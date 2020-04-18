@@ -1,0 +1,16 @@
+This program has been placed in the public domain by its author.
+
+This means you can do whatever you like with them.
+
+Modification, redistribution, passing the code off as your own
+work - it's all fine by me.
+
+With freedom comes responsibility - this code comes with no
+warranty, and is not described as being fit for any purpose.
+
+If you use this code, you do so completely at your own risk.
+
+Enjoy,
+--
+__________
+ |im |yler  http://timtyler.org/  tim@tt1.org
