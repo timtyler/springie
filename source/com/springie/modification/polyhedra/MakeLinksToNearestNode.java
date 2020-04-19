@@ -23,7 +23,7 @@ public class MakeLinksToNearestNode {
   }
 
   public void connectNodesToNearestNodes(int how_many) {
-    final int colour = FrEnd.panel_edit_colour.cp_gas.one.getColour();
+    final int colour = FrEnd.panel_edit_color.cp_gas.one.getColour();
     final int[] selected_node_numbers = getArrayOfSelectedNodes();
     //Log.log("selected_node_numbers" + selected_node_numbers.length);
     final int[] target_node_numbers = getArrayOfNodesOfColour(colour);

@@ -28,8 +28,8 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.selection.SelectionManager;
 import com.springie.extension.Module;
 import com.springie.geometry.Point3D;
-import com.springie.gui.colourpicker.ColourPicker;
-import com.springie.gui.colourpicker.ColourPickerInformer;
+import com.springie.gui.colourpicker.ColorPicker;
+import com.springie.gui.colourpicker.ColorPickerInformer;
 import com.springie.gui.components.ChoiceWithDescription;
 import com.springie.gui.components.DropablePanel;
 import com.springie.gui.components.ImageButton;
@@ -375,8 +375,8 @@ public class FrEnd extends java.applet.Applet implements Runnable {
   public static PanelControlsGenerate panel_edit_generate = new PanelControlsGenerate(
       message_manager);
 
-  public static ColourPicker panel_edit_colour = new ColourPicker(
-      new ColourPickerInformer() {
+  public static ColorPicker panel_edit_color = new ColorPicker(
+      new ColorPickerInformer() {
         public void inform(int colour) {
           final ColourChanger cc = new ColourChanger(ContextMananger.getNodeManager());
           cc.setColour(colour);
@@ -419,7 +419,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
   public static PanelControlsPropertiesScalars panel_edit_properties_scalars = new PanelControlsPropertiesScalars(
       message_manager);
 
-  public static PanelControlsPropertiesScaleFactor panel_edit_properties_scale_factor = new PanelControlsPropertiesScaleFactor(
+  public static PanelControlsPropertiesScaleFactor panel_edit_properties_misc = new PanelControlsPropertiesScaleFactor(
       message_manager);
 
   public static PanelControlsProperties panel_edit_properties = new PanelControlsProperties(

@@ -44,16 +44,16 @@ public final class RendererDelegator {
 
   static JUR rnd = new JUR();
 
-  public static int colour_background_number = 0xFF000000;
+  public static int color_background_number = 0xFF000000;
 
-  public static Color colour_background = new Color(
-      colour_background_number);
+  public static Color color_background = new Color(
+      color_background_number);
 
   public static int colour_selected_number = 0xFFFF0000;
 
   public static Color colour_selected = new Color(colour_selected_number);
 
-  public static int colour_charge_number = 0xFF0000C0;
+  public static int color_charge_number = 0xFF0000C0;
 
   public static boolean fat_struts = true;
 
@@ -104,7 +104,7 @@ public final class RendererDelegator {
   public static void setColour(int colour) {
     RendererDelegator.graphics_handle.setColor(new Color(colour));
     if (FrEnd.xor) {
-      RendererDelegator.graphics_handle.setXORMode(colour_background);
+      RendererDelegator.graphics_handle.setXORMode(color_background);
     }
   }
 
@@ -150,7 +150,7 @@ public final class RendererDelegator {
         // first ensure there is no clip rectangle!
         graphics.setClip(0, 0, 19999, 19999);
         // then clear the big rectangle
-        graphics.setColor(colour_background);
+        graphics.setColor(color_background);
         graphics.fillRect(0, 0, 19999, 19999);
         renderer.reset();
         RendererDelegator.repaint_all_objects = false;
@@ -205,7 +205,7 @@ public final class RendererDelegator {
   }
 
   public static void colourZero() {
-    RendererDelegator.setColour(colour_background_number);
+    RendererDelegator.setColour(color_background_number);
   }
 
   public static void resize(int x_pixels, int y_pixels) {

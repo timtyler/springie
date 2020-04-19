@@ -9,8 +9,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import com.springie.FrEnd;
-import com.springie.gui.colourpicker.ColourPicker;
-import com.springie.gui.colourpicker.ColourPickerInformer;
+import com.springie.gui.colourpicker.ColorPicker;
+import com.springie.gui.colourpicker.ColorPickerInformer;
 import com.springie.gui.components.TabbedPanel;
 import com.springie.gui.components.TTChoice;
 import com.springie.messages.MessageManager;
@@ -25,9 +25,9 @@ public class PanelPreferencesRendererModernFilters {
 
   public Panel panel_filtering = FrEnd.setUpPanelForFrame2();
 
-  public ColourPicker panel_colour_filter_a;
+  public ColorPicker panel_colour_filter_a;
 
-  public ColourPicker panel_colour_filter_b;
+  public ColorPicker panel_colour_filter_b;
 
   MessageManager message_manager;
 
@@ -41,23 +41,23 @@ public class PanelPreferencesRendererModernFilters {
   }
 
   void makePanel() {
-    this.panel_colour_filter_a = new ColourPicker(
-        new ColourPickerInformer() {
+    this.panel_colour_filter_a = new ColorPicker(
+        new ColorPickerInformer() {
           public void inform(int colour) {
             ColourModifier.colour_a_number = colour;
             RendererDelegator.repaintAll();
           }
         });
-    this.panel_colour_filter_a.colour_picker_controller.setColour(ColourModifier.colour_a_number);
+    this.panel_colour_filter_a.color_picker_controller.setColour(ColourModifier.colour_a_number);
 
-    this.panel_colour_filter_b = new ColourPicker(
-        new ColourPickerInformer() {
+    this.panel_colour_filter_b = new ColorPicker(
+        new ColorPickerInformer() {
           public void inform(int colour) {
             ColourModifier.colour_b_number = colour;
             RendererDelegator.repaintAll();
           }
         });
-    this.panel_colour_filter_b.colour_picker_controller.setColour(ColourModifier.colour_b_number);
+    this.panel_colour_filter_b.color_picker_controller.setColour(ColourModifier.colour_b_number);
 
     final TabbedPanel tab_filter_colours = new TabbedPanel();
     tab_filter_colours.add("Colour-A", this.panel_colour_filter_a.panel);

@@ -133,6 +133,8 @@ public interface GUIStrings {
 
   String VELOCITY_REDUCE = "Reduce";
 
+  String VELOCITY_INCREASE = "Increase";
+
   String VELOCITY_FREEZE = "Freeze";
 
   String VELOCITY_REVERSE = "Reverse";

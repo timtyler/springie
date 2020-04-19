@@ -6,8 +6,8 @@ import java.awt.Color;
 import java.awt.Panel;
 
 import com.springie.FrEnd;
-import com.springie.gui.colourpicker.ColourPicker;
-import com.springie.gui.colourpicker.ColourPickerInformer;
+import com.springie.gui.colourpicker.ColorPicker;
+import com.springie.gui.colourpicker.ColorPickerInformer;
 import com.springie.gui.components.TabbedPanel;
 import com.springie.messages.MessageManager;
 import com.springie.render.RendererDelegator;
@@ -24,15 +24,15 @@ public class PanelPreferencesRendererModernColours {
 
   MessageManager message_manager;
 
-  ColourPicker panel_colours_charges;
+  ColorPicker panel_colors_charges;
 
-  ColourPicker panel_colours_selection;
+  ColorPicker panel_colours_selection;
 
-  ColourPicker panel_colours_background;
+  ColorPicker panel_colors_background;
 
-  ColourPicker panel_colours_label;
+  ColorPicker panel_colors_label;
 
-  ColourPicker panel_colours_label_background;
+  ColorPicker panel_colours_label_background;
 
   public PanelPreferencesRendererModernColours(MessageManager message_manager) {
     this.message_manager = message_manager;
@@ -40,64 +40,64 @@ public class PanelPreferencesRendererModernColours {
   }
 
   void makePanel() {
-    this.panel_colours_background = new ColourPicker(
-        new ColourPickerInformer() {
+    this.panel_colors_background = new ColorPicker(
+        new ColorPickerInformer() {
           public void inform(int colour) {
-            RendererDelegator.colour_background_number = colour;
-            RendererDelegator.colour_background = new Color(colour);
+            RendererDelegator.color_background_number = colour;
+            RendererDelegator.color_background = new Color(colour);
             RendererDelegator.repaint_all_objects = true;
           }
         });
-    this.panel_colours_background.colour_picker_controller
-        .setColour(RendererDelegator.colour_background_number);
+    this.panel_colors_background.color_picker_controller
+        .setColour(RendererDelegator.color_background_number);
 
-    this.panel_colours_selection = new ColourPicker(new ColourPickerInformer() {
+    this.panel_colours_selection = new ColorPicker(new ColorPickerInformer() {
       public void inform(int colour) {
         RendererDelegator.colour_selected_number = colour;
         RendererDelegator.colour_selected = new Color(colour);
         RendererDelegator.repaint_all_objects = true;
       }
     });
-    this.panel_colours_selection.colour_picker_controller
+    this.panel_colours_selection.color_picker_controller
         .setColour(RendererDelegator.colour_selected_number);
 
-    this.panel_colours_charges = new ColourPicker(new ColourPickerInformer() {
+    this.panel_colors_charges = new ColorPicker(new ColorPickerInformer() {
       public void inform(int colour) {
-        RendererDelegator.colour_charge_number = colour;
+        RendererDelegator.color_charge_number = colour;
         RendererDelegator.repaint_all_objects = true;
       }
     });
-    this.panel_colours_charges.colour_picker_controller
-        .setColour(RendererDelegator.colour_charge_number);
+    this.panel_colors_charges.color_picker_controller
+        .setColour(RendererDelegator.color_charge_number);
 
-    this.panel_colours_label = new ColourPicker(new ColourPickerInformer() {
+    this.panel_colors_label = new ColorPicker(new ColorPickerInformer() {
       public void inform(int colour) {
         ElementRendererLink.colour_fg = colour;
         RendererDelegator.repaint_all_objects = true;
       }
     });
-    this.panel_colours_label.colour_picker_controller
+    this.panel_colors_label.color_picker_controller
         .setColour(ElementRendererLink.colour_fg);
 
-    this.panel_colours_label_background = new ColourPicker(
-        new ColourPickerInformer() {
+    this.panel_colours_label_background = new ColorPicker(
+        new ColorPickerInformer() {
           public void inform(int colour) {
             ElementRendererLink.colour_bg = colour;
             RendererDelegator.repaint_all_objects = true;
           }
         });
-    this.panel_colours_label_background.colour_picker_controller
+    this.panel_colours_label_background.color_picker_controller
         .setColour(ElementRendererLink.colour_bg);
 
-    this.tab_colours_general.add("Background", this.panel_colours_background.panel);
+    this.tab_colours_general.add("Background", this.panel_colors_background.panel);
     this.tab_colours_general.add("Selection", this.panel_colours_selection.panel);
 
     this.tab_colours_label.add("Background", this.panel_colours_label_background.panel);
-    this.tab_colours_label.add("Foreground", this.panel_colours_label.panel);
+    this.tab_colours_label.add("Foreground", this.panel_colors_label.panel);
 
     this.tab_colours_main.add("General", this.tab_colours_general);
     this.tab_colours_main.add("Label", this.tab_colours_label);
-    this.tab_colours_main.add("Charges", this.panel_colours_charges.panel);
+    this.tab_colours_main.add("Charges", this.panel_colors_charges.panel);
 
     this.panel.add(this.tab_colours_main);
   }

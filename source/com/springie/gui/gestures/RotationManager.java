@@ -10,100 +10,95 @@ import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 
 public class RotationManager {
-  private int start_x;
+	private int start_x;
 
-  private int start_y;
-  
-  boolean cw_acw;
+	private int start_y;
 
-  Point3D[] pos;
-  
-  Point3D centre;
+	boolean cw_acw;
 
-  public void initialise(int x, int y, boolean cw_acw) {
-    this.cw_acw = cw_acw;
-    if (FrEnd.button_virginity) {
-      this.start_x = x;
-      this.start_y = y;
+	Point3D[] pos;
 
-      this.pos = new TransferUtilities().transferPositions();
-      
-      this.centre =  ContextMananger.getNodeManager().getCentre();
+	Point3D centre;
 
-      FrEnd.forces_disabled_during_gesture = true;
-    } else {
-      performRotation(x, y);
-    }
-  }
+	public void initialise(int x, int y, boolean cw_acw) {
+		this.cw_acw = cw_acw;
+		if (FrEnd.button_virginity) {
+			this.start_x = x;
+			this.start_y = y;
 
-  public void performRotation(int x, int y) {
-    final int n = ContextMananger.getNodeManager().element.size();
+			this.pos = new TransferUtilities().transferPositions();
 
-    final float theta1 = (x - this.start_x) / (float) (160 * Coords.x_pixelso2);
-    final float theta2 = (y - this.start_y) / (float) (160 * Coords.y_pixelso2);
+			this.centre = ContextMananger.getNodeManager().getCentre();
 
-    for (int i = n; --i >= 0;) {
-      final Node node = (Node) ContextMananger.getNodeManager().element.elementAt(i);
+			FrEnd.forces_disabled_during_gesture = true;
+		} else {
+			performRotation(x, y);
+		}
+	}
 
-      node.pos = this.pos[i];
-      if (this.cw_acw) {
-      rotateAboutZAxis(theta1, node);
-      } else {
-        rotateAboutYAxis(theta1, node);
-        rotateAboutXAxis(theta2, node);
-  }
-    }
-    
-    RendererDelegator.repaint_some_objects = true;
-  }
+	public void performRotation(int x, int y) {
+		final int n = ContextMananger.getNodeManager().element.size();
 
-  private void rotateAboutYAxis(final float theta, final Node node) {
-    final Point3D relative = (Point3D) node.pos.clone();
-    relative.subtractTuple3D(this.centre);
+		final float theta1 = (x - this.start_x) / (float) (160 * Coords.x_pixelso2);
+		final float theta2 = (y - this.start_y) / (float) (160 * Coords.y_pixelso2);
 
-    final int dx = (int) (relative.x * Math.cos(theta) - relative.z
-      * Math.sin(theta));
-    final int dy = relative.y;
-    final int dz = (int) (relative.z * Math.cos(theta) + relative.x
-      * Math.sin(theta));
+		for (int i = n; --i >= 0;) {
+			final Node node = (Node) ContextMananger.getNodeManager().element.elementAt(i);
+			if (node != null) {
+				node.pos = this.pos[i];
+				if (this.cw_acw) {
+					rotateAboutZAxis(theta1, node);
+				} else {
+					rotateAboutYAxis(theta1, node);
+					rotateAboutXAxis(theta2, node);
+				}
+			}
+		}
 
-    node.pos = new Point3D(dx, dy, dz);
-    node.pos.addTuple3D(this.centre);
-  }
+		RendererDelegator.repaint_some_objects = true;
+	}
 
-  private void rotateAboutXAxis(final float theta, final Node node) {
-    final Point3D relative = (Point3D) node.pos.clone();
-    relative.subtractTuple3D(this.centre);
+	private void rotateAboutYAxis(final float theta, final Node node) {
+		final Point3D relative = (Point3D) node.pos.clone();
+		relative.subtractTuple3D(this.centre);
 
-    final int dx = relative.x;
-    final int dy = (int) (relative.y * Math.cos(theta) - relative.z
-      * Math.sin(theta));
-    final int dz = (int) (relative.z * Math.cos(theta) + relative.y
-      * Math.sin(theta));
+		final int dx = (int) (relative.x * Math.cos(theta) - relative.z * Math.sin(theta));
+		final int dy = relative.y;
+		final int dz = (int) (relative.z * Math.cos(theta) + relative.x * Math.sin(theta));
 
-    node.pos = new Point3D(dx, dy, dz);
-    node.pos.addTuple3D(this.centre);
-  }
-  
-  private void rotateAboutZAxis(final float theta, final Node node) {
-    final Point3D relative = (Point3D) node.pos.clone();
-    relative.subtractTuple3D(this.centre);
+		node.pos = new Point3D(dx, dy, dz);
+		node.pos.addTuple3D(this.centre);
+	}
 
-    final int dx = (int) (relative.x * Math.cos(theta) + relative.y
-        * Math.sin(theta));
-    final int dy = (int) (relative.y * Math.cos(theta) - relative.x
-      * Math.sin(theta));
-    final int dz = relative.z;
+	private void rotateAboutXAxis(final float theta, final Node node) {
+		final Point3D relative = (Point3D) node.pos.clone();
+		relative.subtractTuple3D(this.centre);
 
-    node.pos = new Point3D(dx, dy, dz);
-    node.pos.addTuple3D(this.centre);
-  }
+		final int dx = relative.x;
+		final int dy = (int) (relative.y * Math.cos(theta) - relative.z * Math.sin(theta));
+		final int dz = (int) (relative.z * Math.cos(theta) + relative.y * Math.sin(theta));
 
-  public void terminate(int x, int y) {
-    if (this.pos != null) {
-      performRotation(x, y);
-      this.pos = null;
-      FrEnd.forces_disabled_during_gesture = false;
-    }
-  }
+		node.pos = new Point3D(dx, dy, dz);
+		node.pos.addTuple3D(this.centre);
+	}
+
+	private void rotateAboutZAxis(final float theta, final Node node) {
+		final Point3D relative = (Point3D) node.pos.clone();
+		relative.subtractTuple3D(this.centre);
+
+		final int dx = (int) (relative.x * Math.cos(theta) + relative.y * Math.sin(theta));
+		final int dy = (int) (relative.y * Math.cos(theta) - relative.x * Math.sin(theta));
+		final int dz = relative.z;
+
+		node.pos = new Point3D(dx, dy, dz);
+		node.pos.addTuple3D(this.centre);
+	}
+
+	public void terminate(int x, int y) {
+		if (this.pos != null) {
+			performRotation(x, y);
+			this.pos = null;
+			FrEnd.forces_disabled_during_gesture = false;
+		}
+	}
 }

@@ -34,18 +34,18 @@ public class ColourPickerPreview extends Panel {
 
   private int original_colour;
 
-  ColourPickerInformer informer;
+  ColorPickerInformer informer;
 
-  public ColourPickerPreview(ColourPickerInformer informer) {
+  public ColourPickerPreview(ColorPickerInformer informer) {
     this.informer = informer;
 
     final ActionListener action_listener_set = new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        final int colour = getColour();
-        ColourPickerPreview.this.last_colour = colour;
-        ColourPickerPreview.this.original_colour = colour;
-        ColourPickerPreview.this.informer.inform(colour);
+        final int color = getColour();
+        ColourPickerPreview.this.last_colour = color;
+        ColourPickerPreview.this.original_colour = color;
+        ColourPickerPreview.this.informer.inform(color);
         refresh();
       }
     };

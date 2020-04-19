@@ -4,7 +4,7 @@ package com.springie.gui.panels;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextMananger;
-import com.springie.gui.colourpicker.ColourPicker;
+import com.springie.gui.colourpicker.ColorPicker;
 import com.springie.gui.components.ComponentAccess;
 import com.springie.gui.panels.controls.PanelControlsDelete;
 import com.springie.gui.panels.controls.PanelControlsMisc;
@@ -191,11 +191,11 @@ public final class UpdateEnabledComponents {
     ComponentAccess.setAccess(
         panel_sel_adv.button_edit_spread_selection_via_links, any);
 
-    final ColourPicker panel_controls_colour = FrEnd.panel_edit_colour;
+    final ColorPicker panel_controls_colour = FrEnd.panel_edit_color;
 
-    panel_controls_colour.colour_picker_controller.greyGetAndSetColourButtons();
+    panel_controls_colour.color_picker_controller.greyGetAndSetColourButtons();
     ComponentAccess.setAccess(
-        panel_controls_colour.colour_picker_controller.cp_preview.button_set,
+        panel_controls_colour.color_picker_controller.cp_preview.button_set,
         any);
 
     panel_edit_properties_flags.resetPanel(nodes, links, faces);

@@ -96,10 +96,6 @@ public class NodeManager extends World {
     addCreature(); // 64 + World.rnd.nextInt(128));
   }
 
-  // addPresetObject(int size, Object preset_object) {
-  // addCreatureFromPresetObject(size, preset_object);
-  // }
-
   private void addCreature() {
     final String desc = FrEnd.choose_initial.choice.getSelectedItem();
 
@@ -1098,19 +1094,19 @@ public class NodeManager extends World {
   }
 
   public final void setColourOfSelected(int c) {
-    boolean clean_up = false;
-    final int number_of_nodes = this.element.size();
-    for (int temp2 = 0; temp2 < number_of_nodes; temp2++) {
-      final Node n = (Node) this.element.elementAt(temp2);
-      if (n.type.selected) {
-        n.clazz.colour = (char) c;
-        clean_up = true;
-      }
-    }
-    if (clean_up) {
-      FrEnd.postCleanup();
-    }
-  }
+	    boolean clean_up = false;
+	    final int number_of_nodes = this.element.size();
+	    for (int temp2 = 0; temp2 < number_of_nodes; temp2++) {
+	      final Node n = (Node) this.element.elementAt(temp2);
+	      if (n.type.selected) {
+	        n.clazz.colour = (char) c;
+	        clean_up = true;
+	      }
+	    }
+	    if (clean_up) {
+	      FrEnd.postCleanup();
+	    }
+	  }
 
   public void setSizeOfSelected(int s) {
     boolean clean_up = false;

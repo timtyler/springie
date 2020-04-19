@@ -238,7 +238,7 @@ public final class ElementRendererNode {
       PolygonComposite composite) {
     final int size = node.type.radius / 7;
 
-    final int colour = RendererDelegator.colour_charge_number;
+    final int colour = RendererDelegator.color_charge_number;
 
     final Vector polygon_vector = new Vector();
 
@@ -280,7 +280,7 @@ public final class ElementRendererNode {
       PolygonComposite composite) {
     final int size = node.type.radius / 7;
 
-    final int colour = RendererDelegator.colour_charge_number;
+    final int colour = RendererDelegator.color_charge_number;
 
     final Vector polygon_vector = new Vector();
 

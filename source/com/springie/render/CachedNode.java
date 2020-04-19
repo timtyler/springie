@@ -125,7 +125,7 @@ public class CachedNode {
 
     final int temp2 = FrEnd.quality;
 
-    RendererDelegator.graphics_handle.setColor(RendererDelegator.colour_background);
+    RendererDelegator.graphics_handle.setColor(RendererDelegator.color_background);
 
     switch (temp2) {
       case Quality.THICK_OUTLINE:

@@ -18,7 +18,7 @@ public class RendererDragBox {
   private void drawDragBox(Graphics g, DragBoxManager drag_box_manager) {
     g.setClip(0, 0, 9999, 9999);
     if (drag_box_manager.drag_box_end != null) {
-      g.setColor(RendererDelegator.colour_background);
+      g.setColor(RendererDelegator.color_background);
       drawTheCurrentDragBox(g);
 
       if (drag_box_manager.drag_box_start != null) {

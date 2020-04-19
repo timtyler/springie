@@ -8,21 +8,21 @@ import java.awt.Panel;
 import com.springie.FrEnd;
 import com.springie.gui.components.TabbedPanel;
 
-public class ColourPicker {
+public class ColorPicker {
   public Panel panel = FrEnd.setUpPanelForFrame2();
 
-  public ColourPickerController colour_picker_controller;
+  public ColourPickerController color_picker_controller;
 
   public ColourPickerGettersAndPutters cp_gas;
 
   ColourPickerPreview cp_fc;
 
-  public ColourPicker(ColourPickerInformer informer) {
+  public ColorPicker(ColorPickerInformer informer) {
     makePanel(informer);
   }
 
-  void makePanel(ColourPickerInformer informer) {
-    this.colour_picker_controller = new ColourPickerController();
+  void makePanel(ColorPickerInformer informer) {
+    this.color_picker_controller = new ColourPickerController();
 
     final ColourPickerVRGBR cp_red = new ColourPickerVRGBR();
     cp_red.init();
@@ -52,35 +52,35 @@ public class ColourPicker {
 
     this.cp_gas = new ColourPickerGettersAndPutters();
 
-    this.colour_picker_controller.inform(this.cp_fc);
-    this.cp_fc.inform(this.colour_picker_controller);
+    this.color_picker_controller.inform(this.cp_fc);
+    this.cp_fc.inform(this.color_picker_controller);
 
-    this.colour_picker_controller.inform(cp_hue);
-    cp_hue.inform(this.colour_picker_controller);
+    this.color_picker_controller.inform(cp_hue);
+    cp_hue.inform(this.color_picker_controller);
 
-    this.colour_picker_controller.inform(cp_sat);
-    cp_sat.inform(this.colour_picker_controller);
+    this.color_picker_controller.inform(cp_sat);
+    cp_sat.inform(this.color_picker_controller);
 
-    this.colour_picker_controller.inform(cp_bri);
-    cp_bri.inform(this.colour_picker_controller);
+    this.color_picker_controller.inform(cp_bri);
+    cp_bri.inform(this.color_picker_controller);
 
-    this.colour_picker_controller.inform(cp_red);
-    cp_red.inform(this.colour_picker_controller);
+    this.color_picker_controller.inform(cp_red);
+    cp_red.inform(this.color_picker_controller);
 
-    this.colour_picker_controller.inform(cp_grn);
-    cp_grn.inform(this.colour_picker_controller);
+    this.color_picker_controller.inform(cp_grn);
+    cp_grn.inform(this.color_picker_controller);
 
-    this.colour_picker_controller.inform(cp_blu);
-    cp_blu.inform(this.colour_picker_controller);
+    this.color_picker_controller.inform(cp_blu);
+    cp_blu.inform(this.color_picker_controller);
 
-    this.colour_picker_controller.inform(cpt);
-    cpt.inform(this.colour_picker_controller);
+    this.color_picker_controller.inform(cpt);
+    cpt.inform(this.color_picker_controller);
 
     //this.colour_picker_controller.inform(cpfcv);
     //cpfcv.inform(this.colour_picker_controller);
 
-    this.cp_gas.inform(this.colour_picker_controller);
-    this.colour_picker_controller.inform(this.cp_gas);
+    this.cp_gas.inform(this.color_picker_controller);
+    this.color_picker_controller.inform(this.cp_gas);
 
     // panel_rgb.add(this.colour_picker_controller);
 
@@ -115,6 +115,6 @@ public class ColourPicker {
   }
 
   public int getColour() {
-    return this.colour_picker_controller.getColour();
+    return this.color_picker_controller.getColour();
   }
 }

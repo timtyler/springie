@@ -97,7 +97,7 @@ public class PerformSelection {
             .setState(selected_node.type.pinned);
         FrEnd.panel_edit_properties_flags.checkbox_hidden
             .setState(selected_node.type.hidden);
-        FrEnd.panel_edit_colour.colour_picker_controller
+        FrEnd.panel_edit_color.color_picker_controller
             .setColour(selected_node.clazz.colour);
 
         FrEnd.panel_edit_properties_scalars.scroll_bar_radius
@@ -152,7 +152,7 @@ public class PerformSelection {
 
           updateScalarsForOneLink(type);
 
-          FrEnd.panel_edit_colour.colour_picker_controller
+          FrEnd.panel_edit_color.color_picker_controller
               .setColour(selected_link.clazz.colour);
         }
       }
@@ -211,7 +211,7 @@ public class PerformSelection {
 
       FrEnd.panel_edit_properties_flags.checkbox_hidden.setState(type.hidden);
 
-      FrEnd.panel_edit_colour.colour_picker_controller
+      FrEnd.panel_edit_color.color_picker_controller
           .setColour(selected_face.clazz.colour);
     }
 
@@ -231,7 +231,6 @@ public class PerformSelection {
   }
 
   private void deselectAllNodes() {
-    // Log.log("DESELECTION - OK2");
     ContextMananger.getNodeManager().deselectAll();
   }
 
@@ -245,7 +244,6 @@ public class PerformSelection {
 
   private void deselectAllLinks() {
     ContextMananger.getLinkManager().deselectAll();
-    // FrEnd.selected_link = null;
   }
 
   private void deselectAllPolygons() {
@@ -253,22 +251,14 @@ public class PerformSelection {
   }
 
   private void deselectAllNodesInitially() {
-    // if ((FrEnd.main_canvas.modifiers & 3) == 0) {
-    // Log.log("DESELECTION - OK1");
     deselectAllNodes();
-
-    // }
   }
 
   private void deselectAllLinksInitially() {
-    // if ((FrEnd.main_canvas.modifiers & 3) == 0) {
     deselectAllLinks();
-    // }
   }
 
   private void deselectAllPolygonsInitially() {
-    // if ((FrEnd.main_canvas.modifiers & 3) == 0) {
     deselectAllPolygons();
-    // }
   }
 }

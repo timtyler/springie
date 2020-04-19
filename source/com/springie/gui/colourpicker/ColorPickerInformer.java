@@ -2,6 +2,6 @@
 
 package com.springie.gui.colourpicker;
 
-public abstract class ColourPickerInformer {
+public abstract class ColorPickerInformer {
   public abstract void inform(int colour);
 }

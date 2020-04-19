@@ -14,6 +14,7 @@ import com.springie.gui.components.TTChoice;
 import com.springie.gui.components.TextFieldWrapper;
 import com.springie.messages.MessageManager;
 import com.springie.preferences.Preferences;
+import com.springie.render.RendererInfoButton;
 
 public class PanelPreferencesUpdate {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -26,7 +27,7 @@ public class PanelPreferencesUpdate {
 
   // private Checkbox checkbox_animate_pointer_over;
 
-  public Checkbox checkbox_iconise_bottom_toolbar;
+  public Checkbox checkbox_display_bottom_toolbar;
 
   public PanelPreferencesUpdate(MessageManager message_manager) {
     this.message_manager = message_manager;
@@ -74,8 +75,7 @@ public class PanelPreferencesUpdate {
 
   private Panel getAnimatePointerOverPanel() {
     final boolean b = ((Boolean) FrEnd.preferences.map
-        .get(Preferences.key_update_animation_when_pointer_over))
-        .booleanValue();
+        .get(Preferences.key_update_animation_when_pointer_over));
 
     final Checkbox checkbox_animate_pointer_over = new Checkbox(
         "Stop animating when pointer exits", b);
@@ -86,33 +86,26 @@ public class PanelPreferencesUpdate {
             new Boolean(((Checkbox) e.getSource()).getState()));
       }
     });
-
     final Panel panel = new Panel();
-
     panel.add(checkbox_animate_pointer_over);
-
     return panel;
   }
 
   private Panel getHideBottomToolbarPanel() {
-    final boolean b = FrEnd.viewer;
-
-    this.checkbox_iconise_bottom_toolbar = new Checkbox(
-        "Iconise bottom toolbar", b);
-    this.checkbox_iconise_bottom_toolbar.addItemListener(new ItemListener() {
+    this.checkbox_display_bottom_toolbar = new Checkbox(
+        "Display bottom toolbar", FrEnd.viewer);
+    this.checkbox_display_bottom_toolbar.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        if (((Checkbox) e.getSource()).getState()) {
-          FrEnd.main_canvas.getInfoButton().hide();
+        RendererInfoButton infoButton = FrEnd.main_canvas.getInfoButton();
+		if (((Checkbox) e.getSource()).getState()) {
+          infoButton.hide();
         } else {
-          FrEnd.main_canvas.getInfoButton().show();
+          infoButton.show();
         }
       }
     });
-
     final Panel panel = new Panel();
-
-    panel.add(this.checkbox_iconise_bottom_toolbar);
-
+    panel.add(this.checkbox_display_bottom_toolbar);
     return panel;
   }
 

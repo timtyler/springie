@@ -88,8 +88,6 @@ public class PerformActions {
         doRotation2(x, y);
         break;
         
-        
-
       case Actions.TRANSLATE:
         doTranslation(x, y);
         break;

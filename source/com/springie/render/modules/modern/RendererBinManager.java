@@ -136,7 +136,7 @@ public class RendererBinManager {
               final int width = block_size;
               final int height = block_size;
               FrEnd.main_canvas.panel
-                  .setBackground(RendererDelegator.colour_background);
+                  .setBackground(RendererDelegator.color_background);
               bin.image = FrEnd.main_canvas.createImage(width, height);
             }
             graphics_paint = bin.image.getGraphics();
@@ -269,7 +269,7 @@ public class RendererBinManager {
     final int block_size = divisor - getMargin();
 
     // graphics.setColor(new Color(rnd.nextInt() & 0x7F7F7F));
-    graphics.setColor(RendererDelegator.colour_background);
+    graphics.setColor(RendererDelegator.color_background);
     graphics.fillRect(bin_min_x, bin_min_y, block_size, block_size);
   }
 

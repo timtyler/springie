@@ -55,7 +55,7 @@ public class RendererInfoButton {
     }
 
     show();
-    FrEnd.panel_preferences_update.checkbox_iconise_bottom_toolbar
+    FrEnd.panel_preferences_update.checkbox_display_bottom_toolbar
       .setState(false);
   }
 

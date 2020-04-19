@@ -34,7 +34,7 @@ public final class DomeRelatedChangeDelegator {
   }
 
   private static float getScalingScaleFactor() {
-    final int value = FrEnd.panel_edit_properties_scale_factor.scroll_bar_scale_by.getValue();
+    final int value = FrEnd.panel_edit_properties_misc.scroll_bar_scale_by.getValue();
     return value / 100F;
   }
 

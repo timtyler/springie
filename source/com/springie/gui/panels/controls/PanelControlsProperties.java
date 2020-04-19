@@ -26,7 +26,7 @@ public class PanelControlsProperties {
     tab_scalars.add("Scalars", FrEnd.panel_edit_properties_scalars.panel);
     tab_scalars.add("Delete", FrEnd.panel_edit_delete.panel);
     tab_scalars.add("Edit", FrEnd.panel_edit_edit.panel);
-    tab_scalars.add("Scale factor", FrEnd.panel_edit_properties_scale_factor.panel);
+    tab_scalars.add("Misc", FrEnd.panel_edit_properties_misc.panel);
 
     this.panel.add(tab_scalars, "Center");
 
