@@ -22,13 +22,14 @@ public class PanelControlsProperties {
   void makePanel() {
     this.panel.setLayout(new BorderLayout());
 
-    final TabbedPanel tab_scalars = new TabbedPanel();
-    tab_scalars.add("Scalars", FrEnd.panel_edit_properties_scalars.panel);
-    tab_scalars.add("Delete", FrEnd.panel_edit_delete.panel);
-    tab_scalars.add("Edit", FrEnd.panel_edit_edit.panel);
-    tab_scalars.add("Misc", FrEnd.panel_edit_properties_misc.panel);
+    final TabbedPanel tab_properties = new TabbedPanel();
+    tab_properties.add("Scalars", FrEnd.panel_edit_properties_scalars.panel);
+    tab_properties.add("Delete", FrEnd.panel_edit_delete.panel);
+    tab_properties.add("Edit", FrEnd.panel_edit_edit.panel);
+    tab_properties.add("Color", FrEnd.panel_edit_color.panel);
+    tab_properties.add("Misc", FrEnd.panel_edit_properties_misc.panel);
 
-    this.panel.add(tab_scalars, "Center");
+    this.panel.add(tab_properties, "Center");
 
     final TabbedPanel tab_flags = new TabbedPanel();
     tab_flags.add("Flags", FrEnd.panel_edit_properties_flags.panel);

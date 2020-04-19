@@ -53,11 +53,11 @@ public class PanelControlsDelete {
     panel_delete.add(this.button_delete_selection);
 
     this.panel.add(panel_delete);
-    this.panel.add(getClearPanel());
     this.panel.add(getRemoveLinksPanel());
     this.panel.add(getRemoveFacesPanel());
     this.panel.add(getPanelRemoveLinkAndFuseEnds());
     this.panel.add(getPanelFuseSelectedNodes());
+    this.panel.add(getDeleteAllPanel());
   }
   
   private Panel getRemoveFacesPanel() {
@@ -87,7 +87,7 @@ public class PanelControlsDelete {
     return panel;
   }
 
-  private Panel getClearPanel() {
+  private Panel getDeleteAllPanel() {
 	this.button_delete_all = new Button(GUIStrings.BUTTON_CLEAR);
     button_delete_all.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {

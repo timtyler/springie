@@ -22,8 +22,8 @@ public class PanelControls {
 
   void makePanel() {
     final TabbedPanel tab = new TabbedPanel();
-    tab.add("Modify", FrEnd.panel_edit_modify.panel);
-    tab.add("Universe", FrEnd.panel_edit_universe.panel);
+    tab.add("Edit model", FrEnd.panel_edit_model.panel);
+    tab.add("Edit universe", FrEnd.panel_edit_universe.panel);
     tab.add("Create",  FrEnd.panel_edit_generate.panel);
     tab.add("Misc", FrEnd.panel_edit_misc.panel);
 

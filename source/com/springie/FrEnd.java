@@ -425,7 +425,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
   public static PanelControlsProperties panel_edit_properties = new PanelControlsProperties(
       message_manager);
 
-  public static PanelControlsModify panel_edit_modify = new PanelControlsModify(
+  public static PanelControlsModify panel_edit_model = new PanelControlsModify(
       message_manager);
 
   public static PanelFundamental panel_fundamental = new PanelFundamental(

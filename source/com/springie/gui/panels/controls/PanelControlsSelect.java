@@ -23,7 +23,7 @@ public class PanelControlsSelect {
     tab.add("Select", FrEnd.panel_edit_select_main.panel);
     tab.add("Links", FrEnd.panel_edit_select_links.panel);
     tab.add("Advanced", FrEnd.panel_edit_select_advanced.panel);
-
+    
     this.panel.add(tab);
   }
   
