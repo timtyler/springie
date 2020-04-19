@@ -60,7 +60,7 @@ public class Node extends BaseElement {
 
   public static int TRIG_TAB_SIZEMO = TRIG_TAB_SIZE - 1;
 
-  static int TRIG_TAB_SIZEO2 = TRIG_TAB_SIZE >>> 1;
+  private static int TRIG_TAB_SIZEO2 = TRIG_TAB_SIZE >>> 1;
 
   public static World temp_private_world;
 

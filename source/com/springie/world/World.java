@@ -53,6 +53,8 @@ public class World extends BaseElementManager {
 
   public static int gravity_strength = 2;
 
+  public static int global_temperature = 6;
+
   public static boolean gravity_active;
 
   protected static Node temp_agent;
