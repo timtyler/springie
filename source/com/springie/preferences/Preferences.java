@@ -19,7 +19,7 @@ public class Preferences {
 
   public static final String renderer_new_double_buffer = "renderer.new.double_buffer";
 
-  public Hashtable map = new Hashtable();
+  public Hashtable<String, Object> map = new Hashtable();
 
   public Preferences() {
     this.map.put(Preferences.key_output_pov_ground, "none");

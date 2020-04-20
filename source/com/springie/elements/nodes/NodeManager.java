@@ -9,10 +9,12 @@ import org.xml.sax.SAXException;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextMananger;
+import com.springie.elements.clazz.Clazz;
 import com.springie.elements.electrostatics.ElectrostaticRepulsion;
 import com.springie.elements.links.LinkManager;
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
+import com.springie.gui.gestures.PerformSelection;
 import com.springie.messages.ArgumentList;
 import com.springie.modification.post.PostModification;
 import com.springie.modification.translation.CentreOnScreen;
@@ -500,7 +502,24 @@ public class NodeManager extends World {
 				temp_agent = (Node) this.element.elementAt(temp);
 				applyGravity();
 				applyTemperature();
+				decrementCounter();
 			}
+		}
+	}
+
+	private void decrementCounter() {
+		int counter = temp_agent.type.counter;
+		if (counter > 0) {
+			if (counter == PerformSelection.INFECTION_START) {
+				temp_agent.clazz = new Clazz(0xFFFF4040);
+			}
+			if (counter == PerformSelection.IMMUNITY_START) {
+				temp_agent.clazz = new Clazz(0xFFFFFF40);
+			}
+			if (counter == 1) {
+				temp_agent.clazz = new Clazz(0xFF40FF40);
+			}
+			temp_agent.type.counter--;
 		}
 	}
 
@@ -615,8 +634,7 @@ public class NodeManager extends World {
 							int magnitude = -(((tadx * temp_x) + (tady * temp_y) + (tadz * temp_z)) >> Coords.shift);
 							// magnitude = (magnitude < 0) ? -magnitude : magnitude; // ???
 							if (magnitude > 0) {
-								int temp_count;
-								temp_count = ((temp_detection_distance - temp_radius) << 8) // !
+								int temp_count = ((temp_detection_distance - temp_radius) << 8) // !
 										+ World.minimum_magnitude;
 
 								if (temp_count > World.maximum_magnitude) {
@@ -661,6 +679,7 @@ public class NodeManager extends World {
 									temp2_agent.velocity.z -= tadz >> 9;
 								}
 								shrinkNodesOnCollision();
+								spreadInfectionOnCollisions();
 							}
 
 							/*
@@ -687,6 +706,21 @@ public class NodeManager extends World {
 						}
 					}
 				}
+			}
+		}
+	}
+
+	private void spreadInfectionOnCollisions() {
+		int counter1 = temp_agent.type.counter;
+		int counter2 = temp2_agent.type.counter;
+		if (counter1 > PerformSelection.IMMUNITY_START) {
+			if (counter2 == 0) {
+				temp2_agent.type.counter = PerformSelection.INFECTION_START;
+			}
+		}
+		if (counter2 > PerformSelection.IMMUNITY_START) {
+			if (counter1 == 0) {
+				temp_agent.type.counter = PerformSelection.INFECTION_START;
 			}
 		}
 	}

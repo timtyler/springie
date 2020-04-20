@@ -16,7 +16,8 @@ import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ModularRendererNew;
 
 public class PerformSelection {
-	int INITIAL_INFECTION = 32;
+	public static int INFECTION_START = 64;
+	public static int IMMUNITY_START = 48;
 	
 	public void performSelection(int x, int y, boolean drag_is_possible) {
 		if (RendererDelegator.renderer instanceof ModularRendererNew) {
@@ -64,7 +65,7 @@ public class PerformSelection {
 	public void performInfection(int x, int y) {
 		final Node node = ContextMananger.getNodeManager().isThereOne(x, y);
 		if (node != null) {
-			node.type.counter = INITIAL_INFECTION;
+			node.type.counter = INFECTION_START;
 		}
 	}
 

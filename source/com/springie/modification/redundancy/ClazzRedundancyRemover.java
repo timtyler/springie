@@ -1,7 +1,6 @@
 package com.springie.modification.redundancy;
 
 import java.util.List;
-import java.util.Vector;
 
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.faces.Face;
