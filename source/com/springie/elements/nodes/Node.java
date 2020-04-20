@@ -3,7 +3,6 @@
 package com.springie.elements.nodes;
 
 import com.springie.FrEnd;
-import com.springie.composite.Composite;
 import com.springie.elements.base.BaseElement;
 import com.springie.elements.clazz.ClazzFactory;
 import com.springie.elements.lists.ListOfIntegers;
@@ -35,9 +34,7 @@ public class Node extends BaseElement {
   public ListOfIntegers list_of_polygons = new ListOfIntegers();
 
   public Point3D current_bin = new Point3D(-1, -1, -1);
-
-  public boolean moves_with_selection;
-
+  
   public static int thickness = 6; // display only...
 
   public static int max_speed = Integer.MAX_VALUE;
@@ -58,14 +55,12 @@ public class Node extends BaseElement {
 
   public static int TRIG_TAB_SIZEMO = TRIG_TAB_SIZE - 1;
 
-  private static int TRIG_TAB_SIZEO2 = TRIG_TAB_SIZE >>> 1;
-
   public static World temp_private_world;
 
   public static int number_of_render_divisions = 1;
-
+  
   public Node() {
-    //setUpVectors();
+	  //...
   }
 
   public Node(Point3D pos, int seed, NodeTypeFactory node_type_factory) {
@@ -82,7 +77,6 @@ public class Node extends BaseElement {
 
   public Node(Node e, NodeTypeFactory node_type_factory,
     ClazzFactory clazz_factory) {
-    //setUpVectors();
     set(e, node_type_factory, clazz_factory);
   }
 
@@ -140,8 +134,7 @@ public class Node extends BaseElement {
   public void travel() {
     capVelocities();
 
-    //final boolean motionless = this.type.pinned || (FrEnd.dragged_element != null && this.type.selected);
-    final boolean motionless = this.type.pinned || (FrEnd.dragged_element != null && this.moves_with_selection);
+    final boolean motionless = this.type.pinned || (FrEnd.dragged_element != null && this.type.selected);
     
     if (motionless) {
       this.velocity = new Vector3D(0, 0, 0);

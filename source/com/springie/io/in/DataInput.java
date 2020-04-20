@@ -64,7 +64,7 @@ public class DataInput {
     this.manager_destination.node_type_factory.array.removeAllElements();
     link_manager.link_type_factory.array.removeAllElements();
     face_manager.face_type_factory.array.removeAllElements();
-    this.manager_destination.clazz_factory.array.removeAllElements();
+    this.manager_destination.clazz_factory.array.clear();
   }
 
   public void addFromString(String s, NodeManager manager) {

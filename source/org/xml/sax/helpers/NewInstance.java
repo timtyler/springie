@@ -42,7 +42,7 @@ class NewInstance {
         throws ClassNotFoundException, IllegalAccessException,
             InstantiationException
     {
-        Class driverClass;
+        Class<?> driverClass;
         if (classLoader == null) {
             driverClass = Class.forName(className);
         } else {

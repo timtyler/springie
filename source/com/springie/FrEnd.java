@@ -25,7 +25,6 @@ import com.springie.context.ContextMananger;
 import com.springie.elements.base.BaseElement;
 import com.springie.elements.links.Link;
 import com.springie.elements.nodes.Node;
-import com.springie.elements.selection.SelectionManager;
 import com.springie.extension.Module;
 import com.springie.geometry.Point3D;
 import com.springie.gui.colourpicker.ColorPicker;
@@ -188,7 +187,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
   public static int frame_frequency = FrameFrequency._FRAME_1;
 
   // 2 is too much for IE JVM!
-  public static int delay = Delay._DELAY_5;
+  public static int delay = Delay._DELAY_2;
 
   public static int action_left_type = Actions.SELECT;
 
@@ -709,7 +708,6 @@ public class FrEnd extends java.applet.Applet implements Runnable {
   }
 
   public static void updateGUIToReflectSelectionChange() {
-    SelectionManager.updateMovesWithSelectionFlag();
     RendererDelegator.repaint_some_objects = true;
     UpdateEnabledComponents.updateGUIGreyItemsDependingOnSelection();
     

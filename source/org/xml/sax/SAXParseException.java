@@ -43,6 +43,12 @@ public class SAXParseException extends SAXException {
 
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+	/**
      * Create a new SAXParseException from a message and a Locator.
      *
      * <p>This constructor is especially useful when an application is

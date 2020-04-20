@@ -207,7 +207,7 @@ public class WriterWRL {
     final int clazz_number = this.node_manager.clazz_factory.array.size();
     for (int c = 0; c < clazz_number; c++) {
       final Clazz clazz = (Clazz) this.node_manager.clazz_factory.array
-        .elementAt(c);
+        .get(c);
       outputNodeTypes(clazz);
     }
   }
@@ -216,7 +216,7 @@ public class WriterWRL {
     final int clazz_number = this.node_manager.clazz_factory.array.size();
     for (int c = 0; c < clazz_number; c++) {
       final Clazz clazz = (Clazz) this.node_manager.clazz_factory.array
-        .elementAt(c);
+        .get(c);
       outputLinkTypes(clazz);
     }
   }
@@ -225,7 +225,7 @@ public class WriterWRL {
     final int clazz_number = this.node_manager.clazz_factory.array.size();
     for (int c = 0; c < clazz_number; c++) {
       final Clazz clazz = (Clazz) this.node_manager.clazz_factory.array
-        .elementAt(c);
+        .get(c);
       outputFacesTypes(clazz);
     }
   }

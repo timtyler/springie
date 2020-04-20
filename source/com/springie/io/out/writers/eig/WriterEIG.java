@@ -155,8 +155,7 @@ public class WriterEIG {
     final int clazz_number = this.node_manager.clazz_factory.array.size();
     boolean some = false;
     for (int c = 0; c < clazz_number; c++) {
-      final Clazz clazz = (Clazz) this.node_manager.clazz_factory.array
-          .elementAt(c);
+      final Clazz clazz = (Clazz) this.node_manager.clazz_factory.array.get(c);
       final XMLWriterTagPair tag_type = new XMLWriterTagPair("CLASS_INVIS");
       outputColour(clazz, tag_type);
       final boolean any = outputNodeTypes(tag_type, clazz);
@@ -224,7 +223,7 @@ public class WriterEIG {
     boolean some = false;
     for (int c = 0; c < clazz_number; c++) {
       final Clazz clazz = (Clazz) this.node_manager.clazz_factory.array
-          .elementAt(c);
+          .get(c);
       final XMLWriterTagPair tag_type = new XMLWriterTagPair("CLASS_INVIS");
       outputColour(clazz, tag_type);
       final boolean any = outputLinkTypes(tag_type, clazz);
@@ -278,7 +277,7 @@ public class WriterEIG {
     boolean some = false;
     for (int c = 0; c < clazz_number; c++) {
       final Clazz clazz = (Clazz) this.node_manager.clazz_factory.array
-          .elementAt(c);
+          .get(c);
       final XMLWriterTagPair tag_type = new XMLWriterTagPair("CLASS_INVIS");
       outputColour(clazz, tag_type);
       // tag_type.add(new XMLWriterAttribute("color", "#"

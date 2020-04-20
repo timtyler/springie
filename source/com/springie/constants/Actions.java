@@ -34,5 +34,7 @@ public interface Actions {
 
   int ROTATE_CW_ACW = 15;
 
+  int INFECT = 16;
+
   void placeholder();
 }

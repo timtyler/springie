@@ -3,21 +3,15 @@
 package com.springie.gui.panels.controls;
 
 import java.awt.BorderLayout;
-import java.awt.Button;
 import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.Scrollbar;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
 import com.springie.FrEnd;
-import com.springie.gui.GUIStrings;
-import com.springie.messages.Message;
 import com.springie.messages.MessageManager;
-import com.tifsoft.Forget;
 
 public class PanelControlsPropertiesScaleFactor {
   public Panel panel = FrEnd.setUpPanelForFrame2();

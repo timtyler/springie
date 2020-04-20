@@ -5,8 +5,8 @@ import com.springie.utilities.random.Hortensius32Fast;
 
 public class NodeType extends BaseType {
   public boolean pinned;
-
   public int charge;
+  public int counter;
 
   static Hortensius32Fast static_rnd = new Hortensius32Fast();
 
@@ -33,6 +33,7 @@ public class NodeType extends BaseType {
     this.radius = t.radius;
     this.pinned = t.pinned;
     this.selected = t.selected;
+    this.counter = t.counter;
   }
   
   public boolean equals(Object o) {

@@ -38,6 +38,13 @@ public class SAXException extends Exception {
 
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+
+	/**
      * Create a new SAXException.
      */
     public SAXException ()

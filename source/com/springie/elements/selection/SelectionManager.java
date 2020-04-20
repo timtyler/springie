@@ -131,51 +131,5 @@ public final class SelectionManager {
 
     return (String) ex.output;
   }
-
-  public static void updateMovesWithSelectionFlag() {
-    updateMovesWithSelectionFlagNodes();
-    updateMovesWithSelectionFlagLinks();
-    updateMovesWithSelectionFlagFaces();
-  }
-
-  private static void updateMovesWithSelectionFlagNodes() {
-    final NodeManager node_manager = ContextMananger.getNodeManager();
-    final int number_of_nodes = node_manager.element.size();
-    for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) node_manager.element.elementAt(counter);
-      candidate.moves_with_selection = candidate.isSelected();
-    }
-  }
-
-  private static void updateMovesWithSelectionFlagLinks() {
-    final NodeManager node_manager = ContextMananger.getNodeManager();
-    final LinkManager link_manager = node_manager.getLinkManager();
-    final int number = link_manager.element.size();
-    for (int counter = number; --counter >= 0;) {
-      final Link candidate = (Link) link_manager.element.elementAt(counter);
-      if (candidate.isSelected()) {
-        final int non = candidate.nodes.length;
-        for (int i = 0; i < non; i++) {
-          final Node node = candidate.nodes[i];
-          node.moves_with_selection = true;
-        }
-      }
-    }
-  }
-
-  private static void updateMovesWithSelectionFlagFaces() {
-    final NodeManager node_manager = ContextMananger.getNodeManager();
-    final FaceManager face_manager = node_manager.getFaceManager();
-    final int number = face_manager.element.size();
-    for (int counter = number; --counter >= 0;) {
-      final Face candidate = (Face) face_manager.element.elementAt(counter);
-      if (candidate.isSelected()) {
-        final int non = candidate.nodes.size();
-        for (int i = 0; i < non; i++) {
-          final Node node = (Node) candidate.nodes.elementAt(i);
-          node.moves_with_selection = true;
-        }
-      }
-    }
-  }
 }
+

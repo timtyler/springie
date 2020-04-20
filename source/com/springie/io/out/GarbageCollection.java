@@ -33,7 +33,7 @@ public class GarbageCollection {
     final int number = this.node_manager.clazz_factory.array.size();
     for (int i = number; --i >= 0;) {
       final Clazz clazz = (Clazz) this.node_manager.clazz_factory.array
-          .elementAt(i);
+          .get(i);
       final boolean any_n = new AreThereAny().nodes(clazz);
       final boolean any_l = new AreThereAny().links(clazz);
       final boolean any_p = new AreThereAny().polygons(clazz);

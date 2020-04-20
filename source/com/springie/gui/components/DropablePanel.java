@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -173,8 +174,8 @@ public class DropablePanel extends Panel {
       //if (data instanceof String) {
       //final String s = (String) data;
       //} else
-      if (data instanceof java.util.List) {
-        final java.util.List julist = (java.util.List) data;
+      if (data instanceof List) {
+        final List julist = (List) data;
         //Log.log("File:" + julist);
 
         final File file = (File) julist.get(0);

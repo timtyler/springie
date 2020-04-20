@@ -30,6 +30,12 @@ public class SAXNotSupportedException extends SAXException
 {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+	/**
      * Construct a new exception with no message.
      */
     public SAXNotSupportedException ()

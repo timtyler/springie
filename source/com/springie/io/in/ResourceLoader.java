@@ -14,7 +14,7 @@ import com.springie.FrEnd;
 import com.springie.utilities.log.Log;
 
 public class ResourceLoader {
-  public String getResourceAsString(Class base, String name) {
+  public String getResourceAsString(Class<?> base, String name) {
     String output;
 
     //Log.log("Starting to load " + name + ".");
@@ -78,7 +78,7 @@ public class ResourceLoader {
     return output.toString();
   }
 
-  private InputStream getInputStream(Class base, String location) {
+  private InputStream getInputStream(Class<?> base, String location) {
     if (isURL(location)) {
       return getResourceFromURL(location);
     }
@@ -102,7 +102,7 @@ public class ResourceLoader {
     return null;
   }
 
-  private String getResourceAsStringHelper(Class base, String location) {
+  private String getResourceAsStringHelper(Class<?> base, String location) {
     if (isResource(location)) {
       return getResourceAsString(base, location.substring(11));
     }

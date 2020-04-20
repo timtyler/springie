@@ -29,7 +29,6 @@ public class PolygonObject2D {
     final int size = points.length;
     this.x = new int[size];
     this.y = new int[size];
-    int tot_z = 0;
     for (int i = 0; i < size; i++) {
       final Point3D point = points[i];
 
@@ -37,7 +36,6 @@ public class PolygonObject2D {
       final int y = Coords.getYCoords(point.y, point.z);
       this.x[i] = x;
       this.y[i] = y;
-      tot_z += point.z;
     }
 
     final Double3D point_d0 = new Double3D(points[0]);

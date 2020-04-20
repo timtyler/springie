@@ -106,6 +106,7 @@ public class PanelPreferencesEdit {
     action_choice.add("clone", Actions.CLONE);
     action_choice.add("unlink all", Actions.UNLINKALL);
     action_choice.add("select no drag", Actions.SELECT_NO_DRAG);
+    action_choice.add("infect", Actions.INFECT);
     action_choice.add("rotate 2", Actions.ROTATE_CW_ACW);
 
     // action_choice.add("select links", _ACT_SELECT_LINKS);

@@ -23,7 +23,7 @@ public class MakeSlightAdjustmentsToClazzes {
     final int n = clazz_factory.array.size();
 
     for (int i = n; --i >= 0;) {
-      final Clazz clazz = (Clazz) clazz_factory.array.elementAt(i);
+      final Clazz clazz = (Clazz) clazz_factory.array.get(i);
       clazz.colour = clazz.colour ^ xor;
     }
   }

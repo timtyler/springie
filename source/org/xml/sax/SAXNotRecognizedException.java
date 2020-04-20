@@ -30,6 +30,12 @@ public class SAXNotRecognizedException extends SAXException
 {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+	/**
      * Default constructor.
      */
     public SAXNotRecognizedException ()
