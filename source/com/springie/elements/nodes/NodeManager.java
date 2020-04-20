@@ -597,8 +597,6 @@ public class NodeManager extends World {
 						final int temp_detection_distance_squared = temp_detection_distance * temp_detection_distance;
 						if (temp_radius < temp_detection_distance_squared) {
 							// collision
-							collide_with_self = (temp_agent.creature == temp2_agent.creature)
-									&& (temp_agent.creature != null);
 							// sqrt - really? :-(
 							temp_radius = SquareRoot.fastSqrt(1 + temp_radius);
 
@@ -617,58 +615,52 @@ public class NodeManager extends World {
 							int magnitude = -(((tadx * temp_x) + (tady * temp_y) + (tadz * temp_z)) >> Coords.shift);
 							// magnitude = (magnitude < 0) ? -magnitude : magnitude; // ???
 							if (magnitude > 0) {
-								if (collide_with_self || !FrEnd.collide_self_only) {
-									int temp_count;
-									if (collide_with_self) {
-										temp_count = (temp_detection_distance - temp_radius) << 6; // !
-									} else {
-										temp_count = ((temp_detection_distance - temp_radius) << 8) // !
-												+ World.minimum_magnitude;
-									}
+								int temp_count;
+								temp_count = ((temp_detection_distance - temp_radius) << 8) // !
+										+ World.minimum_magnitude;
 
-									if (temp_count > World.maximum_magnitude) {
-										temp_count = World.maximum_magnitude;
-									}
-
-									if (magnitude < temp_count) {
-										magnitude = temp_count;
-									}
-
-									// /very/ crude hack - since impulse calculations
-									// don't seem to be running yet...
-									temp_x = temp_x * magnitude;
-									temp_y = temp_y * magnitude;
-									temp_z = temp_z * magnitude;
-
-									final int temp_ma = temp_agent.type.log_mass - temp2_agent.type.log_mass;
-
-									if (temp_ma < 0) {
-										tadx = temp_x >> -temp_ma;
-										tady = temp_y >> -temp_ma;
-										tadz = temp_z >> -temp_ma;
-
-										temp_agent.velocity.x += tadx >> 9;
-										temp_agent.velocity.y += tady >> 9;
-										temp_agent.velocity.z += tadz >> 9;
-
-										temp2_agent.velocity.x -= ((temp_x << 1) - tadx) >> 9;
-										temp2_agent.velocity.y -= ((temp_y << 1) - tady) >> 9;
-										temp2_agent.velocity.z -= ((temp_z << 1) - tadz) >> 9;
-									} else {
-										tadx = temp_x >> temp_ma;
-										tady = temp_y >> temp_ma;
-										tadz = temp_z >> temp_ma;
-
-										temp_agent.velocity.x += ((temp_x << 1) - tadx) >> 9;
-										temp_agent.velocity.y += ((temp_y << 1) - tady) >> 9;
-										temp_agent.velocity.z += ((temp_z << 1) - tadz) >> 9;
-
-										temp2_agent.velocity.x -= tadx >> 9;
-										temp2_agent.velocity.y -= tady >> 9;
-										temp2_agent.velocity.z -= tadz >> 9;
-									}
-									shrinkNodesOnCollision();
+								if (temp_count > World.maximum_magnitude) {
+									temp_count = World.maximum_magnitude;
 								}
+
+								if (magnitude < temp_count) {
+									magnitude = temp_count;
+								}
+
+								// /very/ crude hack - since impulse calculations
+								// don't seem to be running yet...
+								temp_x = temp_x * magnitude;
+								temp_y = temp_y * magnitude;
+								temp_z = temp_z * magnitude;
+
+								final int temp_ma = temp_agent.type.log_mass - temp2_agent.type.log_mass;
+
+								if (temp_ma < 0) {
+									tadx = temp_x >> -temp_ma;
+									tady = temp_y >> -temp_ma;
+									tadz = temp_z >> -temp_ma;
+
+									temp_agent.velocity.x += tadx >> 9;
+									temp_agent.velocity.y += tady >> 9;
+									temp_agent.velocity.z += tadz >> 9;
+
+									temp2_agent.velocity.x -= ((temp_x << 1) - tadx) >> 9;
+									temp2_agent.velocity.y -= ((temp_y << 1) - tady) >> 9;
+									temp2_agent.velocity.z -= ((temp_z << 1) - tadz) >> 9;
+								} else {
+									tadx = temp_x >> temp_ma;
+									tady = temp_y >> temp_ma;
+									tadz = temp_z >> temp_ma;
+
+									temp_agent.velocity.x += ((temp_x << 1) - tadx) >> 9;
+									temp_agent.velocity.y += ((temp_y << 1) - tady) >> 9;
+									temp_agent.velocity.z += ((temp_z << 1) - tadz) >> 9;
+
+									temp2_agent.velocity.x -= tadx >> 9;
+									temp2_agent.velocity.y -= tady >> 9;
+									temp2_agent.velocity.z -= tadz >> 9;
+								}
+								shrinkNodesOnCollision();
 							}
 
 							/*

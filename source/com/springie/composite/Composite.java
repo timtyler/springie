@@ -129,8 +129,6 @@ public class Composite {
     }
 
     this.node_list[this.number_of_entities++] = e;
-
-    e.creature = this;
   }
 
   // again, this is wasteful :-|
@@ -172,11 +170,6 @@ public class Composite {
 
   final void markAsKilled() {
     this.status |= Composite.DEAD;
-    // need to manually go through and destroy all references to this
-    // creature...
-    for (temp = 0; temp < this.number_of_entities; temp++) {
-      this.node_list[temp].creature = null; // OK after all...
-    }
   }
 
   public final void beginToReproduce() {

@@ -427,7 +427,7 @@ public class MessageManager {
 //        new MotionlessMaker().freeze(node_manager);
 //        break;
 
-      case Message.MSG_DB_OLD:
+      case Message.MSG_DOUBLE_BUFFER_OLD:
         final boolean bool_db = FrEnd.panel_preferences_renderer_original.checkbox_db.getState();
         final String pref = Preferences.renderer_old_double_buffer; 
         FrEnd.preferences.map.put(pref, new Boolean(bool_db));
@@ -439,7 +439,7 @@ public class MessageManager {
 
         break;
 
-      case Message.MSG_DB_NEW:
+      case Message.MSG_DOUBLE_BUFFER_NEW:
         final boolean bool_db1 = FrEnd.panel_preferences_renderer_modern.checkbox_db_new.getState();
         final String pref2 = Preferences.renderer_new_double_buffer;
         FrEnd.preferences.map.put(pref2, new Boolean(bool_db1));

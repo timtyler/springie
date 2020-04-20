@@ -213,22 +213,6 @@ public class CompositeManager {
     }
   }
 
-  final void killAllCreatures() {
-    for (int temp = this.number_of_creatures; --temp >= 0;) {
-      temp_creature = this.creature[temp];
-
-      killCreature(temp_creature.write_node);
-    }
-  }
-
-  public final void killCreature(Node e) {
-    temp_creature = e.creature;
-    if (temp_creature != null) {
-      killSpecifiedCreature(temp_creature);
-      e.simplyKill();
-    }
-  }
-
   static final void moveCreaturesBetweenWorlds(World pw_from, World pw_to) {
     for (int temp = pw_from.creature_manager.number_of_creatures; --temp >= 0;) {
       temp_creature = pw_to.creature_manager.add();

@@ -177,7 +177,7 @@ public class PanelPreferencesRendererOriginal {
     this.checkbox_db.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_DB_OLD, 0, 0);
+        getMessageManager().sendMessage(Message.MSG_DOUBLE_BUFFER_OLD, 0, 0);
       }
     });
 

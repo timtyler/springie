@@ -61,8 +61,6 @@ public class World extends BaseElementManager {
 
   protected static Node temp2_agent;
 
-  public static boolean collide_with_self; // used in collisions...
-
   public static int minimum_magnitude;
 
   public static int maximum_magnitude = 1 << 24; // 512; // 1024;
@@ -443,8 +441,6 @@ public class World extends BaseElementManager {
         // temp_detection_distance;
         if (temp_radius >= temp_detection_distance_squared) {
           // collision
-          collide_with_self = (temp_agent.creature == this.associated_node.creature)
-            && (temp_agent.creature != null);
           // sqrt - really? :-(
           temp_radius = SquareRoot.fastSqrt(1 + temp_radius);
 

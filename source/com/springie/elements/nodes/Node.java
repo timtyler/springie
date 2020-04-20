@@ -36,8 +36,6 @@ public class Node extends BaseElement {
 
   public Point3D current_bin = new Point3D(-1, -1, -1);
 
-  public Composite creature; // TODO get rid of this...
-
   public boolean moves_with_selection;
 
   public static int thickness = 6; // display only...
@@ -113,8 +111,6 @@ public class Node extends BaseElement {
 
     this.clazz = e.clazz;
     this.clazz = clazz_factory.getNew(e.clazz.colour);
-
-    this.creature = e.creature;
 
     this.current_bin.x = e.current_bin.x;
     this.current_bin.y = e.current_bin.y;

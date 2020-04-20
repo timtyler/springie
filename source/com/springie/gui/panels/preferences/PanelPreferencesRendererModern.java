@@ -111,7 +111,7 @@ public class PanelPreferencesRendererModern {
 		this.checkbox_db_new.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				Forget.about(e);
-				getMessageManager().sendMessage(Message.MSG_DB_NEW, 0, 0);
+				getMessageManager().sendMessage(Message.MSG_DOUBLE_BUFFER_NEW, 0, 0);
 			}
 		});
 

@@ -183,7 +183,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
   public static String initial_type;
 
-  public static String initial_initial_type = "Tensegrity";
+  public static String initial_initial_type = "Moscow";
 
   public static int frame_frequency = FrameFrequency._FRAME_1;
 

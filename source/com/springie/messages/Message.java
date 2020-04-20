@@ -8,7 +8,7 @@ public interface Message {
   int MSG_NULL = 0;
 
   //int MSG_DOME_MAKE_MOTIONLESS = 31;
-  int MSG_DB_OLD = 32;
+  int MSG_DOUBLE_BUFFER_OLD = 32;
   int MSG_LINKLENGTH = 33;
   int MSG_DELETE = 34;
   int MSG_EDIT_REMOVE_POLYGONS = 35;
@@ -70,7 +70,7 @@ public interface Message {
   int MSG_EDIT_SPREAD_SELECTION_VIA_LINKS = 94;
   int MSG_EDIT_COLOUR_CARTESIAN = 95;
   int MSG_GENERATE_STRING = 96;
-  int MSG_DB_NEW = 97;
+  int MSG_DOUBLE_BUFFER_NEW = 97;
   //int MSG_INVERT_ALL_TYPE = 98;
 
   void placeholder();
