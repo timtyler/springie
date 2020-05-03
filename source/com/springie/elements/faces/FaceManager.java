@@ -11,7 +11,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.render.Coords;
 import com.tifsoft.deprecated.OldMethods;
 
-public class FaceManager extends BaseElementManager {
+public class FaceManager extends BaseElementManager<Face> {
   static int agent_counter;
 
   public FaceTypeFactory face_type_factory = new FaceTypeFactory();

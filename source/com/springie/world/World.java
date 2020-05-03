@@ -30,7 +30,7 @@ import com.springie.utilities.random.Hortensius32Fast;
  * It can cover a collection of entities that are inside an egg - or the
  * collection of entities that is unconfined and fills all space.
  */
-public class World extends BaseElementManager {
+public class World extends BaseElementManager<Node> {
 	public RendererArrays renderer = new RendererArrays();
 
 	public RendererArrays renderer2 = new RendererArrays();

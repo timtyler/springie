@@ -17,7 +17,7 @@ import com.springie.render.RendererDelegator;
 import com.springie.utilities.math.SquareRoot;
 import com.tifsoft.deprecated.OldMethods;
 
-public class LinkManager extends BaseElementManager {
+public class LinkManager extends BaseElementManager<Link> {
   static int agent_counter;
 
   static Node temp_node;
