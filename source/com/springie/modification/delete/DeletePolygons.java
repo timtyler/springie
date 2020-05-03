@@ -19,7 +19,7 @@ public class DeletePolygons {
 
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) this.node_manager.element
-        .elementAt(counter);
+        .get(counter);
       if (candidate.type.selected) {
         this.node_manager.getFaceManager().killAllPolygons(candidate);
       }

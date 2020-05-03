@@ -31,8 +31,8 @@ public class PrepareToModifyLinkClazzes {
     final int number = this.link_manager.element.size();
     for (int c1 = number; --c1 >= 0;) {
       for (int c2 = c1; --c2 >= 0;) {
-        final Link l1 = (Link) this.link_manager.element.elementAt(c1);
-        final Link l2 = (Link) this.link_manager.element.elementAt(c2);
+        final Link l1 = (Link) this.link_manager.element.get(c1);
+        final Link l2 = (Link) this.link_manager.element.get(c2);
         if (l1.clazz == l2.clazz) {
           return true;
         }
@@ -52,8 +52,7 @@ public class PrepareToModifyLinkClazzes {
   public void makeNewLinkClazzes() {
     final int number = this.link_manager.element.size();
     for (int counter = number; --counter >= 0;) {
-      final Link candidate = (Link) this.link_manager.element
-        .elementAt(counter);
+      final Link candidate = (Link) this.link_manager.element.get(counter);
       Clazz clazz = this.node_manager.clazz_factory
         .getNew(candidate.clazz.colour);
       candidate.clazz = clazz;

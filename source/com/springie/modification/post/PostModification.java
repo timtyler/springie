@@ -43,7 +43,7 @@ public class PostModification {
     this.node_manager.is_tensegrity = false;
     final int n_o_l = this.link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.link_manager.element.elementAt(temp);
+      final Link l = (Link) this.link_manager.element.get(temp);
       if (!l.type.compression) {
         this.node_manager.is_tensegrity = true;
       }
@@ -56,8 +56,7 @@ public class PostModification {
 
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) this.node_manager.element
-        .elementAt(counter);
+      final Node candidate = (Node) this.node_manager.element.get(counter);
       if (candidate.type.charge != 0) {
         if (!candidate.type.disabled) {
           electrostatic.charged.addElement(candidate);
@@ -70,7 +69,7 @@ public class PostModification {
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) this.node_manager.element
-        .elementAt(counter);
+        .get(counter);
       candidate.list_of_links = getListOfLinks(candidate);
     }
   }
@@ -79,7 +78,7 @@ public class PostModification {
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) this.node_manager.element
-        .elementAt(counter);
+        .get(counter);
       candidate.list_of_polygons = getListOfFaces(candidate);
     }
   }
@@ -89,7 +88,7 @@ public class PostModification {
 
     final int n_o_l = this.link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.link_manager.element.elementAt(temp);
+      final Link l = (Link) this.link_manager.element.get(temp);
       if (l.hasNode(candidate)) {
       //if ((l.node1 == candidate) || (l.node2 == candidate)) {
         list.add(temp);
@@ -104,7 +103,7 @@ public class PostModification {
 
     final int n_o_l = this.face_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Face f = (Face) this.face_manager.element.elementAt(temp);
+      final Face f = (Face) this.face_manager.element.get(temp);
       if (f.containsNodes(candidate)) {
         list.add(temp);
       }

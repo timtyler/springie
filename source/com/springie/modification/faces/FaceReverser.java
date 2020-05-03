@@ -30,7 +30,7 @@ public class FaceReverser {
     final int size = this.face_manager.element.size();
 
     for (int i = 0; i < size; i++) {
-      final Face face = (Face) this.face_manager.element.elementAt(i);
+      final Face face = (Face) this.face_manager.element.get(i);
       if (face.type.selected) {
         final Vector nodes = face.nodes;
         final int non = nodes.size();

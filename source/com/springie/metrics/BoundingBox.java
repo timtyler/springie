@@ -19,7 +19,7 @@ public class BoundingBox {
 
     final int number_of_nodes = node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) node_manager.element.elementAt(counter);
+      final Node candidate = (Node) node_manager.element.get(counter);
       final Point3D pos = candidate.pos;
       final NodeType type = candidate.type;
       final int radius = type.radius;

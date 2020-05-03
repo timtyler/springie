@@ -49,7 +49,7 @@ public class HexagonMaker {
 //
 //    for (int counter = number_of_selected_nodes; --counter >= 0;) {
 //      final int i = selected_node_numbers[counter];
-//      final Node source = (Node) this.node_manager.element.elementAt(i);
+//      final Node source = (Node) this.node_manager.element.get(i);
 //      final ListOfNearest list_of_nearest = getNearestNodes(source,
 //        target_node_numbers, how_many);
 //      createLinks(i, list_of_nearest);
@@ -66,7 +66,7 @@ public class HexagonMaker {
 //    int idx = 0;
 //    for (int counter = number_of_nodes; --counter >= 0;) {
 //      final Node candidate = (Node) this.node_manager.element
-//        .elementAt(counter);
+//        .get(counter);
 //      if (candidate.type.selected) {
 //        nodes[idx++] = counter;
 //      }
@@ -83,7 +83,7 @@ public class HexagonMaker {
 //    //int idx = 0;
 //    for (int counter = number_of_nodes; --counter >= 0;) {
 //      final Node candidate = (Node) this.node_manager.element
-//        .elementAt(counter);
+//        .get(counter);
 //      if (candidate.clazz.colour == colour) {
 //        nodes.addElement(new Integer(counter));
 //        //nodes[idx++] = counter;
@@ -94,7 +94,7 @@ public class HexagonMaker {
 //    final int[] array = new int[size];
 //
 //    for (int counter = size; --counter >= 0;) {
-//      array[counter] = ((Integer) (nodes.elementAt(counter))).intValue();
+//      array[counter] = ((Integer) (nodes.get(counter))).intValue();
 //    }
 //
 //    return array;
@@ -102,12 +102,12 @@ public class HexagonMaker {
 //
 //  private void createLinks(int nn_1, ListOfNearest list_of_nearest) {
 //    final int number = list_of_nearest.size;
-//    final Node candidate = (Node) this.node_manager.element.elementAt(nn_1);
+//    final Node candidate = (Node) this.node_manager.element.get(nn_1);
 //    for (int counter = number; --counter >= 0;) {
 //      final int nn_2 = list_of_nearest.array[counter];
 //      if (nn_2 > nn_1) {
 //        final Node destination = (Node) this.node_manager.element
-//          .elementAt(nn_2);
+//          .get(nn_2);
 //
 //        if (!this.link_manager.isThereALinkBetween(destination, candidate)) {
 //          joinNodesInOuterHexLayer(candidate, destination);
@@ -125,7 +125,7 @@ public class HexagonMaker {
 //    for (int idx = number; --idx >= 0;) {
 //      final int num_of_candidate_node = target_node_numbers[idx];
 //      final Node candidate = (Node) this.node_manager.element
-//        .elementAt(num_of_candidate_node);
+//        .get(num_of_candidate_node);
 //      if (source != candidate) {
 //        final int d = this.node_manager.distanceBetween(source, candidate);
 //        if (d < list_of_nearest.largest_proximity) {
@@ -144,13 +144,12 @@ public class HexagonMaker {
 
     for (int counter = number_of_nodes; --counter >= 0;) {
       //Log.log("" + counter);
-      final Node candidate = (Node) this.node_manager.element
-        .elementAt(counter);
+      final Node candidate = (Node) this.node_manager.element.get(counter);
       if (candidate.type.selected) {
         while (nonoc[counter] < 3) {
           final int idx = getIndexOfNearestNodeOfColourQuick(candidate, nonoc,
             3);
-          final Node found = (Node) this.node_manager.element.elementAt(idx);
+          final Node found = (Node) this.node_manager.element.get(idx);
 
           joinNodesInOuterHexLayer(candidate, found);
           nonoc[counter]++;
@@ -165,7 +164,7 @@ public class HexagonMaker {
     final int[] nonoc = new int[number_of_nodes];
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) this.node_manager.element
-        .elementAt(counter);
+        .get(counter);
       if (candidate.type.selected) {
         nonoc[counter] = quickNumberOfLinksOfColour(candidate, colour);
       }
@@ -177,7 +176,7 @@ public class HexagonMaker {
   //// public void connectNodesInInnerHexLayer() {
   //    final int number_of_nodes = this.node_manager.element.size();
   //    for (int counter = number_of_nodes; --counter >= 0;) {
-  //      final Node candidate = (Node) this.node_manager.element.elementAt(counter);
+  //      final Node candidate = (Node) this.node_manager.element.get(counter);
   //      if (candidate.type.selected) {
   //      if (candidate.clazz.colour == this.colour_node_inner_hex) {
   //        while (numberOfLinksOfColour(candidate,
@@ -194,8 +193,7 @@ public class HexagonMaker {
   public void connectNodesInTriaxialOuterLayer() {
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) this.node_manager.element
-        .elementAt(counter);
+      final Node candidate = (Node) this.node_manager.element        .get(counter);
       if (candidate.clazz.colour == this.colour_node_triaxial) {
         while (numberOfLinksOfColour(candidate,
           this.colour_level_link_between_triaxial) < 4) {
@@ -215,7 +213,7 @@ public class HexagonMaker {
       return null;
     }
 
-    return (Node) this.node_manager.element.elementAt(i);
+    return (Node) this.node_manager.element.get(i);
   }
 
   private int getIndexOfNearestNodeOfColourQuick(Node node, int[] array,
@@ -225,8 +223,7 @@ public class HexagonMaker {
 
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) this.node_manager.element
-        .elementAt(counter);
+      final Node candidate = (Node) this.node_manager.element        .get(counter);
       if (candidate.type.selected) {
         if (array[counter] < max_already) {
           if (node != candidate) {
@@ -252,8 +249,7 @@ public class HexagonMaker {
 
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) this.node_manager.element
-        .elementAt(counter);
+      final Node candidate = (Node) this.node_manager.element        .get(counter);
       if (node != candidate) {
         if (candidate.type.selected) {
           if (!this.link_manager.isThereALinkBetween(node, candidate)) {
@@ -278,7 +274,7 @@ public class HexagonMaker {
 
     final int n_o_l = this.link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link link = (Link) this.link_manager.element.elementAt(temp);
+      final Link link = (Link) this.link_manager.element.get(temp);
       if (link.clazz.colour == colour) {
         if ((link.nodes[0] == node) || (link.nodes[1] == node)) {
           count++;
@@ -294,7 +290,7 @@ public class HexagonMaker {
     final int n_o_l = node.list_of_links.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final int i = node.list_of_links.retreive(temp);
-      final Link link = (Link) this.link_manager.element.elementAt(i);
+      final Link link = (Link) this.link_manager.element.get(i);
       if (link.clazz.colour == colour) {
         count++;
       }
@@ -308,7 +304,7 @@ public class HexagonMaker {
     final Point3D centre = this.node_manager.getCentre();
 
     for (int cnt = number_of_links; --cnt >= 0;) {
-      final Link link = (Link) this.link_manager.element.elementAt(cnt);
+      final Link link = (Link) this.link_manager.element.get(cnt);
       if (link.type.selected) {
         makeNewEdenNode(s_f, centre, link);
       }
@@ -319,7 +315,7 @@ public class HexagonMaker {
 //    final int number_of_nodes = this.node_manager.element.size();
 //    for (int cnt = 1000; --cnt >= 0;) {
 //      final int a1 = this.rnd.nextInt(number_of_nodes);
-//      final Node node_1 = (Node) this.node_manager.element.elementAt(a1);
+//      final Node node_1 = (Node) this.node_manager.element.get(a1);
 //      if (node_1.clazz.colour != this.colour_node_triaxial) {
 //        continue;
 //      }
@@ -389,7 +385,7 @@ public class HexagonMaker {
 //    final int number_of_nodes = this.node_manager.element.size();
 //    for (int cnt = 1000; --cnt >= 0;) {
 //      final int a1 = this.rnd.nextInt(number_of_nodes);
-//      final Node node_1 = (Node) this.node_manager.element.elementAt(a1);
+//      final Node node_1 = (Node) this.node_manager.element.get(a1);
 //      if (node_1.clazz.colour != this.colour_node_triaxial) {
 //        continue;
 //      }
@@ -493,7 +489,7 @@ public class HexagonMaker {
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) this.node_manager.element
-        .elementAt(counter);
+        .get(counter);
       if (candidate.clazz.colour != 0) {
         candidate.type.setSize((candidate.type.radius * 7) >> 3);
       }
@@ -503,8 +499,7 @@ public class HexagonMaker {
   public void domeNodesExpand() {
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) this.node_manager.element
-        .elementAt(counter);
+      final Node candidate = (Node) this.node_manager.element        .get(counter);
       if (candidate.clazz.colour != 0) {
         candidate.type.setSize((candidate.type.radius * 9) >> 3);
       }
@@ -553,7 +548,7 @@ public class HexagonMaker {
 //
 //    for (int cnt = 1000; --cnt >= 0;) {
 //      final int a1 = this.rnd.nextInt(number_of_nodes);
-//      final Node node_1 = (Node) this.node_manager.node.elementAt(a1);
+//      final Node node_1 = (Node) this.node_manager.node.get(a1);
 //      if (node_1.clazz.colour != this.colour_level_geodesic) {
 //        continue;
 //      }
@@ -617,7 +612,7 @@ public class HexagonMaker {
 //    final int number_of_nodes = this.node_manager.node.size();
 //    for (int cnt = 1000; --cnt >= 0;) {
 //      final int a1 = this.rnd.nextInt(number_of_nodes);
-//      final Node node_1 = (Node) this.node_manager.node.elementAt(a1);
+//      final Node node_1 = (Node) this.node_manager.node.get(a1);
 //      if (node_1.clazz.colour != this.colour_level_geodesic) {
 //        continue;
 //      }

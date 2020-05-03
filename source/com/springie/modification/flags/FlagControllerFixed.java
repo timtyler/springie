@@ -19,7 +19,7 @@ public class FlagControllerFixed {
   private void fixNodes(boolean fixed) {
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) this.node_manager.element.elementAt(counter);
+      final Node candidate = (Node) this.node_manager.element.get(counter);
       if (candidate.type.selected) {
         //candidate.type.setSize((candidate.type.radius * 9) >> 3);
         candidate.type.pinned = fixed;

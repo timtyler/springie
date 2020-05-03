@@ -38,7 +38,7 @@ public class LinkManager extends BaseElementManager {
     node2.list_of_links.add(last);
 
     final Link link = new Link(node1, node2, type, clazz);
-    this.element.addElement(link);
+    this.element.add(link);
 
     return link;
   }
@@ -46,7 +46,7 @@ public class LinkManager extends BaseElementManager {
   // dangerous... TODO: eliminate this code...
   public final Link setLink(LinkType type, Clazz clazz) {
     final Link l = new Link(null, null, type, clazz);
-    this.element.addElement(l);
+    this.element.add(l);
 
     return l;
   }
@@ -62,7 +62,7 @@ public class LinkManager extends BaseElementManager {
     e1.list_of_links.add(last);
     e2.list_of_links.add(last);
 
-    this.element.addElement(l);
+    this.element.add(l);
 
     // add this link to the list of links associated with the node...
     // e1.addLink(l);
@@ -74,7 +74,7 @@ public class LinkManager extends BaseElementManager {
   public final boolean isNodeLinkedToNode(Node e1, Node e2) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       if ((l.nodes[0] == e1) && (l.nodes[1] == e2)) {
         return true;
       }
@@ -97,7 +97,7 @@ public class LinkManager extends BaseElementManager {
   public final void deleteAllLinksBetween(Node e1, Node e2) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
 
       if ((l.nodes[0] == e1) && (l.nodes[1] == e2)) {
         killNumberedLink(temp);
@@ -117,7 +117,7 @@ public class LinkManager extends BaseElementManager {
     final int n_o_l = list_of_links.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final int i = list_of_links.retreive(temp);
-      final Link link = (Link) this.element.elementAt(i);
+      final Link link = (Link) this.element.get(i);
       if (!link.type.hidden) {
         if (link.nodes[0] == node2) {
           return true;
@@ -138,7 +138,7 @@ public class LinkManager extends BaseElementManager {
   public final boolean ZoldIsThereALinkBetween(Node e1, Node e2) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       if (!l.type.hidden) {
         if ((l.nodes[0] == e1) && (l.nodes[1] == e2)) {
           return true;
@@ -161,7 +161,7 @@ public class LinkManager extends BaseElementManager {
   public final Link getLinkBetween(Node e1, Node e2) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       if ((l.nodes[0] == e1) && (l.nodes[1] == e2)) {
         return l;
       }
@@ -179,7 +179,7 @@ public class LinkManager extends BaseElementManager {
   public final boolean ZisThereALinkFromTo(Node e1, Node e2) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       // one way only...
       if ((l.nodes[0] == e1) && (l.nodes[1] == e2)) {
         return true;
@@ -194,7 +194,7 @@ public class LinkManager extends BaseElementManager {
   final Link ZgetLinkFromTo(Node e1, Node e2) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       if ((l.nodes[0] == e1) && (l.nodes[1] == e2)) {
         return l;
       }
@@ -211,7 +211,7 @@ public class LinkManager extends BaseElementManager {
   public final void killAllLinks(Node e) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       if ((l.nodes[0] == e) || (l.nodes[1] == e)) {
         killNumberedLink(temp);
       }
@@ -226,7 +226,7 @@ public class LinkManager extends BaseElementManager {
   public final boolean killLastLink(Node e) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       if ((l.nodes[0] == e) || (l.nodes[1] == e)) {
         // if () {//TODO!!!!
         killNumberedLink(temp);
@@ -238,16 +238,16 @@ public class LinkManager extends BaseElementManager {
   }
 
   public final void killNumberedLink(int n) {
-    // final Link link = (Link) this.element.elementAt(n);
+    // final Link link = (Link) this.element.get(n);
     // link.nodes[0].list_of_links.remove(n);
     // link.nodes[1].list_of_links.remove(n);
-    this.element.removeElementAt(n);
+    this.element.remove(n);
   }
 
   final int getNumberOfLink(Link lk) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       if (l == lk) {
         return temp;
       }
@@ -265,7 +265,7 @@ public class LinkManager extends BaseElementManager {
   // public final void drawTheLinks() {
   // final int n_o_l = this.element.size();
   // for (int temp = n_o_l; --temp >= 0;) {
-  // final Link l = (Link) this.element.elementAt(temp);
+  // final Link l = (Link) this.element.get(temp);
   // l.draw();
   // }
   // }
@@ -284,7 +284,7 @@ public class LinkManager extends BaseElementManager {
 //  public final void applyElasticForceAll() {
 //    final int n_o_l = this.element.size();
 //    for (int temp = n_o_l; --temp >= 0;) {
-//      final Link l = (Link) this.element.elementAt(temp);
+//      final Link l = (Link) this.element.get(temp);
 //      if (!l.type.disabled) {
 //        l.applyElasticForce();
 //      }
@@ -294,7 +294,7 @@ public class LinkManager extends BaseElementManager {
 //  public final void applyDampingForceAll() {
 //    final int n_o_l = this.element.size();
 //    for (int temp = n_o_l; --temp >= 0;) {
-//      final Link l = (Link) this.element.elementAt(temp);
+//      final Link l = (Link) this.element.get(temp);
 //      if (!l.type.disabled) {
 //        l.applyDampingForce();
 //      }
@@ -304,7 +304,7 @@ public class LinkManager extends BaseElementManager {
 //  public final void applyElasticForceOrigAll() {
 //    final int n_o_l = this.element.size();
 //    for (int temp = n_o_l; --temp >= 0;) {
-//      final Link l = (Link) this.element.elementAt(temp);
+//      final Link l = (Link) this.element.get(temp);
 //      if (!l.type.disabled) {
 //        l.applyElasticForceOrig2();
 //      }
@@ -314,7 +314,7 @@ public class LinkManager extends BaseElementManager {
   public final void applyElasticForceOrigAll() {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       if (!l.type.disabled) {
         l.applyElasticForceOrig();
       }
@@ -333,9 +333,9 @@ public class LinkManager extends BaseElementManager {
     }
 
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       final CachedLink cl = ContextMananger.getNodeManager().renderer.renderer_link.array[temp];
-      // return name;t;// this.element.elementAt(temp);
+      // return name;t;// this.element.get(temp);
       if (!l.type.hidden || FrEnd.render_hidden_links) {
         for (int i = 0; i < cl.preserved_node_start.length - 1; i++) {
           final Point3D point0 = cl.preserved_node_start[i];
@@ -394,7 +394,7 @@ public class LinkManager extends BaseElementManager {
   public final void deselectAll() {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       if (l.type.selected) {
         l.type.selected = false;
         // BinGrid.RepaintAll = true;
@@ -406,7 +406,7 @@ public class LinkManager extends BaseElementManager {
   public final void deselectAll(int colour) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       if (l.clazz.colour == colour) {
         if (l.type.selected) {
           l.type.selected = false;
@@ -419,7 +419,7 @@ public class LinkManager extends BaseElementManager {
   public final void selectionInvert() {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link link = (Link) this.element.elementAt(temp);
+      final Link link = (Link) this.element.get(temp);
       if (!link.type.hidden || FrEnd.render_hidden_links) {
         link.setSelectedFiltered(!link.type.selected);
       }
@@ -430,7 +430,7 @@ public class LinkManager extends BaseElementManager {
   public final void selectAll() {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link link = (Link) this.element.elementAt(temp);
+      final Link link = (Link) this.element.get(temp);
       if (!link.type.hidden || FrEnd.render_hidden_links) {
         if (!link.type.selected) {
           link.setSelectedFiltered(true);
@@ -443,7 +443,7 @@ public class LinkManager extends BaseElementManager {
   public final void selectAll(int colour) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link link = (Link) this.element.elementAt(temp);
+      final Link link = (Link) this.element.get(temp);
       if (link.clazz.colour == colour) {
         if (!link.type.hidden || FrEnd.render_hidden_links) {
           link.setSelectedFiltered(true);
@@ -456,7 +456,7 @@ public class LinkManager extends BaseElementManager {
   public final void deleteSelected() {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       if (l.type.selected) {
         killSpecifiedLink(l);
       }
@@ -467,7 +467,7 @@ public class LinkManager extends BaseElementManager {
   public final void setColourOfSelected(int c) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       if (l.type.selected) {
         l.clazz.colour = c;
         RendererDelegator.repaint_all_objects = true;
@@ -478,7 +478,7 @@ public class LinkManager extends BaseElementManager {
   public final void setSizeOfSelected(int s) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       if (l.type.selected) {
         l.type.setLength(s);
       }
@@ -488,7 +488,7 @@ public class LinkManager extends BaseElementManager {
   public final void setElasticityOfSelected(int e) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       if (l.type.selected) {
         l.type.setElasticity(e);
       }
@@ -498,7 +498,7 @@ public class LinkManager extends BaseElementManager {
   public final void setStiffnessOfSelected(int damping) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       if (l.type.selected) {
         l.type.damping = damping;
       }
@@ -508,7 +508,7 @@ public class LinkManager extends BaseElementManager {
   public final void setLengthOfSelected(int length) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       if (l.type.selected) {
         l.type.setLength(length);
       }
@@ -518,7 +518,7 @@ public class LinkManager extends BaseElementManager {
   public final void setRadiusOfSelected(int radius) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       if (l.type.selected) {
         l.type.radius = radius;
       }
@@ -528,7 +528,7 @@ public class LinkManager extends BaseElementManager {
   public final Link getFirstSelectedLink() {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       if (l.type.selected) {
         return l;
       }
@@ -540,7 +540,7 @@ public class LinkManager extends BaseElementManager {
   public boolean isSelection() {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.elementAt(temp);
+      final Link l = (Link) this.element.get(temp);
       if (l.type.selected) {
         return true;
       }
@@ -553,7 +553,7 @@ public class LinkManager extends BaseElementManager {
     int number = 0;
     final int total = this.element.size();
     for (int temp = 0; temp < total; temp++) {
-      final Link e = (Link) this.element.elementAt(temp);
+      final Link e = (Link) this.element.get(temp);
       if (e.type.selected) {
         number++;
       }
@@ -566,7 +566,7 @@ public class LinkManager extends BaseElementManager {
     final Vector list_of_nodes = new Vector();
     final int total = this.element.size();
     for (int temp = 0; temp < total; temp++) {
-      final Link link = (Link) this.element.elementAt(temp);
+      final Link link = (Link) this.element.get(temp);
       if (link.isSelected()) {
         final int non = link.nodes.length;
         for (int i = 0; i < non; i++) {

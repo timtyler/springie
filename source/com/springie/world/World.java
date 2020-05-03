@@ -84,7 +84,7 @@ public class World extends BaseElementManager {
 	}
 
 	void init() {
-		this.element.removeAllElements();
+		this.element.clear();
 		this.link_manager = new LinkManager();
 		this.face_manager = new FaceManager();
 		this.creature_manager = new CompositeManager();
@@ -109,7 +109,7 @@ public class World extends BaseElementManager {
 
 	public Node copy(Node e) {
 		temp_agent = new Node(e, this.node_type_factory, this.clazz_factory);
-		this.element.addElement(temp_agent);
+		this.element.add(temp_agent);
 
 		return temp_agent;
 	}
@@ -120,7 +120,7 @@ public class World extends BaseElementManager {
 		if (FrEnd.frame_frequency == 0) {
 			if (number_of_nodes > 0) {
 				for (int counter = number_of_nodes; --counter >= 0;) {
-					temp_agent = (Node) this.element.elementAt(counter);
+					temp_agent = (Node) this.element.get(counter);
 
 					if (!FrEnd.paused) {
 						temp_agent.travel();
@@ -178,7 +178,7 @@ public class World extends BaseElementManager {
 		final int number_of_nodes = this.element.size();
 
 		for (int i = number_of_nodes; --i >= 0;) {
-			final Node node = (Node) this.element.elementAt(i);
+			final Node node = (Node) this.element.get(i);
 			final Vector3D delta = node.velocity_delta;
 			delta.x = 0;
 			delta.y = 0;
@@ -191,7 +191,7 @@ public class World extends BaseElementManager {
 		final int number_of_nodes = this.element.size();
 
 		for (int i = number_of_nodes; --i >= 0;) {
-			final Node node = (Node) this.element.elementAt(i);
+			final Node node = (Node) this.element.get(i);
 			final Vector3D delta = node.velocity_delta;
 			node.velocity.addTuple3D(delta);
 		}
@@ -200,9 +200,9 @@ public class World extends BaseElementManager {
 	public void collisionCheckNbyN() {
 		final int number_of_nodes = this.element.size();
 		for (int temp = 0; temp < (number_of_nodes - 1); temp++) {
-			World.temp_agent = (Node) this.element.elementAt(temp);
+			World.temp_agent = (Node) this.element.get(temp);
 			for (int temp2 = temp + 1; temp2 < number_of_nodes; temp2++) {
-				World.temp2_agent = (Node) this.element.elementAt(temp2);
+				World.temp2_agent = (Node) this.element.get(temp2);
 				ContextMananger.getNodeManager().collideTheseEntities();
 			}
 		}
@@ -212,7 +212,7 @@ public class World extends BaseElementManager {
 		final int number_of_nodes = this.element.size();
 		Node.temp_private_world = this;
 		for (int counter = number_of_nodes; --counter >= 0;) {
-			temp_agent = (Node) this.element.elementAt(counter);
+			temp_agent = (Node) this.element.get(counter);
 			temp_agent.travel();
 			confine();
 		}
@@ -222,7 +222,7 @@ public class World extends BaseElementManager {
 		final int number_of_nodes = this.element.size();
 
 		for (int temp = 0; temp < number_of_nodes; temp++) {
-			temp_agent = (Node) this.element.elementAt(temp);
+			temp_agent = (Node) this.element.get(temp);
 			temp_agent.type.setSize((byte) d);
 		}
 	}
@@ -233,14 +233,14 @@ public class World extends BaseElementManager {
 	 */
 	public Node addNewAgent() {
 		temp_agent = new Node(new Point3D(0, 0, 0), rnd.nextInt(), this.node_type_factory);
-		this.element.addElement(temp_agent);
+		this.element.add(temp_agent);
 
 		return temp_agent;
 	}
 
 	public Node addNewAgent(Point3D pos, Clazz clazz, NodeType type) {
 		temp_agent = new Node(new Point3D(pos), rnd.nextInt(), this.node_type_factory);
-		this.element.addElement(temp_agent);
+		this.element.add(temp_agent);
 		temp_agent.clazz = clazz;
 		temp_agent.type = type;
 
@@ -253,7 +253,7 @@ public class World extends BaseElementManager {
 	 */
 	public Node addNewAgent(Node e) {
 		temp_agent = new Node(e, this.node_type_factory, this.clazz_factory);
-		this.element.addElement(temp_agent);
+		this.element.add(temp_agent);
 
 		return temp_agent;
 	}
@@ -264,7 +264,7 @@ public class World extends BaseElementManager {
 	public boolean killThisNode(Node e) {
 		final int number_of_nodes = this.element.size();
 		for (int temp = number_of_nodes; --temp >= 0;) {
-			if (this.element.elementAt(temp) == e) {
+			if (this.element.get(temp) == e) {
 				killNumberedAgent(temp);
 				return true;
 			}
@@ -277,10 +277,10 @@ public class World extends BaseElementManager {
 
 	public void killNumberedAgent(int n) {
 		RendererDelegator.colourZero();
-		final Node nod = (Node) this.element.elementAt(n);
+		final Node nod = (Node) this.element.get(n);
 		// nod.scrub();
 		this.link_manager.killAllLinks(nod);
-		this.element.removeElementAt(n);
+		this.element.remove(n);
 	}
 
 	/**
@@ -305,7 +305,7 @@ public class World extends BaseElementManager {
 	public boolean isSelection() {
 		final int number_of_nodes = this.element.size();
 		for (int temp = number_of_nodes; --temp >= 0;) {
-			if (((Node) this.element.elementAt(temp)).type.selected) {
+			if (((Node) this.element.get(temp)).type.selected) {
 				return true;
 			}
 		}
@@ -316,7 +316,7 @@ public class World extends BaseElementManager {
 	public void deselectAll() {
 		final int number_of_nodes = this.element.size();
 		for (int temp = number_of_nodes; --temp >= 0;) {
-			final Node n = (Node) this.element.elementAt(temp);
+			final Node n = (Node) this.element.get(temp);
 			n.type.selected = false;
 		}
 		RendererDelegator.repaintAll();
@@ -325,7 +325,7 @@ public class World extends BaseElementManager {
 	public void deleteSelected() {
 		final int number_of_nodes = this.element.size();
 		for (int temp = number_of_nodes; --temp >= 0;) {
-			final Node n = (Node) this.element.elementAt(temp);
+			final Node n = (Node) this.element.get(temp);
 			if (n.type.selected) {
 				FrEnd.killAllLinks(n);
 				killThisNode(n);
@@ -337,7 +337,7 @@ public class World extends BaseElementManager {
 	public void setColourOfSelected(char c) {
 		final int number_of_nodes = this.element.size();
 		for (int temp = number_of_nodes; --temp >= 0;) {
-			final Node n = (Node) this.element.elementAt(temp);
+			final Node n = (Node) this.element.get(temp);
 			if (n.type.selected) {
 				n.clazz.colour = c;
 				RendererDelegator.repaintAll();
@@ -348,7 +348,7 @@ public class World extends BaseElementManager {
 	public void setSizeOfSelected(int s) {
 		final int number_of_nodes = this.element.size();
 		for (int temp = number_of_nodes; --temp >= 0;) {
-			final Node n = (Node) this.element.elementAt(temp);
+			final Node n = (Node) this.element.get(temp);
 			if (n.type.selected) {
 				n.type.setSize((byte) s);
 				RendererDelegator.repaintAll();
@@ -359,7 +359,7 @@ public class World extends BaseElementManager {
 	public void moveSelection(int _dx, int _dy) {
 		final int number_of_nodes = this.element.size();
 		for (int temp = number_of_nodes; --temp >= 0;) {
-			final Node n = (Node) this.element.elementAt(temp);
+			final Node n = (Node) this.element.get(temp);
 			if (temp_agent.type.selected) {
 				n.pos.x += _dx;
 				n.pos.y += _dy;
@@ -379,7 +379,7 @@ public class World extends BaseElementManager {
 	public void centre() {
 		final int number_of_nodes = this.element.size();
 		for (int temp = number_of_nodes; --temp >= 0;) {
-			final Node n = (Node) this.element.elementAt(temp);
+			final Node n = (Node) this.element.get(temp);
 			n.pos.x = this.associated_node.pos.x;
 			n.pos.y = this.associated_node.pos.y;
 			n.pos.z = this.associated_node.pos.z;
@@ -529,7 +529,7 @@ public class World extends BaseElementManager {
 	public boolean contains(Node e) {
 		final int number_of_nodes = this.element.size();
 		for (int temp = number_of_nodes; --temp >= 0;) {
-			final Node n = (Node) this.element.elementAt(temp);
+			final Node n = (Node) this.element.get(temp);
 			if (n == e) {
 				return true;
 			}
@@ -541,7 +541,7 @@ public class World extends BaseElementManager {
 	final int getNodeNumber(Node e) {
 		final int number_of_nodes = this.element.size();
 		for (int temp = number_of_nodes; --temp >= 0;) {
-			final Node n = (Node) this.element.elementAt(temp);
+			final Node n = (Node) this.element.get(temp);
 			if (n == e) {
 				return temp;
 			}
@@ -574,7 +574,7 @@ public class World extends BaseElementManager {
 
 		final int n_l = source.link_manager.element.size();
 		for (int temp = 0; temp < n_l; temp++) {
-			final Link link = (Link) source.link_manager.element.elementAt(temp);
+			final Link link = (Link) source.link_manager.element.get(temp);
 			if (link.clazz.equals(clazz_from)) {
 				link.clazz = clazz_to;
 			}
@@ -582,7 +582,7 @@ public class World extends BaseElementManager {
 
 		final int n_f = source.face_manager.element.size();
 		for (int temp = 0; temp < n_f; temp++) {
-			final Face face = (Face) source.face_manager.element.elementAt(temp);
+			final Face face = (Face) source.face_manager.element.get(temp);
 			if (face.clazz.equals(clazz_from)) {
 				face.clazz = clazz_to;
 			}
@@ -590,7 +590,7 @@ public class World extends BaseElementManager {
 
 		final int n_n = source.element.size();
 		for (int temp = 0; temp < n_n; temp++) {
-			final Node node = (Node) source.element.elementAt(temp);
+			final Node node = (Node) source.element.get(temp);
 			if (node.clazz.equals(clazz_from)) {
 				node.clazz = clazz_to;
 			}
@@ -601,11 +601,11 @@ public class World extends BaseElementManager {
 		final int n = source.link_manager.element.size();
 
 		for (int temp = 0; temp < n; temp++) {
-			final Link link = (Link) source.link_manager.element.elementAt(temp);
+			final Link link = (Link) source.link_manager.element.get(temp);
 			final LinkType type = this.link_manager.link_type_factory.getNew();
 			type.makeEqualTo(link.type);
 			link.type = type;
-			this.link_manager.element.addElement(link);
+			this.link_manager.element.add(link);
 		}
 	}
 
@@ -613,11 +613,11 @@ public class World extends BaseElementManager {
 		final int number_of_faces = source.face_manager.element.size();
 
 		for (int temp = 0; temp < number_of_faces; temp++) {
-			final Face face = (Face) source.face_manager.element.elementAt(temp);
+			final Face face = (Face) source.face_manager.element.get(temp);
 			final FaceType type = this.face_manager.face_type_factory.getNew();
 			type.makeEqualTo(face.type);
 			face.type = type;
-			this.face_manager.element.addElement(face);
+			this.face_manager.element.add(face);
 		}
 	}
 
@@ -625,11 +625,11 @@ public class World extends BaseElementManager {
 		final int number_of_nodes_from = source.element.size();
 
 		for (int temp = 0; temp < number_of_nodes_from; temp++) {
-			final Node node = (Node) source.element.elementAt(temp);
+			final Node node = (Node) source.element.get(temp);
 			final NodeType type = this.node_type_factory.getNew();
 			type.makeEqualTo(node.type);
 			node.type = type;
-			this.element.addElement(node);
+			this.element.add(node);
 		}
 	}
 

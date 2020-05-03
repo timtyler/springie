@@ -80,7 +80,7 @@ public class PanelControlsStatistics {
 
     final int n_o_l = link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link link = (Link) link_manager.element.elementAt(temp);
+      final Link link = (Link) link_manager.element.get(temp);
       if (link.type.length < length_of_shortest_link) {
         length_of_shortest_link = link.type.length;
       }

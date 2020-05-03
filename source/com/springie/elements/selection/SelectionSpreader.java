@@ -28,7 +28,7 @@ public class SelectionSpreader {
   public void spreadFromLinksToNodes() {
     final int number = this.link_manager.element.size();
     for (int i = number; --i >= 0;) {
-      final Link link = (Link) this.link_manager.element.elementAt(i);
+      final Link link = (Link) this.link_manager.element.get(i);
       if (link.type.selected) {
         selectAllNodes(link);
       }
@@ -39,7 +39,7 @@ public class SelectionSpreader {
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) this.node_manager.element
-        .elementAt(counter);
+        .get(counter);
       if (candidate.type.selected) {
         selectAllLinks(candidate);
       }
@@ -61,7 +61,7 @@ public class SelectionSpreader {
     final int n_o_l = list_of_links.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final int i = list_of_links.retreive(temp);
-      final Link link = (Link) this.link_manager.element.elementAt(i);
+      final Link link = (Link) this.link_manager.element.get(i);
       if (!link.type.hidden) {
         link.type.selected = true;
       }

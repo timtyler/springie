@@ -27,8 +27,8 @@ public class PrepareToModifyNodeClazzes {
     final int number_of_nodes = this.node_manager.element.size();
     for (int c1 = number_of_nodes; --c1 >= 0;) {
       for (int c2 = c1; --c2 >= 0;) {
-        final Node n1 = (Node) this.node_manager.element.elementAt(c1);
-        final Node n2 = (Node) this.node_manager.element.elementAt(c2);
+        final Node n1 = (Node) this.node_manager.element.get(c1);
+        final Node n2 = (Node) this.node_manager.element.get(c2);
         if (n1.clazz == n2.clazz) {
           return true;
         }
@@ -48,7 +48,7 @@ public class PrepareToModifyNodeClazzes {
   public void makeNewClazzes() {
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) this.node_manager.element.elementAt(counter);
+      final Node candidate = (Node) this.node_manager.element.get(counter);
       Clazz clazz = this.node_manager.clazz_factory.getNew(candidate.clazz.colour);
       candidate.clazz = clazz;
     }

@@ -33,7 +33,7 @@ public class ColourClassificationCartesian {
     final int max_size = this.link_manager.element.size();
 
     for (int counter = max_size; --counter >= 0;) {
-      final Link link = (Link) this.link_manager.element.elementAt(counter);
+      final Link link = (Link) this.link_manager.element.get(counter);
       if (link.type.selected) {
         int colour = 0xFF808080;
         final Node node1 = link.nodes[0];

@@ -15,7 +15,7 @@ public class DomeMakingUtilities {
     final LinkManager link_manager = node_manager.getLinkManager();
     final int number_of_nodes = node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) node_manager.element.elementAt(counter);
+      final Node candidate = (Node) node_manager.element.get(counter);
       if (!candidate.type.hidden) {
         if (link_manager.isThereALinkBetween(node_1, candidate)) {
           if (link_manager.isThereALinkBetween(node_2, candidate)) {
@@ -35,7 +35,7 @@ public class DomeMakingUtilities {
     final LinkManager link_manager = node_manager.getLinkManager();
     final int number_of_nodes = node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) node_manager.element.elementAt(counter);
+      final Node candidate = (Node) node_manager.element.get(counter);
       if (!candidate.type.hidden) {
         if (link_manager.isThereALinkBetween(node_1, candidate)) {
           if (link_manager.isThereALinkBetween(node_2, candidate)) {
@@ -57,7 +57,7 @@ public class DomeMakingUtilities {
     final LinkManager link_manager = node_manager.getLinkManager();
     final int number_of_nodes = node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) node_manager.element.elementAt(counter);
+      final Node candidate = (Node) node_manager.element.get(counter);
       if (!candidate.type.hidden) {
         if (link_manager.isThereALinkBetween(node_1, candidate)) {
           if (link_manager.isThereALinkBetween(node_2, candidate)) {
@@ -87,7 +87,7 @@ public class DomeMakingUtilities {
     //final int counter = x;
 
     final int n = node_1.list_of_links.retreive(x);
-    final Link link = (Link) link_manager.element.elementAt(n);
+    final Link link = (Link) link_manager.element.get(n);
     final Node other = link.theOtherEnd(node_1);
     return other;
   }
@@ -106,7 +106,7 @@ public class DomeMakingUtilities {
 
     do {
       final int n = node_1.list_of_links.retreive(counter);
-      final Link link = (Link) link_manager.element.elementAt(n);
+      final Link link = (Link) link_manager.element.get(n);
       final Node other = link.theOtherEnd(node_1);
       if (other.type.selected) {
         return other;
@@ -120,7 +120,7 @@ public class DomeMakingUtilities {
 
   //        // for (int counter = number_of_nodes; --counter >= 0;) { // final int
   // // a2 = this.rnd.nextInt(number_of_nodes);
-  //        final Node node_2 = (Node) node_manager.element.elementAt(a2);
+  //        final Node node_2 = (Node) node_manager.element.get(a2);
   //        if (node_1 != node_2) {
   //          //if (node_1.type.colour == node_2.type.colour) {
   //          if (link_manager.isThereALinkBetween(node_1, node_2)) {

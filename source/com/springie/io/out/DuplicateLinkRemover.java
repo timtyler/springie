@@ -21,9 +21,9 @@ public class DuplicateLinkRemover {
     final int n = link_manager.element.size();
 
     for (int i = n; --i >= 0;) {
-      final Link l1 = (Link) link_manager.element.elementAt(i);
+      final Link l1 = (Link) link_manager.element.get(i);
       for (int j = i - 1; --j >= 0;) {
-        final Link l2 = (Link) link_manager.element.elementAt(j);
+        final Link l2 = (Link) link_manager.element.get(j);
         if (linkHasTheSameNodesInASimilarOrder(l1, l2)) {
           link_manager.killNumberedLink(i);
         }

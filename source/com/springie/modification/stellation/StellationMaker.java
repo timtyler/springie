@@ -46,7 +46,7 @@ public class StellationMaker {
     this.centre = this.node_manager.getCentre();
 
     for (int count = 0; count < this.face_manager.element.size(); count++) {
-      final Face face = (Face) this.face_manager.element.elementAt(count);
+      final Face face = (Face) this.face_manager.element.get(count);
       if (face.type.selected) {
         tryToMakeStellation(face);
       }

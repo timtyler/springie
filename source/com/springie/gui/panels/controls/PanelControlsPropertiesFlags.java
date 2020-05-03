@@ -7,7 +7,7 @@ import java.awt.Label;
 import java.awt.Panel;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Vector;
+import java.util.List;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextMananger;
@@ -124,7 +124,7 @@ public class PanelControlsPropertiesFlags {
     final LinkManager link_manager = ContextMananger.getLinkManager();
     final int size = link_manager.element.size();
     for (int i = 0; i < size; i++) {
-      final Link l = (Link) link_manager.element.elementAt(i);
+      final Link l = (Link) link_manager.element.get(i);
       if (l.type.selected) {
         if (l.type.compression) {
           return true;
@@ -141,7 +141,7 @@ public class PanelControlsPropertiesFlags {
     final LinkManager link_manager = ContextMananger.getLinkManager();
     final int size = link_manager.element.size();
     for (int i = 0; i < size; i++) {
-      final Link l = (Link) link_manager.element.elementAt(i);
+      final Link l = (Link) link_manager.element.get(i);
       if (l.type.selected) {
         if (l.type.tension) {
           return true;
@@ -158,7 +158,7 @@ public class PanelControlsPropertiesFlags {
     final LinkManager link_manager = ContextMananger.getLinkManager();
     final int size = link_manager.element.size();
     for (int i = 0; i < size; i++) {
-      final Link l = (Link) link_manager.element.elementAt(i);
+      final Link l = (Link) link_manager.element.get(i);
       if (l.type.selected) {
         if (l.type.disabled) {
           return true;
@@ -175,7 +175,7 @@ public class PanelControlsPropertiesFlags {
     final NodeManager node_manager = ContextMananger.getNodeManager();
     final int size = node_manager.element.size();
     for (int i = 0; i < size; i++) {
-      final Node n = (Node) node_manager.element.elementAt(i);
+      final Node n = (Node) node_manager.element.get(i);
       if (n.type.selected) {
         if (n.type.pinned) {
           return true;
@@ -199,11 +199,11 @@ public class PanelControlsPropertiesFlags {
         || anySelectedThingHidden(face_manager.element);
   }
 
-  private boolean anySelectedThingHidden(Vector v) {
+  private boolean anySelectedThingHidden(List v) {
     // final NodeManager node_manager = ContextMananger.getNodeManager();
     final int size = v.size();
     for (int i = 0; i < size; i++) {
-      final BaseElement n = (BaseElement) v.elementAt(i);
+      final BaseElement n = (BaseElement) v.get(i);
       if (n.isSelected()) {
         if (n.isHidden()) {
           return true;

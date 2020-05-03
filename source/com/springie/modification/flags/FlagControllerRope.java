@@ -25,7 +25,7 @@ public class FlagControllerRope {
   private void ropeLinks(boolean compression, boolean tension) {
     final int n_o_l = this.link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.link_manager.element.elementAt(temp);
+      final Link l = (Link) this.link_manager.element.get(temp);
       if (l.type.selected) {
         l.type.compression = compression;
         l.type.tension = tension;

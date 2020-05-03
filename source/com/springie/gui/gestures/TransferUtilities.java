@@ -14,7 +14,7 @@ public class TransferUtilities {
     final Point3D[] pos = new Point3D[n];
 
     for (int i = n; --i >= 0;) {
-      final Node node = (Node) ContextMananger.getNodeManager().element.elementAt(i);
+      final Node node = (Node) ContextMananger.getNodeManager().element.get(i);
       pos[i] = (Point3D) node.pos.clone();
     }
 
@@ -27,7 +27,7 @@ public class TransferUtilities {
     final int[] lengths = new int[n];
 
     for (int i = n; --i >= 0;) {
-      final Link link = (Link) link_manager.element.elementAt(i);
+      final Link link = (Link) link_manager.element.get(i);
       lengths[i] = link.type.length;
     }
 
@@ -40,7 +40,7 @@ public class TransferUtilities {
     final int[] radii = new int[n];
 
     for (int i = n; --i >= 0;) {
-      final Link link = (Link) link_manager.element.elementAt(i);
+      final Link link = (Link) link_manager.element.get(i);
       radii[i] = link.type.radius;
     }
 
@@ -52,7 +52,7 @@ public class TransferUtilities {
     final int[] radii = new int[n];
 
     for (int i = n; --i >= 0;) {
-      final Node node = (Node) ContextMananger.getNodeManager().element.elementAt(i);
+      final Node node = (Node) ContextMananger.getNodeManager().element.get(i);
       radii[i] = node.type.radius;
     }
 

@@ -34,11 +34,11 @@ public class FaceManager extends BaseElementManager {
    */
   public final Face setPolygon(Vector v, FaceType type, Clazz clazz) {
     final Face p = new Face(v, type, clazz);
-    this.element.addElement(p);
+    this.element.add(p);
 
     //final int npoints = v.size();
     //for (int k = npoints; --k >= 0;) {
-    //final Node n = (Node) v.elementAt(k);
+    //final Node n = (Node) v.get(k);
     //n.list_of_polygons.addElement(p);
     //}
 
@@ -47,7 +47,7 @@ public class FaceManager extends BaseElementManager {
 
   public final Face setPolygon(FaceType type, Clazz clazz) {
     final Face p = new Face(new Vector(), type, clazz);
-    this.element.addElement(p);
+    this.element.add(p);
 
     return p;
   }
@@ -59,7 +59,7 @@ public class FaceManager extends BaseElementManager {
   public final void killAllPolygons(Node node) {
     final int number = this.element.size();
     for (int temp = number; --temp >= 0;) {
-      final Face face = (Face) this.element.elementAt(temp);
+      final Face face = (Face) this.element.get(temp);
       if (face.containsNodes(node)) {
         killNumberedPolygon(temp);
       }
@@ -67,13 +67,13 @@ public class FaceManager extends BaseElementManager {
   }
 
   final void killNumberedPolygon(int n) {
-    this.element.removeElementAt(n);
+    this.element.remove(n);
   }
 
   final int getNumberOfPolygon(Face lk) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Face l = (Face) this.element.elementAt(temp);
+      final Face l = (Face) this.element.get(temp);
       if (l == lk) {
         return temp;
       }
@@ -85,7 +85,7 @@ public class FaceManager extends BaseElementManager {
   //  public final void drawThePolygons() {
   //    final int n_o_l = this.element.size();
   //    for (int temp = n_o_l; --temp >= 0;) {
-  //      final Face face = (Face) this.element.elementAt(temp);
+  //      final Face face = (Face) this.element.get(temp);
   //      face.draw(face);
   //    }
   //  }
@@ -94,7 +94,7 @@ public class FaceManager extends BaseElementManager {
   //    BinGrid.colourZero();
   //    final int n_o_l = this.element.size();
   //    for (int temp = n_o_l; --temp >= 0;) {
-  //      final Face l = (Face) this.element.elementAt(temp);
+  //      final Face l = (Face) this.element.get(temp);
   //      l.scrub(face);
   //    }
   //  }
@@ -102,7 +102,7 @@ public class FaceManager extends BaseElementManager {
   //  public final void polygonRender() {
   //    final int n_o_l = this.element.size();
   //    for (int temp = n_o_l; --temp >= 0;) {
-  //      final Face l = (Face) this.element.elementAt(temp);
+  //      final Face l = (Face) this.element.get(temp);
   //      l.scrub(face);
   //      l.draw(face);
   //    }
@@ -111,7 +111,7 @@ public class FaceManager extends BaseElementManager {
   public boolean isThereAPolygonWithNodes(Vector node_list) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Face poly = (Face) this.element.elementAt(temp);
+      final Face poly = (Face) this.element.get(temp);
       if (poly.hasExactlyTheseNodes(node_list)) {
         return true;
       }
@@ -123,7 +123,7 @@ public class FaceManager extends BaseElementManager {
   public final void deselectAll() {
     final int n = this.element.size();
     for (int temp = n; --temp >= 0;) {
-      final Face poly = (Face) this.element.elementAt(temp);
+      final Face poly = (Face) this.element.get(temp);
       poly.type.selected = false;
     }
     FrEnd.updateGUIToReflectSelectionChange();
@@ -132,7 +132,7 @@ public class FaceManager extends BaseElementManager {
   public final void selectAll() {
     final int n = this.element.size();
     for (int temp = n; --temp >= 0;) {
-      final Face face = (Face) this.element.elementAt(temp);
+      final Face face = (Face) this.element.get(temp);
       if (!face.type.hidden || FrEnd.render_hidden_faces) {
         face.type.selected = true;
       }
@@ -143,7 +143,7 @@ public class FaceManager extends BaseElementManager {
   public final void selectionInvert() {
     final int n = this.element.size();
     for (int temp = n; --temp >= 0;) {
-      final Face face = (Face) this.element.elementAt(temp);
+      final Face face = (Face) this.element.get(temp);
       if (!face.type.hidden || FrEnd.render_hidden_faces) {
         face.type.selected = !face.type.selected;
       }
@@ -157,7 +157,7 @@ public class FaceManager extends BaseElementManager {
 
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Face p = (Face) this.element.elementAt(temp);
+      final Face p = (Face) this.element.get(temp);
       if (!p.type.hidden || FrEnd.render_hidden_faces) {
         final int npoints = p.nodes.size();
 
@@ -166,7 +166,7 @@ public class FaceManager extends BaseElementManager {
         final int[] awt_points_y = new int[npoints];
 
         for (int i = npoints; --i >= 0;) {
-          final Node n = (Node) p.nodes.elementAt(i);
+          final Node n = (Node) p.nodes.get(i);
 
           int nx = Coords.getXCoordsInternal(n.pos.x, n.pos.z);
           int ny = Coords.getXCoordsInternal(n.pos.y, n.pos.z);
@@ -196,7 +196,7 @@ public class FaceManager extends BaseElementManager {
   public boolean isSelection() {
     final int number = this.element.size();
     for (int temp = number; --temp >= 0;) {
-      final Face l = (Face) this.element.elementAt(temp);
+      final Face l = (Face) this.element.get(temp);
       if (l.type.selected) {
         return true;
       }
@@ -208,7 +208,7 @@ public class FaceManager extends BaseElementManager {
   public final Face getFirstSelectedPolygon() {
     final int n = this.element.size();
     for (int temp = n; --temp >= 0;) {
-      final Face p = (Face) this.element.elementAt(temp);
+      final Face p = (Face) this.element.get(temp);
       if (p.type.selected) {
         return p;
       }
@@ -220,7 +220,7 @@ public class FaceManager extends BaseElementManager {
   public final void selectAll(int colour) {
     final int number = this.element.size();
     for (int temp = number; --temp >= 0;) {
-      final Face face = (Face) this.element.elementAt(temp);
+      final Face face = (Face) this.element.get(temp);
       if (face.clazz.colour == colour) {
         if (!face.type.hidden || FrEnd.render_hidden_faces) {
           face.type.selected = true;
@@ -233,7 +233,7 @@ public class FaceManager extends BaseElementManager {
   public final void selectAllWithNSides(int n) {
     final int number = this.element.size();
     for (int temp = number; --temp >= 0;) {
-      final Face p = (Face) this.element.elementAt(temp);
+      final Face p = (Face) this.element.get(temp);
       if (p.nodes.size() == n) {
         p.type.selected = true;
       }
@@ -244,7 +244,7 @@ public class FaceManager extends BaseElementManager {
   public final void deleteSelected() {
     final int number = this.element.size();
     for (int temp = number; --temp >= 0;) {
-      final Face p = (Face) this.element.elementAt(temp);
+      final Face p = (Face) this.element.get(temp);
       if (p.type.selected) {
         kill(p);
       }
@@ -253,13 +253,13 @@ public class FaceManager extends BaseElementManager {
   }
 
   final void killNumbered(int n) {
-    //final Face p = (Face) this.element.elementAt(n);
+    //final Face p = (Face) this.element.get(n);
     //final int npoints = p.node.size();
-    this.element.removeElementAt(n);
+    this.element.remove(n);
     // TODO!
 
     //for (int i = npoints; --i >= 0;) {
-    //final Node node = (Node) p.node.elementAt(i);
+    //final Node node = (Node) p.node.get(i);
     //node.list_of_polygons.removeElement(p);
     //}
   }
@@ -267,7 +267,7 @@ public class FaceManager extends BaseElementManager {
   final int getNumberOf(Face polygon) {
     final int number = this.element.size();
     for (int temp = number; --temp >= 0;) {
-      final Face p = (Face) this.element.elementAt(temp);
+      final Face p = (Face) this.element.get(temp);
       if (p == polygon) {
         return temp;
       }
@@ -280,7 +280,7 @@ public class FaceManager extends BaseElementManager {
     int number = 0;
     final int total = this.element.size();
     for (int temp = 0; temp < total; temp++) {
-      final Face e = (Face) this.element.elementAt(temp);
+      final Face e = (Face) this.element.get(temp);
       if (e.type.selected) {
         number++;
       }

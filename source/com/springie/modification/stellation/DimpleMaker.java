@@ -22,7 +22,7 @@ public class DimpleMaker {
   public void dimple() {
     final Vector vector = new Vector();
     for (int count = 0; count < this.node_manager.element.size(); count++) {
-      final Node node = (Node) this.node_manager.element.elementAt(count);
+      final Node node = (Node) this.node_manager.element.get(count);
       if (node.type.selected) {
         final Point3D p = tryToMakeDimple(node);
         vector.addElement(p);
@@ -31,7 +31,7 @@ public class DimpleMaker {
 
     int i = 0;
     for (int count = 0; count < this.node_manager.element.size(); count++) {
-      final Node node = (Node) this.node_manager.element.elementAt(count);
+      final Node node = (Node) this.node_manager.element.get(count);
       if (node.type.selected) {
         final Point3D delta = (Point3D) vector.elementAt(i++);
         node.pos.addTuple3D(delta);
@@ -49,7 +49,7 @@ public class DimpleMaker {
     if (total > 0) {
       for (int count = 0; count < total; count++) {
         final int i = list_of_integers.retreive(count);
-        final Link link = (Link) this.link_manager.element.elementAt(i);
+        final Link link = (Link) this.link_manager.element.get(i);
         final Node other = link.theOtherEnd(node);
         average.addTuple3D(other.pos);
         average.subtractTuple3D(initial);

@@ -18,14 +18,14 @@ public final class DampOverallVelocities {
     }
 
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) node_manager.element.elementAt(counter);
+      final Node candidate = (Node) node_manager.element.get(counter);
       velocity_total.addTuple3D(candidate.velocity);
     }
 
     velocity_total.divideBy(sf);
 
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) node_manager.element.elementAt(counter);
+      final Node candidate = (Node) node_manager.element.get(counter);
       candidate.velocity.subtractTuple3D(velocity_total);
     }
   }

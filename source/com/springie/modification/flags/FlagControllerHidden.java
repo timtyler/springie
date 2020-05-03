@@ -34,8 +34,7 @@ public class FlagControllerHidden {
   private void hideNodes(boolean hidden) {
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) this.node_manager.element
-        .elementAt(counter);
+      final Node candidate = (Node) this.node_manager.element      .get(counter);
       if (candidate.type.selected) {
         //candidate.type.setSize((candidate.type.radius * 9) >> 3);
         candidate.type.hidden = hidden;
@@ -46,7 +45,7 @@ public class FlagControllerHidden {
   private void hideLinks(boolean hidden) {
     final int n_o_l = this.link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.link_manager.element.elementAt(temp);
+      final Link l = (Link) this.link_manager.element.get(temp);
       if (l.type.selected) {
         l.type.hidden = hidden;
       }
@@ -56,7 +55,7 @@ public class FlagControllerHidden {
   private void hideFaces(boolean hidden) {
     final int n_o_l = this.face_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Face f = (Face) this.face_manager.element.elementAt(temp);
+      final Face f = (Face) this.face_manager.element.get(temp);
       if (f.type.selected) {
         f.type.hidden = hidden;
       }

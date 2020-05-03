@@ -51,7 +51,7 @@ public class ClazzRedundancyRemover {
 	private void replaceClassInNodes(final Clazz c_old, final Clazz c_new) {
 		final int n = this.node_manager.element.size();
 		for (int i = n; --i >= 0;) {
-			final Node node = (Node) this.node_manager.element.elementAt(i);
+			final Node node = (Node) this.node_manager.element.get(i);
 			if (node.clazz.equals(c_old)) {
 				node.clazz = c_new;
 			}
@@ -61,7 +61,7 @@ public class ClazzRedundancyRemover {
 	private void replaceClassInLinks(final Clazz c_old, final Clazz c_new) {
 		final int n_o_p = this.node_manager.getLinkManager().element.size();
 		for (int i = n_o_p; --i >= 0;) {
-			final Link l = (Link) this.node_manager.getLinkManager().element.elementAt(i);
+			final Link l = (Link) this.node_manager.getLinkManager().element.get(i);
 			if (l.clazz.equals(c_old)) {
 				l.clazz = c_new;
 			}
@@ -71,7 +71,7 @@ public class ClazzRedundancyRemover {
 	private void replaceClassInPolygons(final Clazz c_old, final Clazz c_new) {
 		final int n_o_p = this.node_manager.getFaceManager().element.size();
 		for (int i = n_o_p; --i >= 0;) {
-			final Face p = (Face) this.node_manager.getFaceManager().element.elementAt(i);
+			final Face p = (Face) this.node_manager.getFaceManager().element.get(i);
 			if (p.clazz.equals(c_old)) {
 				p.clazz = c_new;
 			}

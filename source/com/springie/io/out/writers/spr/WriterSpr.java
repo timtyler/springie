@@ -301,7 +301,7 @@ public class WriterSpr {
 		boolean some = false;
 		final int n_o_l = face_manager.element.size();
 		for (int temp = n_o_l; --temp >= 0;) {
-			final Face face = (Face) face_manager.element.elementAt(temp);
+			final Face face = (Face) face_manager.element.get(temp);
 			if (face.clazz == clazz) {
 				if (face.type == face_type) {
 					final XMLWriterSinglet tag_face = outputFace(face);
@@ -361,7 +361,7 @@ public class WriterSpr {
 		boolean some = false;
 		final int n_o_l = link_manager.element.size();
 		for (int temp = n_o_l; --temp >= 0;) {
-			final Link link = (Link) link_manager.element.elementAt(temp);
+			final Link link = (Link) link_manager.element.get(temp);
 			if (link.clazz == clazz) {
 				if (link.type == link_type) {
 					final XMLWriterSinglet tag_node = outputLink(link);
@@ -401,7 +401,7 @@ public class WriterSpr {
 		boolean some = false;
 		final int number_of_nodes = node_manager.element.size();
 		for (int n = 0; n < number_of_nodes; n++) {
-			final Node node = (Node) node_manager.element.elementAt(n);
+			final Node node = (Node) node_manager.element.get(n);
 			if (node.clazz == clazz) {
 				if (node.type == node_type) {
 					final XMLWriterTagPair tag_node = outputNode(node);

@@ -26,7 +26,7 @@ public class AutomaticNodeRadius {
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) this.node_manager.element
-        .elementAt(counter);
+        .get(counter);
       if (candidate.type.selected) {
         final int largest_radius = getRadiusOfLargestLink(candidate);
         if ((!only_set_if_zero) || (candidate.type.radius == 0)) {
@@ -43,7 +43,7 @@ public class AutomaticNodeRadius {
     for (int counter = size; --counter >= 0;) {
       final int l_n = list_of_links.retreive(counter);
       final Link link = (Link) this.node_manager.getLinkManager().element
-        .elementAt(l_n);
+        .get(l_n);
       int radius = link.type.radius;
       if (radius > max) {
         max = radius;

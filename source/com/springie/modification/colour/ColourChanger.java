@@ -50,7 +50,7 @@ public class ColourChanger {
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) this.node_manager.element
-        .elementAt(counter);
+        .get(counter);
       if (candidate.type.selected) {
         candidate.clazz.colour = argb;
       }
@@ -63,7 +63,7 @@ public class ColourChanger {
     final int max_size = this.link_manager.element.size();
 
     for (int counter = max_size; --counter >= 0;) {
-      final Link l = (Link) this.link_manager.element.elementAt(counter);
+      final Link l = (Link) this.link_manager.element.get(counter);
       if (l.type.selected) {
         l.clazz.colour = argb;
       }
@@ -76,7 +76,7 @@ public class ColourChanger {
     final int max_size = this.manager_faces.element.size();
 
     for (int counter = max_size; --counter >= 0;) {
-      final Face p = (Face) this.manager_faces.element.elementAt(counter);
+      final Face p = (Face) this.manager_faces.element.get(counter);
       if (p.type.selected) {
         p.clazz.colour = argb;
       }

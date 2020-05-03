@@ -35,7 +35,7 @@ public class FaceMaker {
     final Vector node = new Vector();
 
     final int a0 = this.rnd.nextInt(number_of_nodes);
-    final Node n0 = (Node) this.node_manager.element.elementAt(a0);
+    final Node n0 = (Node) this.node_manager.element.get(a0);
 
     if (!n0.type.selected) {
       return;

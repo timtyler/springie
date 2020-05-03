@@ -101,7 +101,7 @@ public class WriterOFF {
   private void outputNodes() {
     final int number_of_nodes = this.node_manager.element.size();
     for (int n = 0; n < number_of_nodes; n++) {
-      final Node node = (Node) this.node_manager.element.elementAt(n);
+      final Node node = (Node) this.node_manager.element.get(n);
       outputNode(node);
     }
   }
@@ -118,7 +118,7 @@ public class WriterOFF {
     final int n_o_l = this.link_manager.element.size();
 
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link link = (Link) this.link_manager.element.elementAt(temp);
+      final Link link = (Link) this.link_manager.element.get(temp);
       outputLink(link);
     }
   }
@@ -137,7 +137,7 @@ public class WriterOFF {
     final int n_o_l = this.face_manager.element.size();
 
     for (int temp = n_o_l; --temp >= 0;) {
-      final Face face = (Face) this.face_manager.element.elementAt(temp);
+      final Face face = (Face) this.face_manager.element.get(temp);
       outputFace(face);
     }
   }
@@ -147,7 +147,7 @@ public class WriterOFF {
     final StringBuffer out = new StringBuffer();
     out.append("" + n);
     for (int i = 0; i < n; i++) {
-      final Node node = (Node) face.nodes.elementAt(i);
+      final Node node = (Node) face.nodes.get(i);
       out.append(" ");
       final int index = this.node_manager.element.indexOf(node);
       out.append("" + index);

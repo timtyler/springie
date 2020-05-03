@@ -164,7 +164,7 @@ public class NodeManager extends World {
 	final void ensureEntitiesAreBinnedAgain() {
 		final int number_of_nodes = this.element.size();
 		for (int temp = 0; temp < number_of_nodes; temp++) {
-			final Node n = (Node) this.element.elementAt(temp);
+			final Node n = (Node) this.element.get(temp);
 			n.current_bin.x = -1;
 			n.current_bin.y = -1;
 			n.current_bin.z = -1;
@@ -250,7 +250,7 @@ public class NodeManager extends World {
 
 		for (int counter = number_of_nodes; --counter >= 0;) {
 			final int num = this.node_depth_index[counter];
-			final Node node = (Node) this.element.elementAt(num);
+			final Node node = (Node) this.element.get(num);
 			final CachedNode cached_node = this.renderer.renderer_node.array[num];
 			// if (FrEnd.render_nodes) {
 			// cached_node.renderNodes(node, mask);
@@ -274,7 +274,7 @@ public class NodeManager extends World {
 
 		for (int counter = number_of_nodes; --counter >= 0;) {
 			final int num = this.node_depth_index[counter];
-			final Node node = (Node) this.element.elementAt(num);
+			final Node node = (Node) this.element.get(num);
 			final CachedNode cached_node = this.renderer.renderer_node.array[num];
 			if (FrEnd.render_nodes) {
 				cached_node.renderNodes(node, mask);
@@ -299,7 +299,7 @@ public class NodeManager extends World {
 
 		for (int counter = number_of_nodes; --counter >= 0;) {
 			final int num = this.node_depth_index[counter];
-			final Node n = (Node) this.element.elementAt(num);
+			final Node n = (Node) this.element.get(num);
 			final CachedNode cn1 = this.renderer.renderer_node.array[num];
 			final CachedNode cn2 = this.renderer2.renderer_node.array[num];
 			if (FrEnd.render_nodes) {
@@ -360,8 +360,8 @@ public class NodeManager extends World {
 				final int k = j + 1;
 				final int j1 = this.node_depth_index[j];
 				final int k1 = this.node_depth_index[k];
-				final Node a = (Node) this.element.elementAt(j1);
-				final Node b = (Node) this.element.elementAt(k1);
+				final Node a = (Node) this.element.get(j1);
+				final Node b = (Node) this.element.get(k1);
 				if (a.pos.z > b.pos.z) {
 					int temp = this.node_depth_index[j];
 					this.node_depth_index[j] = this.node_depth_index[k];
@@ -397,10 +397,10 @@ public class NodeManager extends World {
 	public void collisionCheckNbyN() {
 		final int number_of_nodes = this.element.size();
 		for (int counter = number_of_nodes; --counter >= 0;) {
-			temp_agent = (Node) this.element.elementAt(counter);
+			temp_agent = (Node) this.element.get(counter);
 
 			for (int counter2 = counter + 1; counter2 < number_of_nodes; counter2++) {
-				temp2_agent = (Node) this.element.elementAt(counter2);
+				temp2_agent = (Node) this.element.get(counter2);
 				collideTheseEntities();
 			}
 		}
@@ -456,7 +456,7 @@ public class NodeManager extends World {
 	public final void findNewBins() {
 		final int number_of_nodes = this.element.size();
 		for (int counter = number_of_nodes; --counter >= 0;) {
-			temp_agent = (Node) this.element.elementAt(counter);
+			temp_agent = (Node) this.element.get(counter);
 
 			int new_bin_x = temp_agent.pos.x >> this.node_grid.log2binsize;
 			int new_bin_y = temp_agent.pos.y >> this.node_grid.log2binsize;
@@ -502,7 +502,7 @@ public class NodeManager extends World {
 		final int number_of_nodes = this.element.size();
 		if (number_of_nodes > 0) {
 			for (int temp = 0; temp < number_of_nodes; temp++) {
-				temp_agent = (Node) this.element.elementAt(temp);
+				temp_agent = (Node) this.element.get(temp);
 				applyGravity();
 				applyTemperature();
 				decrementCounter();
@@ -810,7 +810,7 @@ public class NodeManager extends World {
 
 		final int number_of_nodes = this.element.size();
 		for (int temp = 0; temp < number_of_nodes; temp++) {
-			temp_agent = (Node) this.element.elementAt(temp);
+			temp_agent = (Node) this.element.get(temp);
 			if (!temp_agent.type.hidden || FrEnd.render_hidden_nodes) {
 				final int temp_detection_distance = Coords.getRadiusInternal(temp_agent.type.radius, temp_agent.pos.z);
 				final int temp_x0 = Coords.getXCoordsInternal(temp_agent.pos.x, temp_agent.pos.z) - _x;
@@ -855,7 +855,7 @@ public class NodeManager extends World {
 	public final void setRadiusOfSelected(int radius) {
 		final int n_o_n = this.element.size();
 		for (int temp = n_o_n; --temp >= 0;) {
-			final Node node = (Node) this.element.elementAt(temp);
+			final Node node = (Node) this.element.get(temp);
 			if (node.type.selected) {
 				node.type.radius = radius;
 			}
@@ -865,7 +865,7 @@ public class NodeManager extends World {
 	public final void setChargeOfSelected(int charge) {
 		final int n_o_n = this.element.size();
 		for (int temp = n_o_n; --temp >= 0;) {
-			final Node node = (Node) this.element.elementAt(temp);
+			final Node node = (Node) this.element.get(temp);
 			if (node.type.selected) {
 				node.type.charge = charge;
 			}
@@ -983,7 +983,7 @@ public class NodeManager extends World {
 		if (needToMoveNodes()) {
 			final int number_of_nodes = this.element.size();
 			for (int counter = number_of_nodes; --counter >= 0;) {
-				((Node) this.element.elementAt(counter)).travel();
+				((Node) this.element.get(counter)).travel();
 			}
 		}
 	}
@@ -993,7 +993,7 @@ public class NodeManager extends World {
 
 		final int number_of_nodes = this.element.size();
 		for (int temp = 0; temp < number_of_nodes; temp++) {
-			((Node) this.element.elementAt(temp)).type.setSize(d);
+			((Node) this.element.get(temp)).type.setSize(d);
 		}
 
 		// for (int temp = 0; temp < Node.TRIG_TAB_SIZE; temp++) {
@@ -1063,7 +1063,7 @@ public class NodeManager extends World {
 	public final boolean killThisNode(Node e) {
 		final int number_of_nodes = this.element.size();
 		for (int temp = 0; temp < number_of_nodes; temp++) {
-			if (this.element.elementAt(temp) == e) {
+			if (this.element.get(temp) == e) {
 				killNumberedAgent(temp);
 				return true;
 			}
@@ -1073,10 +1073,10 @@ public class NodeManager extends World {
 	}
 
 	public void killNumberedAgent(int n) {
-		final Node node = (Node) this.element.elementAt(n);
+		final Node node = (Node) this.element.get(n);
 		this.getLinkManager().killAllLinks(node);
 		this.getFaceManager().killAllPolygons(node);
-		this.element.removeElementAt(n);
+		this.element.remove(n);
 
 		// IMPORTANT: remove it from the bins...
 		node.removeFromBin(this.node_grid);
@@ -1088,7 +1088,7 @@ public class NodeManager extends World {
 		final int number_of_nodes = this.element.size();
 		for (int temp = 0; temp < number_of_nodes; temp++) {
 			// number_of_nodes--;
-			final Node n = (Node) this.element.elementAt(temp);
+			final Node n = (Node) this.element.get(temp);
 
 			if (n.type.selected) {
 				return n;
@@ -1101,7 +1101,7 @@ public class NodeManager extends World {
 	public void deselectAll() {
 		final int number_of_nodes = this.element.size();
 		for (int temp = 0; temp < number_of_nodes; temp++) {
-			final Node n = (Node) this.element.elementAt(temp);
+			final Node n = (Node) this.element.get(temp);
 			if (n.type.selected) {
 				n.type.selected = false;
 			}
@@ -1113,7 +1113,7 @@ public class NodeManager extends World {
 	public void deselectAll(int colour) {
 		final int number_of_nodes = this.element.size();
 		for (int temp = 0; temp < number_of_nodes; temp++) {
-			final Node n = (Node) this.element.elementAt(temp);
+			final Node n = (Node) this.element.get(temp);
 			if (n.clazz.colour == colour) {
 				if (n.type.selected) {
 					n.type.selected = false;
@@ -1127,7 +1127,7 @@ public class NodeManager extends World {
 	public void selectAll() {
 		final int number_of_nodes = this.element.size();
 		for (int temp = 0; temp < number_of_nodes; temp++) {
-			final Node node = (Node) this.element.elementAt(temp);
+			final Node node = (Node) this.element.get(temp);
 			if (!node.type.hidden || FrEnd.render_hidden_nodes) {
 				if (!node.type.selected) {
 					node.setSelected(true);
@@ -1140,7 +1140,7 @@ public class NodeManager extends World {
 	public void selectionInvert() {
 		final int number_of_nodes = this.element.size();
 		for (int temp = 0; temp < number_of_nodes; temp++) {
-			final Node node = (Node) this.element.elementAt(temp);
+			final Node node = (Node) this.element.get(temp);
 			if (!node.type.hidden || FrEnd.render_hidden_nodes) {
 				node.type.selected = !node.type.selected;
 			}
@@ -1151,7 +1151,7 @@ public class NodeManager extends World {
 	public void selectAll(int colour) {
 		final int number_of_nodes = this.element.size();
 		for (int temp = 0; temp < number_of_nodes; temp++) {
-			final Node node = (Node) this.element.elementAt(temp);
+			final Node node = (Node) this.element.get(temp);
 			if (node.clazz.colour == colour) {
 				if (!node.type.hidden || FrEnd.render_hidden_nodes) {
 					node.type.selected = true;
@@ -1164,7 +1164,7 @@ public class NodeManager extends World {
 	public void deleteSelected() {
 		final int number_of_nodes = this.element.size();
 		for (int temp2 = number_of_nodes; --temp2 >= 0;) {
-			final Node n = (Node) this.element.elementAt(temp2);
+			final Node n = (Node) this.element.get(temp2);
 			if (n.type.selected) {
 				killNumberedAgent(temp2);
 			}
@@ -1176,7 +1176,7 @@ public class NodeManager extends World {
 		boolean clean_up = false;
 		final int number_of_nodes = this.element.size();
 		for (int temp2 = 0; temp2 < number_of_nodes; temp2++) {
-			final Node n = (Node) this.element.elementAt(temp2);
+			final Node n = (Node) this.element.get(temp2);
 			if (n.type.selected) {
 				n.clazz.colour = (char) c;
 				clean_up = true;
@@ -1191,7 +1191,7 @@ public class NodeManager extends World {
 		boolean clean_up = false;
 		final int number_of_nodes = this.element.size();
 		for (int temp2 = 0; temp2 < number_of_nodes; temp2++) {
-			final Node n = (Node) this.element.elementAt(temp2);
+			final Node n = (Node) this.element.get(temp2);
 			if (n.type.selected) {
 				n.type.setSize(s);
 				clean_up = true;
@@ -1209,7 +1209,7 @@ public class NodeManager extends World {
 
 		int number_of_nodes = this.element.size();
 		for (int counter = number_of_nodes; --counter >= 0;) {
-			final Node candidate = (Node) this.element.elementAt(counter);
+			final Node candidate = (Node) this.element.get(counter);
 			x += candidate.pos.x;
 			y += candidate.pos.y;
 			z += candidate.pos.z;
@@ -1228,7 +1228,7 @@ public class NodeManager extends World {
 			final int vd = 1024 - Node.viscocity;
 
 			for (int counter = number_of_nodes; --counter >= 0;) {
-				final Node node = (Node) this.element.elementAt(counter);
+				final Node node = (Node) this.element.get(counter);
 				final Vector3D velocity = node.velocity;
 				velocity.x = (velocity.x * vd + 512) >> 10;
 				velocity.y = (velocity.y * vd + 512) >> 10;
@@ -1248,7 +1248,7 @@ public class NodeManager extends World {
 		int number = 0;
 		final int number_of_nodes = this.element.size();
 		for (int temp = 0; temp < number_of_nodes; temp++) {
-			final Node n = (Node) this.element.elementAt(temp);
+			final Node n = (Node) this.element.get(temp);
 			if (n.type.selected) {
 				number++;
 			}
@@ -1260,7 +1260,7 @@ public class NodeManager extends World {
 	public int getNodeNumberFromName(String name) {
 		final int number_of_nodes = this.element.size();
 		for (int temp = 0; temp < number_of_nodes; temp++) {
-			final Node n = (Node) this.element.elementAt(temp);
+			final Node n = (Node) this.element.get(temp);
 			if (name.equals(n.name)) {
 				return temp;
 			}
@@ -1272,7 +1272,7 @@ public class NodeManager extends World {
 	public void selectAllWithNLinks(int n_links) {
 		final int number_of_nodes = this.element.size();
 		for (int temp = 0; temp < number_of_nodes; temp++) {
-			final Node n = (Node) this.element.elementAt(temp);
+			final Node n = (Node) this.element.get(temp);
 			final int num = n.list_of_links.size();
 			if (n_links == num) {
 				n.type.selected = true;
@@ -1294,7 +1294,7 @@ public class NodeManager extends World {
 
 		final int number_of_nodes = this.element.size();
 		for (int temp = 0; temp < number_of_nodes; temp++) {
-			final Node n = (Node) this.element.elementAt(temp);
+			final Node n = (Node) this.element.get(temp);
 			int z = n.pos.z;
 			if (z > max) {
 				max = z;
@@ -1309,7 +1309,7 @@ public class NodeManager extends World {
 		final Vector list_of_nodes = new Vector();
 		final int number_of_nodes = this.element.size();
 		for (int temp = 0; temp < number_of_nodes; temp++) {
-			final Node n = (Node) this.element.elementAt(temp);
+			final Node n = (Node) this.element.get(temp);
 			if (n.isSelected()) {
 				list_of_nodes.addElement(n);
 			}
@@ -1320,7 +1320,7 @@ public class NodeManager extends World {
 	public void moveSelection(int _dx, int _dy) {
 		final int number_of_nodes = this.element.size();
 		for (int temp2 = 0; temp2 < number_of_nodes; temp2++) {
-			final Node n = (Node) this.element.elementAt(temp2);
+			final Node n = (Node) this.element.get(temp2);
 			if (n.type.selected) {
 				n.pos.x += _dx;
 				n.pos.y += _dy;

@@ -34,7 +34,7 @@ public class ExtendLinks {
     Forget.about(sf);
     final int n_o_l = this.link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.link_manager.element.elementAt(temp);
+      final Link l = (Link) this.link_manager.element.get(temp);
       final int x = l.nodes[0].pos.x;
       final float scale = (float) (0.5 + 0.3 * Math.sin(x / 12000.0));
       if (l.type.selected) {

@@ -71,7 +71,7 @@ public class ScaleManager {
     final int n = this.node_manager.element.size();
 
     for (int i = n; --i >= 0;) {
-      final Node node = (Node) ContextMananger.getNodeManager().element.elementAt(i);
+      final Node node = (Node) ContextMananger.getNodeManager().element.get(i);
 
       node.type.radius = (int) (this.node_radius[i] * scale_factor);
     }
@@ -87,7 +87,7 @@ public class ScaleManager {
 
   private void rescaleLink(final float scale_factor, int i) {
     final LinkManager link_manager = this.link_manager;
-    final Link link = (Link) link_manager.element.elementAt(i);
+    final Link link = (Link) link_manager.element.get(i);
 
     link.type.length = (int) (this.link_length[i] * scale_factor);
     link.type.radius = (int) (this.link_radius[i] * scale_factor);

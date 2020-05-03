@@ -36,7 +36,7 @@ public class MakeLinksToNearestNode {
 
     for (int counter = number_of_selected_nodes; --counter >= 0;) {
       final int i = selected_node_numbers[counter];
-      final Node source = (Node) this.node_manager.element.elementAt(i);
+      final Node source = (Node) this.node_manager.element.get(i);
       final ListOfNearest list_of_nearest = getNearestNodes(source,
         target_node_numbers, how_many);
 
@@ -56,8 +56,7 @@ public class MakeLinksToNearestNode {
     final int[] nodes = new int[number_of_selected_nodes];
     int idx = 0;
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) this.node_manager.element
-        .elementAt(counter);
+      final Node candidate = (Node) this.node_manager.element.get(counter);
       if (candidate.type.selected) {
         nodes[idx++] = counter;
       }
@@ -70,7 +69,7 @@ public class MakeLinksToNearestNode {
     final Vector nodes = new Vector();
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) this.node_manager.element
-        .elementAt(counter);
+        .get(counter);
       if (candidate.clazz.colour == colour) {
         nodes.addElement(new Integer(counter));
       }
@@ -80,7 +79,7 @@ public class MakeLinksToNearestNode {
     final int[] array = new int[size];
 
     for (int counter = size; --counter >= 0;) {
-      array[counter] = ((Integer) (nodes.elementAt(counter))).intValue();
+      array[counter] = ((Integer) (nodes.get(counter))).intValue();
     }
 
     return array;
@@ -89,10 +88,10 @@ public class MakeLinksToNearestNode {
   private void createLinks(int nn_1, ListOfNearest list_of_nearest) {
     //final PostModification post_modification = new PostModification(this.node_manager);
     final int number = list_of_nearest.size;
-    final Node candidate = (Node) this.node_manager.element.elementAt(nn_1);
+    final Node candidate = (Node) this.node_manager.element.get(nn_1);
     for (int counter = number; --counter >= 0;) {
       final int nn_2 = list_of_nearest.array[counter];
-      final Node destination = (Node) this.node_manager.element.elementAt(nn_2);
+      final Node destination = (Node) this.node_manager.element.get(nn_2);
 
       
       if (!this.link_manager.isThereALinkBetween(destination, candidate)) {
@@ -117,7 +116,7 @@ public class MakeLinksToNearestNode {
       }
 
       final Node candidate = (Node) this.node_manager.element
-        .elementAt(num_of_candidate_node);
+        .get(num_of_candidate_node);
       if (source != candidate) {
         final int d = this.node_manager.distanceBetween(source, candidate);
         if (d < list_of_nearest.largest_proximity) {

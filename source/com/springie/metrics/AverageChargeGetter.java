@@ -18,7 +18,7 @@ final int number = this.node_manager.element.size();
     int count = 0;
     long total = 0;
     for (int counter = number; --counter >= 0;) {
-      final Node candidate = (Node) this.node_manager.element.elementAt(counter);
+      final Node candidate = (Node) this.node_manager.element.get(counter);
       if (candidate.type.selected) {
         total += candidate.type.charge;
         count++;

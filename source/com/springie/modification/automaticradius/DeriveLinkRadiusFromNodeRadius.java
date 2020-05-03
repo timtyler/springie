@@ -27,7 +27,7 @@ public class DeriveLinkRadiusFromNodeRadius {
   public void set() {
     final int n_o_l = this.link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.link_manager.element.elementAt(temp);
+      final Link l = (Link) this.link_manager.element.get(temp);
       if (l.type.selected) {
         final int r1 = l.nodes[0].type.radius;
         final int r2 = l.nodes[01].type.radius;

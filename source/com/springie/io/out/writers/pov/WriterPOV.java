@@ -522,7 +522,7 @@ public class WriterPOV {
 		}
 
 		for (int n_type = 0; n_type < link_type_number; n_type++) {
-			final LinkType type = (LinkType) this.link_manager.link_type_factory.array.elementAt(n_type);
+			final LinkType type = (LinkType) this.link_manager.link_type_factory.array.get(n_type);
 
 			if (new AreThereAny().links(clazz, type)) {
 				outputLinks(clazz, type, n_clazz, n_type);
@@ -551,12 +551,12 @@ public class WriterPOV {
 
 		// final FaceType type = (FaceType)
 		// this.face_manager.face_type_factory.array
-		// .elementAt(number);
+		// .get(number);
 
 		final int number_of_faces = this.face_manager.element.size();
 
 		for (int n = 0; n < number_of_faces; n++) {
-			final Face face = (Face) this.face_manager.element.elementAt(n);
+			final Face face = (Face) this.face_manager.element.get(n);
 			if (!face.type.hidden || FrEnd.render_hidden_faces) {
 				writeFaceClockwise(face, n_clazz);
 			}
@@ -569,8 +569,8 @@ public class WriterPOV {
 		final Point3D p3 = polygon.getCoordinatessOfCentre();
 
 		for (int i = npolygon; --i >= 0;) {
-			final Node node1 = (Node) polygon.nodes.elementAt(i);
-			final Node node2 = (Node) polygon.nodes.elementAt((i + 1) % npolygon);
+			final Node node1 = (Node) polygon.nodes.get(i);
+			final Node node2 = (Node) polygon.nodes.get((i + 1) % npolygon);
 			final Point3D p1 = node1.pos;
 			final Point3D p2 = node2.pos;
 
@@ -605,10 +605,10 @@ public class WriterPOV {
 
 	private void outputNodes(Clazz clazz, int n_clazz, int n_type) {
 		final NodeType node_type = (NodeType) ContextMananger.getNodeManager().node_type_factory.array
-				.elementAt(n_type);
+				.get(n_type);
 		final int number_of_nodes = this.node_manager.element.size();
 		for (int n = 0; n < number_of_nodes; n++) {
-			final Node node = (Node) this.node_manager.element.elementAt(n);
+			final Node node = (Node) this.node_manager.element.get(n);
 			if (node.type == node_type) {
 				if (node.clazz == clazz) {
 					if (!node.type.hidden || FrEnd.render_hidden_nodes) {
@@ -636,11 +636,11 @@ public class WriterPOV {
 	}
 
 	private void outputLinks(Clazz clazz, int n_clazz, int n_type) {
-		final LinkType type = (LinkType) this.link_manager.link_type_factory.array.elementAt(n_type);
+		final LinkType type = (LinkType) this.link_manager.link_type_factory.array.get(n_type);
 
 		final int n_o_l = this.link_manager.element.size();
 		for (int temp = n_o_l; --temp >= 0;) {
-			final Link link = (Link) this.link_manager.element.elementAt(temp);
+			final Link link = (Link) this.link_manager.element.get(temp);
 			if (link.type == type) {
 				if (link.clazz == clazz) {
 					if (!link.type.hidden || FrEnd.render_hidden_links) {

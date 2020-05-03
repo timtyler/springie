@@ -86,8 +86,8 @@ public final class WorldManager {
     if (number_of_nodes_from > 0) {
       for (int temp = 0; temp < number_of_nodes_from; temp++) {
 
-        temp_node = (Node) pw_from.element.elementAt(temp);
-        pw_from.element.setElementAt(pw_to.element.lastElement(), temp);
+        temp_node = (Node) pw_from.element.get(temp);
+        pw_from.element.set(temp, pw_to.element.get(pw_to.element.size() - 1));
         pw_to.element.add(temp, temp_node);
       }
     }
@@ -96,9 +96,9 @@ public final class WorldManager {
 
     if (n_o_l_from > 0) {
       for (int temp = 0; temp < n_o_l_from; temp++) {
-        final Link l = (Link) pw_from.getLinkManager().element.elementAt(temp);
-        pw_from.getLinkManager().element.setElementAt(pw_to.getLinkManager().element.elementAt(pw_to.getLinkManager().element.size()), temp);
-        pw_to.getLinkManager().element.addElement(l);
+        final Link l = (Link) pw_from.getLinkManager().element.get(temp);
+        pw_from.getLinkManager().element.set(temp, pw_to.getLinkManager().element.get(pw_to.getLinkManager().element.size()));
+        pw_to.getLinkManager().element.add(l);
       }
     }
 

@@ -58,8 +58,8 @@ public class ReaderDATExecutor implements Executor {
     for (int idx_1 = n_o_n; --idx_1 >= 0;) {
       for (int idx_2 = idx_1; --idx_2 >= 0;) {
         if (finished) {
-          final Node node_1 = (Node) node_manager.element.elementAt(idx_1);
-          final Node node_2 = (Node) node_manager.element.elementAt(idx_2);
+          final Node node_1 = (Node) node_manager.element.get(idx_1);
+          final Node node_2 = (Node) node_manager.element.get(idx_2);
           if (node_1.pos.equals(node_2.pos)) {
             node_1.type.selected = true;
             node_2.type.selected = true;

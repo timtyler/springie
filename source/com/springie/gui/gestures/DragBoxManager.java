@@ -83,7 +83,7 @@ public class DragBoxManager {
 
     final int number_of_nodes = node_manager.element.size();
     for (int temp = 0; temp < number_of_nodes; temp++) {
-      final Node node = (Node) node_manager.element.elementAt(temp);
+      final Node node = (Node) node_manager.element.get(temp);
       final int z = node.pos.z;
       final int radius = Coords.getRadiusInternal(node.type.radius, z);
       final int x = Coords.getXCoordsInternal(node.pos.x, z);
@@ -110,7 +110,7 @@ public class DragBoxManager {
 
     final int number = link_manager.element.size();
     for (int temp = 0; temp < number; temp++) {
-      final Link link = (Link) link_manager.element.elementAt(temp);
+      final Link link = (Link) link_manager.element.get(temp);
       if (!link.type.hidden || FrEnd.render_hidden_links) {
         if (allNodesInArrayAreInVector(link.nodes, list_of_nodes)) {
           link.setSelectedFiltered(true);
@@ -137,7 +137,7 @@ public class DragBoxManager {
 
     final int number = face_manager.element.size();
     for (int temp = 0; temp < number; temp++) {
-      final Face face = (Face) face_manager.element.elementAt(temp);
+      final Face face = (Face) face_manager.element.get(temp);
       if (!face.type.hidden || FrEnd.render_hidden_faces) {
         if (faceHasAllNodesInList(face, list_of_nodes)) {
           face.type.selected = true;

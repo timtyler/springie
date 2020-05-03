@@ -32,7 +32,7 @@ public class AutomaticNodeColourer {
 
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) this.node_manager.element
-        .elementAt(counter);
+        .get(counter);
       if (candidate.clazz.colour == 0) {
         final int number_of_links = candidate.list_of_links.size();
         candidate.clazz.colour = colours[number_of_links];

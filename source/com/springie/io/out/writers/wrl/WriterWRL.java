@@ -255,7 +255,7 @@ public class WriterWRL {
 
     for (int number = 0; number < link_type_number; number++) {
       final LinkType type = (LinkType) link_manager.link_type_factory.array
-        .elementAt(number);
+        .get(number);
 
       if (new AreThereAny().links(clazz, type)) {
         outputLinks(clazz, link_manager, number, type);
@@ -314,7 +314,7 @@ public class WriterWRL {
 
     for (int number = 0; number < type_number; number++) {
       final FaceType type = (FaceType) polygon_manager.face_type_factory.array
-        .elementAt(number);
+        .get(number);
       if (new AreThereAny().polygons(clazz, type)) {
         outputFaceType(clazz, number);
         outputFaces(polygon_manager, clazz, number);
@@ -346,7 +346,7 @@ public class WriterWRL {
 
   private void outputFaces(FaceManager face_manager, Clazz clazz, int number) {
     final FaceType type = (FaceType) face_manager.face_type_factory.array
-      .elementAt(number);
+      .get(number);
 
     writeLine(" geometry IndexedFaceSet {");
     writeLine("  coord Coordinate {");
@@ -355,13 +355,13 @@ public class WriterWRL {
 
     int cnt = 0;
     for (int n = 0; n < number_of_faces; n++) {
-      final Face polygon = (Face) face_manager.element.elementAt(n);
+      final Face polygon = (Face) face_manager.element.get(n);
       if (polygon.type == type) {
         if (polygon.clazz == clazz) {
           final int npolygon = polygon.nodes.size();
 
           for (int i = npolygon; --i >= 0;) {
-            final Node node = (Node) polygon.nodes.elementAt(i);
+            final Node node = (Node) polygon.nodes.get(i);
 
             if (processNode(node, cnt)) {
               cnt++;
@@ -377,7 +377,7 @@ public class WriterWRL {
     writeLine("  coordIndex [");
 
     for (int n = 0; n < number_of_faces; n++) {
-      final Face face = (Face) face_manager.element.elementAt(n);
+      final Face face = (Face) face_manager.element.get(n);
       if (face.type.equals(type)) {
         if (!face.type.hidden || FrEnd.render_hidden_faces) {
           writeFaceClockwise(face);
@@ -397,7 +397,7 @@ public class WriterWRL {
     String pline = "   ";
 
     for (int i = npolygon; --i >= 0;) {
-      final Node node = (Node) polygon.nodes.elementAt(i);
+      final Node node = (Node) polygon.nodes.get(i);
 
       final int n1 = this.nodes.indexOf(node);
 
@@ -411,7 +411,7 @@ public class WriterWRL {
     String pline = "   ";
 
     for (int i = 0; i < npolygon; i++) {
-      final Node node = (Node) polygon.nodes.elementAt(i);
+      final Node node = (Node) polygon.nodes.get(i);
 
       final int n1 = this.nodes.indexOf(node);
 
@@ -439,7 +439,7 @@ public class WriterWRL {
 
   private void outputNodeType(Clazz clazz, int number) {
     final NodeType type = (NodeType) ContextMananger.getNodeManager().node_type_factory.array
-      .elementAt(number);
+      .get(number);
 
     if (!new AreThereAny().nodes(clazz, type)) {
       return;
@@ -480,12 +480,12 @@ public class WriterWRL {
   private void outputNodes(final NodeManager node_manager, Clazz clazz,
     int number) {
     final NodeType node_type = (NodeType) ContextMananger.getNodeManager().node_type_factory.array
-      .elementAt(number);
+      .get(number);
     if (!node_type.hidden || FrEnd.render_hidden_nodes) {
 
       final int number_of_nodes = node_manager.element.size();
       for (int n = 0; n < number_of_nodes; n++) {
-        final Node node = (Node) node_manager.element.elementAt(n);
+        final Node node = (Node) node_manager.element.get(n);
         if (node.type == node_type) {
           if (node.clazz == clazz) {
             outputNode(number, node);
@@ -506,11 +506,11 @@ public class WriterWRL {
 
   private void outputLinks(LinkManager link_manager, Clazz clazz, int number) {
     final LinkType type = (LinkType) link_manager.link_type_factory.array
-      .elementAt(number);
+      .get(number);
 
     final int n_o_l = link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link link = (Link) link_manager.element.elementAt(temp);
+      final Link link = (Link) link_manager.element.get(temp);
       if (link.type == type) {
         if (link.clazz == clazz) {
           if (!link.type.hidden || FrEnd.render_hidden_links) {

@@ -61,7 +61,7 @@ public class GarbageCollection {
   private boolean findLinks(LinkManager link_manager, LinkType link_type) {
     final int n_o_l = link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link link = (Link) link_manager.element.elementAt(temp);
+      final Link link = (Link) link_manager.element.get(temp);
       if (link.type == link_type) {
         return true;
       }
@@ -87,7 +87,7 @@ public class GarbageCollection {
       final NodeType node_type) {
     final int number_of_nodes = node_manager.element.size();
     for (int n = number_of_nodes; --n >= 0;) {
-      final Node node = (Node) node_manager.element.elementAt(n);
+      final Node node = (Node) node_manager.element.get(n);
       if (node.type == node_type) {
         return true;
       }

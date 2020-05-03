@@ -314,7 +314,7 @@ public class CachedNode {
 
     for (int l = number; --l >= 0;) {
       final int num_of_link = list_of_links.retreive(l);
-      final Link link = (Link) link_manager.element.elementAt(num_of_link);
+      final Link link = (Link) link_manager.element.get(num_of_link);
       final CachedLink cached_link = renderer_link.array[num_of_link];
       final Node other = link.theOtherEnd(n);
       if (n.pos.z >= other.pos.z) {
@@ -339,7 +339,7 @@ public class CachedNode {
 
       for (int l = number; --l >= 0;) {
         final int num_of_link = list_of_links.retreive(l);
-        final Link link = (Link) link_manager.element.elementAt(num_of_link);
+        final Link link = (Link) link_manager.element.get(num_of_link);
         final CachedLink cached_link = renderer_link.array[num_of_link];
         final Node other = link.theOtherEnd(n);
         if (n.pos.z >= other.pos.z) {
@@ -363,7 +363,7 @@ public class CachedNode {
 
       for (int l = polygons.size(); --l >= 0;) {
         final int face_number = polygons.retreive(l);
-        final Face polygon = (Face) face_manager.element.elementAt(face_number);
+        final Face polygon = (Face) face_manager.element.get(face_number);
         final CachedFace cached_face = renderer_face.array[face_number];
         int cnt = 0;
         final int npolygon = polygon.nodes.size();
@@ -396,7 +396,7 @@ public class CachedNode {
 
     for (int l = polygons.size(); --l >= 0;) {
       final int face_number = polygons.retreive(l);
-      final Face polygon = (Face) face_manager.element.elementAt(face_number);
+      final Face polygon = (Face) face_manager.element.get(face_number);
       final CachedFace cached_face = renderer_face.array[face_number];
       int cnt = 0;
       final int npolygon = polygon.nodes.size();

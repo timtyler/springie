@@ -37,7 +37,7 @@ public class TypeRedundancyRemoverFace {
     final FaceType nt_nww = (FaceType) v.elementAt(nww);
     final int n_o_p = this.node_manager.getFaceManager().element.size();
     for (int i = n_o_p; --i >= 0;) {
-      final Face p = (Face) this.node_manager.getFaceManager().element.elementAt(i);
+      final Face p = (Face) this.node_manager.getFaceManager().element.get(i);
       if (p.type.equals(nt_old)) {
         p.type = nt_nww;
       }

@@ -23,7 +23,7 @@ public class SphereScooper {
     final int number_of_nodes = this.node_manager.element.size();
 
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) this.node_manager.element.elementAt(counter);
+      final Node candidate = (Node) this.node_manager.element.get(counter);
       t_x += candidate.pos.x;
       t_y += candidate.pos.y;
       t_z += candidate.pos.z;
@@ -38,7 +38,7 @@ public class SphereScooper {
     final long r_inner = (long) (max_d * 0.11);
 
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) this.node_manager.element.elementAt(counter);
+      final Node candidate = (Node) this.node_manager.element.get(counter);
       final long d_x = candidate.pos.x - av_x;
       final long d_y = candidate.pos.y - av_y;
       final long d_z = candidate.pos.z - av_z;
@@ -57,7 +57,7 @@ public class SphereScooper {
     long max_d = 0;
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) this.node_manager.element.elementAt(counter);
+      final Node candidate = (Node) this.node_manager.element.get(counter);
       final long d_x = candidate.pos.x - av_x;
       final long d_y = candidate.pos.y - av_y;
       final long d_z = candidate.pos.z - av_z;

@@ -28,7 +28,7 @@ public class RemoveLinkAndFuseEnds {
   public void action() {
     final int n_o_l = this.link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.link_manager.element.elementAt(temp);
+      final Link l = (Link) this.link_manager.element.get(temp);
       if (l.type.selected) {
         deleteAndFuseEnds(l);
       }
@@ -47,7 +47,7 @@ public class RemoveLinkAndFuseEnds {
 //    final int n_o_l = list_of_links.size();
 //    for (int temp = n_o_l; --temp >= 0;) {
 //      final int l_n = list_of_links.retreive(temp);
-//      final Link lk = (Link) this.link_manager.element.elementAt(l_n);
+//      final Link lk = (Link) this.link_manager.element.get(l_n);
 //      if (lk.node1 == n2) {
 //        this.link_manager.setLink(lk.node2, n1, lk.type, lk.clazz);
 //      } else if (lk.node2 == n2) {
@@ -64,7 +64,7 @@ public class RemoveLinkAndFuseEnds {
   private void rearrangeLinks(final Node n1, final Node n2) {
     final int n_o_l = this.link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link lk = (Link) this.link_manager.element.elementAt(temp);
+      final Link lk = (Link) this.link_manager.element.get(temp);
       if (lk.nodes[0] == n2) {
         makeLink(n1, lk.nodes[1], lk);
       } else if (lk.nodes[1] == n2) {

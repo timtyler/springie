@@ -85,7 +85,7 @@ public final class SelectionManager {
     final FaceManager face_manager = node_manager.getFaceManager();
     final int number = face_manager.element.size();
     for (int counter = number; --counter >= 0;) {
-      final Face candidate = (Face) face_manager.element.elementAt(counter);
+      final Face candidate = (Face) face_manager.element.get(counter);
       ex.execute(candidate);
     }
   }
@@ -98,7 +98,7 @@ public final class SelectionManager {
     final LinkManager link_manager = node_manager.getLinkManager();
     final int number = link_manager.element.size();
     for (int i = number; --i >= 0;) {
-      final Link candidate = (Link) link_manager.element.elementAt(i);
+      final Link candidate = (Link) link_manager.element.get(i);
       ex.execute(candidate);
     }
   }
@@ -110,7 +110,7 @@ public final class SelectionManager {
     }
     final int number_of_nodes = node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) node_manager.element.elementAt(counter);
+      final Node candidate = (Node) node_manager.element.get(counter);
       ex.execute(candidate);
     }
   }

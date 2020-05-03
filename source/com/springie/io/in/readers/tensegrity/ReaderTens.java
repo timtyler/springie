@@ -103,8 +103,7 @@ public final class ReaderTens {
                 if (ch > '9') {
                   final int temp = node_manager.getNodeNumberFromName(token);
                   // Log.log("Link[" + token + "] maps to " + temp);
-                  final Node temp_node = (Node) node_manager.element
-                      .elementAt(temp);
+                  final Node temp_node = (Node) node_manager.element.get(temp);
                   current_link.addNode(temp_node, node_number);
                   temp_node.list_of_links.add(current_link_number);
                   node_number++;
@@ -118,7 +117,7 @@ public final class ReaderTens {
                   Log.log("token:" + token);
                   final int temp = node_manager.getNodeNumberFromName(token);
                   final Node temp_node = (Node) node_manager.element
-                      .elementAt(temp);
+                      .get(temp);
                   current_polygon.nodes.addElement(temp_node);
                   temp_node.list_of_polygons.add(current_face_number);
                   node_number++;
@@ -149,7 +148,7 @@ public final class ReaderTens {
                     node_manager.addNewAgent();
 
                     final int n = node_manager.element.size();
-                    current_node = (Node) node_manager.element.elementAt(n - 1);
+                    current_node = (Node) node_manager.element.get(n - 1);
 
                     current_object = last_token_number;
                     current_node.type = current_node_type;
@@ -171,8 +170,8 @@ public final class ReaderTens {
                     current_object = last_token_number;
                     node_manager.getLinkManager().setLink(current_link_type,
                         current_clazz);
-                    current_link = (Link) node_manager.getLinkManager().element
-                        .lastElement();
+                    int sz = node_manager.getLinkManager().element.size();
+                    current_link = (Link) node_manager.getLinkManager().element.get(sz - 1);
                     node_number = 0;
 
                     break;
@@ -183,8 +182,8 @@ public final class ReaderTens {
                     current_object = last_token_number;
                     node_manager.getFaceManager().setPolygon(current_face_type,
                         current_clazz);
-                    current_polygon = (Face) node_manager.getFaceManager().element
-                        .lastElement();
+                    int sz2 = node_manager.getFaceManager().element.size();
+                    current_polygon = (Face) node_manager.getFaceManager().element.get(sz2);
                     node_number = 0;
 
                     break;
@@ -459,7 +458,7 @@ public final class ReaderTens {
                     // if (node_number == 0) {
                     // TODO: handle expansion
                     final Node temp_node = (Node) node_manager.element
-                        .elementAt(temp);
+                        .get(temp);
                     current_link.addNode(temp_node, node_number);
                     temp_node.list_of_links.add(current_link_number);
                     node_number++;
@@ -477,7 +476,7 @@ public final class ReaderTens {
                 switch (last_token_number) {
                   case Instructions.V:
                     final Node temp_node1 = (Node) node_manager.element
-                        .elementAt(temp);
+                        .get(temp);
                     current_polygon.nodes.addElement(temp_node1);
                     temp_node1.list_of_polygons.add(current_face_number);
                     node_number++;

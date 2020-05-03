@@ -18,7 +18,7 @@ public class LinkResetter {
   public void reset() {
     final int n_o_l = this.link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.link_manager.element.elementAt(temp);
+      final Link l = (Link) this.link_manager.element.get(temp);
       if (l.type.selected) { 
         final int length = l.getActualLength();
         l.type.setLength(length);

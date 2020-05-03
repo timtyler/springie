@@ -18,7 +18,7 @@ public class LinkLengthChanger {
   public void resize(float scale_factor) {
     final int n_o_l = this.link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.link_manager.element.elementAt(temp);
+      final Link l = (Link) this.link_manager.element.get(temp);
       if (l.type.selected) { 
         l.type.setLength((int) (l.type.length * scale_factor));
       }
@@ -29,7 +29,7 @@ public class LinkLengthChanger {
 //  public void lengthen(float scale_factor) {
 //    final int n_o_l = this.link_manager.link.size();
 //    for (int temp = n_o_l; --temp >= 0;) {
-//      final Link l = (Link) this.link_manager.link.elementAt(temp);
+//      final Link l = (Link) this.link_manager.link.get(temp);
 //      if (l.type.selected) { 
 //        l.type.setLength((l.type.length * 17) >> 4);
 //      }

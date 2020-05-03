@@ -3,6 +3,7 @@
 package com.springie.render.modules.modern;
 
 import java.awt.Graphics;
+import java.util.List;
 import java.util.Vector;
 
 import com.springie.FrEnd;
@@ -61,12 +62,12 @@ public class ModularRendererNew implements ModularRendererBase {
     Forget.about(mask);
     if (FrEnd.render_faces) {
       final FaceManager face_manager = manager.getFaceManager();
-      final Vector faces = face_manager.element;
+      final List faces = face_manager.element;
 
       final int total_number = faces.size();
 
       for (int l = total_number; --l >= 0;) {
-        final Face face = (Face) face_manager.element.elementAt(l);
+        final Face face = (Face) face_manager.element.get(l);
 
         final PolygonComposite polygons = ElementRendererFace.getPolygon(face);
 
@@ -81,7 +82,7 @@ public class ModularRendererNew implements ModularRendererBase {
       final int number = link_manager.element.size();
 
       for (int l = number; --l >= 0;) {
-        final Link link = (Link) link_manager.element.elementAt(l);
+        final Link link = (Link) link_manager.element.get(l);
         if (!link.type.hidden) {
           final Node[] nodes = link.nodes;
           final int node_n = nodes.length;
@@ -96,7 +97,7 @@ public class ModularRendererNew implements ModularRendererBase {
                 node_1, node_2, link.getThicknesss(), colour);
             final int polygons_size = polygons.size();
             for (int pci = polygons_size; --pci >= 0;) {
-              final PolygonComposite pc = (PolygonComposite) polygons.elementAt(pci);
+              final PolygonComposite pc = (PolygonComposite) polygons.get(pci);
               this.bins_current.add(pc);
             }
           }
@@ -118,7 +119,7 @@ public class ModularRendererNew implements ModularRendererBase {
       // ObjectBase sphere_object = new SimpleIcosahedron();
 
       for (int counter = number_of_nodes; --counter >= 0;) {
-        final Node node = (Node) manager.element.elementAt(counter);
+        final Node node = (Node) manager.element.get(counter);
         if (!node.type.hidden) {
           final PolygonComposite polygons = ElementRendererNode.get(
               ModularRendererNew.sphere_object, node);

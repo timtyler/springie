@@ -41,7 +41,7 @@ public class AverageRadiusGetter {
     long total = 0;
     for (int counter = number; --counter >= 0;) {
       final Node candidate = (Node) this.node_manager.element
-          .elementAt(counter);
+          .get(counter);
       if (candidate.type.selected) {
         total += candidate.type.radius;
         count++;
@@ -64,7 +64,7 @@ public class AverageRadiusGetter {
     long total = 0;
     for (int counter = number; --counter >= 0;) {
       final Link candidate = (Link) this.link_manager.element
-          .elementAt(counter);
+          .get(counter);
       if (candidate.type.selected) {
         total += candidate.type.radius;
         count++;

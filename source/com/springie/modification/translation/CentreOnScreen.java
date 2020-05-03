@@ -34,7 +34,7 @@ public final class CentreOnScreen {
 
     final int number_of_nodes = node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) node_manager.element.elementAt(counter);
+      final Node candidate = (Node) node_manager.element.get(counter);
       candidate.pos.addTuple3D(offset_actual);
     }
   }
@@ -46,7 +46,7 @@ public final class CentreOnScreen {
 
     final int number_of_nodes = node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) node_manager.element.elementAt(counter);
+      final Node candidate = (Node) node_manager.element.get(counter);
       if (candidate.pos.x < min.x) {
         min.x = candidate.pos.x;
       }
@@ -85,7 +85,7 @@ public final class CentreOnScreen {
     offset_actual.y = (max_screen_size_y - max.y - min.y) >> 7;
     offset_actual.z = (max_screen_size_z - max.z - min.z) >> 7;
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) node_manager.element.elementAt(counter);
+      final Node candidate = (Node) node_manager.element.get(counter);
       candidate.pos.addTuple3D(offset_actual);
     }
   }

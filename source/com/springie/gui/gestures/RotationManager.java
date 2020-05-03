@@ -43,7 +43,7 @@ public class RotationManager {
 		final float theta2 = (y - this.start_y) / (float) (160 * Coords.y_pixelso2);
 
 		for (int i = n; --i >= 0;) {
-			final Node node = (Node) ContextMananger.getNodeManager().element.elementAt(i);
+			final Node node = (Node) ContextMananger.getNodeManager().element.get(i);
 			if (node != null) {
 				node.pos = this.pos[i];
 				if (this.cw_acw) {

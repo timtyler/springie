@@ -40,11 +40,11 @@ public class ReaderOFFExecutor implements Executor {
     final int n_faces = face_manager.element.size();
 
     for (int i = 0; i < n_faces; i++) {
-      final Face face = (Face) face_manager.element.elementAt(i);
+      final Face face = (Face) face_manager.element.get(i);
       final int n_nodes = face.nodes.size();
       for (int j = 0; j < n_nodes; j++) {
-        final Node node1 = (Node) face.nodes.elementAt(j);
-        final Node node2 = (Node) face.nodes.elementAt((j + 1) % n_nodes);
+        final Node node1 = (Node) face.nodes.get(j);
+        final Node node2 = (Node) face.nodes.get((j + 1) % n_nodes);
         if (!link_manager.isThereALinkBetween(node1, node2)) {
           joinNodes(node_manager, node1, node2);
         }
@@ -58,10 +58,10 @@ public class ReaderOFFExecutor implements Executor {
     final int n_faces = face_manager.element.size();
 
     for (int i = n_faces; --i >= 0;) {
-      final Face face = (Face) face_manager.element.elementAt(i);
+      final Face face = (Face) face_manager.element.get(i);
       final int n_nodes = face.nodes.size();
       if (n_nodes == 2) {
-        face_manager.element.removeElementAt(i);
+        face_manager.element.remove(i);
       }
     }
   }

@@ -18,7 +18,7 @@ public class AreThereAny {
     final int number = manager.element.size();
 
     for (int i = number; --i >= 0;) {
-      final Node node = (Node) manager.element.elementAt(i);
+      final Node node = (Node) manager.element.get(i);
       if (node.clazz.equals(clazz)) {
         return true;
       }
@@ -31,7 +31,7 @@ public class AreThereAny {
     final int number = manager.element.size();
 
     for (int i = number; --i >= 0;) {
-      final Link link = (Link) manager.element.elementAt(i);
+      final Link link = (Link) manager.element.get(i);
       if (link.clazz.equals(clazz)) {
         return true;
       }
@@ -44,7 +44,7 @@ public class AreThereAny {
     final int number = manager.element.size();
 
     for (int i = number; --i >= 0;) {
-      final Face polygon = (Face) manager.element.elementAt(i);
+      final Face polygon = (Face) manager.element.get(i);
       if (polygon.clazz.equals(clazz)) {
         return true;
       }
@@ -57,7 +57,7 @@ public class AreThereAny {
     final int number = manager.element.size();
 
     for (int i = number; --i >= 0;) {
-      final Node node = (Node) manager.element.elementAt(i);
+      final Node node = (Node) manager.element.get(i);
       if (node.clazz.equals(clazz)) {
         if (node.type.equals(type)) {
           return true;
@@ -72,7 +72,7 @@ public class AreThereAny {
     final int number = manager.element.size();
 
     for (int i = number; --i >= 0;) {
-      final Link link = (Link) manager.element.elementAt(i);
+      final Link link = (Link) manager.element.get(i);
       if (link.clazz.equals(clazz)) {
         if (link.type.equals(type)) {
           return true;
@@ -87,7 +87,7 @@ public class AreThereAny {
     final int number = manager.element.size();
 
     for (int i = number; --i >= 0;) {
-      final Face polygon = (Face) manager.element.elementAt(i);
+      final Face polygon = (Face) manager.element.get(i);
       if (polygon.clazz.equals(clazz)) {
         if (polygon.type.equals(type)) {
           return true;

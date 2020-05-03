@@ -42,7 +42,7 @@ public class FuseSelectedNodes {
     new PostModification(this.node_manager).generateListOfLinks();
     final int n_o_n = this.node_manager.element.size();
     for (int temp = n_o_n; --temp >= 0;) {
-      final Node node = (Node) this.node_manager.element.elementAt(temp);
+      final Node node = (Node) this.node_manager.element.get(temp);
       if (node.type.selected) {
         if (node != n1) {
           final ListOfIntegers lol = node.list_of_links;
@@ -50,7 +50,7 @@ public class FuseSelectedNodes {
           // loop through the links...
           for (int i = 0; i < lol_l; i++) {
             final int idx = lol.retreive(i);
-            final Link lk = (Link) this.link_manager.element.elementAt(idx);
+            final Link lk = (Link) this.link_manager.element.get(idx);
 
             //if ((lk.nodes[0] == n1) || (lk.nodes[1] == n1)) {
               // kill any link between them...

@@ -28,7 +28,7 @@ public class GeodesicMaker {
     final int number_of_nodes = this.node_manager.element.size();
     for (int cnt = 100000; --cnt >= 0;) {
       final int a1 = this.rnd.nextInt(number_of_nodes);
-      final Node node_1 = (Node) this.node_manager.element.elementAt(a1);
+      final Node node_1 = (Node) this.node_manager.element.get(a1);
       final Node node_2 = getCellInContactWith(node_1);
       if (node_2 != null) {
         final Node node_3 = getCellInContactWith(node_2);
@@ -63,7 +63,7 @@ public class GeodesicMaker {
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
       final int a2 = this.rnd.nextInt(number_of_nodes);
-      final Node node_2 = (Node) this.node_manager.element.elementAt(a2);
+      final Node node_2 = (Node) this.node_manager.element.get(a2);
       if (node_1 != node_2) {
         if (node_1.clazz.colour == node_2.clazz.colour) {
           if (this.utils.isNodeTouchingNode(node_1, node_2)) {

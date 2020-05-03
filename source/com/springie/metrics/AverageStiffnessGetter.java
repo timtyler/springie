@@ -27,7 +27,7 @@ public class AverageStiffnessGetter {
     long total = 0;
     for (int counter = number; --counter >= 0;) {
       final Link candidate = (Link) this.link_manager.element
-          .elementAt(counter);
+          .get(counter);
       if (candidate.type.selected) {
         total += candidate.type.damping;
         count++;

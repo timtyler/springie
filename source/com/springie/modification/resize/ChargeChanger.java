@@ -16,7 +16,7 @@ public class ChargeChanger {
   public void scaleBy(float scale_factor) {
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
-      final Node candidate = (Node) this.node_manager.element.elementAt(counter);
+      final Node candidate = (Node) this.node_manager.element.get(counter);
       if (candidate.type.selected) {
         candidate.type.charge = (int) (candidate.type.charge * scale_factor);
       }

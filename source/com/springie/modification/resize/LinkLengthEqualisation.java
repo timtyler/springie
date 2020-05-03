@@ -21,7 +21,7 @@ public class LinkLengthEqualisation {
     long total_upper_length_limit = 0;
     final int n_o_l = this.link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.link_manager.element.elementAt(temp);
+      final Link l = (Link) this.link_manager.element.get(temp);
 
       if (l.type.selected) {
         number++;
@@ -36,7 +36,7 @@ public class LinkLengthEqualisation {
     final int average_upper_length_limit = (int) (total_upper_length_limit / number);
 
     for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.link_manager.element.elementAt(temp);
+      final Link l = (Link) this.link_manager.element.get(temp);
       if (l.type.selected) {
         l.type.setLength(average_upper_length_limit);
       }

@@ -31,7 +31,7 @@ public class TranslationManager {
     final int n = ContextMananger.getNodeManager().element.size();
 
     for (int i = n; --i >= 0;) {
-      final Node node = (Node) ContextMananger.getNodeManager().element.elementAt(i);
+      final Node node = (Node) ContextMananger.getNodeManager().element.get(i);
 
       final Point3D point = this.pos[i];
       node.pos.x = point.x + ((x - this.start_x) >> 0);

@@ -37,7 +37,7 @@ public class TypeRedundancyRemoverNode {
     final NodeType nt_nww = (NodeType) v.elementAt(nww);
     final int n_o_n = this.node_manager.element.size();
     for (int i = n_o_n; --i >= 0;) {
-      final Node n = (Node) this.node_manager.element.elementAt(i);
+      final Node n = (Node) this.node_manager.element.get(i);
       if (n.type.equals(nt_old)) {
         n.type = nt_nww;
       }

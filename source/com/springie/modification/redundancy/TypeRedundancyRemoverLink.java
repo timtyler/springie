@@ -37,7 +37,7 @@ public class TypeRedundancyRemoverLink {
     final LinkType nt_nww = (LinkType) v.elementAt(nww);
     final int n_o_l = this.node_manager.getLinkManager().element.size();
     for (int i = n_o_l; --i >= 0;) {
-      final Link l = (Link) this.node_manager.getLinkManager().element.elementAt(i);
+      final Link l = (Link) this.node_manager.getLinkManager().element.get(i);
       if (l.type.equals(nt_old)) {
         l.type = nt_nww;
       }
