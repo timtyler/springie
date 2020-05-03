@@ -17,6 +17,9 @@ import com.springie.render.modules.modern.ModularRendererNew;
 
 public class PerformSelection {
 	public static int INFECTION_START = 64;
+	public static int VIRUS_RELEASE1 = 60;
+	public static int VIRUS_RELEASE2 = 55;
+	public static int VIRUS_RELEASE3 = 50;
 	public static int IMMUNITY_START = 48;
 	
 	public void performSelection(int x, int y, boolean drag_is_possible) {

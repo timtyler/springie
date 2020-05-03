@@ -113,29 +113,27 @@ public final class PresetObjects {
     // 4, 6, 12, 32, 42, 72, 92, 162, ?(252), 362
     final int number_of_spheres = nodes;
     final int scale_factor = 3;
-    int initial_size = 2560 * scale_factor;
-    String dome = "CR ";
-
-    initial_size = 1060 * scale_factor;
+    int initial_size = 260 * scale_factor;
+    String desc = "CR ";
 
     for (int i = 1; i <= number_of_spheres; i++) {
       final int rx = rnd.nextInt(10000 * scale_factor);
       final int ry = rnd.nextInt(10000 * scale_factor);
 
-      dome += "NG R:" + initial_size + " CH:10 C:0xFF80C0FF ";
-      dome += "N X:" + rx + " Y:" + ry + " Z:" + (rx + ry) + " ";
-      dome += "DX:" + (rx & 7) + " DY:" + (ry & 7) + " DZ:" + (rx & 7) + " ";
+      desc += "NG R:" + initial_size + " "; //CH:10 C:0xFF80C0FF ";
+      desc += "N X:" + rx + " Y:" + ry + " Z:" + (rx + ry) + " ";
+      desc += "DX:" + (rx & 7) + " DY:" + (ry & 7) + " DZ:" + (rx & 7) + " ";
     }
 
-    for (int i = 1; i <= number_of_spheres; i++) {
-      final int rx = rnd.nextInt(10000 * scale_factor);
-      final int ry = rnd.nextInt(10000 * scale_factor);
+//    for (int i = 1; i <= number_of_spheres; i++) {
+//      final int rx = rnd.nextInt(10000 * scale_factor);
+//      final int ry = rnd.nextInt(10000 * scale_factor);
+//
+//      desc += "NG R:" + initial_size + " CH:-10 C:0xFFFF80C0 ";
+//      desc += "N X:" + ry + " Y:" + rx + " Z:" + (rx + ry) + " ";
+//    }
 
-      dome += "NG R:" + initial_size + " CH:-10 C:0xFFFF80C0 ";
-      dome += "N X:" + ry + " Y:" + rx + " Z:" + (rx + ry) + " ";
-    }
-
-    return dome;
+    return desc;
   }
 
   static String makeMatrix(int n1, int n2, int n3) {

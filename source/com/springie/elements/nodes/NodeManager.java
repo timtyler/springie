@@ -16,6 +16,7 @@ import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
 import com.springie.gui.gestures.PerformSelection;
 import com.springie.messages.ArgumentList;
+import com.springie.messages.NewMessage;
 import com.springie.modification.post.PostModification;
 import com.springie.modification.translation.CentreOnScreen;
 import com.springie.modification.velocity.DampOverallVelocities;
@@ -66,6 +67,8 @@ public class NodeManager extends World {
 	public boolean nodes_have_been_deleted;
 
 	public boolean is_tensegrity;
+
+	final static int virus_color = 0xFFFF00FF;
 
 	public NodeManager() {
 		super();
@@ -510,17 +513,66 @@ public class NodeManager extends World {
 	private void decrementCounter() {
 		int counter = temp_agent.type.counter;
 		if (counter > 0) {
-			if (counter == PerformSelection.INFECTION_START) {
-				temp_agent.clazz = new Clazz(0xFFFF4040);
-			}
-			if (counter == PerformSelection.IMMUNITY_START) {
-				temp_agent.clazz = new Clazz(0xFFFFFF40);
-			}
-			if (counter == 1) {
-				temp_agent.clazz = new Clazz(0xFF40FF40);
+			if (temp_agent.clazz.colour == virus_color) {
+				if (temp_agent.type.counter == 1) {
+					sendDeleteNodeMessage(temp_agent);
+				}
+			} else {
+				if (counter == PerformSelection.INFECTION_START) {
+					temp_agent.clazz = new Clazz(0xFFFF4040);
+				}
+				if (counter == PerformSelection.IMMUNITY_START) {
+					temp_agent.clazz = new Clazz(0xFFFFFF40);
+				}
+				if (counter == 1) {
+					temp_agent.clazz = new Clazz(0xFF40FF40);
+				}
+				if (!FrEnd.pandemic_paradigm_direct_contact) {
+					if (counter == PerformSelection.VIRUS_RELEASE1) {
+						releaseVirus(temp_agent);
+					}
+					if (counter == PerformSelection.VIRUS_RELEASE2) {
+						//releaseVirus(temp_agent);
+					}
+					if (counter == PerformSelection.VIRUS_RELEASE3) {
+						releaseVirus(temp_agent);
+					}
+				}
 			}
 			temp_agent.type.counter--;
 		}
+	}
+
+	private void sendDeleteNodeMessage(Node node) {
+		FrEnd.new_message_manager.add(new NewMessage(null) {
+			
+			@Override
+			public Object execute() {
+				node.killWithNoExplosion();
+				return null;
+			}
+		});
+	}
+
+	private void releaseVirus(Node agent) {
+		Node node = new Node(agent, this.node_type_factory, this.clazz_factory);
+		node.clazz = this.clazz_factory.getNew(virus_color);
+		int radius = 0x600;
+		node.type.radius = radius;
+		node.type.counter = 16;
+		node.pos.x += radius + agent.type.radius;
+		node.velocity.x = 0;
+		node.velocity.y = 0;
+		
+		FrEnd.new_message_manager.add(new NewMessage(null) {
+			
+			@Override
+			public Object execute() {
+				element.add(node);
+				FrEnd.postCleanup();
+				return null;
+			}
+		});
 	}
 
 	private void applyGravity() {
@@ -711,16 +763,29 @@ public class NodeManager extends World {
 	}
 
 	private void spreadInfectionOnCollisions() {
-		int counter1 = temp_agent.type.counter;
-		int counter2 = temp2_agent.type.counter;
-		if (counter1 > PerformSelection.IMMUNITY_START) {
-			if (counter2 == 0) {
-				temp2_agent.type.counter = PerformSelection.INFECTION_START;
+		final int counter1 = temp_agent.type.counter;
+		final int counter2 = temp2_agent.type.counter;
+		if (FrEnd.pandemic_paradigm_direct_contact) {
+			spreadInfectionOneWay(temp2_agent, counter1, counter2);
+			spreadInfectionOneWay(temp_agent, counter2, counter1);
+		} else {
+			spreadUsingVirus(temp_agent, temp2_agent, counter1);
+			spreadUsingVirus(temp2_agent, temp_agent, counter2);
+		}
+	}
+
+	private void spreadUsingVirus(Node node1, Node node2, final int counter) {
+		if (counter == 0) {
+			if (node2.clazz.colour == virus_color) {
+				node1.type.counter = PerformSelection.INFECTION_START;
 			}
 		}
-		if (counter2 > PerformSelection.IMMUNITY_START) {
-			if (counter1 == 0) {
-				temp_agent.type.counter = PerformSelection.INFECTION_START;
+	}
+
+	private void spreadInfectionOneWay(Node uninfectedNode, int counter1, int counter2) {
+		if (counter1 > PerformSelection.IMMUNITY_START) {
+			if (counter2 == 0) {
+				uninfectedNode.type.counter = PerformSelection.INFECTION_START;
 			}
 		}
 	}

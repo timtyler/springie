@@ -19,7 +19,6 @@ import com.springie.world.World;
  * This class represents a single "node" in the system
  */
 public class Node extends BaseElement {
-  private static final int DEFAULT_2D_DEPTH = 320;
 
   public Point3D pos = new Point3D(0, 0, 0);
 
@@ -55,10 +54,12 @@ public class Node extends BaseElement {
 
   public static int TRIG_TAB_SIZEMO = TRIG_TAB_SIZE - 1;
 
-  public static World temp_private_world;
+  public static World temp_private_world; // ToDo Kill this...
 
   public static int number_of_render_divisions = 1;
   
+  private static final int DEFAULT_2D_DEPTH = 320;
+
   public Node() {
 	  //...
   }
@@ -75,28 +76,27 @@ public class Node extends BaseElement {
     this.type.log_mass = 16;
   }
 
-  public Node(Node e, NodeTypeFactory node_type_factory,
-    ClazzFactory clazz_factory) {
+  public Node(Node e, NodeTypeFactory node_type_factory, ClazzFactory clazz_factory) {
     set(e, node_type_factory, clazz_factory);
   }
 
-  public void set(Point3D pos, int seed, NodeTypeFactory node_type_factory) {
-    this.pos = pos;
+//  public void set(Point3D pos, int seed, NodeTypeFactory node_type_factory) {
+//    this.pos = pos;
+//
+//    this.type = node_type_factory.getNew();
+//
+//    NodeType.static_rnd.setSeed(seed);
+//    this.velocity = new Vector3D(3, 4, 5);
+//
+//    this.type.setSize(NodeManager.general_size);
+//    this.type.log_mass = 16;
+//  }
 
-    this.type = node_type_factory.getNew();
-
-    NodeType.static_rnd.setSeed(seed);
-    this.velocity = new Vector3D(3, 4, 5);
-
-    this.type.setSize(NodeManager.general_size);
-    this.type.log_mass = 16;
-  }
-
-  public void set(Node e, NodeTypeFactory node_type_factory,
-    ClazzFactory clazz_factory) {
+  public void set(Node e, NodeTypeFactory node_type_factory, ClazzFactory clazz_factory) {
     this.pos.x = e.pos.x;
     this.pos.y = e.pos.y;
     this.pos.z = e.pos.z;
+    
     this.velocity.x = e.velocity.x;
     this.velocity.y = e.velocity.y;
     this.velocity.z = e.velocity.z;
@@ -109,12 +109,6 @@ public class Node extends BaseElement {
     this.current_bin.x = e.current_bin.x;
     this.current_bin.y = e.current_bin.y;
     this.current_bin.z = e.current_bin.z;
-
-    //    this.preserved.x = e.preserved.x;
-    //    this.preserved.y = e.preserved.y;
-    //    this.preserved.z = e.preserved.z;
-
-    //this.list_of_links.removeAllElements(); // no links yet, though...
   }
 
   // need "reset node" routines here...
@@ -353,12 +347,14 @@ public class Node extends BaseElement {
   public void simplyKill() {
     explode();
 
-    temp_private_world.getLinkManager().killAllLinks(this);
+    killWithNoExplosion();
+  }
+
+  public void killWithNoExplosion() {
+	temp_private_world.getLinkManager().killAllLinks(this);
 
     temp_private_world.killThisNode(this);
-
-    //RendererDelegator.repaint_all_objects = true;
-  }
+}
 
   public boolean isHidden() {
     return this.type.hidden;

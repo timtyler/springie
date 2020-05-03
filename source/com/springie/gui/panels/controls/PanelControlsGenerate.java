@@ -143,7 +143,7 @@ public class PanelControlsGenerate {
     final Panel panel = new Panel();
 
     panel.add(new Label("N:", Label.RIGHT));
-    this.textfield_generate_free_nodes = new TextFieldWrapper("100");
+    this.textfield_generate_free_nodes = new TextFieldWrapper("1000");
 
     panel.add(this.textfield_generate_free_nodes);
 
