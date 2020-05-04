@@ -231,16 +231,6 @@ public class NodeManager extends World {
 		}
 	}
 
-	// private void travelAllNodes() {
-	// // *should* do this in some sort of random order - to avoid artefacts...
-	// if (needToApplyForces()) {
-	// final int number_of_nodes = this.element.size();
-	// for (int counter = number_of_nodes; --counter >= 0;) {
-	// ((Node) this.element.elementAt(counter)).travel();
-	// }
-	// }
-	// }
-
 	// just set up polygons...
 	public void nodeAndLinkRenderDummy() {
 		sortIndex();
@@ -413,47 +403,6 @@ public class NodeManager extends World {
 		collisionCheckNbyN();
 	}
 
-	/*
-	 * private void collisionCheckUsingBins() { //findNewBins();
-	 * 
-	 * for (temp = 0; temp < number_of_nodes; temp++) { setUpTempAgent();
-	 * 
-	 * new_bin_x = temp_agent.current_bin_x; new_bin_y = temp_agent.current_bin_y;
-	 * new_bin_z = temp_agent.current_bin_z; // C list =
-	 * NodeGrid.node_list[new_bin_x][new_bin_y][new_bin_z]; temp_x0 =
-	 * list.getNumberInList(temp_agent) + 1; // temp_x0 = 0; //if (temp_x0 <
-	 * list.current_number) { for (temp2 = temp_x0; temp2 < (list.current_number);
-	 * temp2++) { temp2_agent = list.node[temp2];
-	 * 
-	 * collideTheseEntities(); } // W if (new_bin_x > 0) { list =
-	 * NodeGrid.node_list[new_bin_x - 1][new_bin_y]; for (temp2 = 0; temp2 <
-	 * (list.current_number); temp2++) { temp2_agent = list.node[temp2];
-	 * collideTheseEntities(); } // NW if (new_bin_y > 0) { list =
-	 * NodeGrid.node_list[new_bin_x - 1][new_bin_y - 1]; for (temp2 = 0; temp2 <
-	 * (list.current_number); temp2++) { temp2_agent = list.node[temp2];
-	 * collideTheseEntities(); } } // SW if (new_bin_y < (NodeGrid.ny - 1)) { list =
-	 * NodeGrid.node_list[new_bin_x - 1][new_bin_y + 1]; for (temp2 = 0; temp2 <
-	 * (list.current_number); temp2++) { temp2_agent = list.node[temp2];
-	 * collideTheseEntities(); } } } // U if (new_bin_y > 0) { list =
-	 * NodeGrid.node_list[new_bin_x][new_bin_y - 1]; for (temp2 = 0; temp2 <
-	 * (list.current_number); temp2++) { temp2_agent = list.node[temp2];
-	 * collideTheseEntities(); } } } }
-	 */
-
-	// final void setUpTempAgent() {
-	// if (temp < number_of_nodes) {
-	// temp_agent = node[temp];
-	// } else {
-	// temp_agent = (Node) leader[temp - number_of_nodes];
-	// }
-	// }
-	// final void setUpTemp2Agent() {
-	// if (temp2 < number_of_nodes) {
-	// temp2_agent = node[temp2];
-	// } else {
-	// temp2_agent = (Node) leader[temp2 - number_of_nodes];
-	// }
-	// }
 	public final void findNewBins() {
 		final int number_of_nodes = this.element.size();
 		for (int counter = number_of_nodes; --counter >= 0;) {
@@ -532,12 +481,6 @@ public class NodeManager extends World {
 					if (counter == PerformSelection.VIRUS_RELEASE1) {
 						releaseVirus(temp_agent);
 					}
-					if (counter == PerformSelection.VIRUS_RELEASE2) {
-						//releaseVirus(temp_agent);
-					}
-					if (counter == PerformSelection.VIRUS_RELEASE3) {
-						releaseVirus(temp_agent);
-					}
 				}
 			}
 			temp_agent.type.counter--;
@@ -556,14 +499,26 @@ public class NodeManager extends World {
 	}
 
 	private void releaseVirus(Node agent) {
+		int radius = 0x400;
+		int delta = radius + agent.type.radius;
+		createViralNode(agent, radius, delta, 0);
+		createViralNode(agent, radius, -delta, 0);
+		createViralNode(agent, radius, 0, delta);
+		createViralNode(agent, radius, 0, -delta);
+	}
+
+	private void createViralNode(Node agent, int radius, int delta_x, int delta_y) {
 		Node node = new Node(agent, this.node_type_factory, this.clazz_factory);
 		node.clazz = this.clazz_factory.getNew(virus_color);
-		int radius = 0x600;
 		node.type.radius = radius;
-		node.type.counter = 16;
-		node.pos.x += radius + agent.type.radius;
-		node.velocity.x = 0;
-		node.velocity.y = 0;
+		node.type.counter = 20;
+		int velocityExtra = 0xFFF;
+		node.velocity.x += rnd.nextInt(velocityExtra);
+		node.velocity.x -= rnd.nextInt(velocityExtra);
+		node.velocity.y += rnd.nextInt(velocityExtra);
+		node.velocity.y -= rnd.nextInt(velocityExtra);
+		node.pos.x += delta_x;
+		node.pos.y += delta_y;
 		
 		FrEnd.new_message_manager.add(new NewMessage(null) {
 			
@@ -652,8 +607,6 @@ public class NodeManager extends World {
 
 				temp_z0 = pos.z - pos2.z;
 				temp_z1 = (temp_z0 < 0) ? -temp_z0 : temp_z0;
-				// if (!FrEnd.three_d) {
-				// }
 				if (temp_z1 < temp_detection_distance2) {
 					// probable collision...
 					// outer diamond check...
@@ -734,28 +687,6 @@ public class NodeManager extends World {
 								shrinkNodesOnCollision();
 								spreadInfectionOnCollisions();
 							}
-
-							/*
-							 * temp_count = 12;
-							 * 
-							 * do { temp_agent.x += (tadx >> 4); temp_agent.y += (tady >> 4); temp2_agent.x
-							 * -= (tadx >> 4); temp2_agent.y -= (tady >> 4);
-							 * 
-							 * temp_x0 = temp_agent.x - temp2_agent.x; temp_x1 = (temp_x0 < 0) ? -temp_x0 :
-							 * temp_x0;
-							 * 
-							 * temp_y0 = temp_agent.y - temp2_agent.y; temp_y1 = (temp_y0 < 0) ? -temp_y0 :
-							 * temp_y0;
-							 * 
-							 * temp_x1) + (temp_y1 * temp_y1); // now check using circle... } while
-							 * ((temp_radius < detection_radius_squared) && (temp_count-- > 0));
-							 */
-
-							/*
-							 * temp_agent.x += temp_agent.dx; temp_agent.y += temp_agent.dy; temp2_agent.x
-							 * += temp2_agent.dx; temp2_agent.y += temp2_agent.dy;
-							 */
-
 						}
 					}
 				}
@@ -846,11 +777,7 @@ public class NodeManager extends World {
 
 	// picker algorithm choice...
 	public final Node isThereOne(int x, int y) {
-		// if (FrEnd.oscd) {
 		return isThereOneHelper(x, y);
-		// } else {
-		// return isThereOne1(x, y);
-		// }
 	}
 
 	public final void setRadiusOfSelected(int radius) {
@@ -875,110 +802,6 @@ public class NodeManager extends World {
 		new PostModification(this).cleanup();
 	}
 
-	/*
-	 * // picker algorithm - complex and quick... // not well maintained... private
-	 * Node isThereOne1(int x, int y) { new_bin_x = x >>> NodeGrid.log2binsize;
-	 * new_bin_y = y >>> NodeGrid.log2binsize;
-	 * 
-	 * if (new_bin_x < 0) new_bin_x = 0;
-	 * 
-	 * if (new_bin_x >= NodeGrid.nx) new_bin_x = NodeGrid.nx - 1;
-	 * 
-	 * if (new_bin_y < 0) new_bin_y = 0;
-	 * 
-	 * if (new_bin_y >= NodeGrid.ny) new_bin_y = NodeGrid.ny - 1;
-	 * 
-	 * list = NodeGrid.node_list[new_bin_x][new_bin_y][new_bin_z];
-	 * 
-	 * temp_agent = checkThisList(x, y); if (temp_agent != null) { return
-	 * temp_agent; }
-	 * 
-	 * if (new_bin_x > 0) { list = NodeGrid.node_list[new_bin_x - 1][new_bin_y];
-	 * 
-	 * temp_agent = checkThisList(x, y); if (temp_agent != null) { return
-	 * temp_agent; }
-	 * 
-	 * if (new_bin_y > 0) { list = NodeGrid.node_list[new_bin_x - 1][new_bin_y - 1];
-	 * 
-	 * temp_agent = checkThisList(x, y); if (temp_agent != null) { return
-	 * temp_agent; } }
-	 * 
-	 * if (new_bin_y < (NodeGrid.ny - 1)) { list = NodeGrid.node_list[new_bin_x -
-	 * 1][new_bin_y + 1];
-	 * 
-	 * temp_agent = checkThisList(x, y); if (temp_agent != null) { return
-	 * temp_agent; } } }
-	 * 
-	 * if (new_bin_x < (NodeGrid.nx - 1)) { list = NodeGrid.node_list[new_bin_x +
-	 * 1][new_bin_y];
-	 * 
-	 * temp_agent = checkThisList(x, y); if (temp_agent != null) { return
-	 * temp_agent; }
-	 * 
-	 * if (new_bin_y > 0) { list = NodeGrid.node_list[new_bin_x + 1][new_bin_y - 1];
-	 * 
-	 * temp_agent = checkThisList(x, y); if (temp_agent != null) { return
-	 * temp_agent; } }
-	 * 
-	 * if (new_bin_y < (NodeGrid.ny - 1)) { list = NodeGrid.node_list[new_bin_x +
-	 * 1][new_bin_y + 1];
-	 * 
-	 * temp_agent = checkThisList(x, y); if (temp_agent != null) { return
-	 * temp_agent; } } } // D if (new_bin_y > 0) { list =
-	 * NodeGrid.node_list[new_bin_x][new_bin_y - 1];
-	 * 
-	 * temp_agent = checkThisList(x, y); if (temp_agent != null) { return
-	 * temp_agent; } } // U if (new_bin_y < (NodeGrid.ny - 1)) { list =
-	 * NodeGrid.node_list[new_bin_x][new_bin_y + 1];
-	 * 
-	 * temp_agent = checkThisList(x, y); if (temp_agent != null) { return
-	 * temp_agent; } } return null; }
-	 */
-
-	/*
-	 * Node checkThisListx(int _x, int _y) { int tadx; int tady; //int tadz;
-	 * 
-	 * for (int temp = 0; temp < NodeManager.list.current_number; temp++) {
-	 * temp_agent = NodeManager.list.node[temp]; // temp_detection_distance =
-	 * ((int)temp_agent.detection_radius) < < shift; final int
-	 * temp_detection_distance = Coords.getRadius(temp_agent.type.radius,
-	 * temp_agent.pos.z); // temp_x0 = temp_agent.x - x; final int temp_x0 =
-	 * Coords.getXCoordsInternal(temp_agent.pos.x, temp_agent.pos.z) - _x; final int
-	 * temp_x1 = (temp_x0 < 0) ? -temp_x0 : temp_x0; if (temp_x1 <
-	 * temp_detection_distance) { // temp_y0 = temp_agent.y - y; final int temp_y0 =
-	 * Coords.getYCoordsInternal(temp_agent.pos.y, temp_agent.pos.z) - _y;
-	 * 
-	 * final int temp_y1 = (temp_y0 < 0) ? -temp_y0 : temp_y0; if (temp_y1 <
-	 * temp_detection_distance) { // probable collision... // make smaller to
-	 * prevent overflow... tadx = temp_x1 >> Coords.shift; tady = temp_y1 >>
-	 * Coords.shift; temp_radius = (tadx * tadx) + (tady * tady); // now // check
-	 * using circle... final int temp_detection_distance_squared =
-	 * (temp_agent.type.radius >> Coords.shift) (temp_agent.type.radius >>
-	 * Coords.shift); // emp_detection_distance_squared *=
-	 * temp_detection_distance_squared; // // temp_detection_distance *
-	 * temp_detection_distance; if (temp_radius < temp_detection_distance_squared) {
-	 * // collision return temp_agent; } } } }
-	 * 
-	 * return null; }
-	 */
-
-	// public void drawTheAgents() {
-	// ShoalsGrid.last_colour = -1;
-	// Shoals_Grid.graphics_handle.setColor(Shoals_Grid.agent_colour);
-	// for (counter = 0; counter < number_of_nodes; counter++) {
-	// node[counter].draw();
-	// }
-	// NodeGrid.drawAgents();
-	// }
-	// public void scrubTheAgents() {
-	// final int number_of_nodes = this.element.size();
-	// BinGrid.graphics_handle.setColor(BinGrid.bg_colour);
-	// for (int counter = 0; counter < number_of_nodes; counter++) {
-	// final Node node = (Node) this.element.elementAt(counter);
-	// ((CachedNode)
-	// this.renderer.renderer_node.elements.elementAt(counter)).scrub(node);
-	// }
-	// }
 	public void travelTheAgents() {
 		Node.temp_private_world = this;
 		if (needToMoveNodes()) {
@@ -996,71 +819,8 @@ public class NodeManager extends World {
 		for (int temp = 0; temp < number_of_nodes; temp++) {
 			((Node) this.element.get(temp)).type.setSize(d);
 		}
-
-		// for (int temp = 0; temp < Node.TRIG_TAB_SIZE; temp++) {
-		// Node.ship_image_array[temp] = null;
-		// }
 	}
 
-	// void setGlobalEggSize(int d) {
-	// general_eggsize = d;
-
-	// for (counter = 0; counter < number_of_leaders; counter++) {
-	// leader[counter].setSize(d);
-	// }
-
-	// Node.ring_image = null;
-	// }
-
-	// public final void changeNumber() {
-	// }
-
-	/*
-	 * final int number_of_nodes = node.size(); if
-	 * (NodeManager.target_number_of_agents != number_of_nodes) { while
-	 * (NodeManager.target_number_of_agents > number_of_nodes) { addNewAgent(); }
-	 * 
-	 * while (NodeManager.target_number_of_agents < number_of_nodes) { killAgent();
-	 * }
-	 * 
-	 * resetNodeGrid(); } }/* /* final void changeLeaderNumber() { if
-	 * ((target_number_of_leaders != number_of_leaders)) { while
-	 * (target_number_of_leaders > number_of_leaders) { addNewLeader(); }
-	 * 
-	 * while (target_number_of_leaders < number_of_leaders) { killLeader(); }
-	 * 
-	 * resetNodeGrid(); } } // wastes memory, but who cares? public final void
-	 * addNewLeader() { number_of_leaders++;
-	 * 
-	 * new_array_of_leaders = new NodeLeader[number_of_leaders];
-	 * 
-	 * for (temp = 0; temp < (number_of_leaders - 1); temp++) {
-	 * new_array_of_leaders[temp] = leader[temp]; }
-	 * 
-	 * if (number_of_leaders > 1) { temp = rnd.nextInt(number_of_leaders - 1);
-	 * temp_x = ((Node) leader[temp]).x + rnd.nextInt(256); temp_y = ((Node)
-	 * leader[temp]).y + rnd.nextInt(256);
-	 * 
-	 * new_array_of_leaders[number_of_leaders - 1] = new NodeLeader(temp_x, temp_y,
-	 * rnd .nextInt()); ((Node) new_array_of_leaders[number_of_leaders - 1]).colour
-	 * = ((Node) leader[temp]).colour; ((Node)
-	 * new_array_of_leaders[number_of_leaders - 1]) .setSize(((Node)
-	 * leader[temp]).diameter); } else { temp_x = rnd.nextInt(Coords.x_pixels) < <
-	 * shift; temp_y = rnd.nextInt(Coords.y_pixels) < < shift;
-	 * 
-	 * new_array_of_leaders[number_of_leaders - 1] = new NodeLeader(temp_x, temp_y,
-	 * rnd .nextInt()); }
-	 * 
-	 * leader = new_array_of_leaders; }
-	 */
-
-	// public void killAgent() {
-	// final int number_of_nodes = this.node.size();
-	// if (number_of_nodes > 0) {
-	// this.link_manager.killAllLinks((Node) this.node.lastElement());
-	// }
-	//
-	// }
 	public final boolean killThisNode(Node e) {
 		final int number_of_nodes = this.element.size();
 		for (int temp = 0; temp < number_of_nodes; temp++) {
