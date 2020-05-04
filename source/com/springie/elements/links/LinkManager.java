@@ -2,7 +2,8 @@
 
 package com.springie.elements.links;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextMananger;
@@ -553,8 +554,8 @@ public class LinkManager extends BaseElementManager<Link> {
     int number = 0;
     final int total = this.element.size();
     for (int temp = 0; temp < total; temp++) {
-      final Link e = (Link) this.element.get(temp);
-      if (e.type.selected) {
+      final Link link = this.element.get(temp);
+      if (link.type.selected) {
         number++;
       }
     }
@@ -562,16 +563,16 @@ public class LinkManager extends BaseElementManager<Link> {
     return number;
   }
 
-  public Vector getVectorOfNodesOnSelectedLinks() {
-    final Vector list_of_nodes = new Vector();
+  public List<Node> getListOfNodesOnSelectedLinks() {
+    final List<Node> list_of_nodes = new ArrayList<>();
     final int total = this.element.size();
     for (int temp = 0; temp < total; temp++) {
-      final Link link = (Link) this.element.get(temp);
+      final Link link = this.element.get(temp);
       if (link.isSelected()) {
         final int non = link.nodes.length;
         for (int i = 0; i < non; i++) {
           final Node node = link.nodes[i];
-          list_of_nodes.addElement(node);
+          list_of_nodes.add(node);
         }
       }
     }

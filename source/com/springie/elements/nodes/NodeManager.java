@@ -3,7 +3,8 @@
 package com.springie.elements.nodes;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.xml.sax.SAXException;
 
@@ -1305,13 +1306,13 @@ public class NodeManager extends World {
 		this.depth_range = new Range(min, max);
 	}
 
-	public Vector getVectorOfSelectedNodes() {
-		final Vector list_of_nodes = new Vector();
+	public List<Node> getListOfSelectedNodes() {
+		final List<Node> list_of_nodes = new ArrayList<>();
 		final int number_of_nodes = this.element.size();
 		for (int temp = 0; temp < number_of_nodes; temp++) {
-			final Node n = (Node) this.element.get(temp);
+			final Node n = this.element.get(temp);
 			if (n.isSelected()) {
-				list_of_nodes.addElement(n);
+				list_of_nodes.add(n);
 			}
 		}
 		return list_of_nodes;
@@ -1320,7 +1321,7 @@ public class NodeManager extends World {
 	public void moveSelection(int _dx, int _dy) {
 		final int number_of_nodes = this.element.size();
 		for (int temp2 = 0; temp2 < number_of_nodes; temp2++) {
-			final Node n = (Node) this.element.get(temp2);
+			final Node n = this.element.get(temp2);
 			if (n.type.selected) {
 				n.pos.x += _dx;
 				n.pos.y += _dy;
@@ -1335,10 +1336,10 @@ public class NodeManager extends World {
 		}
 	}
 
-	public void moveNodesInList(Vector list_of_nodes, int d_x, int d_y) {
+	public void moveNodesInList(List<Node> list_of_nodes, int d_x, int d_y) {
 		final int number_of_nodes = list_of_nodes.size();
 		for (int temp2 = 0; temp2 < number_of_nodes; temp2++) {
-			final Node n = (Node) list_of_nodes.elementAt(temp2);
+			final Node n = list_of_nodes.get(temp2);
 			n.pos.x += d_x;
 			n.pos.y += d_y;
 			n.velocity.x = 0;
