@@ -196,7 +196,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 	public static boolean currently_dragging;
 
-	public static boolean pandemic_paradigm_direct_contact = false;
+	public static boolean pandemic_paradigm_direct_contact = true;
 
 	public static Module extension;
 

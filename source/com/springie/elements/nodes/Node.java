@@ -58,7 +58,7 @@ public class Node extends BaseElement {
 
   public static int number_of_render_divisions = 1;
   
-  private static final int DEFAULT_2D_DEPTH = 320;
+  public static final int DEFAULT_2D_DEPTH = 320;
 
   public Node() {
 	  //...

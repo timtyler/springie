@@ -6,6 +6,7 @@ import com.springie.FrEnd;
 import com.springie.constants.Actions;
 import com.springie.constants.ToolTypes;
 import com.springie.context.ContextMananger;
+import com.springie.elements.clazz.Clazz;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeType;
 import com.springie.geometry.Point3D;
@@ -81,6 +82,11 @@ public class PerformActions {
 
 		case Actions.CLONE:
 			doClone(x, y);
+
+			break;
+
+		case Actions.MAKE_CIRCLE:
+			doMakeCircle(x, y);
 
 			break;
 
@@ -190,6 +196,31 @@ public class PerformActions {
 			}
 		}
 
+		FrEnd.postCleanup();
+	}
+
+	void doMakeCircle(int x, int y) {
+		int circle_radius = 0x4000;
+		int nodeCount = 28;
+		int radius = (int)(circle_radius * Math.PI / nodeCount);
+		int color = 0xFFFFFFFF;
+		Clazz clazz = ContextMananger.getNodeManager().clazz_factory.getNew(color);
+		
+		for (int n = 0; n < nodeCount; n++) {
+			final NodeType type = ContextMananger.getNodeManager().node_type_factory.getNew();
+			type.log_mass = 0;
+			type.selected = false;
+			type.hidden = false;
+			type.disabled = false;
+			type.radius = radius;
+			type.counter = 0;
+			type.charge = 0;
+			type.pinned = true;
+			int dx = (int)(circle_radius * Math.sin(2 * Math.PI * n/ nodeCount));
+			int dy = (int)(circle_radius * Math.cos(2 * Math.PI * n / nodeCount));
+			final Point3D pos = new Point3D(x + dx, y + dy, Node.DEFAULT_2D_DEPTH);
+			ContextMananger.getNodeManager().addNewAgent(pos, clazz, type);
+		}
 		FrEnd.postCleanup();
 	}
 

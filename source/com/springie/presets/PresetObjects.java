@@ -121,6 +121,7 @@ public final class PresetObjects {
       final int ry = rnd.nextInt(10000 * scale_factor);
 
       desc += "NG R:" + initial_size + " "; //CH:10 C:0xFF80C0FF ";
+      desc += "C:0xff20ff20 ";
       desc += "N X:" + rx + " Y:" + ry + " Z:" + (rx + ry) + " ";
       desc += "DX:" + (rx & 7) + " DY:" + (ry & 7) + " DZ:" + (rx & 7) + " ";
     }

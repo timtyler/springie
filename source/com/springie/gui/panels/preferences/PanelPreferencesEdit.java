@@ -95,19 +95,20 @@ public class PanelPreferencesEdit {
     // action_choice.add("infect", _ACT_KILLALL);
 
     action_choice.add("select", Actions.SELECT);
-    action_choice.add("rotate", Actions.ROTATE);
-    action_choice.add("scale", Actions.SCALE);
-    action_choice.add("diet", Actions.DIET);
-    action_choice.add("translate", Actions.TRANSLATE);
     action_choice.add("delete", Actions.KILL);
-    action_choice.add("link", Actions.LINK);
     action_choice.add("drag box", Actions.DRAG_BOX);
-    action_choice.add("unlink", Actions.UNLINK);
-    action_choice.add("clone", Actions.CLONE);
-    action_choice.add("unlink all", Actions.UNLINKALL);
     action_choice.add("select no drag", Actions.SELECT_NO_DRAG);
+    action_choice.add("scale", Actions.SCALE);
+    action_choice.add("translate", Actions.TRANSLATE);
     action_choice.add("infect", Actions.INFECT);
-    action_choice.add("rotate 2", Actions.ROTATE_CW_ACW);
+    action_choice.add("make circle", Actions.MAKE_CIRCLE);
+    action_choice.add("clone", Actions.CLONE);
+    action_choice.add("link", Actions.LINK);
+    action_choice.add("unlink", Actions.UNLINK);
+    action_choice.add("unlink all", Actions.UNLINKALL);
+    action_choice.add("diet", Actions.DIET);
+    action_choice.add("rotate CW", Actions.ROTATE);
+    action_choice.add("rotate ACW", Actions.ROTATE_CW_ACW);
 
     // action_choice.add("select links", _ACT_SELECT_LINKS);
     // action_choice.add("select faces", _ACT_SELECT_POLYGONS);

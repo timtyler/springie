@@ -22,19 +22,21 @@ public interface Actions {
 
   int ROTATE = 9;
 
-  int TRANSLATE = 10;
+  int ROTATE_CW_ACW = 10;
 
   int SCALE = 11;
 
-  int DIET = 12;
-
+  int INFECT = 12;
+  
   int SELECT_NO_DRAG = 13;
 
   int DRAG_BOX = 14;
 
-  int ROTATE_CW_ACW = 15;
+  int TRANSLATE = 15;
 
-  int INFECT = 16;
+  int DIET = 16;
+
+  int MAKE_CIRCLE = 17;
 
   void placeholder();
 }

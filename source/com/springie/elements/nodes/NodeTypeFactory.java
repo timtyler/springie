@@ -12,7 +12,7 @@ public class NodeTypeFactory {
     return type;
   }
 
-  public  NodeType getNew() {
+  public NodeType getNew() {
     final NodeType type = new NodeType();
     this.array.addElement(type);
     return type;

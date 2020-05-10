@@ -218,15 +218,15 @@ public class NodeManager extends World {
 	private void updateLinks(LinkManager link_manager) {
 		Forget.about(link_manager);
 		if (needToMoveNodes()) {
-			final int n_o_l = this.getLinkManager().element.size();
-			if (n_o_l > 0) {
-				if (!FrEnd.paused) {
+			if (!FrEnd.paused) {
+				final int n_o_l = this.getLinkManager().element.size();
+				if (n_o_l > 0) {
 					if (!FrEnd.links_disabled) {
 						wrappedLinkExerciser(link_manager);
-						ContextMananger.getNodeManager().electrostatic.repel();
-						ContextMananger.getNodeManager().applyViscousDrag();
 					}
 				}
+				ContextMananger.getNodeManager().electrostatic.repel();
+				ContextMananger.getNodeManager().applyViscousDrag();
 			}
 		}
 	}
@@ -489,7 +489,7 @@ public class NodeManager extends World {
 
 	private void sendDeleteNodeMessage(Node node) {
 		FrEnd.new_message_manager.add(new NewMessage(null) {
-			
+
 			@Override
 			public Object execute() {
 				node.killWithNoExplosion();
@@ -512,6 +512,7 @@ public class NodeManager extends World {
 		node.clazz = this.clazz_factory.getNew(virus_color);
 		node.type.radius = radius;
 		node.type.counter = 20;
+		node.type.log_mass = 8;
 		int velocityExtra = 0xFFF;
 		node.velocity.x += rnd.nextInt(velocityExtra);
 		node.velocity.x -= rnd.nextInt(velocityExtra);
@@ -519,9 +520,9 @@ public class NodeManager extends World {
 		node.velocity.y -= rnd.nextInt(velocityExtra);
 		node.pos.x += delta_x;
 		node.pos.y += delta_y;
-		
+
 		FrEnd.new_message_manager.add(new NewMessage(null) {
-			
+
 			@Override
 			public Object execute() {
 				element.add(node);
@@ -657,6 +658,8 @@ public class NodeManager extends World {
 								temp_y = temp_y * magnitude;
 								temp_z = temp_z * magnitude;
 
+								// System.out.println("Log 1: " + temp_agent.type.log_mass + ", log 2: "
+								// +temp2_agent.type.log_mass);
 								final int temp_ma = temp_agent.type.log_mass - temp2_agent.type.log_mass;
 
 								if (temp_ma < 0) {
@@ -695,14 +698,18 @@ public class NodeManager extends World {
 	}
 
 	private void spreadInfectionOnCollisions() {
-		final int counter1 = temp_agent.type.counter;
-		final int counter2 = temp2_agent.type.counter;
-		if (FrEnd.pandemic_paradigm_direct_contact) {
-			spreadInfectionOneWay(temp2_agent, counter1, counter2);
-			spreadInfectionOneWay(temp_agent, counter2, counter1);
-		} else {
-			spreadUsingVirus(temp_agent, temp2_agent, counter1);
-			spreadUsingVirus(temp2_agent, temp_agent, counter2);
+		if (!temp_agent.type.pinned) {
+			if (!temp2_agent.type.pinned) {
+				final int counter1 = temp_agent.type.counter;
+				final int counter2 = temp2_agent.type.counter;
+				if (FrEnd.pandemic_paradigm_direct_contact) {
+					spreadInfectionOneWay(temp2_agent, counter1, counter2);
+					spreadInfectionOneWay(temp_agent, counter2, counter1);
+				} else {
+					spreadUsingVirus(temp_agent, temp2_agent, counter1);
+					spreadUsingVirus(temp2_agent, temp_agent, counter2);
+				}
+			}
 		}
 	}
 
