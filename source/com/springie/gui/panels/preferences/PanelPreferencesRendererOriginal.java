@@ -234,8 +234,7 @@ public class PanelPreferencesRendererOriginal {
     // choose_quality.add("< medium", Quality._QUALITY_2A);
     choose_quality.add("poor", Quality.SOLID);
     choose_quality.add("< poor", Quality._QUALITY_1A);
-    choose_quality.add("terrible", Quality._QUALITY_3);
-    choose_quality.add("< terrible", Quality._QUALITY_3A);
+    choose_quality.add("terrible", Quality.QUALITY_TERRIBLE);
     choose_quality.add("abysmal", Quality._QUALITY_4);
     choose_quality.add("< abysmal", Quality._QUALITY_4A);
     choose_quality.add("dots only", Quality._QUALITY_5);

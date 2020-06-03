@@ -39,7 +39,6 @@ public class CachedNode {
     switch (FrEnd.quality) {
       case Quality.SOLID:
         renderSolid(temp_x, temp_y, temp_diameter);
-
         break;
 
       case Quality.THICK_OUTLINE:
@@ -49,40 +48,25 @@ public class CachedNode {
         RendererDelegator.graphics_handle.fillOval(temp_x + thickness,
           temp_y + thickness, temp_diameter - thickness - thickness,
           temp_diameter - thickness - thickness);
-
         break;
 
       case Quality._QUALITY_1A:
         renderSolid(temp_x, temp_y, temp_diameter);
-
         break;
 
       case Quality.MULTIPLE:
         renderMultiple(temp_x, temp_y, temp_diameter);
-
         break;
 
-      case Quality._QUALITY_3A:
-        RendererDelegator.graphics_handle.drawRect(this.pos.x - (this.radius >> 1),
-          this.pos.y - (this.radius >> 1), this.radius, this.radius);
-        break;
-
-      case Quality._QUALITY_3:
-        RendererDelegator.graphics_handle.drawRect(this.pos.x - (this.radius >> 1),
-          this.pos.y - (this.radius >> 1), this.radius, this.radius);
-
+      case Quality.QUALITY_TERRIBLE:
+        RendererDelegator.graphics_handle.drawRect(this.pos.x - 1 -(this.radius >> 1),
+          this.pos.y - (this.radius >> 1) - 1, this.radius, this.radius);
         break;
 
       case Quality._QUALITY_4A:
-        RendererDelegator.graphics_handle.fillRect(this.pos.x - (this.radius >> 1),
-          this.pos.y - (this.radius >> 1), this.radius, this.radius);
-
-        break;
-
       case Quality._QUALITY_4:
         RendererDelegator.graphics_handle.fillRect(this.pos.x - (this.radius >> 1),
           this.pos.y - (this.radius >> 1), this.radius, this.radius);
-
         break;
 
       case Quality._QUALITY_5:
@@ -130,53 +114,35 @@ public class CachedNode {
     switch (temp2) {
       case Quality.THICK_OUTLINE:
       case Quality.SOLID:
-        //RendererDelegator.colourZero();
         renderSolid(temp_x, temp_y, temp_diameter);
         break;
 
       case Quality._QUALITY_1A:
-        //RendererDelegator.graphics_handle.setColor(RendererDelegator.colour_background);
         RendererDelegator.graphics_handle.fillRect(temp_x, temp_y, temp_diameter,
           temp_diameter);
-
         break;
 
       case Quality.MULTIPLE:
-        //RendererDelegator.colourZero();
         renderMultiple(temp_x, temp_y, temp_diameter);
-
         break;
 
-      case Quality._QUALITY_3A:
-        //RendererDelegator.graphics_handle.setColor(RendererDelegator.colour_background);
-        RendererDelegator.graphics_handle.fillRect(this.pos.x - (this.radius >> 1),
-          this.pos.y - (this.radius >> 1), this.radius + 1, this.radius + 1);
-
-        break;
-
-      case Quality._QUALITY_3:
-        //RendererDelegator.graphics_handle.setColor(RendererDelegator.colour_background);
-        RendererDelegator.graphics_handle.fillRect(this.pos.x - (this.radius >> 1),
-          this.pos.y - (this.radius >> 1), this.radius + 1, this.radius + 1);
-
+      case Quality.QUALITY_TERRIBLE:
+          RendererDelegator.graphics_handle.drawRect(this.pos.x - 1 -(this.radius >> 1),
+                  this.pos.y - (this.radius >> 1) - 1, this.radius, this.radius);
         break;
 
       case Quality._QUALITY_4A:
-        //RendererDelegator.graphics_handle.setColor(RendererDelegator.colour_background);
         RendererDelegator.graphics_handle.fillRect(this.pos.x - (this.radius >> 1),
           this.pos.y - (this.radius >> 1), this.radius, this.radius);
-
         break;
 
       case Quality._QUALITY_4:
         RendererDelegator.graphics_handle.fillRect(this.pos.x - (this.radius >> 1),
           this.pos.y - (this.radius >> 1), this.radius, this.radius);
-
         break;
 
       case Quality._QUALITY_5:
         RendererDelegator.graphics_handle.fillRect(this.pos.x - 1, this.pos.y - 1, 2, 2);
-
         break;
 
       case Quality._QUALITY_6:

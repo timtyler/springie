@@ -5,8 +5,7 @@ public interface Quality {
   int SOLID = 1;
   int _QUALITY_1A = 2;
   int MULTIPLE = 3;
-  int _QUALITY_3 = 4;
-  int _QUALITY_3A = 5;
+  int QUALITY_TERRIBLE = 4;
   int _QUALITY_4 = 6;
   int _QUALITY_4A = 7;
   int _QUALITY_5 = 8;

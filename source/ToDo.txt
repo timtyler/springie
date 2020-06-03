@@ -1,24 +1,49 @@
 ToDo
 ====
+Pandemic application
+ Create new graph showing node breakdown by color over time
+ Implement destinations
+ Implement journeys
+ Create some pandemic-friendly presets
+ Application object for each node - for Pandemic application 
+
+Improve rendering
+ Improve Modern renderer when in (fast) single-buffer mode (sometimes incomplete redraw)
+ Why does original rendderer go faster when there is a drag box?
+ Original renderer color fade algorithm has cosmetic flaw in the distance
+ Nicer MemoryImageSource-based renderer
+  Support for multiple light sources?
+  Integrate with POVRay support.
+ 
+Misc
+ Implement sources
+ Implement sinks
+ Implement "static velocity visualization" - for making static pictures of a dynamical system
+
+Implement Copy/Paste of selection
+
+Use a better sort algorithm for depth sort within buckets - maybe just quicksort
+
+
 "+" should select objects better...
+
 "Angular" theta for rot_z
 
- "Fundamental" icons for:
-  Kill
+Add a "Fundamental" icon for: Kill
 
  Improve linking behaviour (multiple selected nodes)
  P for pause - FrEnd
 
+Add Hovertext - for interactive help
 ImageButton
- Hovertext - for interactive help
  Gets keyboard focus
  Draw button borders automatically
  Draw text with icon on button
  
-Deploy
+Improve M.C.V. architecture implementation
 
-Group - a bit like name - not visible in GUI?
-Xara-like group/ungroup of selection
+Xara/Inkscape-like group/ungroup of selection
+ Group - a bit like name - not visible in GUI?
 
 CrudeClay:
  Rework FDL writer to write clay files
@@ -28,8 +53,7 @@ CrudeClay:
  Support Charge
  
 Configure colour of link being created
-  Configure colour of created link - last link
-    clicked on!
+  Configure colour of created link.
 
 Fix up existing models
 
@@ -96,8 +120,6 @@ Damping should have natural max value?
 
 Unknown bug when repeat loading bob's small 3 prism
 
-Deploy
-
 Fix "0 radius" Springie bug with OFF import?
 
 3D sphere/rod renderer:
@@ -105,8 +127,6 @@ Fix "0 radius" Springie bug with OFF import?
  Improved rendering of link selection
 
  Wireframe performance: don't render lines twice?!
-
- Use a better sort algorithm - quicksort???
 
  Add more solids: football!??
 
@@ -120,8 +140,6 @@ Fix "0 radius" Springie bug with OFF import?
 
  Configurable number of strut sides
  Bug: dragging nodes (etc) is dodgy when zoomed
- Nicer MemoryImageSource-based renderer
- Multiple light sources?
 
  Faces "mould" around nodes...???
  Allow faces/nodes/struts to independently have
@@ -343,6 +361,7 @@ Scripting programming language for Springie (important)
  Java is totally unsuitable as scripting language
  Need a small, dynamic RAD scripting language
  Look at Io/Smalltalk - and other things first
+ Use Python?
  Do this at about the same time as implementing "undo"?
 
 GarbageCollection - faces not done yet...
@@ -417,8 +436,6 @@ Pulleys - Tension equalization algorithm
  <link composite=true><node><node><node><node></link>
 
 Implement a "make all polygons clockwise" algorithm
-
-"M.C.V." architecture
 
 "Slow Down" button (combine with "make motionless"?)?
 
