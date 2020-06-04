@@ -6,7 +6,7 @@ import java.awt.Image;
 import java.util.Vector;
 
 public class RendererBin {
-  Vector vector = new Vector();
+  Vector<PolygonComposite> vector = new Vector<>();
 
   Image image;
 
@@ -20,10 +20,10 @@ public class RendererBin {
     actual.min_y = Integer.MAX_VALUE;
     actual.max_x = Integer.MIN_VALUE;
     actual.max_y = Integer.MIN_VALUE;
-    final Vector vector = this.vector;
+    final Vector<PolygonComposite> vector = this.vector;
     final int size = vector.size();
     for (int c = size; --c >= 0;) {
-      final PolygonComposite polygon = (PolygonComposite) vector.elementAt(c);
+      final PolygonComposite polygon = vector.elementAt(c);
       final RectangleInt bb = polygon.getBoundingBox();
       if (bb.min_x < actual.min_x) {
         actual.min_x = bb.min_x;

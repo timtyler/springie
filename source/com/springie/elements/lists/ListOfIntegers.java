@@ -6,7 +6,7 @@ import com.springie.elements.base.BaseType;
 import com.springie.utilities.log.Log;
 
 public class ListOfIntegers extends BaseType {
-  Vector list = new Vector();
+  Vector<Integer> list = new Vector<>();
 
   public final int size() {
     return this.list.size();
@@ -17,7 +17,7 @@ public class ListOfIntegers extends BaseType {
   }
 
   public int retreive(int i) {
-    return ((Integer) this.list.elementAt(i)).intValue();
+    return this.list.elementAt(i).intValue();
   }
 
   public void remove(int n) {

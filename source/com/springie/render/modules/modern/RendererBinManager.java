@@ -29,11 +29,11 @@ public class RendererBinManager {
 
   public static int colour_modifier_wireframe = ColourModifier.darker;
 
-  Vector getVector(int x, int y) {
+  Vector<PolygonComposite> getVector(int x, int y) {
     return this.array[x][y].vector;
   }
 
-  void putVector(int x, int y, Vector vector) {
+  void putVector(int x, int y, Vector<PolygonComposite> vector) {
     this.array[x][y].vector = vector;
   }
 
@@ -76,7 +76,7 @@ public class RendererBinManager {
   }
 
   void add(int x, int y, PolygonComposite triangle) {
-    final Vector v = getVector(x, y);
+    final Vector<PolygonComposite> v = getVector(x, y);
     v.addElement(triangle);
   }
 
@@ -110,11 +110,11 @@ public class RendererBinManager {
     for (int j = 0; j < this.number_of_bins_y; j++) {
       for (int i = 0; i < this.number_of_bins_x; i++) {
         final RendererBin bin = this.array[i][j];
-        final Vector v_this = bin.vector;
+        final Vector<PolygonComposite> v_this = bin.vector;
         final int size = v_this.size();
 
         final RendererBin last_bin = bins_last.array[i][j];
-        final Vector v_last = last_bin.vector;
+        final Vector<PolygonComposite> v_last = last_bin.vector;
         final int size_last = v_last.size();
 
         final boolean size_last_gt_0 = size_last > 0;
@@ -277,7 +277,7 @@ public class RendererBinManager {
     return RendererBinManager.show_bins ? 4 : 0;
   }
 
-  private void getSortedNodeDepthIndex(final Vector v_this) {
+  private void getSortedNodeDepthIndex(final Vector<PolygonComposite> v_this) {
     final int size = v_this.size();
     setUpNewNodeDepthIndex(size);
 
@@ -293,23 +293,17 @@ public class RendererBinManager {
     }
   }
 
-  private void sort(Vector vector) {
-    // perform a dimwitted bubble sort... TODO improve sort...
-    final int number_of_nodes = vector.size();
-
-    for (int i = number_of_nodes - 1; --i >= 0;) {
+  private void sort(Vector<PolygonComposite> vector) {
+    for (int i = vector.size() - 1; --i >= 0;) {
       boolean flipped = false;
       for (int j = 0; j <= i; j++) {
         final int k = j + 1;
-        final int j1 = this.node_depth_index[j];
-        final int k1 = this.node_depth_index[k];
-        final PolygonComposite a = (PolygonComposite) vector.elementAt(j1);
-        final PolygonComposite b = (PolygonComposite) vector.elementAt(k1);
+        final PolygonComposite a = vector.elementAt(this.node_depth_index[j]);
+        final PolygonComposite b = vector.elementAt(this.node_depth_index[k]);
         if (a.z > b.z) {
           int temp = this.node_depth_index[j];
           this.node_depth_index[j] = this.node_depth_index[k];
           this.node_depth_index[k] = temp;
-
           flipped = true;
         }
       }

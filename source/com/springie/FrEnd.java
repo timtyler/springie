@@ -934,7 +934,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 				final int d_x = x - dragged_x_offset - centre.x;
 				final int d_y = y - dragged_y_offset - centre.y;
 
-				final List list_of_nodes = getallNodesInContactWithSelection();
+				final List<Node> list_of_nodes = getallNodesInContactWithSelection();
 
 				ContextMananger.getNodeManager().moveNodesInList(list_of_nodes, d_x, d_y);
 				RendererDelegator.repaint_some_objects = true;
@@ -942,7 +942,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		}
 	}
 
-	private static List getallNodesInContactWithSelection() {
+	private static List<Node> getallNodesInContactWithSelection() {
 		List list_of_nodes;
 		List list_of_nodes_2;
 		list_of_nodes = ContextMananger.getNodeManager().getListOfSelectedNodes();

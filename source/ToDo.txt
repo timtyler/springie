@@ -5,16 +5,18 @@ Pandemic application
  Implement destinations
  Implement journeys
  Create some pandemic-friendly presets
- Application object for each node - for Pandemic application 
+ Application object for each node - for Pandemic application
 
 Improve rendering
  Improve Modern renderer when in (fast) single-buffer mode (sometimes incomplete redraw)
- Why does original rendderer go faster when there is a drag box?
+ Why does original renderer go faster when there is a drag box?
  Original renderer color fade algorithm has cosmetic flaw in the distance
  Nicer MemoryImageSource-based renderer
   Support for multiple light sources?
   Integrate with POVRay support.
- 
+
+Improve UI
+
 Misc
  Implement sources
  Implement sinks
@@ -23,7 +25,6 @@ Misc
 Implement Copy/Paste of selection
 
 Use a better sort algorithm for depth sort within buckets - maybe just quicksort
-
 
 "+" should select objects better...
 

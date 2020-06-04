@@ -188,16 +188,10 @@ public class DropablePanel extends Panel {
         FrEnd.loadFile(filepath);
       } else if (data instanceof InputStream) {
         final InputStream input = (InputStream) data;
-        InputStreamReader isr = null;
-        try {
-          isr = new InputStreamReader(input, "Unicode");
-        } catch (UnsupportedEncodingException uee) {
-          isr = new InputStreamReader(input);
-        }
-
-        final StringBuffer str = new StringBuffer();
-        int in = -1;
-        try {
+        
+        try (InputStreamReader isr = new InputStreamReader(input, "Unicode")) {
+          final StringBuffer str = new StringBuffer();
+	      int in = -1;
           while ((in = isr.read()) >= 0) {
             if (in != 0) {
               str.append((char) in);
