@@ -19,7 +19,12 @@ public class RendererBinManager {
 
   private RendererBin[][] array;
 
-  private int[] node_depth_index;
+  private int[] node_depth_index = new int[0];
+
+  // Scratch buffers for the depth sort, reused across bins and frames.
+  private int[] sort_keys = new int[0];
+
+  private int[] sort_scratch = new int[0];
 
   static Random rnd = new Random();
 
@@ -152,7 +157,7 @@ public class RendererBinManager {
                 doScrubbing(graphics_paint, potential, bin);
               }
 
-              getSortedNodeDepthIndex(v_this);
+              getSortedNodeDepthIndex(v_this, FrEnd.redraw_deepest_first);
 
               graphics_paint.setClip(potential.min_x, potential.min_y,
                   block_size, block_size);
@@ -277,46 +282,82 @@ public class RendererBinManager {
     return RendererBinManager.show_bins ? 4 : 0;
   }
 
-  private void getSortedNodeDepthIndex(final ArrayList<PolygonComposite> v_this) {
+  private void getSortedNodeDepthIndex(final ArrayList<PolygonComposite> v_this,
+      boolean deepest_first) {
     final int size = v_this.size();
     setUpNewNodeDepthIndex(size);
 
-    if (FrEnd.redraw_deepest_first) {
+    if (deepest_first) {
       sort(v_this);
     }
   }
 
   private void setUpNewNodeDepthIndex(int number_of_nodes) {
-    this.node_depth_index = new int[number_of_nodes];
+    if (this.node_depth_index.length < number_of_nodes) {
+      this.node_depth_index = new int[number_of_nodes];
+    }
+    final int[] index = this.node_depth_index;
     for (int temp = number_of_nodes; --temp >= 0;) {
-      this.node_depth_index[temp] = temp;
+      index[temp] = temp;
     }
   }
 
+  // Stable bottom-up merge sort of the depth index, ascending by z.
+  // (The caller draws the index from the end backwards, deepest first.)
+  // Replaces the old O(n^2) bubble sort; same observable order.
   private void sort(ArrayList<PolygonComposite> vector) {
-    // perform a dimwitted bubble sort... TODO improve sort...
-    final int number_of_nodes = vector.size();
+    final int size = vector.size();
+    if (size < 2) {
+      return;
+    }
+    if (this.sort_keys.length < size) {
+      this.sort_keys = new int[size];
+      this.sort_scratch = new int[size];
+    }
+    final int[] index = this.node_depth_index;
+    final int[] keys = this.sort_keys;
+    for (int i = size; --i >= 0;) {
+      keys[i] = vector.get(i).z;
+    }
 
-    for (int i = number_of_nodes - 1; --i >= 0;) {
-      boolean flipped = false;
-      for (int j = 0; j <= i; j++) {
-        final int k = j + 1;
-        final int j1 = this.node_depth_index[j];
-        final int k1 = this.node_depth_index[k];
-        final PolygonComposite a = vector.get(j1);
-        final PolygonComposite b = vector.get(k1);
-        if (a.z > b.z) {
-          int temp = this.node_depth_index[j];
-          this.node_depth_index[j] = this.node_depth_index[k];
-          this.node_depth_index[k] = temp;
-
-          flipped = true;
+    int[] src = index;
+    int[] dst = this.sort_scratch;
+    for (int width = 1; width < size; width <<= 1) {
+      final int step = width << 1;
+      for (int lo = 0; lo < size; lo += step) {
+        int mid = lo + width;
+        if (mid > size) {
+          mid = size;
+        }
+        int hi = lo + step;
+        if (hi > size) {
+          hi = size;
+        }
+        int i = lo;
+        int j = mid;
+        int k = lo;
+        while (i < mid && j < hi) {
+          // Strictly-less takes from the right run; ties take from the
+          // left run, which keeps the sort stable.
+          if (keys[src[j]] < keys[src[i]]) {
+            dst[k++] = src[j++];
+          } else {
+            dst[k++] = src[i++];
+          }
+        }
+        while (i < mid) {
+          dst[k++] = src[i++];
+        }
+        while (j < hi) {
+          dst[k++] = src[j++];
         }
       }
-
-      if (!flipped) {
-        return;
-      }
+      final int[] temp = src;
+      src = dst;
+      dst = temp;
+    }
+    if (src != index) {
+      System.arraycopy(src, 0, index, 0, size);
     }
   }
 
