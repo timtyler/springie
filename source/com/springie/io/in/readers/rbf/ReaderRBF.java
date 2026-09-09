@@ -6,9 +6,12 @@ import java.util.StringTokenizer;
 import java.util.ArrayList;
 
 import com.springie.presets.ColourFactory;
-import com.springie.utilities.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class ReaderRBF {
+  private static final Logger logger = LoggerFactory.getLogger(ReaderRBF.class);
+
   
   private ReaderRBF() {
     //...
@@ -50,7 +53,7 @@ public final class ReaderRBF {
                   out.append("N X:" + x + " Y:" + y + " Z:" + z + " ");
                   //out.append("DX:1 DY:2 DZ:3 ");
                   waiting_for_hidden = false;
-                  Log.log("N X:" + x + " Y:" + y + " Z:" + z + " ");
+                  logger.debug("N X:" + x + " Y:" + y + " Z:" + z + " ");
                 }
               }
             }

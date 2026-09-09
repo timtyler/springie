@@ -13,10 +13,13 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.springie.io.in.ResourceLoader;
-import com.springie.utilities.log.Log;
 import com.tifsoft.Forget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ReadXMLModelIndexFile extends DefaultHandler {
+  private static final Logger logger = LoggerFactory.getLogger(ReadXMLModelIndexFile.class);
+
 
   String leaf = "";
 
@@ -40,7 +43,7 @@ public class ReadXMLModelIndexFile extends DefaultHandler {
     final Reader reader = new ResourceLoader().getReader(source);
     xr.parse(new InputSource(reader));
 
-    Log.log("handler.path:" + handler.path);
+    logger.debug("handler.path:" + handler.path);
 
     return handler.path;
   }

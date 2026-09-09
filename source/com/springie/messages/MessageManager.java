@@ -33,9 +33,12 @@ import com.springie.modification.stellation.StellationMaker;
 import com.springie.preferences.Preferences;
 import com.springie.presets.ProceduralObject;
 import com.springie.render.SetUpCode;
-import com.springie.utilities.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MessageManager {
+  private static final Logger logger = LoggerFactory.getLogger(MessageManager.class);
+
   public int current_message; // make private...
 
   MessageObj[] msgq;
@@ -77,9 +80,8 @@ public class MessageManager {
     try {
       processMessage(msgn);
     } catch (RuntimeException e) {
-      Log
-        .log("Error processing message (number " + this.msgq[msgn].type + "):");
-      e.printStackTrace();
+      logger.debug("Error processing message (number " + this.msgq[msgn].type + "):");
+      logger.error("Unexpected exception", e);
     }
   }
 

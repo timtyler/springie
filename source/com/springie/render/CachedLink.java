@@ -10,10 +10,13 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkRenderType;
 import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;
-import com.springie.utilities.log.Log;
 import com.springie.utilities.math.SquareRoot;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CachedLink {
+  private static final Logger logger = LoggerFactory.getLogger(CachedLink.class);
+
   public Point3D[] preserved_node_start; //= new Point3D(0, 0, 0); // needed?
 
   public Point3D[] preserved_node_end; //= new Point3D(0, 0, 0); // needed?
@@ -298,7 +301,7 @@ public class CachedLink {
     //final Node node = link.nodes[i];
     //final Point3D preserved_node_s = this.preserved_node_start[i];
     if (preserved_node == null) {
-      Log.log("getPreservedShortNodeCoordinates:preserved_node_s == null");
+      logger.debug("getPreservedShortNodeCoordinates:preserved_node_s == null");
     }
 
     final int r2 = node.type.radius >> Coords.shift;

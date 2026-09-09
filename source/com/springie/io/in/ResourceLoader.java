@@ -11,16 +11,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.springie.FrEnd;
-import com.springie.utilities.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ResourceLoader {
+  private static final Logger logger = LoggerFactory.getLogger(ResourceLoader.class);
+
   public String getResourceAsString(Class<?> base, String name) {
     String output;
 
     //Log.log("Starting to load " + name + ".");
     final InputStream in = getInputStream(base, name);
     if (in == null) {
-      Log.log("Base class: <" + base + ">");
+      logger.debug("Base class: <" + base + ">");
       throw new RuntimeException("File not found: <" + name + ">");
     }
 
@@ -50,8 +53,7 @@ public class ResourceLoader {
 
       in.close();
     } catch (IOException e) {
-      e.printStackTrace();
-      Log.error("" + e);
+      logger.error("Failed to load resource", e);
     }
     return output;
   }
@@ -71,8 +73,7 @@ public class ResourceLoader {
 
       r.close();
     } catch (IOException e) {
-      e.printStackTrace();
-      Log.error("" + e);
+      logger.error("Failed to load resource", e);
     }
 
     return output.toString();
@@ -91,12 +92,12 @@ public class ResourceLoader {
     try {
       url = new URL(location);
     } catch (MalformedURLException e) {
-      e.printStackTrace();
+      logger.error("Unexpected exception", e);
     }
     try {
       return url.openStream();
     } catch (IOException e1) {
-      e1.printStackTrace();
+      logger.error("Unexpected exception", e1);
     }
 
     return null;
@@ -124,7 +125,7 @@ public class ResourceLoader {
       try {
         return new FileReader(location.substring(7));
       } catch (FileNotFoundException e) {
-        e.printStackTrace();
+        logger.error("Unexpected exception", e);
       }
     }
 

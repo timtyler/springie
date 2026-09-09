@@ -25,13 +25,16 @@ import com.springie.io.out.WriteFloatingPoint;
 import com.springie.modification.post.PostModification;
 import com.springie.modification.redundancy.RedundancyRemover;
 import com.springie.render.Coords;
-import com.springie.utilities.log.Log;
 import com.springie.world.World;
 import com.tifsoft.xml.writer.XMLWriterAttribute;
 import com.tifsoft.xml.writer.XMLWriterSinglet;
 import com.tifsoft.xml.writer.XMLWriterTagPair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WriterSpr {
+  private static final Logger logger = LoggerFactory.getLogger(WriterSpr.class);
+
 	// scale factor - causes problems if not equal to 1.
 	//
 	// Plan to make this work...
@@ -65,7 +68,7 @@ public class WriterSpr {
 				this.out.close();
 			}
 		} catch (IOException e) {
-			Log.log("Error in write: " + e);
+			logger.debug("Error in write: " + e);
 		}
 	}
 
@@ -501,7 +504,7 @@ public class WriterSpr {
 				this.out.write(s + " ");
 			}
 		} catch (IOException e) {
-			Log.log("Error (writeOut): " + e.toString());
+			logger.debug("Error (writeOut): " + e.toString());
 		}
 	}
 }

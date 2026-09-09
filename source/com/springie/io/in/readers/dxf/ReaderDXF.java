@@ -5,9 +5,12 @@ package com.springie.io.in.readers.dxf;
 import java.util.StringTokenizer;
 
 import com.springie.presets.ColourFactory;
-import com.springie.utilities.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ReaderDXF {
+  private static final Logger logger = LoggerFactory.getLogger(ReaderDXF.class);
+
   int scale_factor = 3000;
 
   int node_number;
@@ -29,7 +32,7 @@ public class ReaderDXF {
     final StringBuilder out = new StringBuilder();
     extractNodes(st, out);
 
-    Log.log("" + out);
+    logger.debug("" + out);
 
     return out;
   }

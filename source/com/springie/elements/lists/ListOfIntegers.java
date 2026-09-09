@@ -3,9 +3,12 @@ package com.springie.elements.lists;
 import java.util.ArrayList;
 
 import com.springie.elements.base.BaseType;
-import com.springie.utilities.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ListOfIntegers extends BaseType {
+  private static final Logger logger = LoggerFactory.getLogger(ListOfIntegers.class);
+
   ArrayList<Integer> list = new ArrayList<>();
 
   public final int size() {
@@ -24,7 +27,7 @@ public class ListOfIntegers extends BaseType {
     for (int i = this.list.size(); --i >= 0;) {
       final int value = retreive(i);
       if (value == n) {
-        Log.log("Removing index " + n + " : from list position:" + i);
+        logger.debug("Removing index " + n + " : from list position:" + i);
         this.list.remove(i);
         return;
       }

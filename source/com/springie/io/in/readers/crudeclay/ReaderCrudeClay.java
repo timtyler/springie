@@ -4,10 +4,13 @@ package com.springie.io.in.readers.crudeclay;
 
 import java.awt.Color;
 import java.util.StringTokenizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.springie.utilities.log.Log;
 
 public class ReaderCrudeClay {
+  private static final Logger logger = LoggerFactory.getLogger(ReaderCrudeClay.class);
+
   int current_r;
 
   int current_g;
@@ -157,7 +160,7 @@ public class ReaderCrudeClay {
     } else if ("fixed".equals(command)) {
       commandFixed(st2);
     } else {
-      Log.log("Unknown command: " + command);
+      logger.debug("Unknown command: " + command);
     }
   }
 

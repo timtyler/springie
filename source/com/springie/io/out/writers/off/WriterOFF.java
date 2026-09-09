@@ -15,9 +15,12 @@ import com.springie.io.out.GarbageCollection;
 import com.springie.io.out.WriteFloatingPoint;
 import com.springie.metrics.BoundingBox;
 import com.springie.modification.redundancy.RedundancyRemover;
-import com.springie.utilities.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WriterOFF {
+  private static final Logger logger = LoggerFactory.getLogger(WriterOFF.class);
+
   float scale_factor;
 
   BoundingBox bb;
@@ -87,7 +90,7 @@ public class WriterOFF {
         this.out.close();
       }
     } catch (IOException e) {
-      Log.log("Error in write: " + e);
+      logger.debug("Error in write: " + e);
     }
   }
 
@@ -165,7 +168,7 @@ public class WriterOFF {
     try {
       this.out.write(s + "\n");
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error("Unexpected exception", e);
     }
   }
 }

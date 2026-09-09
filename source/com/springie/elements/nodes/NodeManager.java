@@ -24,16 +24,19 @@ import com.springie.modification.velocity.DampOverallVelocities;
 import com.springie.presets.PresetObjects;
 import com.springie.render.CachedNode;
 import com.springie.render.Coords;
-import com.springie.utilities.log.Log;
 import com.springie.utilities.math.SquareRoot;
 import com.springie.world.World;
 import com.tifsoft.Forget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The class that manages the particular collection of entities that is
  * universal - and is not confined to a particular egg.
  */
 public class NodeManager extends World {
+  private static final Logger logger = LoggerFactory.getLogger(NodeManager.class);
+
 
 	static int max_poss_dyn_size = 500;
 
@@ -128,20 +131,20 @@ public class NodeManager extends World {
 			d = PresetObjects.getCreatureDescription(location);
 		} catch (IOException e) {
 			reportProblem(location);
-			e.printStackTrace();
+			logger.error("Unexpected exception", e);
 		} catch (RuntimeException e) {
 			reportProblem(location);
-			e.printStackTrace();
+			logger.error("Unexpected exception", e);
 		} catch (SAXException e) {
 			reportProblem(location);
-			e.printStackTrace();
+			logger.error("Unexpected exception", e);
 		}
 
 		FrEnd.data_input.addFromString(d, ContextMananger.getNodeManager());
 	}
 
 	private void reportProblem(String location) {
-		Log.log("Problem getting information from location:" + location);
+		logger.debug("Problem getting information from location:" + location);
 	}
 
 	// called on resize...

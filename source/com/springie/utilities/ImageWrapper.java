@@ -6,11 +6,14 @@ import java.awt.image.ColorModel;
 import java.awt.image.MemoryImageSource;
 import java.awt.image.PixelGrabber;
 
-import com.springie.utilities.log.Log;
 import com.tifsoft.Forget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // Don't try writing to JPEGs. It will have no effect...
 public class ImageWrapper {
+  private static final Logger logger = LoggerFactory.getLogger(ImageWrapper.class);
+
   private Image image;
 
   private int[] source;
@@ -116,7 +119,7 @@ public class ImageWrapper {
     try {
       pg.grabPixels();
     } catch (InterruptedException e) {
-      Log.log(e.toString());
+      logger.debug(e.toString());
     }
   }
 

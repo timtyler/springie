@@ -8,9 +8,12 @@ import com.springie.elements.links.LinkManager;
 import com.springie.elements.links.LinkType;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.utilities.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MakeLinksToNearestNode {
+  private static final Logger logger = LoggerFactory.getLogger(MakeLinksToNearestNode.class);
+
   int colour_of_link_to_nearest = 0xFFFFC0FF;
 
   private NodeManager node_manager;
@@ -112,7 +115,7 @@ public class MakeLinksToNearestNode {
     for (int idx = number; --idx >= 0;) {
       final int num_of_candidate_node = target_node_numbers[idx];
       if (num_of_candidate_node < 0) {
-        Log.log("num_of_candidate_node: " + num_of_candidate_node);
+        logger.debug("num_of_candidate_node: " + num_of_candidate_node);
       }
 
       final Node candidate = (Node) this.node_manager.element
@@ -126,7 +129,7 @@ public class MakeLinksToNearestNode {
     }
     
     if (list_of_nearest.countFound() != max) {
-      Log.log("list_of_nearest.countFound:" + list_of_nearest.countFound());
+      logger.debug("list_of_nearest.countFound:" + list_of_nearest.countFound());
     }
 
     return list_of_nearest;

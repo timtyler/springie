@@ -23,10 +23,13 @@ import com.springie.io.out.WriteFloatingPoint;
 import com.springie.metrics.BoundingBox;
 import com.springie.modification.redundancy.RedundancyRemover;
 import com.springie.preferences.Preferences;
-import com.springie.utilities.log.Log;
 import com.tifsoft.Forget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WriterPOV {
+  private static final Logger logger = LoggerFactory.getLogger(WriterPOV.class);
+
 	double scale_factor;
 
 	BoundingBox bb;
@@ -121,7 +124,7 @@ public class WriterPOV {
 				this.out.close();
 			}
 		} catch (IOException e) {
-			Log.log("Error in write: " + e);
+			logger.debug("Error in write: " + e);
 		}
 	}
 
@@ -800,7 +803,7 @@ public class WriterPOV {
 		try {
 			this.out.write(s + "\n");
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("Unexpected exception", e);
 		}
 	}
 }

@@ -4,12 +4,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
-import com.springie.utilities.log.Log;
 import com.tifsoft.fdl.old.ZFDLWriterAttribute;
 import com.tifsoft.fdl.old.ZFDLWriterCharacters;
 import com.tifsoft.fdl.old.ZFDLWriterNamedBraceList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FDLWriterExampleProgram {
+  private static final Logger logger = LoggerFactory.getLogger(FDLWriterExampleProgram.class);
+
   Writer out;
 
   public void test(String filename) {
@@ -29,7 +32,7 @@ public class FDLWriterExampleProgram {
       this.out.write(ten.makeString());
       this.out.flush();
     } catch (IOException e) {
-      Log.log("TT_Error (writeOutFile): " + e.toString());
+      logger.debug("TT_Error (writeOutFile): " + e.toString());
     }
   }
 }

@@ -5,9 +5,12 @@ package com.springie.io.in.readers.dat;
 import java.util.StringTokenizer;
 
 import com.springie.presets.ColourFactory;
-import com.springie.utilities.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class ReaderDAT {
+  private static final Logger logger = LoggerFactory.getLogger(ReaderDAT.class);
+
 
   private ReaderDAT() {
     // ...
@@ -43,7 +46,7 @@ public final class ReaderDAT {
                   final int z = (int) (Double.valueOf(st_z).doubleValue() * sf);
 
                   out.append("N X:" + x + " Y:" + y + " Z:" + z + " ");
-                  Log.log("N X:" + x + " Y:" + y + " Z:" + z + " ");
+                  logger.debug("N X:" + x + " Y:" + y + " Z:" + z + " ");
                 }
               }
             }
@@ -71,7 +74,7 @@ public final class ReaderDAT {
                   }
 
                   out.append("LK V:" + i_a + " V:" + i_b + " ");
-                  Log.log("LK V:" + i_a + " V:" + i_b + " ");
+                  logger.debug("LK V:" + i_a + " V:" + i_b + " ");
                 }
               }
             }

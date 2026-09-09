@@ -15,10 +15,13 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
 import com.springie.modification.resize.LinkResetter;
-import com.springie.utilities.log.Log;
 import com.springie.world.World;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class ReaderTens {
+  private static final Logger logger = LoggerFactory.getLogger(ReaderTens.class);
+
   static Reader in;
 
   static int last_token_number = 999;
@@ -114,7 +117,7 @@ public final class ReaderTens {
               if (last_token_number == Instructions.V) {
                 final char ch = token.charAt(0);
                 if (ch > '9') {
-                  Log.log("token:" + token);
+                  logger.debug("token:" + token);
                   final int temp = node_manager.getNodeNumberFromName(token);
                   final Node temp_node = (Node) node_manager.element
                       .get(temp);
@@ -139,7 +142,7 @@ public final class ReaderTens {
 
               if (t == MAX_INS) {
                 if (debug_parser) {
-                  Log.log("Unknown token: " + token + " (ignored)");
+                  logger.debug("Unknown token: " + token + " (ignored)");
                 }
               } else {
                 last_token_number = t;
@@ -261,7 +264,7 @@ public final class ReaderTens {
                 // current_object = last_token_number;
 
                 if (debug_parser) {
-                  Log.log("Token: " + token + " (" + t + ")");
+                  logger.debug("Token: " + token + " (" + t + ")");
                 }
               }
 
@@ -280,7 +283,7 @@ public final class ReaderTens {
             if ((number.length() >= 3) && (number.charAt(1) == 'x')) {
               number = number.substring(2);
               if (debug_parser) {
-                Log.log("Hex number: 0x" + number + " ("
+                logger.debug("Hex number: 0x" + number + " ("
                     + (int) Long.parseLong(number, 16) + ")");
               }
 
@@ -511,12 +514,12 @@ public final class ReaderTens {
                 break;
 
               default:
-                Log.log("current_object:" + current_object);
+                logger.debug("current_object:" + current_object);
                 throw new RuntimeException("");
             }
 
             if (debug_parser) {
-              Log.log("Number: " + number);
+              logger.debug("Number: " + number);
             }
 
             in_number = false;

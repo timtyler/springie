@@ -33,10 +33,13 @@ import com.springie.modification.automaticradius.AutomaticLinkRadius;
 import com.springie.modification.automaticradius.AutomaticNodeRadius;
 import com.springie.modification.automaticradius.DeriveLinkRadiusFromNodeRadius;
 import com.springie.modification.post.PostModification;
-import com.springie.utilities.log.Log;
 import com.tifsoft.utilities.execute.Executor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DataInput {
+  private static final Logger logger = LoggerFactory.getLogger(DataInput.class);
+
   Reader in;
 
   public NodeManager manager_destination;
@@ -128,17 +131,17 @@ public class DataInput {
     try {
       input = new ReaderSPR().translate(filename);
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error("Unexpected exception", e);
     } catch (SAXException e) {
-      e.printStackTrace();
+      logger.error("Unexpected exception", e);
     }
 
     if (FrEnd.development_version) {
-      Log.log("DataInput->readInSprFile output:" + input);
+      logger.debug("DataInput->readInSprFile output:" + input);
     }
 
     if (input == null) {
-      Log.log("DataInput->readInSprFile problems with:" + filename);
+      logger.debug("DataInput->readInSprFile problems with:" + filename);
     }
 
     final Executor execute = new ReaderSPRExecutor();
@@ -151,9 +154,9 @@ public class DataInput {
     try {
       out = new ReaderEIG().translate(filename);
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error("Unexpected exception", e);
     } catch (SAXException e) {
-      e.printStackTrace();
+      logger.error("Unexpected exception", e);
     }
     final Executor execute = new ReaderRBFExecutor();
 
@@ -167,9 +170,9 @@ public class DataInput {
     try {
       out = ReaderFabric.translate(filename);
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error("Unexpected exception", e);
     } catch (SAXException e) {
-      e.printStackTrace();
+      logger.error("Unexpected exception", e);
     }
     final Executor execute = new ReaderRBFExecutor();
 

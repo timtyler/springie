@@ -9,11 +9,14 @@ import org.xml.sax.SAXException;
 import com.springie.FrEnd;
 import com.springie.io.in.readers.spr.ReaderSPR;
 import com.springie.messages.ArgumentList;
-import com.springie.utilities.log.Log;
 import com.springie.utilities.random.JUR;
 import com.tifsoft.Forget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class PresetObjects {
+  private static final Logger logger = LoggerFactory.getLogger(PresetObjects.class);
+
   static JUR rnd = new JUR();
 
   private PresetObjects() {
@@ -44,7 +47,7 @@ public final class PresetObjects {
       return makeMatrix(n1, n2, n3);
     }
 
-    Log.log("No known creature specified");
+    logger.debug("No known creature specified");
     return null;
   }
 
@@ -68,9 +71,9 @@ public final class PresetObjects {
       // Log.log("getPathFromXMLFile out:" + out);
       return out;
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error("Unexpected exception", e);
     } catch (SAXException e) {
-      e.printStackTrace();
+      logger.error("Unexpected exception", e);
     }
 
     return "";

@@ -13,9 +13,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.springie.FrEnd;
-import com.springie.utilities.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class ImageLoader {
+  private static final Logger logger = LoggerFactory.getLogger(ImageLoader.class);
+
   //private static ImageLoader image_loader;
   private static Toolkit toolkit;
 
@@ -78,8 +81,8 @@ public final class ImageLoader {
           // Log.log("111");
           // Log.log("PNG->NULL?:" + image.i);
         } catch (IOException ioexception) {
-          Log.log("Problem loading image: " + name);
-          Log.exception(ioexception);
+          logger.debug("Problem loading image: " + name);
+          logger.error("Exception", ioexception);
         }
       } else {
         // Thanks to Karl Schmidt for the followig code...
@@ -112,7 +115,7 @@ public final class ImageLoader {
 
       return image;
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error("Unexpected exception", e);
     }
 
     //Log.log("BAD EXIT: "+ name);
@@ -130,7 +133,7 @@ public final class ImageLoader {
       try {
         Thread.sleep(10);
       } catch (InterruptedException e) {
-        Log.exception(e);
+        logger.error("Exception", e);
       }
     } while (!toolkit.prepareImage(temp_image.getImage(), -1, -1, null));
     // Log.log("Finished loading: " + name + ".");

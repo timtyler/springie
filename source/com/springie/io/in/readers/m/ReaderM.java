@@ -6,9 +6,12 @@ import java.util.StringTokenizer;
 import java.util.ArrayList;
 
 import com.springie.geometry.Point3D;
-import com.springie.utilities.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ReaderM {
+  private static final Logger logger = LoggerFactory.getLogger(ReaderM.class);
+
   ArrayList<Point3D> nodes = new ArrayList<>();
 
   ArrayList<ArrayList<Integer>> faces = new ArrayList<>();
@@ -39,7 +42,7 @@ public class ReaderM {
     extractNodes(st, out);
     outputFaces(out);
 
-    Log.log("" + out);
+    logger.debug("" + out);
     
     return out;
   }

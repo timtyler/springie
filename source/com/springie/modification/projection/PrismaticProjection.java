@@ -12,8 +12,12 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.io.in.readers.spr.ReaderSPR;
 import com.springie.io.out.Serialiser;
 import com.tifsoft.utilities.execute.Executor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PrismaticProjection {
+  private static final Logger logger = LoggerFactory.getLogger(PrismaticProjection.class);
+
   NodeManager node_manager;
 
   LinkManager link_manager;
@@ -37,9 +41,9 @@ public class PrismaticProjection {
     try {
       tokenised = new ReaderSPR().translateString(serialised);
     } catch (IOException e1) {
-      e1.printStackTrace();
+      logger.error("Unexpected exception", e1);
     } catch (SAXException e1) {
-      e1.printStackTrace();
+      logger.error("Unexpected exception", e1);
     }
 
     final Executor e = new Executor() {

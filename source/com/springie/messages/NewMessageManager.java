@@ -2,10 +2,13 @@
 package com.springie.messages;
 
 import java.util.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.springie.utilities.log.Log;
 
 public class NewMessageManager {
+  private static final Logger logger = LoggerFactory.getLogger(NewMessageManager.class);
+
   ArrayList<NewMessage> messages = new ArrayList<>();
 
   public final void add(NewMessage msg) {
@@ -20,8 +23,8 @@ public class NewMessageManager {
         final NewMessage msg = this.messages.get(n);
         msg.execute();
       } catch (RuntimeException e) {
-        Log.log("Error processing message (number " + n + "):");
-        e.printStackTrace();
+        logger.debug("Error processing message (number " + n + "):");
+        logger.error("Unexpected exception", e);
       }
     }
 

@@ -7,14 +7,17 @@ import java.util.ArrayList;
 import uk.org.fdl.tokeniser.FDLTokeniser;
 import uk.org.fdl.tokens.FDLElement;
 
-import com.springie.utilities.log.Log;
 import com.tifsoft.Forget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class FDLReader {
+  private static final Logger logger = LoggerFactory.getLogger(FDLReader.class);
+
 
   public static void main(String[] args) {
     Forget.about(args);
-    Log.log(test("foo bar() {  0 10 1.9 -3 <Comment> 'aoe' \"aseo\" }"));
+    logger.debug(test("foo bar() {  0 10 1.9 -3 <Comment> 'aoe' \"aseo\" }"));
   }
 
   private FDLReader() {

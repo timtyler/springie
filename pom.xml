@@ -33,6 +33,8 @@
     <maven.compiler.release>17</maven.compiler.release>
     <junit.version>5.10.3</junit.version>
     <jmh.version>1.37</jmh.version>
+    <slf4j.version>2.0.16</slf4j.version>
+    <logback.version>1.5.12</logback.version>
   </properties>
 
   <build>
@@ -61,21 +63,41 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.4.1</version>
-        <configuration>
-          <archive>
-            <manifest>
-              <addClasspath>false</addClasspath>
-              <mainClass>com.springie.FrEnd</mainClass>
-            </manifest>
-          </archive>
-        </configuration>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.6.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <!-- Merge META-INF/services so the SLF4J provider is found. -->
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>com.springie.FrEnd</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
 
   <dependencies>
+    <!-- Logging: SLF4J API + Logback implementation. -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>${logback.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>

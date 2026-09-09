@@ -12,10 +12,13 @@ import com.springie.modification.pre.PrepareToModifyNodeTypes;
 import com.springie.modification.resize.LinkResetter;
 import com.springie.modification.resize.ScaleToFitScreen;
 import com.springie.modification.translation.CentreOnScreen;
-import com.springie.utilities.log.Log;
 import com.tifsoft.utilities.execute.Executor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ReaderDATExecutor implements Executor {
+  private static final Logger logger = LoggerFactory.getLogger(ReaderDATExecutor.class);
+
   public Object execute(Object o) {
     final NodeManager node_manager = (NodeManager) o;
 
@@ -45,7 +48,7 @@ public class ReaderDATExecutor implements Executor {
     int index = 0;
     do {
       finished = processDuplicateNodes(node_manager);
-      Log.log("Deduping (" + index++ + "/" + n_o_n + ")");
+      logger.debug("Deduping (" + index++ + "/" + n_o_n + ")");
       node_manager.deselectAll();
     } while (!finished);
     new PostModification(node_manager).cleanup();

@@ -31,8 +31,12 @@ import com.springie.presets.AddXMLModelIndexLeaves;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 import com.tifsoft.Forget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PanelFundamental {
+  private static final Logger logger = LoggerFactory.getLogger(PanelFundamental.class);
+
   public Panel panel = FrEnd.setUpPanelForFrame2();
 
   MessageManager message_manager;
@@ -341,9 +345,9 @@ public class PanelFundamental {
       new AddXMLModelIndexLeaves().addLeaves(FrEnd.choose_preset_index,
           FrEnd.model_index);
     } catch (IOException e1) {
-      e1.printStackTrace();
+      logger.error("Unexpected exception", e1);
     } catch (SAXException e1) {
-      e1.printStackTrace();
+      logger.error("Unexpected exception", e1);
     }
 
     setUpInitialChoice();
@@ -406,9 +410,9 @@ public class PanelFundamental {
     try {
       new AddXMLModelIndexLeaves().addLeaves(FrEnd.choose_initial, path);
     } catch (IOException e1) {
-      e1.printStackTrace();
+      logger.error("Unexpected exception", e1);
     } catch (SAXException e1) {
-      e1.printStackTrace();
+      logger.error("Unexpected exception", e1);
     }
   }
 

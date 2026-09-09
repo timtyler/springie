@@ -21,9 +21,10 @@ import com.springie.geometry.Vector3D;
 import com.springie.render.Coords;
 import com.springie.render.RendererArrays;
 import com.springie.render.RendererDelegator;
-import com.springie.utilities.log.Log;
 import com.springie.utilities.math.SquareRoot;
 import com.springie.utilities.random.Hortensius32Fast;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The class that manages collections of entities. <BR>
@@ -31,6 +32,8 @@ import com.springie.utilities.random.Hortensius32Fast;
  * collection of entities that is unconfined and fills all space.
  */
 public class World extends BaseElementManager<Node> {
+  private static final Logger logger = LoggerFactory.getLogger(World.class);
+
 	public RendererArrays renderer = new RendererArrays();
 
 	public RendererArrays renderer2 = new RendererArrays();
@@ -270,7 +273,7 @@ public class World extends BaseElementManager<Node> {
 			}
 		}
 
-		Log.log("Node not found!");
+		logger.debug("Node not found!");
 
 		return false;
 	}

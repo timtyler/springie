@@ -3,10 +3,13 @@ package com.tifsoft.xml.writer;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.springie.utilities.log.Log;
 
 public class XMLWriter {
+  private static final Logger logger = LoggerFactory.getLogger(XMLWriter.class);
+
   Writer out;
 
   public void test(String filename) {
@@ -26,7 +29,7 @@ public class XMLWriter {
       this.out.write(ten.makeString());
       this.out.flush();
     } catch (IOException e) {
-      Log.log("TT_Error (writeOutFile): " + e.toString());
+      logger.debug("TT_Error (writeOutFile): " + e.toString());
     }
   }
 }
