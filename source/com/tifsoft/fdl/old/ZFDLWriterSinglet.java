@@ -9,9 +9,9 @@ import uk.org.fdl.writer.FDLWriterStringUtilities;
 public class ZFDLWriterSinglet implements FDLWriterInterface {
   String name;
 
-  ArrayList attributes;
+  ArrayList<ZFDLWriterAttribute> attributes;
 
-  public ZFDLWriterSinglet(String name, ArrayList arguments) {
+  public ZFDLWriterSinglet(String name, ArrayList<ZFDLWriterAttribute> arguments) {
     this.name = name;
     this.attributes = arguments;
   }
@@ -35,7 +35,7 @@ public class ZFDLWriterSinglet implements FDLWriterInterface {
       if (this.attributes != null) {
         final int arguments_size = this.attributes.size();
         for (int i = 0; i < arguments_size; i++) {
-          final ZFDLWriterAttribute arg = (ZFDLWriterAttribute) this.attributes.get(i);
+          final ZFDLWriterAttribute arg = this.attributes.get(i);
           sb.append(":" + arg.toString());
         }
       }
@@ -46,11 +46,11 @@ public class ZFDLWriterSinglet implements FDLWriterInterface {
     return sb.toString();
   }
 
-  public ArrayList getAttributes() {
+  public ArrayList<ZFDLWriterAttribute> getAttributes() {
     return this.attributes;
   }
 
-  public void setAttributes(ArrayList arguments) {
+  public void setAttributes(ArrayList<ZFDLWriterAttribute> arguments) {
     this.attributes = arguments;
   }
 

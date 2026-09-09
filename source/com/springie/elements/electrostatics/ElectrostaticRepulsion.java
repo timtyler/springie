@@ -8,7 +8,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.render.Coords;
 
 public class ElectrostaticRepulsion {
-  public ArrayList charged = new ArrayList<>();
+  public ArrayList<Node> charged = new ArrayList<>();
   
   public boolean charge_active = true;
   

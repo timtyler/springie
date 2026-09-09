@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import com.springie.utilities.log.Log;
 
 public class NewMessageManager {
-  ArrayList messages = new ArrayList<>();
+  ArrayList<NewMessage> messages = new ArrayList<>();
 
   public final void add(NewMessage msg) {
     this.messages.add(msg);
@@ -17,7 +17,7 @@ public class NewMessageManager {
 
     for (int n = 0; n < number_of_messages; n++) {
       try {
-        final NewMessage msg = (NewMessage) this.messages.get(n);
+        final NewMessage msg = this.messages.get(n);
         msg.execute();
       } catch (RuntimeException e) {
         Log.log("Error processing message (number " + n + "):");

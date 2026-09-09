@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 
 public class TTChoice {
-  public ArrayList vector;
+  public ArrayList<TTNumStr> vector;
 
   public Choice choice;
 

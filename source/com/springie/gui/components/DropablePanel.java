@@ -175,7 +175,7 @@ public class DropablePanel extends Panel {
       //final String s = (String) data;
       //} else
       if (data instanceof List) {
-        final List julist = (List) data;
+        final List<?> julist = (List<?>) data;
         //Log.log("File:" + julist);
 
         final File file = (File) julist.get(0);

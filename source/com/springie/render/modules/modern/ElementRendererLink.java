@@ -31,7 +31,7 @@ public final class ElementRendererLink {
     // ...
   }
 
-  public static ArrayList getPolygon(Link link, Node node_1, Node node_2,
+  public static ArrayList<PolygonComposite> getPolygon(Link link, Node node_1, Node node_2,
       int thicknesss, int colour) {
     final Point3D point0 = (Point3D) node_1.pos.clone();
     final Point3D point1 = (Point3D) node_2.pos.clone();
@@ -84,7 +84,7 @@ public final class ElementRendererLink {
 
     final Vector3D cross_2_int = new Vector3D(c2_x, c2_y, c2_z);
 
-    final ArrayList return_vector = new ArrayList<>();
+    final ArrayList<PolygonComposite> return_vector = new ArrayList<>();
 
     int strut_divisions_actual = strut_divisions;
     if (RendererDelegator.fat_struts) {

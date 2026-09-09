@@ -185,7 +185,7 @@ public final class ElementRendererNode {
     final int actual_colour = DeepObjectColourCalculator.getColourOfDeepObject(colour,
         node.pos.z);
 
-    final ArrayList polygon_vector = new ArrayList<>();
+    final ArrayList<PolygonObject2D> polygon_vector = new ArrayList<>();
     final double radius_in = node.type.radius * 4 / 3;
     final double radius_mid = radius_in + width;
     final double radius_out = radius_in + width + width;
@@ -240,7 +240,7 @@ public final class ElementRendererNode {
 
     final int colour = RendererDelegator.color_charge_number;
 
-    final ArrayList polygon_vector = new ArrayList<>();
+    final ArrayList<PolygonObject2D> polygon_vector = new ArrayList<>();
 
     final int x = node.pos.x;
     final int y = node.pos.y;
@@ -282,7 +282,7 @@ public final class ElementRendererNode {
 
     final int colour = RendererDelegator.color_charge_number;
 
-    final ArrayList polygon_vector = new ArrayList<>();
+    final ArrayList<PolygonObject2D> polygon_vector = new ArrayList<>();
 
     final int x = node.pos.x;
     final int y = node.pos.y;
@@ -306,7 +306,7 @@ public final class ElementRendererNode {
     return combine(polygon_vector, composite);
   }
 
-  private static PolygonComposite combine(ArrayList polygon_vector,
+  private static PolygonComposite combine(ArrayList<PolygonObject2D> polygon_vector,
       PolygonComposite composite) {
     final int size_1 = polygon_vector.size();
     final int size_2 = composite.array.length;
@@ -314,7 +314,7 @@ public final class ElementRendererNode {
     final PolygonObject2D[] out = new PolygonObject2D[size_1 + size_2];
 
     for (int i = 0; i < size_1; i++) {
-      out[i] = (PolygonObject2D) polygon_vector.get(i);
+      out[i] = polygon_vector.get(i);
     }
 
     for (int i = 0; i < size_2; i++) {

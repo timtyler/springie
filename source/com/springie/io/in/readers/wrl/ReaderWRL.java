@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import com.springie.render.modules.modern.Double3D;
 
 public final class ReaderWRL {
-  static ArrayList groups = new ArrayList<>();
+  static ArrayList<ReaderWRLGroup> groups = new ArrayList<>();
 
   static ReaderWRLGroup current_group;
 
@@ -107,7 +107,7 @@ public final class ReaderWRL {
       }
 
       if ("coordIndex".equals(token)) {
-        ArrayList current_face = new ArrayList<>();
+        ArrayList<Integer> current_face = new ArrayList<>();
         current_group.faces.add(current_face);
         boolean finished = false;
         do {
@@ -162,20 +162,20 @@ public final class ReaderWRL {
     // make node number lists...
     final int main_size = groups.size();
 
-    final ArrayList final_node_list = new ArrayList<>();
+    final ArrayList<Double3D> final_node_list = new ArrayList<>();
 
     for (int i = 0; i < main_size; i++) {
-      final ReaderWRLGroup group = (ReaderWRLGroup) groups.get(i);
+      final ReaderWRLGroup group = groups.get(i);
       if (group.colour == 0xFFFFFF) {
         // list of point numbers for each node
-        final ArrayList lists = new ArrayList<>();
+        final ArrayList<ArrayList<Integer>> lists = new ArrayList<>();
         final int faces_size = group.faces.size();
         for (int j = 0; j < faces_size; j++) {
-          final ArrayList face = (ArrayList) group.faces.get(j);
+          final ArrayList<Integer> face = group.faces.get(j);
           final int face_size = face.size();
-          ArrayList found_list = null;
+          ArrayList<Integer> found_list = null;
           for (int k = 0; k < face_size; k++) {
-            final Integer v = (Integer) face.get(k);
+            final Integer v = face.get(k);
             if (found_list == null) {
               found_list = foundAlready(v, lists);
               break;
@@ -190,27 +190,27 @@ public final class ReaderWRL {
 
           // add all needed points to relevant list
           for (int k = 0; k < face_size; k++) {
-            final Integer v = (Integer) face.get(k);
+            final Integer v = face.get(k);
             if (!found_list.contains(v)) {
               found_list.add(v);
             }
           }
         }
 
-        final ArrayList node_list = new ArrayList<>();
+        final ArrayList<ReaderWRLNode> node_list = new ArrayList<>();
         // make the nodes...
         final int lists_size = lists.size();
         for (int idx = 0; idx < lists_size; idx++) {
-          final ArrayList list = (ArrayList) lists.get(idx);
+          final ArrayList<Integer> list = lists.get(idx);
           final int list_size = list.size();
           if (list_size > 0) {
             final Double3D min = new Double3D(9999, 9999, 9999);
             final Double3D max = new Double3D(-9999, -9999, -9999);
             final Double3D average = new Double3D(0, 0, 0);
             for (int jdx = 0; jdx < list_size; jdx++) {
-              final Integer integer = (Integer) list.get(jdx);
+              final Integer integer = list.get(jdx);
               final int index = integer.intValue();
-              final Double3D d3d = (Double3D) group.points.get(index);
+              final Double3D d3d = group.points.get(index);
               min.x = Math.min(d3d.x, min.x);
               min.y = Math.min(d3d.y, min.y);
               min.z = Math.min(d3d.z, min.z);
@@ -232,7 +232,7 @@ public final class ReaderWRL {
 
         final int node_list_size = node_list.size();
         for (int idx = 0; idx < node_list_size; idx++) {
-          final ReaderWRLNode node = (ReaderWRLNode) node_list.get(idx);
+          final ReaderWRLNode node = node_list.get(idx);
           if (noLargerNodesIntersect(node, node_list, idx + 1)) {
             final Double3D node_min = node.min;
             final Double3D node_max = node.max;
@@ -257,23 +257,23 @@ public final class ReaderWRL {
     }
 
     // links...
-    final HashMap already = new HashMap<>();
+    final HashMap<Point, Point> already = new HashMap<>();
     for (int i = 0; i < main_size; i++) {
-      final ReaderWRLGroup group = (ReaderWRLGroup) groups.get(i);
+      final ReaderWRLGroup group = groups.get(i);
       if (group.colour != 0xFFFFFF) {
         final int faces_size = group.faces.size();
         for (int j = 0; j < faces_size; j++) {
-          final ArrayList face = (ArrayList) group.faces.get(j);
+          final ArrayList<Integer> face = group.faces.get(j);
           final int face_size = face.size();
           for (int k = 0; k < face_size - 1; k++) {
-            final Integer v1 = (Integer) face.get(k);
-            final Integer v2 = (Integer) face.get(k + 1);
+            final Integer v1 = face.get(k);
+            final Integer v2 = face.get(k + 1);
 
             // Log.log("Link idx: " + v1 + " - " + v2);
 
-            final Double3D pt_1 = (Double3D) group.points.get(v1
+            final Double3D pt_1 = group.points.get(v1
                 .intValue());
-            final Double3D pt_2 = (Double3D) group.points.get(v2
+            final Double3D pt_2 = group.points.get(v2
                 .intValue());
 
             // create link
@@ -312,13 +312,13 @@ public final class ReaderWRL {
     return "FF" + rv.substring(1);
   }
 
-  private static int getIndexOfNearest(Double3D point, ArrayList final_node_list) {
+  private static int getIndexOfNearest(Double3D point, ArrayList<Double3D> final_node_list) {
     final int final_node_list_size = final_node_list.size();
     int nearest_index = 0;
     double min_distance = 99999;
 
     for (int k = 0; k < final_node_list_size; k++) {
-      final Double3D pt = (Double3D) final_node_list.get(k);
+      final Double3D pt = final_node_list.get(k);
       final Double3D copy = pt.subtract(point);
       double len = copy.length();
       if (len < min_distance) {
@@ -331,10 +331,10 @@ public final class ReaderWRL {
   }
 
   private static boolean noLargerNodesIntersect(ReaderWRLNode target,
-      ArrayList node_list, int start) {
+      ArrayList<ReaderWRLNode> node_list, int start) {
     final int node_list_size = node_list.size();
     for (int idx = start; idx < node_list_size; idx++) {
-      final ReaderWRLNode node = (ReaderWRLNode) node_list.get(idx);
+      final ReaderWRLNode node = node_list.get(idx);
       if (node.intersects(target)) {
         return false;
       }
@@ -343,13 +343,13 @@ public final class ReaderWRL {
     return true;
   }
 
-  private static ArrayList foundAlready(Integer value, ArrayList lists) {
+  private static ArrayList<Integer> foundAlready(Integer value, ArrayList<ArrayList<Integer>> lists) {
     final int lists_size = lists.size();
     for (int i = 0; i < lists_size; i++) {
-      final ArrayList list = (ArrayList) lists.get(i);
+      final ArrayList<Integer> list = lists.get(i);
       final int list_size = list.size();
       for (int j = 0; j < list_size; j++) {
-        final Integer integer = (Integer) list.get(j);
+        final Integer integer = list.get(j);
         if (integer.equals(value)) {
           return list;
         }

@@ -55,7 +55,7 @@ public class StellationMaker {
 
   public void tryToMakeStellation(Face face) {
     //final int number_of_nodes = this.node_manager.element.size();
-    final ArrayList node_list = face.nodes;
+    final ArrayList<Node> node_list = face.nodes;
     //ArrayList();
 
     //    final int a0 = this.rnd.nextInt(number_of_nodes);
@@ -102,17 +102,17 @@ public class StellationMaker {
 
     final int number_of_nodes_in_face = face.nodes.size();
     for (int idx = 0; idx < number_of_nodes_in_face; idx++) {
-      final Node n = (Node) node_list.get(idx);
+      final Node n = node_list.get(idx);
       final int length = this.node_manager.distanceBetween(n, added);
       joinNodesBetweenLayers(n, added, length);
     }
   }
 
-  private Point3D centreOfGravityOfNodeList(final ArrayList node) {
+  private Point3D centreOfGravityOfNodeList(final ArrayList<Node> node) {
     final int number = node.size();
     final Point3D c_of_g = new Point3D(0, 0, 0);
     for (int idx = 0; idx < number; idx++) {
-      final Node n = (Node) node.get(idx);
+      final Node n = node.get(idx);
       c_of_g.addTuple3D(n.pos);
     }
 

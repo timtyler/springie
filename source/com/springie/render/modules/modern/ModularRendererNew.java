@@ -62,12 +62,12 @@ public class ModularRendererNew implements ModularRendererBase {
     Forget.about(mask);
     if (FrEnd.render_faces) {
       final FaceManager face_manager = manager.getFaceManager();
-      final List faces = face_manager.element;
+      final List<Face> faces = face_manager.element;
 
       final int total_number = faces.size();
 
       for (int l = total_number; --l >= 0;) {
-        final Face face = (Face) face_manager.element.get(l);
+        final Face face = face_manager.element.get(l);
 
         final PolygonComposite polygons = ElementRendererFace.getPolygon(face);
 
@@ -93,11 +93,11 @@ public class ModularRendererNew implements ModularRendererBase {
             if (link.type.selected) {
               colour = RendererDelegator.colour_selected_number;
             }
-            final ArrayList polygons = ElementRendererLink.getPolygon(link,
+            final ArrayList<PolygonComposite> polygons = ElementRendererLink.getPolygon(link,
                 node_1, node_2, link.getThicknesss(), colour);
             final int polygons_size = polygons.size();
             for (int pci = polygons_size; --pci >= 0;) {
-              final PolygonComposite pc = (PolygonComposite) polygons.get(pci);
+              final PolygonComposite pc = polygons.get(pci);
               this.bins_current.add(pc);
             }
           }

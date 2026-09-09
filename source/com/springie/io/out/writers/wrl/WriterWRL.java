@@ -39,7 +39,7 @@ public class WriterWRL {
 
   Writer out;
 
-  ArrayList nodes;
+  ArrayList<Node> nodes;
 
   public WriterWRL(NodeManager node_manager) {
     this.node_manager = node_manager;
@@ -361,7 +361,7 @@ public class WriterWRL {
           final int npolygon = polygon.nodes.size();
 
           for (int i = npolygon; --i >= 0;) {
-            final Node node = (Node) polygon.nodes.get(i);
+            final Node node = polygon.nodes.get(i);
 
             if (processNode(node, cnt)) {
               cnt++;
@@ -397,7 +397,7 @@ public class WriterWRL {
     String pline = "   ";
 
     for (int i = npolygon; --i >= 0;) {
-      final Node node = (Node) polygon.nodes.get(i);
+      final Node node = polygon.nodes.get(i);
 
       final int n1 = this.nodes.indexOf(node);
 
@@ -411,7 +411,7 @@ public class WriterWRL {
     String pline = "   ";
 
     for (int i = 0; i < npolygon; i++) {
-      final Node node = (Node) polygon.nodes.get(i);
+      final Node node = polygon.nodes.get(i);
 
       final int n1 = this.nodes.indexOf(node);
 

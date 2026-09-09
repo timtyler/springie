@@ -41,7 +41,7 @@ public class WriterSpr {
 
 	Writer out;
 
-	ArrayList nodes;
+	ArrayList<Node> nodes;
 
 	NodeManager node_manager;
 
@@ -325,7 +325,7 @@ public class WriterSpr {
 		final int number = face.nodes.size();
 
 		for (int i = 0; i < number; i++) {
-			final Node node = (Node) face.nodes.get(i);
+			final Node node = face.nodes.get(i);
 
 			final int n1 = this.nodes.indexOf(node);
 

@@ -3,7 +3,7 @@ package com.springie.elements.links;
 import java.util.ArrayList;
 
 public class LinkTypeFactory {
-  public ArrayList array = new ArrayList<>();
+  public ArrayList<LinkType> array = new ArrayList<>();
 
   public LinkType getNew() {
     final LinkType type = new LinkType();

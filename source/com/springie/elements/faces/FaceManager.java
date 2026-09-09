@@ -32,7 +32,7 @@ public class FaceManager extends BaseElementManager<Face> {
    * Sets a polygon between e1 and e2, with target length lenth, elasticity,
    * colour and status flags specified
    */
-  public final Face setPolygon(ArrayList v, FaceType type, Clazz clazz) {
+  public final Face setPolygon(ArrayList<Node> v, FaceType type, Clazz clazz) {
     final Face p = new Face(v, type, clazz);
     this.element.add(p);
 
@@ -108,7 +108,7 @@ public class FaceManager extends BaseElementManager<Face> {
   //    }
   //  }
 
-  public boolean isThereAPolygonWithNodes(ArrayList node_list) {
+  public boolean isThereAPolygonWithNodes(ArrayList<Node> node_list) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final Face poly = (Face) this.element.get(temp);

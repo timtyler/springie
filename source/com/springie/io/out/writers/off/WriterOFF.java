@@ -3,7 +3,6 @@ package com.springie.io.out.writers.off;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
 
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
@@ -27,7 +26,6 @@ public class WriterOFF {
 
   Writer out;
 
-  ArrayList nodes;
 
   private NodeManager node_manager;
 
@@ -57,7 +55,6 @@ public class WriterOFF {
     this.middle.y = (this.bb.max.y + this.bb.min.y) >> 1;
     this.middle.z = (this.bb.max.z + this.bb.min.z) >> 1;
 
-    this.nodes = new ArrayList<>();
 
     try {
       try {

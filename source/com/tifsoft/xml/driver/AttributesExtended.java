@@ -52,7 +52,7 @@ public class AttributesExtended implements Attributes {
   }
 
   // ArrayList has no indexOf(element, from_index); Vector did.
-  private static int indexOfFrom(ArrayList list, Object element, int from_index) {
+  private static int indexOfFrom(ArrayList<String> list, String element, int from_index) {
     for (int i = from_index, n = list.size(); i < n; i++) {
       if (element.equals(list.get(i))) {
         return i;

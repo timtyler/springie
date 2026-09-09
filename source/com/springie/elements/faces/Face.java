@@ -10,7 +10,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;
 
 public class Face extends BaseElement {
-  public ArrayList nodes;
+  public ArrayList<Node> nodes;
 
   public FaceType type;
 
@@ -18,17 +18,17 @@ public class Face extends BaseElement {
 
   public static int number_of_render_divisions = 4;
 
-  public Face(ArrayList v, FaceType type, Clazz clazz) {
+  public Face(ArrayList<Node> v, FaceType type, Clazz clazz) {
     this.nodes = v;
     this.type = type;
     this.clazz = clazz;
   }
 
-  public Face(ArrayList v) {
+  public Face(ArrayList<Node> v) {
     this.nodes = v;
   }
 
-  public boolean hasExactlyTheseNodes(ArrayList node_list) {
+  public boolean hasExactlyTheseNodes(ArrayList<Node> node_list) {
     final int n_points = this.nodes.size();
     final int l_points = node_list.size();
     if (n_points != l_points) {

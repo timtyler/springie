@@ -5,19 +5,19 @@ import java.util.ArrayList;
 public class XMLWriterTagPair implements XMLWriterInterface {
   String name;
 
-  ArrayList attributes;
+  ArrayList<XMLWriterAttribute> attributes;
 
-  ArrayList children;
+  ArrayList<XMLWriterInterface> children;
   
   public boolean newlines = true;
 
-  public XMLWriterTagPair(String name, ArrayList arguments, ArrayList children) {
+  public XMLWriterTagPair(String name, ArrayList<XMLWriterAttribute> arguments, ArrayList<XMLWriterInterface> children) {
     this.name = name;
     this.attributes = arguments;
     this.children = children;
   }
 
-  public XMLWriterTagPair(String name, ArrayList arguments) {
+  public XMLWriterTagPair(String name, ArrayList<XMLWriterAttribute> arguments) {
     this.name = name;
     this.attributes = arguments;
   }
@@ -52,8 +52,7 @@ public class XMLWriterTagPair implements XMLWriterInterface {
       if (this.attributes != null) {
         final int arguments_size = this.attributes.size();
         for (int i = 0; i < arguments_size; i++) {
-          final XMLWriterAttribute arg = (XMLWriterAttribute) this.attributes
-            .get(i);
+          final XMLWriterAttribute arg = this.attributes.get(i);
           sb.append(" " + arg.toString());
         }
       }
@@ -71,8 +70,7 @@ public class XMLWriterTagPair implements XMLWriterInterface {
     if (this.children != null) {
       final int children_size = this.children.size();
       for (int i = 0; i < children_size; i++) {
-        final XMLWriterInterface node = (XMLWriterInterface) this.children
-          .get(i);
+        final XMLWriterInterface node = this.children.get(i);
         sb.append(node.makeString(indent + XMLWriterIndent.level));
       }
     }
@@ -87,19 +85,19 @@ public class XMLWriterTagPair implements XMLWriterInterface {
     }
   }
 
-  public ArrayList getAttributes() {
+  public ArrayList<XMLWriterAttribute> getAttributes() {
     return this.attributes;
   }
 
-  public void setAttributes(ArrayList arguments) {
+  public void setAttributes(ArrayList<XMLWriterAttribute> arguments) {
     this.attributes = arguments;
   }
 
-  public ArrayList getChildren() {
+  public ArrayList<XMLWriterInterface> getChildren() {
     return this.children;
   }
 
-  public void setChildren(ArrayList children) {
+  public void setChildren(ArrayList<XMLWriterInterface> children) {
     this.children = children;
   }
 
@@ -139,7 +137,7 @@ public class XMLWriterTagPair implements XMLWriterInterface {
     ensureChildrenExist();
     
     for (int i = 0; i < child.children.size(); i++) {
-      final Object tag = child.children.get(i);
+      final XMLWriterInterface tag = child.children.get(i);
       this.children.add(tag);
     }
   }

@@ -3,7 +3,6 @@ package com.springie.io.out.writers.pov;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextMananger;
@@ -36,7 +35,6 @@ public class WriterPOV {
 
 	Writer out;
 
-	ArrayList nodes;
 
 	private NodeManager node_manager;
 
@@ -66,7 +64,6 @@ public class WriterPOV {
 		this.middle.y = (this.bb.max.y + this.bb.min.y) >> 1;
 		this.middle.z = (this.bb.max.z + this.bb.min.z) >> 1;
 
-		this.nodes = new ArrayList<>();
 
 		try {
 			try {

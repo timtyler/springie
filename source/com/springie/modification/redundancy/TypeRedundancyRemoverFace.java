@@ -21,10 +21,10 @@ public class TypeRedundancyRemoverFace {
 
   // polygons...
   public void removeRedundancyInFaceTypes() {
-    final ArrayList v = this.node_manager.getFaceManager().face_type_factory.array;
+    final ArrayList<FaceType> v = this.node_manager.getFaceManager().face_type_factory.array;
     final int size = v.size();
     for (int i = size; --i >= 0;) {
-      final FaceType nt = (FaceType) v.get(i);
+      final FaceType nt = v.get(i);
       if (equalspreviousPolygonType(v, i)) {
         final int first = getFirstPolygonType(v, nt, i);
         replacePolygonTypeWithPrevious(v, i, first);
@@ -32,9 +32,9 @@ public class TypeRedundancyRemoverFace {
     }
   }
 
-  private void replacePolygonTypeWithPrevious(ArrayList v, int old, int nww) {
-    final FaceType nt_old = (FaceType) v.get(old);
-    final FaceType nt_nww = (FaceType) v.get(nww);
+  private void replacePolygonTypeWithPrevious(ArrayList<FaceType> v, int old, int nww) {
+    final FaceType nt_old = v.get(old);
+    final FaceType nt_nww = v.get(nww);
     final int n_o_p = this.node_manager.getFaceManager().element.size();
     for (int i = n_o_p; --i >= 0;) {
       final Face p = (Face) this.node_manager.getFaceManager().element.get(i);
@@ -46,7 +46,7 @@ public class TypeRedundancyRemoverFace {
     v.remove(old);
   }
 
-  private int getFirstPolygonType(ArrayList v, FaceType t, int max) {
+  private int getFirstPolygonType(ArrayList<FaceType> v, FaceType t, int max) {
     for (int i = max; --i >= 0;) {
       if (t.equals(v.get(i))) {
         return i;
@@ -56,8 +56,8 @@ public class TypeRedundancyRemoverFace {
     return -1;
   }
 
-  private boolean equalspreviousPolygonType(ArrayList v, int max) {
-    final FaceType t = (FaceType) v.get(max);
+  private boolean equalspreviousPolygonType(ArrayList<FaceType> v, int max) {
+    final FaceType t = v.get(max);
 
     return getFirstPolygonType(v, t, max) > 0;
   }

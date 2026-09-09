@@ -10,9 +10,9 @@ import uk.org.fdl.writer.FDLWriterStringUtilities;
 public class ZFDLWriterNamedBraceList implements FDLWriterInterface {
   String name;
 
-  ArrayList attributes;
+  ArrayList<ZFDLWriterAttribute> attributes;
 
-  ArrayList children;
+  ArrayList<FDLWriterInterface> children;
 
   public boolean newlines = true;
 
@@ -20,13 +20,13 @@ public class ZFDLWriterNamedBraceList implements FDLWriterInterface {
 
   String close = "}";
 
-  public ZFDLWriterNamedBraceList(String name, ArrayList arguments, ArrayList children) {
+  public ZFDLWriterNamedBraceList(String name, ArrayList<ZFDLWriterAttribute> arguments, ArrayList<FDLWriterInterface> children) {
     this.name = name;
     this.attributes = arguments;
     this.children = children;
   }
 
-  public ZFDLWriterNamedBraceList(String name, ArrayList arguments) {
+  public ZFDLWriterNamedBraceList(String name, ArrayList<ZFDLWriterAttribute> arguments) {
     this.name = name;
     this.attributes = arguments;
   }
@@ -65,8 +65,7 @@ public class ZFDLWriterNamedBraceList implements FDLWriterInterface {
       if (this.attributes != null) {
         final int arguments_size = this.attributes.size();
         for (int i = 0; i < arguments_size; i++) {
-          final ZFDLWriterAttribute arg = (ZFDLWriterAttribute) this.attributes
-              .get(i);
+          final ZFDLWriterAttribute arg = this.attributes.get(i);
           sb.append(":" + arg.toString());
         }
       }
@@ -85,8 +84,7 @@ public class ZFDLWriterNamedBraceList implements FDLWriterInterface {
     if (this.children != null) {
       final int children_size = this.children.size();
       for (int i = 0; i < children_size; i++) {
-        final FDLWriterInterface node = (FDLWriterInterface) this.children
-            .get(i);
+        final FDLWriterInterface node = this.children.get(i);
         sb.append(node.makeString(indent + FDLWriter.level));
       }
     }
@@ -102,19 +100,19 @@ public class ZFDLWriterNamedBraceList implements FDLWriterInterface {
     }
   }
 
-  public ArrayList getAttributes() {
+  public ArrayList<ZFDLWriterAttribute> getAttributes() {
     return this.attributes;
   }
 
-  public void setAttributes(ArrayList arguments) {
+  public void setAttributes(ArrayList<ZFDLWriterAttribute> arguments) {
     this.attributes = arguments;
   }
 
-  public ArrayList getChildren() {
+  public ArrayList<FDLWriterInterface> getChildren() {
     return this.children;
   }
 
-  public void setChildren(ArrayList children) {
+  public void setChildren(ArrayList<FDLWriterInterface> children) {
     this.children = children;
   }
 
@@ -154,7 +152,7 @@ public class ZFDLWriterNamedBraceList implements FDLWriterInterface {
     ensureChildrenExist();
 
     for (int i = 0; i < child.children.size(); i++) {
-      final Object tag = child.children.get(i);
+      final FDLWriterInterface tag = child.children.get(i);
       this.children.add(tag);
     }
   }

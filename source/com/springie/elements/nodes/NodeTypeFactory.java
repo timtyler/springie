@@ -3,7 +3,7 @@ package com.springie.elements.nodes;
 import java.util.ArrayList;
 
 public class NodeTypeFactory {
-  public ArrayList array = new ArrayList<>();
+  public ArrayList<NodeType> array = new ArrayList<>();
 
   public NodeType getNew(NodeType current) {
     final NodeType type = new NodeType(current);

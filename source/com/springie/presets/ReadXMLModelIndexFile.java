@@ -22,7 +22,7 @@ public class ReadXMLModelIndexFile extends DefaultHandler {
 
   String path;
 
-  ArrayList directories = new ArrayList<>();
+  ArrayList<String> directories = new ArrayList<>();
 
   public String translate(String leaf, String source) throws IOException,
     SAXException {
@@ -78,7 +78,7 @@ public class ReadXMLModelIndexFile extends DefaultHandler {
             if (this.leaf.equals(val)) {
               this.path = "";
               for (int j = 0; j < this.directories.size(); j++) {
-                this.path += (String) this.directories.get(j) + "/";
+                this.path += this.directories.get(j) + "/";
               }
               this.path += this.leaf;
             }

@@ -44,7 +44,7 @@ public class WriterFDL {
 
 	Writer out;
 
-	ArrayList nodes;
+	ArrayList<Node> nodes;
 
 	NodeManager node_manager;
 

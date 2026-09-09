@@ -3,23 +3,23 @@ package uk.org.fdl.object;
 import java.util.ArrayList;
 
 class FDLObjectCollection extends FDLObject {  
-  public ArrayList children;
+  public ArrayList<FDLObject> children;
   public String separator = " ";
 
-  public ArrayList getChildren() {
+  public ArrayList<FDLObject> getChildren() {
     return this.children;
   }
 
-  public void setChildren(ArrayList children) {
+  public void setChildren(ArrayList<FDLObject> children) {
     this.children = children;
   }
 
-  public void add(ArrayList children) {
+  public void add(ArrayList<FDLObject> children) {
     ensureChildrenExist();
     
     final int children_size = this.children.size();
     for (int i = 0; i < children_size; i++) {
-      final FDLObject element = (FDLObject) children.get(i);
+      final FDLObject element = children.get(i);
       add(element);
     }
   }
@@ -40,7 +40,7 @@ class FDLObjectCollection extends FDLObject {
     ensureChildrenExist();
 
     for (int i = 0; i < child.children.size(); i++) {
-      final Object tag = child.children.get(i);
+      final FDLObject tag = child.children.get(i);
       this.children.add(tag);
     }
   }

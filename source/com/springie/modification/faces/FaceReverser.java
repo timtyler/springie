@@ -32,11 +32,11 @@ public class FaceReverser {
     for (int i = 0; i < size; i++) {
       final Face face = (Face) this.face_manager.element.get(i);
       if (face.type.selected) {
-        final ArrayList nodes = face.nodes;
+        final ArrayList<Node> nodes = face.nodes;
         final int non = nodes.size();
         final int half = non >> 1;
         for (int j = 0; j < half; j++) {
-          final Node temp = (Node) nodes.get(j);
+          final Node temp = nodes.get(j);
           nodes.set(j, nodes.get(non - 1 - j));
           nodes.set(non - 1 - j, temp);
         }

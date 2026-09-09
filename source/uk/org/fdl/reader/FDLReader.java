@@ -24,7 +24,7 @@ public final class FDLReader {
   public static String test(String in) {
     final StringBuilder out = new StringBuilder();
 
-    final ArrayList tokens = new ArrayList<>();
+    final ArrayList<FDLElement> tokens = new ArrayList<>();
 
     final FDLTokeniser token_reader = new FDLTokeniser();
     token_reader.setSource(in);
@@ -39,10 +39,10 @@ public final class FDLReader {
     return out.toString();
   }
 
-  private static void dumpOutTokens(StringBuilder out, ArrayList tokens) {
+  private static void dumpOutTokens(StringBuilder out, ArrayList<FDLElement> tokens) {
     final int size = tokens.size();
     for (int i = 0; i < size; i++) {
-      final FDLElement array_element = (FDLElement) tokens.get(i);
+      final FDLElement array_element = tokens.get(i);
       out.append("(" + array_element.line + "," + array_element.column + ") - "
           + array_element.type.name + " - <" + array_element.getText() + ">\n");
     }

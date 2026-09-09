@@ -20,7 +20,7 @@ public class DimpleMaker {
   }
 
   public void dimple() {
-    final ArrayList vector = new ArrayList<>();
+    final ArrayList<Point3D> vector = new ArrayList<>();
     for (int count = 0; count < this.node_manager.element.size(); count++) {
       final Node node = (Node) this.node_manager.element.get(count);
       if (node.type.selected) {
@@ -33,7 +33,7 @@ public class DimpleMaker {
     for (int count = 0; count < this.node_manager.element.size(); count++) {
       final Node node = (Node) this.node_manager.element.get(count);
       if (node.type.selected) {
-        final Point3D delta = (Point3D) vector.get(i++);
+        final Point3D delta = vector.get(i++);
         node.pos.addTuple3D(delta);
         node.pos.addTuple3D(delta);
       }

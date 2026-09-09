@@ -3,14 +3,11 @@
 package com.springie.io.in.readers.dxf;
 
 import java.util.StringTokenizer;
-import java.util.ArrayList;
 
 import com.springie.presets.ColourFactory;
 import com.springie.utilities.log.Log;
 
 public class ReaderDXF {
-  ArrayList nodes = new ArrayList<>();
-
   int scale_factor = 3000;
 
   int node_number;

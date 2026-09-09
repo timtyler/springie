@@ -32,7 +32,7 @@ public class FaceMaker {
 
   public void tryToMakePolygon(int number) {
     final int number_of_nodes = this.node_manager.element.size();
-    final ArrayList node = new ArrayList<>();
+    final ArrayList<Node> node = new ArrayList<>();
 
     final int a0 = this.rnd.nextInt(number_of_nodes);
     final Node n0 = (Node) this.node_manager.element.get(a0);
@@ -74,10 +74,10 @@ public class FaceMaker {
     polygon_manager.setPolygon(node, type, clazz);
   }
   
-  private boolean nodeIsOnList(Node node_to_check, ArrayList node_list) {
+  private boolean nodeIsOnList(Node node_to_check, ArrayList<Node> node_list) {
     final int number_of_nodes = node_list.size();
     for (int cnt = number_of_nodes; --cnt >= 0;) {
-      final Node candidate = (Node) node_list.get(cnt);
+      final Node candidate = node_list.get(cnt);
       if (candidate == node_to_check) {
         return true;
       }

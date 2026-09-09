@@ -59,7 +59,7 @@ public class TabbedPanel extends Panel implements MouseListener,
   int nCards;
 
   // contains the (interned) card names
-  ArrayList names = new ArrayList<>(10);
+  ArrayList<String> names = new ArrayList<>(10);
 
   // position & width of each tab
   int[] pos;
@@ -180,7 +180,7 @@ public class TabbedPanel extends Panel implements MouseListener,
       if (this.nCards > 0) {
         this.selected = i % this.nCards;
       }
-      ((CardLayout) getLayout()).show(this, (String) this.names.get(i));
+      ((CardLayout) getLayout()).show(this, this.names.get(i));
       repaint();
       final Component c = getComponent(i);
       // ?
@@ -296,7 +296,7 @@ public class TabbedPanel extends Panel implements MouseListener,
     for (int i = 0; i < this.nCards; i++) {
       this.pos[i] = x;
       this.width[i] = this.tabH
-          + this.metric.stringWidth((String) this.names.get(i));
+          + this.metric.stringWidth(this.names.get(i));
       x += this.width[i];
     }
     this.pos[this.nCards] = x;

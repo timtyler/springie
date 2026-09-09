@@ -9,11 +9,11 @@ import com.springie.geometry.Point3D;
 import com.springie.utilities.log.Log;
 
 public class ReaderM {
-  ArrayList nodes = new ArrayList<>();
+  ArrayList<Point3D> nodes = new ArrayList<>();
 
-  ArrayList faces = new ArrayList<>();
+  ArrayList<ArrayList<Integer>> faces = new ArrayList<>();
 
-  ArrayList current_polygon = new ArrayList<>();
+  ArrayList<Integer> current_polygon = new ArrayList<>();
 
   int scale_factor = 30000;
 
@@ -50,7 +50,7 @@ public class ReaderM {
 
     for (int i = 0; i < n; i++) {
       out.append("P ");
-      final ArrayList face = (ArrayList) this.faces.get(i);
+      final ArrayList<Integer> face = this.faces.get(i);
       final int number_of_nodes = face.size();
       for (int j = 0; j < number_of_nodes; j++) {
         final Integer integer = (Integer) face.get(j);

@@ -6,7 +6,7 @@ import com.springie.elements.base.BaseType;
 import com.springie.utilities.log.Log;
 
 public class ListOfIntegers extends BaseType {
-  ArrayList list = new ArrayList<>();
+  ArrayList<Integer> list = new ArrayList<>();
 
   public final int size() {
     return this.list.size();

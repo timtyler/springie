@@ -27,8 +27,8 @@ public final class ReaderRBF {
     final int[] colours = new ColourFactory(65387).getColourArray(64);
     int last_link_group = -1;
     boolean waiting_for_hidden = false;
-    final ArrayList v = new ArrayList<>();
-    final ArrayList h = new ArrayList<>();
+    final ArrayList<Integer> v = new ArrayList<>();
+    final ArrayList<String> h = new ArrayList<>();
     final StringBuilder out = new StringBuilder();
     String tok;
     out.append("CR NG R:0 C:0x0 ");
@@ -120,21 +120,21 @@ public final class ReaderRBF {
     return out;
   }
 
-  private static String getHidden(final ArrayList h, final int num) {
+  private static String getHidden(final ArrayList<String> h, final int num) {
     if (num >= h.size()) {
       return "0";
     }
 
-    final String hidden = (String) h.get(num);
+    final String hidden = h.get(num);
     return hidden;
   }
 
-  private static int getLength(final ArrayList v, final int num) {
+  private static int getLength(final ArrayList<Integer> v, final int num) {
     if (num >= v.size()) {
       return 10;
     }
 
-    final int length = ((Integer) v.get(num)).intValue();
+    final int length = v.get(num).intValue();
     return length;
   }
 

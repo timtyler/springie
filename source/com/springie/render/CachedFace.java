@@ -13,7 +13,7 @@ import com.springie.elements.nodes.Node;
 
 public class CachedFace {
 
-  public ArrayList render = new ArrayList<>();
+  public ArrayList<Point> render = new ArrayList<>();
 
   public Point render_centre = new Point(0, 0);
 

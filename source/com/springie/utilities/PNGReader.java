@@ -38,7 +38,7 @@ public final class PNGReader {
 
   public static final byte[] lut2 = {-119, 80, 78, 71, 13, 10, 26, 10 };
 
-  private ArrayList vector;
+  private ArrayList<Integer> vector;
 
   private boolean is_colour_type;
 

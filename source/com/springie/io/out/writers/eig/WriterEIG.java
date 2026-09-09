@@ -39,7 +39,7 @@ public class WriterEIG {
 
   Writer out;
 
-  ArrayList nodes;
+  ArrayList<Node> nodes;
 
   private NodeManager node_manager;
 

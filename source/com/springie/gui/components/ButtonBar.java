@@ -21,7 +21,7 @@ public class ButtonBar extends Panel implements ItemSelectable {
 
   ImageButtonGroup image_button_group = new ImageButtonGroup();
 
-  ArrayList buttons = new ArrayList<>();
+  ArrayList<ImageButton> buttons = new ArrayList<>();
 
   String name;
 
@@ -84,7 +84,7 @@ public class ButtonBar extends Panel implements ItemSelectable {
   public void select(String action) {
     final int size = this.buttons.size();
     for (int i = 0; i < size; i++) {
-      final ImageButton button = (ImageButton) this.buttons.get(i);
+      final ImageButton button = this.buttons.get(i);
       if (button.name == action) {
         button.setState(true);
       }

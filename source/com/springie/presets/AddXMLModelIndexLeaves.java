@@ -22,7 +22,7 @@ public class AddXMLModelIndexLeaves extends DefaultHandler {
 
   int index;
 
-  ArrayList directories = new ArrayList<>();
+  ArrayList<String> directories = new ArrayList<>();
 
   //private String name2;
   //private String desc;
@@ -88,7 +88,7 @@ public class AddXMLModelIndexLeaves extends DefaultHandler {
       if (leaf) {
         String path = "";
         for (int j = 0; j < this.directories.size(); j++) {
-          path += (String) this.directories.get(j) + "/";
+          path += this.directories.get(j) + "/";
         }
         path += "" + name2;
         //Log.log("Add:" + this.desc + " -> " + path);

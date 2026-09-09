@@ -3,7 +3,7 @@ package com.springie.elements.faces;
 import java.util.ArrayList;
 
 public class FaceTypeFactory {
-  public ArrayList array = new ArrayList<>();
+  public ArrayList<FaceType> array = new ArrayList<>();
 
   public FaceType getNew() {
     final FaceType type = new FaceType();

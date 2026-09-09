@@ -66,7 +66,7 @@ public class MakeLinksToNearestNode {
 
   private int[] getArrayOfNodesOfColour(int colour) {
     final int number_of_nodes = this.node_manager.element.size();
-    final ArrayList nodes = new ArrayList<>();
+    final ArrayList<Integer> nodes = new ArrayList<>();
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) this.node_manager.element
         .get(counter);
@@ -79,7 +79,7 @@ public class MakeLinksToNearestNode {
     final int[] array = new int[size];
 
     for (int counter = size; --counter >= 0;) {
-      array[counter] = ((Integer) (nodes.get(counter))).intValue();
+      array[counter] = nodes.get(counter).intValue();
     }
 
     return array;
