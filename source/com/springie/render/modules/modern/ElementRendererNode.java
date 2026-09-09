@@ -185,12 +185,15 @@ public final class ElementRendererNode {
     final int actual_colour = DeepObjectColourCalculator.getColourOfDeepObject(colour,
         node.pos.z);
 
-    final ArrayList<PolygonObject2D> polygon_vector = new ArrayList<>();
     final double radius_in = node.type.radius * 4 / 3;
     final double radius_mid = radius_in + width;
     final double radius_out = radius_in + width + width;
 
     final int sides = 9;
+
+    // Two polygons per side.
+    final ArrayList<PolygonObject2D> polygon_vector = new ArrayList<>(
+        sides * 2);
     final double increment = 2 * Math.PI / sides;
     final int x = node.pos.x;
     final int y = node.pos.y;
@@ -240,7 +243,7 @@ public final class ElementRendererNode {
 
     final int colour = RendererDelegator.color_charge_number;
 
-    final ArrayList<PolygonObject2D> polygon_vector = new ArrayList<>();
+    final ArrayList<PolygonObject2D> polygon_vector = new ArrayList<>(1);
 
     final int x = node.pos.x;
     final int y = node.pos.y;
@@ -282,7 +285,7 @@ public final class ElementRendererNode {
 
     final int colour = RendererDelegator.color_charge_number;
 
-    final ArrayList<PolygonObject2D> polygon_vector = new ArrayList<>();
+    final ArrayList<PolygonObject2D> polygon_vector = new ArrayList<>(1);
 
     final int x = node.pos.x;
     final int y = node.pos.y;

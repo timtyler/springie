@@ -116,8 +116,6 @@ public final class ElementRendererLink {
     final Vector3D cross_2_int = scratch_cross_2_int;
     cross_2_int.set(c2_x, c2_y, c2_z);
 
-    final ArrayList<PolygonComposite> return_vector = new ArrayList<>();
-
     int strut_divisions_actual = strut_divisions;
     if (RendererDelegator.fat_struts) {
       if (ContextMananger.getNodeManager().is_tensegrity) {
@@ -129,6 +127,10 @@ public final class ElementRendererLink {
 
     final int divisions = link.type.compression ? strut_divisions_actual
         : cable_divisions;
+
+    // One composite per segment, plus room for the optional text label.
+    final ArrayList<PolygonComposite> return_vector = new ArrayList<>(
+        divisions + 1);
     final boolean simple = divisions == 1;
     final double iv = simple ? 1 : 0.4d;
     final double mult = link.type.compression ? 0.6d : -0.1d;
