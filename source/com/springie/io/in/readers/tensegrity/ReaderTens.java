@@ -1,7 +1,7 @@
 package com.springie.io.in.readers.tensegrity;
 
 import java.io.Reader;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.FrEnd;
 import com.springie.composite.Composite;
@@ -15,10 +15,13 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
 import com.springie.modification.resize.LinkResetter;
-import com.springie.utilities.log.Log;
 import com.springie.world.World;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class ReaderTens {
+  private static final Logger logger = LoggerFactory.getLogger(ReaderTens.class);
+
   static Reader in;
 
   static int last_token_number = 999;
@@ -53,7 +56,7 @@ public final class ReaderTens {
     Node current_node = new Node();
     Link current_link = new Link(null, null, current_link_type, current_clazz);
     int current_link_number = -1;
-    Face current_polygon = new Face(new Vector());
+    Face current_polygon = new Face(new ArrayList<>());
     int current_face_number = -1;
 
     setUpUniverseProperties();
@@ -114,11 +117,11 @@ public final class ReaderTens {
               if (last_token_number == Instructions.V) {
                 final char ch = token.charAt(0);
                 if (ch > '9') {
-                  Log.log("token:" + token);
+                  logger.debug("token:" + token);
                   final int temp = node_manager.getNodeNumberFromName(token);
                   final Node temp_node = (Node) node_manager.element
                       .get(temp);
-                  current_polygon.nodes.addElement(temp_node);
+                  current_polygon.nodes.add(temp_node);
                   temp_node.list_of_polygons.add(current_face_number);
                   node_number++;
                   done = true;
@@ -139,7 +142,7 @@ public final class ReaderTens {
 
               if (t == MAX_INS) {
                 if (debug_parser) {
-                  Log.log("Unknown token: " + token + " (ignored)");
+                  logger.debug("Unknown token: " + token + " (ignored)");
                 }
               } else {
                 last_token_number = t;
@@ -261,7 +264,7 @@ public final class ReaderTens {
                 // current_object = last_token_number;
 
                 if (debug_parser) {
-                  Log.log("Token: " + token + " (" + t + ")");
+                  logger.debug("Token: " + token + " (" + t + ")");
                 }
               }
 
@@ -280,7 +283,7 @@ public final class ReaderTens {
             if ((number.length() >= 3) && (number.charAt(1) == 'x')) {
               number = number.substring(2);
               if (debug_parser) {
-                Log.log("Hex number: 0x" + number + " ("
+                logger.debug("Hex number: 0x" + number + " ("
                     + (int) Long.parseLong(number, 16) + ")");
               }
 
@@ -477,7 +480,7 @@ public final class ReaderTens {
                   case Instructions.V:
                     final Node temp_node1 = (Node) node_manager.element
                         .get(temp);
-                    current_polygon.nodes.addElement(temp_node1);
+                    current_polygon.nodes.add(temp_node1);
                     temp_node1.list_of_polygons.add(current_face_number);
                     node_number++;
                     last_token_number = -99;
@@ -511,12 +514,12 @@ public final class ReaderTens {
                 break;
 
               default:
-                Log.log("current_object:" + current_object);
+                logger.debug("current_object:" + current_object);
                 throw new RuntimeException("");
             }
 
             if (debug_parser) {
-              Log.log("Number: " + number);
+              logger.debug("Number: " + number);
             }
 
             in_number = false;

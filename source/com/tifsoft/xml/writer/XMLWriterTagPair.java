@@ -1,23 +1,23 @@
 package com.tifsoft.xml.writer;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class XMLWriterTagPair implements XMLWriterInterface {
   String name;
 
-  Vector attributes;
+  ArrayList<XMLWriterAttribute> attributes;
 
-  Vector children;
+  ArrayList<XMLWriterInterface> children;
   
   public boolean newlines = true;
 
-  public XMLWriterTagPair(String name, Vector arguments, Vector children) {
+  public XMLWriterTagPair(String name, ArrayList<XMLWriterAttribute> arguments, ArrayList<XMLWriterInterface> children) {
     this.name = name;
     this.attributes = arguments;
     this.children = children;
   }
 
-  public XMLWriterTagPair(String name, Vector arguments) {
+  public XMLWriterTagPair(String name, ArrayList<XMLWriterAttribute> arguments) {
     this.name = name;
     this.attributes = arguments;
   }
@@ -31,7 +31,7 @@ public class XMLWriterTagPair implements XMLWriterInterface {
   }
 
   public String makeString(int indent) {
-    final StringBuffer sb = new StringBuffer();
+    final StringBuilder sb = new StringBuilder();
 
     outputStartTagAndAttributes(indent, sb);
 
@@ -43,7 +43,7 @@ public class XMLWriterTagPair implements XMLWriterInterface {
   }
 
   private void outputStartTagAndAttributes(final int indent,
-    final StringBuffer sb) {
+    final StringBuilder sb) {
     if (this.name != null) {
       XMLWriterUtilities.indent(sb, indent);
       sb.append("<");
@@ -52,8 +52,7 @@ public class XMLWriterTagPair implements XMLWriterInterface {
       if (this.attributes != null) {
         final int arguments_size = this.attributes.size();
         for (int i = 0; i < arguments_size; i++) {
-          final XMLWriterAttribute arg = (XMLWriterAttribute) this.attributes
-            .elementAt(i);
+          final XMLWriterAttribute arg = this.attributes.get(i);
           sb.append(" " + arg.toString());
         }
       }
@@ -67,18 +66,17 @@ public class XMLWriterTagPair implements XMLWriterInterface {
     }
   }
 
-  private void outputChildren(int indent, final StringBuffer sb) {
+  private void outputChildren(int indent, final StringBuilder sb) {
     if (this.children != null) {
       final int children_size = this.children.size();
       for (int i = 0; i < children_size; i++) {
-        final XMLWriterInterface node = (XMLWriterInterface) this.children
-          .elementAt(i);
+        final XMLWriterInterface node = this.children.get(i);
         sb.append(node.makeString(indent + XMLWriterIndent.level));
       }
     }
   }
 
-  private void outputEndTag(int indent, final StringBuffer sb) {
+  private void outputEndTag(int indent, final StringBuilder sb) {
     if (this.name != null) {
       XMLWriterUtilities.indent(sb, indent);
       sb.append("</");
@@ -87,19 +85,19 @@ public class XMLWriterTagPair implements XMLWriterInterface {
     }
   }
 
-  public Vector getAttributes() {
+  public ArrayList<XMLWriterAttribute> getAttributes() {
     return this.attributes;
   }
 
-  public void setAttributes(Vector arguments) {
+  public void setAttributes(ArrayList<XMLWriterAttribute> arguments) {
     this.attributes = arguments;
   }
 
-  public Vector getChildren() {
+  public ArrayList<XMLWriterInterface> getChildren() {
     return this.children;
   }
 
-  public void setChildren(Vector children) {
+  public void setChildren(ArrayList<XMLWriterInterface> children) {
     this.children = children;
   }
 
@@ -114,24 +112,24 @@ public class XMLWriterTagPair implements XMLWriterInterface {
   public void add(XMLWriterAttribute attribute) {
     ensureAttributesExist();
 
-    this.attributes.addElement(attribute);
+    this.attributes.add(attribute);
   }
 
   public void add(XMLWriterInterface child) {
     ensureChildrenExist();
 
-    this.children.addElement(child);
+    this.children.add(child);
   }
 
   private void ensureAttributesExist() {
     if (this.attributes == null) {
-      this.attributes = new Vector();
+      this.attributes = new ArrayList<>();
     }
   }
 
   private void ensureChildrenExist() {
     if (this.children == null) {
-      this.children = new Vector();
+      this.children = new ArrayList<>();
     }
   }
 
@@ -139,8 +137,8 @@ public class XMLWriterTagPair implements XMLWriterInterface {
     ensureChildrenExist();
     
     for (int i = 0; i < child.children.size(); i++) {
-      final Object tag = child.children.elementAt(i);
-      this.children.addElement(tag);
+      final XMLWriterInterface tag = child.children.get(i);
+      this.children.add(tag);
     }
   }
 }

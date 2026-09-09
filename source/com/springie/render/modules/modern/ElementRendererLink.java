@@ -2,7 +2,7 @@
 
 package com.springie.render.modules.modern;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.context.ContextMananger;
 import com.springie.elements.DeepObjectColourCalculator;
@@ -17,6 +17,27 @@ import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 
 public final class ElementRendererLink {
+  // Scratch objects reused across calls to avoid per-frame allocation.
+  // Rendering is single-threaded, and these are never held across calls.
+  private static final Point3D scratch_point0 = new Point3D(0, 0, 0);
+  private static final Point3D scratch_point1 = new Point3D(0, 0, 0);
+  private static final Point3D scratch_point0n = new Point3D(0, 0, 0);
+  private static final Point3D scratch_point1n = new Point3D(0, 0, 0);
+  private static final Vector3D scratch_delta = new Vector3D(0, 0, 0);
+  private static final Vector3D scratch_delta_1 = new Vector3D(0, 0, 0);
+  private static final Vector3D scratch_delta_2 = new Vector3D(0, 0, 0);
+  private static final Vector3D scratch_cross_1_int = new Vector3D(0, 0, 0);
+  private static final Vector3D scratch_cross_2_int = new Vector3D(0, 0, 0);
+  private static final Vector3D scratch_cross_1_int_sf1 = new Vector3D(0, 0, 0);
+  private static final Vector3D scratch_cross_1_int_sf2 = new Vector3D(0, 0, 0);
+  private static final Vector3D scratch_cross_2_int_sf1 = new Vector3D(0, 0, 0);
+  private static final Vector3D scratch_cross_2_int_sf2 = new Vector3D(0, 0, 0);
+  private static final Vector3D scratch_partial_start = new Vector3D(0, 0, 0);
+  private static final Vector3D scratch_partial_end = new Vector3D(0, 0, 0);
+  private static final Double3D scratch_cross_1 = new Double3D(0, 0, 0);
+  private static final Double3D scratch_original = new Double3D(0, 0, 0);
+  private static final Double3D scratch_cross_2 = new Double3D(0, 0, 0);
+
   public static int strut_divisions = 1;
 
   public static int cable_divisions = 1;
@@ -31,22 +52,28 @@ public final class ElementRendererLink {
     // ...
   }
 
-  public static Vector getPolygon(Link link, Node node_1, Node node_2,
+  public static ArrayList<PolygonComposite> getPolygon(Link link, Node node_1, Node node_2,
       int thicknesss, int colour) {
-    final Point3D point0 = (Point3D) node_1.pos.clone();
-    final Point3D point1 = (Point3D) node_2.pos.clone();
+    final Point3D point0 = scratch_point0;
+    point0.set(node_1.pos);
+    final Point3D point1 = scratch_point1;
+    point1.set(node_2.pos);
 
-    final Vector3D delta = new Vector3D(point0, point1);
+    final Vector3D delta = scratch_delta;
+    delta.set(point0);
+    delta.subtractTuple3D(point1);
 
     final double length = delta.length();
 
     final double r1 = node_1.type.radius / length;
     final double r2 = node_2.type.radius / length;
 
-    final Vector3D delta_1 = (Vector3D) delta.clone();
+    final Vector3D delta_1 = scratch_delta_1;
+    delta_1.set(delta);
     delta_1.multiplyBy(r1);
 
-    final Vector3D delta_2 = (Vector3D) delta.clone();
+    final Vector3D delta_2 = scratch_delta_2;
+    delta_2.set(delta);
     delta_2.multiplyBy(r2);
 
     point0.subtractTuple3D(delta_1);
@@ -60,12 +87,15 @@ public final class ElementRendererLink {
     // final Vector3D cross_1 = z_vector.crossProduct(delta);
 
     // Find two normalized vectors.
-    final Double3D cross_1 = new Double3D(-delta.y, delta.x, 0);
+    final Double3D cross_1 = scratch_cross_1;
+    cross_1.set(-delta.y, delta.x, 0);
     cross_1.normalize();
 
-    final Double3D orignial = new Double3D(delta.x, delta.y, delta.z);
+    final Double3D orignial = scratch_original;
+    orignial.set(delta.x, delta.y, delta.z);
 
-    final Double3D cross_2 = cross_1.crossProduct(orignial);
+    final Double3D cross_2 = scratch_cross_2;
+    cross_2.setCrossProduct(cross_1, orignial);
     cross_2.normalize();
 
     // switch them to integer vectors
@@ -76,15 +106,15 @@ public final class ElementRendererLink {
     final int c1_y = (int) (cross_1.y * actual_thicknesss);
     final int c1_z = (int) (cross_1.z * actual_thicknesss);
 
-    final Vector3D cross_1_int = new Vector3D(c1_x, c1_y, c1_z);
+    final Vector3D cross_1_int = scratch_cross_1_int;
+    cross_1_int.set(c1_x, c1_y, c1_z);
 
     final int c2_x = (int) (cross_2.x * actual_thicknesss);
     final int c2_y = (int) (cross_2.y * actual_thicknesss);
     final int c2_z = (int) (cross_2.z * actual_thicknesss);
 
-    final Vector3D cross_2_int = new Vector3D(c2_x, c2_y, c2_z);
-
-    final Vector return_vector = new Vector();
+    final Vector3D cross_2_int = scratch_cross_2_int;
+    cross_2_int.set(c2_x, c2_y, c2_z);
 
     int strut_divisions_actual = strut_divisions;
     if (RendererDelegator.fat_struts) {
@@ -97,6 +127,10 @@ public final class ElementRendererLink {
 
     final int divisions = link.type.compression ? strut_divisions_actual
         : cable_divisions;
+
+    // One composite per segment, plus room for the optional text label.
+    final ArrayList<PolygonComposite> return_vector = new ArrayList<>(
+        divisions + 1);
     final boolean simple = divisions == 1;
     final double iv = simple ? 1 : 0.4d;
     final double mult = link.type.compression ? 0.6d : -0.1d;
@@ -116,25 +150,34 @@ public final class ElementRendererLink {
       final double sf1 = iv + mult * Math.sin(Math.PI * sp0 / divisions);
       final double sf2 = iv + mult * Math.sin(Math.PI * sp1 / divisions);
 
-      final Vector3D cross_1_int_sf1 = new Vector3D(cross_1_int);
+      final Vector3D cross_1_int_sf1 = scratch_cross_1_int_sf1;
+      cross_1_int_sf1.set(cross_1_int);
       cross_1_int_sf1.multiplyBy(sf1);
-      final Vector3D cross_1_int_sf2 = new Vector3D(cross_1_int);
+      final Vector3D cross_1_int_sf2 = scratch_cross_1_int_sf2;
+      cross_1_int_sf2.set(cross_1_int);
       cross_1_int_sf2.multiplyBy(sf2);
 
-      final Vector3D cross_2_int_sf1 = new Vector3D(cross_2_int);
+      final Vector3D cross_2_int_sf1 = scratch_cross_2_int_sf1;
+      cross_2_int_sf1.set(cross_2_int);
       cross_2_int_sf1.multiplyBy(sf1);
-      final Vector3D cross_2_int_sf2 = new Vector3D(cross_2_int);
+      final Vector3D cross_2_int_sf2 = scratch_cross_2_int_sf2;
+      cross_2_int_sf2.set(cross_2_int);
       cross_2_int_sf2.multiplyBy(sf2);
 
-      final Vector3D partial_start = new Vector3D(point1, point0);
-      final Vector3D partial_end = new Vector3D(partial_start);
+      final Vector3D partial_start = scratch_partial_start;
+      partial_start.set(point1);
+      partial_start.subtractTuple3D(point0);
+      final Vector3D partial_end = scratch_partial_end;
+      partial_end.set(partial_start);
       partial_start.multiplyBy(sp0);
       partial_start.divideBy(divisions);
       partial_end.multiplyBy(sp1);
       partial_end.divideBy(divisions);
 
-      final Point3D point0n = new Point3D(point0);
-      final Point3D point1n = new Point3D(point0);
+      final Point3D point0n = scratch_point0n;
+      point0n.set(point0);
+      final Point3D point1n = scratch_point1n;
+      point1n.set(point0);
       point0n.addTuple3D(partial_start);
       point1n.addTuple3D(partial_end);
 
@@ -177,13 +220,13 @@ public final class ElementRendererLink {
           new_colour);
       array[pologon_count++] = polygon2;
 
-      return_vector.addElement(new PolygonComposite(array, z));
+      return_vector.add(new PolygonComposite(array, z));
     }
 
     final int render_label_when = PanelPreferencesRendererModern.render_label_when;
 
     if ((render_label_when == 1) || ((render_label_when == 3) && link.isSelected())) {
-      return_vector.addElement(addRelevantText(link, min_z));
+      return_vector.add(addRelevantText(link, min_z));
     }
 
     return return_vector;

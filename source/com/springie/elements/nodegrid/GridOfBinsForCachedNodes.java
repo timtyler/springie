@@ -4,10 +4,13 @@ package com.springie.elements.nodegrid;
 
 import com.springie.elements.nodes.Node;
 import com.springie.render.Coords;
-import com.springie.utilities.log.Log;
 import com.springie.utilities.random.JUR;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class GridOfBinsForCachedNodes {
+  private static final Logger logger = LoggerFactory.getLogger(GridOfBinsForCachedNodes.class);
+
   JUR rnd = new JUR();
   int nx = 12;
   int ny = 10;
@@ -60,10 +63,10 @@ public final class GridOfBinsForCachedNodes {
     for (int bin_x = 0; bin_x < this.nx; bin_x++) {
       for (int bin_y = 0; bin_y < this.ny; bin_y++) {
         for (int bin_z = 0; bin_z < this.nz; bin_z++) {
-          Log.log(" " + this.node_list[bin_x][bin_y][bin_z].size());
+          logger.debug(" " + this.node_list[bin_x][bin_y][bin_z].size());
         }
 
-        Log.log(" ");
+        logger.debug(" ");
       }
     }
   }

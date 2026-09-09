@@ -2,19 +2,22 @@
 
 package uk.org.fdl.reader;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import uk.org.fdl.tokeniser.FDLTokeniser;
 import uk.org.fdl.tokens.FDLElement;
 
-import com.springie.utilities.log.Log;
 import com.tifsoft.Forget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class FDLReader {
+  private static final Logger logger = LoggerFactory.getLogger(FDLReader.class);
+
 
   public static void main(String[] args) {
     Forget.about(args);
-    Log.log(test("foo bar() {  0 10 1.9 -3 <Comment> 'aoe' \"aseo\" }"));
+    logger.debug(test("foo bar() {  0 10 1.9 -3 <Comment> 'aoe' \"aseo\" }"));
   }
 
   private FDLReader() {
@@ -22,9 +25,9 @@ public final class FDLReader {
   }
 
   public static String test(String in) {
-    final StringBuffer out = new StringBuffer();
+    final StringBuilder out = new StringBuilder();
 
-    final Vector tokens = new Vector();
+    final ArrayList<FDLElement> tokens = new ArrayList<>();
 
     final FDLTokeniser token_reader = new FDLTokeniser();
     token_reader.setSource(in);
@@ -39,10 +42,10 @@ public final class FDLReader {
     return out.toString();
   }
 
-  private static void dumpOutTokens(StringBuffer out, Vector tokens) {
+  private static void dumpOutTokens(StringBuilder out, ArrayList<FDLElement> tokens) {
     final int size = tokens.size();
     for (int i = 0; i < size; i++) {
-      final FDLElement array_element = (FDLElement) tokens.elementAt(i);
+      final FDLElement array_element = tokens.get(i);
       out.append("(" + array_element.line + "," + array_element.column + ") - "
           + array_element.type.name + " - <" + array_element.getText() + ">\n");
     }

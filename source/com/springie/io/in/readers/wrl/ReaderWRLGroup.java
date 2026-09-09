@@ -2,11 +2,12 @@
 
 package com.springie.io.in.readers.wrl;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
+import com.springie.render.modules.modern.Double3D;
 
 class ReaderWRLGroup {
   int colour;
-  Vector points = new Vector();
-  Vector faces = new Vector();  
+  ArrayList<Double3D> points = new ArrayList<>();
+  ArrayList<ArrayList<Integer>> faces = new ArrayList<>();
 }

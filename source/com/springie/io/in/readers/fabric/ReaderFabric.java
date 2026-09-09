@@ -18,7 +18,7 @@ import com.tifsoft.Forget;
 public class ReaderFabric extends DefaultHandler {
   static final int scale_factor = 18000;
   static int node_count;
-  static HashMap map;
+  static HashMap<String, String> map;
 
   static String value;
   static String last_element;
@@ -42,7 +42,7 @@ public class ReaderFabric extends DefaultHandler {
     xr.setErrorHandler(handler);
 
     value = "CR F:2048 NG R:0 C:0x0 ";
-    map = new HashMap();
+    map = new HashMap<>();
     node_count = 0;
 
     final Reader reader = new ResourceLoader().getReader(source);

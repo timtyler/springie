@@ -2,7 +2,7 @@
 
 package com.springie.elements.faces;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.elements.base.BaseElement;
 import com.springie.elements.clazz.Clazz;
@@ -10,7 +10,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;
 
 public class Face extends BaseElement {
-  public Vector nodes;
+  public ArrayList<Node> nodes;
 
   public FaceType type;
 
@@ -18,17 +18,17 @@ public class Face extends BaseElement {
 
   public static int number_of_render_divisions = 4;
 
-  public Face(Vector v, FaceType type, Clazz clazz) {
+  public Face(ArrayList<Node> v, FaceType type, Clazz clazz) {
     this.nodes = v;
     this.type = type;
     this.clazz = clazz;
   }
 
-  public Face(Vector v) {
+  public Face(ArrayList<Node> v) {
     this.nodes = v;
   }
 
-  public boolean hasExactlyTheseNodes(Vector node_list) {
+  public boolean hasExactlyTheseNodes(ArrayList<Node> node_list) {
     final int n_points = this.nodes.size();
     final int l_points = node_list.size();
     if (n_points != l_points) {
@@ -38,10 +38,10 @@ public class Face extends BaseElement {
     int count = 0;
 
     for (int i = n_points; --i >= 0;) {
-      final Node n1 = (Node) this.nodes.elementAt(i);
+      final Node n1 = (Node) this.nodes.get(i);
 
       for (int j = l_points; --j >= 0;) {
-        final Node n2 = (Node) node_list.elementAt(j);
+        final Node n2 = (Node) node_list.get(j);
         if (n1 == n2) {
           count++;
         }
@@ -59,7 +59,7 @@ public class Face extends BaseElement {
     final int n_points = this.nodes.size();
 
     for (int i = n_points; --i >= 0;) {
-      final Node n1 = (Node) this.nodes.elementAt(i);
+      final Node n1 = (Node) this.nodes.get(i);
 
       if (n1 == e) {
         return true;
@@ -75,7 +75,7 @@ public class Face extends BaseElement {
     final int npoints = this.nodes.size();
 
     for (int i = npoints; --i >= 0;) {
-      final Node n = (Node) this.nodes.elementAt(i);
+      final Node n = (Node) this.nodes.get(i);
 
       centre.addTuple3D(n.pos);
     }
@@ -101,7 +101,7 @@ public class Face extends BaseElement {
   }
 
   public Point3D getCoordinatesOfCentrePoint() {
-    final Node n = (Node) this.nodes.elementAt(0);
+    final Node n = (Node) this.nodes.get(0);
     return  new Point3D(n.pos);
   }
 }

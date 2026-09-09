@@ -2,11 +2,14 @@ package com.springie.composite;
 
 import com.springie.elements.links.Link;
 import com.springie.elements.nodes.Node;
-import com.springie.utilities.log.Log;
 import com.springie.utilities.random.Hortensius32Fast;
 import com.springie.world.World;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CompositeManager {
+  private static final Logger logger = LoggerFactory.getLogger(CompositeManager.class);
+
   public Composite[] creature;
 
   Composite[] new_array_of_creatures;
@@ -125,7 +128,7 @@ public class CompositeManager {
   // final int temp3 = temp_node.list_of_links.size();
   //
   // for (int temp2 = temp3; --temp2 >= 0;) {
-  // temp_link = (Link) temp_node.list_of_links.elementAt(temp2);
+  // temp_link = (Link) temp_node.list_of_links.get(temp2);
   // final int temp4 = c.getNodeNumber(temp_link.node1);
   // final int temp5 = c.getNodeNumber(temp_link.node2);
   //
@@ -207,7 +210,7 @@ public class CompositeManager {
         killNumberedCreature(temp);
       } else {
         // never fires...
-        Log.log("ATTEMPT TO KILL DEAD CREATURE ... ERROR - NOC:"
+        logger.debug("ATTEMPT TO KILL DEAD CREATURE ... ERROR - NOC:"
             + this.number_of_creatures);
       }
     }

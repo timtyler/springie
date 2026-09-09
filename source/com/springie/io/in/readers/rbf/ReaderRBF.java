@@ -3,12 +3,15 @@
 package com.springie.io.in.readers.rbf;
 
 import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.presets.ColourFactory;
-import com.springie.utilities.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class ReaderRBF {
+  private static final Logger logger = LoggerFactory.getLogger(ReaderRBF.class);
+
   
   private ReaderRBF() {
     //...
@@ -17,19 +20,19 @@ public final class ReaderRBF {
   public static String translate(String in) {
     final StringTokenizer st = new StringTokenizer(in);
 
-    final StringBuffer out = parseTheFile(st);
+    final StringBuilder out = parseTheFile(st);
 
     return out.toString();
   }
 
-  private static StringBuffer parseTheFile(final StringTokenizer st) {
+  private static StringBuilder parseTheFile(final StringTokenizer st) {
     final int sf = 32000;
     final int[] colours = new ColourFactory(65387).getColourArray(64);
     int last_link_group = -1;
     boolean waiting_for_hidden = false;
-    final Vector v = new Vector();
-    final Vector h = new Vector();
-    final StringBuffer out = new StringBuffer();
+    final ArrayList<Integer> v = new ArrayList<>();
+    final ArrayList<String> h = new ArrayList<>();
+    final StringBuilder out = new StringBuilder();
     String tok;
     out.append("CR NG R:0 C:0x0 ");
     do {
@@ -50,7 +53,7 @@ public final class ReaderRBF {
                   out.append("N X:" + x + " Y:" + y + " Z:" + z + " ");
                   //out.append("DX:1 DY:2 DZ:3 ");
                   waiting_for_hidden = false;
-                  Log.log("N X:" + x + " Y:" + y + " Z:" + z + " ");
+                  logger.debug("N X:" + x + " Y:" + y + " Z:" + z + " ");
                 }
               }
             }
@@ -95,8 +98,8 @@ public final class ReaderRBF {
             final String st_l = st.nextToken();
             if (isANumber(st_l)) {
               final int l = (int) ((Double.valueOf(st_l).doubleValue() * sf));
-              v.addElement(new Integer(l));
-              h.addElement("0");
+              v.add(new Integer(l));
+              h.add("0");
               waiting_for_hidden = true;
             }
           }
@@ -105,7 +108,7 @@ public final class ReaderRBF {
         case 'H':
           if (waiting_for_hidden) {
             final int cv = h.size();
-            h.setElementAt("1", cv - 1);
+            h.set(cv - 1, "1");
             waiting_for_hidden = false;
           }
 
@@ -120,21 +123,21 @@ public final class ReaderRBF {
     return out;
   }
 
-  private static String getHidden(final Vector h, final int num) {
+  private static String getHidden(final ArrayList<String> h, final int num) {
     if (num >= h.size()) {
       return "0";
     }
 
-    final String hidden = (String) h.elementAt(num);
+    final String hidden = h.get(num);
     return hidden;
   }
 
-  private static int getLength(final Vector v, final int num) {
+  private static int getLength(final ArrayList<Integer> v, final int num) {
     if (num >= v.size()) {
       return 10;
     }
 
-    final int length = ((Integer) v.elementAt(num)).intValue();
+    final int length = v.get(num).intValue();
     return length;
   }
 

@@ -3,7 +3,6 @@ package com.springie.io.out.writers.off;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Vector;
 
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
@@ -16,9 +15,12 @@ import com.springie.io.out.GarbageCollection;
 import com.springie.io.out.WriteFloatingPoint;
 import com.springie.metrics.BoundingBox;
 import com.springie.modification.redundancy.RedundancyRemover;
-import com.springie.utilities.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WriterOFF {
+  private static final Logger logger = LoggerFactory.getLogger(WriterOFF.class);
+
   float scale_factor;
 
   BoundingBox bb;
@@ -27,7 +29,6 @@ public class WriterOFF {
 
   Writer out;
 
-  Vector nodes;
 
   private NodeManager node_manager;
 
@@ -57,7 +58,6 @@ public class WriterOFF {
     this.middle.y = (this.bb.max.y + this.bb.min.y) >> 1;
     this.middle.z = (this.bb.max.z + this.bb.min.z) >> 1;
 
-    this.nodes = new Vector();
 
     try {
       try {
@@ -90,7 +90,7 @@ public class WriterOFF {
         this.out.close();
       }
     } catch (IOException e) {
-      Log.log("Error in write: " + e);
+      logger.debug("Error in write: " + e);
     }
   }
 
@@ -144,7 +144,7 @@ public class WriterOFF {
 
   private void outputFace(Face face) {
     final int n = face.nodes.size();
-    final StringBuffer out = new StringBuffer();
+    final StringBuilder out = new StringBuilder();
     out.append("" + n);
     for (int i = 0; i < n; i++) {
       final Node node = (Node) face.nodes.get(i);
@@ -168,7 +168,7 @@ public class WriterOFF {
     try {
       this.out.write(s + "\n");
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error("Unexpected exception", e);
     }
   }
 }

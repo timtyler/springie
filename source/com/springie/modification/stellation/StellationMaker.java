@@ -1,6 +1,6 @@
 package com.springie.modification.stellation;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.faces.Face;
@@ -55,17 +55,17 @@ public class StellationMaker {
 
   public void tryToMakeStellation(Face face) {
     //final int number_of_nodes = this.node_manager.element.size();
-    final Vector node_list = face.nodes;
-    //Vector();
+    final ArrayList<Node> node_list = face.nodes;
+    //ArrayList();
 
     //    final int a0 = this.rnd.nextInt(number_of_nodes);
-    //    final Node n0 = (Node) this.node_manager.element.elementAt(a0);
+    //    final Node n0 = (Node) this.node_manager.element.get(a0);
     //
     //    if (!n0.type.selected) {
     //      return;
     //    }
     //
-    //    node_list.addElement(n0);
+    //    node_list.add(n0);
     //
     //    Node last_node = n0;
     //    for (int cnt = 1; cnt < number; cnt++) {
@@ -75,7 +75,7 @@ public class StellationMaker {
     //          last_node);
     //      } while (nodeIsOnList(can, node_list));
     //
-    //      node_list.addElement(can);
+    //      node_list.add(can);
     //      last_node = can;
     //    }
 
@@ -102,17 +102,17 @@ public class StellationMaker {
 
     final int number_of_nodes_in_face = face.nodes.size();
     for (int idx = 0; idx < number_of_nodes_in_face; idx++) {
-      final Node n = (Node) node_list.elementAt(idx);
+      final Node n = node_list.get(idx);
       final int length = this.node_manager.distanceBetween(n, added);
       joinNodesBetweenLayers(n, added, length);
     }
   }
 
-  private Point3D centreOfGravityOfNodeList(final Vector node) {
+  private Point3D centreOfGravityOfNodeList(final ArrayList<Node> node) {
     final int number = node.size();
     final Point3D c_of_g = new Point3D(0, 0, 0);
     for (int idx = 0; idx < number; idx++) {
-      final Node n = (Node) node.elementAt(idx);
+      final Node n = node.get(idx);
       c_of_g.addTuple3D(n.pos);
     }
 
@@ -120,12 +120,12 @@ public class StellationMaker {
     return c_of_g;
   }
 
-  //  private boolean thereIsAlreadyANodeConnectedToEachOfTheseNodes(Vector list,
+  //  private boolean thereIsAlreadyANodeConnectedToEachOfTheseNodes(ArrayList list,
   //    int colour) {
   //    final int number_of_nodes = this.node_manager.element.size();
   //    final int number_in_list = list.size();
   //    for (int i = 0; i < number_of_nodes; i++) {
-  //      final Node n = (Node) this.node_manager.element.elementAt(i);
+  //      final Node n = (Node) this.node_manager.element.get(i);
   //      if (n.clazz.colour == colour) {
   //        final int count = countNumberOfNodesLinked(list, n);
   //
@@ -138,12 +138,12 @@ public class StellationMaker {
   //    return false;
   //  }
 
-  //  private boolean thereIsAlreadyANodeConnectedToEachOfTheseNodes(Vector list)
+  //  private boolean thereIsAlreadyANodeConnectedToEachOfTheseNodes(ArrayList list)
   // {
   //    final int number_of_nodes = this.node_manager.element.size();
   //    final int number_in_list = list.size();
   //    for (int i = 0; i < number_of_nodes; i++) {
-  //      final Node n = (Node) this.node_manager.element.elementAt(i);
+  //      final Node n = (Node) this.node_manager.element.get(i);
   //      final int count = countNumberOfNodesLinked(list, n);
   //
   //      if (count == number_in_list) {
@@ -154,11 +154,11 @@ public class StellationMaker {
   //    return false;
   //  }
 
-  //  private int countNumberOfNodesLinked(Vector list, final Node n) {
+  //  private int countNumberOfNodesLinked(ArrayList list, final Node n) {
   //    final int number_in_list = list.size();
   //    int count = 0;
   //    for (int idx = 0; idx < number_in_list; idx++) {
-  //      final Node test = (Node) list.elementAt(idx);
+  //      final Node test = (Node) list.get(idx);
   //
   //      if (this.link_manager.isThereALinkBetween(test, n)) {
   //        count++;
@@ -175,10 +175,10 @@ public class StellationMaker {
     this.link_manager.setLink(node_1, node_2, type, clazz);
   }
 
-  //  private boolean nodeIsOnList(Node node_to_check, Vector node_list) {
+  //  private boolean nodeIsOnList(Node node_to_check, ArrayList node_list) {
   //    final int number_of_nodes = node_list.size();
   //    for (int cnt = number_of_nodes; --cnt >= 0;) {
-  //      final Node candidate = (Node) node_list.elementAt(cnt);
+  //      final Node candidate = (Node) node_list.get(cnt);
   //      if (candidate == node_to_check) {
   //        return true;
   //      }

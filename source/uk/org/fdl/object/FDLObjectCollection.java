@@ -1,25 +1,25 @@
 package uk.org.fdl.object;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 class FDLObjectCollection extends FDLObject {  
-  public Vector children;
+  public ArrayList<FDLObject> children;
   public String separator = " ";
 
-  public Vector getChildren() {
+  public ArrayList<FDLObject> getChildren() {
     return this.children;
   }
 
-  public void setChildren(Vector children) {
+  public void setChildren(ArrayList<FDLObject> children) {
     this.children = children;
   }
 
-  public void add(Vector children) {
+  public void add(ArrayList<FDLObject> children) {
     ensureChildrenExist();
     
     final int children_size = this.children.size();
     for (int i = 0; i < children_size; i++) {
-      final FDLObject element = (FDLObject) children.elementAt(i);
+      final FDLObject element = children.get(i);
       add(element);
     }
   }
@@ -27,12 +27,12 @@ class FDLObjectCollection extends FDLObject {
   public void add(FDLObject child) {
     ensureChildrenExist();
 
-    this.children.addElement(child);
+    this.children.add(child);
   }
 
   private void ensureChildrenExist() {
     if (this.children == null) {
-      this.children = new Vector();
+      this.children = new ArrayList<>();
     }
   }
 
@@ -40,8 +40,8 @@ class FDLObjectCollection extends FDLObject {
     ensureChildrenExist();
 
     for (int i = 0; i < child.children.size(); i++) {
-      final Object tag = child.children.elementAt(i);
-      this.children.addElement(tag);
+      final FDLObject tag = child.children.get(i);
+      this.children.add(tag);
     }
   }
 }

@@ -17,7 +17,7 @@ public class ZFDLWriterCharacters implements FDLWriterInterface {
   }
 
   public String makeString(int indent) {
-    final StringBuffer sb = new StringBuffer();
+    final StringBuilder sb = new StringBuilder();
 
     outputContents(indent, sb);
 
@@ -28,7 +28,7 @@ public class ZFDLWriterCharacters implements FDLWriterInterface {
     return makeString(0);
   }
 
-  private void outputContents(final int indent, final StringBuffer sb) {
+  private void outputContents(final int indent, final StringBuilder sb) {
     if (this.contents != null) {
       FDLWriterStringUtilities.indent(sb, indent);
       sb.append(this.contents);

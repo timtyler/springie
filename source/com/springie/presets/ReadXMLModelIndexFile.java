@@ -4,7 +4,7 @@ package com.springie.presets;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -13,16 +13,19 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.springie.io.in.ResourceLoader;
-import com.springie.utilities.log.Log;
 import com.tifsoft.Forget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ReadXMLModelIndexFile extends DefaultHandler {
+  private static final Logger logger = LoggerFactory.getLogger(ReadXMLModelIndexFile.class);
+
 
   String leaf = "";
 
   String path;
 
-  Vector directories = new Vector();
+  ArrayList<String> directories = new ArrayList<>();
 
   public String translate(String leaf, String source) throws IOException,
     SAXException {
@@ -40,7 +43,7 @@ public class ReadXMLModelIndexFile extends DefaultHandler {
     final Reader reader = new ResourceLoader().getReader(source);
     xr.parse(new InputSource(reader));
 
-    Log.log("handler.path:" + handler.path);
+    logger.debug("handler.path:" + handler.path);
 
     return handler.path;
   }
@@ -70,7 +73,7 @@ public class ReadXMLModelIndexFile extends DefaultHandler {
 
         if (node) {
           if ("name".equals(nam)) {
-            this.directories.addElement(val);
+            this.directories.add(val);
           }
         }
         if (leaf) {
@@ -78,7 +81,7 @@ public class ReadXMLModelIndexFile extends DefaultHandler {
             if (this.leaf.equals(val)) {
               this.path = "";
               for (int j = 0; j < this.directories.size(); j++) {
-                this.path += (String) this.directories.elementAt(j) + "/";
+                this.path += this.directories.get(j) + "/";
               }
               this.path += this.leaf;
             }
@@ -94,7 +97,7 @@ public class ReadXMLModelIndexFile extends DefaultHandler {
     Forget.about(element_name);
 
     if ("node".equals(element_name)) {
-      this.directories.removeElementAt(this.directories.size() - 1);
+      this.directories.remove(this.directories.size() - 1);
     }
   }
 

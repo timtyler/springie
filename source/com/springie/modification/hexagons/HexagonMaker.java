@@ -79,13 +79,13 @@ public class HexagonMaker {
 //    //final int number_of_selected_nodes = this.node_manager
 //    //.getNumberOfSelectedNodes();
 //    //final int[] nodes = new int[number_of_selected_nodes];
-//    final Vector nodes = new Vector();
+//    final ArrayList nodes = new ArrayList<>();
 //    //int idx = 0;
 //    for (int counter = number_of_nodes; --counter >= 0;) {
 //      final Node candidate = (Node) this.node_manager.element
 //        .get(counter);
 //      if (candidate.clazz.colour == colour) {
-//        nodes.addElement(new Integer(counter));
+//        nodes.add(new Integer(counter));
 //        //nodes[idx++] = counter;
 //      }
 //    }

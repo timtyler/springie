@@ -24,13 +24,13 @@ public final class ReaderOFF {
 
     final StringTokenizer st = new StringTokenizer(in, c_r);
 
-    final StringBuffer out = parseTheFile(st);
+    final StringBuilder out = parseTheFile(st);
 
     return out.toString();
   }
 
-  private static StringBuffer parseTheFile(final StringTokenizer st) {
-    final StringBuffer out = new StringBuffer();
+  private static StringBuilder parseTheFile(final StringTokenizer st) {
+    final StringBuilder out = new StringBuilder();
 
     String line = st.nextToken();
     if (line.startsWith("OFF")) {
@@ -66,7 +66,7 @@ public final class ReaderOFF {
   }
 
   private static void dealWithNodes(final StringTokenizer st,
-      final StringBuffer out, final int number_of_nodes) {
+      final StringBuilder out, final int number_of_nodes) {
     out.append("CR NG R:0 C:0x0 ");
     final int scale_factor = 10000;
     for (int i = 0; i < number_of_nodes; i++) {
@@ -86,7 +86,7 @@ public final class ReaderOFF {
   }
 
   private static void dealWithFaces(final StringTokenizer st,
-      final StringBuffer out, final int number_of_faces) {
+      final StringBuilder out, final int number_of_faces) {
     out.append("PG C:0x8000C0C0 ");
     for (int i = 0; i < number_of_faces; i++) {
       final String line = getNextValidLine(st);

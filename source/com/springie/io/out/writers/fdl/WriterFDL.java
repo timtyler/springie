@@ -3,7 +3,7 @@ package com.springie.io.out.writers.fdl;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import uk.org.fdl.object.FDLObjectBraceList;
 import uk.org.fdl.object.FDLObjectBracketList;
@@ -31,10 +31,13 @@ import com.springie.io.out.WriteFloatingPoint;
 import com.springie.modification.post.PostModification;
 import com.springie.modification.redundancy.RedundancyRemover;
 import com.springie.render.Coords;
-import com.springie.utilities.log.Log;
 import com.springie.world.World;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WriterFDL {
+  private static final Logger logger = LoggerFactory.getLogger(WriterFDL.class);
+
 	// scale factor - causes problems if not equal to 1.
 	//
 	// Plan to make this work...
@@ -44,7 +47,7 @@ public class WriterFDL {
 
 	Writer out;
 
-	Vector nodes;
+	ArrayList<Node> nodes;
 
 	NodeManager node_manager;
 
@@ -68,7 +71,7 @@ public class WriterFDL {
 				this.out.close();
 			}
 		} catch (IOException e) {
-			Log.log("Error in write: " + e);
+			logger.debug("Error in write: " + e);
 		}
 	}
 
@@ -78,7 +81,7 @@ public class WriterFDL {
 		new RedundancyRemover(this.node_manager).removeRedundancy();
 		new PostModification(this.node_manager).thoroughCleanup();
 
-		this.nodes = new Vector();
+		this.nodes = new ArrayList<>();
 
 		final FDLObjectChain chain_uni = new FDLObjectChain(":");
 		chain_uni.add(new FDLObjectIdentifier("universe"));
@@ -260,7 +263,7 @@ public class WriterFDL {
 			final FDLObjectBracketList list_attr = new FDLObjectBracketList();
 
 			final NodeType node_type = (NodeType) ContextMananger.getNodeManager().node_type_factory.array
-					.elementAt(nt);
+					.get(nt);
 			final FDLObjectChain chain_radius = new FDLObjectChain("=");
 			chain_radius.add(new FDLObjectIdentifier("radius"));
 			chain_radius.add(new FDLObjectNumber("" + (node_type.radius / scale_factor)));
@@ -336,7 +339,7 @@ public class WriterFDL {
 		boolean some = false;
 
 		for (int lt = 0; lt < link_type_number; lt++) {
-			final LinkType link_type = (LinkType) link_manager.link_type_factory.array.elementAt(lt);
+			final LinkType link_type = (LinkType) link_manager.link_type_factory.array.get(lt);
 			final FDLObjectChain chain = new FDLObjectChain(":");
 
 			chain.add(new FDLObjectIdentifier("type"));
@@ -444,7 +447,7 @@ public class WriterFDL {
 		final int type_number = face_manager.face_type_factory.array.size();
 
 		for (int t = 0; t < type_number; t++) {
-			final FaceType polygon_type = (FaceType) face_manager.face_type_factory.array.elementAt(t);
+			final FaceType polygon_type = (FaceType) face_manager.face_type_factory.array.get(t);
 
 			final FDLObjectChain chain = new FDLObjectChain(":");
 
@@ -504,7 +507,7 @@ public class WriterFDL {
 		final int number = face.nodes.size();
 
 		for (int i = 0; i < number; i++) {
-			final Node node = (Node) face.nodes.elementAt(i);
+			final Node node = (Node) face.nodes.get(i);
 
 			final int n1 = this.nodes.indexOf(node);
 
@@ -563,7 +566,7 @@ public class WriterFDL {
 					final FDLObjectChain tag_node = outputNode(node);
 
 					list_nodes.add(tag_node);
-					this.nodes.addElement(node);
+					this.nodes.add(node);
 					some = true;
 				}
 			}
@@ -637,7 +640,7 @@ public class WriterFDL {
 				this.out.write(s + " ");
 			}
 		} catch (IOException e) {
-			Log.log("Error (writeOut): " + e.toString());
+			logger.debug("Error (writeOut): " + e.toString());
 		}
 	}
 }

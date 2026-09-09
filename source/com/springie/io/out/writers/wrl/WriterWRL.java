@@ -3,7 +3,7 @@ package com.springie.io.out.writers.wrl;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextMananger;
@@ -23,10 +23,13 @@ import com.springie.io.out.GarbageCollection;
 import com.springie.io.out.WriteFloatingPoint;
 import com.springie.metrics.BoundingBox;
 import com.springie.modification.redundancy.RedundancyRemover;
-import com.springie.utilities.log.Log;
 import com.tifsoft.Forget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WriterWRL {
+  private static final Logger logger = LoggerFactory.getLogger(WriterWRL.class);
+
   NodeManager node_manager;
 
   LinkManager link_manager;
@@ -39,7 +42,7 @@ public class WriterWRL {
 
   Writer out;
 
-  Vector nodes;
+  ArrayList<Node> nodes;
 
   public WriterWRL(NodeManager node_manager) {
     this.node_manager = node_manager;
@@ -64,7 +67,7 @@ public class WriterWRL {
     this.middle.y = (this.bb.max.y + this.bb.min.y) >> 1;
     this.middle.z = (this.bb.max.z + this.bb.min.z) >> 1;
 
-    this.nodes = new Vector();
+    this.nodes = new ArrayList<>();
 
     try {
       try {
@@ -83,7 +86,7 @@ public class WriterWRL {
         this.out.close();
       }
     } catch (IOException e) {
-      Log.log("Error in write: " + e);
+      logger.debug("Error in write: " + e);
     }
   }
 
@@ -341,7 +344,7 @@ public class WriterWRL {
     writeLine(" }");
     writeLine(" ");
 
-    this.nodes.removeAllElements();
+    this.nodes.clear();
   }
 
   private void outputFaces(FaceManager face_manager, Clazz clazz, int number) {
@@ -361,7 +364,7 @@ public class WriterWRL {
           final int npolygon = polygon.nodes.size();
 
           for (int i = npolygon; --i >= 0;) {
-            final Node node = (Node) polygon.nodes.get(i);
+            final Node node = polygon.nodes.get(i);
 
             if (processNode(node, cnt)) {
               cnt++;
@@ -397,7 +400,7 @@ public class WriterWRL {
     String pline = "   ";
 
     for (int i = npolygon; --i >= 0;) {
-      final Node node = (Node) polygon.nodes.get(i);
+      final Node node = polygon.nodes.get(i);
 
       final int n1 = this.nodes.indexOf(node);
 
@@ -411,7 +414,7 @@ public class WriterWRL {
     String pline = "   ";
 
     for (int i = 0; i < npolygon; i++) {
-      final Node node = (Node) polygon.nodes.get(i);
+      final Node node = polygon.nodes.get(i);
 
       final int n1 = this.nodes.indexOf(node);
 
@@ -426,7 +429,7 @@ public class WriterWRL {
     }
 
     outputFaceVertex(node, cnt);
-    this.nodes.addElement(node);
+    this.nodes.add(node);
     return true;
   }
 
@@ -567,7 +570,7 @@ public class WriterWRL {
     try {
       this.out.write(s + "\n");
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error("Unexpected exception", e);
     }
   }
 }

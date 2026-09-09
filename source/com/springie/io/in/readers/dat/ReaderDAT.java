@@ -5,9 +5,12 @@ package com.springie.io.in.readers.dat;
 import java.util.StringTokenizer;
 
 import com.springie.presets.ColourFactory;
-import com.springie.utilities.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class ReaderDAT {
+  private static final Logger logger = LoggerFactory.getLogger(ReaderDAT.class);
+
 
   private ReaderDAT() {
     // ...
@@ -16,15 +19,15 @@ public final class ReaderDAT {
   public static String translate(String in) {
     final StringTokenizer st = new StringTokenizer(in);
 
-    final StringBuffer out = parseTheFile(st);
+    final StringBuilder out = parseTheFile(st);
 
     return out.toString();
   }
 
-  private static StringBuffer parseTheFile(final StringTokenizer st) {
+  private static StringBuilder parseTheFile(final StringTokenizer st) {
     final int sf = 32000;
     final int[] colours = new ColourFactory(65387).getColourArray(64);
-    final StringBuffer out = new StringBuffer();
+    final StringBuilder out = new StringBuilder();
     String tok;
     out.append("CR NG R:0 C:0x0 ");
     do {
@@ -43,7 +46,7 @@ public final class ReaderDAT {
                   final int z = (int) (Double.valueOf(st_z).doubleValue() * sf);
 
                   out.append("N X:" + x + " Y:" + y + " Z:" + z + " ");
-                  Log.log("N X:" + x + " Y:" + y + " Z:" + z + " ");
+                  logger.debug("N X:" + x + " Y:" + y + " Z:" + z + " ");
                 }
               }
             }
@@ -71,7 +74,7 @@ public final class ReaderDAT {
                   }
 
                   out.append("LK V:" + i_a + " V:" + i_b + " ");
-                  Log.log("LK V:" + i_a + " V:" + i_b + " ");
+                  logger.debug("LK V:" + i_a + " V:" + i_b + " ");
                 }
               }
             }

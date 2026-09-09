@@ -46,8 +46,7 @@ public final class RendererDelegator {
 
   public static int color_background_number = 0xFF000000;
 
-  public static Color color_background = new Color(
-      color_background_number);
+  public static Color color_background = new Color(color_background_number);
 
   public static int colour_selected_number = 0xFFFF0000;
 

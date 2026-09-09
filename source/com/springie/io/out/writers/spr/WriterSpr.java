@@ -3,7 +3,7 @@ package com.springie.io.out.writers.spr;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextMananger;
@@ -25,13 +25,16 @@ import com.springie.io.out.WriteFloatingPoint;
 import com.springie.modification.post.PostModification;
 import com.springie.modification.redundancy.RedundancyRemover;
 import com.springie.render.Coords;
-import com.springie.utilities.log.Log;
 import com.springie.world.World;
 import com.tifsoft.xml.writer.XMLWriterAttribute;
 import com.tifsoft.xml.writer.XMLWriterSinglet;
 import com.tifsoft.xml.writer.XMLWriterTagPair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WriterSpr {
+  private static final Logger logger = LoggerFactory.getLogger(WriterSpr.class);
+
 	// scale factor - causes problems if not equal to 1.
 	//
 	// Plan to make this work...
@@ -41,7 +44,7 @@ public class WriterSpr {
 
 	Writer out;
 
-	Vector nodes;
+	ArrayList<Node> nodes;
 
 	NodeManager node_manager;
 
@@ -65,7 +68,7 @@ public class WriterSpr {
 				this.out.close();
 			}
 		} catch (IOException e) {
-			Log.log("Error in write: " + e);
+			logger.debug("Error in write: " + e);
 		}
 	}
 
@@ -75,7 +78,7 @@ public class WriterSpr {
 		new RedundancyRemover(this.node_manager).removeRedundancy();
 		new PostModification(this.node_manager).thoroughCleanup();
 
-		this.nodes = new Vector();
+		this.nodes = new ArrayList<>();
 
 		final XMLWriterTagPair uni = new XMLWriterTagPair("universe");
 
@@ -177,7 +180,7 @@ public class WriterSpr {
 		boolean some = false;
 		for (int nt = 0; nt < node_type_number; nt++) {
 			final NodeType node_type = (NodeType) ContextMananger.getNodeManager().node_type_factory.array
-					.elementAt(nt);
+					.get(nt);
 			final XMLWriterTagPair tag_type = new XMLWriterTagPair("type");
 			tag_type.add(new XMLWriterAttribute("radius", "" + ((node_type.radius / scale_factor))));
 
@@ -225,7 +228,7 @@ public class WriterSpr {
 		boolean some = false;
 
 		for (int lt = 0; lt < link_type_number; lt++) {
-			final LinkType link_type = (LinkType) link_manager.link_type_factory.array.elementAt(lt);
+			final LinkType link_type = (LinkType) link_manager.link_type_factory.array.get(lt);
 			final XMLWriterTagPair tag_type = new XMLWriterTagPair("type");
 			tag_type.add(new XMLWriterAttribute("length", "" + scale(link_type.length)));
 			if (link_type.radius != 0) {
@@ -281,7 +284,7 @@ public class WriterSpr {
 		final int type_number = face_manager.face_type_factory.array.size();
 
 		for (int t = 0; t < type_number; t++) {
-			final FaceType polygon_type = (FaceType) face_manager.face_type_factory.array.elementAt(t);
+			final FaceType polygon_type = (FaceType) face_manager.face_type_factory.array.get(t);
 			final XMLWriterTagPair tag = new XMLWriterTagPair("type");
 
 			if (polygon_type.hidden) {
@@ -320,12 +323,12 @@ public class WriterSpr {
 	private XMLWriterSinglet outputFace(Face face) {
 		final XMLWriterSinglet tag_face = new XMLWriterSinglet("face");
 
-		final StringBuffer nodelist = new StringBuffer();
+		final StringBuilder nodelist = new StringBuilder();
 
 		final int number = face.nodes.size();
 
 		for (int i = 0; i < number; i++) {
-			final Node node = (Node) face.nodes.elementAt(i);
+			final Node node = face.nodes.get(i);
 
 			final int n1 = this.nodes.indexOf(node);
 
@@ -345,7 +348,7 @@ public class WriterSpr {
 	// final int number = face.node.size();
 	//
 	// for (int i = 0; i < number; i++) {
-	// final Node node = (Node) face.node.elementAt(i);
+	// final Node node = (Node) face.node.get(i);
 	//
 	// final int n1 = this.nodes.indexOf(node);
 	// final XMLWriterSinglet tag_node = new XMLWriterSinglet("node");
@@ -407,7 +410,7 @@ public class WriterSpr {
 					final XMLWriterTagPair tag_node = outputNode(node);
 
 					tag_type.add(tag_node);
-					this.nodes.addElement(node);
+					this.nodes.add(node);
 					some = true;
 				}
 			}
@@ -501,7 +504,7 @@ public class WriterSpr {
 				this.out.write(s + " ");
 			}
 		} catch (IOException e) {
-			Log.log("Error (writeOut): " + e.toString());
+			logger.debug("Error (writeOut): " + e.toString());
 		}
 	}
 }

@@ -943,8 +943,8 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 	}
 
 	private static List<Node> getallNodesInContactWithSelection() {
-		List list_of_nodes;
-		List list_of_nodes_2;
+		List<Node> list_of_nodes;
+		List<Node> list_of_nodes_2;
 		list_of_nodes = ContextMananger.getNodeManager().getListOfSelectedNodes();
 		list_of_nodes_2 = ContextMananger.getLinkManager().getListOfNodesOnSelectedLinks();
 
@@ -953,10 +953,10 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		return list_of_nodes;
 	}
 
-	private static void addElementsOfList2ToList1(List list_1, List list_2) {
+	private static void addElementsOfList2ToList1(List<Node> list_1, List<Node> list_2) {
 		final int size = list_2.size();
 		for (int i = 0; i < size; i++) {
-			final Object o = list_2.get(i);
+			final Node o = list_2.get(i);
 			if (!list_1.contains(o)) {
 				list_1.add(o);
 			}

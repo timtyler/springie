@@ -5,7 +5,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.URL;
-import java.util.Stack;
+import java.util.ArrayDeque;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.DTDHandler;
@@ -29,7 +29,7 @@ public class Driver implements XMLReaderExtension, ContentHandlerExtension,
 
   private ErrorHandler error_handler = this;
 
-  private final Stack stack = new Stack();
+  private final ArrayDeque<String> stack = new ArrayDeque<>();
 
   final ParserState state = new ParserState();
 
@@ -138,7 +138,7 @@ public class Driver implements XMLReaderExtension, ContentHandlerExtension,
       this.content_handler = this;
       this.content_handler_extension = this;
       this.error_handler = this;
-      this.stack.removeAllElements();
+      this.stack.clear();
     }
   }
 
@@ -169,8 +169,8 @@ public class Driver implements XMLReaderExtension, ContentHandlerExtension,
   private void dealWithQuotes2() {
     this.state.element_stage = StateElement.WAITING_FOR_ATTRIBUTE;
     this.attributes_basic.attribute_local_names
-      .addElement(this.state.name_attribute);
-    this.attributes_basic.attribute_values.addElement(this.state.name);
+      .add(this.state.name_attribute);
+    this.attributes_basic.attribute_values.add(this.state.name);
     this.state.name_attribute = "";
     this.state.name_value = "";
     this.state.name = "";
@@ -205,7 +205,7 @@ public class Driver implements XMLReaderExtension, ContentHandlerExtension,
     ParserStateUpdater.endOfIdentifier(state);
     if (state.closing_element) {
       this.content_handler.endElement("", LNAM, state.name_element);
-      final String popped = (String) this.stack.pop();
+      final String popped = this.stack.pop();
       if (!popped.equals(state.name_element)) {
         String error = ConstantsErrorMessages.MISMATCHED + state.name_element;
         error += ConstantsErrorMessages.DOES_NOT_MATCH + popped;

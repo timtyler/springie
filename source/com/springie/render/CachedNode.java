@@ -335,7 +335,7 @@ public class CachedNode {
         final int npolygon = polygon.nodes.size();
 
         for (int i = npolygon; --i >= 0;) {
-          final Node node = (Node) polygon.nodes.elementAt(i);
+          final Node node = (Node) polygon.nodes.get(i);
           if (n.pos.z >= node.pos.z) {
             cnt++;
           }
@@ -368,7 +368,7 @@ public class CachedNode {
       final int npolygon = polygon.nodes.size();
 
       for (int i = npolygon; --i >= 0;) {
-        final Node node = (Node) polygon.nodes.elementAt(i);
+        final Node node = (Node) polygon.nodes.get(i);
         if (n.pos.z >= node.pos.z) {
           cnt++;
         }

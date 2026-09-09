@@ -11,19 +11,19 @@ public class FDLObjectChain extends FDLObjectCollection {
 //  }
 //
 //  public String makeString(int indent) {
-//    final StringBuffer sb = new StringBuffer();
+//    final StringBuilder sb = new StringBuilder();
 //    FDLWriterStringUtilities.repeat(' ', indent);
 //    outputChildren(sb, indent);
 //
 //    return sb.toString();
 //  }
 //
-//  private void outputChildren(final StringBuffer sb, int indent) {
+//  private void outputChildren(final StringBuilder sb, int indent) {
 //    if (this.children != null) {
 //      final int children_size = this.children.size();
 //      for (int i = 0; i < children_size; i++) {
 //        final FDLWriterInterface node = (FDLWriterInterface) this.children
-//            .elementAt(i);
+//            .get(i);
 //        if (i > 0) {
 //          sb.append(this.separator);
 //        } else {

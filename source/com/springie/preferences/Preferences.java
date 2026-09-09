@@ -2,7 +2,7 @@
 
 package com.springie.preferences;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import com.springie.FrEnd;
 
@@ -19,7 +19,7 @@ public class Preferences {
 
   public static final String renderer_new_double_buffer = "renderer.new.double_buffer";
 
-  public Hashtable<String, Object> map = new Hashtable();
+  public HashMap<String, Object> map = new HashMap<>();
 
   public Preferences() {
     this.map.put(Preferences.key_output_pov_ground, "none");

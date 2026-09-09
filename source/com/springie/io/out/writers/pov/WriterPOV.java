@@ -3,7 +3,6 @@ package com.springie.io.out.writers.pov;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Vector;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextMananger;
@@ -24,10 +23,13 @@ import com.springie.io.out.WriteFloatingPoint;
 import com.springie.metrics.BoundingBox;
 import com.springie.modification.redundancy.RedundancyRemover;
 import com.springie.preferences.Preferences;
-import com.springie.utilities.log.Log;
 import com.tifsoft.Forget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WriterPOV {
+  private static final Logger logger = LoggerFactory.getLogger(WriterPOV.class);
+
 	double scale_factor;
 
 	BoundingBox bb;
@@ -36,7 +38,6 @@ public class WriterPOV {
 
 	Writer out;
 
-	Vector nodes;
 
 	private NodeManager node_manager;
 
@@ -66,7 +67,6 @@ public class WriterPOV {
 		this.middle.y = (this.bb.max.y + this.bb.min.y) >> 1;
 		this.middle.z = (this.bb.max.z + this.bb.min.z) >> 1;
 
-		this.nodes = new Vector();
 
 		try {
 			try {
@@ -124,7 +124,7 @@ public class WriterPOV {
 				this.out.close();
 			}
 		} catch (IOException e) {
-			Log.log("Error in write: " + e);
+			logger.debug("Error in write: " + e);
 		}
 	}
 
@@ -803,7 +803,7 @@ public class WriterPOV {
 		try {
 			this.out.write(s + "\n");
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("Unexpected exception", e);
 		}
 	}
 }

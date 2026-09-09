@@ -10,10 +10,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.springie.utilities.log.Log;
 
 public class ZipLoader {
+  private static final Logger logger = LoggerFactory.getLogger(ZipLoader.class);
+
   private final String zip_file_name = "index.spr";
   
   public String getZIPURLAsString(String location) {
@@ -46,27 +49,27 @@ public class ZipLoader {
     try {
       return new FileInputStream(location);
     } catch (FileNotFoundException e) {
-      e.printStackTrace();
+      logger.error("Unexpected exception", e);
     }
 
     return null;
   }
 
   private InputStream getResourceFromURL(String location) {
-    Log.log("ZipLoader:getResourceFromURL:" + location);
+    logger.debug("ZipLoader:getResourceFromURL:" + location);
 
     URL url = null;
     try {
       url = new URL(location);
     } catch (MalformedURLException e) {
-      Log.log("getResourceFromURL:" + location);
-      e.printStackTrace();
+      logger.debug("getResourceFromURL:" + location);
+      logger.error("Unexpected exception", e);
     }
     try {
       return url.openStream();
     } catch (IOException e1) {
-      Log.log("getResourceFromURL:" + location);
-      e1.printStackTrace();
+      logger.debug("getResourceFromURL:" + location);
+      logger.error("Unexpected exception", e1);
     }
 
     return null;
@@ -94,8 +97,7 @@ public class ZipLoader {
 
       in.close();
     } catch (IOException e) {
-      e.printStackTrace();
-      Log.error("" + e);
+      logger.error("Failed to load resource", e);
     }
     return output;
   }
@@ -131,7 +133,7 @@ public class ZipLoader {
       bytes2.close();
 
     } catch (IOException e) {
-      Log.log(e.getMessage());
+      logger.debug(e.getMessage());
       return null;
     }
 

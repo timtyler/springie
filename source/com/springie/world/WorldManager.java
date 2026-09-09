@@ -3,9 +3,12 @@ package com.springie.world;
 import com.springie.composite.Composite;
 import com.springie.elements.links.Link;
 import com.springie.elements.nodes.Node;
-import com.springie.utilities.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class WorldManager {
+  private static final Logger logger = LoggerFactory.getLogger(WorldManager.class);
+
   static World[] private_world;
   static World[] new_private_world;
 
@@ -69,7 +72,7 @@ public final class WorldManager {
       }
     }
 
-    Log.log("Couldn't find the World associated with this node :-(");
+    logger.debug("Couldn't find the World associated with this node :-(");
 
     return null;
   }
@@ -132,7 +135,7 @@ public final class WorldManager {
       }
     }
 
-    Log.log("World not found!");
+    logger.debug("World not found!");
     
     return -1;
   }

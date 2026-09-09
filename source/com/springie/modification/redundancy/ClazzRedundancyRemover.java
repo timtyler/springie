@@ -23,11 +23,11 @@ public class ClazzRedundancyRemover {
 	}
 
 	public void removeRedundancyInClazzes() {
-		final List v = this.node_manager.clazz_factory.array;
+		final List<Clazz> v = this.node_manager.clazz_factory.array;
 		final int size = v.size();
 		// Log.log("Initial classes: " + size);
 		for (int i = size; --i >= 0;) {
-			final Clazz nt = (Clazz) v.get(i);
+			final Clazz nt = v.get(i);
 			if (equalspreviousClazz(v, i)) {
 				final int first = getFirstClazz(v, nt, i);
 				replaceClazzWithPrevious(v, i, first);
@@ -37,9 +37,9 @@ public class ClazzRedundancyRemover {
 		// Log.log("Remaining classes: " + v.size());
 	}
 
-	private void replaceClazzWithPrevious(List v, int old, int nww) {
-		final Clazz c_old = (Clazz) v.get(old);
-		final Clazz c_new = (Clazz) v.get(nww);
+	private void replaceClazzWithPrevious(List<Clazz> v, int old, int nww) {
+		final Clazz c_old = v.get(old);
+		final Clazz c_new = v.get(nww);
 
 		replaceClassInNodes(c_old, c_new);
 		replaceClassInLinks(c_old, c_new);
@@ -78,7 +78,7 @@ public class ClazzRedundancyRemover {
 		}
 	}
 
-	private int getFirstClazz(List v, Clazz t, int max) {
+	private int getFirstClazz(List<Clazz> v, Clazz t, int max) {
 		for (int i = max; --i >= 0;) {
 			if (t.equals(v.get(i))) {
 				return i;
@@ -88,8 +88,8 @@ public class ClazzRedundancyRemover {
 		return -1;
 	}
 
-	private boolean equalspreviousClazz(List v, int max) {
-		final Clazz t = (Clazz) v.get(max);
+	private boolean equalspreviousClazz(List<Clazz> v, int max) {
+		final Clazz t = v.get(max);
 
 		return getFirstClazz(v, t, max) > 0;
 	}

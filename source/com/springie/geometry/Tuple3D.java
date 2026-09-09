@@ -1,6 +1,10 @@
 package com.springie.geometry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Tuple3D implements Cloneable {
+  private static final Logger logger = LoggerFactory.getLogger(Tuple3D.class);
+
   public int x;
 
   public int y;
@@ -14,6 +18,18 @@ public class Tuple3D implements Cloneable {
   }
 
   public Tuple3D(Tuple3D t) {
+    this.x = t.x;
+    this.y = t.y;
+    this.z = t.z;
+  }
+
+  public void set(int x, int y, int z) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
+
+  public void set(Tuple3D t) {
     this.x = t.x;
     this.y = t.y;
     this.z = t.z;
@@ -81,7 +97,7 @@ public class Tuple3D implements Cloneable {
     try {
       super.clone();
     } catch (CloneNotSupportedException e) {
-      e.printStackTrace();
+      logger.error("Unexpected exception", e);
     }
     return new Tuple3D(this.x, this.y, this.z);
   }

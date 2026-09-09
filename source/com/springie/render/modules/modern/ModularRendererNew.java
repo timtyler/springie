@@ -4,7 +4,7 @@ package com.springie.render.modules.modern;
 
 import java.awt.Graphics;
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.FrEnd;
 import com.springie.elements.faces.Face;
@@ -68,7 +68,9 @@ public class ModularRendererNew implements ModularRendererBase {
 
       for (int l = total_number; --l >= 0;) {
         final Face face = face_manager.element.get(l);
+
         final PolygonComposite polygons = ElementRendererFace.getPolygon(face);
+
         this.bins_current.add(polygons);
       }
     }
@@ -78,6 +80,7 @@ public class ModularRendererNew implements ModularRendererBase {
     if (FrEnd.render_links) {
       final LinkManager link_manager = manager.getLinkManager();
       final int number = link_manager.element.size();
+
       for (int l = number; --l >= 0;) {
         final Link link = (Link) link_manager.element.get(l);
         if (!link.type.hidden) {
@@ -90,11 +93,11 @@ public class ModularRendererNew implements ModularRendererBase {
             if (link.type.selected) {
               colour = RendererDelegator.colour_selected_number;
             }
-            final Vector polygons = ElementRendererLink.getPolygon(link,
+            final ArrayList<PolygonComposite> polygons = ElementRendererLink.getPolygon(link,
                 node_1, node_2, link.getThicknesss(), colour);
             final int polygons_size = polygons.size();
             for (int pci = polygons_size; --pci >= 0;) {
-              final PolygonComposite pc = (PolygonComposite) polygons.get(pci);
+              final PolygonComposite pc = polygons.get(pci);
               this.bins_current.add(pc);
             }
           }

@@ -16,7 +16,7 @@ import java.awt.Panel;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.tifsoft.Forget;
 
@@ -59,7 +59,7 @@ public class TabbedPanel extends Panel implements MouseListener,
   int nCards;
 
   // contains the (interned) card names
-  Vector names = new Vector(10, 10);
+  ArrayList<String> names = new ArrayList<>(10);
 
   // position & width of each tab
   int[] pos;
@@ -125,7 +125,7 @@ public class TabbedPanel extends Panel implements MouseListener,
     super.add(name_interned, component);
     // if name isn't already present
     if (!this.names.contains(name_interned)) {
-      this.names.addElement(name_interned);
+      this.names.add(name_interned);
       this.nCards++;
       if (isShowing()) {
         computeTabs();
@@ -141,7 +141,7 @@ public class TabbedPanel extends Panel implements MouseListener,
     // Let layout manager do its job
     super.remove(component);
     // but we'll record our part.
-    this.names.removeElementAt(i);
+    this.names.remove(i);
     this.nCards--;
     if (i < this.selected) {
       setSelected(this.selected - 1, true);
@@ -167,7 +167,7 @@ public class TabbedPanel extends Panel implements MouseListener,
   /** remove all cards from the TabPanel. */
   public void removeAll() {
     super.removeAll();
-    this.names.removeAllElements();
+    this.names.clear();
     repaint();
   }
 
@@ -180,7 +180,7 @@ public class TabbedPanel extends Panel implements MouseListener,
       if (this.nCards > 0) {
         this.selected = i % this.nCards;
       }
-      ((CardLayout) getLayout()).show(this, (String) this.names.elementAt(i));
+      ((CardLayout) getLayout()).show(this, this.names.get(i));
       repaint();
       final Component c = getComponent(i);
       // ?
@@ -296,7 +296,7 @@ public class TabbedPanel extends Panel implements MouseListener,
     for (int i = 0; i < this.nCards; i++) {
       this.pos[i] = x;
       this.width[i] = this.tabH
-          + this.metric.stringWidth((String) this.names.elementAt(i));
+          + this.metric.stringWidth(this.names.get(i));
       x += this.width[i];
     }
     this.pos[this.nCards] = x;
@@ -358,7 +358,7 @@ public class TabbedPanel extends Panel implements MouseListener,
     if (!selected) {
       g.setColor(this.colour_inactive_foreground);
     }
-    g.drawString((String) this.names.elementAt(p), x + r, this.margin_top
+    g.drawString((String) this.names.get(p), x + r, this.margin_top
         + this.tabH - this.metric.getDescent());
   }
 
@@ -497,7 +497,7 @@ public class TabbedPanel extends Panel implements MouseListener,
     if (this.applet != null) {
       final int i = cardAt(e.getX(), e.getY());
       if (i != -1) {
-        this.applet.showStatus(documentCard((String) this.names.elementAt(i)));
+        this.applet.showStatus(documentCard((String) this.names.get(i)));
       }
     }
   }

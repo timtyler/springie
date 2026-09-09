@@ -5,12 +5,12 @@ package com.springie.gui.components;
 import java.awt.Choice;
 import java.awt.Color;
 import java.awt.event.ItemListener;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 
 public class TTChoice {
-  public Vector vector;
+  public ArrayList<TTNumStr> vector;
 
   public Choice choice;
 
@@ -20,31 +20,27 @@ public class TTChoice {
     this.choice.setBackground(Color.white);
     this.choice.setForeground(Color.black);
 
-    this.vector = new Vector();
+    this.vector = new ArrayList<>();
   }
 
   public void add(String s, int n) {
     this.choice.addItem(s);
 
-    this.vector.addElement(new TTNumStr(n, s)); //  = s;
+    this.vector.add(new TTNumStr(n, s)); //  = s;
   }
 
   void removeAll() {
     this.choice.removeAll();
 
-    this.vector.removeAllElements(); //  = s;
+    this.vector.clear(); //  = s;
   }
 
   public int str_to_num(String s) {
     // int i = 0;
-    Enumeration enumeration;
-    TTNumStr temp_pair;
+    final Iterator<TTNumStr> enumeration = this.vector.iterator();
 
-    enumeration = this.vector.elements();
-
-    while (enumeration.hasMoreElements()) {
-
-      temp_pair = (TTNumStr) (enumeration.nextElement());
+    while (enumeration.hasNext()) {
+      final TTNumStr temp_pair = enumeration.next();
 
       if (temp_pair.string == s) {
         return temp_pair.number;
@@ -56,13 +52,10 @@ public class TTChoice {
 
   public String num_to_str(int j) {
     //int i = 0;
-    Enumeration enumeration;
-    TTNumStr temp_pair;
+    final Iterator<TTNumStr> enumeration = this.vector.iterator();
 
-    enumeration = this.vector.elements();
-
-    while (enumeration.hasMoreElements()) {
-      temp_pair = (TTNumStr) (enumeration.nextElement());
+    while (enumeration.hasNext()) {
+      final TTNumStr temp_pair = enumeration.next();
 
       if (temp_pair.number == j) {
         return temp_pair.string;

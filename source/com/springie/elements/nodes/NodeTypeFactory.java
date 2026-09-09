@@ -1,20 +1,20 @@
 package com.springie.elements.nodes;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class NodeTypeFactory {
-  public Vector array = new Vector();
+  public ArrayList<NodeType> array = new ArrayList<>();
 
   public NodeType getNew(NodeType current) {
     final NodeType type = new NodeType(current);
-    this.array.addElement(type);
+    this.array.add(type);
     type.makeEqualTo(current);
     return type;
   }
 
   public NodeType getNew() {
     final NodeType type = new NodeType();
-    this.array.addElement(type);
+    this.array.add(type);
     return type;
   }
 
@@ -25,7 +25,7 @@ public class NodeTypeFactory {
 
 //public public NodeTypeFactory(NodeType current) {
 //final NodeType type = new NodeType();
-//array.addElement(type);
+//array.add(type);
 //type.makeEqualTo(type)
 //t
 //return type;

@@ -264,7 +264,7 @@ public class Composite {
   //
   // case Genome.FOLLOW :
   // this.read_node = this.read_link.theOtherEnd(this.read_node);
-  // this.read_link = (Link) this.read_node.list_of_links.elementAt(0);
+  // this.read_link = (Link) this.read_node.list_of_links.get(0);
   //
   // break;
   //
@@ -287,7 +287,7 @@ public class Composite {
   // corresponding_node.creature = this.next_creature;
   // temp4 = temp_node.list_of_links.size();
   // for (temp2 = 0; temp2 < temp4; temp2++) {
-  // temp_link = (Link) temp_node.list_of_links.elementAt(temp2);
+  // temp_link = (Link) temp_node.list_of_links.get(temp2);
   // other_temp_node = temp_link.theOtherEnd(temp_node);
   // if (isAssociatedWithThisCreature(other_temp_node)) {
   // other_corresponding_node =
@@ -311,22 +311,21 @@ public class Composite {
   // for (temp3 = 0; temp3 < this.number_of_entities; temp3++) {
   // temp_node = this.node_list[temp3];
   // corresponding_node = this.pair_manager.findCorrespondingNode(temp_node);
-  // temp_link = (Link) temp_node.list_of_links.elementAt(0);
+  // temp_link = (Link) temp_node.list_of_links.get(0);
   // other_temp_node = temp_link.theOtherEnd(temp_node);
   //
   // other_corresponding_node =
   // this.pair_manager.findCorrespondingNode(other_temp_node);
-  // temp_link = (Link) corresponding_node.list_of_links.elementAt(0);
+  // temp_link = (Link) corresponding_node.list_of_links.get(0);
   // if (other_corresponding_node != temp_link.theOtherEnd(corresponding_node))
   // {
   // temp4 = corresponding_node.list_of_links.size();
   // for (temp2 = 1; temp2 < temp4; temp2++) {
-  // temp_link = (Link) corresponding_node.list_of_links.elementAt(temp2);
+  // temp_link = (Link) corresponding_node.list_of_links.get(temp2);
   // if (other_corresponding_node == temp_link.theOtherEnd(corresponding_node))
   // {
-  // corresponding_node.list_of_links.setElementAt(corresponding_node.list_of_links.elementAt(0),
-  // temp2);
-  // corresponding_node.list_of_links.setElementAt(temp_link, 0);
+  // corresponding_node.list_of_links.set(// temp2, corresponding_node.list_of_links.get(0));
+  // corresponding_node.list_of_links.set(0, temp_link);
   //
   // break;
   // }
@@ -367,8 +366,8 @@ public class Composite {
   // }
 
   // final void setDefaultRWLinks() {
-  // this.read_link = (Link) this.read_node.list_of_links.elementAt(0);
-  // this.write_link = (Link) this.write_node.list_of_links.elementAt(0);
+  // this.read_link = (Link) this.read_node.list_of_links.get(0);
+  // this.write_link = (Link) this.write_node.list_of_links.get(0);
   // }
 
   final void mostlyCopy(Composite c) {

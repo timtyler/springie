@@ -23,10 +23,13 @@ import javax.swing.JOptionPane;
 
 import com.springie.FrEnd;
 import com.springie.utilities.FilePath;
-import com.springie.utilities.log.Log;
 import com.tifsoft.Forget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DropablePanel extends Panel {
+  private static final Logger logger = LoggerFactory.getLogger(DropablePanel.class);
+
   static final long serialVersionUID = 1250; 
   //private DropTargetListener dtListener;
 
@@ -66,7 +69,7 @@ public class DropablePanel extends Panel {
 
     private boolean isDragOk(DropTargetDragEvent e) {
       if (!isDragFlavorSupported(e)) {
-        Log.log("isDragOk:no flavors chosen");
+        logger.debug("isDragOk:no flavors chosen");
         return false;
       }
 
@@ -83,7 +86,7 @@ public class DropablePanel extends Panel {
     public void dragEnter(DropTargetDragEvent e) {
       //Log.log("Drag: dragEnter");
       if (!isDragOk(e)) {
-        Log.log("Drag: enter not ok");
+        logger.debug("Drag: enter not ok");
         e.rejectDrag();
         return;
       }
@@ -103,11 +106,11 @@ public class DropablePanel extends Panel {
 
     public void dropActionChanged(DropTargetDragEvent e) {
       if (!isDragOk(e)) {
-        Log.log("dtlistener changed not ok");
+        logger.debug("dtlistener changed not ok");
         e.rejectDrag();
         return;
       }
-      Log.log("dt changed: accepting" + e.getDropAction());
+      logger.debug("dt changed: accepting" + e.getDropAction());
       e.acceptDrag(e.getDropAction());
     }
 
@@ -121,7 +124,7 @@ public class DropablePanel extends Panel {
 
       final DataFlavor chosen = chooseDropFlavor(e);
       if (chosen == null) {
-        Log.log("No flavor match found");
+        logger.debug("No flavor match found");
         e.rejectDrop();
         return;
       }
@@ -141,7 +144,7 @@ public class DropablePanel extends Panel {
       //Log.log("drop: dropAction: " + da);
 
       if ((sa & DropablePanel.this.acceptableActions) == 0) {
-        Log.log("No action match found");
+        logger.debug("No action match found");
         e.rejectDrop();
         return;
       }
@@ -175,7 +178,7 @@ public class DropablePanel extends Panel {
       //final String s = (String) data;
       //} else
       if (data instanceof List) {
-        final List julist = (List) data;
+        final List<?> julist = (List<?>) data;
         //Log.log("File:" + julist);
 
         final File file = (File) julist.get(0);
@@ -188,17 +191,23 @@ public class DropablePanel extends Panel {
         FrEnd.loadFile(filepath);
       } else if (data instanceof InputStream) {
         final InputStream input = (InputStream) data;
-        
-        try (InputStreamReader isr = new InputStreamReader(input, "Unicode")) {
-          final StringBuffer str = new StringBuffer();
-	      int in = -1;
+        InputStreamReader isr = null;
+        try {
+          isr = new InputStreamReader(input, "Unicode");
+        } catch (UnsupportedEncodingException uee) {
+          isr = new InputStreamReader(input);
+        }
+
+        final StringBuilder str = new StringBuilder();
+        int in = -1;
+        try {
           while ((in = isr.read()) >= 0) {
             if (in != 0) {
               str.append((char) in);
             }
           }
         } catch (IOException ioe) {
-          Log.log("cannot read" + ioe);
+          logger.debug("cannot read" + ioe);
           e.dropComplete(false);
           final String message = "Bad drop\n" + ioe.getMessage();
           JOptionPane.showMessageDialog(DropablePanel.this, message, "Error",
@@ -207,7 +216,7 @@ public class DropablePanel extends Panel {
         }
 
       } else {
-        Log.log("drop: rejecting");
+        logger.debug("drop: rejecting");
         e.dropComplete(false);
         return;
       }
@@ -216,8 +225,8 @@ public class DropablePanel extends Panel {
     }
 
     private void reportException(DropTargetDropEvent e, Exception t) {
-      Log.log("Couldn't get transfer data: " + t.getMessage());
-      t.printStackTrace();
+      logger.debug("Couldn't get transfer data: " + t.getMessage());
+      logger.error("Unexpected exception", t);
       e.dropComplete(false);
     }
   }

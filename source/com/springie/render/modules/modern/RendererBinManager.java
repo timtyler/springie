@@ -4,7 +4,7 @@ package com.springie.render.modules.modern;
 
 import java.awt.Graphics;
 import java.util.Random;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextMananger;
@@ -19,7 +19,12 @@ public class RendererBinManager {
 
   private RendererBin[][] array;
 
-  private int[] node_depth_index;
+  private int[] node_depth_index = new int[0];
+
+  // Scratch buffers for the depth sort, reused across bins and frames.
+  private int[] sort_keys = new int[0];
+
+  private int[] sort_scratch = new int[0];
 
   static Random rnd = new Random();
 
@@ -29,11 +34,11 @@ public class RendererBinManager {
 
   public static int colour_modifier_wireframe = ColourModifier.darker;
 
-  Vector<PolygonComposite> getVector(int x, int y) {
+  ArrayList<PolygonComposite> getVector(int x, int y) {
     return this.array[x][y].vector;
   }
 
-  void putVector(int x, int y, Vector<PolygonComposite> vector) {
+  void putVector(int x, int y, ArrayList<PolygonComposite> vector) {
     this.array[x][y].vector = vector;
   }
 
@@ -41,7 +46,7 @@ public class RendererBinManager {
     // Log.log("BinManager.clear");
     for (int i = 0; i < this.number_of_bins_x; i++) {
       for (int j = 0; j < this.number_of_bins_y; j++) {
-        this.array[i][j].vector.setSize(0);
+        this.array[i][j].vector.clear();
       }
     }
   }
@@ -76,8 +81,8 @@ public class RendererBinManager {
   }
 
   void add(int x, int y, PolygonComposite triangle) {
-    final Vector<PolygonComposite> v = getVector(x, y);
-    v.addElement(triangle);
+    final ArrayList<PolygonComposite> v = getVector(x, y);
+    v.add(triangle);
   }
 
   void add(PolygonComposite composite) {
@@ -110,11 +115,11 @@ public class RendererBinManager {
     for (int j = 0; j < this.number_of_bins_y; j++) {
       for (int i = 0; i < this.number_of_bins_x; i++) {
         final RendererBin bin = this.array[i][j];
-        final Vector<PolygonComposite> v_this = bin.vector;
+        final ArrayList<PolygonComposite> v_this = bin.vector;
         final int size = v_this.size();
 
         final RendererBin last_bin = bins_last.array[i][j];
-        final Vector<PolygonComposite> v_last = last_bin.vector;
+        final ArrayList<PolygonComposite> v_last = last_bin.vector;
         final int size_last = v_last.size();
 
         final boolean size_last_gt_0 = size_last > 0;
@@ -152,7 +157,7 @@ public class RendererBinManager {
                 doScrubbing(graphics_paint, potential, bin);
               }
 
-              getSortedNodeDepthIndex(v_this);
+              getSortedNodeDepthIndex(v_this, FrEnd.redraw_deepest_first);
 
               graphics_paint.setClip(potential.min_x, potential.min_y,
                   block_size, block_size);
@@ -160,7 +165,7 @@ public class RendererBinManager {
               for (int c = size; --c >= 0;) {
                 final int index = this.node_depth_index[c];
                 final PolygonComposite composite = (PolygonComposite) v_this
-                    .elementAt(index);
+                    .get(index);
 
                 renderThePolygon(graphics_paint, composite);
               }
@@ -277,40 +282,82 @@ public class RendererBinManager {
     return RendererBinManager.show_bins ? 4 : 0;
   }
 
-  private void getSortedNodeDepthIndex(final Vector<PolygonComposite> v_this) {
+  private void getSortedNodeDepthIndex(final ArrayList<PolygonComposite> v_this,
+      boolean deepest_first) {
     final int size = v_this.size();
     setUpNewNodeDepthIndex(size);
 
-    if (FrEnd.redraw_deepest_first) {
+    if (deepest_first) {
       sort(v_this);
     }
   }
 
   private void setUpNewNodeDepthIndex(int number_of_nodes) {
-    this.node_depth_index = new int[number_of_nodes];
+    if (this.node_depth_index.length < number_of_nodes) {
+      this.node_depth_index = new int[number_of_nodes];
+    }
+    final int[] index = this.node_depth_index;
     for (int temp = number_of_nodes; --temp >= 0;) {
-      this.node_depth_index[temp] = temp;
+      index[temp] = temp;
     }
   }
 
-  private void sort(Vector<PolygonComposite> vector) {
-    for (int i = vector.size() - 1; --i >= 0;) {
-      boolean flipped = false;
-      for (int j = 0; j <= i; j++) {
-        final int k = j + 1;
-        final PolygonComposite a = vector.elementAt(this.node_depth_index[j]);
-        final PolygonComposite b = vector.elementAt(this.node_depth_index[k]);
-        if (a.z > b.z) {
-          int temp = this.node_depth_index[j];
-          this.node_depth_index[j] = this.node_depth_index[k];
-          this.node_depth_index[k] = temp;
-          flipped = true;
+  // Stable bottom-up merge sort of the depth index, ascending by z.
+  // (The caller draws the index from the end backwards, deepest first.)
+  // Replaces the old O(n^2) bubble sort; same observable order.
+  private void sort(ArrayList<PolygonComposite> vector) {
+    final int size = vector.size();
+    if (size < 2) {
+      return;
+    }
+    if (this.sort_keys.length < size) {
+      this.sort_keys = new int[size];
+      this.sort_scratch = new int[size];
+    }
+    final int[] index = this.node_depth_index;
+    final int[] keys = this.sort_keys;
+    for (int i = size; --i >= 0;) {
+      keys[i] = vector.get(i).z;
+    }
+
+    int[] src = index;
+    int[] dst = this.sort_scratch;
+    for (int width = 1; width < size; width <<= 1) {
+      final int step = width << 1;
+      for (int lo = 0; lo < size; lo += step) {
+        int mid = lo + width;
+        if (mid > size) {
+          mid = size;
+        }
+        int hi = lo + step;
+        if (hi > size) {
+          hi = size;
+        }
+        int i = lo;
+        int j = mid;
+        int k = lo;
+        while (i < mid && j < hi) {
+          // Strictly-less takes from the right run; ties take from the
+          // left run, which keeps the sort stable.
+          if (keys[src[j]] < keys[src[i]]) {
+            dst[k++] = src[j++];
+          } else {
+            dst[k++] = src[i++];
+          }
+        }
+        while (i < mid) {
+          dst[k++] = src[i++];
+        }
+        while (j < hi) {
+          dst[k++] = src[j++];
         }
       }
-
-      if (!flipped) {
-        return;
-      }
+      final int[] temp = src;
+      src = dst;
+      dst = temp;
+    }
+    if (src != index) {
+      System.arraycopy(src, 0, index, 0, size);
     }
   }
 

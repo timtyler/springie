@@ -26,7 +26,7 @@ public class ReaderSPR extends DefaultHandler {
 
   int node_count;
 
-  StringBuffer out = new StringBuffer();
+  StringBuilder out = new StringBuilder();
 
   String last_element;
 

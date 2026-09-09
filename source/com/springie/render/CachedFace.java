@@ -3,7 +3,7 @@
 package com.springie.render;
 
 import java.awt.Point;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.FrEnd;
 import com.springie.elements.DeepObjectColourCalculator;
@@ -13,7 +13,7 @@ import com.springie.elements.nodes.Node;
 
 public class CachedFace {
 
-  public Vector render = new Vector();
+  public ArrayList<Point> render = new ArrayList<>();
 
   public Point render_centre = new Point(0, 0);
 
@@ -25,7 +25,7 @@ public class CachedFace {
 
   public void draw(Face face) {
     if (!face.type.hidden || FrEnd.render_hidden_faces) {
-      //final Node n1 = (Node) face.node.elementAt(0);
+      //final Node n1 = (Node) face.node.get(0);
 
       RendererDelegator.setColour(this.colour);
 
@@ -77,7 +77,7 @@ public class CachedFace {
   }
 
   void cache(Face face, int mask) {
-    final Node n1 = (Node) face.nodes.elementAt(0);
+    final Node n1 = (Node) face.nodes.get(0);
 
     this.colour = DeepObjectColourCalculator.getColourOfDeepObject(
       face.clazz.colour, n1.pos.z)
@@ -97,7 +97,7 @@ public class CachedFace {
 
     this.selected = face.type.selected;
 
-    //final Node n1 = (Node) face.node.elementAt(0);
+    //final Node n1 = (Node) face.node.get(0);
     this.selected_colour = DeepObjectColourCalculator.getColourOfDeepObject(
       0xFF2020, n1.pos.z)
       & mask;
@@ -110,8 +110,8 @@ public class CachedFace {
     int sum_y = 0;
 
     for (int i = npoints; --i >= 0;) {
-      final Node n = (Node) face.nodes.elementAt(i);
-      final Point scratch = (Point) this.render.elementAt(i);
+      final Node n = (Node) face.nodes.get(i);
+      final Point scratch = (Point) this.render.get(i);
 
       scratch.x = Coords.getXCoords(n.pos.x, n.pos.z);
       scratch.y = Coords.getYCoords(n.pos.y, n.pos.z);
@@ -135,8 +135,8 @@ public class CachedFace {
     for (int i = 1; i < actual_number; i = i + 2) {
       final int j = actual_number - i;
       for (int k = npoints; --k >= 0;) {
-        final Point r1 = (Point) this.render.elementAt(k);
-        final Point r2 = (Point) this.render.elementAt((k + 1) % npoints);
+        final Point r1 = (Point) this.render.get(k);
+        final Point r2 = (Point) this.render.get((k + 1) % npoints);
 
         final int x1 = (this.render_centre.x * i + r1.x * j) / actual_number;
         final int y1 = (this.render_centre.y * i + r1.y * j) / actual_number;
@@ -159,8 +159,8 @@ public class CachedFace {
     final int actual_number = num << 1;
 
     for (int k = npoints; --k >= 0;) {
-      final Point r1 = (Point) this.render.elementAt(k);
-      final Point r2 = (Point) this.render.elementAt((k + 1) % npoints);
+      final Point r1 = (Point) this.render.get(k);
+      final Point r2 = (Point) this.render.get((k + 1) % npoints);
       final Point r3 = this.render_centre;
       final int c_x = (r1.x + r2.x) >> 1;
       final int c_y = (r1.y + r2.y) >> 1;
@@ -196,8 +196,8 @@ public class CachedFace {
     for (int i = 1; i < actual_number; i = i + 2) {
       final int j = actual_number - i;
       for (int k = npoints; --k >= 0;) {
-        final Point r1 = (Point) this.render.elementAt(k);
-        final Point r2 = (Point) this.render.elementAt((k + 1) % npoints);
+        final Point r1 = (Point) this.render.get(k);
+        final Point r2 = (Point) this.render.get((k + 1) % npoints);
 
         final int x1 = (r2.x * i + this.render_centre.x * j) / actual_number;
         final int y1 = (r2.y * i + this.render_centre.y * j) / actual_number;
@@ -222,8 +222,8 @@ public class CachedFace {
     for (int i = 1; i < actual_number; i = i + 2) {
       final int j = actual_number - i;
       for (int k = npoints; --k >= 0;) {
-        final Point r1 = (Point) this.render.elementAt(k);
-        final Point r2 = (Point) this.render.elementAt((k + 1) % npoints);
+        final Point r1 = (Point) this.render.get(k);
+        final Point r2 = (Point) this.render.get((k + 1) % npoints);
 
         final int x1 = (r1.x * i + this.render_centre.x * j) / actual_number;
         final int y1 = (r1.y * i + this.render_centre.y * j) / actual_number;
@@ -238,11 +238,11 @@ public class CachedFace {
 
   private void setUpRenderingScratchSpace(Face face) {
     if (face.nodes != null) {
-      this.render = new Vector();
+      this.render = new ArrayList<>();
 
       final int npoints = face.nodes.size();
       for (int i = npoints; --i >= 0;) {
-        this.render.addElement(new Point(0, 0));
+        this.render.add(new Point(0, 0));
       }
     }
   }

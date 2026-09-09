@@ -30,6 +30,18 @@ public class Double3D {
     this.z = point.z;
   }
 
+  public void set(double x, double y, double z) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
+
+  public void setCrossProduct(Double3D a, Double3D b) {
+    this.x = a.y * b.z - a.z * b.y;
+    this.y = a.z * b.x - a.x * b.z;
+    this.z = a.x * b.y - a.y * b.x;
+  }
+
   public Double3D subtract(Double3D d) {
     return new Double3D(this.x - d.x, this.y - d.y, this.z - d.z);
   }

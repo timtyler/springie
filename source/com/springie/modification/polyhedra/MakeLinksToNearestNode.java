@@ -1,6 +1,6 @@
 package com.springie.modification.polyhedra;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.FrEnd;
 import com.springie.elements.clazz.Clazz;
@@ -8,9 +8,12 @@ import com.springie.elements.links.LinkManager;
 import com.springie.elements.links.LinkType;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.utilities.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MakeLinksToNearestNode {
+  private static final Logger logger = LoggerFactory.getLogger(MakeLinksToNearestNode.class);
+
   int colour_of_link_to_nearest = 0xFFFFC0FF;
 
   private NodeManager node_manager;
@@ -66,12 +69,12 @@ public class MakeLinksToNearestNode {
 
   private int[] getArrayOfNodesOfColour(int colour) {
     final int number_of_nodes = this.node_manager.element.size();
-    final Vector nodes = new Vector();
+    final ArrayList<Integer> nodes = new ArrayList<>();
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) this.node_manager.element
         .get(counter);
       if (candidate.clazz.colour == colour) {
-        nodes.addElement(new Integer(counter));
+        nodes.add(new Integer(counter));
       }
     }
 
@@ -79,7 +82,7 @@ public class MakeLinksToNearestNode {
     final int[] array = new int[size];
 
     for (int counter = size; --counter >= 0;) {
-      array[counter] = ((Integer) (nodes.get(counter))).intValue();
+      array[counter] = nodes.get(counter).intValue();
     }
 
     return array;
@@ -112,7 +115,7 @@ public class MakeLinksToNearestNode {
     for (int idx = number; --idx >= 0;) {
       final int num_of_candidate_node = target_node_numbers[idx];
       if (num_of_candidate_node < 0) {
-        Log.log("num_of_candidate_node: " + num_of_candidate_node);
+        logger.debug("num_of_candidate_node: " + num_of_candidate_node);
       }
 
       final Node candidate = (Node) this.node_manager.element
@@ -126,7 +129,7 @@ public class MakeLinksToNearestNode {
     }
     
     if (list_of_nearest.countFound() != max) {
-      Log.log("list_of_nearest.countFound:" + list_of_nearest.countFound());
+      logger.debug("list_of_nearest.countFound:" + list_of_nearest.countFound());
     }
 
     return list_of_nearest;

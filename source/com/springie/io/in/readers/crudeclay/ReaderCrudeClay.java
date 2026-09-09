@@ -4,10 +4,13 @@ package com.springie.io.in.readers.crudeclay;
 
 import java.awt.Color;
 import java.util.StringTokenizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.springie.utilities.log.Log;
 
 public class ReaderCrudeClay {
+  private static final Logger logger = LoggerFactory.getLogger(ReaderCrudeClay.class);
+
   int current_r;
 
   int current_g;
@@ -84,7 +87,7 @@ public class ReaderCrudeClay {
 
     final StringTokenizer st = new StringTokenizer(in, c_r);
 
-    final StringBuffer out = parseTheFile(st);
+    final StringBuilder out = parseTheFile(st);
 
     final String o = out.toString();
 
@@ -92,8 +95,8 @@ public class ReaderCrudeClay {
     return o;
   }
 
-  private StringBuffer parseTheFile(final StringTokenizer st) {
-    final StringBuffer out = new StringBuffer();
+  private StringBuilder parseTheFile(final StringTokenizer st) {
+    final StringBuilder out = new StringBuilder();
     out.append("CR ");
 
     while (st.hasMoreTokens()) {
@@ -111,7 +114,7 @@ public class ReaderCrudeClay {
   }
 
   private void execute(final StringTokenizer st2, String command,
-      StringBuffer out) {
+      StringBuilder out) {
     if ("node".equals(command)) {
       commandNode(st2, out);
     } else if ("link".equals(command)) {
@@ -157,11 +160,11 @@ public class ReaderCrudeClay {
     } else if ("fixed".equals(command)) {
       commandFixed(st2);
     } else {
-      Log.log("Unknown command: " + command);
+      logger.debug("Unknown command: " + command);
     }
   }
 
-  private void commandReset(StringTokenizer s_t, StringBuffer out) {
+  private void commandReset(StringTokenizer s_t, StringBuilder out) {
     final String t = getNextCommand(s_t);
     if (t.equals("link")) {
       final String t2 = getNextCommand(s_t);
@@ -171,7 +174,7 @@ public class ReaderCrudeClay {
     }
   }
 
-  private void commandSelect(StringTokenizer s_t, StringBuffer out) {
+  private void commandSelect(StringTokenizer s_t, StringBuilder out) {
     final String t = getNextCommand(s_t);
     if (t.equals("all")) {
       final String t2 = getNextCommand(s_t);
@@ -181,7 +184,7 @@ public class ReaderCrudeClay {
     }
   }
 
-  private void commandDeselect(StringTokenizer s_t, StringBuffer out) {
+  private void commandDeselect(StringTokenizer s_t, StringBuilder out) {
     final String t = getNextCommand(s_t);
     if (t.equals("all")) {
       final String t2 = getNextCommand(s_t);
@@ -195,7 +198,7 @@ public class ReaderCrudeClay {
     return s_t.nextToken().toLowerCase();
   }
 
-  private void commandNode(StringTokenizer s_t, StringBuffer out) {
+  private void commandNode(StringTokenizer s_t, StringBuilder out) {
     boolean need_group = this.type != this.type_node;
     need_group |= needsNewGroup();
     need_group |= this.current_radius != this.last_radius;
@@ -234,7 +237,7 @@ public class ReaderCrudeClay {
     out.append("Z:" + z + " ");
   }
 
-  private void commandLink(StringTokenizer s_t, StringBuffer out) {
+  private void commandLink(StringTokenizer s_t, StringBuilder out) {
     boolean need_group = this.type != this.type_link;
     need_group |= needsNewGroup();
     need_group |= this.current_radius != this.last_radius;
@@ -265,7 +268,7 @@ public class ReaderCrudeClay {
     }
   }
 
-  private void commandFace(StringTokenizer s_t, StringBuffer out) {
+  private void commandFace(StringTokenizer s_t, StringBuilder out) {
     boolean need_group = this.type != this.type_face;
     need_group |= needsNewGroup();
 
@@ -425,68 +428,68 @@ public class ReaderCrudeClay {
     this.last_radius = this.current_radius;
   }
 
-  private void outputNewRadius(StringBuffer out) {
+  private void outputNewRadius(StringBuilder out) {
     out.append("R:" + (int) this.current_radius + " ");
     this.last_radius = this.current_radius;
   }
 
-  private void outputNewHidden(StringBuffer out) {
+  private void outputNewHidden(StringBuilder out) {
     if (this.current_hidden) {
       out.append("H:1 ");
       this.last_hidden = this.current_hidden;
     }
   }
 
-  private void outputNewFixed(StringBuffer out) {
+  private void outputNewFixed(StringBuilder out) {
     if (this.current_fixed) {
       out.append("FX:1 ");
       this.last_fixed = this.current_fixed;
     }
   }
 
-  private void outputNewCable(StringBuffer out) {
+  private void outputNewCable(StringBuilder out) {
     if (this.current_cable) {
       out.append("CA:1 ");
       this.last_cable = this.current_cable;
     }
   }
 
-  private void outputNewDisabled(StringBuffer out) {
+  private void outputNewDisabled(StringBuilder out) {
     if (this.current_disabled) {
       out.append("D:1 ");
       this.last_disabled = this.current_disabled;
     }
   }
 
-  private void outputNewLength(StringBuffer out) {
+  private void outputNewLength(StringBuilder out) {
     // if (this.current_length != this.last_length) {
     out.append("L:" + (int) this.current_length + " ");
     this.last_length = this.current_length;
     // }
   }
 
-  private void outputNewElasticity(StringBuffer out) {
+  private void outputNewElasticity(StringBuilder out) {
     // if (this.current_elasticity != this.last_elasticity) {
     out.append("E:" + this.current_elasticity + " ");
     this.last_elasticity = this.current_elasticity;
     // }
   }
 
-  private void outputNewDamping(StringBuffer out) {
+  private void outputNewDamping(StringBuilder out) {
     if (this.current_damping != this.last_damping) {
       out.append("DA:" + this.current_damping + " ");
       this.last_damping = this.current_damping;
     }
   }
 
-  private void outputNewCharge(StringBuffer out) {
+  private void outputNewCharge(StringBuilder out) {
     if (this.current_charge != this.last_charge) {
       out.append("CH:" + this.current_charge + " ");
       this.last_charge = this.current_charge;
     }
   }
 
-  private void outputNewColour(StringBuffer out) {
+  private void outputNewColour(StringBuilder out) {
     this.current_colour = getCurrentColour();
     if (this.current_colour != this.last_colour) {
       final long c = this.current_colour & 0xFFFFFFFFL;

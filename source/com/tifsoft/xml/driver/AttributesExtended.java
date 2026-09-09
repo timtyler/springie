@@ -1,5 +1,7 @@
 package com.tifsoft.xml.driver;
 
+import java.util.ArrayList;
+
 import org.xml.sax.Attributes;
 
 import com.tifsoft.Forget;
@@ -17,15 +19,15 @@ public class AttributesExtended implements Attributes {
   }
 
   public String getURI(final int i) {
-    return (String) this.aw.attribute_uris.elementAt(i);
+    return (String) this.aw.attribute_uris.get(i);
   }
 
   public String getLocalName(final int i) {
-    return (String) this.aw.attribute_local_names.elementAt(i);
+    return (String) this.aw.attribute_local_names.get(i);
   }
 
   public String getQName(final int i) {
-    return (String) this.aw.attribute_qnames.elementAt(i);
+    return (String) this.aw.attribute_qnames.get(i);
   }
 
   public String getType(final int i) {
@@ -34,19 +36,29 @@ public class AttributesExtended implements Attributes {
   }
 
   public String getValue(final int i) {
-    return (String) this.aw.attribute_values.elementAt(i);
+    return (String) this.aw.attribute_values.get(i);
   }
 
   public int getIndex(final String uri, final String local_part) {
     int i = -1;
 
     while (true) {
-      i = this.aw.attribute_local_names.indexOf(local_part, i + 1);
+      i = indexOfFrom(this.aw.attribute_local_names, local_part, i + 1);
 
-      if (i == -1 || uri.equals(this.aw.attribute_uris.elementAt(i))) {
+      if (i == -1 || uri.equals(this.aw.attribute_uris.get(i))) {
         return i;
       }
     }
+  }
+
+  // ArrayList has no indexOf(element, from_index); Vector did.
+  private static int indexOfFrom(ArrayList<String> list, String element, int from_index) {
+    for (int i = from_index, n = list.size(); i < n; i++) {
+      if (element.equals(list.get(i))) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   public int getIndex(final String q_name) {
@@ -67,13 +79,13 @@ public class AttributesExtended implements Attributes {
   public String getValue(final String uri, final String local_name) {
     final int index = this.getIndex(uri, local_name);
 
-    return (index == -1) ? null : (String) this.aw.attribute_values.elementAt(index);
+    return (index == -1) ? null : (String) this.aw.attribute_values.get(index);
   }
 
   public String getValue(final String q_name) {
     final int index = this.aw.attribute_qnames.indexOf(q_name);
 
-    return (index == -1) ? null : (String) this.aw.attribute_values.elementAt(index);
+    return (index == -1) ? null : (String) this.aw.attribute_values.get(index);
   }
 
   public void setAw(AttributesBasic aw) {

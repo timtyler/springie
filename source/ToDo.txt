@@ -17,6 +17,8 @@ Improve rendering
 
 Improve UI
 
+Grabbing a link should immobilize both ends (works OK with a node).
+
 Misc
  Implement sources
  Implement sinks

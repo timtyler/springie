@@ -36,7 +36,7 @@ public class FDLTokeniser {
     this.state = FDLParserState.in_between_states;
     final int length = this.source.length();
 
-    final StringBuffer token_text = new StringBuffer();
+    final StringBuilder token_text = new StringBuilder();
 
     while (this.index_char < length) {
       final char c = this.source.charAt(this.index_char++);

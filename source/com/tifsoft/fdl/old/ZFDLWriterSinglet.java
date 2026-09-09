@@ -1,6 +1,6 @@
 package com.tifsoft.fdl.old;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import uk.org.fdl.writer.FDLWriterInterface;
 import uk.org.fdl.writer.FDLWriterStringUtilities;
@@ -9,9 +9,9 @@ import uk.org.fdl.writer.FDLWriterStringUtilities;
 public class ZFDLWriterSinglet implements FDLWriterInterface {
   String name;
 
-  Vector attributes;
+  ArrayList<ZFDLWriterAttribute> attributes;
 
-  public ZFDLWriterSinglet(String name, Vector arguments) {
+  public ZFDLWriterSinglet(String name, ArrayList<ZFDLWriterAttribute> arguments) {
     this.name = name;
     this.attributes = arguments;
   }
@@ -25,7 +25,7 @@ public class ZFDLWriterSinglet implements FDLWriterInterface {
   }
 
   public String makeString(int indent) {
-    final StringBuffer sb = new StringBuffer();
+    final StringBuilder sb = new StringBuilder();
 
     if (this.name != null) {
       FDLWriterStringUtilities.indent(sb, indent);
@@ -35,7 +35,7 @@ public class ZFDLWriterSinglet implements FDLWriterInterface {
       if (this.attributes != null) {
         final int arguments_size = this.attributes.size();
         for (int i = 0; i < arguments_size; i++) {
-          final ZFDLWriterAttribute arg = (ZFDLWriterAttribute) this.attributes.elementAt(i);
+          final ZFDLWriterAttribute arg = this.attributes.get(i);
           sb.append(":" + arg.toString());
         }
       }
@@ -46,11 +46,11 @@ public class ZFDLWriterSinglet implements FDLWriterInterface {
     return sb.toString();
   }
 
-  public Vector getAttributes() {
+  public ArrayList<ZFDLWriterAttribute> getAttributes() {
     return this.attributes;
   }
 
-  public void setAttributes(Vector arguments) {
+  public void setAttributes(ArrayList<ZFDLWriterAttribute> arguments) {
     this.attributes = arguments;
   }
 
@@ -65,12 +65,12 @@ public class ZFDLWriterSinglet implements FDLWriterInterface {
   public void add(ZFDLWriterAttribute attribute) {
     ensureAttributesExist();
 
-    this.attributes.addElement(attribute);
+    this.attributes.add(attribute);
   }
 
   private void ensureAttributesExist() {
     if (this.attributes == null) {
-      this.attributes = new Vector();
+      this.attributes = new ArrayList<>();
     }
   }
 }

@@ -13,7 +13,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import org.xml.sax.SAXException;
 
@@ -31,8 +31,12 @@ import com.springie.presets.AddXMLModelIndexLeaves;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 import com.tifsoft.Forget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PanelFundamental {
+  private static final Logger logger = LoggerFactory.getLogger(PanelFundamental.class);
+
   public Panel panel = FrEnd.setUpPanelForFrame2();
 
   MessageManager message_manager;
@@ -341,9 +345,9 @@ public class PanelFundamental {
       new AddXMLModelIndexLeaves().addLeaves(FrEnd.choose_preset_index,
           FrEnd.model_index);
     } catch (IOException e1) {
-      e1.printStackTrace();
+      logger.error("Unexpected exception", e1);
     } catch (SAXException e1) {
-      e1.printStackTrace();
+      logger.error("Unexpected exception", e1);
     }
 
     setUpInitialChoice();
@@ -406,15 +410,15 @@ public class PanelFundamental {
     try {
       new AddXMLModelIndexLeaves().addLeaves(FrEnd.choose_initial, path);
     } catch (IOException e1) {
-      e1.printStackTrace();
+      logger.error("Unexpected exception", e1);
     } catch (SAXException e1) {
-      e1.printStackTrace();
+      logger.error("Unexpected exception", e1);
     }
   }
 
   public static String getXMLIndexPath() {
-    final Enumeration e = FrEnd.choose_preset_index.hashtable.keys();
-    final String initial = (String) e.nextElement();
+    final Iterator<String> e = FrEnd.choose_preset_index.hashtable.keySet().iterator();
+    final String initial = e.next();
     return initial;
   }
 

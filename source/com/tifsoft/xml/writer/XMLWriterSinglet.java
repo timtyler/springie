@@ -1,13 +1,13 @@
 package com.tifsoft.xml.writer;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class XMLWriterSinglet implements XMLWriterInterface {
   String name;
 
-  Vector attributes;
+  ArrayList<XMLWriterAttribute> attributes;
 
-  public XMLWriterSinglet(String name, Vector arguments) {
+  public XMLWriterSinglet(String name, ArrayList<XMLWriterAttribute> arguments) {
     this.name = name;
     this.attributes = arguments;
   }
@@ -21,7 +21,7 @@ public class XMLWriterSinglet implements XMLWriterInterface {
   }
 
   public String makeString(int indent) {
-    final StringBuffer sb = new StringBuffer();
+    final StringBuilder sb = new StringBuilder();
 
     if (this.name != null) {
       XMLWriterUtilities.indent(sb, indent);
@@ -31,7 +31,7 @@ public class XMLWriterSinglet implements XMLWriterInterface {
       if (this.attributes != null) {
         final int arguments_size = this.attributes.size();
         for (int i = 0; i < arguments_size; i++) {
-          final XMLWriterAttribute arg = (XMLWriterAttribute) this.attributes.elementAt(i);
+          final XMLWriterAttribute arg = this.attributes.get(i);
           sb.append(" " + arg.toString());
         }
       }
@@ -42,11 +42,11 @@ public class XMLWriterSinglet implements XMLWriterInterface {
     return sb.toString();
   }
 
-  public Vector getAttributes() {
+  public ArrayList<XMLWriterAttribute> getAttributes() {
     return this.attributes;
   }
 
-  public void setAttributes(Vector arguments) {
+  public void setAttributes(ArrayList<XMLWriterAttribute> arguments) {
     this.attributes = arguments;
   }
 
@@ -61,12 +61,12 @@ public class XMLWriterSinglet implements XMLWriterInterface {
   public void add(XMLWriterAttribute attribute) {
     ensureAttributesExist();
 
-    this.attributes.addElement(attribute);
+    this.attributes.add(attribute);
   }
 
   private void ensureAttributesExist() {
     if (this.attributes == null) {
-      this.attributes = new Vector();
+      this.attributes = new ArrayList<>();
     }
   }
 }

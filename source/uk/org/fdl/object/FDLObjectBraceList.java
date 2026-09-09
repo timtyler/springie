@@ -18,7 +18,7 @@ public class FDLObjectBraceList extends FDLObjectCollection {
 //  }
 //
 //  public String makeString(int indent) {
-//    final StringBuffer sb = new StringBuffer();
+//    final StringBuilder sb = new StringBuilder();
 //
 //    outputStartTagAndAttributes(indent, sb);
 //
@@ -30,7 +30,7 @@ public class FDLObjectBraceList extends FDLObjectCollection {
 //  }
 //
 //  private void outputStartTagAndAttributes(final int indent,
-//      final StringBuffer sb) {
+//      final StringBuilder sb) {
 //    Forget.about(indent);
 //    sb.append(this.open);
 //    if (this.newlines) {
@@ -39,12 +39,12 @@ public class FDLObjectBraceList extends FDLObjectCollection {
 //    }
 //  }
 //
-//  private void outputChildren(int indent, final StringBuffer sb) {
+//  private void outputChildren(int indent, final StringBuilder sb) {
 //    if (this.children != null) {
 //      final int children_size = this.children.size();
 //      for (int i = 0; i < children_size; i++) {
 //        final FDLWriterInterface node = (FDLWriterInterface) this.children
-//            .elementAt(i);
+//            .get(i);
 //        int spaces = 0;
 //        if (this.newlines) {
 //          spaces = indent + ZFDLWriterIndent.level;
@@ -63,7 +63,7 @@ public class FDLObjectBraceList extends FDLObjectCollection {
 //    recent_end_tag = false;
 //  }
 //
-//  private void outputEndTag(int indent, final StringBuffer sb) {
+//  private void outputEndTag(int indent, final StringBuilder sb) {
 //    if (this.newlines) {
 //      FDLWriterStringUtilities.indent(sb, indent);
 //    }

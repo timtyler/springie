@@ -1,19 +1,22 @@
 package com.springie.elements.lists;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.elements.base.BaseType;
-import com.springie.utilities.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ListOfIntegers extends BaseType {
-  Vector<Integer> list = new Vector<>();
+  private static final Logger logger = LoggerFactory.getLogger(ListOfIntegers.class);
+
+  ArrayList<Integer> list = new ArrayList<>();
 
   public final int size() {
     return this.list.size();
   }
 
   public final void add(int i) {
-    this.list.addElement(new Integer(i));
+    this.list.add(new Integer(i));
   }
 
   public int retreive(int i) {
@@ -24,8 +27,8 @@ public class ListOfIntegers extends BaseType {
     for (int i = this.list.size(); --i >= 0;) {
       final int value = retreive(i);
       if (value == n) {
-        Log.log("Removing index " + n + " : from list position:" + i);
-        this.list.removeElementAt(i);
+        logger.debug("Removing index " + n + " : from list position:" + i);
+        this.list.remove(i);
         return;
       }
     }

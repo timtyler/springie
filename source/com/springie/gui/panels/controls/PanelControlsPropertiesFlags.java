@@ -199,11 +199,11 @@ public class PanelControlsPropertiesFlags {
         || anySelectedThingHidden(face_manager.element);
   }
 
-  private boolean anySelectedThingHidden(List v) {
+  private boolean anySelectedThingHidden(List<? extends BaseElement> v) {
     // final NodeManager node_manager = ContextMananger.getNodeManager();
     final int size = v.size();
     for (int i = 0; i < size; i++) {
-      final BaseElement n = (BaseElement) v.get(i);
+      final BaseElement n = v.get(i);
       if (n.isSelected()) {
         if (n.isHidden()) {
           return true;

@@ -3,8 +3,8 @@ package com.springie.utilities;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.zip.CRC32;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
@@ -38,7 +38,7 @@ public final class PNGReader {
 
   public static final byte[] lut2 = {-119, 80, 78, 71, 13, 10, 26, 10 };
 
-  private Vector vector;
+  private ArrayList<Integer> vector;
 
   private boolean is_colour_type;
 
@@ -99,7 +99,7 @@ public final class PNGReader {
     this.ya = 1167;
     setCRC(new CRC32());
     // yf = new byte[8192];
-    this.vector = new Vector();
+    this.vector = new ArrayList<>();
     this.state = 1;
     this.inflater = new Inflater();
     // gamma = 45000;
@@ -206,7 +206,7 @@ public final class PNGReader {
     }
 
     this.is_colour_type = true;
-    this.vector.addElement(new Integer(getLocation()));
+    this.vector.add(new Integer(getLocation()));
     if (getColourMapSize() > 8192) {
       throw error(verbose ? "Implementation - too long colour map: " + getColourMapSize()
           : "");
@@ -250,7 +250,7 @@ public final class PNGReader {
     // old code...
     // pixels = new int[width * height];
     this.png_maker = new PNGMaker(this.input_stream, this.inflater, 512);
-    this.vector.addElement(new Integer(getLocation()));
+    this.vector.add(new Integer(getLocation()));
     final int j = (this.state * this.bit_depth + 7) / 8;
     // boolean flag = false;
     this.xb = new byte[j * this.width + 1];
@@ -410,7 +410,7 @@ public final class PNGReader {
   }
 
   private void santiyCheck() throws IOException {
-    this.vector.addElement(new Integer(getLocation()));
+    this.vector.add(new Integer(getLocation()));
     if (!getPLTEOrderProblem() || this.colour_type == 3 && !this.is_colour_type) {
       throw error(verbose ? "IDAT or PLTE absence" : "");
     }
@@ -423,7 +423,7 @@ public final class PNGReader {
   }
 
   private void changeGamma() throws IOException {
-    this.vector.addElement(new Integer(getLocation()));
+    this.vector.add(new Integer(getLocation()));
     if (this.is_colour_type || getPLTEOrderProblem()) {
       throw error(verbose ? "Late gAMA appeares" : "");
     }
@@ -448,7 +448,7 @@ public final class PNGReader {
     if (this.colour_type == 3 && !this.is_colour_type) {
       throw error(verbose ? "Early tRNS appeared" : "");
     }
-    this.vector.addElement(new Integer(getLocation()));
+    this.vector.add(new Integer(getLocation()));
     if ((this.ya & 0x400) == 0) {
       xp();
       return;
@@ -596,7 +596,7 @@ public final class PNGReader {
     if (getPLTEOrderProblem()) {
       this.bool3 = true;
     }
-    this.vector.addElement(new Integer(getLocation()));
+    this.vector.add(new Integer(getLocation()));
     if ((getLocation() & 0x20000000) != 0) {
       xp();
       return;
@@ -625,9 +625,9 @@ public final class PNGReader {
 
   private boolean containsInteger(int i) {
     boolean flag = false;
-    for (final Enumeration enumeration = this.vector.elements(); enumeration
-        .hasMoreElements();) {
-      if (((Integer) enumeration.nextElement()).intValue() == i) {
+    for (final Iterator<Integer> enumeration = this.vector.iterator(); enumeration
+        .hasNext();) {
+      if (enumeration.next().intValue() == i) {
         flag = true;
         break;
       }

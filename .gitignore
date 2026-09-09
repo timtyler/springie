@@ -1,1 +1,17 @@
 bin/
+target/
+*.class
+*.jar
+*.war
+*.log
+.idea/
+*.iml
+.eclipse/
+.settings/
+.classpath
+.project
+*.orig
+*~
+.DS_Store
+Thumbs.db
+dependency-reduced-pom.xml

@@ -1,13 +1,13 @@
 package com.springie.elements.faces;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class FaceTypeFactory {
-  public Vector array = new Vector();
+  public ArrayList<FaceType> array = new ArrayList<>();
 
   public FaceType getNew() {
     final FaceType type = new FaceType();
-    this.array.addElement(type);
+    this.array.add(type);
     return type;
   }
 }

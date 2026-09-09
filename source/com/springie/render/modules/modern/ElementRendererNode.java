@@ -3,7 +3,7 @@
 package com.springie.render.modules.modern;
 
 import java.awt.Point;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.FrEnd;
 import com.springie.elements.DeepObjectColourCalculator;
@@ -185,12 +185,15 @@ public final class ElementRendererNode {
     final int actual_colour = DeepObjectColourCalculator.getColourOfDeepObject(colour,
         node.pos.z);
 
-    final Vector polygon_vector = new Vector();
     final double radius_in = node.type.radius * 4 / 3;
     final double radius_mid = radius_in + width;
     final double radius_out = radius_in + width + width;
 
     final int sides = 9;
+
+    // Two polygons per side.
+    final ArrayList<PolygonObject2D> polygon_vector = new ArrayList<>(
+        sides * 2);
     final double increment = 2 * Math.PI / sides;
     final int x = node.pos.x;
     final int y = node.pos.y;
@@ -219,7 +222,7 @@ public final class ElementRendererNode {
       point1[3] = new Point3D(x4, y4, z - width);
 
       final PolygonObject2D polygon1 = new PolygonObject2D(point1, actual_colour);
-      polygon_vector.addElement(polygon1);
+      polygon_vector.add(polygon1);
 
       final Point3D[] point2 = new Point3D[4];
       point2[0] = new Point3D(x6, y6, z);
@@ -228,7 +231,7 @@ public final class ElementRendererNode {
       point2[3] = new Point3D(x3, y3, z - width);
 
       final PolygonObject2D polygon2 = new PolygonObject2D(point2, actual_colour);
-      polygon_vector.addElement(polygon2);
+      polygon_vector.add(polygon2);
     }
 
     return combine(polygon_vector, composite);
@@ -240,7 +243,7 @@ public final class ElementRendererNode {
 
     final int colour = RendererDelegator.color_charge_number;
 
-    final Vector polygon_vector = new Vector();
+    final ArrayList<PolygonObject2D> polygon_vector = new ArrayList<>(1);
 
     final int x = node.pos.x;
     final int y = node.pos.y;
@@ -271,7 +274,7 @@ public final class ElementRendererNode {
     point1[11] = new Point3D(x2, y3, z);
 
     final PolygonObject2D polygon1 = new PolygonObject2D(point1, colour);
-    polygon_vector.addElement(polygon1);
+    polygon_vector.add(polygon1);
 
     return combine(polygon_vector, composite);
   }
@@ -282,7 +285,7 @@ public final class ElementRendererNode {
 
     final int colour = RendererDelegator.color_charge_number;
 
-    final Vector polygon_vector = new Vector();
+    final ArrayList<PolygonObject2D> polygon_vector = new ArrayList<>(1);
 
     final int x = node.pos.x;
     final int y = node.pos.y;
@@ -301,12 +304,12 @@ public final class ElementRendererNode {
     point1[0] = new Point3D(x4, y3, z);
 
     final PolygonObject2D polygon1 = new PolygonObject2D(point1, colour);
-    polygon_vector.addElement(polygon1);
+    polygon_vector.add(polygon1);
 
     return combine(polygon_vector, composite);
   }
 
-  private static PolygonComposite combine(Vector polygon_vector,
+  private static PolygonComposite combine(ArrayList<PolygonObject2D> polygon_vector,
       PolygonComposite composite) {
     final int size_1 = polygon_vector.size();
     final int size_2 = composite.array.length;
@@ -314,7 +317,7 @@ public final class ElementRendererNode {
     final PolygonObject2D[] out = new PolygonObject2D[size_1 + size_2];
 
     for (int i = 0; i < size_1; i++) {
-      out[i] = (PolygonObject2D) polygon_vector.elementAt(i);
+      out[i] = polygon_vector.get(i);
     }
 
     for (int i = 0; i < size_2; i++) {
