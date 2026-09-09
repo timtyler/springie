@@ -62,7 +62,9 @@ public final class SquareRoot {
 
         xn = (xn + 1 + (x / xn)) >> 1;
         xn = (xn + 1 + (x / xn)) >> 1;
-        return ((xn * xn) > x) ? --xn : xn;
+        // long multiplication: xn * xn overflows int for xn > 46340,
+        // which made sqrt(Integer.MAX_VALUE) return 46341 instead of 46340.
+        return ((long) xn * xn > x) ? --xn : xn;
       } else if (x >= 0x100000) {
         if (x >= 0x400000) {
           xn = table[x >> 16] << 4;
@@ -185,24 +187,27 @@ public final class SquareRoot {
     // or, for all cases except x == 0:
     //    if |xn * xn - x| > x - xn * xn + 2 * xn - 1 then xn-1 is more accurate
     //    if |xn * xn - x| > xn * xn + 2 * xn + 1 - x then xn+1 is more accurate
-    final int xn2 = xn * xn;
+    //
+    // Uses long arithmetic: with int, xn * xn overflows for xn > 46340,
+    // which made sqrt(Integer.MAX_VALUE) return 46341 instead of 46340.
+    final long xn2 = (long) xn * xn;
 
     // |xn * xn - x|
-    int comparitor0 = xn2 - x;
+    long comparitor0 = xn2 - x;
     if (comparitor0 < 0) {
       comparitor0 = -comparitor0;
     }
 
-    final int twice_xn = xn << 1;
+    final long twice_xn = (long) xn << 1;
 
     // |x - (xn-1) * (xn-1)|
-    int comparitor1 = x - xn2 + twice_xn - 1;
+    long comparitor1 = (long) x - xn2 + twice_xn - 1;
     if (comparitor1 < 0) { // need to correct for x == 0 case?
       comparitor1 = -comparitor1; // only gets here when x == 0
     }
 
     // |(xn+1) * (xn+1) - x|
-    final int comparitor2 = xn2 + twice_xn + 1 - x;
+    final long comparitor2 = xn2 + twice_xn + 1 - x;
 
     if (comparitor0 > comparitor1) {
       return (comparitor1 > comparitor2) ? (xn + 1) : (xn - 1);
