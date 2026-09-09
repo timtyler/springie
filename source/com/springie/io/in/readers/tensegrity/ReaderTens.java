@@ -186,7 +186,7 @@ public final class ReaderTens {
                     node_manager.getFaceManager().setPolygon(current_face_type,
                         current_clazz);
                     int sz2 = node_manager.getFaceManager().element.size();
-                    current_polygon = (Face) node_manager.getFaceManager().element.get(sz2);
+                    current_polygon = (Face) node_manager.getFaceManager().element.get(sz2 - 1);
                     node_number = 0;
 
                     break;
