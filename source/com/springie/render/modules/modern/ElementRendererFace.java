@@ -10,6 +10,12 @@ import com.springie.geometry.Vector3D;
 import com.springie.render.RendererDelegator;
 
 public final class ElementRendererFace {
+  // Scratch objects reused across calls to avoid per-frame allocation.
+  // Rendering is single-threaded, and these are never held across calls.
+  private static final Point3D scratch_center = new Point3D(0, 0, 0);
+  private static final Vector3D scratch_v1 = new Vector3D(0, 0, 0);
+  private static final Vector3D scratch_v2 = new Vector3D(0, 0, 0);
+
   private ElementRendererFace() {
     // ...
   }
@@ -27,7 +33,8 @@ public final class ElementRendererFace {
   private static PolygonComposite getPolygonSimple(Face face, int colour) {
     final int npolygon = face.nodes.size();
 
-    final Point3D center = getCoordsOfCentre(face);
+    final Point3D center = scratch_center;
+    getCoordsOfCentre(face, center);
 
     final int opacity = face.clazz.colour >>> 24;
 
@@ -44,8 +51,12 @@ public final class ElementRendererFace {
       final Node node1 = (Node) face.nodes.get(i);
       final Node node2 = (Node) face.nodes.get((i + 1) % npolygon);
 
-      final Vector3D v1 = new Vector3D(node1.pos, center);
-      final Vector3D v2 = new Vector3D(node2.pos, center);
+      final Vector3D v1 = scratch_v1;
+      v1.set(node1.pos);
+      v1.subtractTuple3D(center);
+      final Vector3D v2 = scratch_v2;
+      v2.set(node2.pos);
+      v2.subtractTuple3D(center);
 
       final int new_colour = DeepObjectColourCalculator.getColourOfDeepObject(
           colour, center.z);
@@ -76,9 +87,9 @@ public final class ElementRendererFace {
     return new PolygonComposite(polygon_array, center.z);
   }
 
-  private static Point3D getCoordsOfCentre(Face face) {
+  private static void getCoordsOfCentre(Face face, Point3D sum) {
     final int npoints = face.nodes.size();
-    final Point3D sum = new Point3D(0, 0, 0);
+    sum.set(0, 0, 0);
 
     for (int i = npoints; --i >= 0;) {
       final Node n = (Node) face.nodes.get(i);
@@ -86,7 +97,5 @@ public final class ElementRendererFace {
     }
 
     sum.divideBy(npoints);
-
-    return sum;
   }
 }

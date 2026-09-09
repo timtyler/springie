@@ -23,6 +23,18 @@ public class Tuple3D implements Cloneable {
     this.z = t.z;
   }
 
+  public void set(int x, int y, int z) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
+
+  public void set(Tuple3D t) {
+    this.x = t.x;
+    this.y = t.y;
+    this.z = t.z;
+  }
+
   public void addTuple3D(Tuple3D delta) {
     this.x += delta.x;
     this.y += delta.y;
