@@ -20,7 +20,7 @@ public class ListOfIntegers extends BaseType {
   }
 
   public int retreive(int i) {
-    return this.list.elementAt(i).intValue();
+    return this.list.get(i).intValue();
   }
 
   public void remove(int n) {

@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -191,16 +190,10 @@ public class DropablePanel extends Panel {
         FrEnd.loadFile(filepath);
       } else if (data instanceof InputStream) {
         final InputStream input = (InputStream) data;
-        InputStreamReader isr = null;
-        try {
-          isr = new InputStreamReader(input, "Unicode");
-        } catch (UnsupportedEncodingException uee) {
-          isr = new InputStreamReader(input);
-        }
 
         final StringBuilder str = new StringBuilder();
         int in = -1;
-        try {
+        try (InputStreamReader isr = new InputStreamReader(input, "Unicode")) {
           while ((in = isr.read()) >= 0) {
             if (in != 0) {
               str.append((char) in);
