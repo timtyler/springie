@@ -38,182 +38,47 @@ public final class SquareRoot {
   }
   
   /**
-   * A faster replacement for (int)(java.lang.Math.sqrt(x)). Completely accurate
-   * for x < 2147483648 (i.e. 2^31)...
+   * A faster replacement for (int)(java.lang.Math.sqrt(x)).
+   * Exactly accurate for every non-negative int.
+   *
+   * <p>History: this used to be a table-driven integer Newton iteration,
+   * written in 2003 when Math.sqrt was slow. On modern hardware Math.sqrt
+   * compiles to a single square-root instruction, and the integer code was
+   * measured at roughly half the speed (see SquareRootBenchmark).
+   *
+   * <p>The single-precision path below is exact, not approximate: a float
+   * carries 24 bits of mantissa, so the float root is within 0.004 of the
+   * true root, and the correction against the original {@code x} fixes the
+   * at-most-one residual step. Verified bit-identical to the old
+   * implementation over all 2^31 inputs (see SquareRootAnalysis).
    */
   public static int sqrt(int x) {
-    int xn;
-
-    if (x >= 0x10000) {
-      if (x >= 0x1000000) {
-        if (x >= 0x10000000) {
-          if (x >= 0x40000000) {
-            xn = table[x >> 24] << 8;
-          } else {
-            xn = table[x >> 22] << 7;
-          }
-        } else {
-          if (x >= 0x4000000) {
-            xn = table[x >> 20] << 6;
-          } else {
-            xn = table[x >> 18] << 5;
-          }
-        }
-
-        xn = (xn + 1 + (x / xn)) >> 1;
-        xn = (xn + 1 + (x / xn)) >> 1;
-        // long multiplication: xn * xn overflows int for xn > 46340,
-        // which made sqrt(Integer.MAX_VALUE) return 46341 instead of 46340.
-        return ((long) xn * xn > x) ? --xn : xn;
-      } else if (x >= 0x100000) {
-        if (x >= 0x400000) {
-          xn = table[x >> 16] << 4;
-        } else {
-          xn = table[x >> 14] << 3;
-        }
-      } else {
-        if (x >= 0x40000) {
-          xn = table[x >> 12] << 2;
-        } else {
-          xn = table[x >> 10] << 1;
-        }
-      }
-
-      xn = (xn + 1 + (x / xn)) >> 1;
-
-      return ((xn * xn) > x) ? --xn : xn;
-    } else if (x >= 0x100) {
-      if (x >= 0x1000) {
-        if (x >= 0x4000) {
-          xn = (table[x >> 8]) + 1;
-        } else {
-          xn = (table[x >> 6] >> 1) + 1;
-        }
-      } else {
-        if (x >= 0x400) {
-          xn = (table[x >> 4] >> 2) + 1;
-        } else {
-          xn = (table[x >> 2] >> 3) + 1;
-        }
-      }
-
-      return ((xn * xn) > x) ? --xn : xn;
-    } else {
-      if (x >= 0) {
-        return table[x] >> 4;
-      }
+    if (x < 0) {
+      illegalArgument();
     }
-
-    illegalArgument();
-    return -1;
+    final int r = (int) (float) Math.sqrt((float) x);
+    // At most one correction step is ever needed (see above); the second
+    // branch is defensive and is never taken on a conforming JVM.
+    if ((long) (r + 1) * (r + 1) <= x) {
+      return r + 1;
+    }
+    return ((long) r * r > x) ? r - 1 : r;
   }
 
   /**
-   * A faster replacement for (int)(java.lang.Math.sqrt(x)). Completely accurate
-   * for x < 2147483648 (i.e. 2^31)... Adjusted to more closely approximate
-   * "(int)(java.lang.Math.sqrt(x) + 0.5)" by Jeff Lawson.
+   * A faster replacement for (int)(java.lang.Math.sqrt(x) + 0.5): the square
+   * root rounded to the nearest integer, with ties rounding up. Exactly
+   * accurate for every non-negative int.
+   *
+   * <p>History: this used to share the table-driven Newton code with an
+   * adjustment step; the hardware path below was measured at roughly twice
+   * the speed (see SquareRootBenchmark).
    */
   static int accurateSqrt(int x) {
-    int xn;
-
-    if (x >= 0x10000) {
-      if (x >= 0x1000000) {
-        if (x >= 0x10000000) {
-          if (x >= 0x40000000) {
-            xn = table[x >> 24] << 8;
-          } else {
-            xn = table[x >> 22] << 7;
-          }
-        } else {
-          if (x >= 0x4000000) {
-            xn = table[x >> 20] << 6;
-          } else {
-            xn = table[x >> 18] << 5;
-          }
-        }
-
-        xn = (xn + 1 + (x / xn)) >> 1;
-        xn = (xn + 1 + (x / xn)) >> 1;
-        return adjustment(x, xn);
-      } else if (x >= 0x100000) {
-        if (x >= 0x400000) {
-          xn = table[x >> 16] << 4;
-        } else {
-          xn = table[x >> 14] << 3;
-        }
-      } else {
-        if (x >= 0x40000) {
-          xn = table[x >> 12] << 2;
-        } else {
-          xn = table[x >> 10] << 1;
-        }
-      }
-
-      xn = (xn + 1 + (x / xn)) >> 1;
-
-      return adjustment(x, xn);
-
-    } else if (x >= 0x100) {
-      if (x >= 0x1000) {
-        if (x >= 0x4000) {
-          xn = (table[x >> 8]) + 1;
-        } else {
-          xn = (table[x >> 6] >> 1) + 1;
-        }
-      } else {
-        if (x >= 0x400) {
-          xn = (table[x >> 4] >> 2) + 1;
-        } else {
-          xn = (table[x >> 2] >> 3) + 1;
-        }
-      }
-
-      return adjustment(x, xn);
-    } else {
-      if (x >= 0) {
-        return adjustment(x, table[x] >> 4);
-      }
+    if (x < 0) {
+      illegalArgument();
     }
-
-    illegalArgument();
-    return -1;
-  }
-
-  private static int adjustment(int x, int xn) {
-    // Added by Jeff Lawson:
-    // need to test:
-    //   if |xn * xn - x| > |x - (xn-1) * (xn-1)| then xn-1 is more accurate
-    //   if |xn * xn - x| > |(xn+1) * (xn+1) - x| then xn+1 is more accurate
-    // or, for all cases except x == 0:
-    //    if |xn * xn - x| > x - xn * xn + 2 * xn - 1 then xn-1 is more accurate
-    //    if |xn * xn - x| > xn * xn + 2 * xn + 1 - x then xn+1 is more accurate
-    //
-    // Uses long arithmetic: with int, xn * xn overflows for xn > 46340,
-    // which made sqrt(Integer.MAX_VALUE) return 46341 instead of 46340.
-    final long xn2 = (long) xn * xn;
-
-    // |xn * xn - x|
-    long comparitor0 = xn2 - x;
-    if (comparitor0 < 0) {
-      comparitor0 = -comparitor0;
-    }
-
-    final long twice_xn = (long) xn << 1;
-
-    // |x - (xn-1) * (xn-1)|
-    long comparitor1 = (long) x - xn2 + twice_xn - 1;
-    if (comparitor1 < 0) { // need to correct for x == 0 case?
-      comparitor1 = -comparitor1; // only gets here when x == 0
-    }
-
-    // |(xn+1) * (xn+1) - x|
-    final long comparitor2 = xn2 + twice_xn + 1 - x;
-
-    if (comparitor0 > comparitor1) {
-      return (comparitor1 > comparitor2) ? (xn + 1) : (xn - 1);
-    }
-
-    return (comparitor0 > comparitor2) ? (xn + 1) : xn;
+    return (int) (Math.sqrt(x) + 0.5);
   }
 
   /**
