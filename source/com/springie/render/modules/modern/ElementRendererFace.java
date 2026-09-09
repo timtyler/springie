@@ -41,8 +41,8 @@ public final class ElementRendererFace {
     final PolygonObject2D[] polygon_array = new PolygonObject2D[npolygon * n];
 
     for (int i = npolygon; --i >= 0;) {
-      final Node node1 = (Node) face.nodes.elementAt(i);
-      final Node node2 = (Node) face.nodes.elementAt((i + 1) % npolygon);
+      final Node node1 = (Node) face.nodes.get(i);
+      final Node node2 = (Node) face.nodes.get((i + 1) % npolygon);
 
       final Vector3D v1 = new Vector3D(node1.pos, center);
       final Vector3D v2 = new Vector3D(node2.pos, center);
@@ -81,7 +81,7 @@ public final class ElementRendererFace {
     final Point3D sum = new Point3D(0, 0, 0);
 
     for (int i = npoints; --i >= 0;) {
-      final Node n = (Node) face.nodes.elementAt(i);
+      final Node n = (Node) face.nodes.get(i);
       sum.addTuple3D(n.pos);
     }
 

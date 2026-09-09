@@ -3,13 +3,13 @@
 package com.springie.io.in.readers.dxf;
 
 import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.presets.ColourFactory;
 import com.springie.utilities.log.Log;
 
 public class ReaderDXF {
-  Vector nodes = new Vector();
+  ArrayList nodes = new ArrayList<>();
 
   int scale_factor = 3000;
 
@@ -23,13 +23,13 @@ public class ReaderDXF {
 
     final StringTokenizer st = new StringTokenizer(in, ", [](){}" + c_r);
 
-    final StringBuffer out = parseTheFile(st);
+    final StringBuilder out = parseTheFile(st);
 
     return out.toString();
   }
 
-  private StringBuffer parseTheFile(final StringTokenizer st) {
-    final StringBuffer out = new StringBuffer();
+  private StringBuilder parseTheFile(final StringTokenizer st) {
+    final StringBuilder out = new StringBuilder();
     extractNodes(st, out);
 
     Log.log("" + out);
@@ -41,7 +41,7 @@ public class ReaderDXF {
     // ...
   }
 
-  private void extractNodes(final StringTokenizer st, final StringBuffer out) {
+  private void extractNodes(final StringTokenizer st, final StringBuilder out) {
     String token = null;
     // final int colour = 0xFFFFB0FF;
     double radius = 0;

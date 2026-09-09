@@ -50,7 +50,7 @@ public class GarbageCollection {
 
     for (int lt = link_type_number; --lt >= 0;) {
       final LinkType link_type = (LinkType) link_manager.link_type_factory.array
-          .elementAt(lt);
+          .get(lt);
       final boolean any = findLinks(link_manager, link_type);
       if (!any) {
         link_manager.link_type_factory.array.remove(lt);
@@ -74,7 +74,7 @@ public class GarbageCollection {
     final int node_type_number = node_type_factory.array.size();
     for (int nt = node_type_number; --nt >= 0;) {
       final NodeType node_type = (NodeType) node_type_factory.array
-          .elementAt(nt);
+          .get(nt);
       final boolean any = findNodes(this.node_manager, node_type);
 
       if (!any) {

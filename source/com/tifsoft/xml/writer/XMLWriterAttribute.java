@@ -10,7 +10,7 @@ public class XMLWriterAttribute {
   }
   
   public String toString() {
-    final StringBuffer sb = new StringBuffer();
+    final StringBuilder sb = new StringBuilder();
 
     sb.append(this.name);
     sb.append("=\"");

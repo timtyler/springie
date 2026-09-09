@@ -2,7 +2,7 @@
 
 package com.springie.render.modules.modern;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.context.ContextMananger;
 import com.springie.elements.DeepObjectColourCalculator;
@@ -31,7 +31,7 @@ public final class ElementRendererLink {
     // ...
   }
 
-  public static Vector getPolygon(Link link, Node node_1, Node node_2,
+  public static ArrayList getPolygon(Link link, Node node_1, Node node_2,
       int thicknesss, int colour) {
     final Point3D point0 = (Point3D) node_1.pos.clone();
     final Point3D point1 = (Point3D) node_2.pos.clone();
@@ -84,7 +84,7 @@ public final class ElementRendererLink {
 
     final Vector3D cross_2_int = new Vector3D(c2_x, c2_y, c2_z);
 
-    final Vector return_vector = new Vector();
+    final ArrayList return_vector = new ArrayList<>();
 
     int strut_divisions_actual = strut_divisions;
     if (RendererDelegator.fat_struts) {
@@ -177,13 +177,13 @@ public final class ElementRendererLink {
           new_colour);
       array[pologon_count++] = polygon2;
 
-      return_vector.addElement(new PolygonComposite(array, z));
+      return_vector.add(new PolygonComposite(array, z));
     }
 
     final int render_label_when = PanelPreferencesRendererModern.render_label_when;
 
     if ((render_label_when == 1) || ((render_label_when == 3) && link.isSelected())) {
-      return_vector.addElement(addRelevantText(link, min_z));
+      return_vector.add(addRelevantText(link, min_z));
     }
 
     return return_vector;

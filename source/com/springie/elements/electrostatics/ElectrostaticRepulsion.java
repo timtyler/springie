@@ -2,13 +2,13 @@
 
 package com.springie.elements.electrostatics;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.elements.nodes.Node;
 import com.springie.render.Coords;
 
 public class ElectrostaticRepulsion {
-  public Vector charged = new Vector();
+  public ArrayList charged = new ArrayList<>();
   
   public boolean charge_active = true;
   
@@ -21,9 +21,9 @@ public class ElectrostaticRepulsion {
   private void applyForce() {
     final int number_of_nodes = this.charged.size();
     for (int counter1 = number_of_nodes; --counter1 >= 0;) {
-      final Node node1 = (Node) this.charged.elementAt(counter1);
+      final Node node1 = (Node) this.charged.get(counter1);
       for (int counter2 = number_of_nodes; --counter2 > counter1;) {
-        final Node node2 = (Node) this.charged.elementAt(counter2);
+        final Node node2 = (Node) this.charged.get(counter2);
         applyForceToNodes(node1, node2);
       }
     }

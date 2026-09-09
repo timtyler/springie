@@ -3,17 +3,17 @@
 package com.springie.io.in.readers.m;
 
 import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.geometry.Point3D;
 import com.springie.utilities.log.Log;
 
 public class ReaderM {
-  Vector nodes = new Vector();
+  ArrayList nodes = new ArrayList<>();
 
-  Vector faces = new Vector();
+  ArrayList faces = new ArrayList<>();
 
-  Vector current_polygon = new Vector();
+  ArrayList current_polygon = new ArrayList<>();
 
   int scale_factor = 30000;
 
@@ -29,13 +29,13 @@ public class ReaderM {
 
     final StringTokenizer st = new StringTokenizer(in, ", [](){}" + c_r);
 
-    final StringBuffer out = parseTheFile(st);
+    final StringBuilder out = parseTheFile(st);
 
     return out.toString();
   }
 
-  private StringBuffer parseTheFile(final StringTokenizer st) {
-    final StringBuffer out = new StringBuffer();
+  private StringBuilder parseTheFile(final StringTokenizer st) {
+    final StringBuilder out = new StringBuilder();
     extractNodes(st, out);
     outputFaces(out);
 
@@ -44,22 +44,22 @@ public class ReaderM {
     return out;
   }
 
-  private void outputFaces(StringBuffer out) {
+  private void outputFaces(StringBuilder out) {
     final int n = this.faces.size();
     out.append("PG C:0xFFB0FFFF ");
 
     for (int i = 0; i < n; i++) {
       out.append("P ");
-      final Vector face = (Vector) this.faces.elementAt(i);
+      final ArrayList face = (ArrayList) this.faces.get(i);
       final int number_of_nodes = face.size();
       for (int j = 0; j < number_of_nodes; j++) {
-        final Integer integer = (Integer) face.elementAt(j);
+        final Integer integer = (Integer) face.get(j);
         out.append("V:" + integer.intValue() + " ");
       }
     }
   }
 
-  private void extractNodes(final StringTokenizer st, final StringBuffer out) {
+  private void extractNodes(final StringTokenizer st, final StringBuilder out) {
     String token = null;
     boolean first_polygon = true;
     boolean point = false;
@@ -90,10 +90,10 @@ public class ReaderM {
           if (first_polygon) {
             first_polygon = false;
           } else {
-            this.faces.addElement(this.current_polygon);
+            this.faces.add(this.current_polygon);
           }
 
-          this.current_polygon = new Vector();
+          this.current_polygon = new ArrayList<>();
           if (finished) {
             //Log.log("TERM TOK:" + token);
             return;
@@ -134,7 +134,7 @@ public class ReaderM {
         out.append("N X:" + x + " Y:" + y + " Z:" + z + " ");
         //Log.log("X:" + x + " Y:" + y + " Z:" + z + " ");
 
-        this.current_polygon.addElement(new Integer(this.node_number));
+        this.current_polygon.add(new Integer(this.node_number));
       } else if (this.in_polygon) {
         final double xd = Double.valueOf(token).doubleValue();
         token = getNextValidToken(st);
@@ -150,10 +150,10 @@ public class ReaderM {
         this.node_number = findNumberOfNode(node);
         if (this.node_number == -1) {
           this.node_number = this.nodes.size();
-          this.nodes.addElement(node);
+          this.nodes.add(node);
           out.append("N X:" + node.x + " Y:" + node.y + " Z:" + node.z + " ");
         }
-        this.current_polygon.addElement(new Integer(this.node_number));
+        this.current_polygon.add(new Integer(this.node_number));
       }
     } while (true);
   }
@@ -161,7 +161,7 @@ public class ReaderM {
   private int findNumberOfNode(Point3D node) {
     final int n = this.nodes.size();
     for (int i = 0; i < n; i++) {
-      final Point3D p = (Point3D) this.nodes.elementAt(i);
+      final Point3D p = (Point3D) this.nodes.get(i);
       if (p.equals(node)) {
         return i;
       }

@@ -4,7 +4,7 @@ package com.springie.render.modules.modern;
 
 import java.awt.Graphics;
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.FrEnd;
 import com.springie.elements.faces.Face;
@@ -93,7 +93,7 @@ public class ModularRendererNew implements ModularRendererBase {
             if (link.type.selected) {
               colour = RendererDelegator.colour_selected_number;
             }
-            final Vector polygons = ElementRendererLink.getPolygon(link,
+            final ArrayList polygons = ElementRendererLink.getPolygon(link,
                 node_1, node_2, link.getThicknesss(), colour);
             final int polygons_size = polygons.size();
             for (int pci = polygons_size; --pci >= 0;) {

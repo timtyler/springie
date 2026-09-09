@@ -1,6 +1,6 @@
 package com.springie.modification.polyhedra;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.FrEnd;
 import com.springie.elements.clazz.Clazz;
@@ -66,12 +66,12 @@ public class MakeLinksToNearestNode {
 
   private int[] getArrayOfNodesOfColour(int colour) {
     final int number_of_nodes = this.node_manager.element.size();
-    final Vector nodes = new Vector();
+    final ArrayList nodes = new ArrayList<>();
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) this.node_manager.element
         .get(counter);
       if (candidate.clazz.colour == colour) {
-        nodes.addElement(new Integer(counter));
+        nodes.add(new Integer(counter));
       }
     }
 

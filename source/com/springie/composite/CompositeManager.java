@@ -125,7 +125,7 @@ public class CompositeManager {
   // final int temp3 = temp_node.list_of_links.size();
   //
   // for (int temp2 = temp3; --temp2 >= 0;) {
-  // temp_link = (Link) temp_node.list_of_links.elementAt(temp2);
+  // temp_link = (Link) temp_node.list_of_links.get(temp2);
   // final int temp4 = c.getNodeNumber(temp_link.node1);
   // final int temp5 = c.getNodeNumber(temp_link.node2);
   //

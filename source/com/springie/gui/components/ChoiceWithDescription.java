@@ -5,10 +5,10 @@ package com.springie.gui.components;
 import java.awt.Choice;
 import java.awt.Color;
 import java.awt.event.ItemListener;
-import java.util.Hashtable;
+import java.util.LinkedHashMap;
 
 public class ChoiceWithDescription {
-  public Hashtable hashtable;
+  public LinkedHashMap<String, String> hashtable;
 
   public Choice choice;
 
@@ -18,7 +18,7 @@ public class ChoiceWithDescription {
     this.choice.setBackground(Color.white);
     this.choice.setForeground(Color.black);
 
-    this.hashtable = new Hashtable();
+    this.hashtable = new LinkedHashMap<>();
   }
 
   public void add(String description, String name) {
@@ -34,6 +34,6 @@ public class ChoiceWithDescription {
   }
 
   public String getName(String description) {
-    return (String) this.hashtable.get(description);
+    return this.hashtable.get(description);
   }
 }

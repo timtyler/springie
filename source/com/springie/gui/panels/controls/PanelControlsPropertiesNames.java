@@ -331,7 +331,7 @@ public class PanelControlsPropertiesNames {
       proposed = '_' + proposed;
     }
 
-    final StringBuffer result = new StringBuffer();
+    final StringBuilder result = new StringBuilder();
     for (int i = 0; i < proposed.length(); i++) {
       char c = proposed.charAt(i);
       if (c <= 32) {

@@ -4,7 +4,7 @@ package com.springie.presets;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -22,7 +22,7 @@ public class ReadXMLModelIndexFile extends DefaultHandler {
 
   String path;
 
-  Vector directories = new Vector();
+  ArrayList directories = new ArrayList<>();
 
   public String translate(String leaf, String source) throws IOException,
     SAXException {
@@ -70,7 +70,7 @@ public class ReadXMLModelIndexFile extends DefaultHandler {
 
         if (node) {
           if ("name".equals(nam)) {
-            this.directories.addElement(val);
+            this.directories.add(val);
           }
         }
         if (leaf) {
@@ -78,7 +78,7 @@ public class ReadXMLModelIndexFile extends DefaultHandler {
             if (this.leaf.equals(val)) {
               this.path = "";
               for (int j = 0; j < this.directories.size(); j++) {
-                this.path += (String) this.directories.elementAt(j) + "/";
+                this.path += (String) this.directories.get(j) + "/";
               }
               this.path += this.leaf;
             }
@@ -94,7 +94,7 @@ public class ReadXMLModelIndexFile extends DefaultHandler {
     Forget.about(element_name);
 
     if ("node".equals(element_name)) {
-      this.directories.removeElementAt(this.directories.size() - 1);
+      this.directories.remove(this.directories.size() - 1);
     }
   }
 

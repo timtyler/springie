@@ -16,15 +16,15 @@ public final class ReaderDAT {
   public static String translate(String in) {
     final StringTokenizer st = new StringTokenizer(in);
 
-    final StringBuffer out = parseTheFile(st);
+    final StringBuilder out = parseTheFile(st);
 
     return out.toString();
   }
 
-  private static StringBuffer parseTheFile(final StringTokenizer st) {
+  private static StringBuilder parseTheFile(final StringTokenizer st) {
     final int sf = 32000;
     final int[] colours = new ColourFactory(65387).getColourArray(64);
-    final StringBuffer out = new StringBuffer();
+    final StringBuilder out = new StringBuilder();
     String tok;
     out.append("CR NG R:0 C:0x0 ");
     do {

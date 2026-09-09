@@ -57,7 +57,7 @@ public class ResourceLoader {
   }
 
   String getStringFromReader(Reader r) {
-    final StringBuffer output = new StringBuffer();
+    final StringBuilder output = new StringBuilder();
 
     final int array_size = 1024; // choose a size...
     final char[] array = new char[array_size];

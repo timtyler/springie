@@ -3,7 +3,7 @@ package com.springie.io.out.writers.wrl;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextMananger;
@@ -39,7 +39,7 @@ public class WriterWRL {
 
   Writer out;
 
-  Vector nodes;
+  ArrayList nodes;
 
   public WriterWRL(NodeManager node_manager) {
     this.node_manager = node_manager;
@@ -64,7 +64,7 @@ public class WriterWRL {
     this.middle.y = (this.bb.max.y + this.bb.min.y) >> 1;
     this.middle.z = (this.bb.max.z + this.bb.min.z) >> 1;
 
-    this.nodes = new Vector();
+    this.nodes = new ArrayList<>();
 
     try {
       try {
@@ -341,7 +341,7 @@ public class WriterWRL {
     writeLine(" }");
     writeLine(" ");
 
-    this.nodes.removeAllElements();
+    this.nodes.clear();
   }
 
   private void outputFaces(FaceManager face_manager, Clazz clazz, int number) {
@@ -426,7 +426,7 @@ public class WriterWRL {
     }
 
     outputFaceVertex(node, cnt);
-    this.nodes.addElement(node);
+    this.nodes.add(node);
     return true;
   }
 

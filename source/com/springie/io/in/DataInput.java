@@ -61,9 +61,9 @@ public class DataInput {
     link_manager.reset();
     face_manager.reset();
 
-    this.manager_destination.node_type_factory.array.removeAllElements();
-    link_manager.link_type_factory.array.removeAllElements();
-    face_manager.face_type_factory.array.removeAllElements();
+    this.manager_destination.node_type_factory.array.clear();
+    link_manager.link_type_factory.array.clear();
+    face_manager.face_type_factory.array.clear();
     this.manager_destination.clazz_factory.array.clear();
   }
 

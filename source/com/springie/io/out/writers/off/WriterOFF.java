@@ -3,7 +3,7 @@ package com.springie.io.out.writers.off;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
@@ -27,7 +27,7 @@ public class WriterOFF {
 
   Writer out;
 
-  Vector nodes;
+  ArrayList nodes;
 
   private NodeManager node_manager;
 
@@ -57,7 +57,7 @@ public class WriterOFF {
     this.middle.y = (this.bb.max.y + this.bb.min.y) >> 1;
     this.middle.z = (this.bb.max.z + this.bb.min.z) >> 1;
 
-    this.nodes = new Vector();
+    this.nodes = new ArrayList<>();
 
     try {
       try {
@@ -144,7 +144,7 @@ public class WriterOFF {
 
   private void outputFace(Face face) {
     final int n = face.nodes.size();
-    final StringBuffer out = new StringBuffer();
+    final StringBuilder out = new StringBuilder();
     out.append("" + n);
     for (int i = 0; i < n; i++) {
       final Node node = (Node) face.nodes.get(i);

@@ -39,6 +39,15 @@
     <!-- Historic layout: everything already lives under source/. -->
     <sourceDirectory>source</sourceDirectory>
     <testSourceDirectory>src/test/java</testSourceDirectory>
+    <!-- Non-Java resources (images, xml presets) live alongside the sources. -->
+    <resources>
+      <resource>
+        <directory>source</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

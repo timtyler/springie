@@ -4,7 +4,7 @@ package com.springie.presets;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -22,7 +22,7 @@ public class AddXMLModelIndexLeaves extends DefaultHandler {
 
   int index;
 
-  Vector directories = new Vector();
+  ArrayList directories = new ArrayList<>();
 
   //private String name2;
   //private String desc;
@@ -71,7 +71,7 @@ public class AddXMLModelIndexLeaves extends DefaultHandler {
 
         if (node) {
           if ("name".equals(nam)) {
-            this.directories.addElement(val);
+            this.directories.add(val);
             //Log.log("ADD DIR" + val);
           }
         }
@@ -88,7 +88,7 @@ public class AddXMLModelIndexLeaves extends DefaultHandler {
       if (leaf) {
         String path = "";
         for (int j = 0; j < this.directories.size(); j++) {
-          path += (String) this.directories.elementAt(j) + "/";
+          path += (String) this.directories.get(j) + "/";
         }
         path += "" + name2;
         //Log.log("Add:" + this.desc + " -> " + path);
@@ -104,7 +104,7 @@ public class AddXMLModelIndexLeaves extends DefaultHandler {
     Forget.about(element_name);
 
     if ("node".equals(element_name)) {
-      this.directories.removeElementAt(this.directories.size() - 1);
+      this.directories.remove(this.directories.size() - 1);
     }
   }
 

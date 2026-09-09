@@ -13,7 +13,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import org.xml.sax.SAXException;
 
@@ -413,8 +413,8 @@ public class PanelFundamental {
   }
 
   public static String getXMLIndexPath() {
-    final Enumeration e = FrEnd.choose_preset_index.hashtable.keys();
-    final String initial = (String) e.nextElement();
+    final Iterator<String> e = FrEnd.choose_preset_index.hashtable.keySet().iterator();
+    final String initial = e.next();
     return initial;
   }
 

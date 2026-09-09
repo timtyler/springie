@@ -2,7 +2,7 @@
 
 package com.springie.elements.faces;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.FrEnd;
 import com.springie.elements.base.BaseElementManager;
@@ -23,7 +23,7 @@ public class FaceManager extends BaseElementManager<Face> {
   static int bigthreshold = threshold << Coords.shift;
 
   public FaceManager() {
-    //this.element = new Vector();
+    //this.element = new ArrayList<>();
 
     reset();
   }
@@ -32,21 +32,21 @@ public class FaceManager extends BaseElementManager<Face> {
    * Sets a polygon between e1 and e2, with target length lenth, elasticity,
    * colour and status flags specified
    */
-  public final Face setPolygon(Vector v, FaceType type, Clazz clazz) {
+  public final Face setPolygon(ArrayList v, FaceType type, Clazz clazz) {
     final Face p = new Face(v, type, clazz);
     this.element.add(p);
 
     //final int npoints = v.size();
     //for (int k = npoints; --k >= 0;) {
     //final Node n = (Node) v.get(k);
-    //n.list_of_polygons.addElement(p);
+    //n.list_of_polygons.add(p);
     //}
 
     return p;
   }
 
   public final Face setPolygon(FaceType type, Clazz clazz) {
-    final Face p = new Face(new Vector(), type, clazz);
+    final Face p = new Face(new ArrayList<>(), type, clazz);
     this.element.add(p);
 
     return p;
@@ -108,7 +108,7 @@ public class FaceManager extends BaseElementManager<Face> {
   //    }
   //  }
 
-  public boolean isThereAPolygonWithNodes(Vector node_list) {
+  public boolean isThereAPolygonWithNodes(ArrayList node_list) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final Face poly = (Face) this.element.get(temp);
@@ -260,7 +260,7 @@ public class FaceManager extends BaseElementManager<Face> {
 
     //for (int i = npoints; --i >= 0;) {
     //final Node node = (Node) p.node.get(i);
-    //node.list_of_polygons.removeElement(p);
+    //node.list_of_polygons.remove(p);
     //}
   }
 

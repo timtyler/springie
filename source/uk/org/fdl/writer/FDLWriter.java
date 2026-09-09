@@ -51,7 +51,7 @@ public final class FDLWriter {
   }
 
   private static String renderList(FDLObjectBraceList list, int indent) {
-    final StringBuffer sb = new StringBuffer();
+    final StringBuilder sb = new StringBuilder();
 
     outputListStartTagAndAttributes(list, indent, sb);
 
@@ -63,18 +63,18 @@ public final class FDLWriter {
   }
   
   public static String renderChain(FDLObjectChain chain, int indent) {
-    final StringBuffer sb = new StringBuffer();
+    final StringBuilder sb = new StringBuilder();
     FDLWriterStringUtilities.repeat(' ', indent);
     outputChainChildren(chain, sb, indent);
 
     return sb.toString();
   }
 
-  private static void outputChainChildren(FDLObjectChain chain, final StringBuffer sb, int indent) {
+  private static void outputChainChildren(FDLObjectChain chain, final StringBuilder sb, int indent) {
     if (chain.children != null) {
       final int children_size = chain.children.size();
       for (int i = 0; i < children_size; i++) {
-        final FDLObject node = (FDLObject) chain.children.elementAt(i);
+        final FDLObject node = (FDLObject) chain.children.get(i);
         if (i > 0) {
           sb.append(chain.separator);
         } else {
@@ -86,7 +86,7 @@ public final class FDLWriter {
   }
 
   private static void outputListStartTagAndAttributes(FDLObjectBraceList list, final int indent,
-      final StringBuffer sb) {
+      final StringBuilder sb) {
     Forget.about(indent);
     sb.append(list.open);
     if (list.newlines) {
@@ -95,11 +95,11 @@ public final class FDLWriter {
     }
   }
 
-  private static void outputListChildren(FDLObjectBraceList list, int indent, final StringBuffer sb) {
+  private static void outputListChildren(FDLObjectBraceList list, int indent, final StringBuilder sb) {
     if (list.children != null) {
       final int children_size = list.children.size();
       for (int i = 0; i < children_size; i++) {
-        final FDLObject node = (FDLObject) list.children.elementAt(i);
+        final FDLObject node = (FDLObject) list.children.get(i);
         int spaces = 0;
         if (list.newlines) {
           spaces = indent + level;
@@ -118,7 +118,7 @@ public final class FDLWriter {
     recent_end_tag = false;
   }
 
-  private static void outputListEndTag(FDLObjectBraceList list, int indent, final StringBuffer sb) {
+  private static void outputListEndTag(FDLObjectBraceList list, int indent, final StringBuilder sb) {
     if (list.newlines) {
       FDLWriterStringUtilities.indent(sb, indent);
     }

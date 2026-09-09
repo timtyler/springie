@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.utilities.ImageLoader;
 import com.springie.utilities.ImageWrapper;
@@ -21,7 +21,7 @@ public class ButtonBar extends Panel implements ItemSelectable {
 
   ImageButtonGroup image_button_group = new ImageButtonGroup();
 
-  Vector buttons = new Vector();
+  ArrayList buttons = new ArrayList<>();
 
   String name;
 
@@ -33,7 +33,7 @@ public class ButtonBar extends Panel implements ItemSelectable {
     this.name = name;
     this.description = description;
     final ImageButton ib = getImageButton(name, description);
-    this.buttons.addElement(ib);
+    this.buttons.add(ib);
     this.add(ib);
   }
 
@@ -84,7 +84,7 @@ public class ButtonBar extends Panel implements ItemSelectable {
   public void select(String action) {
     final int size = this.buttons.size();
     for (int i = 0; i < size; i++) {
-      final ImageButton button = (ImageButton) this.buttons.elementAt(i);
+      final ImageButton button = (ImageButton) this.buttons.get(i);
       if (button.name == action) {
         button.setState(true);
       }

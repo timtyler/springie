@@ -1,7 +1,7 @@
 package com.springie.io.in.readers.tensegrity;
 
 import java.io.Reader;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.FrEnd;
 import com.springie.composite.Composite;
@@ -53,7 +53,7 @@ public final class ReaderTens {
     Node current_node = new Node();
     Link current_link = new Link(null, null, current_link_type, current_clazz);
     int current_link_number = -1;
-    Face current_polygon = new Face(new Vector());
+    Face current_polygon = new Face(new ArrayList<>());
     int current_face_number = -1;
 
     setUpUniverseProperties();
@@ -118,7 +118,7 @@ public final class ReaderTens {
                   final int temp = node_manager.getNodeNumberFromName(token);
                   final Node temp_node = (Node) node_manager.element
                       .get(temp);
-                  current_polygon.nodes.addElement(temp_node);
+                  current_polygon.nodes.add(temp_node);
                   temp_node.list_of_polygons.add(current_face_number);
                   node_number++;
                   done = true;
@@ -477,7 +477,7 @@ public final class ReaderTens {
                   case Instructions.V:
                     final Node temp_node1 = (Node) node_manager.element
                         .get(temp);
-                    current_polygon.nodes.addElement(temp_node1);
+                    current_polygon.nodes.add(temp_node1);
                     temp_node1.list_of_polygons.add(current_face_number);
                     node_number++;
                     last_token_number = -99;

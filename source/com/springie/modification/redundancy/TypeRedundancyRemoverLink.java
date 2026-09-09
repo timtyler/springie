@@ -1,6 +1,6 @@
 package com.springie.modification.redundancy;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkType;
@@ -19,10 +19,10 @@ public class TypeRedundancyRemoverLink {
   }
 
   public void removeRedundancyInLinkTypes() {
-    final Vector v = this.node_manager.getLinkManager().link_type_factory.array;
+    final ArrayList v = this.node_manager.getLinkManager().link_type_factory.array;
     final int size = v.size();
     for (int i = size; --i >= 0;) {
-      final LinkType nt = (LinkType) v.elementAt(i);
+      final LinkType nt = (LinkType) v.get(i);
       if (equalspreviousLinkType(v, i)) {
         final int first = getFirstLinkType(v, nt, i);
         replaceLinkTypeWithPrevious(v, i, first);
@@ -32,9 +32,9 @@ public class TypeRedundancyRemoverLink {
     this.node_manager.getLinkManager().each_has_its_own_type = false;
   }
 
-  private void replaceLinkTypeWithPrevious(Vector v, int old, int nww) {
-    final LinkType nt_old = (LinkType) v.elementAt(old);
-    final LinkType nt_nww = (LinkType) v.elementAt(nww);
+  private void replaceLinkTypeWithPrevious(ArrayList v, int old, int nww) {
+    final LinkType nt_old = (LinkType) v.get(old);
+    final LinkType nt_nww = (LinkType) v.get(nww);
     final int n_o_l = this.node_manager.getLinkManager().element.size();
     for (int i = n_o_l; --i >= 0;) {
       final Link l = (Link) this.node_manager.getLinkManager().element.get(i);
@@ -46,9 +46,9 @@ public class TypeRedundancyRemoverLink {
     v.remove(old);
   }
 
-  private int getFirstLinkType(Vector v, LinkType t, int max) {
+  private int getFirstLinkType(ArrayList v, LinkType t, int max) {
     for (int i = max; --i >= 0;) {
-      if (t.equals(v.elementAt(i))) {
+      if (t.equals(v.get(i))) {
         return i;
       }
     }
@@ -56,8 +56,8 @@ public class TypeRedundancyRemoverLink {
     return -1;
   }
 
-  private boolean equalspreviousLinkType(Vector v, int max) {
-    final LinkType nt = (LinkType) v.elementAt(max);
+  private boolean equalspreviousLinkType(ArrayList v, int max) {
+    final LinkType nt = (LinkType) v.get(max);
 
     return getFirstLinkType(v, nt, max) > 0;
   }

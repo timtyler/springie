@@ -3,7 +3,7 @@ package com.springie.io.out.writers.eig;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextMananger;
@@ -39,7 +39,7 @@ public class WriterEIG {
 
   Writer out;
 
-  Vector nodes;
+  ArrayList nodes;
 
   private NodeManager node_manager;
 
@@ -82,7 +82,7 @@ public class WriterEIG {
     this.middle.y = (this.bb.max.y + this.bb.min.y) >> 1;
     this.middle.z = (this.bb.max.z + this.bb.min.z) >> 1;
 
-    this.nodes = new Vector();
+    this.nodes = new ArrayList<>();
 
     final int n_nodes = this.node_manager.element.size();
 
@@ -196,7 +196,7 @@ public class WriterEIG {
     boolean some = false;
     for (int nt = 0; nt < node_type_number; nt++) {
       final NodeType node_type = (NodeType) ContextMananger.getNodeManager().node_type_factory.array
-          .elementAt(nt);
+          .get(nt);
 
       this.count_joints = 0;
       final XMLWriterTagPair tag_type = new XMLWriterTagPair("JOINTSET");
@@ -242,7 +242,7 @@ public class WriterEIG {
 
     for (int lt = 0; lt < link_type_number; lt++) {
       final LinkType link_type = (LinkType) this.link_manager.link_type_factory.array
-          .elementAt(lt);
+          .get(lt);
       final XMLWriterTagPair tag_type = new XMLWriterTagPair("SPRINGSET");
       this.number_springsets++;
       this.count_springs = 0;
@@ -297,7 +297,7 @@ public class WriterEIG {
 
     for (int t = 0; t < type_number; t++) {
       final FaceType polygon_type = (FaceType) this.face_manager.face_type_factory.array
-          .elementAt(t);
+          .get(t);
       final XMLWriterTagPair tag_type = new XMLWriterTagPair("SKINSET!");
 
       this.number_skinsets++;
@@ -333,12 +333,12 @@ public class WriterEIG {
   private XMLWriterTagPair outputFace(Face face) {
     final XMLWriterTagPair tag_face = new XMLWriterTagPair("SKIN");
 
-    final StringBuffer nodelist = new StringBuffer();
+    final StringBuilder nodelist = new StringBuilder();
 
     final int number = face.nodes.size();
 
     for (int i = 0; i < number; i++) {
-      final Node node = (Node) face.nodes.elementAt(i);
+      final Node node = (Node) face.nodes.get(i);
 
       final int n1 = this.nodes.indexOf(node);
 
@@ -401,7 +401,7 @@ public class WriterEIG {
           final XMLWriterTagPair tag_node = outputNode(node);
 
           tag_type.add(tag_node);
-          this.nodes.addElement(node);
+          this.nodes.add(node);
           some = true;
           // Log.log("outputNodeTypes: yes");
         }

@@ -2,11 +2,11 @@
 
 package com.springie.io.in.readers.wrl;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 
 class ReaderWRLGroup {
   int colour;
-  Vector points = new Vector();
-  Vector faces = new Vector();  
+  ArrayList points = new ArrayList<>();
+  ArrayList faces = new ArrayList<>();  
 }

@@ -1,6 +1,6 @@
 package com.springie.modification.stellation;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
@@ -20,12 +20,12 @@ public class DimpleMaker {
   }
 
   public void dimple() {
-    final Vector vector = new Vector();
+    final ArrayList vector = new ArrayList<>();
     for (int count = 0; count < this.node_manager.element.size(); count++) {
       final Node node = (Node) this.node_manager.element.get(count);
       if (node.type.selected) {
         final Point3D p = tryToMakeDimple(node);
-        vector.addElement(p);
+        vector.add(p);
       }
     }
 
@@ -33,7 +33,7 @@ public class DimpleMaker {
     for (int count = 0; count < this.node_manager.element.size(); count++) {
       final Node node = (Node) this.node_manager.element.get(count);
       if (node.type.selected) {
-        final Point3D delta = (Point3D) vector.elementAt(i++);
+        final Point3D delta = (Point3D) vector.get(i++);
         node.pos.addTuple3D(delta);
         node.pos.addTuple3D(delta);
       }

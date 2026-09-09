@@ -4,7 +4,7 @@ package com.springie.render.modules.modern;
 
 import java.awt.Graphics;
 import java.util.Random;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextMananger;
@@ -29,11 +29,11 @@ public class RendererBinManager {
 
   public static int colour_modifier_wireframe = ColourModifier.darker;
 
-  Vector getVector(int x, int y) {
+  ArrayList getVector(int x, int y) {
     return this.array[x][y].vector;
   }
 
-  void putVector(int x, int y, Vector vector) {
+  void putVector(int x, int y, ArrayList vector) {
     this.array[x][y].vector = vector;
   }
 
@@ -41,7 +41,7 @@ public class RendererBinManager {
     // Log.log("BinManager.clear");
     for (int i = 0; i < this.number_of_bins_x; i++) {
       for (int j = 0; j < this.number_of_bins_y; j++) {
-        this.array[i][j].vector.setSize(0);
+        this.array[i][j].vector.clear();
       }
     }
   }
@@ -76,8 +76,8 @@ public class RendererBinManager {
   }
 
   void add(int x, int y, PolygonComposite triangle) {
-    final Vector v = getVector(x, y);
-    v.addElement(triangle);
+    final ArrayList v = getVector(x, y);
+    v.add(triangle);
   }
 
   void add(PolygonComposite composite) {
@@ -110,11 +110,11 @@ public class RendererBinManager {
     for (int j = 0; j < this.number_of_bins_y; j++) {
       for (int i = 0; i < this.number_of_bins_x; i++) {
         final RendererBin bin = this.array[i][j];
-        final Vector v_this = bin.vector;
+        final ArrayList v_this = bin.vector;
         final int size = v_this.size();
 
         final RendererBin last_bin = bins_last.array[i][j];
-        final Vector v_last = last_bin.vector;
+        final ArrayList v_last = last_bin.vector;
         final int size_last = v_last.size();
 
         final boolean size_last_gt_0 = size_last > 0;
@@ -160,7 +160,7 @@ public class RendererBinManager {
               for (int c = size; --c >= 0;) {
                 final int index = this.node_depth_index[c];
                 final PolygonComposite composite = (PolygonComposite) v_this
-                    .elementAt(index);
+                    .get(index);
 
                 renderThePolygon(graphics_paint, composite);
               }
@@ -277,7 +277,7 @@ public class RendererBinManager {
     return RendererBinManager.show_bins ? 4 : 0;
   }
 
-  private void getSortedNodeDepthIndex(final Vector v_this) {
+  private void getSortedNodeDepthIndex(final ArrayList v_this) {
     final int size = v_this.size();
     setUpNewNodeDepthIndex(size);
 
@@ -293,7 +293,7 @@ public class RendererBinManager {
     }
   }
 
-  private void sort(Vector vector) {
+  private void sort(ArrayList vector) {
     // perform a dimwitted bubble sort... TODO improve sort...
     final int number_of_nodes = vector.size();
 
@@ -303,8 +303,8 @@ public class RendererBinManager {
         final int k = j + 1;
         final int j1 = this.node_depth_index[j];
         final int k1 = this.node_depth_index[k];
-        final PolygonComposite a = (PolygonComposite) vector.elementAt(j1);
-        final PolygonComposite b = (PolygonComposite) vector.elementAt(k1);
+        final PolygonComposite a = (PolygonComposite) vector.get(j1);
+        final PolygonComposite b = (PolygonComposite) vector.get(k1);
         if (a.z > b.z) {
           int temp = this.node_depth_index[j];
           this.node_depth_index[j] = this.node_depth_index[k];

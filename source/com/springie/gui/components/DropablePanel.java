@@ -195,7 +195,7 @@ public class DropablePanel extends Panel {
           isr = new InputStreamReader(input);
         }
 
-        final StringBuffer str = new StringBuffer();
+        final StringBuilder str = new StringBuilder();
         int in = -1;
         try {
           while ((in = isr.read()) >= 0) {

@@ -1,18 +1,18 @@
 package com.tifsoft.xml.driver;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class AttributesBasic {
-  final Vector attribute_uris = new Vector();
-  final Vector attribute_local_names = new Vector();
-  public final Vector attribute_qnames = new Vector();
-  final Vector attribute_values = new Vector();
+  final ArrayList attribute_uris = new ArrayList<>();
+  final ArrayList attribute_local_names = new ArrayList<>();
+  public final ArrayList attribute_qnames = new ArrayList<>();
+  final ArrayList attribute_values = new ArrayList<>();
 
   
   void removeAllElements() {
-    this.attribute_uris.removeAllElements();
-    this.attribute_local_names.removeAllElements();
-    this.attribute_qnames.removeAllElements();
-    this.attribute_values.removeAllElements();
+    this.attribute_uris.clear();
+    this.attribute_local_names.clear();
+    this.attribute_qnames.clear();
+    this.attribute_values.clear();
   }
 }

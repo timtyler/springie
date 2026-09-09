@@ -1,15 +1,15 @@
 //This program has been placed into the public domain by its author.
 package com.springie.messages;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.utilities.log.Log;
 
 public class NewMessageManager {
-  Vector messages = new Vector();
+  ArrayList messages = new ArrayList<>();
 
   public final void add(NewMessage msg) {
-    this.messages.addElement(msg);
+    this.messages.add(msg);
   }
 
   public final void process() {
@@ -17,7 +17,7 @@ public class NewMessageManager {
 
     for (int n = 0; n < number_of_messages; n++) {
       try {
-        final NewMessage msg = (NewMessage) this.messages.elementAt(n);
+        final NewMessage msg = (NewMessage) this.messages.get(n);
         msg.execute();
       } catch (RuntimeException e) {
         Log.log("Error processing message (number " + n + "):");
@@ -26,7 +26,7 @@ public class NewMessageManager {
     }
 
     for (int n = number_of_messages; --n >= 0;) {
-      this.messages.removeElementAt(n);
+      this.messages.remove(n);
     }
   }
 }

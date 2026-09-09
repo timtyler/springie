@@ -3,7 +3,7 @@
 package com.springie.io.in.readers.rbf;
 
 import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.springie.presets.ColourFactory;
 import com.springie.utilities.log.Log;
@@ -17,19 +17,19 @@ public final class ReaderRBF {
   public static String translate(String in) {
     final StringTokenizer st = new StringTokenizer(in);
 
-    final StringBuffer out = parseTheFile(st);
+    final StringBuilder out = parseTheFile(st);
 
     return out.toString();
   }
 
-  private static StringBuffer parseTheFile(final StringTokenizer st) {
+  private static StringBuilder parseTheFile(final StringTokenizer st) {
     final int sf = 32000;
     final int[] colours = new ColourFactory(65387).getColourArray(64);
     int last_link_group = -1;
     boolean waiting_for_hidden = false;
-    final Vector v = new Vector();
-    final Vector h = new Vector();
-    final StringBuffer out = new StringBuffer();
+    final ArrayList v = new ArrayList<>();
+    final ArrayList h = new ArrayList<>();
+    final StringBuilder out = new StringBuilder();
     String tok;
     out.append("CR NG R:0 C:0x0 ");
     do {
@@ -95,8 +95,8 @@ public final class ReaderRBF {
             final String st_l = st.nextToken();
             if (isANumber(st_l)) {
               final int l = (int) ((Double.valueOf(st_l).doubleValue() * sf));
-              v.addElement(new Integer(l));
-              h.addElement("0");
+              v.add(new Integer(l));
+              h.add("0");
               waiting_for_hidden = true;
             }
           }
@@ -105,7 +105,7 @@ public final class ReaderRBF {
         case 'H':
           if (waiting_for_hidden) {
             final int cv = h.size();
-            h.setElementAt("1", cv - 1);
+            h.set(cv - 1, "1");
             waiting_for_hidden = false;
           }
 
@@ -120,21 +120,21 @@ public final class ReaderRBF {
     return out;
   }
 
-  private static String getHidden(final Vector h, final int num) {
+  private static String getHidden(final ArrayList h, final int num) {
     if (num >= h.size()) {
       return "0";
     }
 
-    final String hidden = (String) h.elementAt(num);
+    final String hidden = (String) h.get(num);
     return hidden;
   }
 
-  private static int getLength(final Vector v, final int num) {
+  private static int getLength(final ArrayList v, final int num) {
     if (num >= v.size()) {
       return 10;
     }
 
-    final int length = ((Integer) v.elementAt(num)).intValue();
+    final int length = ((Integer) v.get(num)).intValue();
     return length;
   }
 

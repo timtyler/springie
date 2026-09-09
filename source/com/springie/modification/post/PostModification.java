@@ -52,14 +52,14 @@ public class PostModification {
 
   private void generateChargedNodeList() {
     final ElectrostaticRepulsion electrostatic = this.node_manager.electrostatic;
-    electrostatic.charged.removeAllElements();
+    electrostatic.charged.clear();
 
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) this.node_manager.element.get(counter);
       if (candidate.type.charge != 0) {
         if (!candidate.type.disabled) {
-          electrostatic.charged.addElement(candidate);
+          electrostatic.charged.add(candidate);
         }
       }
     }

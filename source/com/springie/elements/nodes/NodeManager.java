@@ -372,7 +372,7 @@ public class NodeManager extends World {
 		final int number = this.node_type_factory.array.size();
 		if (FrEnd.node_growth) {
 			for (int temp = 0; temp < number; temp++) {
-				final NodeType type = (NodeType) this.node_type_factory.array.elementAt(temp);
+				final NodeType type = (NodeType) this.node_type_factory.array.get(temp);
 				if (type.radius < NodeManager.max_poss_dyn_size) {
 					type.setSize(type.radius + 6);
 				}
