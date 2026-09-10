@@ -81,6 +81,10 @@ public interface GUIStrings {
 
   String DOME_LINKS_RESET_LENGTHS = "Reset link lengths";
 
+  String RESET_PREFERENCES = "Reset preferences";
+
+  String RESET_UNIVERSE = "Reset universe";
+
   String DOME_REMOVE_POLYGONS = "Remove faces";
 
   String DOME_REMOVE_LINKS = "Remove links";

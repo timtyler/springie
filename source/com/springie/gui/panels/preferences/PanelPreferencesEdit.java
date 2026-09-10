@@ -140,6 +140,23 @@ public class PanelPreferencesEdit {
     return this.choose_right_action;
   }
 
+  /**
+   * Restores the default mouse actions: select / translate / rotate.
+   */
+  public void resetToDefaults() {
+    this.choose_left_action.choice.select(this.choose_left_action
+        .num_to_str(Actions.SELECT));
+    FrEnd.action_left_type = Actions.SELECT;
+
+    this.choose_middle_action.choice.select(this.choose_middle_action
+        .num_to_str(Actions.TRANSLATE));
+    FrEnd.action_middle_type = Actions.TRANSLATE;
+
+    this.choose_right_action.choice.select(this.choose_right_action
+        .num_to_str(Actions.ROTATE));
+    FrEnd.action_right_type = Actions.ROTATE;
+  }
+
   public MessageManager getMessageManager() {
     return this.message_manager;
   }

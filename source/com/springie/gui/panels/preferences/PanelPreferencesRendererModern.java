@@ -19,6 +19,7 @@ import com.springie.gui.components.TTChoice;
 import com.springie.gui.components.TabbedPanel;
 import com.springie.messages.Message;
 import com.springie.messages.MessageManager;
+import com.springie.preferences.Preferences;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ElementRendererLink;
 import com.springie.render.modules.modern.ModularRendererNew;
@@ -46,13 +47,21 @@ public class PanelPreferencesRendererModern {
 
 	public Checkbox checkbox_db_new;
 
+	private Checkbox checkbox_show_bins;
+
 	private TTChoice choose_polyhedron;
 
 	private Label label_bin_size_number;
 
+	private Scrollbar scroll_bar_bin_size;
+
 	private Label label_strut_divisions;
 
+	private Scrollbar scroll_bar_strut_divisions;
+
 	private Label label_cable_divisions;
+
+	private Scrollbar scroll_bar_cable_divisions;
 
 	private Checkbox checkbox_fat_struts;
 
@@ -116,15 +125,15 @@ public class PanelPreferencesRendererModern {
 		});
 
 		final Panel panel_show_bins = new Panel();
-		final Checkbox checkbox_show_bins = new Checkbox(GUIStrings.SHOW_BINS, RendererBinManager.show_bins);
-		checkbox_show_bins.addItemListener(new ItemListener() {
+		this.checkbox_show_bins = new Checkbox(GUIStrings.SHOW_BINS, RendererBinManager.show_bins);
+		this.checkbox_show_bins.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				Forget.about(e);
 				RendererBinManager.show_bins = ((Checkbox) e.getSource()).getState();
 				FrEnd.main_canvas.forceResize();
 			}
 		});
-		panel_show_bins.add(checkbox_show_bins);
+		panel_show_bins.add(this.checkbox_show_bins);
 
 		this.panel_bins.add(panel_new_double_buffering);
 
@@ -208,6 +217,7 @@ public class PanelPreferencesRendererModern {
 		panel.add("West", new Label("Bin size:", Label.RIGHT));
 
 		final Scrollbar scroll_bar = new Scrollbar(Scrollbar.HORIZONTAL, RendererBinManager.divisor, 50, 50, 550);
+		this.scroll_bar_bin_size = scroll_bar;
 		scroll_bar.addAdjustmentListener(new AdjustmentListener() {
 			public void adjustmentValueChanged(AdjustmentEvent e) {
 				final int temp = e.getValue();
@@ -232,6 +242,7 @@ public class PanelPreferencesRendererModern {
 		panel.add("West", new Label("Strut divisions:", Label.RIGHT));
 
 		final Scrollbar scroll_bar = new Scrollbar(Scrollbar.HORIZONTAL, ElementRendererLink.strut_divisions, 1, 1, 8);
+		this.scroll_bar_strut_divisions = scroll_bar;
 		scroll_bar.addAdjustmentListener(new AdjustmentListener() {
 			public void adjustmentValueChanged(AdjustmentEvent e) {
 				final int temp = e.getValue();
@@ -256,6 +267,7 @@ public class PanelPreferencesRendererModern {
 		panel.add("West", new Label("Cable divisions:", Label.RIGHT));
 
 		final Scrollbar scroll_bar = new Scrollbar(Scrollbar.HORIZONTAL, ElementRendererLink.cable_divisions, 1, 1, 8);
+		this.scroll_bar_cable_divisions = scroll_bar;
 		scroll_bar.addAdjustmentListener(new AdjustmentListener() {
 			public void adjustmentValueChanged(AdjustmentEvent e) {
 				final int temp = e.getValue();
@@ -296,6 +308,51 @@ public class PanelPreferencesRendererModern {
 
 	public Label getLabelBinSizeNumber() {
 		return this.label_bin_size_number;
+	}
+
+	/**
+	 * Restores the default modern-renderer preferences. The double-buffer
+	 * default comes from the (freshly reset) Preferences map.
+	 */
+	public void resetToDefaults() {
+		// Double buffering (the message handler reads the checkbox state).
+		this.checkbox_db_new.setState(((Boolean) FrEnd.preferences.map
+				.get(Preferences.renderer_new_double_buffer)).booleanValue());
+
+		// Show bins.
+		RendererBinManager.show_bins = false;
+		this.checkbox_show_bins.setState(false);
+
+		// Bin size.
+		RendererBinManager.divisor = 192;
+		this.scroll_bar_bin_size.setValue(RendererBinManager.divisor);
+		reflectBinSizeNumber();
+
+		// Strut and cable divisions.
+		ElementRendererLink.strut_divisions = 1;
+		this.scroll_bar_strut_divisions
+				.setValue(ElementRendererLink.strut_divisions);
+		reflectLabelStrutDivisions();
+
+		ElementRendererLink.cable_divisions = 1;
+		this.scroll_bar_cable_divisions
+				.setValue(ElementRendererLink.cable_divisions);
+		reflectLabelCableDivisions();
+
+		// Fat struts in tensegrities.
+		RendererDelegator.fat_struts = true;
+		this.checkbox_fat_struts.setState(true);
+
+		// Node polyhedron (Dodecahedron).
+		this.choose_polyhedron.choice.select(this.choose_polyhedron
+				.num_to_str(1));
+
+		// Show labels on selected nodes only.
+		render_label_when = 3;
+		this.choose_label_when.choice.select(this.choose_label_when
+				.num_to_str(render_label_when));
+
+		FrEnd.main_canvas.forceResize();
 	}
 
 	public MessageManager getMessageManager() {

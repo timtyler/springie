@@ -140,6 +140,31 @@ public class PanelPreferencesRendererModernFilters {
     choice.add("Colour-B", ColourModifier.colour_b);
   }
 
+  /**
+   * Restores the default colour filter settings.
+   */
+  public void resetToDefaults() {
+    ColourModifier.colour_a_number = 0xFFFFFFFF;
+    this.panel_colour_filter_a.color_picker_controller
+        .setColour(ColourModifier.colour_a_number);
+
+    ColourModifier.colour_b_number = 0xFF000000;
+    this.panel_colour_filter_b.color_picker_controller
+        .setColour(ColourModifier.colour_b_number);
+
+    RendererBinManager.colour_modifier_filled = ColourModifier.natural;
+    this.choose_colour_modifier_filled.choice.select(
+        this.choose_colour_modifier_filled
+            .num_to_str(ColourModifier.natural));
+
+    RendererBinManager.colour_modifier_wireframe = ColourModifier.darker;
+    this.choose_colour_modifier_wireframe.choice.select(
+        this.choose_colour_modifier_wireframe
+            .num_to_str(ColourModifier.darker));
+
+    RendererDelegator.repaintAll();
+  }
+
   
   public MessageManager getMessageManager() {
     return this.message_manager;

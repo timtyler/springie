@@ -33,6 +33,8 @@ public class PanelPreferencesViewpoint {
 
   private Label label_translate_z;
 
+  private Checkbox checkbox_merge;
+
   MessageManager message_manager;
 
   public PanelPreferencesViewpoint(MessageManager message_manager) {
@@ -42,14 +44,14 @@ public class PanelPreferencesViewpoint {
 
   void makePanel() {
     final Panel panel_merge = new Panel();
-    final Checkbox checkbox_merge = new Checkbox("Merge structures");
-    checkbox_merge.addItemListener(new ItemListener() {
+    this.checkbox_merge = new Checkbox("Merge structures");
+    this.checkbox_merge.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         Forget.about(e);
         FrEnd.merge = ((Checkbox) e.getSource()).getState();
       }
     });
-    panel_merge.add(checkbox_merge);
+    panel_merge.add(this.checkbox_merge);
 
     final Panel panel_translate_view_x = getTranslateViewXPanel();
 
@@ -151,6 +153,21 @@ public class PanelPreferencesViewpoint {
     this.scroll_bar_translate_z.setValue(tmp);
 
     this.label_translate_z.setText("" + tmp);
+  }
+
+  /**
+   * Restores the default viewpoint: no merging and no translation shift.
+   */
+  public void resetToDefaults() {
+    FrEnd.merge = false;
+    this.checkbox_merge.setState(false);
+
+    Coords.shift_constant_x = 0;
+    Coords.shift_constant_y = 0;
+    Coords.shift_constant_z = Coords.shift_shifted - (Coords.shift_shifted >> 2);
+    reflectTranslateX();
+    reflectTranslateY();
+    reflectTranslateZ();
   }
 
   public MessageManager getMessageManager() {

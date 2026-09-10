@@ -268,6 +268,33 @@ public class PanelPreferencesRendererSharedShow {
     return this.checkbox_render_hidden_polygons;
   }
 
+  /**
+   * Restores the default visibility checkboxes: everything rendered, nothing
+   * hidden.
+   */
+  public void resetToDefaults() {
+    // The listeners copy the checkbox state into the FrEnd statics.
+    this.checkbox_render_nodes.setState(true);
+    this.checkbox_render_links.setState(true);
+    this.checkbox_render_polygons.setState(true);
+    getCheckboxRenderCharges().setState(true);
+
+    getCheckboxRenderHiddenNodes().setState(false);
+    getCheckboxRenderHiddenLinks().setState(false);
+    getCheckboxRenderHiddenPolygons().setState(false);
+
+    // In case a checkbox was already in its default state (no item event).
+    FrEnd.render_nodes = true;
+    FrEnd.render_links = true;
+    FrEnd.render_faces = true;
+    FrEnd.render_charges = true;
+    FrEnd.render_hidden_nodes = false;
+    FrEnd.render_hidden_links = false;
+    FrEnd.render_hidden_faces = false;
+
+    RendererDelegator.repaintAll();
+  }
+
   public MessageManager getMessageManager() {
     return this.message_manager;
   }

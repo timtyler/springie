@@ -45,6 +45,10 @@ public class PanelPreferencesIO {
 
   private TTChoice choose_pov_compression;
 
+  private TTChoice choose_pov_sky;
+
+  private Checkbox checkbox_merge;
+
   public PanelPreferencesIO(MessageManager message_manager) {
     this.message_manager = message_manager;
     makePanel();
@@ -52,15 +56,15 @@ public class PanelPreferencesIO {
 
   void makePanel() {
     final Panel panel_merge = new Panel();
-    final Checkbox checkbox_merge = new Checkbox(
+    this.checkbox_merge = new Checkbox(
         "Merge new structures with the scene");
-    checkbox_merge.addItemListener(new ItemListener() {
+    this.checkbox_merge.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         Forget.about(e);
         FrEnd.merge = ((Checkbox) e.getSource()).getState();
       }
     });
-    panel_merge.add(checkbox_merge);
+    panel_merge.add(this.checkbox_merge);
 
     this.panel.add(panel_merge);
     this.panel.add(setUpSliderImportScale());
@@ -200,28 +204,53 @@ public class PanelPreferencesIO {
   private Panel getPOVSkyPanel() {
     final Panel panel = new Panel();
     panel.add(new Label("POV: Sky:", Label.RIGHT));
-    final TTChoice choose_pov_sky = new TTChoice(new ItemListener() {
+    this.choose_pov_sky = new TTChoice(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         FrEnd.preferences.map.put(Preferences.key_output_pov_sky, e.getItem());
       }
     });
 
-    choose_pov_sky.add("cirrus", 0);
-    choose_pov_sky.add("cloud 1", 1);
-    choose_pov_sky.add("cloud 2", 2);
-    choose_pov_sky.add("wispy", 3);
-    choose_pov_sky.add("white", 4);
-    choose_pov_sky.add("black", 5);
+    this.choose_pov_sky.add("cirrus", 0);
+    this.choose_pov_sky.add("cloud 1", 1);
+    this.choose_pov_sky.add("cloud 2", 2);
+    this.choose_pov_sky.add("wispy", 3);
+    this.choose_pov_sky.add("white", 4);
+    this.choose_pov_sky.add("black", 5);
 
-    choose_pov_sky.choice.select((String) FrEnd.preferences.map
+    this.choose_pov_sky.choice.select((String) FrEnd.preferences.map
         .get(Preferences.key_output_pov_sky));
 
-    panel.add(choose_pov_sky.choice);
+    panel.add(this.choose_pov_sky.choice);
     return panel;
   }
 
   protected TTChoice getChooseRightAction() {
     return this.choose_pov_ground;
+  }
+
+  /**
+   * Restores the default I/O preferences. The POV choices read their defaults
+   * from the (freshly reset) Preferences map.
+   */
+  public void resetToDefaults() {
+    FrEnd.merge = false;
+    this.checkbox_merge.setState(false);
+
+    import_scale = 94;
+    reflectImportScale();
+
+    pov_immersion_depth = 0;
+    reflectPOVImmersionDepth();
+
+    pov_view_height = 50;
+    reflectPOVViewHeight();
+
+    this.choose_pov_compression.choice.select((String) FrEnd.preferences.map
+        .get(Preferences.key_output_pov_compression));
+    this.choose_pov_ground.choice.select((String) FrEnd.preferences.map
+        .get(Preferences.key_output_pov_ground));
+    this.choose_pov_sky.choice.select((String) FrEnd.preferences.map
+        .get(Preferences.key_output_pov_sky));
   }
 
   public MessageManager getMessageManager() {

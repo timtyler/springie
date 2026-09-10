@@ -102,6 +102,37 @@ public class PanelPreferencesRendererModernColours {
     this.panel.add(this.tab_colours_main);
   }
 
+  /**
+   * Restores the default renderer colours.
+   */
+  public void resetToDefaults() {
+    RendererDelegator.color_background_number = 0xFF000000;
+    RendererDelegator.color_background = new Color(
+        RendererDelegator.color_background_number);
+    this.panel_colors_background.color_picker_controller
+        .setColour(RendererDelegator.color_background_number);
+
+    RendererDelegator.colour_selected_number = 0xFFFF0000;
+    RendererDelegator.colour_selected = new Color(
+        RendererDelegator.colour_selected_number);
+    this.panel_colours_selection.color_picker_controller
+        .setColour(RendererDelegator.colour_selected_number);
+
+    RendererDelegator.color_charge_number = 0xFF0000C0;
+    this.panel_colors_charges.color_picker_controller
+        .setColour(RendererDelegator.color_charge_number);
+
+    ElementRendererLink.colour_fg = 0xFF0000FF;
+    this.panel_colors_label.color_picker_controller
+        .setColour(ElementRendererLink.colour_fg);
+
+    ElementRendererLink.colour_bg = 0xFFFFFF00;
+    this.panel_colours_label_background.color_picker_controller
+        .setColour(ElementRendererLink.colour_bg);
+
+    RendererDelegator.repaint_all_objects = true;
+  }
+
   public MessageManager getMessageManager() {
     return this.message_manager;
   }

@@ -29,6 +29,8 @@ public class PanelPreferencesUpdate {
 
   public Checkbox checkbox_display_bottom_toolbar;
 
+  private Checkbox checkbox_animate_pointer_over;
+
   public PanelPreferencesUpdate(MessageManager message_manager) {
     this.message_manager = message_manager;
     makePanel();
@@ -79,6 +81,7 @@ public class PanelPreferencesUpdate {
 
     final Checkbox checkbox_animate_pointer_over = new Checkbox(
         "Stop animating when pointer exits", b);
+    this.checkbox_animate_pointer_over = checkbox_animate_pointer_over;
     checkbox_animate_pointer_over.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         FrEnd.preferences.map.put(
@@ -111,5 +114,26 @@ public class PanelPreferencesUpdate {
 
   public MessageManager getMessageManager() {
     return this.message_manager;
+  }
+
+  /**
+   * Restores the default update preferences: delay 2, step size 1, the
+   * animation and toolbar checkboxes back to their defaults.
+   */
+  public void resetToDefaults() {
+    FrEnd.choose_delay.choice.select(FrEnd.choose_delay
+        .num_to_str(Delay._DELAY_2));
+    FrEnd.delay = Delay._DELAY_2;
+
+    FrEnd.textfield_step_size.setText("1");
+
+    final boolean animate_when_pointer_over = ((Boolean) FrEnd.preferences.map
+        .get(Preferences.key_update_animation_when_pointer_over))
+        .booleanValue();
+    this.checkbox_animate_pointer_over
+        .setState(animate_when_pointer_over);
+
+    // Unchecked means the toolbar is displayed (default).
+    this.checkbox_display_bottom_toolbar.setState(FrEnd.viewer);
   }
 }

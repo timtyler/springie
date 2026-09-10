@@ -45,18 +45,7 @@ public class PanelPreferencesDisplay {
         final String scs = (String) e.getItem();
         final int value = PanelPreferencesDisplay.this.choose_display_type
             .str_to_num(scs);
-        PanelPreferencesDisplay.this.panel_main.removeAll();
-        if (value == Quality.THICK_OUTLINE) {
-          RendererDelegator.renderer = new com.springie.render.modules.original.ModularRendererOld();
-          PanelPreferencesDisplay.this.panel_main.add(
-              FrEnd.panel_preferences_renderer_original.panel, "Center");
-        } else {
-          RendererDelegator.renderer = new ModularRendererNew();
-          PanelPreferencesDisplay.this.panel_main.add(
-              FrEnd.panel_preferences_renderer_modern.panel, "Center");
-        }
-        PanelPreferencesDisplay.this.panel_main.validate();
-        FrEnd.main_canvas.forceResize();
+        applyRendererType(value);
       }
     });
 
@@ -116,5 +105,38 @@ public class PanelPreferencesDisplay {
 
    public MessageManager getMessageManager() {
     return this.message_manager;
+  }
+
+  private void applyRendererType(int value) {
+    this.panel_main.removeAll();
+    if (value == Quality.THICK_OUTLINE) {
+      RendererDelegator.renderer = new com.springie.render.modules.original.ModularRendererOld();
+      this.panel_main.add(FrEnd.panel_preferences_renderer_original.panel,
+          "Center");
+    } else {
+      RendererDelegator.renderer = new ModularRendererNew();
+      this.panel_main.add(FrEnd.panel_preferences_renderer_modern.panel,
+          "Center");
+    }
+    this.panel_main.validate();
+    FrEnd.main_canvas.forceResize();
+  }
+
+  /**
+   * Restores the default renderer (Modern) and resets every renderer
+   * preference panel.
+   */
+  public void resetToDefaults() {
+    this.choose_display_type.choice.select(this.choose_display_type
+        .num_to_str(Quality.SOLID));
+    // In case it was already selected (no item event fires then).
+    applyRendererType(Quality.SOLID);
+
+    FrEnd.panel_preferences_renderer_original.resetToDefaults();
+    FrEnd.panel_preferences_renderer_modern.resetToDefaults();
+    FrEnd.panel_preferences_renderer_modern_filters.resetToDefaults();
+    FrEnd.panel_preferences_renderer_modern_colours.resetToDefaults();
+    FrEnd.panel_preferences_shared_show.resetToDefaults();
+    FrEnd.panel_preferences_shared_misc.resetToDefaults();
   }
 }

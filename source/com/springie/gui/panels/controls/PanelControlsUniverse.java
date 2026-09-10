@@ -3,10 +3,13 @@
 package com.springie.gui.panels.controls;
 
 import java.awt.BorderLayout;
+import java.awt.Button;
 import java.awt.Checkbox;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.Scrollbar;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.ItemEvent;
@@ -41,6 +44,8 @@ public class PanelControlsUniverse {
 	public Checkbox checkbox_collision_check;
 
 	public Checkbox checkbox_collide_self_only;
+
+	public Checkbox checkbox_links_disabled;
 
 	Label label_gravity;
 	Label label_temperature;
@@ -210,15 +215,15 @@ public class PanelControlsUniverse {
 		panel_collision_check.add(this.checkbox_collision_check);
 
 		final Panel panel_links_disabled = new Panel();
-		final Checkbox checkbox_links_disabled = new Checkbox(GUIStrings.LINKS_DISABLED);
-		checkbox_links_disabled.setState(true);
-		checkbox_links_disabled.addItemListener(new ItemListener() {
+		this.checkbox_links_disabled = new Checkbox(GUIStrings.LINKS_DISABLED);
+		this.checkbox_links_disabled.setState(true);
+		this.checkbox_links_disabled.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				Forget.about(e);
 				FrEnd.links_disabled = !FrEnd.links_disabled;
 			}
 		});
-		panel_links_disabled.add(checkbox_links_disabled);
+		panel_links_disabled.add(this.checkbox_links_disabled);
 
 		final Panel panel_collide_self_only = new Panel();
 		this.checkbox_collide_self_only = new Checkbox(GUIStrings.CSO);
@@ -322,6 +327,99 @@ public class PanelControlsUniverse {
 			this.panel.add(panel_speed);
 
 			this.panel.add(panel_excite);
+		}
+
+		this.panel.add(getResetUniversePanel());
+	}
+
+	private Panel getResetUniversePanel() {
+		final Button button_reset_universe = new Button(GUIStrings.RESET_UNIVERSE);
+		button_reset_universe.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				resetUniverse();
+			}
+		});
+		final Panel panel_reset_universe = new Panel();
+		panel_reset_universe.add(button_reset_universe);
+		return panel_reset_universe;
+	}
+
+	/**
+	 * Restores every Universe setting to its default value and updates the
+	 * controls to match. Defaults are the static field initialisers.
+	 */
+	public void resetUniverse() {
+		// 3D view.
+		this.checkbox_3D.setState(true);
+		FrEnd.three_d = true;
+
+		// Gravity.
+		World.gravity_strength = 2;
+		World.gravity_active = false;
+		reflectGravity();
+
+		// Temperature.
+		World.global_temperature = 6;
+		reflectTemperature();
+
+		// Viscosity.
+		Node.viscocity = 0;
+		reflectViscocity();
+
+		// Collision checks.
+		setCheckboxSilently(this.checkbox_collision_check, true);
+		FrEnd.check_collisions = true;
+
+		// Links disabled (checkbox is inverted: checked means enabled).
+		setCheckboxSilently(this.checkbox_links_disabled, true);
+		FrEnd.links_disabled = false;
+
+		// Collide self only (the listener sends a link-length message, so
+		// don't fire it here).
+		setCheckboxSilently(this.checkbox_collide_self_only, false);
+		FrEnd.collide_self_only = false;
+
+		// Charge.
+		ContextMananger.getNodeManager().electrostatic.charge_active = true;
+		this.checkbox_charge_switch.setState(true);
+
+		// Continuously centre and node growth (their listeners queue toggle
+		// messages, so don't fire them here).
+		setCheckboxSilently(this.checkbox_continuously_centre, false);
+		FrEnd.continuously_centre = false;
+		setCheckboxSilently(this.checkbox_node_growth, false);
+		FrEnd.node_growth = false;
+
+		if (FrEnd.development_version) {
+			// Speed limit.
+			Node.max_speed = Integer.MAX_VALUE;
+			reflectMaxSpeed();
+
+			// Minimum excitation magnitude.
+			World.minimum_magnitude = 0;
+			reflectImpact();
+
+			// Bias (display only).
+			this.scroll_bar_bias.setValue(0);
+			this.label_bias.setText("  0");
+		}
+
+		RendererDelegator.repaintAll();
+	}
+
+	/**
+	 * Sets a checkbox without firing its item listeners (several Universe
+	 * checkboxes queue toggle messages when clicked, which must not happen
+	 * during a reset).
+	 */
+	private static void setCheckboxSilently(Checkbox checkbox, boolean state) {
+		final ItemListener[] listeners = checkbox.getItemListeners();
+		for (final ItemListener listener : listeners) {
+			checkbox.removeItemListener(listener);
+		}
+		checkbox.setState(state);
+		for (final ItemListener listener : listeners) {
+			checkbox.addItemListener(listener);
 		}
 	}
 

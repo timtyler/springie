@@ -25,6 +25,7 @@ import com.springie.gui.components.TabbedPanel;
 import com.springie.gui.components.TTChoice;
 import com.springie.messages.Message;
 import com.springie.messages.MessageManager;
+import com.springie.preferences.Preferences;
 import com.springie.render.RendererDelegator;
 import com.tifsoft.Forget;
 
@@ -43,7 +44,11 @@ public class PanelPreferencesRendererOriginal {
 
   TTChoice choose_polygon_render_type;
 
+  private Scrollbar scroll_bar_link_render_struts;
+
   private Scrollbar scroll_bar_link_render_cables;
+
+  private Scrollbar scroll_bar_render_nodes;
 
   private Label label_cable_render_number;
 
@@ -446,9 +451,9 @@ public class PanelPreferencesRendererOriginal {
     panel.setLayout(new BorderLayout(0, 8));
     panel.add("West", new Label("Strut lines:", Label.RIGHT));
 
-    this.scroll_bar_link_render_cables = new Scrollbar(Scrollbar.HORIZONTAL,
+    this.scroll_bar_link_render_struts = new Scrollbar(Scrollbar.HORIZONTAL,
         Link.number_of_strut_render_divisions, 4, 0, 22);
-    this.scroll_bar_link_render_cables
+    this.scroll_bar_link_render_struts
         .addAdjustmentListener(new AdjustmentListener() {
           public void adjustmentValueChanged(AdjustmentEvent e) {
             final int temp = e.getValue();
@@ -458,7 +463,7 @@ public class PanelPreferencesRendererOriginal {
           }
         });
 
-    panel.add("Center", this.scroll_bar_link_render_cables);
+    panel.add("Center", this.scroll_bar_link_render_struts);
 
     this.label_strut_render_number = new Label("", Label.LEFT);
     panel.add("East", this.label_strut_render_number);
@@ -500,6 +505,7 @@ public class PanelPreferencesRendererOriginal {
 
     final Scrollbar scroll_bar_render_nodes = new Scrollbar(
         Scrollbar.HORIZONTAL, Node.number_of_render_divisions, 4, 0, 12);
+    this.scroll_bar_render_nodes = scroll_bar_render_nodes;
     scroll_bar_render_nodes.addAdjustmentListener(new AdjustmentListener() {
       public void adjustmentValueChanged(AdjustmentEvent e) {
         final int temp = e.getValue();
@@ -598,6 +604,60 @@ public class PanelPreferencesRendererOriginal {
 
   public TTChoice getChoosePolygonRenderType() {
     return this.choose_polygon_render_type;
+  }
+
+  /**
+   * Restores the default original-renderer preferences.
+   */
+  public void resetToDefaults() {
+    // Node render type (thick outline).
+    FrEnd.choose_quality.choice.select(FrEnd.choose_quality
+        .num_to_str(Quality.THICK_OUTLINE));
+    FrEnd.quality = Quality.THICK_OUTLINE;
+
+    // Struts and cables display types.
+    FrEnd.choose_display_struts.choice.select(FrEnd.choose_display_struts
+        .num_to_str(LinkRenderType.MULTIPLE));
+    Link.link_display_struts_type = LinkRenderType.MULTIPLE;
+
+    FrEnd.choose_display_cables.choice.select(FrEnd.choose_display_cables
+        .num_to_str(LinkRenderType.MULTIPLE));
+    Link.link_display_cables_type = LinkRenderType.MULTIPLE;
+
+    // Render divisions.
+    Link.number_of_strut_render_divisions = 2;
+    this.scroll_bar_link_render_struts
+        .setValue(Link.number_of_strut_render_divisions);
+    reflectLabelStrutRenderNumber();
+
+    Link.number_of_cable_render_divisions = 1;
+    this.scroll_bar_link_render_cables
+        .setValue(Link.number_of_cable_render_divisions);
+    reflectLabelCableRenderNumber();
+
+    Node.number_of_render_divisions = 1;
+    this.scroll_bar_render_nodes.setValue(Node.number_of_render_divisions);
+    reflectLabelNodeRenderNumber();
+
+    // Polygon fill.
+    this.choose_polygon_render_type.choice.select(
+        this.choose_polygon_render_type
+            .num_to_str(FaceRenderTypes.CONCENTRIC));
+    Face.face_display_type = FaceRenderTypes.CONCENTRIC;
+
+    // Short links (the queued message carries SHORT explicitly).
+    this.checkbox_shortlinks.setState(true);
+    Link.link_display_length = Link.SHORT;
+
+    // Old-renderer double buffering (default off).
+    this.checkbox_db.setState(false);
+    FrEnd.preferences.map.put(Preferences.renderer_old_double_buffer,
+        Boolean.FALSE);
+
+    // XOR rendering (development builds only).
+    FrEnd.xor = false;
+
+    RendererDelegator.repaintAll();
   }
 
   public MessageManager getMessageManager() {

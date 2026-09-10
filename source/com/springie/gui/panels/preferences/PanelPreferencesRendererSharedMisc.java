@@ -35,6 +35,10 @@ public class PanelPreferencesRendererSharedMisc {
 
   public Checkbox checkbox_relative_fog;
 
+  private Scrollbar scroll_bar_fog;
+
+  private Scrollbar scroll_bar_face_render_number;
+
   private Label label_fog;
 
   //public Label label_fps_value;
@@ -112,6 +116,7 @@ public class PanelPreferencesRendererSharedMisc {
 
     final Scrollbar scroll_bar_fog = new Scrollbar(Scrollbar.HORIZONTAL,
         DeepObjectColourCalculator.factor / 10, 10, 0, 110);
+    this.scroll_bar_fog = scroll_bar_fog;
     scroll_bar_fog.addAdjustmentListener(new AdjustmentListener() {
       public void adjustmentValueChanged(AdjustmentEvent e) {
         final int temp = e.getValue();
@@ -136,6 +141,7 @@ public class PanelPreferencesRendererSharedMisc {
 
     final Scrollbar scroll_bar_face_render_number = new Scrollbar(
         Scrollbar.HORIZONTAL, Face.number_of_render_divisions, 4, 0, 28);
+    this.scroll_bar_face_render_number = scroll_bar_face_render_number;
     scroll_bar_face_render_number
         .addAdjustmentListener(new AdjustmentListener() {
           public void adjustmentValueChanged(AdjustmentEvent e) {
@@ -159,8 +165,7 @@ public class PanelPreferencesRendererSharedMisc {
     getLabelFog().setText("" + (DeepObjectColourCalculator.factor / 10));
   }
 
-  public Label getLabelFog() {
-    return this.label_fog;
+  public Label getLabelFog() {    return this.label_fog;
   }
 
   private void reflectLabelFaceRenderNumber() {
@@ -168,6 +173,35 @@ public class PanelPreferencesRendererSharedMisc {
   }
   public Label getLabelFaceRenderNumber() {
     return this.label_face_render_number;
+  }
+
+  /**
+   * Restores the default shared miscellaneous renderer preferences.
+   */
+  public void resetToDefaults() {
+    // The listeners copy the checkbox state into the statics.
+    this.checkbox_redraw_deepest_first.setState(true);
+    FrEnd.redraw_deepest_first = true;
+
+    this.checkbox_explosions.setState(true);
+    FrEnd.explosions = true;
+
+    this.checkbox_relative_fog.setState(true);
+    DeepObjectColourCalculator.depth_is_relative = true;
+
+    // Fog strength.
+    DeepObjectColourCalculator.factor = 640;
+    this.scroll_bar_fog
+        .setValue(DeepObjectColourCalculator.factor / 10);
+    reflectLabelFog();
+
+    // Face lines.
+    Face.number_of_render_divisions = 4;
+    this.scroll_bar_face_render_number
+        .setValue(Face.number_of_render_divisions);
+    reflectLabelFaceRenderNumber();
+
+    RendererDelegator.repaintAll();
   }
 
   public MessageManager getMessageManager() {
