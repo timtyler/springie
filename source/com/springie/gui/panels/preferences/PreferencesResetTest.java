@@ -93,7 +93,25 @@ class PreferencesResetTest {
 
         DeepObjectColourCalculator.factor = 100;
         DeepObjectColourCalculator.depth_is_relative = false;
+
+        FrEnd.controls_stay_on_top = false;
+        // Park the main window where the docked controls are sure to fit on
+        // its right, then dock.
+        FrEnd.frame_main.setLocation(100, 100);
+        FrEnd.controls_dock_with_main = true;
+        FrEnd.applyControlsWindowOptions();
       });
+
+      // Docking snaps the controls window against the main window.
+      final int[] dock_geometry = new int[4];
+      SwingUtilities.invokeAndWait(() -> {
+        dock_geometry[0] = FrEnd.frame_main.getX();
+        dock_geometry[1] = FrEnd.frame_main.getWidth();
+        dock_geometry[2] = FrEnd.frame_controls.getX();
+        dock_geometry[3] = FrEnd.frame_controls.getWidth();
+      });
+      assertEquals(dock_geometry[0] + dock_geometry[1], dock_geometry[2],
+          "controls window should sit against the main window when docked");
 
       SwingUtilities.invokeAndWait(
           () -> FrEnd.panel_preferences.resetPreferences());
@@ -159,6 +177,11 @@ class PreferencesResetTest {
           .get(Preferences.renderer_new_double_buffer));
       assertEquals(Boolean.FALSE, FrEnd.preferences.map
           .get(Preferences.renderer_old_double_buffer));
+
+      // The controls window is back on top and undocked.
+      assertTrue(FrEnd.controls_stay_on_top);
+      assertFalse(FrEnd.controls_dock_with_main);
+      assertTrue(FrEnd.frame_controls.isAlwaysOnTop());
     } finally {
       SwingUtilities.invokeAndWait(() -> {
         for (final Frame frame : Frame.getFrames()) {

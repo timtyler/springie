@@ -7,12 +7,18 @@ package com.springie;
 import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.Panel;
+import java.awt.Point;
 import java.awt.Scrollbar;
+import java.awt.Toolkit;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.InputEvent;
 import java.util.List;
 
@@ -325,6 +331,16 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 	public static Frame frame_controls;
 
+	public static boolean controls_stay_on_top = true;
+
+	public static boolean controls_dock_with_main = false;
+
+	private static ComponentListener controls_dock_listener;
+
+	private static Frame controls_dock_frame;
+
+	private static Point controls_dock_last_main_location;
+
 	public static Frame frame_panel_about;
 
 	public static Frame frame_panel_help;
@@ -628,6 +644,93 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		frame_panel_help = frame_maker.setUpFrameHelp();
 		// frame_preferences = frame_maker.setUpFramePreferences();
 		frame_controls = frame_maker.setUpFrameControls();
+	}
+
+	/**
+	 * Applies the controls-window options: stay-on-top and docking with the
+	 * main window. Idempotent; call it whenever the options change and once
+	 * at startup.
+	 */
+	public static void applyControlsWindowOptions() {
+		if (frame_controls != null) {
+			try {
+				frame_controls.setAlwaysOnTop(controls_stay_on_top);
+			} catch (SecurityException e) {
+				// Applets may not be allowed to keep windows on top.
+				Forget.about(e);
+			}
+		}
+
+		if (controls_dock_with_main) {
+			startControlsDocking();
+		} else {
+			stopControlsDocking();
+		}
+	}
+
+	private static void startControlsDocking() {
+		if (frame_main == null || frame_controls == null) {
+			return;
+		}
+
+		if (controls_dock_frame == frame_main) {
+			// Already docked to this window; don't snap it again.
+			return;
+		}
+
+		stopControlsDocking();
+
+		if (controls_dock_listener == null) {
+			controls_dock_listener = new ComponentAdapter() {
+				public void componentMoved(ComponentEvent e) {
+					Forget.about(e);
+					final Point now = frame_main.getLocation();
+					final Point last = controls_dock_last_main_location;
+					controls_dock_last_main_location = now;
+					if (last != null && !now.equals(last)
+							&& frame_controls != null) {
+						final Point c = frame_controls.getLocation();
+						frame_controls.setLocation(c.x + now.x - last.x,
+								c.y + now.y - last.y);
+					}
+				}
+			};
+		}
+
+		snapControlsNextToMain();
+		frame_main.addComponentListener(controls_dock_listener);
+		controls_dock_frame = frame_main;
+		controls_dock_last_main_location = frame_main.getLocation();
+	}
+
+	private static void stopControlsDocking() {
+		if (controls_dock_frame != null && controls_dock_listener != null) {
+			controls_dock_frame.removeComponentListener(controls_dock_listener);
+		}
+		controls_dock_frame = null;
+	}
+
+	/**
+	 * Places the controls window against the side of the main window.
+	 */
+	private static void snapControlsNextToMain() {
+		int x = frame_main.getX() + frame_main.getWidth();
+		int y = frame_main.getY();
+
+		final Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+		if (x + frame_controls.getWidth() > screen.width) {
+			// No room on the right; try the left.
+			x = frame_main.getX() - frame_controls.getWidth();
+			if (x < 0) {
+				x = 0;
+			}
+		}
+
+		if (y + frame_controls.getHeight() > screen.height) {
+			y = Math.max(0, screen.height - frame_controls.getHeight());
+		}
+
+		frame_controls.setLocation(x, y);
 	}
 
 	static void setUpResolutionSelector2() {
@@ -1003,5 +1106,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		frame_main = new FrameMain(window_title_prefix, applet);
 
 		frame_main.setVisible(true);
+
+		FrEnd.applyControlsWindowOptions();
 	}
 }

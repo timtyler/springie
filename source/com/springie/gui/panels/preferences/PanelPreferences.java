@@ -3,9 +3,12 @@
 package com.springie.gui.panels.preferences;
 
 import java.awt.Button;
+import java.awt.Checkbox;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import com.springie.FrEnd;
 import com.springie.gui.GUIStrings;
@@ -13,6 +16,7 @@ import com.springie.gui.components.TabbedPanel;
 import com.springie.messages.MessageManager;
 import com.springie.preferences.Preferences;
 import com.springie.render.RendererDelegator;
+import com.tifsoft.Forget;
 
 public class PanelPreferences {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -20,6 +24,10 @@ public class PanelPreferences {
   public Panel panel_centre = FrEnd.setUpPanelForFrame2();
 
   MessageManager message_manager;
+
+  private Checkbox checkbox_stay_on_top;
+
+  private Checkbox checkbox_dock_with_main;
 
   public PanelPreferences(MessageManager message_manager) {
     this.message_manager = message_manager;
@@ -36,6 +44,32 @@ public class PanelPreferences {
     tab.add("I/O", FrEnd.panel_preferences_io.panel);
 
     this.panel.add(tab);
+
+    final Panel panel_window = new Panel();
+
+    this.checkbox_stay_on_top = new Checkbox(
+        GUIStrings.CONTROL_WINDOW_STAY_ON_TOP, FrEnd.controls_stay_on_top);
+    this.checkbox_stay_on_top.addItemListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        Forget.about(e);
+        FrEnd.controls_stay_on_top = ((Checkbox) e.getSource()).getState();
+        FrEnd.applyControlsWindowOptions();
+      }
+    });
+    panel_window.add(this.checkbox_stay_on_top);
+
+    this.checkbox_dock_with_main = new Checkbox(
+        GUIStrings.CONTROL_WINDOW_DOCK, FrEnd.controls_dock_with_main);
+    this.checkbox_dock_with_main.addItemListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        Forget.about(e);
+        FrEnd.controls_dock_with_main = ((Checkbox) e.getSource()).getState();
+        FrEnd.applyControlsWindowOptions();
+      }
+    });
+    panel_window.add(this.checkbox_dock_with_main);
+
+    this.panel.add(panel_window);
 
     final Button button_reset = new Button(GUIStrings.RESET_PREFERENCES);
     button_reset.addActionListener(new ActionListener() {
@@ -58,6 +92,14 @@ public class PanelPreferences {
    */
   public void resetPreferences() {
     FrEnd.preferences = new Preferences();
+
+    FrEnd.controls_stay_on_top = true;
+    FrEnd.controls_dock_with_main = false;
+    this.checkbox_stay_on_top.setState(true);
+    this.checkbox_dock_with_main.setState(false);
+    // In case a checkbox was already in its default state (no item event
+    // fires then).
+    FrEnd.applyControlsWindowOptions();
 
     FrEnd.panel_preferences_display.resetToDefaults();
     FrEnd.panel_preferences_viewpoint.resetToDefaults();
