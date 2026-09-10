@@ -112,6 +112,10 @@ public class RendererBinManager {
 
     final RectangleInt potential = new RectangleInt(0, 0, 0, 0);
 
+    // Hoisted out of the per-bin loop: this is a HashMap lookup on the
+    // preferences map, and was costing ~16% of render-thread CPU.
+    final boolean double_buffered = RendererDelegator.isNewDoubleBuffer();
+
     for (int j = 0; j < this.number_of_bins_y; j++) {
       for (int i = 0; i < this.number_of_bins_x; i++) {
         final RendererBin bin = this.array[i][j];
@@ -136,7 +140,7 @@ public class RendererBinManager {
 
           Graphics graphics_paint = null;
 
-          if (RendererDelegator.isNewDoubleBuffer()) {
+          if (double_buffered) {
             if (bin.image == null) {
               final int width = block_size;
               final int height = block_size;
