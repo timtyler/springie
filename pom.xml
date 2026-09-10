@@ -7,7 +7,9 @@
   The historic source tree is kept in place: sources live under "source/"
   rather than Maven's default src/main/java, to avoid a 400-file move.
 
-  Tests follow the Maven default layout: src/test/java.
+  Tests live in the same tree, in the same packages as the code they test.
+  The test compilation is restricted to *Test.java plus the small set of
+  test-scope helpers (benchmark/analysis utilities) via testIncludes below.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -40,7 +42,7 @@
   <build>
     <!-- Historic layout: everything already lives under source/. -->
     <sourceDirectory>source</sourceDirectory>
-    <testSourceDirectory>src/test/java</testSourceDirectory>
+    <testSourceDirectory>source</testSourceDirectory>
     <!-- Non-Java resources (images, xml presets) live alongside the sources. -->
     <resources>
       <resource>
@@ -55,6 +57,23 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.13.0</version>
+        <configuration>
+          <!-- Test classes live in the same tree as the main sources:
+               keep them out of the main compilation... -->
+          <excludes>
+            <exclude>**/*Test.java</exclude>
+            <exclude>**/SqrtCandidates.java</exclude>
+            <exclude>**/SquareRootAnalysis.java</exclude>
+            <exclude>**/SquareRootBenchmark.java</exclude>
+          </excludes>
+          <!-- ...and compile only them (plus test-scope helpers) as tests. -->
+          <testIncludes>
+            <testInclude>**/*Test.java</testInclude>
+            <testInclude>**/SqrtCandidates.java</testInclude>
+            <testInclude>**/SquareRootAnalysis.java</testInclude>
+            <testInclude>**/SquareRootBenchmark.java</testInclude>
+          </testIncludes>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
