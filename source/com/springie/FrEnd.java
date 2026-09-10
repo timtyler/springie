@@ -57,7 +57,6 @@ import com.springie.gui.panels.controls.PanelControlsProperties;
 import com.springie.gui.panels.controls.PanelControlsPropertiesFlags;
 import com.springie.gui.panels.controls.PanelControlsPropertiesNames;
 import com.springie.gui.panels.controls.PanelControlsPropertiesScalars;
-import com.springie.gui.panels.controls.PanelControlsPropertiesScaleFactor;
 import com.springie.gui.panels.controls.PanelControlsSelect;
 import com.springie.gui.panels.controls.PanelControlsSelectAdvanced;
 import com.springie.gui.panels.controls.PanelControlsSelectLinks;
@@ -408,9 +407,6 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 	public static PanelControlsStatistics panel_controls_statistics = new PanelControlsStatistics(message_manager);
 
 	public static PanelControlsPropertiesScalars panel_edit_properties_scalars = new PanelControlsPropertiesScalars(
-			message_manager);
-
-	public static PanelControlsPropertiesScaleFactor panel_edit_properties_misc = new PanelControlsPropertiesScaleFactor(
 			message_manager);
 
 	public static PanelControlsProperties panel_edit_properties = new PanelControlsProperties(message_manager);

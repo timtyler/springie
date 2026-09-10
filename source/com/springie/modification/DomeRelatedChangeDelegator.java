@@ -4,18 +4,18 @@ import com.springie.FrEnd;
 import com.springie.context.ContextMananger;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.NodeManager;
+import com.springie.metrics.AverageChargeGetter;
+import com.springie.metrics.AverageElasticityGetter;
+import com.springie.metrics.AverageLengthGetter;
+import com.springie.metrics.AverageRadiusGetter;
+import com.springie.metrics.AverageStiffnessGetter;
 import com.springie.modification.flags.FlagControllerDisabled;
 import com.springie.modification.flags.FlagControllerFixed;
 import com.springie.modification.flags.FlagControllerHidden;
 import com.springie.modification.flags.FlagControllerRope;
-import com.springie.modification.resize.ChargeChanger;
-import com.springie.modification.resize.LinkElasticityChanger;
-import com.springie.modification.resize.LinkLengthChanger;
 import com.springie.modification.resize.LinkLengthEqualisation;
-import com.springie.modification.resize.LinkRadiusChanger;
 import com.springie.modification.resize.LinkResetter;
-import com.springie.modification.resize.LinkStiffnessChanger;
-import com.springie.modification.resize.NodeSizeChanger;
+import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 
 public final class DomeRelatedChangeDelegator {
@@ -33,90 +33,115 @@ public final class DomeRelatedChangeDelegator {
     tool.equalise();
   }
 
-  private static float getScalingScaleFactor() {
-    final int value = FrEnd.panel_edit_properties_misc.scroll_bar_scale_by.getValue();
-    return value / 100F;
+  // The +/- buttons on the Properties > Scalars panel nudge the selected
+  // value by a single step in slider units, clamped to the slider's range.
+  // (They used to scale multiplicatively by a percentage taken from an
+  // unrelated scrollbar on the Misc panel, which meant the step size was
+  // unpredictable, + then - did not return to the starting value, and at
+  // zero the + button did nothing at all. Worse, the damping pair was
+  // mismatched: "+" scaled elasticity while "-" scaled damping.)
+
+  // Slider ranges (maximum - visible amount) for the Scalars panel.
+  private static final int DAMPING_MIN = 0;
+  private static final int DAMPING_MAX = 200;
+  private static final int ELASTICITY_MIN = 0;
+  private static final int ELASTICITY_MAX = 350;
+  private static final int LENGTH_MIN_PX = 0;
+  private static final int LENGTH_MAX_PX = 9799;
+  private static final int RADIUS_SHIFT = 7;
+  private static final int RADIUS_MIN = 0;
+  private static final int RADIUS_MAX = 799;
+  private static final int CHARGE_MIN = -100;
+  private static final int CHARGE_MAX = 100;
+
+  private static int clamp(int value, int min, int max) {
+    return Math.max(min, Math.min(max, value));
   }
 
   public static void shortenLinks() {
-    final float scale_factor = 1F - getScalingScaleFactor();
-
-    final LinkLengthChanger tool = new LinkLengthChanger(ContextMananger.getNodeManager());
-    tool.resize(scale_factor);
+    changeLengthBy(-1);
   }
 
   public static void lengthenLinks() {
-    final float scale_factor = 1F + getScalingScaleFactor();
+    changeLengthBy(1);
+  }
 
-    final LinkLengthChanger tool = new LinkLengthChanger(ContextMananger.getNodeManager());
-    tool.resize(scale_factor);
+  private static void changeLengthBy(int delta_px) {
+    FrEnd.prepareToModifyLinkTypes();
+    final int average_px = new AverageLengthGetter(
+        ContextMananger.getNodeManager()).getAverage() >> Coords.shift;
+    final int new_px = clamp(average_px + delta_px, LENGTH_MIN_PX,
+        LENGTH_MAX_PX);
+    ContextMananger.getLinkManager()
+        .setLengthOfSelected(new_px << Coords.shift);
   }
 
   public static void expand() {
-    final float scale_factor = 1F + getScalingScaleFactor();
-
-    if (ContextMananger.getNodeManager().isSelection()) {
-      new NodeSizeChanger(ContextMananger.getNodeManager()).resize(scale_factor);
-      RendererDelegator.repaintAll();
-    }
-
-    if (ContextMananger.getLinkManager().isSelection()) {
-      new LinkRadiusChanger(ContextMananger.getNodeManager()).resize(scale_factor);
-      RendererDelegator.repaintAll();
-    }
+    changeRadiusBy(1);
   }
 
   public static void contract() {
-    final float scale_factor = 1F - getScalingScaleFactor();
-    if (ContextMananger.getNodeManager().isSelection()) {
-      new NodeSizeChanger(ContextMananger.getNodeManager()).resize(scale_factor);
-      RendererDelegator.repaintAll();
-    }
+    changeRadiusBy(-1);
+  }
 
-    if (ContextMananger.getLinkManager().isSelection()) {
-      new LinkRadiusChanger(ContextMananger.getNodeManager()).resize(scale_factor);
-      RendererDelegator.repaintAll();
-    }
+  private static void changeRadiusBy(int delta) {
+    FrEnd.prepareToModifyAllTypes();
+    final int average = new AverageRadiusGetter(
+        ContextMananger.getNodeManager()).getAverage() >> RADIUS_SHIFT;
+    final int new_value = clamp(average + delta, RADIUS_MIN, RADIUS_MAX)
+        << RADIUS_SHIFT;
+    ContextMananger.getLinkManager().setRadiusOfSelected(new_value);
+    ContextMananger.getNodeManager().setRadiusOfSelected(new_value);
+    RendererDelegator.repaintAll();
   }
 
   public static void chargeDown() {
-    final float scale_factor = 1F - getScalingScaleFactor();
-    new ChargeChanger(ContextMananger.getNodeManager()).scaleBy(scale_factor);
-    FrEnd.postCleanup();
+    changeChargeBy(-1);
   }
 
   public static void chargeUp() {
-    final float scale_factor = 1F + getScalingScaleFactor();
-    new ChargeChanger(ContextMananger.getNodeManager()).scaleBy(scale_factor);
+    changeChargeBy(1);
+  }
+
+  private static void changeChargeBy(int delta) {
+    FrEnd.prepareToModifyNodeTypes();
+    final int average = new AverageChargeGetter(
+        ContextMananger.getNodeManager()).getAverage();
+    ContextMananger.getNodeManager()
+        .setChargeOfSelected(clamp(average + delta, CHARGE_MIN, CHARGE_MAX));
     FrEnd.postCleanup();
   }
 
   public static void elasticityUp() {
-    final float scale_factor = 1F + getScalingScaleFactor();
-    final LinkElasticityChanger tool = new LinkElasticityChanger(
-        ContextMananger.getNodeManager());
-    tool.resize(scale_factor);
+    changeElasticityBy(1);
   }
 
   public static void elasticityDown() {
-    final float scale_factor = 1F - getScalingScaleFactor();
-    final LinkElasticityChanger tool = new LinkElasticityChanger(
-        ContextMananger.getNodeManager());
-    tool.resize(scale_factor);
+    changeElasticityBy(-1);
+  }
+
+  private static void changeElasticityBy(int delta) {
+    FrEnd.prepareToModifyLinkTypes();
+    final int average = new AverageElasticityGetter(
+        ContextMananger.getNodeManager()).getAverage();
+    ContextMananger.getLinkManager().setElasticityOfSelected(
+        clamp(average + delta, ELASTICITY_MIN, ELASTICITY_MAX));
   }
 
   public static void stiffnessUp() {
-    final float scale_factor = 1F + getScalingScaleFactor();
-    final LinkElasticityChanger tool = new LinkElasticityChanger(
-        ContextMananger.getNodeManager());
-    tool.resize(scale_factor);
+    changeDampingBy(1);
   }
 
   public static void stiffnessDown() {
-    final float scale_factor = 1F - getScalingScaleFactor();
-    final LinkStiffnessChanger tool = new LinkStiffnessChanger(
-        ContextMananger.getNodeManager());
-    tool.resize(scale_factor);
+    changeDampingBy(-1);
+  }
+
+  private static void changeDampingBy(int delta) {
+    FrEnd.prepareToModifyLinkTypes();
+    final int average = new AverageStiffnessGetter(
+        ContextMananger.getNodeManager()).getAverage();
+    ContextMananger.getLinkManager().setStiffnessOfSelected(
+        clamp(average + delta, DAMPING_MIN, DAMPING_MAX));
   }
 
   public static void resetLinkLengths() {

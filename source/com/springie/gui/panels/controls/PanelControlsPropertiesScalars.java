@@ -258,7 +258,7 @@ public class PanelControlsPropertiesScalars {
 
     this.label_charge = new Label("X", Label.LEFT);
 
-    this.button_scale_charge_up = new Button(GUIStrings.EDIT_CHANGE_DOWN);
+    this.button_scale_charge_up = new Button(GUIStrings.EDIT_CHANGE_UP);
     this.button_scale_charge_up.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
@@ -266,7 +266,7 @@ public class PanelControlsPropertiesScalars {
       }
     });
 
-    this.button_scale_charge_down = new Button(GUIStrings.EDIT_CHANGE_UP);
+    this.button_scale_charge_down = new Button(GUIStrings.EDIT_CHANGE_DOWN);
     this.button_scale_charge_down.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);

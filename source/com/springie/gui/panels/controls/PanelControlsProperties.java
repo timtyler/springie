@@ -27,7 +27,6 @@ public class PanelControlsProperties {
     tab_properties.add("Delete", FrEnd.panel_edit_delete.panel);
     tab_properties.add("Edit", FrEnd.panel_edit_edit.panel);
     tab_properties.add("Color", FrEnd.panel_edit_color.panel);
-    tab_properties.add("Misc", FrEnd.panel_edit_properties_misc.panel);
 
     this.panel.add(tab_properties, "Center");
 
