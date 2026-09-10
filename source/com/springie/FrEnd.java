@@ -20,6 +20,9 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.InputEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.List;
 
 import com.springie.constants.Actions;
@@ -650,15 +653,28 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 	 * Applies the controls-window options: stay-on-top and docking with the
 	 * main window. Idempotent; call it whenever the options change and once
 	 * at startup.
+	 *
+	 * "Stay on top" keeps the controls above the main window only -- never
+	 * above every window on the machine. A window listener on the main
+	 * frame brings the controls forward whenever the main window is
+	 * activated.
 	 */
 	public static void applyControlsWindowOptions() {
+		// Never system-wide: the controls must not sit above other
+		// applications' windows.
 		if (frame_controls != null) {
 			try {
-				frame_controls.setAlwaysOnTop(controls_stay_on_top);
+				frame_controls.setAlwaysOnTop(false);
 			} catch (SecurityException e) {
-				// Applets may not be allowed to keep windows on top.
+				// Applets may not be allowed to change this.
 				Forget.about(e);
 			}
+		}
+
+		if (controls_stay_on_top) {
+			startControlsStayOnTop();
+		} else {
+			stopControlsStayOnTop();
 		}
 
 		if (controls_dock_with_main) {
@@ -666,6 +682,56 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		} else {
 			stopControlsDocking();
 		}
+	}
+
+	private static WindowListener controls_stay_on_top_listener;
+
+	/** The main frame the stay-on-top listener is attached to. */
+	private static Frame controls_stay_on_top_frame;
+
+	/**
+	 * Whether the stay-on-top listener is currently watching the main
+	 * window. Exposed for the tests.
+	 */
+	public static boolean isControlsStayOnTopActive() {
+		return controls_stay_on_top_listener != null;
+	}
+
+	private static void startControlsStayOnTop() {
+		if (frame_main == null || frame_controls == null) {
+			return;
+		}
+
+		if (controls_stay_on_top_listener == null
+				|| controls_stay_on_top_frame != frame_main) {
+			// (Re)attach: the frames may have been recreated since the
+			// listener was last attached.
+			stopControlsStayOnTop();
+			controls_stay_on_top_listener = new WindowAdapter() {
+				public void windowActivated(WindowEvent e) {
+					Forget.about(e);
+					if (frame_controls != null && frame_controls.isVisible()) {
+						frame_controls.toFront();
+					}
+				}
+			};
+			frame_main.addWindowListener(controls_stay_on_top_listener);
+			controls_stay_on_top_frame = frame_main;
+			// Bring the controls forward once, now that the option is on.
+			// (Not on every apply: that would yank the window forward while
+			// the user works in another application.)
+			frame_controls.toFront();
+		}
+	}
+
+	private static void stopControlsStayOnTop() {
+		if (controls_stay_on_top_frame != null
+				&& controls_stay_on_top_listener != null) {
+			controls_stay_on_top_frame
+					.removeWindowListener(controls_stay_on_top_listener);
+		}
+		controls_stay_on_top_listener = null;
+		controls_stay_on_top_frame = null;
 	}
 
 	private static void startControlsDocking() {

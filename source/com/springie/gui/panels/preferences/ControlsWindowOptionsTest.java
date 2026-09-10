@@ -9,6 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.Checkbox;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Frame;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.SwingUtilities;
 
@@ -47,23 +50,106 @@ class ControlsWindowOptionsTest {
   }
 
   @Test
-  void stayOnTopDefaultsToTrueAndAppliesToFrame() throws Exception {
-    final boolean[] states = new boolean[2];
+  void stayOnTopDefaultsToTrueAndStaysAboveMainWindowOnly() throws Exception {
+    final boolean[] states = new boolean[3];
+    final int[] listener_count = new int[1];
     SwingUtilities.invokeAndWait(() -> {
       states[0] = FrEnd.controls_stay_on_top;
+      // Never system-wide: the controls must not sit above every window
+      // on the machine.
       states[1] = FrEnd.frame_controls.isAlwaysOnTop();
+      states[2] = FrEnd.isControlsStayOnTopActive();
+      listener_count[0] = FrEnd.frame_main.getWindowListeners().length;
     });
     assertTrue(states[0], "stay on top should default to true");
-    assertTrue(states[1], "controls frame should be always-on-top by default");
+    assertFalse(states[1], "controls frame must not be always-on-top");
+    assertTrue(states[2], "the stay-on-top listener should be watching");
+
+    // Re-applying must not attach a second listener.
+    SwingUtilities.invokeAndWait(() -> {
+      FrEnd.applyControlsWindowOptions();
+      listener_count[0] = FrEnd.frame_main.getWindowListeners().length
+          - listener_count[0];
+      states[2] = FrEnd.isControlsStayOnTopActive();
+    });
+    assertEquals(0, listener_count[0], "re-applying must not duplicate it");
+    assertTrue(states[2]);
+
+    // Activating the main window brings the controls forward, without
+    // touching the system-wide flag. The other window listeners on the
+    // main frame ignore activation; only ours calls toFront.
+    final boolean[] brought_forward = new boolean[1];
+    SwingUtilities.invokeAndWait(() -> {
+      final Frame real_controls = FrEnd.frame_controls;
+      try {
+        FrEnd.frame_controls = new Frame() {
+          public void toFront() {
+            brought_forward[0] = true;
+          }
+
+          public boolean isVisible() {
+            return true;
+          }
+        };
+        final WindowEvent activated = new WindowEvent(FrEnd.frame_main,
+            WindowEvent.WINDOW_ACTIVATED);
+        for (final WindowListener listener
+            : FrEnd.frame_main.getWindowListeners()) {
+          listener.windowActivated(activated);
+        }
+      } finally {
+        FrEnd.frame_controls = real_controls;
+      }
+    });
+    assertTrue(brought_forward[0],
+        "activating the main window should bring the controls forward");
+    final boolean[] still_not_on_top = new boolean[1];
+    SwingUtilities.invokeAndWait(
+        () -> still_not_on_top[0] = FrEnd.frame_controls.isAlwaysOnTop());
+    assertFalse(still_not_on_top[0]);
 
     SwingUtilities.invokeAndWait(() -> {
       FrEnd.controls_stay_on_top = false;
       FrEnd.applyControlsWindowOptions();
+      states[1] = FrEnd.frame_controls.isAlwaysOnTop();
+      states[2] = FrEnd.isControlsStayOnTopActive();
     });
-    final boolean[] off = new boolean[1];
-    SwingUtilities.invokeAndWait(
-        () -> off[0] = FrEnd.frame_controls.isAlwaysOnTop());
-    assertFalse(off[0], "unchecking stay on top should clear the window flag");
+    assertFalse(states[2], "unchecking stay on top should detach it");
+    assertFalse(states[1], "the window flag should stay clear");
+  }
+
+  @Test
+  void stayOnTopFollowsRecreatedFrames() throws Exception {
+    // Booting again recreates the frames; the option must follow the new
+    // main window instead of staying attached to the discarded one.
+    GuiTestSupport.bootApp();
+
+    final boolean[] brought_forward = new boolean[1];
+    SwingUtilities.invokeAndWait(() -> {
+      assertTrue(FrEnd.isControlsStayOnTopActive());
+      final Frame real_controls = FrEnd.frame_controls;
+      try {
+        FrEnd.frame_controls = new Frame() {
+          public void toFront() {
+            brought_forward[0] = true;
+          }
+
+          public boolean isVisible() {
+            return true;
+          }
+        };
+        final WindowEvent activated = new WindowEvent(FrEnd.frame_main,
+            WindowEvent.WINDOW_ACTIVATED);
+        for (final WindowListener listener
+            : FrEnd.frame_main.getWindowListeners()) {
+          listener.windowActivated(activated);
+        }
+      } finally {
+        FrEnd.frame_controls = real_controls;
+      }
+    });
+    assertTrue(brought_forward[0],
+        "after a fresh boot the new main window should drive stay-on-top");
   }
 
   @Test

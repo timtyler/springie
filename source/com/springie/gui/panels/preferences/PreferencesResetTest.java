@@ -170,10 +170,12 @@ class PreferencesResetTest {
       assertEquals(Boolean.FALSE, FrEnd.preferences.map
           .get(Preferences.renderer_old_double_buffer));
 
-      // The controls window is back on top and undocked.
+      // The controls window is back on top of the main window (never
+      // system-wide) and undocked.
       assertTrue(FrEnd.controls_stay_on_top);
       assertFalse(FrEnd.controls_dock_with_main);
-      assertTrue(FrEnd.frame_controls.isAlwaysOnTop());
+      assertFalse(FrEnd.frame_controls.isAlwaysOnTop());
+      assertTrue(FrEnd.isControlsStayOnTopActive());
     } finally {
       GuiTestSupport.disposeFrames();
     }

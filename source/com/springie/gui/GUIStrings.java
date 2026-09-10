@@ -85,7 +85,7 @@ public interface GUIStrings {
 
   String RESET_UNIVERSE = "Reset universe";
 
-  String CONTROL_WINDOW_STAY_ON_TOP = "Stay on top";
+  String CONTROL_WINDOW_STAY_ON_TOP = "Stay on top of main window";
 
   String CONTROL_WINDOW_DOCK = "Dock with main window";
 
