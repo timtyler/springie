@@ -6,7 +6,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.Link;
@@ -32,7 +32,7 @@ public class DragBoxManager {
     if (FrEnd.button_virginity) {
       this.drag_box_start = new Point(x, y);
 
-      final RendererDragBox renderer = ContextMananger.getNodeManager().renderer.renderer_drag_box;
+      final RendererDragBox renderer = ContextManager.getNodeManager().renderer.renderer_drag_box;
       renderer.min = new Point(0, 0);
       renderer.max = new Point(0, 0);
     }
@@ -48,24 +48,24 @@ public class DragBoxManager {
     this.list_of_nodes = new ArrayList<>();
 
     if (this.drag_box_start != null) {
-      final RendererDragBox renderer = ContextMananger.getNodeManager().renderer.renderer_drag_box;
+      final RendererDragBox renderer = ContextManager.getNodeManager().renderer.renderer_drag_box;
       final Point min = renderer.min;
       final Point max = renderer.max;
 
       // prepare
       if (FrEnd.panel_edit_select_main.checkbox_select_nodes.getState()) {
-        new PrepareToModifyNodeTypes(ContextMananger.getNodeManager()).prepare();
+        new PrepareToModifyNodeTypes(ContextManager.getNodeManager()).prepare();
 
         selectNodesInBox(min, max);
       }
 
       if (FrEnd.panel_edit_select_main.checkbox_select_links.getState()) {
-        new PrepareToModifyLinkTypes(ContextMananger.getLinkManager()).prepare();
+        new PrepareToModifyLinkTypes(ContextManager.getLinkManager()).prepare();
         selectLinksWithNodesInList(this.list_of_nodes);
       }
 
       if (FrEnd.panel_edit_select_main.checkbox_select_faces.getState()) {
-        new PrepareToModifyFaceTypes(ContextMananger.getFaceManager()).prepare();
+        new PrepareToModifyFaceTypes(ContextManager.getFaceManager()).prepare();
         selectFacesWithNodesInList(this.list_of_nodes);
       }
       
@@ -79,7 +79,7 @@ public class DragBoxManager {
   }
 
   private void selectNodesInBox(Point min, Point max) {
-    final NodeManager node_manager = ContextMananger.getNodeManager();
+    final NodeManager node_manager = ContextManager.getNodeManager();
 
     final int number_of_nodes = node_manager.element.size();
     for (int temp = 0; temp < number_of_nodes; temp++) {
@@ -106,7 +106,7 @@ public class DragBoxManager {
   }
 
   private void selectLinksWithNodesInList(ArrayList<Node> list_of_nodes) {
-    final LinkManager link_manager = ContextMananger.getLinkManager();
+    final LinkManager link_manager = ContextManager.getLinkManager();
 
     final int number = link_manager.element.size();
     for (int temp = 0; temp < number; temp++) {
@@ -133,7 +133,7 @@ public class DragBoxManager {
   }
 
   private void selectFacesWithNodesInList(ArrayList<Node> list_of_nodes) {
-    final FaceManager face_manager = ContextMananger.getFaceManager();
+    final FaceManager face_manager = ContextManager.getFaceManager();
 
     final int number = face_manager.element.size();
     for (int temp = 0; temp < number; temp++) {

@@ -3,7 +3,7 @@
 package com.springie.gui.gestures;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;
 import com.springie.render.RendererDelegator;
@@ -28,10 +28,10 @@ public class TranslationManager {
   }
 
   public void performTranslation(int x, int y) {
-    final int n = ContextMananger.getNodeManager().element.size();
+    final int n = ContextManager.getNodeManager().element.size();
 
     for (int i = n; --i >= 0;) {
-      final Node node = (Node) ContextMananger.getNodeManager().element.get(i);
+      final Node node = (Node) ContextManager.getNodeManager().element.get(i);
 
       final Point3D point = this.pos[i];
       node.pos.x = point.x + ((x - this.start_x) >> 0);

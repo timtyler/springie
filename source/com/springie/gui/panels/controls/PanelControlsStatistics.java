@@ -7,7 +7,7 @@ import java.awt.Label;
 import java.awt.Panel;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.NodeManager;
@@ -67,12 +67,12 @@ public class PanelControlsStatistics {
   }
 
   public void updateGUIToReflectPropertiesChange() {
-    final NodeManager node_manager = ContextMananger.getNodeManager();
+    final NodeManager node_manager = ContextManager.getNodeManager();
     if (node_manager == null) {
       return;
     }
 
-    final LinkManager link_manager = ContextMananger.getLinkManager();
+    final LinkManager link_manager = ContextManager.getLinkManager();
 
     length_of_shortest_link = Integer.MAX_VALUE;
     long total = 0;
@@ -105,7 +105,7 @@ public class PanelControlsStatistics {
   }
 
   public void updateGUIToReflectSelectionChange() {
-    final NodeManager node_manager = ContextMananger.getNodeManager();
+    final NodeManager node_manager = ContextManager.getNodeManager();
     if (node_manager == null) {
       return;
     }

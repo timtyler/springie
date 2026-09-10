@@ -3,7 +3,7 @@
 package com.springie.modification.projection;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
@@ -51,7 +51,7 @@ public class RescaleManager {
     final int n = this.node_manager.element.size();
 
     for (int i = n; --i >= 0;) {
-      final Node node = (Node) ContextMananger.getNodeManager().element.get(i);
+      final Node node = (Node) ContextManager.getNodeManager().element.get(i);
 
       node.type.radius = (int) (this.node_radius[i] * scale_factor);
 

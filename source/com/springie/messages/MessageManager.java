@@ -7,7 +7,7 @@ package com.springie.messages;
 import java.awt.Point;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.Link;
@@ -88,7 +88,7 @@ public class MessageManager {
   private void processMessage(int msgn) {
     HexagonMaker hexagon_maker;
     //final MessageObj message = this.msgq[msgn];
-    final NodeManager node_manager = ContextMananger.getNodeManager();
+    final NodeManager node_manager = ContextManager.getNodeManager();
     final FaceManager face_manager = node_manager.getFaceManager();
     final LinkManager link_manager = node_manager.getLinkManager();
     
@@ -668,45 +668,45 @@ public class MessageManager {
   public static void deselectAllOfType() {
     final PanelControlsSelectMain panel = FrEnd.panel_edit_select_main;
     if (panel.checkbox_select_nodes.getState()) {
-      ContextMananger.getNodeManager().deselectAll();
+      ContextManager.getNodeManager().deselectAll();
     }
 
     if (panel.checkbox_select_links.getState()) {
-      ContextMananger.getLinkManager().deselectAll();
+      ContextManager.getLinkManager().deselectAll();
     }
 
     if (panel.checkbox_select_faces.getState()) {
-      ContextMananger.getFaceManager().deselectAll();
+      ContextManager.getFaceManager().deselectAll();
     }
   }
 
   public static void selectAllOfType() {
     final PanelControlsSelectMain panel = FrEnd.panel_edit_select_main;
     if (panel.checkbox_select_nodes.getState()) {
-      ContextMananger.getNodeManager().selectAll();
+      ContextManager.getNodeManager().selectAll();
     }
 
     if (panel.checkbox_select_links.getState()) {
-      ContextMananger.getLinkManager().selectAll();
+      ContextManager.getLinkManager().selectAll();
     }
 
     if (panel.checkbox_select_faces.getState()) {
-      ContextMananger.getFaceManager().selectAll();
+      ContextManager.getFaceManager().selectAll();
     }
   }
   
   public static void invertAllOfType() {
     final PanelControlsSelectMain panel = FrEnd.panel_edit_select_main;
     if (panel.checkbox_select_nodes.getState()) {
-      ContextMananger.getNodeManager().selectionInvert();
+      ContextManager.getNodeManager().selectionInvert();
     }
 
     if (panel.checkbox_select_links.getState()) {
-      ContextMananger.getLinkManager().selectionInvert();
+      ContextManager.getLinkManager().selectionInvert();
     }
 
     if (panel.checkbox_select_faces.getState()) {
-      ContextMananger.getFaceManager().selectionInvert();
+      ContextManager.getFaceManager().selectionInvert();
     }
   }
   

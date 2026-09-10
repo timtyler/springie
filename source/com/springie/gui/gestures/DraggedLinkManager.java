@@ -3,7 +3,7 @@
 package com.springie.gui.gestures;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.links.LinkType;
@@ -19,24 +19,24 @@ public class DraggedLinkManager {
 
   void doLink(int x, int y) {
     if (FrEnd.button_virginity) {
-      final Node dragged_node = ContextMananger.getNodeManager().isThereOne(x, y);
+      final Node dragged_node = ContextManager.getNodeManager().isThereOne(x, y);
       if (dragged_node != null) {
 
-        new DeleteLinks(ContextMananger.getNodeManager()).prepare();
+        new DeleteLinks(ContextManager.getNodeManager()).prepare();
         FrEnd.perform_selection.doSelectNodes(x, y, false); //? TODO: check this...
         this.pointer_node = new Node(new Point3D(x, y, 0), 999,
-          ContextMananger.getNodeManager().node_type_factory);
+          ContextManager.getNodeManager().node_type_factory);
         this.pointer_node.type.hidden = false;
 
-        final LinkType link_type = ContextMananger.getLinkManager().link_type_factory
+        final LinkType link_type = ContextManager.getLinkManager().link_type_factory
           .getNew(60, 0);
         link_type.radius = (dragged_node.type.radius) >> 1;
         link_type.hidden = false;
         link_type.compression = true;
         link_type.tension = true;
         link_type.disabled = true;
-        final Clazz dragged_clazz = ContextMananger.getNodeManager().clazz_factory.getNew(0xFFF0FFF0);
-        ContextMananger.getLinkManager().setLink(dragged_node,
+        final Clazz dragged_clazz = ContextManager.getNodeManager().clazz_factory.getNew(0xFFF0FFF0);
+        ContextManager.getLinkManager().setLink(dragged_node,
           this.pointer_node, link_type, dragged_clazz);
 
         FrEnd.postCleanup();
@@ -49,7 +49,7 @@ public class DraggedLinkManager {
   // TODO: this.pointer_node never gets deleted...?
   public void terminateLink(int x, int y) {
     if (this.pointer_node != null) {
-      final NodeManager node_manager = ContextMananger.getNodeManager();
+      final NodeManager node_manager = ContextManager.getNodeManager();
       final Node dragged_node = node_manager.getSelectedNode();
       if (dragged_node != null) {
         this.end_node = node_manager.isThereOne(x, y);
@@ -58,7 +58,7 @@ public class DraggedLinkManager {
             dragged_node, this.end_node); // in
           // pixels...
           if (temp_distance > 0) {
-            final LinkManager link_manager = ContextMananger.getLinkManager();
+            final LinkManager link_manager = ContextManager.getLinkManager();
             link_manager.deleteAllLinksBetween(dragged_node,
               this.end_node);
             final LinkType link_type = link_manager.link_type_factory

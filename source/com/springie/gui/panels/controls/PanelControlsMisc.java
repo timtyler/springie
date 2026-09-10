@@ -13,7 +13,7 @@ import java.awt.event.ItemListener;
 
 import com.springie.FrEnd;
 import com.springie.constants.ToolTypes;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TTChoice;
 import com.springie.gui.components.TextFieldWrapper;
@@ -148,7 +148,7 @@ public class PanelControlsMisc {
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             final PrismaticProjection prismatic_projection = new PrismaticProjection(
-                ContextMananger.getNodeManager());
+                ContextManager.getNodeManager());
             final float sf3 = Float
                 .parseFloat(FrEnd.panel_edit_misc.textfield_prismatic_projection
                     .getText());
@@ -166,7 +166,7 @@ public class PanelControlsMisc {
         Forget.about(e);
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
-            final ExtendLinks extend_links = new ExtendLinks(ContextMananger.getNodeManager());
+            final ExtendLinks extend_links = new ExtendLinks(ContextManager.getNodeManager());
             final float sf3 = Float
                 .parseFloat(FrEnd.panel_edit_misc.textfield_extend_links
                     .getText());
@@ -184,7 +184,7 @@ public class PanelControlsMisc {
         Forget.about(e);
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
-            final DimpleMaker dimple_maker = new DimpleMaker(ContextMananger.getNodeManager());
+            final DimpleMaker dimple_maker = new DimpleMaker(ContextManager.getNodeManager());
             dimple_maker.dimple();
             FrEnd.postCleanup();
             return null;
@@ -202,7 +202,7 @@ public class PanelControlsMisc {
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             final FaceReverser face_reverser = new FaceReverser(
-                ContextMananger.getNodeManager());
+                ContextManager.getNodeManager());
             face_reverser.reverse();
             FrEnd.postCleanup();
             return null;
@@ -376,7 +376,7 @@ public class PanelControlsMisc {
 //              public Object execute() {
 //                Log.log("EXEXC!");
 //                final FuseSelectedNodes fsn = new FuseSelectedNodes(
-//                    ContextMananger.getNodeManager());
+//                    ContextManager.getNodeManager());
 //                fsn.action();
 //                return null;
 //              }
@@ -522,7 +522,7 @@ public class PanelControlsMisc {
   // Forget.about(e);
   // getNewMessageManager().add(new NewMessage(null) {
   // public Object execute() {
-  // ContextMananger.getNodeManager().initialSetUp();
+  // ContextManager.getNodeManager().initialSetUp();
   //
   // FrEnd.last_file_path = null;
   //
@@ -534,7 +534,7 @@ public class PanelControlsMisc {
   // //ewmessage(Message.MSG_CLEAR, 0, 0);
   //        
   // // case Message.MSG_CLEAR:
-  // // ContextMananger.getNodeManager().initialSetUp();
+  // // ContextManager.getNodeManager().initialSetUp();
   // //
   // // FrEnd.last_file_path = null;
   // //
@@ -586,7 +586,7 @@ public class PanelControlsMisc {
   // final int n_links = Integer
   // .parseInt(FrEnd.panel_edit_misc.textfield_select_nodes_with_n_links
   // .getText());
-  // ContextMananger.getNodeManager().selectAllWithNLinks(n_links);
+  // ContextManager.getNodeManager().selectAllWithNLinks(n_links);
   // FrEnd.postCleanup();
   // return null;
   // }

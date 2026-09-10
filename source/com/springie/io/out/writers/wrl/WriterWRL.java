@@ -6,7 +6,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
@@ -52,11 +52,11 @@ public class WriterWRL {
   }
 
   public void write(String filename) {
-    new GarbageCollection(ContextMananger.getNodeManager()).cleanUp();
-    new RedundancyRemover(ContextMananger.getNodeManager()).removeRedundancy();
+    new GarbageCollection(ContextManager.getNodeManager()).cleanUp();
+    new RedundancyRemover(ContextManager.getNodeManager()).removeRedundancy();
 
     this.bb = new BoundingBox();
-    this.bb.find(ContextMananger.getNodeManager());
+    this.bb.find(ContextManager.getNodeManager());
 
     final float sfx = 2f / (this.bb.max.x - this.bb.min.x);
     final float sfy = 2f / (this.bb.max.y - this.bb.min.y);
@@ -234,7 +234,7 @@ public class WriterWRL {
   }
 
   private void outputNodeTypes(Clazz clazz) {
-    final int node_type_number = ContextMananger.getNodeManager().node_type_factory.array
+    final int node_type_number = ContextManager.getNodeManager().node_type_factory.array
       .size();
 
     if (!new AreThereAny().nodes(clazz)) {
@@ -243,13 +243,13 @@ public class WriterWRL {
 
     for (int number = 0; number < node_type_number; number++) {
       outputNodeType(clazz, number);
-      outputNodes(ContextMananger.getNodeManager(), clazz, number);
+      outputNodes(ContextManager.getNodeManager(), clazz, number);
       writeLine("");
     }
   }
 
   private void outputLinkTypes(Clazz clazz) {
-    final LinkManager link_manager = ContextMananger.getLinkManager();
+    final LinkManager link_manager = ContextManager.getLinkManager();
     final int link_type_number = link_manager.link_type_factory.array.size();
 
     if (!new AreThereAny().links(clazz)) {
@@ -309,7 +309,7 @@ public class WriterWRL {
   }
 
   private void outputFacesTypes(Clazz clazz) {
-    final FaceManager polygon_manager = ContextMananger.getFaceManager();
+    final FaceManager polygon_manager = ContextManager.getFaceManager();
     final int type_number = polygon_manager.face_type_factory.array.size();
     if (!new AreThereAny().polygons(clazz)) {
       return;
@@ -441,7 +441,7 @@ public class WriterWRL {
   }
 
   private void outputNodeType(Clazz clazz, int number) {
-    final NodeType type = (NodeType) ContextMananger.getNodeManager().node_type_factory.array
+    final NodeType type = (NodeType) ContextManager.getNodeManager().node_type_factory.array
       .get(number);
 
     if (!new AreThereAny().nodes(clazz, type)) {
@@ -482,7 +482,7 @@ public class WriterWRL {
 
   private void outputNodes(final NodeManager node_manager, Clazz clazz,
     int number) {
-    final NodeType node_type = (NodeType) ContextMananger.getNodeManager().node_type_factory.array
+    final NodeType node_type = (NodeType) ContextManager.getNodeManager().node_type_factory.array
       .get(number);
     if (!node_type.hidden || FrEnd.render_hidden_nodes) {
 

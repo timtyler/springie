@@ -2,7 +2,7 @@
 
 package com.springie.gui.gestures;
 
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
@@ -10,11 +10,11 @@ import com.springie.geometry.Point3D;
 
 public class TransferUtilities {
   public Point3D[] transferPositions() {
-    final int n = ContextMananger.getNodeManager().element.size();
+    final int n = ContextManager.getNodeManager().element.size();
     final Point3D[] pos = new Point3D[n];
 
     for (int i = n; --i >= 0;) {
-      final Node node = (Node) ContextMananger.getNodeManager().element.get(i);
+      final Node node = (Node) ContextManager.getNodeManager().element.get(i);
       pos[i] = (Point3D) node.pos.clone();
     }
 
@@ -22,7 +22,7 @@ public class TransferUtilities {
   }
 
   public int[] transferLinkLengths() {
-    final LinkManager link_manager = ContextMananger.getLinkManager();
+    final LinkManager link_manager = ContextManager.getLinkManager();
     final int n = link_manager.element.size();
     final int[] lengths = new int[n];
 
@@ -35,7 +35,7 @@ public class TransferUtilities {
   }
 
   public int[] transferLinkRadii() {
-    final LinkManager link_manager = ContextMananger.getLinkManager();
+    final LinkManager link_manager = ContextManager.getLinkManager();
     final int n = link_manager.element.size();
     final int[] radii = new int[n];
 
@@ -48,11 +48,11 @@ public class TransferUtilities {
   }
 
   public int[] transferNodeRadii() {
-    final int n = ContextMananger.getNodeManager().element.size();
+    final int n = ContextManager.getNodeManager().element.size();
     final int[] radii = new int[n];
 
     for (int i = n; --i >= 0;) {
-      final Node node = (Node) ContextMananger.getNodeManager().element.get(i);
+      final Node node = (Node) ContextManager.getNodeManager().element.get(i);
       radii[i] = node.type.radius;
     }
 

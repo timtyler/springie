@@ -6,7 +6,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
@@ -70,7 +70,7 @@ public class WriterEIG {
 
   public void write(String filename) {
     new GarbageCollection(this.node_manager).cleanUp();
-    new RedundancyRemover(ContextMananger.getNodeManager()).removeRedundancy();
+    new RedundancyRemover(ContextManager.getNodeManager()).removeRedundancy();
 
     this.bb = new BoundingBox();
     this.bb.find(this.node_manager);
@@ -194,11 +194,11 @@ public class WriterEIG {
   }
 
   private boolean outputNodeTypes(final XMLWriterTagPair uni, Clazz clazz) {
-    final int node_type_number = ContextMananger.getNodeManager().node_type_factory.array
+    final int node_type_number = ContextManager.getNodeManager().node_type_factory.array
         .size();
     boolean some = false;
     for (int nt = 0; nt < node_type_number; nt++) {
-      final NodeType node_type = (NodeType) ContextMananger.getNodeManager().node_type_factory.array
+      final NodeType node_type = (NodeType) ContextManager.getNodeManager().node_type_factory.array
           .get(nt);
 
       this.count_joints = 0;
@@ -208,7 +208,7 @@ public class WriterEIG {
 
       tag_type.add(new XMLWriterAttribute("hidden", "" + node_type.hidden));
 
-      final boolean any = outputNodes(ContextMananger.getNodeManager(), clazz, node_type,
+      final boolean any = outputNodes(ContextManager.getNodeManager(), clazz, node_type,
           tag_type);
 
       if (any) {

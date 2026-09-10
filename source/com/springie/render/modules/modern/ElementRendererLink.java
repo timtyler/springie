@@ -4,7 +4,7 @@ package com.springie.render.modules.modern;
 
 import java.util.ArrayList;
 
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.links.Link;
 import com.springie.elements.nodes.Node;
@@ -118,7 +118,7 @@ public final class ElementRendererLink {
 
     int strut_divisions_actual = strut_divisions;
     if (RendererDelegator.fat_struts) {
-      if (ContextMananger.getNodeManager().is_tensegrity) {
+      if (ContextManager.getNodeManager().is_tensegrity) {
         if (strut_divisions == 1) {
           strut_divisions_actual = 2;
         }

@@ -9,7 +9,7 @@ import java.util.List;
 import org.xml.sax.SAXException;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.electrostatics.ElectrostaticRepulsion;
 import com.springie.elements.links.LinkManager;
@@ -116,7 +116,7 @@ public class NodeManager extends World {
 	void addCreatureFromPresetObject(ArgumentList preset_type) {
 		String d = null;
 		d = PresetObjects.getCreatureDescription(preset_type);
-		FrEnd.data_input.addFromString(d, ContextMananger.getNodeManager());
+		FrEnd.data_input.addFromString(d, ContextManager.getNodeManager());
 	}
 
 	public void addCreatureFromLocation(String location) {
@@ -144,7 +144,7 @@ public class NodeManager extends World {
 			return;
 		}
 
-		FrEnd.data_input.addFromString(d, ContextMananger.getNodeManager());
+		FrEnd.data_input.addFromString(d, ContextManager.getNodeManager());
 	}
 
 	private void reportProblem(String location) {
@@ -232,8 +232,8 @@ public class NodeManager extends World {
 						wrappedLinkExerciser(link_manager);
 					}
 				}
-				ContextMananger.getNodeManager().electrostatic.repel();
-				ContextMananger.getNodeManager().applyViscousDrag();
+				ContextManager.getNodeManager().electrostatic.repel();
+				ContextManager.getNodeManager().applyViscousDrag();
 			}
 		}
 	}
@@ -453,7 +453,7 @@ public class NodeManager extends World {
 			return;
 		}
 
-		ContextMananger.getNodeManager().creature_manager.update();
+		ContextManager.getNodeManager().creature_manager.update();
 
 		// apply acceleration...
 		final int number_of_nodes = this.element.size();

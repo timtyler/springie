@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.preferences.Preferences;
 import com.springie.render.MainCanvas;
@@ -150,7 +150,7 @@ class RendererBinManagerDirtyBinTest {
     frame.add(canvas.panel);
     frame.setSize(400, 400);
     frame.setVisible(true);
-    ContextMananger.setNodeManager(new NodeManager());
+    ContextManager.setNodeManager(new NodeManager());
 
     RendererBinManager.divisor = 192;
     RendererBinManager.show_bins = false;

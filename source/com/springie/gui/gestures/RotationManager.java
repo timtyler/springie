@@ -3,7 +3,7 @@
 package com.springie.gui.gestures;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;
 import com.springie.render.Coords;
@@ -28,7 +28,7 @@ public class RotationManager {
 
 			this.pos = new TransferUtilities().transferPositions();
 
-			this.centre = ContextMananger.getNodeManager().getCentre();
+			this.centre = ContextManager.getNodeManager().getCentre();
 
 			FrEnd.forces_disabled_during_gesture = true;
 		} else {
@@ -37,13 +37,13 @@ public class RotationManager {
 	}
 
 	public void performRotation(int x, int y) {
-		final int n = ContextMananger.getNodeManager().element.size();
+		final int n = ContextManager.getNodeManager().element.size();
 
 		final float theta1 = (x - this.start_x) / (float) (160 * Coords.x_pixelso2);
 		final float theta2 = (y - this.start_y) / (float) (160 * Coords.y_pixelso2);
 
 		for (int i = n; --i >= 0;) {
-			final Node node = (Node) ContextMananger.getNodeManager().element.get(i);
+			final Node node = (Node) ContextManager.getNodeManager().element.get(i);
 			if (node != null) {
 				node.pos = this.pos[i];
 				if (this.cw_acw) {

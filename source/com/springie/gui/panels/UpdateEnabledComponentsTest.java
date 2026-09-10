@@ -11,7 +11,7 @@ import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 
 /**
  * Regression test: toggling one of the Nodes/Links/Faces checkboxes in the
@@ -42,8 +42,8 @@ class UpdateEnabledComponentsTest {
     try {
       // Wait for the startup model to load.
       final long loaded_by = System.currentTimeMillis() + 30000;
-      while (ContextMananger.getLinkManager() == null
-          || ContextMananger.getLinkManager().element.isEmpty()) {
+      while (ContextManager.getLinkManager() == null
+          || ContextManager.getLinkManager().element.isEmpty()) {
         if (System.currentTimeMillis() > loaded_by) {
           throw new IllegalStateException("startup model did not load");
         }
@@ -58,7 +58,7 @@ class UpdateEnabledComponentsTest {
 
       // Select all links, as the UI's "select links" button does.
       SwingUtilities.invokeAndWait(() -> {
-        ContextMananger.getLinkManager().selectAll();
+        ContextManager.getLinkManager().selectAll();
         FrEnd.updateGUIToReflectSelectionChange();
       });
 

@@ -10,7 +10,7 @@ import java.awt.event.ItemListener;
 import java.util.List;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.base.BaseElement;
 import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.Link;
@@ -118,10 +118,10 @@ public class PanelControlsPropertiesFlags {
   }
 
   private boolean anySelectedLinksSustainCompression() {
-    if (ContextMananger.getNodeManager() == null) {
+    if (ContextManager.getNodeManager() == null) {
       return false;
     }
-    final LinkManager link_manager = ContextMananger.getLinkManager();
+    final LinkManager link_manager = ContextManager.getLinkManager();
     final int size = link_manager.element.size();
     for (int i = 0; i < size; i++) {
       final Link l = (Link) link_manager.element.get(i);
@@ -135,10 +135,10 @@ public class PanelControlsPropertiesFlags {
   }
 
   private boolean anySelectedLinksSustainTension() {
-    if (ContextMananger.getNodeManager() == null) {
+    if (ContextManager.getNodeManager() == null) {
       return false;
     }
-    final LinkManager link_manager = ContextMananger.getLinkManager();
+    final LinkManager link_manager = ContextManager.getLinkManager();
     final int size = link_manager.element.size();
     for (int i = 0; i < size; i++) {
       final Link l = (Link) link_manager.element.get(i);
@@ -152,10 +152,10 @@ public class PanelControlsPropertiesFlags {
   }
 
   private boolean anySelectedLinksDisabled() {
-    if (ContextMananger.getNodeManager() == null) {
+    if (ContextManager.getNodeManager() == null) {
       return false;
     }
-    final LinkManager link_manager = ContextMananger.getLinkManager();
+    final LinkManager link_manager = ContextManager.getLinkManager();
     final int size = link_manager.element.size();
     for (int i = 0; i < size; i++) {
       final Link l = (Link) link_manager.element.get(i);
@@ -169,10 +169,10 @@ public class PanelControlsPropertiesFlags {
   }
 
   private boolean anySelectedNodesPinned() {
-    if (ContextMananger.getNodeManager() == null) {
+    if (ContextManager.getNodeManager() == null) {
       return false;
     }
-    final NodeManager node_manager = ContextMananger.getNodeManager();
+    final NodeManager node_manager = ContextManager.getNodeManager();
     final int size = node_manager.element.size();
     for (int i = 0; i < size; i++) {
       final Node n = (Node) node_manager.element.get(i);
@@ -186,13 +186,13 @@ public class PanelControlsPropertiesFlags {
   }
 
   private boolean anySelectedThingHidden() {
-    if (ContextMananger.getNodeManager() == null) {
+    if (ContextManager.getNodeManager() == null) {
       return false;
     }
     
-    final NodeManager node_manager = ContextMananger.getNodeManager();
-    final LinkManager link_manager = ContextMananger.getLinkManager();
-    final FaceManager face_manager = ContextMananger.getFaceManager();
+    final NodeManager node_manager = ContextManager.getNodeManager();
+    final LinkManager link_manager = ContextManager.getLinkManager();
+    final FaceManager face_manager = ContextManager.getFaceManager();
 
     return anySelectedThingHidden(node_manager.element)
         || anySelectedThingHidden(link_manager.element)
@@ -200,7 +200,7 @@ public class PanelControlsPropertiesFlags {
   }
 
   private boolean anySelectedThingHidden(List<? extends BaseElement> v) {
-    // final NodeManager node_manager = ContextMananger.getNodeManager();
+    // final NodeManager node_manager = ContextManager.getNodeManager();
     final int size = v.size();
     for (int i = 0; i < size; i++) {
       final BaseElement n = v.get(i);

@@ -5,7 +5,7 @@ import java.awt.Graphics;
 
 import com.springie.FrEnd;
 import com.springie.composite.Reproduction;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.explosions.fragments.LineFragmentManager;
 import com.springie.explosions.particles.ParticleManager;
 import com.springie.gui.gestures.DragBoxManager;
@@ -158,8 +158,8 @@ public final class RendererDelegator {
     }
 
     if (RendererDelegator.repaint_all_objects) {
-      ContextMananger.getNodeManager().renderer.clear();
-      ContextMananger.getNodeManager().renderer2.clear();
+      ContextManager.getNodeManager().renderer.clear();
+      ContextManager.getNodeManager().renderer2.clear();
     }
   }
 
@@ -172,7 +172,7 @@ public final class RendererDelegator {
     // re-render every bin to repair it.
     RendererBinManager.drag_box_damaged_last_frame = repaint;
 
-    final RendererDragBox drag_box_renderer = ContextMananger.getNodeManager().renderer.renderer_drag_box;
+    final RendererDragBox drag_box_renderer = ContextManager.getNodeManager().renderer.renderer_drag_box;
     drag_box_renderer.draw(graphics, FrEnd.perform_actions.drag_box_manager);
 
     if (repaint) {
@@ -187,12 +187,12 @@ public final class RendererDelegator {
     if (!FrEnd.paused) {
       ParticleManager.update();
       LineFragmentManager.update();
-      Reproduction.handleReproduction(ContextMananger.getNodeManager().creature_manager);
+      Reproduction.handleReproduction(ContextManager.getNodeManager().creature_manager);
     }
 
-    ContextMananger.getNodeManager().nodeAndLinkUpdate();
+    ContextManager.getNodeManager().nodeAndLinkUpdate();
 
-    renderer.repaint(graphics, ContextMananger.getNodeManager());
+    renderer.repaint(graphics, ContextManager.getNodeManager());
 
     WorldManager.privateWorldUnbufferedUpdate();
   }
@@ -203,7 +203,7 @@ public final class RendererDelegator {
 
       ParticleManager.update();
       LineFragmentManager.update();
-      Reproduction.handleReproduction(ContextMananger.getNodeManager().creature_manager);
+      Reproduction.handleReproduction(ContextManager.getNodeManager().creature_manager);
 
       RendererDelegator.incrementGenerationCount();
     }

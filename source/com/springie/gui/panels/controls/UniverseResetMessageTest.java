@@ -5,11 +5,7 @@ package com.springie.gui.panels.controls;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
 import java.awt.Checkbox;
-import java.awt.Frame;
-import java.awt.GraphicsEnvironment;
 import java.awt.ItemSelectable;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -22,9 +18,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
 import com.springie.elements.links.Link;
-import com.springie.world.World;
+import com.springie.gui.GuiTestSupport;
 
 /**
  * The message-queue discipline behind the Universe tab's reset. Several
@@ -36,26 +31,20 @@ class UniverseResetMessageTest {
 
   @BeforeAll
   static void boot() throws Exception {
-    assumeTrue(!GraphicsEnvironment.isHeadless(), "needs a display");
-    SwingUtilities.invokeAndWait(() -> FrEnd.main(new String[0]));
-    waitForBootModelLoadToSettle();
+    GuiTestSupport.bootApp();
   }
 
   @AfterEach
   void restoreDefaults() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.panel_edit_universe.resetUniverse();
+      FrEnd.panel_universe.resetUniverse();
       drainMessageQueue();
     });
   }
 
   @AfterAll
   static void disposeFrames() throws Exception {
-    SwingUtilities.invokeAndWait(() -> {
-      for (final Frame frame : Frame.getFrames()) {
-        frame.dispose();
-      }
-    });
+    GuiTestSupport.disposeFrames();
   }
 
   @Test
@@ -64,7 +53,7 @@ class UniverseResetMessageTest {
       drainMessageQueue();
 
       // Scramble the toggle checkboxes with real clicks.
-      final PanelControlsUniverse panel = FrEnd.panel_edit_universe;
+      final PanelControlsUniverse panel = FrEnd.panel_universe;
       final int link_length = Link.link_display_length;
       clickCheckbox(panel.checkbox_continuously_centre, ItemEvent.SELECTED);
       clickCheckbox(panel.checkbox_node_growth, ItemEvent.SELECTED);
@@ -106,7 +95,7 @@ class UniverseResetMessageTest {
       // toggle message, the reset fixes the static directly, then the
       // queued toggle flips it back when processed.
       FrEnd.continuously_centre = true;
-      clickCheckbox(FrEnd.panel_edit_universe.checkbox_continuously_centre,
+      clickCheckbox(FrEnd.panel_universe.checkbox_continuously_centre,
           ItemEvent.DESELECTED);
       FrEnd.continuously_centre = false;
 
@@ -145,30 +134,4 @@ class UniverseResetMessageTest {
     }
   }
 
-  /**
-   * The boot-time model load applies its universe settings asynchronously,
-   * seconds after FrEnd.main returns. Wait until the world has gone quiet.
-   */
-  private static void waitForBootModelLoadToSettle() throws Exception {
-    int last_gravity = Integer.MIN_VALUE;
-    int last_nodes = -1;
-    long last_change = System.currentTimeMillis();
-    final long deadline = last_change + 60000;
-    while (System.currentTimeMillis() < deadline) {
-      final int[] state = new int[2];
-      SwingUtilities.invokeAndWait(() -> {
-        state[0] = World.gravity_strength;
-        state[1] = ContextMananger.getNodeManager().element.size();
-      });
-      if (state[0] != last_gravity || state[1] != last_nodes) {
-        last_gravity = state[0];
-        last_nodes = state[1];
-        last_change = System.currentTimeMillis();
-      }
-      if (state[1] > 0 && System.currentTimeMillis() - last_change > 2000) {
-        return;
-      }
-      Thread.sleep(250);
-    }
-  }
 }

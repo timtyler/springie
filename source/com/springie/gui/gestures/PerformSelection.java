@@ -3,7 +3,7 @@
 package com.springie.gui.gestures;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.base.BaseElement;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceType;
@@ -24,7 +24,7 @@ public class PerformSelection {
 	
 	public void performSelection(int x, int y, boolean drag_is_possible) {
 		if (RendererDelegator.renderer instanceof ModularRendererNew) {
-			ContextMananger.getNodeManager().nodeAndLinkRenderDummy();
+			ContextManager.getNodeManager().nodeAndLinkRenderDummy();
 		}
 
 		final BaseElement dragged_element = FrEnd.dragged_element;
@@ -66,7 +66,7 @@ public class PerformSelection {
 
 	// performInfection
 	public void performInfection(int x, int y) {
-		final Node node = ContextMananger.getNodeManager().isThereOne(x, y);
+		final Node node = ContextManager.getNodeManager().isThereOne(x, y);
 		if (node != null) {
 			node.type.counter = INFECTION_START;
 		}
@@ -93,7 +93,7 @@ public class PerformSelection {
 
 	public boolean doSelectNodes(int x, int y, boolean drag_is_possible) {
 		// Log.log("GETS");
-		final Node selected_node = ContextMananger.getNodeManager().isThereOne(x, y);
+		final Node selected_node = ContextManager.getNodeManager().isThereOne(x, y);
 
 		// check for selected node...
 		boolean selection_changed = false;
@@ -128,7 +128,7 @@ public class PerformSelection {
 	}
 
 	public boolean doSelectLinks(int x, int y, boolean drag_is_possible) {
-		final Link selected_link = ContextMananger.getLinkManager().isThereOne(x, y);
+		final Link selected_link = ContextManager.getLinkManager().isThereOne(x, y);
 		boolean selection_changed = false;
 
 		final BaseElement dragged_element = FrEnd.dragged_element;
@@ -201,7 +201,7 @@ public class PerformSelection {
 	}
 
 	public boolean doSelectPolygons(int x, int y) {
-		final Face selected_face = ContextMananger.getFaceManager().isThereOne(x, y);
+		final Face selected_face = ContextManager.getFaceManager().isThereOne(x, y);
 		if (selected_face != null) {
 			final FaceType type = selected_face.type;
 			if ((FrEnd.main_canvas.modifiers & 2) != 0) {
@@ -235,23 +235,23 @@ public class PerformSelection {
 	}
 
 	private void deselectAllNodes() {
-		ContextMananger.getNodeManager().deselectAll();
+		ContextManager.getNodeManager().deselectAll();
 	}
 
 	private void selectAllNodes() {
-		ContextMananger.getNodeManager().selectAll();
+		ContextManager.getNodeManager().selectAll();
 	}
 
 	private void selectAllLinks() {
-		ContextMananger.getLinkManager().selectAll();
+		ContextManager.getLinkManager().selectAll();
 	}
 
 	private void deselectAllLinks() {
-		ContextMananger.getLinkManager().deselectAll();
+		ContextManager.getLinkManager().deselectAll();
 	}
 
 	private void deselectAllPolygons() {
-		ContextMananger.getFaceManager().deselectAll();
+		ContextManager.getFaceManager().deselectAll();
 	}
 
 	private void deselectAllNodesInitially() {

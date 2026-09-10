@@ -1,7 +1,7 @@
 package com.springie.render;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.explosions.fragments.LineFragmentManager;
 import com.springie.explosions.particles.ParticleManager;
@@ -25,7 +25,7 @@ public final class SetUpCode {
     Forget.about(resolutionx);
     Forget.about(resolutiony);
     
-    ContextMananger.setNodeManager(new NodeManager());
+    ContextManager.setNodeManager(new NodeManager());
     ParticleManager.initial();
 
     LineFragmentManager.initial();
@@ -33,16 +33,16 @@ public final class SetUpCode {
   }
   
   public static void clear() {
-    ContextMananger.getNodeManager().initialSetUp();
+    ContextManager.getNodeManager().initialSetUp();
   }
 
   public static void clearAndThenAddInitialObjects() {
-    ContextMananger.getNodeManager().initial();
+    ContextManager.getNodeManager().initial();
     informModulesOfReset();
   }
 
   public static void clearAndThenAddProceduralObjects(ArgumentList al) {
-    ContextMananger.getNodeManager().initialWithPreset(al);
+    ContextManager.getNodeManager().initialWithPreset(al);
     informModulesOfReset();
   }
 
@@ -54,6 +54,6 @@ public final class SetUpCode {
   }
 
   public static void addBoids() {
-    ContextMananger.getNodeManager().add();
+    ContextManager.getNodeManager().add();
   }
 }

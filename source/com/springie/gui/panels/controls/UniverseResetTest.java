@@ -5,18 +5,15 @@ package com.springie.gui.panels.controls;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
-import java.awt.Frame;
-import java.awt.GraphicsEnvironment;
 
 import javax.swing.SwingUtilities;
 
 import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.nodes.Node;
+import com.springie.gui.GuiTestSupport;
 import com.springie.world.World;
 
 /**
@@ -27,14 +24,11 @@ class UniverseResetTest {
 
   @Test
   void resetUniverseRestoresDefaults() throws Exception {
-    assumeTrue(!GraphicsEnvironment.isHeadless(), "needs a display");
-
-    SwingUtilities.invokeAndWait(() -> FrEnd.main(new String[0]));
+    GuiTestSupport.bootApp();
     try {
-      waitForBootModelLoadToSettle();
 
       SwingUtilities.invokeAndWait(() -> {
-        final PanelControlsUniverse panel = FrEnd.panel_edit_universe;
+        final PanelControlsUniverse panel = FrEnd.panel_universe;
 
         // Scramble everything the reset covers.
         World.gravity_strength = 99;
@@ -47,7 +41,7 @@ class UniverseResetTest {
         FrEnd.collide_self_only = true;
         FrEnd.continuously_centre = true;
         FrEnd.node_growth = true;
-        ContextMananger.getNodeManager().electrostatic.charge_active = false;
+        ContextManager.getNodeManager().electrostatic.charge_active = false;
 
         panel.resetUniverse();
 
@@ -63,7 +57,7 @@ class UniverseResetTest {
         assertFalse(FrEnd.continuously_centre);
         assertFalse(FrEnd.node_growth);
         assertTrue(
-            ContextMananger.getNodeManager().electrostatic.charge_active);
+            ContextManager.getNodeManager().electrostatic.charge_active);
 
         // ...and the controls match.
         assertEquals(2, panel.scroll_bar_gravity.getValue());
@@ -89,39 +83,7 @@ class UniverseResetTest {
         assertFalse(panel.checkbox_node_growth.getState(), "node growth");
       });
     } finally {
-      SwingUtilities.invokeAndWait(() -> {
-        for (final Frame frame : Frame.getFrames()) {
-          frame.dispose();
-        }
-      });
-    }
-  }
-
-  /**
-   * The boot-time model load applies its universe settings asynchronously,
-   * seconds after FrEnd.main returns. Wait until the world has gone quiet
-   * before scrambling anything, or the load will stomp the test mid-flight.
-   */
-  private static void waitForBootModelLoadToSettle() throws Exception {
-    int last_gravity = Integer.MIN_VALUE;
-    int last_nodes = -1;
-    long last_change = System.currentTimeMillis();
-    final long deadline = last_change + 60000;
-    while (System.currentTimeMillis() < deadline) {
-      final int[] state = new int[2];
-      SwingUtilities.invokeAndWait(() -> {
-        state[0] = World.gravity_strength;
-        state[1] = ContextMananger.getNodeManager().element.size();
-      });
-      if (state[0] != last_gravity || state[1] != last_nodes) {
-        last_gravity = state[0];
-        last_nodes = state[1];
-        last_change = System.currentTimeMillis();
-      }
-      if (state[1] > 0 && System.currentTimeMillis() - last_change > 2000) {
-        return;
-      }
-      Thread.sleep(250);
+      GuiTestSupport.disposeFrames();
     }
   }
 }

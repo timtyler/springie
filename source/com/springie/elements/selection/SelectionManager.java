@@ -1,6 +1,6 @@
 package com.springie.elements.selection;
 
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.base.BaseElement;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
@@ -78,7 +78,7 @@ public final class SelectionManager {
   }
 
   private static void applyToEachFace(Executor ex) {
-    final NodeManager node_manager = ContextMananger.getNodeManager();
+    final NodeManager node_manager = ContextManager.getNodeManager();
     if (node_manager == null) {
       return;
     }
@@ -91,7 +91,7 @@ public final class SelectionManager {
   }
 
   private static void applyToEachLink(Executor ex) {
-    final NodeManager node_manager = ContextMananger.getNodeManager();
+    final NodeManager node_manager = ContextManager.getNodeManager();
     if (node_manager == null) {
       return;
     }
@@ -104,7 +104,7 @@ public final class SelectionManager {
   }
 
   private static void applyToEachNode(Executor ex) {
-    final NodeManager node_manager = ContextMananger.getNodeManager();
+    final NodeManager node_manager = ContextManager.getNodeManager();
     if (node_manager == null) {
       return;
     }

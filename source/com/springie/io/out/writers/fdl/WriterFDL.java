@@ -13,7 +13,7 @@ import uk.org.fdl.object.FDLObjectNumber;
 import uk.org.fdl.writer.FDLWriter;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.electrostatics.ElectrostaticRepulsion;
 import com.springie.elements.faces.Face;
@@ -110,7 +110,7 @@ public class WriterFDL {
 			list_attr.add(chain_dimensions);
 		}
 
-		final ElectrostaticRepulsion electrostatic = ContextMananger.getNodeManager().electrostatic;
+		final ElectrostaticRepulsion electrostatic = ContextManager.getNodeManager().electrostatic;
 		if (electrostatic.charge_active) {
 			final String c_b = "" + electrostatic.charge_active;
 			final FDLObjectChain chain_charge_active = new FDLObjectChain("=");
@@ -253,7 +253,7 @@ public class WriterFDL {
 	}
 
 	private boolean outputNodeTypes(final FDLObjectBraceList uni, Clazz clazz) {
-		final int node_type_number = ContextMananger.getNodeManager().node_type_factory.array.size();
+		final int node_type_number = ContextManager.getNodeManager().node_type_factory.array.size();
 
 		boolean some = false;
 		for (int nt = 0; nt < node_type_number; nt++) {
@@ -262,7 +262,7 @@ public class WriterFDL {
 
 			final FDLObjectBracketList list_attr = new FDLObjectBracketList();
 
-			final NodeType node_type = (NodeType) ContextMananger.getNodeManager().node_type_factory.array
+			final NodeType node_type = (NodeType) ContextManager.getNodeManager().node_type_factory.array
 					.get(nt);
 			final FDLObjectChain chain_radius = new FDLObjectChain("=");
 			chain_radius.add(new FDLObjectIdentifier("radius"));
@@ -292,7 +292,7 @@ public class WriterFDL {
 
 			final FDLObjectBraceList list_nodes = new FDLObjectBraceList();
 
-			final boolean any = outputNodes(ContextMananger.getNodeManager(), clazz, node_type, list_nodes);
+			final boolean any = outputNodes(ContextManager.getNodeManager(), clazz, node_type, list_nodes);
 
 			chain.add(list_nodes);
 
@@ -334,7 +334,7 @@ public class WriterFDL {
 	}
 
 	private boolean outputLinkTypes(final FDLObjectBraceList uni, Clazz clazz) {
-		final LinkManager link_manager = ContextMananger.getLinkManager();
+		final LinkManager link_manager = ContextManager.getLinkManager();
 		final int link_type_number = link_manager.link_type_factory.array.size();
 		boolean some = false;
 
@@ -443,7 +443,7 @@ public class WriterFDL {
 
 	private boolean outputFaceTypes(FDLObjectBraceList uni, Clazz clazz) {
 		boolean some = false;
-		final FaceManager face_manager = ContextMananger.getFaceManager();
+		final FaceManager face_manager = ContextManager.getFaceManager();
 		final int type_number = face_manager.face_type_factory.array.size();
 
 		for (int t = 0; t < type_number; t++) {

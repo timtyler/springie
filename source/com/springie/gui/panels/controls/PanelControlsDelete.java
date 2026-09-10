@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.gui.GUIStrings;
 import com.springie.messages.Message;
 import com.springie.messages.MessageManager;
@@ -94,7 +94,7 @@ public class PanelControlsDelete {
         Forget.about(e);
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
-            ContextMananger.getNodeManager().initialSetUp();
+            ContextManager.getNodeManager().initialSetUp();
 
             FrEnd.last_file_path = null;
 
@@ -137,7 +137,7 @@ public class PanelControlsDelete {
               public Object execute() {
                 //Log.log("EXEXC!");
                 final FuseSelectedNodes fsn = new FuseSelectedNodes(
-                    ContextMananger.getNodeManager());
+                    ContextManager.getNodeManager());
                 fsn.action();
                 return null;
               }

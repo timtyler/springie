@@ -8,7 +8,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.gui.components.TTChoice;
 import com.springie.messages.MessageManager;
@@ -90,7 +90,7 @@ public class PanelControlsSelectLinks {
           final int select_type = PanelControlsSelectLinks.this.choice_link_definition
               .str_to_num(stateChangedString);
 
-          ContextMananger.getLinkManager().deselectAll();
+          ContextManager.getLinkManager().deselectAll();
 
           switch (select_type) {
             // case any_member:

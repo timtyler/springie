@@ -2,7 +2,7 @@ package com.springie.world;
 
 import com.springie.FrEnd;
 import com.springie.composite.CompositeManager;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.base.BaseElementManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.clazz.ClazzFactory;
@@ -206,7 +206,7 @@ public class World extends BaseElementManager<Node> {
 			World.temp_agent = (Node) this.element.get(temp);
 			for (int temp2 = temp + 1; temp2 < number_of_nodes; temp2++) {
 				World.temp2_agent = (Node) this.element.get(temp2);
-				ContextMananger.getNodeManager().collideTheseEntities();
+				ContextManager.getNodeManager().collideTheseEntities();
 			}
 		}
 	}

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.io.in.DataInput;
 
@@ -36,7 +36,7 @@ class DataInputModelLoadTest {
   void setUp() {
     assumeTrue(!GraphicsEnvironment.isHeadless(), "needs a display");
     this.manager = new NodeManager();
-    ContextMananger.setNodeManager(this.manager);
+    ContextManager.setNodeManager(this.manager);
   }
 
   @ParameterizedTest

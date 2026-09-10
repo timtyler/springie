@@ -3,7 +3,7 @@
 package com.springie.gui.panels;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.gui.colourpicker.ColorPicker;
 import com.springie.gui.components.ComponentAccess;
 import com.springie.gui.panels.controls.PanelControlsDelete;
@@ -54,9 +54,9 @@ public final class UpdateEnabledComponents {
   }
 
   public static void actuallyUpdateGUIAfterSelectionChange() {
-    final boolean nodes = ContextMananger.getNodeManager().isSelection();
-    final boolean links = ContextMananger.getLinkManager().isSelection();
-    final boolean faces = ContextMananger.getFaceManager().isSelection();
+    final boolean nodes = ContextManager.getNodeManager().isSelection();
+    final boolean links = ContextManager.getLinkManager().isSelection();
+    final boolean faces = ContextManager.getFaceManager().isSelection();
 
     int hash = (nodes ? 1 : 0) | (links ? 2 : 0) | (faces ? 4 : 0);
 

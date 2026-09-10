@@ -16,7 +16,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.nodes.Node;
 import com.springie.gui.GUIStrings;
@@ -170,7 +170,7 @@ public class PanelControlsUniverse {
 		this.checkbox_charge_switch.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				Forget.about(e);
-				ContextMananger.getNodeManager().electrostatic.charge_active = ((Checkbox) e.getSource()).getState();
+				ContextManager.getNodeManager().electrostatic.charge_active = ((Checkbox) e.getSource()).getState();
 			}
 		});
 		panel_charge_switch.add(this.checkbox_charge_switch);
@@ -380,7 +380,7 @@ public class PanelControlsUniverse {
 		FrEnd.collide_self_only = false;
 
 		// Charge.
-		ContextMananger.getNodeManager().electrostatic.charge_active = true;
+		ContextManager.getNodeManager().electrostatic.charge_active = true;
 		this.checkbox_charge_switch.setState(true);
 
 		// Continuously centre and node growth (their listeners queue toggle

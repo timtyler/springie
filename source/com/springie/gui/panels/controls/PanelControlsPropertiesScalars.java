@@ -13,7 +13,7 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TextFieldWrapper;
 import com.springie.messages.Message;
@@ -379,7 +379,7 @@ public class PanelControlsPropertiesScalars {
   }
 
   public void updateGUIToReflectSelectionChange() {
-    if (ContextMananger.getNodeManager() == null) {
+    if (ContextManager.getNodeManager() == null) {
       return;
     }
 
@@ -391,21 +391,21 @@ public class PanelControlsPropertiesScalars {
   }
 
   public void reflectElasticity() {
-    final int v = new AverageElasticityGetter(ContextMananger.getNodeManager())
+    final int v = new AverageElasticityGetter(ContextManager.getNodeManager())
         .getAverage();
     this.scroll_bar_elasticity.setValue(v);
     this.label_elasticity.setText("" + v);
   }
 
   public void reflectStiffness() {
-    final int v = new AverageStiffnessGetter(ContextMananger.getNodeManager())
+    final int v = new AverageStiffnessGetter(ContextManager.getNodeManager())
         .getAverage();
     this.scroll_bar_damping.setValue(v);
     this.label_damping.setText("" + v);
   }
 
   public void reflectLength() {
-    final int v = new AverageLengthGetter(ContextMananger.getNodeManager())
+    final int v = new AverageLengthGetter(ContextManager.getNodeManager())
         .getAverage() >> Coords.shift;
     this.scroll_bar_length.setValue(v);
     setLengthLabel(v);
@@ -413,14 +413,14 @@ public class PanelControlsPropertiesScalars {
   }
 
   public void reflectRadius() {
-    final int v = new AverageRadiusGetter(ContextMananger.getNodeManager())
+    final int v = new AverageRadiusGetter(ContextManager.getNodeManager())
         .getAverage() >> this.radius_shift;
     this.scroll_bar_radius.setValue(v);
     this.label_radius.setText("" + v);
   }
 
   public void reflectCharge() {
-    final int v = new AverageChargeGetter(ContextMananger.getNodeManager())
+    final int v = new AverageChargeGetter(ContextManager.getNodeManager())
         .getAverage();
     this.scroll_bar_charge.setValue(v);
     this.label_charge.setText("" + v);

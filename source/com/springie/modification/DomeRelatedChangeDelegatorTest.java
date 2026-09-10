@@ -11,7 +11,7 @@ import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.metrics.AverageChargeGetter;
 import com.springie.metrics.AverageElasticityGetter;
 import com.springie.metrics.AverageLengthGetter;
@@ -33,8 +33,8 @@ class DomeRelatedChangeDelegatorTest {
   private static void bootApp() throws Exception {
     SwingUtilities.invokeAndWait(() -> FrEnd.main(new String[0]));
     final long loaded_by = System.currentTimeMillis() + 30000;
-    while (ContextMananger.getLinkManager() == null
-        || ContextMananger.getLinkManager().element.isEmpty()) {
+    while (ContextManager.getLinkManager() == null
+        || ContextManager.getLinkManager().element.isEmpty()) {
       if (System.currentTimeMillis() > loaded_by) {
         throw new IllegalStateException("startup model did not load");
       }
@@ -49,38 +49,38 @@ class DomeRelatedChangeDelegatorTest {
   }
 
   private static int averageDamping() {
-    return new AverageStiffnessGetter(ContextMananger.getNodeManager())
+    return new AverageStiffnessGetter(ContextManager.getNodeManager())
         .getAverage();
   }
 
   private static int averageElasticity() {
-    return new AverageElasticityGetter(ContextMananger.getNodeManager())
+    return new AverageElasticityGetter(ContextManager.getNodeManager())
         .getAverage();
   }
 
   private static int averageLengthPx() {
-    return new AverageLengthGetter(ContextMananger.getNodeManager())
+    return new AverageLengthGetter(ContextManager.getNodeManager())
         .getAverage() >> Coords.shift;
   }
 
   private static int averageRadiusUnits() {
-    return new AverageRadiusGetter(ContextMananger.getNodeManager())
+    return new AverageRadiusGetter(ContextManager.getNodeManager())
         .getAverage() >> 7;
   }
 
   private static int averageCharge() {
-    return new AverageChargeGetter(ContextMananger.getNodeManager())
+    return new AverageChargeGetter(ContextManager.getNodeManager())
         .getAverage();
   }
 
   private static void selectAllLinks() throws Exception {
     SwingUtilities.invokeAndWait(
-        () -> ContextMananger.getLinkManager().selectAll());
+        () -> ContextManager.getLinkManager().selectAll());
   }
 
   private static void selectAllNodes() throws Exception {
     SwingUtilities.invokeAndWait(
-        () -> ContextMananger.getNodeManager().selectAll());
+        () -> ContextManager.getNodeManager().selectAll());
   }
 
   @Test
@@ -132,12 +132,12 @@ class DomeRelatedChangeDelegatorTest {
     try {
       selectAllLinks();
 
-      ContextMananger.getLinkManager().setStiffnessOfSelected(200);
+      ContextManager.getLinkManager().setStiffnessOfSelected(200);
       DomeRelatedChangeDelegator.stiffnessUp();
       assertEquals(200, averageDamping(),
           "damping + at the 200 maximum must stay at 200");
 
-      ContextMananger.getLinkManager().setStiffnessOfSelected(0);
+      ContextManager.getLinkManager().setStiffnessOfSelected(0);
       DomeRelatedChangeDelegator.stiffnessDown();
       assertEquals(0, averageDamping(),
           "damping - at the 0 minimum must stay at 0");

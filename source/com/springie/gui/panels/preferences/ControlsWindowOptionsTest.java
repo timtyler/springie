@@ -6,13 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
 import java.awt.Checkbox;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Frame;
-import java.awt.GraphicsEnvironment;
 
 import javax.swing.SwingUtilities;
 
@@ -22,9 +18,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
 import com.springie.gui.GUIStrings;
-import com.springie.world.World;
+import com.springie.gui.GuiTestSupport;
 
 /**
  * The controls-window options on the Preferences tab: stay-on-top and
@@ -34,9 +29,7 @@ class ControlsWindowOptionsTest {
 
   @BeforeAll
   static void boot() throws Exception {
-    assumeTrue(!GraphicsEnvironment.isHeadless(), "needs a display");
-    SwingUtilities.invokeAndWait(() -> FrEnd.main(new String[0]));
-    waitForBootModelLoadToSettle();
+    GuiTestSupport.bootApp();
   }
 
   @AfterEach
@@ -50,11 +43,7 @@ class ControlsWindowOptionsTest {
 
   @AfterAll
   static void disposeFrames() throws Exception {
-    SwingUtilities.invokeAndWait(() -> {
-      for (final Frame frame : Frame.getFrames()) {
-        frame.dispose();
-      }
-    });
+    GuiTestSupport.disposeFrames();
   }
 
   @Test
@@ -227,30 +216,4 @@ class ControlsWindowOptionsTest {
     return null;
   }
 
-  /**
-   * The boot-time model load applies its universe settings asynchronously,
-   * seconds after FrEnd.main returns. Wait until the world has gone quiet.
-   */
-  private static void waitForBootModelLoadToSettle() throws Exception {
-    int last_gravity = Integer.MIN_VALUE;
-    int last_nodes = -1;
-    long last_change = System.currentTimeMillis();
-    final long deadline = last_change + 60000;
-    while (System.currentTimeMillis() < deadline) {
-      final int[] state = new int[2];
-      SwingUtilities.invokeAndWait(() -> {
-        state[0] = World.gravity_strength;
-        state[1] = ContextMananger.getNodeManager().element.size();
-      });
-      if (state[0] != last_gravity || state[1] != last_nodes) {
-        last_gravity = state[0];
-        last_nodes = state[1];
-        last_change = System.currentTimeMillis();
-      }
-      if (state[1] > 0 && System.currentTimeMillis() - last_change > 2000) {
-        return;
-      }
-      Thread.sleep(250);
-    }
-  }
 }

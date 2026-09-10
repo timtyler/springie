@@ -9,7 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TextFieldWrapper;
 import com.springie.messages.Message;
@@ -97,7 +97,7 @@ public class PanelControlsSelectAdvanced {
             final int n_links = Integer
               .parseInt(FrEnd.panel_edit_select_advanced.textfield_select_nodes_with_n_links
                 .getText());
-            ContextMananger.getNodeManager().selectAllWithNLinks(n_links);
+            ContextManager.getNodeManager().selectAllWithNLinks(n_links);
             FrEnd.postCleanup();
             return null;
           }

@@ -15,7 +15,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.image.ImageObserver;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.messages.Message;
 import com.springie.messages.NewMessage;
 
@@ -277,7 +277,7 @@ public class MainCanvas {
 
     setUpGraphicsHandle();
 
-    ContextMananger.getNodeManager().resetNodeGrid(); // due to resize...
+    ContextManager.getNodeManager().resetNodeGrid(); // due to resize...
 
     //StarManager.reset(); // stars need resizing...
 

@@ -8,7 +8,7 @@ import java.io.Reader;
 import org.xml.sax.SAXException;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.NodeManager;
@@ -100,7 +100,7 @@ public class DataInput {
     final String lower = filename.toLowerCase();
 
     if (filename.startsWith("internal://")) {
-      ContextMananger.getNodeManager().addCreatureFromLocation(filename);
+      ContextManager.getNodeManager().addCreatureFromLocation(filename);
     } else if (lower.endsWith(".spr")) {
       //Log.log(" addFile readInSprFile");
       readInSprFile(filename);
@@ -299,7 +299,7 @@ public class DataInput {
 
     this.manager_destination.makeSureNoClazzesOrTypesAreFlagged();
     
-    ContextMananger.getNodeManager().nodes_have_been_deleted = true;
+    ContextManager.getNodeManager().nodes_have_been_deleted = true;
 
     new PostModification(this.manager_destination).thoroughCleanup();
 
@@ -307,14 +307,14 @@ public class DataInput {
   }
 
   void resizeRadii() {
-    final AutomaticLinkRadius alr = new AutomaticLinkRadius(ContextMananger.getNodeManager());
+    final AutomaticLinkRadius alr = new AutomaticLinkRadius(ContextManager.getNodeManager());
     alr.setInitially();
-    final AutomaticNodeRadius anr = new AutomaticNodeRadius(ContextMananger.getNodeManager());
+    final AutomaticNodeRadius anr = new AutomaticNodeRadius(ContextManager.getNodeManager());
     anr.setInitially();
   }
 
   void resizeLinkRadii() {
-    final DeriveLinkRadiusFromNodeRadius alr = new DeriveLinkRadiusFromNodeRadius(ContextMananger.getNodeManager());
+    final DeriveLinkRadiusFromNodeRadius alr = new DeriveLinkRadiusFromNodeRadius(ContextManager.getNodeManager());
     alr.setInitially();
   }
 }

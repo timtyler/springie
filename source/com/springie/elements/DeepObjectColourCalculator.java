@@ -1,6 +1,6 @@
 package com.springie.elements;
 
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.nodes.Range;
 import com.springie.render.Coords;
 
@@ -14,7 +14,7 @@ public final class DeepObjectColourCalculator {
 
   public static int getColourOfDeepObject(int colour, int z) {
     if (depth_is_relative) {
-      final Range depth_range = ContextMananger.getNodeManager().getDepthRange();
+      final Range depth_range = ContextManager.getNodeManager().getDepthRange();
 
       final int max_minus_min = depth_range.max - depth_range.min;
       final int zz = (depth_range.max - z) >> Coords.shift;

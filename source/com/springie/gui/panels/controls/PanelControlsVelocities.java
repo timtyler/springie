@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.gui.GUIStrings;
 import com.springie.messages.MessageManager;
 import com.springie.messages.NewMessage;
@@ -48,7 +48,7 @@ public class PanelControlsVelocities {
 				Forget.about(e);
 				getNewMessageManager().add(new NewMessage(null) {
 					public Object execute() {
-						new MotionlessMaker().reduce(ContextMananger.getNodeManager(), 0.5f);
+						new MotionlessMaker().reduce(ContextManager.getNodeManager(), 0.5f);
 						return null;
 					}
 				});
@@ -66,7 +66,7 @@ public class PanelControlsVelocities {
 				Forget.about(e);
 				getNewMessageManager().add(new NewMessage(null) {
 					public Object execute() {
-						new MotionlessMaker().reduce(ContextMananger.getNodeManager(), 2.0f);
+						new MotionlessMaker().reduce(ContextManager.getNodeManager(), 2.0f);
 						return null;
 					}
 				});
@@ -84,7 +84,7 @@ public class PanelControlsVelocities {
 				Forget.about(e);
 				getNewMessageManager().add(new NewMessage(null) {
 					public Object execute() {
-						new MotionlessMaker().reduce(ContextMananger.getNodeManager(), 0.0f);
+						new MotionlessMaker().reduce(ContextManager.getNodeManager(), 0.0f);
 						return null;
 					}
 				});
@@ -103,7 +103,7 @@ public class PanelControlsVelocities {
 				Forget.about(e);
 				getNewMessageManager().add(new NewMessage(null) {
 					public Object execute() {
-						new MotionlessMaker().reduce(ContextMananger.getNodeManager(), -1.0f);
+						new MotionlessMaker().reduce(ContextManager.getNodeManager(), -1.0f);
 						return null;
 					}
 				});

@@ -27,7 +27,7 @@ import com.springie.constants.Delay;
 import com.springie.constants.FrameFrequency;
 import com.springie.constants.Quality;
 import com.springie.constants.ToolTypes;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.base.BaseElement;
 import com.springie.elements.links.Link;
 import com.springie.elements.nodes.Node;
@@ -390,7 +390,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 	public static ColorPicker panel_edit_color = new ColorPicker(new ColorPickerInformer() {
 		public void inform(int colour) {
-			final ColourChanger cc = new ColourChanger(ContextMananger.getNodeManager());
+			final ColourChanger cc = new ColourChanger(ContextManager.getNodeManager());
 			cc.setColour(colour);
 		}
 	});
@@ -402,7 +402,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 	public static PanelControlsEdit panel_edit_edit = new PanelControlsEdit(message_manager, new_message_manager);
 
-	public static PanelControlsUniverse panel_edit_universe = new PanelControlsUniverse(message_manager);
+	public static PanelControlsUniverse panel_universe = new PanelControlsUniverse(message_manager);
 
 	public static PanelControlsSelectAdvanced panel_edit_select_advanced = new PanelControlsSelectAdvanced(
 			message_manager, new_message_manager);
@@ -541,7 +541,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		label_show_gen = new Label("0       ", Label.LEFT);
 		panel_generation.add(label_show_gen);
 
-		FrEnd.panel_edit_universe.reflectMaxSpeed();
+		FrEnd.panel_universe.reflectMaxSpeed();
 
 		setLayout(new BorderLayout(0, 0));
 
@@ -561,7 +561,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 		loadInitialModel();
 
-		ContextMananger.getNodeManager().initialSetUp();
+		ContextManager.getNodeManager().initialSetUp();
 
 		reflectValuesInGUIAfterPropertyEditing();
 
@@ -742,7 +742,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 	}
 
 	public static void postCleanup() {
-		new PostModification(ContextMananger.getNodeManager()).cleanup();
+		new PostModification(ContextManager.getNodeManager()).cleanup();
 		reflectAllValuesInGUIAfterSeriousEditing();
 	}
 
@@ -757,9 +757,9 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 	}
 
 	private static void reflectElementNumbersInGUI() {
-		final int n_nodes = ContextMananger.getNodeManager().element.size();
-		final int n_links = ContextMananger.getLinkManager().element.size();
-		final int n_faces = ContextMananger.getFaceManager().element.size();
+		final int n_nodes = ContextManager.getNodeManager().element.size();
+		final int n_links = ContextManager.getLinkManager().element.size();
+		final int n_faces = ContextManager.getFaceManager().element.size();
 
 		panel_controls_statistics.updateGUIToReflectSelectionChange();
 
@@ -773,12 +773,12 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		panel_edit_properties_scalars.reflectElasticity();
 		panel_edit_properties_scalars.reflectStiffness();
 
-		FrEnd.panel_edit_universe.reflectMaxSpeed();
-		FrEnd.panel_edit_universe.reflectImpact();
-		FrEnd.panel_edit_universe.reflectViscocity();
-		FrEnd.panel_edit_universe.reflectGravity();
-		FrEnd.panel_edit_universe.reflectTemperature();
-		FrEnd.panel_edit_universe.reflect3D();
+		FrEnd.panel_universe.reflectMaxSpeed();
+		FrEnd.panel_universe.reflectImpact();
+		FrEnd.panel_universe.reflectViscocity();
+		FrEnd.panel_universe.reflectGravity();
+		FrEnd.panel_universe.reflectTemperature();
+		FrEnd.panel_universe.reflect3D();
 
 		FrEnd.panel_controls_statistics.updateGUIToReflectPropertiesChange();
 
@@ -978,49 +978,49 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 	}
 
 	public static void prepareToModifyNodeTypes() {
-		final PrepareToModifyNodeTypes prepare = new PrepareToModifyNodeTypes(ContextMananger.getNodeManager());
+		final PrepareToModifyNodeTypes prepare = new PrepareToModifyNodeTypes(ContextManager.getNodeManager());
 		prepare.prepare();
 		RendererDelegator.repaint_some_objects = true;
 	}
 
 	public static void prepareToModifyLinkTypes() {
-		final PrepareToModifyLinkTypes prepare = new PrepareToModifyLinkTypes(ContextMananger.getLinkManager());
+		final PrepareToModifyLinkTypes prepare = new PrepareToModifyLinkTypes(ContextManager.getLinkManager());
 		prepare.prepare();
 		RendererDelegator.repaint_some_objects = true;
 	}
 
 	public static void prepareToModifyFaceTypes() {
-		final PrepareToModifyFaceTypes prepare = new PrepareToModifyFaceTypes(ContextMananger.getFaceManager());
+		final PrepareToModifyFaceTypes prepare = new PrepareToModifyFaceTypes(ContextManager.getFaceManager());
 		prepare.prepare();
 		RendererDelegator.repaint_some_objects = true;
 	}
 
 	static void prepareToModifyNodeClazzes() {
-		final PrepareToModifyNodeClazzes prepare = new PrepareToModifyNodeClazzes(ContextMananger.getNodeManager());
+		final PrepareToModifyNodeClazzes prepare = new PrepareToModifyNodeClazzes(ContextManager.getNodeManager());
 		prepare.prepare();
 		RendererDelegator.repaint_some_objects = true;
 	}
 
 	static void prepareToModifyLinkClazzes() {
-		final PrepareToModifyLinkClazzes prepare = new PrepareToModifyLinkClazzes(ContextMananger.getNodeManager());
+		final PrepareToModifyLinkClazzes prepare = new PrepareToModifyLinkClazzes(ContextManager.getNodeManager());
 		prepare.prepare();
 		RendererDelegator.repaint_some_objects = true;
 	}
 
 	static void prepareToModifyPolygonClazzes() {
-		final PrepareToModifyFaceClazzes prepare = new PrepareToModifyFaceClazzes(ContextMananger.getNodeManager());
+		final PrepareToModifyFaceClazzes prepare = new PrepareToModifyFaceClazzes(ContextManager.getNodeManager());
 		prepare.prepare();
 		RendererDelegator.repaint_some_objects = true;
 	}
 
 	public static void killAllLinks(Node e) {
-		ContextMananger.getLinkManager().killAllLinks(e);
+		ContextManager.getLinkManager().killAllLinks(e);
 
 		postCleanup();
 	}
 
 	public static void killLastLink(Node e) {
-		ContextMananger.getLinkManager().killLastLink(e);
+		ContextManager.getLinkManager().killLastLink(e);
 
 		postCleanup();
 	}
@@ -1035,7 +1035,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 				final List<Node> list_of_nodes = getallNodesInContactWithSelection();
 
-				ContextMananger.getNodeManager().moveNodesInList(list_of_nodes, d_x, d_y);
+				ContextManager.getNodeManager().moveNodesInList(list_of_nodes, d_x, d_y);
 				RendererDelegator.repaint_some_objects = true;
 			}
 		}
@@ -1044,8 +1044,8 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 	private static List<Node> getallNodesInContactWithSelection() {
 		List<Node> list_of_nodes;
 		List<Node> list_of_nodes_2;
-		list_of_nodes = ContextMananger.getNodeManager().getListOfSelectedNodes();
-		list_of_nodes_2 = ContextMananger.getLinkManager().getListOfNodesOnSelectedLinks();
+		list_of_nodes = ContextManager.getNodeManager().getListOfSelectedNodes();
+		list_of_nodes_2 = ContextManager.getLinkManager().getListOfNodesOnSelectedLinks();
 
 		addElementsOfList2ToList1(list_of_nodes, list_of_nodes_2);
 

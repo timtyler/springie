@@ -4,10 +4,10 @@ import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.NodeManager;
 
-public final class ContextMananger {
+public final class ContextManager {
   public static NodeManager node_manager;
 
-  private ContextMananger() {
+  private ContextManager() {
     //...
   }
   //public static LinkManager link_manager;
@@ -29,6 +29,6 @@ public final class ContextMananger {
   }
 
   public static void setNodeManager(NodeManager node_manager) {
-    ContextMananger.node_manager = node_manager;
+    ContextManager.node_manager = node_manager;
   }
 }

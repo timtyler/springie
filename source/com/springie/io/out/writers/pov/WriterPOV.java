@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
@@ -604,7 +604,7 @@ public class WriterPOV {
 	}
 
 	private void outputNodes(Clazz clazz, int n_clazz, int n_type) {
-		final NodeType node_type = (NodeType) ContextMananger.getNodeManager().node_type_factory.array
+		final NodeType node_type = (NodeType) ContextManager.getNodeManager().node_type_factory.array
 				.get(n_type);
 		final int number_of_nodes = this.node_manager.element.size();
 		for (int n = 0; n < number_of_nodes; n++) {

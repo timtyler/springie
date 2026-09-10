@@ -6,7 +6,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.base.BaseElement;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.electrostatics.ElectrostaticRepulsion;
@@ -94,7 +94,7 @@ public class WriterSpr {
 			uni.add(new XMLWriterAttribute("dimensions", "2"));
 		}
 
-		final ElectrostaticRepulsion electrostatic = ContextMananger.getNodeManager().electrostatic;
+		final ElectrostaticRepulsion electrostatic = ContextManager.getNodeManager().electrostatic;
 		if (electrostatic.charge_active) {
 			final String c_b = "" + electrostatic.charge_active;
 			uni.add(new XMLWriterAttribute("charge_active", c_b));
@@ -176,10 +176,10 @@ public class WriterSpr {
 	}
 
 	private boolean outputNodeTypes(final XMLWriterTagPair uni, Clazz clazz) {
-		final int node_type_number = ContextMananger.getNodeManager().node_type_factory.array.size();
+		final int node_type_number = ContextManager.getNodeManager().node_type_factory.array.size();
 		boolean some = false;
 		for (int nt = 0; nt < node_type_number; nt++) {
-			final NodeType node_type = (NodeType) ContextMananger.getNodeManager().node_type_factory.array
+			final NodeType node_type = (NodeType) ContextManager.getNodeManager().node_type_factory.array
 					.get(nt);
 			final XMLWriterTagPair tag_type = new XMLWriterTagPair("type");
 			tag_type.add(new XMLWriterAttribute("radius", "" + ((node_type.radius / scale_factor))));
@@ -196,7 +196,7 @@ public class WriterSpr {
 				tag_type.add(new XMLWriterAttribute("fixed", "true"));
 			}
 
-			final boolean any = outputNodes(ContextMananger.getNodeManager(), clazz, node_type, tag_type);
+			final boolean any = outputNodes(ContextManager.getNodeManager(), clazz, node_type, tag_type);
 
 			if (any) {
 				uni.add(tag_type);
@@ -223,7 +223,7 @@ public class WriterSpr {
 	}
 
 	private boolean outputLinkTypes(final XMLWriterTagPair uni, Clazz clazz) {
-		final LinkManager link_manager = ContextMananger.getLinkManager();
+		final LinkManager link_manager = ContextManager.getLinkManager();
 		final int link_type_number = link_manager.link_type_factory.array.size();
 		boolean some = false;
 
@@ -280,7 +280,7 @@ public class WriterSpr {
 
 	private boolean outputFaceTypes(final XMLWriterTagPair uni, Clazz clazz) {
 		boolean some = false;
-		final FaceManager face_manager = ContextMananger.getFaceManager();
+		final FaceManager face_manager = ContextManager.getFaceManager();
 		final int type_number = face_manager.face_type_factory.array.size();
 
 		for (int t = 0; t < type_number; t++) {

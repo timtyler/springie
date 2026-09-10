@@ -1,7 +1,7 @@
 package com.springie.modification;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.metrics.AverageChargeGetter;
@@ -29,7 +29,7 @@ public final class DomeRelatedChangeDelegator {
 
   public static void equaliseLinkLengths() {
     LinkLengthEqualisation tool;
-    tool = new LinkLengthEqualisation(ContextMananger.getNodeManager());
+    tool = new LinkLengthEqualisation(ContextManager.getNodeManager());
     tool.equalise();
   }
 
@@ -69,10 +69,10 @@ public final class DomeRelatedChangeDelegator {
   private static void changeLengthBy(int delta_px) {
     FrEnd.prepareToModifyLinkTypes();
     final int average_px = new AverageLengthGetter(
-        ContextMananger.getNodeManager()).getAverage() >> Coords.shift;
+        ContextManager.getNodeManager()).getAverage() >> Coords.shift;
     final int new_px = clamp(average_px + delta_px, LENGTH_MIN_PX,
         LENGTH_MAX_PX);
-    ContextMananger.getLinkManager()
+    ContextManager.getLinkManager()
         .setLengthOfSelected(new_px << Coords.shift);
   }
 
@@ -87,11 +87,11 @@ public final class DomeRelatedChangeDelegator {
   private static void changeRadiusBy(int delta) {
     FrEnd.prepareToModifyAllTypes();
     final int average = new AverageRadiusGetter(
-        ContextMananger.getNodeManager()).getAverage() >> RADIUS_SHIFT;
+        ContextManager.getNodeManager()).getAverage() >> RADIUS_SHIFT;
     final int new_value = clamp(average + delta, RADIUS_MIN, RADIUS_MAX)
         << RADIUS_SHIFT;
-    ContextMananger.getLinkManager().setRadiusOfSelected(new_value);
-    ContextMananger.getNodeManager().setRadiusOfSelected(new_value);
+    ContextManager.getLinkManager().setRadiusOfSelected(new_value);
+    ContextManager.getNodeManager().setRadiusOfSelected(new_value);
     RendererDelegator.repaintAll();
   }
 
@@ -106,8 +106,8 @@ public final class DomeRelatedChangeDelegator {
   private static void changeChargeBy(int delta) {
     FrEnd.prepareToModifyNodeTypes();
     final int average = new AverageChargeGetter(
-        ContextMananger.getNodeManager()).getAverage();
-    ContextMananger.getNodeManager()
+        ContextManager.getNodeManager()).getAverage();
+    ContextManager.getNodeManager()
         .setChargeOfSelected(clamp(average + delta, CHARGE_MIN, CHARGE_MAX));
     FrEnd.postCleanup();
   }
@@ -123,8 +123,8 @@ public final class DomeRelatedChangeDelegator {
   private static void changeElasticityBy(int delta) {
     FrEnd.prepareToModifyLinkTypes();
     final int average = new AverageElasticityGetter(
-        ContextMananger.getNodeManager()).getAverage();
-    ContextMananger.getLinkManager().setElasticityOfSelected(
+        ContextManager.getNodeManager()).getAverage();
+    ContextManager.getLinkManager().setElasticityOfSelected(
         clamp(average + delta, ELASTICITY_MIN, ELASTICITY_MAX));
   }
 
@@ -139,34 +139,34 @@ public final class DomeRelatedChangeDelegator {
   private static void changeDampingBy(int delta) {
     FrEnd.prepareToModifyLinkTypes();
     final int average = new AverageStiffnessGetter(
-        ContextMananger.getNodeManager()).getAverage();
-    ContextMananger.getLinkManager().setStiffnessOfSelected(
+        ContextManager.getNodeManager()).getAverage();
+    ContextManager.getLinkManager().setStiffnessOfSelected(
         clamp(average + delta, DAMPING_MIN, DAMPING_MAX));
   }
 
   public static void resetLinkLengths() {
-    new LinkResetter(ContextMananger.getNodeManager()).reset();
+    new LinkResetter(ContextManager.getNodeManager()).reset();
   }
 
   public static void hide() {
-    new FlagControllerHidden(ContextMananger.getNodeManager())
+    new FlagControllerHidden(ContextManager.getNodeManager())
         .hide(FrEnd.panel_edit_properties_flags.checkbox_hidden.getState());
     FrEnd.postCleanup();
   }
 
   public static void fix() {
-    new FlagControllerFixed(ContextMananger.getNodeManager())
+    new FlagControllerFixed(ContextManager.getNodeManager())
         .fix(FrEnd.panel_edit_properties_flags.checkbox_pinned.getState());
   }
 
   public static void rope() {
-    new FlagControllerRope(ContextMananger.getNodeManager())
+    new FlagControllerRope(ContextManager.getNodeManager())
         .rope(FrEnd.panel_edit_properties_flags.checkbox_compression.getState(), FrEnd.panel_edit_properties_flags.checkbox_tension.getState());
     FrEnd.postCleanup();
   }
 
   public static void disable() {
-    new FlagControllerDisabled(ContextMananger.getNodeManager())
+    new FlagControllerDisabled(ContextManager.getNodeManager())
         .disable(FrEnd.panel_edit_properties_flags.checkbox_disabled.getState());
     FrEnd.postCleanup();
   }

@@ -5,7 +5,7 @@ package com.springie.gui.gestures;
 import com.springie.FrEnd;
 import com.springie.constants.Actions;
 import com.springie.constants.ToolTypes;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeType;
@@ -128,7 +128,7 @@ public class PerformActions {
 	}
 
 	void doScale(int x, int y) {
-		FrEnd.scale_manager.initialise(ContextMananger.getNodeManager(), x, y);
+		FrEnd.scale_manager.initialise(ContextManager.getNodeManager(), x, y);
 	}
 
 	void doDiet(int x, int y) {
@@ -136,23 +136,23 @@ public class PerformActions {
 	}
 
 	void doFreeze(int x, int y) {
-		final Node dragged_node = ContextMananger.getNodeManager().isThereOne(x, y);
+		final Node dragged_node = ContextManager.getNodeManager().isThereOne(x, y);
 		if (dragged_node != null) {
 			dragged_node.type.pinned = true;
 		}
 	}
 
 	void doMelt(int x, int y) {
-		final Node dragged_node = ContextMananger.getNodeManager().isThereOne(x, y);
+		final Node dragged_node = ContextManager.getNodeManager().isThereOne(x, y);
 		if (dragged_node != null) {
 			dragged_node.type.pinned = false;
 		}
 	}
 
 	void doSetHidden(int x, int y, boolean hidden) {
-		final Node dragged_node = ContextMananger.getNodeManager().isThereOne(x, y);
+		final Node dragged_node = ContextManager.getNodeManager().isThereOne(x, y);
 		if (dragged_node != null) {
-			NodeType new_type = ContextMananger.getNodeManager().node_type_factory.getNew();
+			NodeType new_type = ContextManager.getNodeManager().node_type_factory.getNew();
 			new_type.makeEqualTo(dragged_node.type);
 			new_type.hidden = hidden;
 
@@ -161,8 +161,8 @@ public class PerformActions {
 	}
 
 	void doUnlink(int x, int y) {
-		Node dragged_node = ContextMananger.getNodeManager().isThereOne(x, y);
-		dragged_node = ContextMananger.getNodeManager().isThereOne(x, y);
+		Node dragged_node = ContextManager.getNodeManager().isThereOne(x, y);
+		dragged_node = ContextManager.getNodeManager().isThereOne(x, y);
 		if (dragged_node != null) {
 			FrEnd.killLastLink(dragged_node);
 		}
@@ -171,8 +171,8 @@ public class PerformActions {
 	}
 
 	void doUnlinkAll(int x, int y) {
-		Node dragged_node = ContextMananger.getNodeManager().isThereOne(x, y);
-		dragged_node = ContextMananger.getNodeManager().isThereOne(x, y);
+		Node dragged_node = ContextManager.getNodeManager().isThereOne(x, y);
+		dragged_node = ContextManager.getNodeManager().isThereOne(x, y);
 		if (dragged_node != null) {
 			FrEnd.killAllLinks(dragged_node);
 		}
@@ -183,16 +183,16 @@ public class PerformActions {
 	void doClone(int x, int y) {
 		Node selected_node;
 		if (FrEnd.button_virginity) {
-			selected_node = ContextMananger.getNodeManager().getSelectedNode();
+			selected_node = ContextManager.getNodeManager().getSelectedNode();
 
 			if (selected_node != null) {
-				final NodeType type = ContextMananger.getNodeManager().node_type_factory.getNew();
+				final NodeType type = ContextManager.getNodeManager().node_type_factory.getNew();
 				type.makeEqualTo(selected_node.type);
 				type.selected = false;
 
 				final Point3D pos = new Point3D(x - selected_node.type.radius, y - selected_node.type.radius, 0);
 
-				ContextMananger.getNodeManager().addNewAgent(pos, selected_node.clazz, type);
+				ContextManager.getNodeManager().addNewAgent(pos, selected_node.clazz, type);
 			}
 		}
 
@@ -204,10 +204,10 @@ public class PerformActions {
 		int nodeCount = 28;
 		int radius = (int)(circle_radius * Math.PI / nodeCount);
 		int color = 0xFFFFFFFF;
-		Clazz clazz = ContextMananger.getNodeManager().clazz_factory.getNew(color);
+		Clazz clazz = ContextManager.getNodeManager().clazz_factory.getNew(color);
 		
 		for (int n = 0; n < nodeCount; n++) {
-			final NodeType type = ContextMananger.getNodeManager().node_type_factory.getNew();
+			final NodeType type = ContextManager.getNodeManager().node_type_factory.getNew();
 			type.log_mass = 0;
 			type.selected = false;
 			type.hidden = false;
@@ -219,7 +219,7 @@ public class PerformActions {
 			int dx = (int)(circle_radius * Math.sin(2 * Math.PI * n/ nodeCount));
 			int dy = (int)(circle_radius * Math.cos(2 * Math.PI * n / nodeCount));
 			final Point3D pos = new Point3D(x + dx, y + dy, Node.DEFAULT_2D_DEPTH);
-			ContextMananger.getNodeManager().addNewAgent(pos, clazz, type);
+			ContextManager.getNodeManager().addNewAgent(pos, clazz, type);
 		}
 		FrEnd.postCleanup();
 	}
@@ -287,11 +287,11 @@ public class PerformActions {
 	}
 
 	private void kill_a_cell(int x, int y) {
-		final Node temp_node = ContextMananger.getNodeManager().isThereOne(x, y);
+		final Node temp_node = ContextManager.getNodeManager().isThereOne(x, y);
 		if (temp_node != null) {
 			switch (FrEnd.killtype) {
 			case Actions.KILL:
-				final PrepareToModifyNodeTypes prepare = new PrepareToModifyNodeTypes(ContextMananger.getNodeManager());
+				final PrepareToModifyNodeTypes prepare = new PrepareToModifyNodeTypes(ContextManager.getNodeManager());
 				prepare.prepare();
 
 				temp_node.simplyKill();

@@ -7,7 +7,7 @@ import java.util.Random;
 import java.util.ArrayList;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.render.RendererDelegator;
 
 public class RendererBinManager {
@@ -152,7 +152,7 @@ public class RendererBinManager {
   }
 
   public void render(RendererBinManager bins_last, Graphics graphics) {
-    ContextMananger.getNodeManager().depth_range = null;
+    ContextManager.getNodeManager().depth_range = null;
 
     final int block_size = divisor - getMargin();
 

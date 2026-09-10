@@ -2,7 +2,7 @@
 
 package com.springie.explosions.fragments;
 
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.nodes.Node;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
@@ -56,7 +56,7 @@ public class LineFragment {
     this.dx = idx;
     this.dy = idy;
 
-    this.direction = (ContextMananger.getNodeManager().arcTangent(jx2, jy2)) << 8;
+    this.direction = (ContextManager.getNodeManager().arcTangent(jx2, jy2)) << 8;
 
     this.angular_velocity = rnd.nextInt(rotspeed) - (rotspeed >> 1);
     if ((this.angular_velocity < 256) && (this.angular_velocity >= 0)) {
@@ -82,7 +82,7 @@ public class LineFragment {
     this.dx = idx;
     this.dy = idy;
 
-    this.direction = (ContextMananger.getNodeManager().arcTangent(jx2, jy2)) << 8;
+    this.direction = (ContextManager.getNodeManager().arcTangent(jx2, jy2)) << 8;
 
     this.angular_velocity = rnd.nextInt(rotspeed) - (rotspeed >> 1);
     if ((this.angular_velocity < 128) && (this.angular_velocity > 0)) {

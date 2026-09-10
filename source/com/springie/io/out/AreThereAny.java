@@ -1,6 +1,6 @@
 package com.springie.io.out;
 
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
@@ -14,7 +14,7 @@ import com.springie.elements.nodes.NodeType;
 
 public class AreThereAny {
   public boolean nodes(Clazz clazz) {
-    final NodeManager manager = ContextMananger.getNodeManager();
+    final NodeManager manager = ContextManager.getNodeManager();
     final int number = manager.element.size();
 
     for (int i = number; --i >= 0;) {
@@ -27,7 +27,7 @@ public class AreThereAny {
   }
 
   public boolean links(Clazz clazz) {
-    final LinkManager manager = ContextMananger.getLinkManager();
+    final LinkManager manager = ContextManager.getLinkManager();
     final int number = manager.element.size();
 
     for (int i = number; --i >= 0;) {
@@ -40,7 +40,7 @@ public class AreThereAny {
   }
 
   public boolean polygons(Clazz clazz) {
-    final FaceManager manager = ContextMananger.getFaceManager();
+    final FaceManager manager = ContextManager.getFaceManager();
     final int number = manager.element.size();
 
     for (int i = number; --i >= 0;) {
@@ -53,7 +53,7 @@ public class AreThereAny {
   }
 
   public boolean nodes(Clazz clazz, NodeType type) {
-    final NodeManager manager = ContextMananger.getNodeManager();
+    final NodeManager manager = ContextManager.getNodeManager();
     final int number = manager.element.size();
 
     for (int i = number; --i >= 0;) {
@@ -68,7 +68,7 @@ public class AreThereAny {
   }
 
   public boolean links(Clazz clazz, LinkType type) {
-    final LinkManager manager = ContextMananger.getLinkManager();
+    final LinkManager manager = ContextManager.getLinkManager();
     final int number = manager.element.size();
 
     for (int i = number; --i >= 0;) {
@@ -83,7 +83,7 @@ public class AreThereAny {
   }
 
   public boolean polygons(Clazz clazz, FaceType type) {
-    final FaceManager manager = ContextMananger.getFaceManager();
+    final FaceManager manager = ContextManager.getFaceManager();
     final int number = manager.element.size();
 
     for (int i = number; --i >= 0;) {

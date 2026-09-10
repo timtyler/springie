@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.gui.frames.FrameMain;
 import com.springie.io.out.writers.eig.WriterEIG;
 import com.springie.io.out.writers.fdl.WriterFDL;
@@ -204,7 +204,7 @@ public class MenuBarTop extends MenuBar {
     final String path = fd.getDirectory();
     final String leaf = fd.getFile();
     if (isAcceptableFileName(leaf)) {
-      new WriterWRL(ContextMananger.getNodeManager()).write(path + leaf);
+      new WriterWRL(ContextManager.getNodeManager()).write(path + leaf);
     }
   }
 
@@ -227,7 +227,7 @@ public class MenuBarTop extends MenuBar {
     final String leaf_name = fd.getFile();
     if (isAcceptableFileName(leaf_name)) {
       final String file_path = path + leaf_name;
-      new WriterSpr(ContextMananger.getNodeManager()).write(file_path);
+      new WriterSpr(ContextManager.getNodeManager()).write(file_path);
       FrEnd.setFilePath("file://" + file_path);
     }
   }
@@ -251,7 +251,7 @@ public class MenuBarTop extends MenuBar {
     final String leaf_name = fd.getFile();
     if (isAcceptableFileName(leaf_name)) {
       final String file_path = path + leaf_name;
-      new WriterFDL(ContextMananger.getNodeManager()).write(file_path);
+      new WriterFDL(ContextManager.getNodeManager()).write(file_path);
       FrEnd.setFilePath("file://" + file_path);
     }
   }
@@ -275,7 +275,7 @@ public class MenuBarTop extends MenuBar {
     final String leaf_name = fd.getFile();
     if (isAcceptableFileName(leaf_name)) {
       final String file_path = path + leaf_name;
-      new WriterOFF(ContextMananger.getNodeManager()).write(file_path);
+      new WriterOFF(ContextManager.getNodeManager()).write(file_path);
       FrEnd.setFilePath("file://" + file_path);
     }
   }
@@ -299,7 +299,7 @@ public class MenuBarTop extends MenuBar {
     final String leaf_name = fd.getFile();
     if (isAcceptableFileName(leaf_name)) {
       final String file_path = path + leaf_name;
-      new WriterEIG(ContextMananger.getNodeManager()).write(file_path);
+      new WriterEIG(ContextManager.getNodeManager()).write(file_path);
       FrEnd.setFilePath("file://" + file_path);
     }
   }
@@ -323,7 +323,7 @@ public class MenuBarTop extends MenuBar {
     final String leaf_name = fd.getFile();
     if (isAcceptableFileName(leaf_name)) {
       final String file_path = path + leaf_name;
-      new WriterPOV(ContextMananger.getNodeManager()).write(file_path);
+      new WriterPOV(ContextManager.getNodeManager()).write(file_path);
     }
   }
 

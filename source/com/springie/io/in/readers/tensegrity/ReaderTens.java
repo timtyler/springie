@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import com.springie.FrEnd;
 import com.springie.composite.Composite;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceType;
@@ -305,7 +305,7 @@ public final class ReaderTens {
                     break;
 
                   case Instructions.CO:
-                    ContextMananger.getNodeManager().electrostatic.charge_active = temp == 1;
+                    ContextManager.getNodeManager().electrostatic.charge_active = temp == 1;
                     break;
 
                   case Instructions.DIM:
@@ -313,7 +313,7 @@ public final class ReaderTens {
                     break;
 
                   // case Instructions.CS:
-                  // ContextMananger.getNodeManager().electrostatic.charge_strength = temp;
+                  // ContextManager.getNodeManager().electrostatic.charge_strength = temp;
                   // break;
 
                   default:
@@ -530,7 +530,7 @@ public final class ReaderTens {
       }
     } while (++i < index);
 
-    if (node_manager == ContextMananger.getNodeManager()) {
+    if (node_manager == ContextManager.getNodeManager()) {
       FrEnd.reflectValuesInGUIAfterPropertyEditing();
     }
   }
@@ -538,7 +538,7 @@ public final class ReaderTens {
   //?
   private static void setUpUniverseProperties() {
     FrEnd.three_d = true;
-    ContextMananger.getNodeManager().electrostatic.charge_active = true;
+    ContextManager.getNodeManager().electrostatic.charge_active = true;
     World.gravity_active = false;
     World.gravity_strength = 10;
   }

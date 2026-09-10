@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.base.BaseElementManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.lists.ListOfIntegers;
@@ -275,8 +275,8 @@ public class LinkManager extends BaseElementManager<Link> {
   // if (!FrEnd.paused) {
   // if (!FrEnd.links_disabled) {
   // exerciseTheLinks();
-  // ContextMananger.getNodeManager().electrostatic.repel();
-  // ContextMananger.getNodeManager().applyViscousDrag();
+  // ContextManager.getNodeManager().electrostatic.repel();
+  // ContextManager.getNodeManager().applyViscousDrag();
   // }
   // }
   // }
@@ -327,7 +327,7 @@ public class LinkManager extends BaseElementManager<Link> {
     int min = Integer.MAX_VALUE;
     Link best = null;
     final int n_o_l = this.element.size();
-    final int n_o_l_2 = ContextMananger.getNodeManager().renderer.renderer_link.array.length;
+    final int n_o_l_2 = ContextManager.getNodeManager().renderer.renderer_link.array.length;
 
     if (n_o_l != n_o_l_2) {
       return null;
@@ -335,7 +335,7 @@ public class LinkManager extends BaseElementManager<Link> {
 
     for (int temp = n_o_l; --temp >= 0;) {
       final Link l = (Link) this.element.get(temp);
-      final CachedLink cl = ContextMananger.getNodeManager().renderer.renderer_link.array[temp];
+      final CachedLink cl = ContextManager.getNodeManager().renderer.renderer_link.array[temp];
       // return name;t;// this.element.get(temp);
       if (!l.type.hidden || FrEnd.render_hidden_links) {
         for (int i = 0; i < cl.preserved_node_start.length - 1; i++) {

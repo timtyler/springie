@@ -3,7 +3,7 @@
 package com.springie.gui.gestures;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
@@ -29,7 +29,7 @@ public class DietManager {
       this.link_radius = new TransferUtilities().transferLinkRadii();
       this.node_radius = new TransferUtilities().transferNodeRadii();
 
-      this.centre = ContextMananger.getNodeManager().getCentre();
+      this.centre = ContextManager.getNodeManager().getCentre();
       //FrEnd.forces_disabled_during_gesture = true;
     } else {
       performScale(x, y);
@@ -50,17 +50,17 @@ public class DietManager {
   }
 
   private void rescaleNodes(final float scale_factor) {
-    final int n = ContextMananger.getNodeManager().element.size();
+    final int n = ContextManager.getNodeManager().element.size();
 
     for (int i = n; --i >= 0;) {
-      final Node node = (Node) ContextMananger.getNodeManager().element.get(i);
+      final Node node = (Node) ContextManager.getNodeManager().element.get(i);
 
       node.type.radius = (int) (this.node_radius[i] * scale_factor);
     }
   }
 
   private void rescaleLinks(final float scale_factor) {
-    final LinkManager link_manager = ContextMananger.getLinkManager();
+    final LinkManager link_manager = ContextManager.getLinkManager();
     final int n_lk = link_manager.element.size();
     for (int i = n_lk; --i >= 0;) {
       rescaleLink(scale_factor, link_manager, i);

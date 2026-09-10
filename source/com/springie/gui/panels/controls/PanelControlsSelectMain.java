@@ -12,7 +12,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextMananger;
+import com.springie.context.ContextManager;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TTChoice;
 import com.springie.gui.panels.UpdateEnabledComponents;
@@ -245,13 +245,13 @@ public class PanelControlsSelectMain {
             FrEnd.prepareToModifyNodeTypes();
             switch (PanelControlsSelectMain.this.select_type) {
               case 0:
-                ContextMananger.getNodeManager().selectAll();
+                ContextManager.getNodeManager().selectAll();
                 break;
               case 1:
-                ContextMananger.getNodeManager().deselectAll();
+                ContextManager.getNodeManager().deselectAll();
                 break;
               case 2:
-                ContextMananger.getNodeManager().selectionInvert();
+                ContextManager.getNodeManager().selectionInvert();
                 break;
               default:
                 break;
@@ -274,13 +274,13 @@ public class PanelControlsSelectMain {
             FrEnd.prepareToModifyLinkTypes();
             switch (PanelControlsSelectMain.this.select_type) {
               case 0:
-                ContextMananger.getLinkManager().selectAll();
+                ContextManager.getLinkManager().selectAll();
                 break;
               case 1:
-                ContextMananger.getLinkManager().deselectAll();
+                ContextManager.getLinkManager().deselectAll();
                 break;
               case 2:
-                ContextMananger.getLinkManager().selectionInvert();
+                ContextManager.getLinkManager().selectionInvert();
                 break;
               default:
                 break;
@@ -302,13 +302,13 @@ public class PanelControlsSelectMain {
             FrEnd.prepareToModifyFaceTypes();
             switch (PanelControlsSelectMain.this.select_type) {
               case 0:
-                ContextMananger.getFaceManager().selectAll();
+                ContextManager.getFaceManager().selectAll();
                 break;
               case 1:
-                ContextMananger.getFaceManager().deselectAll();
+                ContextManager.getFaceManager().deselectAll();
                 break;
               case 2:
-                ContextMananger.getFaceManager().selectionInvert();
+                ContextManager.getFaceManager().selectionInvert();
                 break;
               default:
                 break;
