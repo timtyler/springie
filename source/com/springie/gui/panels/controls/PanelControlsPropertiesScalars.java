@@ -133,16 +133,21 @@ public class PanelControlsPropertiesScalars {
 
     this.panel.removeAll();
 
-    if (nodes || links) {
-      this.panel.add(panel_radius);
-    }
-    if (links) {
-      this.panel.add(panel_length);
-      this.panel.add(panel_elasticity);
-      this.panel.add(panel_damping);
-    }
-    if (nodes) {
-      this.panel.add(panel_charge);
+    if (!nodes && !links) {
+      this.panel.add(new Label("Nothing is selected. Make a selection.",
+          Label.CENTER));
+    } else {
+      if (nodes || links) {
+        this.panel.add(panel_radius);
+      }
+      if (links) {
+        this.panel.add(panel_length);
+        this.panel.add(panel_elasticity);
+        this.panel.add(panel_damping);
+      }
+      if (nodes) {
+        this.panel.add(panel_charge);
+      }
     }
 
     updateGUIToReflectSelectionChange();
