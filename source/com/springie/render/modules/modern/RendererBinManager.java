@@ -2,6 +2,7 @@
 
 package com.springie.render.modules.modern;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Random;
 import java.util.ArrayList;
@@ -29,6 +30,8 @@ public class RendererBinManager {
   static Random rnd = new Random();
 
   public static boolean show_bins;
+
+  public static boolean show_active_bins;
 
   public static int colour_modifier_filled = ColourModifier.natural;
 
@@ -232,6 +235,30 @@ public class RendererBinManager {
         }
       }
     }
+
+    drawActiveBinOutlines(graphics, block_size);
+  }
+
+  /**
+   * "Show active bins": red outline around every bin holding content this
+   * frame. Drawn on the screen graphics after the bin pixels (not baked
+   * into the cached tiles), so toggling the option needs no tile
+   * invalidation.
+   */
+  private void drawActiveBinOutlines(Graphics graphics, int block_size) {
+    if (!show_active_bins) {
+      return;
+    }
+    graphics.setClip(0, 0, 9999, 9999);
+    graphics.setColor(Color.RED);
+    for (int j = 0; j < this.number_of_bins_y; j++) {
+      for (int i = 0; i < this.number_of_bins_x; i++) {
+        if (this.array[i][j].vector.size() > 0) {
+          graphics.drawRect(getPixelsFromBinX(i), getPixelsFromBinY(j),
+              block_size - 1, block_size - 1);
+        }
+      }
+    }
   }
 
   private void renderTiled(RendererBinManager bins_last, Graphics graphics,
@@ -352,6 +379,8 @@ public class RendererBinManager {
         }
       }
     }
+
+    drawActiveBinOutlines(graphics, block_size);
   }
 
   /**

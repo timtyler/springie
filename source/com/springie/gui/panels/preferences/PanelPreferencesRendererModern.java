@@ -49,6 +49,8 @@ public class PanelPreferencesRendererModern {
 
 	private Checkbox checkbox_show_bins;
 
+	private Checkbox checkbox_show_active_bins;
+
 	private TTChoice choose_polyhedron;
 
 	private Label label_bin_size_number;
@@ -135,9 +137,23 @@ public class PanelPreferencesRendererModern {
 		});
 		panel_show_bins.add(this.checkbox_show_bins);
 
+		final Panel panel_show_active_bins = new Panel();
+		this.checkbox_show_active_bins = new Checkbox(GUIStrings.SHOW_ACTIVE_BINS,
+				RendererBinManager.show_active_bins);
+		this.checkbox_show_active_bins.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				Forget.about(e);
+				RendererBinManager.show_active_bins = ((Checkbox) e.getSource()).getState();
+				FrEnd.main_canvas.forceResize();
+			}
+		});
+		panel_show_active_bins.add(this.checkbox_show_active_bins);
+
 		this.panel_bins.add(panel_new_double_buffering);
 
 		this.panel_bins.add(panel_show_bins);
+
+		this.panel_bins.add(panel_show_active_bins);
 
 		this.panel_bins.add(panel_bin_size);
 	}
@@ -322,6 +338,10 @@ public class PanelPreferencesRendererModern {
 		// Show bins.
 		RendererBinManager.show_bins = false;
 		this.checkbox_show_bins.setState(false);
+
+		// Show active bins.
+		RendererBinManager.show_active_bins = false;
+		this.checkbox_show_active_bins.setState(false);
 
 		// Bin size.
 		RendererBinManager.divisor = 192;

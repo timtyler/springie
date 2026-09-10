@@ -135,6 +135,8 @@ public interface GUIStrings {
 
   String SHOW_BINS = "Show rendering bins";
 
+  String SHOW_ACTIVE_BINS = "Show active bins";
+
   String FACE_REVERSE = "Face mirror";
 
   String EDIT_FUSE_SELECTED_NODES = "Fuse selected nodes";
