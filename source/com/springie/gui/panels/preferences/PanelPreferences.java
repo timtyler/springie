@@ -2,8 +2,10 @@
 
 package com.springie.gui.panels.preferences;
 
+import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Checkbox;
+import java.awt.GridLayout;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,10 +45,15 @@ public class PanelPreferences {
     tab.add("Update", FrEnd.panel_preferences_update.panel);
     tab.add("I/O", FrEnd.panel_preferences_io.panel);
 
-    this.panel.add(tab);
+    this.panel.setLayout(new BorderLayout());
+    this.panel.add(tab, BorderLayout.CENTER);
+
+    // Compact strip: checkboxes on one row, the reset button on the next.
+    // (A single FlowLayout row wraps the button, and FlowLayout's preferred
+    // height ignores wrapping, so the button ended up clipped.)
+    final Panel panel_south = new Panel(new GridLayout(0, 1));
 
     final Panel panel_window = new Panel();
-
     this.checkbox_stay_on_top = new Checkbox(
         GUIStrings.CONTROL_WINDOW_STAY_ON_TOP, FrEnd.controls_stay_on_top);
     this.checkbox_stay_on_top.addItemListener(new ItemListener() {
@@ -68,8 +75,7 @@ public class PanelPreferences {
       }
     });
     panel_window.add(this.checkbox_dock_with_main);
-
-    this.panel.add(panel_window);
+    panel_south.add(panel_window);
 
     final Button button_reset = new Button(GUIStrings.RESET_PREFERENCES);
     button_reset.addActionListener(new ActionListener() {
@@ -79,7 +85,9 @@ public class PanelPreferences {
     });
     final Panel panel_reset = new Panel();
     panel_reset.add(button_reset);
-    this.panel.add(panel_reset);
+    panel_south.add(panel_reset);
+
+    this.panel.add(panel_south, BorderLayout.SOUTH);
 
     this.panel.validate();
   }
