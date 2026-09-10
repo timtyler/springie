@@ -48,14 +48,14 @@ public class ModularRendererNew implements ModularRendererBase {
     addFacesToBins(manager, mask);
 
     // do the drawing operations, offscreen if needed...
-    
+
     this.bins_current.render(this.bins_last, graphics);
 
-    // swap bin pointers
-
-    RendererBinManager bins_temp = this.bins_current;
-    this.bins_current = this.bins_last;
-    this.bins_last = bins_temp;
+    // Rotate per-bin frame state: bins_last takes this frame's vectors and
+    // rectangles for next frame's dirty comparison. The cached tiles stay on
+    // bins_current (swapping the managers would leave clean bins blitting
+    // two-frames-old tiles).
+    this.bins_current.rotateFrameState(this.bins_last);
   }
 
   private void addFacesToBins(NodeManager manager, int mask) {

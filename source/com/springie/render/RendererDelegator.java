@@ -13,6 +13,7 @@ import com.springie.gui.panels.UpdateEnabledComponents;
 import com.springie.preferences.Preferences;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.modules.modern.ModularRendererNew;
+import com.springie.render.modules.modern.RendererBinManager;
 import com.springie.utilities.random.JUR;
 import com.springie.world.WorldManager;
 
@@ -165,6 +166,11 @@ public final class RendererDelegator {
   private static void renderDragBox(Graphics graphics) {
     final DragBoxManager drag_box_manager = FrEnd.perform_actions.drag_box_manager;
     final boolean repaint = drag_box_manager.drag_box_end != null;
+
+    // The drag box erases its old rectangle with the background colour after
+    // the bins have rendered, damaging their pixels; the next frame must
+    // re-render every bin to repair it.
+    RendererBinManager.drag_box_damaged_last_frame = repaint;
 
     final RendererDragBox drag_box_renderer = ContextMananger.getNodeManager().renderer.renderer_drag_box;
     drag_box_renderer.draw(graphics, FrEnd.perform_actions.drag_box_manager);

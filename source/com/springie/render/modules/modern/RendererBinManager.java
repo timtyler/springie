@@ -34,6 +34,48 @@ public class RendererBinManager {
 
   public static int colour_modifier_wireframe = ColourModifier.darker;
 
+  // Dirty-bin skipping: only bins whose polygon content changed since last
+  // frame are re-rendered; the rest blit their cached tile. The render
+  // settings below also affect bin pixels, so any change in them marks every
+  // bin dirty. Compared field-by-field (not hashed) so a missed change can
+  // never silently corrupt the display.
+  private int last_colour_modifier_filled;
+
+  private int last_colour_modifier_wireframe;
+
+  private int last_colour_a_number;
+
+  private int last_colour_b_number;
+
+  private boolean last_redraw_deepest_first;
+
+  private boolean last_show_bins;
+
+  private boolean last_double_buffered;
+
+  private boolean render_settings_valid;
+
+  // The tile size in force when the tiles were created. show_bins changes
+  // the tile size, so the cached tiles must be dropped when it changes.
+  private int last_block_size = -1;
+
+  // Set by RendererDelegator.renderDragBox after each frame: the drag box
+  // paints background over bin pixels after the bins have rendered, so the
+  // next frame must re-render every bin to repair the damage.
+  public static boolean drag_box_damaged_last_frame;
+
+  // Adaptive comparison: when no bin has been skippable for a while, the
+  // per-bin content comparison is pure overhead, so stop doing it for a
+  // while, then probe again. Purely a heuristic; correctness never depends
+  // on it. Instance state: only bins_current.render() is ever called.
+  private int frames_without_skips;
+
+  private int comparison_cooldown;
+
+  private static final int COOLDOWN_AFTER_N_EMPTY_FRAMES = 30;
+
+  private static final int COOLDOWN_LENGTH_FRAMES = 120;
+
   ArrayList<PolygonComposite> getVector(int x, int y) {
     return this.array[x][y].vector;
   }
@@ -78,6 +120,10 @@ public class RendererBinManager {
         this.array[i][j] = new RendererBin();
       }
     }
+
+    // The cached tiles are gone, so the next render must treat every bin
+    // as dirty regardless of the settings comparison.
+    this.render_settings_valid = false;
   }
 
   void add(int x, int y, PolygonComposite triangle) {
@@ -107,14 +153,114 @@ public class RendererBinManager {
 
   public void render(RendererBinManager bins_last, Graphics graphics) {
     ContextMananger.getNodeManager().depth_range = null;
-    
+
     final int block_size = divisor - getMargin();
+
+    // The user's double-buffer preference is honoured: dirty-bin skipping
+    // only applies to the tiled (double-buffered) path, which is where it
+    // wins. With double-buffering off, bins paint directly every frame,
+    // exactly as before.
+    final boolean double_buffered = RendererDelegator.isNewDoubleBuffer();
+
+    if (double_buffered != this.last_double_buffered) {
+      // The tiling mode changed: drop all cached tiles. The tiled path
+      // rebuilds them below (every bin is forced dirty via the settings
+      // check); the direct path repaints everything every frame anyway.
+      for (int j = 0; j < this.number_of_bins_y; j++) {
+        for (int i = 0; i < this.number_of_bins_x; i++) {
+          this.array[i][j].image = null;
+        }
+      }
+    }
+
+    if (double_buffered) {
+      renderTiled(bins_last, graphics, block_size);
+    } else {
+      renderDirect(bins_last, graphics, block_size);
+    }
+
+    rememberRenderSettings(double_buffered);
+  }
+
+  /**
+   * Direct painting path for when the double-buffer preference is off:
+   * no tiles, no skipping. Behaviour is the pre-dirty-bin behaviour.
+   */
+  private void renderDirect(RendererBinManager bins_last, Graphics graphics,
+      int block_size) {
+    final RectangleInt potential = new RectangleInt(0, 0, 0, 0);
+
+    for (int j = 0; j < this.number_of_bins_y; j++) {
+      for (int i = 0; i < this.number_of_bins_x; i++) {
+        final RendererBin bin = this.array[i][j];
+        final ArrayList<PolygonComposite> v_this = bin.vector;
+        final int size = v_this.size();
+
+        final RendererBin last_bin = bins_last.array[i][j];
+        final int size_last = last_bin.vector.size();
+
+        if (size_last > 0 || size > 0) {
+          potential.min_x = getPixelsFromBinX(i);
+          potential.min_y = getPixelsFromBinY(j);
+          potential.max_x = potential.min_x + block_size;
+          potential.max_y = potential.min_y + block_size;
+
+          bin.setUpActual(potential);
+          bin.union.setToUnion(bin.actual, last_bin.actual);
+
+          // No tiles in the direct path (any stale ones were dropped in
+          // render() when the mode changed).
+          bin.image = null;
+
+          if (size > 0) {
+            if (size_last > 0) {
+              doScrubbing(graphics, potential, bin);
+            }
+
+            getSortedNodeDepthIndex(v_this, FrEnd.redraw_deepest_first);
+
+            graphics.setClip(potential.min_x, potential.min_y, block_size,
+                block_size);
+
+            for (int c = size; --c >= 0;) {
+              final int index = this.node_depth_index[c];
+              final PolygonComposite composite = v_this.get(index);
+
+              renderThePolygon(graphics, composite);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private void renderTiled(RendererBinManager bins_last, Graphics graphics,
+      int block_size) {
+
+    // The tile size changed (show_bins toggled): the cached tiles are the
+    // wrong size, so drop them. They are rebuilt below as bins go dirty.
+    if (block_size != this.last_block_size) {
+      for (int j = 0; j < this.number_of_bins_y; j++) {
+        for (int i = 0; i < this.number_of_bins_x; i++) {
+          this.array[i][j].image = null;
+        }
+      }
+      this.last_block_size = block_size;
+    }
 
     final RectangleInt potential = new RectangleInt(0, 0, 0, 0);
 
-    // Hoisted out of the per-bin loop: this is a HashMap lookup on the
-    // preferences map, and was costing ~16% of render-thread CPU.
-    final boolean double_buffered = RendererDelegator.isNewDoubleBuffer();
+    // Dirty-bin skipping: only bins whose polygon content changed since last
+    // frame are re-rendered into their cached tile; every tile (dirty or
+    // not) is blitted below, so exposure damage self-heals on the next
+    // frame without any explicit invalidation.
+    if (comparison_cooldown > 0) {
+      comparison_cooldown--;
+    }
+    final boolean force_all_dirty = comparison_cooldown > 0
+        || drag_box_damaged_last_frame || renderSettingsChanged(true);
+
+    int skipped_this_frame = 0;
 
     for (int j = 0; j < this.number_of_bins_y; j++) {
       for (int i = 0; i < this.number_of_bins_x; i++) {
@@ -126,62 +272,69 @@ public class RendererBinManager {
         final ArrayList<PolygonComposite> v_last = last_bin.vector;
         final int size_last = v_last.size();
 
-        final boolean size_last_gt_0 = size_last > 0;
-        final boolean size_gt_0 = size > 0;
+        if (size == 0 && size_last == 0) {
+          continue;
+        }
 
-        if (size_last_gt_0 || size_gt_0) {
-          potential.min_x = getPixelsFromBinX(i);
-          potential.min_y = getPixelsFromBinY(j);
-          potential.max_x = potential.min_x + block_size;
-          potential.max_y = potential.min_y + block_size;
+        potential.min_x = getPixelsFromBinX(i);
+        potential.min_y = getPixelsFromBinY(j);
+        potential.max_x = potential.min_x + block_size;
+        potential.max_y = potential.min_y + block_size;
 
-          bin.setUpActual(potential);
-          bin.union.setToUnion(bin.actual, last_bin.actual);
+        bin.setUpActual(potential);
+        bin.union.setToUnion(bin.actual, last_bin.actual);
 
-          Graphics graphics_paint = null;
+        final boolean dirty = force_all_dirty || !binsEqual(v_this, v_last);
 
-          if (double_buffered) {
+        if (dirty) {
+          if (size > 0) {
             if (bin.image == null) {
-              final int width = block_size;
-              final int height = block_size;
               FrEnd.main_canvas.panel
                   .setBackground(RendererDelegator.color_background);
-              bin.image = FrEnd.main_canvas.createImage(width, height);
+              bin.image = FrEnd.main_canvas.createImage(block_size,
+                  block_size);
             }
-            graphics_paint = bin.image.getGraphics();
+            final Graphics graphics_paint = bin.image.getGraphics();
             graphics_paint.translate(-potential.min_x, -potential.min_y);
-          } else {
-            bin.image = null;
-            graphics_paint = graphics;
-          }
+            // Scrub the union of last frame's and this frame's content, so
+            // moved content leaves no trail. Always scrub, even for newly
+            // created tiles (createImage content is undefined).
+            doScrubbing(graphics_paint, potential, bin);
 
-          if (graphics_paint != null) {
-            if (size > 0) {
-              if (size_last > 0) {
-                doScrubbing(graphics_paint, potential, bin);
-              }
+            getSortedNodeDepthIndex(v_this, FrEnd.redraw_deepest_first);
 
-              getSortedNodeDepthIndex(v_this, FrEnd.redraw_deepest_first);
+            graphics_paint.setClip(potential.min_x, potential.min_y,
+                block_size, block_size);
 
-              graphics_paint.setClip(potential.min_x, potential.min_y,
-                  block_size, block_size);
+            for (int c = size; --c >= 0;) {
+              final int index = this.node_depth_index[c];
+              final PolygonComposite composite = v_this.get(index);
 
-              for (int c = size; --c >= 0;) {
-                final int index = this.node_depth_index[c];
-                final PolygonComposite composite = (PolygonComposite) v_this
-                    .get(index);
-
-                renderThePolygon(graphics_paint, composite);
-              }
+              renderThePolygon(graphics_paint, composite);
             }
-          }
-        }
-        if (size < 1) {
-          if (bin.image != null) {
+            graphics_paint.dispose();
+          } else if (bin.image != null) {
+            // Vacated bin: repair the screen directly and drop the tile.
             doScrubbing(graphics, potential, bin);
             bin.image = null;
           }
+        } else {
+          // Clean bin: the cached tile already holds these pixels.
+          skipped_this_frame++;
         }
+      }
+    }
+
+    // Adaptive comparison: when a fair probe found nothing skippable for a
+    // while, the comparison is pure overhead; cool down, then probe again.
+    if (!force_all_dirty) {
+      if (skipped_this_frame == 0) {
+        if (++frames_without_skips >= COOLDOWN_AFTER_N_EMPTY_FRAMES) {
+          comparison_cooldown = COOLDOWN_LENGTH_FRAMES;
+          frames_without_skips = 0;
+        }
+      } else {
+        frames_without_skips = 0;
       }
     }
 
@@ -199,6 +352,117 @@ public class RendererBinManager {
         }
       }
     }
+  }
+
+  /**
+   * Rotates per-bin frame state after rendering: bins_last takes this
+   * frame's vectors and rectangles for next frame's dirty comparison, while
+   * the cached tiles stay on this manager for next frame's blit. (The tiles
+   * must not rotate: a clean bin next frame blits this frame's tile.)
+   */
+  void rotateFrameState(RendererBinManager bins_last) {
+    for (int j = 0; j < this.number_of_bins_y; j++) {
+      for (int i = 0; i < this.number_of_bins_x; i++) {
+        final RendererBin bin = this.array[i][j];
+        final RendererBin last_bin = bins_last.array[i][j];
+
+        final ArrayList<PolygonComposite> vector = bin.vector;
+        bin.vector = last_bin.vector;
+        last_bin.vector = vector;
+
+        final RectangleInt actual = bin.actual;
+        bin.actual = last_bin.actual;
+        last_bin.actual = actual;
+
+        final RectangleInt union = bin.union;
+        bin.union = last_bin.union;
+        last_bin.union = union;
+      }
+    }
+  }
+
+  /**
+   * True when any render setting that affects bin pixels changed since last
+   * frame. Everything else that affects pixels is either baked into the
+   * polygon composites (caught by binsEqual) or goes through
+   * repaint_all_objects (which resets the bins and invalidates the
+   * settings).
+   */
+  private boolean renderSettingsChanged(boolean double_buffered) {
+    return !this.render_settings_valid
+        || this.last_double_buffered != double_buffered
+        || this.last_colour_modifier_filled != colour_modifier_filled
+        || this.last_colour_modifier_wireframe != colour_modifier_wireframe
+        || this.last_colour_a_number != ColourModifier.colour_a_number
+        || this.last_colour_b_number != ColourModifier.colour_b_number
+        || this.last_redraw_deepest_first != FrEnd.redraw_deepest_first
+        || this.last_show_bins != show_bins;
+  }
+
+  private void rememberRenderSettings(boolean double_buffered) {
+    this.last_double_buffered = double_buffered;
+    this.last_colour_modifier_filled = colour_modifier_filled;
+    this.last_colour_modifier_wireframe = colour_modifier_wireframe;
+    this.last_colour_a_number = ColourModifier.colour_a_number;
+    this.last_colour_b_number = ColourModifier.colour_b_number;
+    this.last_redraw_deepest_first = FrEnd.redraw_deepest_first;
+    this.last_show_bins = show_bins;
+    this.render_settings_valid = true;
+  }
+
+  /**
+   * Exact per-bin content comparison against last frame. Early-out on the
+   * first difference, so animating bins cost little; only truly static bins
+   * pay the full walk. Insertion order is compared as-is: equivalent
+   * content in a different order counts as dirty (a wasted redraw, never
+   * a missed one).
+   */
+  static boolean binsEqual(ArrayList<PolygonComposite> v_this,
+      ArrayList<PolygonComposite> v_last) {
+    final int size = v_this.size();
+    if (size != v_last.size()) {
+      return false;
+    }
+    for (int i = 0; i < size; i++) {
+      if (!compositesEqual(v_this.get(i), v_last.get(i))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private static boolean compositesEqual(PolygonComposite a,
+      PolygonComposite b) {
+    if (a.z != b.z) {
+      return false;
+    }
+    final PolygonObject2D[] aa = a.array;
+    final PolygonObject2D[] bb = b.array;
+    final int n = aa.length;
+    if (n != bb.length) {
+      return false;
+    }
+    for (int i = 0; i < n; i++) {
+      final PolygonObject2D pa = aa[i];
+      final PolygonObject2D pb = bb[i];
+      if (pa.colour != pb.colour) {
+        return false;
+      }
+      final int[] ax = pa.x;
+      final int[] ay = pa.y;
+      final int[] bx = pb.x;
+      final int[] by = pb.y;
+      final int m = ax.length;
+      if (m != bx.length || m != ay.length || m != by.length) {
+        return false;
+      }
+      for (int k = 0; k < m; k++) {
+        if (ax[k] != bx[k] || ay[k] != by[k]) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   private void renderThePolygon(Graphics graphics,
