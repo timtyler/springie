@@ -27,7 +27,7 @@ public final class UpdateEnabledComponents {
   public static void actuallyUpdate() {
     if (buttons_need_update) {
       actuallyUpdateButtonsAfterSelectionChange();
-      needs_update = false;
+      buttons_need_update = false;
     }
     if (needs_update) {
       actuallyUpdateGUIAfterSelectionChange();
