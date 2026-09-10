@@ -207,7 +207,7 @@ public class PanelPreferencesRendererModern {
 		panel.setLayout(new BorderLayout(0, 8));
 		panel.add("West", new Label("Bin size:", Label.RIGHT));
 
-		final Scrollbar scroll_bar = new Scrollbar(Scrollbar.HORIZONTAL, RendererBinManager.divisor, 100, 50, 500);
+		final Scrollbar scroll_bar = new Scrollbar(Scrollbar.HORIZONTAL, RendererBinManager.divisor, 50, 50, 550);
 		scroll_bar.addAdjustmentListener(new AdjustmentListener() {
 			public void adjustmentValueChanged(AdjustmentEvent e) {
 				final int temp = e.getValue();

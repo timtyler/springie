@@ -14,13 +14,19 @@ The main Java source file can be found at: com/springie/FrEnd.java
 
 Switches at the start of this control how the whole program behaves.
 
-Use "javac -sourcepath source -d bin source/com/springie/FrEnd.java"
-to compile Springie with the command-line tools.
+To build, use:
+mvn clean compile
 
-Use "java com.springie.FrEnd" to run the program.
+To test, use:
+mvn clean test
+
+To package, use:
+mvn clean package
+
+To run, use:
+java -jar target/springie-1.02-beta-5-SNAPSHOT.jar
 
 # ToDo
-
  * Add "temperature" control
  * Add "countdown-timer" concept
    * Add "disease" concept
