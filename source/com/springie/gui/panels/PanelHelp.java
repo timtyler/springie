@@ -5,20 +5,30 @@ package com.springie.gui.panels;
 import java.awt.GridLayout;
 import java.awt.Panel;
 import java.awt.TextArea;
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.springie.FrEnd;
 import com.springie.io.in.ResourceLoader;
 
 public class PanelHelp {
+  private static final Logger logger = LoggerFactory.getLogger(PanelHelp.class);
+
   public Panel panel = FrEnd.setUpPanelForFrame2();
 
   public PanelHelp() {
     final TextArea helptext = new TextArea("");
     final ResourceLoader rl = new ResourceLoader();
-    final String text = rl
-      .getResourceAsString(FrEnd.class, "help/helptext.txt");
+    try {
+      final String text = rl
+        .getResourceAsString(FrEnd.class, "help/helptext.txt");
 
-    helptext.append(text);
+      helptext.append(text);
+    } catch (IOException e) {
+      logger.error("Could not load help text", e);
+    }
     final Panel panel_help = new Panel();
     panel_help.setLayout(new GridLayout(0, 1, 0, 0));
     panel_help.add(helptext);

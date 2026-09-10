@@ -53,7 +53,11 @@ public class DataInput {
   public void loadFile(String filename) {
     resetIfNeeded();
 
-    addFile(filename);
+    try {
+      addFile(filename);
+    } catch (IOException e) {
+      logger.error("Could not load file: <" + filename + ">", e);
+    }
   }
 
   public void resetWorkspaces() {
@@ -92,7 +96,7 @@ public class DataInput {
     }
   }
 
-  void addFile(String filename) {
+  void addFile(String filename) throws IOException {
     final String lower = filename.toLowerCase();
 
     if (filename.startsWith("internal://")) {
@@ -142,6 +146,8 @@ public class DataInput {
 
     if (input == null) {
       logger.debug("DataInput->readInSprFile problems with:" + filename);
+
+      return;
     }
 
     final Executor execute = new ReaderSPRExecutor();
@@ -157,6 +163,9 @@ public class DataInput {
       logger.error("Unexpected exception", e);
     } catch (SAXException e) {
       logger.error("Unexpected exception", e);
+    }
+    if (out == null) {
+      return;
     }
     final Executor execute = new ReaderRBFExecutor();
 
@@ -174,6 +183,9 @@ public class DataInput {
     } catch (SAXException e) {
       logger.error("Unexpected exception", e);
     }
+    if (out == null) {
+      return;
+    }
     final Executor execute = new ReaderRBFExecutor();
 
     processBuffer(out.toCharArray(), execute);
@@ -181,7 +193,7 @@ public class DataInput {
     resizeRadii();
   }
 
-  private void readInRBFFile(String filename) {
+  private void readInRBFFile(String filename) throws IOException {
     final String str = getContentsOfFileAsString(filename);
 
     final String out = ReaderRBF.translate(str);
@@ -192,7 +204,7 @@ public class DataInput {
     resizeRadii();
   }
 
-  private void readInDATFile(String filename) {
+  private void readInDATFile(String filename) throws IOException {
     final String str = getContentsOfFileAsString(filename);
 
     final String out = ReaderDAT.translate(str);
@@ -203,7 +215,7 @@ public class DataInput {
     resizeRadii();
   }
   
-  private void readInWRLFile(String filename) {
+  private void readInWRLFile(String filename) throws IOException {
     final String str = getContentsOfFileAsString(filename);
 
     final String out = ReaderWRL.translate(str);
@@ -214,7 +226,7 @@ public class DataInput {
     resizeLinkRadii();
   }
 
-  private void readInOFFFile(String filename) {
+  private void readInOFFFile(String filename) throws IOException {
     final String str = getContentsOfFileAsString(filename);
 
     final String out = ReaderOFF.translate(str);
@@ -228,7 +240,7 @@ public class DataInput {
     resizeRadii();
   }
   
-  private void readInClayFile(String filename) {
+  private void readInClayFile(String filename) throws IOException {
     final String str = getContentsOfFileAsString(filename);
 
     final String out = new ReaderCrudeClay().translate(str);
@@ -240,7 +252,7 @@ public class DataInput {
     processBuffer(out.toCharArray(), execute);
   }
 
-  private void readInMFile(String filename) {
+  private void readInMFile(String filename) throws IOException {
     final String str = getContentsOfFileAsString(filename);
 
     final String out = new ReaderM().translate(str);
@@ -252,7 +264,7 @@ public class DataInput {
     resizeRadii();
   }
 
-  private void readInDXFFile(String filename) {
+  private void readInDXFFile(String filename) throws IOException {
     final String str = getContentsOfFileAsString(filename);
 
     final String out = new ReaderDXF().translate(str);
@@ -264,7 +276,7 @@ public class DataInput {
     resizeRadii();
   }  
   
-  private String getContentsOfFileAsString(String filepath) {
+  private String getContentsOfFileAsString(String filepath) throws IOException {
     final ResourceLoader rl = new ResourceLoader();
 
     final Reader r = rl.getReader(filepath);

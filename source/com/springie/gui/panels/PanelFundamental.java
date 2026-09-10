@@ -414,6 +414,12 @@ public class PanelFundamental {
     } catch (SAXException e1) {
       logger.error("Unexpected exception", e1);
     }
+    // Repopulating the leaf dropdown fires no item event, so next_file_path
+    // would keep pointing at the previous index's model (and the restart
+    // path, which loads next_file_path, would disagree with the preset
+    // path, which reads the dropdown selection). Sync them here.
+    final String selected = FrEnd.choose_initial.choice.getSelectedItem();
+    FrEnd.next_file_path = (String) FrEnd.choose_initial.hashtable.get(selected);
   }
 
   public static String getXMLIndexPath() {

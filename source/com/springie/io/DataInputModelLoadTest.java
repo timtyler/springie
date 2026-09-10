@@ -22,6 +22,11 @@ import com.springie.io.in.DataInput;
  *   when fetching a freshly added polygon, so any model containing faces
  *   (Soccer ball, Icosahedron) died with IndexOutOfBoundsException.
  * - A failed load must not poison subsequent loads on the same manager.
+ * - Loading a missing/unreachable model (e.g. the dead springie.com URLs in
+ *   the model index) must fail gracefully: ResourceLoader used to swallow
+ *   the IOException, return a null stream and die with NullPointerException
+ *   in getStringFromInputStream; DataInput.readInSprFile then dereferenced
+ *   the null translation result as well.
  */
 class DataInputModelLoadTest {
 
@@ -87,5 +92,28 @@ class DataInputModelLoadTest {
         () -> this.manager.addCreatureFromLocation("resource://models/moscow.spr"),
         "Moscow should load via the preset-menu path after Soccer ball");
     assertTrue(this.manager.element.size() > 0, "Moscow: expected nodes to load");
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {
+      "file:///nonexistent-springie-model.spr",
+      "resource://models/does-not-exist.spr"})
+  void missingModelLoadDoesNotThrow(String location) {
+    // Dead model links (e.g. the defunct springie.com index entries) must
+    // fail gracefully instead of throwing NullPointerException.
+    final DataInput input = new DataInput(this.manager);
+    assertDoesNotThrow(() -> input.loadFile(location),
+        location + " should fail gracefully, not throw");
+  }
+
+  @Test
+  void missingModelPresetMenuPathDoesNotThrow() {
+    // The MSG_PRESET_CHOSEN path (NodeManager.addCreatureFromLocation)
+    // dereferenced the null translation result after a failed load.
+    this.manager.initialSetUp();
+    assertDoesNotThrow(
+        () -> this.manager.addCreatureFromLocation(
+            "file:///nonexistent-springie-model.spr"),
+        "missing model should fail gracefully on the preset-menu path");
   }
 }

@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.springie.FrEnd;
@@ -17,14 +16,14 @@ import org.slf4j.LoggerFactory;
 public class ResourceLoader {
   private static final Logger logger = LoggerFactory.getLogger(ResourceLoader.class);
 
-  public String getResourceAsString(Class<?> base, String name) {
+  public String getResourceAsString(Class<?> base, String name) throws IOException {
     String output;
 
     //Log.log("Starting to load " + name + ".");
     final InputStream in = getInputStream(base, name);
     if (in == null) {
       logger.debug("Base class: <" + base + ">");
-      throw new RuntimeException("File not found: <" + name + ">");
+      throw new FileNotFoundException("File not found: <" + name + ">");
     }
 
     output = getStringFromInputStream(in);
@@ -81,29 +80,26 @@ public class ResourceLoader {
 
   private InputStream getInputStream(Class<?> base, String location) {
     if (isURL(location)) {
-      return getResourceFromURL(location);
+      try {
+        return getResourceFromURL(location);
+      } catch (IOException e) {
+        logger.error("Failed to load URL: <" + location + ">", e);
+
+        return null;
+      }
     }
 
     return base.getResourceAsStream(location);
   }
 
-  private InputStream getResourceFromURL(String location) {
-    URL url = null;
-    try {
-      url = new URL(location);
-    } catch (MalformedURLException e) {
-      logger.error("Unexpected exception", e);
-    }
-    try {
-      return url.openStream();
-    } catch (IOException e1) {
-      logger.error("Unexpected exception", e1);
-    }
+  private InputStream getResourceFromURL(String location) throws IOException {
+    final URL url = new URL(location);
 
-    return null;
+    return url.openStream();
   }
 
-  private String getResourceAsStringHelper(Class<?> base, String location) {
+  private String getResourceAsStringHelper(Class<?> base, String location)
+      throws IOException {
     if (isResource(location)) {
       return getResourceAsString(base, location.substring(11));
     }
@@ -115,18 +111,15 @@ public class ResourceLoader {
     return getResourceAsString(base, location);
   }
 
-  public Reader getReader(String location) {
+  public Reader getReader(String location) throws IOException {
     if (isFile(location)) {
       if (isArchive(location)) {
         final String s = new ZipLoader().getZIPFileAsString(location.substring(7));
 
         return new StringReader(s);
       }
-      try {
-        return new FileReader(location.substring(7));
-      } catch (FileNotFoundException e) {
-        logger.error("Unexpected exception", e);
-      }
+
+      return new FileReader(location.substring(7));
     }
 
     if (isResource(location)) {
@@ -146,10 +139,10 @@ public class ResourceLoader {
       return new StringReader(s);
     }
 
-    return null;
+    throw new IOException("Cannot handle location: <" + location + ">");
   }
 
-  private String getURLAsString(String url) {
+  private String getURLAsString(String url) throws IOException {
     final InputStream is = getResourceFromURL(url);
     return getStringFromInputStream(is);
   }

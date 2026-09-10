@@ -140,6 +140,10 @@ public class NodeManager extends World {
 			logger.error("Unexpected exception", e);
 		}
 
+		if (d == null) {
+			return;
+		}
+
 		FrEnd.data_input.addFromString(d, ContextMananger.getNodeManager());
 	}
 
