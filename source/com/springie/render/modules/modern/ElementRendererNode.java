@@ -126,7 +126,12 @@ public final class ElementRendererNode {
     return 0xFF000000 | or | (og << 8) | (ob << 16);
   }
 
-  private static boolean isVisible(int[] array_x, int[] array_y) {
+  /**
+   * Backface test on projected screen coordinates: true when the polygon
+   * winds the way a front-facing (camera-facing) surface does. Also used
+   * by ElementRendererLink to cull the far side of link tubes.
+   */
+  static boolean isVisible(int[] array_x, int[] array_y) {
     final Point p1 = new Point(array_x[1] - array_x[0], array_y[1] - array_y[0]);
     final Point p2 = new Point(array_x[1] - array_x[2], array_y[1] - array_y[2]);
 

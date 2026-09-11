@@ -163,13 +163,35 @@ public final class ElementRendererLink {
       final int new_colour = DeepObjectColourCalculator.getColourOfDeepObject(
           colour, z);
 
-      final PolygonObject2D[] array = new PolygonObject2D[sides];
+      final PolygonObject2D[] quads = new PolygonObject2D[sides];
       for (int side = 0; side < sides; side++) {
         final double a0 = 2.0 * Math.PI * side / sides;
         final double a1 = 2.0 * Math.PI * (side + 1) / sides;
-        array[side] = tubeQuad(point0n, point1n, cross_1_int, cross_2_int,
+        quads[side] = tubeQuad(point0n, point1n, cross_1_int, cross_2_int,
             Math.cos(a0), Math.sin(a0), Math.cos(a1), Math.sin(a1), sf1, sf2,
             new_colour);
+      }
+      // Backface culling: a closed tube only shows its near side. The
+      // far-side quads would otherwise paint over the near side -- each
+      // composite carries a single depth, so the painter's algorithm
+      // cannot sort quads within it -- making the strut look transparent.
+      // Same winding test as the node polyhedra; culled in place.
+      int front_count = 0;
+      for (int side = 0; side < sides; side++) {
+        final PolygonObject2D quad = quads[side];
+        if (ElementRendererNode.isVisible(quad.x, quad.y)) {
+          quads[front_count++] = quad;
+        }
+      }
+      final PolygonObject2D[] array;
+      if (front_count == 0 || front_count == sides) {
+        // Degenerate end-on view: nothing faced the camera, so quads[]
+        // is untouched and still holds the whole tube; keep it rather
+        // than emit an empty composite.
+        array = quads;
+      } else {
+        array = new PolygonObject2D[front_count];
+        System.arraycopy(quads, 0, array, 0, front_count);
       }
 
       return_vector.add(new PolygonComposite(array, z));
