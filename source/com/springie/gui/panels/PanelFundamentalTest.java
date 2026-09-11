@@ -13,7 +13,8 @@ import java.awt.Label;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,9 +30,13 @@ import com.springie.gui.components.ImageButton;
  */
 public class PanelFundamentalTest {
 
+  @BeforeAll
+  static void boot() throws Exception {
+    GuiTestSupport.bootApp();
+  }
+
   @BeforeEach
   void setUp() throws Exception {
-    GuiTestSupport.bootApp();
     // FrEnd.panel_fundamental is a static singleton shared by every test
     // here, and ImageButton.setState is a no-op when the state is unchanged,
     // so force the default (pressed in, presets card) before each test.
@@ -40,8 +45,8 @@ public class PanelFundamentalTest {
     p.showPresetsCard(true);
   }
 
-  @AfterEach
-  void tearDown() throws Exception {
+  @AfterAll
+  static void dispose() throws Exception {
     GuiTestSupport.disposeFrames();
   }
 

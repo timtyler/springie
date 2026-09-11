@@ -15,6 +15,8 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.SwingUtilities;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
@@ -42,44 +44,49 @@ class ShowActiveBinsTest {
   /** How long to keep painting and re-capturing before giving up. */
   private static final long POLL_DEADLINE_MS = 15000;
 
+  @BeforeAll
+  static void boot() throws Exception {
+    GuiTestSupport.bootApp();
+  }
+
+  @AfterAll
+  static void dispose() throws Exception {
+    GuiTestSupport.disposeFrames();
+  }
+
   @Test
   void activeBinsDrawRedOutlines() throws Exception {
-    GuiTestSupport.bootApp();
-    try {
-      final int baseline_red = countRedPixelsAfterPaint();
+    final int baseline_red = countRedPixelsAfterPaint();
 
-      setShowActiveBins(true);
+    setShowActiveBins(true);
 
-      // Tiled (double-buffered) path is the default.
-      assertTrue(RendererDelegator.isNewDoubleBuffer());
-      waitForRedPixels(baseline_red,
-          "red outlines on non-empty bins in the tiled path");
+    // Tiled (double-buffered) path is the default.
+    assertTrue(RendererDelegator.isNewDoubleBuffer());
+    waitForRedPixels(baseline_red,
+        "red outlines on non-empty bins in the tiled path");
 
-      // Direct path: double-buffering off.
-      setDoubleBuffer(false);
-      assertFalse(RendererDelegator.isNewDoubleBuffer());
-      waitForRedPixels(baseline_red,
-          "red outlines on non-empty bins in the direct path");
+    // Direct path: double-buffering off.
+    setDoubleBuffer(false);
+    assertFalse(RendererDelegator.isNewDoubleBuffer());
+    waitForRedPixels(baseline_red,
+        "red outlines on non-empty bins in the direct path");
 
-      // Back to the default path, outlines switched off.
-      setDoubleBuffer(true);
-      setShowActiveBins(false);
-      waitForPixelCount(baseline_red, "no bin outlines once disabled");
+    // Back to the default path, outlines switched off.
+    setDoubleBuffer(true);
+    setShowActiveBins(false);
+    waitForPixelCount(baseline_red, "no bin outlines once disabled");
 
-      // Reset preferences restores the default (off).
-      SwingUtilities.invokeAndWait(() -> {
-        RendererBinManager.show_active_bins = true;
-        FrEnd.panel_preferences.resetPreferences();
-      });
-      assertFalse(RendererBinManager.show_active_bins);
-    } finally {
-      SwingUtilities.invokeAndWait(() -> {
-        FrEnd.preferences.map.put(Preferences.renderer_new_double_buffer,
-            Boolean.TRUE);
-        RendererBinManager.show_active_bins = false;
-      });
-      GuiTestSupport.disposeFrames();
-    }
+    // Reset preferences restores the default (off).
+    SwingUtilities.invokeAndWait(() -> {
+      RendererBinManager.show_active_bins = true;
+      FrEnd.panel_preferences.resetPreferences();
+    });
+    assertFalse(RendererBinManager.show_active_bins);
+    SwingUtilities.invokeAndWait(() -> {
+      FrEnd.preferences.map.put(Preferences.renderer_new_double_buffer,
+          Boolean.TRUE);
+      RendererBinManager.show_active_bins = false;
+    });
   }
 
   private void setShowActiveBins(boolean state) throws Exception {
@@ -182,31 +189,26 @@ class ShowActiveBinsTest {
    */
   @Test
   void disablingOutlinesWithoutResizeErasesThem() throws Exception {
-    GuiTestSupport.bootApp();
-    try {
-      paintNow();
-      final int baseline = countRedPixels();
+    paintNow();
+    final int baseline = countRedPixels();
 
-      // Tiled (double-buffered) path.
-      setShowActiveBinsNoResize(true);
-      waitForRedPixels(baseline, "tiled outlines did not appear");
-      setShowActiveBinsNoResize(false);
-      waitForPixelCountNoResize(baseline, "tiled outlines did not disappear");
+    // Tiled (double-buffered) path.
+    setShowActiveBinsNoResize(true);
+    waitForRedPixels(baseline, "tiled outlines did not appear");
+    setShowActiveBinsNoResize(false);
+    waitForPixelCountNoResize(baseline, "tiled outlines did not disappear");
 
-      // Direct path.
-      setDoubleBufferedNoResize(false);
-      setShowActiveBinsNoResize(true);
-      waitForRedPixels(baseline, "direct outlines did not appear");
-      setShowActiveBinsNoResize(false);
-      waitForPixelCountNoResize(baseline, "direct outlines did not disappear");
-    } finally {
-      SwingUtilities.invokeAndWait(() -> {
-        FrEnd.preferences.map.put(Preferences.renderer_new_double_buffer,
-            Boolean.TRUE);
-        RendererBinManager.show_active_bins = false;
-      });
-      GuiTestSupport.disposeFrames();
-    }
+    // Direct path.
+    setDoubleBufferedNoResize(false);
+    setShowActiveBinsNoResize(true);
+    waitForRedPixels(baseline, "direct outlines did not appear");
+    setShowActiveBinsNoResize(false);
+    waitForPixelCountNoResize(baseline, "direct outlines did not disappear");
+    SwingUtilities.invokeAndWait(() -> {
+      FrEnd.preferences.map.put(Preferences.renderer_new_double_buffer,
+          Boolean.TRUE);
+      RendererBinManager.show_active_bins = false;
+    });
   }
 
   /** Toggles the option without forcing a resize (no full-repaint rescue). */

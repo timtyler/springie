@@ -8,6 +8,8 @@ import java.awt.GraphicsEnvironment;
 
 import javax.swing.SwingUtilities;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
@@ -48,6 +50,17 @@ class DomeRelatedChangeDelegatorTest {
     }
   }
 
+  @BeforeAll
+  static void boot() throws Exception {
+    assumeTrue(!GraphicsEnvironment.isHeadless(), "needs a display");
+    bootApp();
+  }
+
+  @AfterAll
+  static void dispose() {
+    disposeFrames();
+  }
+
   private static int averageDamping() {
     return new AverageStiffnessGetter(ContextManager.getNodeManager())
         .getAverage();
@@ -85,144 +98,102 @@ class DomeRelatedChangeDelegatorTest {
 
   @Test
   void dampingPlusMinusAreInverseSingleSteps() throws Exception {
-    assumeTrue(!GraphicsEnvironment.isHeadless(), "needs a display");
-    bootApp();
-    try {
-      selectAllLinks();
-      final int before = averageDamping();
+    selectAllLinks();
+    final int before = averageDamping();
 
-      DomeRelatedChangeDelegator.stiffnessUp();
-      assertEquals(before + 1, averageDamping(),
-          "damping + should increment by 1");
+    DomeRelatedChangeDelegator.stiffnessUp();
+    assertEquals(before + 1, averageDamping(),
+        "damping + should increment by 1");
 
-      DomeRelatedChangeDelegator.stiffnessDown();
-      DomeRelatedChangeDelegator.stiffnessDown();
-      assertEquals(before - 1, averageDamping(),
-          "damping - should decrement by 1");
+    DomeRelatedChangeDelegator.stiffnessDown();
+    DomeRelatedChangeDelegator.stiffnessDown();
+    assertEquals(before - 1, averageDamping(),
+        "damping - should decrement by 1");
 
-      DomeRelatedChangeDelegator.stiffnessUp();
-      assertEquals(before, averageDamping(),
-          "+ then - should return to the starting value");
-    } finally {
-      disposeFrames();
-    }
+    DomeRelatedChangeDelegator.stiffnessUp();
+    assertEquals(before, averageDamping(),
+        "+ then - should return to the starting value");
   }
 
   @Test
   void dampingPlusDoesNotTouchElasticity() throws Exception {
-    assumeTrue(!GraphicsEnvironment.isHeadless(), "needs a display");
-    bootApp();
-    try {
-      selectAllLinks();
-      final int elasticity_before = averageElasticity();
+    selectAllLinks();
+    final int elasticity_before = averageElasticity();
 
-      DomeRelatedChangeDelegator.stiffnessUp();
+    DomeRelatedChangeDelegator.stiffnessUp();
 
-      assertEquals(elasticity_before, averageElasticity(),
-          "damping + must not change elasticity");
-    } finally {
-      disposeFrames();
-    }
+    assertEquals(elasticity_before, averageElasticity(),
+        "damping + must not change elasticity");
   }
 
   @Test
   void dampingStaysWithinSliderRange() throws Exception {
-    assumeTrue(!GraphicsEnvironment.isHeadless(), "needs a display");
-    bootApp();
-    try {
-      selectAllLinks();
+    selectAllLinks();
 
-      ContextManager.getLinkManager().setStiffnessOfSelected(200);
-      DomeRelatedChangeDelegator.stiffnessUp();
-      assertEquals(200, averageDamping(),
-          "damping + at the 200 maximum must stay at 200");
+    ContextManager.getLinkManager().setStiffnessOfSelected(200);
+    DomeRelatedChangeDelegator.stiffnessUp();
+    assertEquals(200, averageDamping(),
+        "damping + at the 200 maximum must stay at 200");
 
-      ContextManager.getLinkManager().setStiffnessOfSelected(0);
-      DomeRelatedChangeDelegator.stiffnessDown();
-      assertEquals(0, averageDamping(),
-          "damping - at the 0 minimum must stay at 0");
-    } finally {
-      disposeFrames();
-    }
+    ContextManager.getLinkManager().setStiffnessOfSelected(0);
+    DomeRelatedChangeDelegator.stiffnessDown();
+    assertEquals(0, averageDamping(),
+        "damping - at the 0 minimum must stay at 0");
   }
 
   @Test
   void elasticityPlusMinusAreInverseSingleSteps() throws Exception {
-    assumeTrue(!GraphicsEnvironment.isHeadless(), "needs a display");
-    bootApp();
-    try {
-      selectAllLinks();
-      final int before = averageElasticity();
+    selectAllLinks();
+    final int before = averageElasticity();
 
-      DomeRelatedChangeDelegator.elasticityUp();
-      assertEquals(before + 1, averageElasticity(),
-          "elasticity + should increment by 1");
+    DomeRelatedChangeDelegator.elasticityUp();
+    assertEquals(before + 1, averageElasticity(),
+        "elasticity + should increment by 1");
 
-      DomeRelatedChangeDelegator.elasticityDown();
-      assertEquals(before, averageElasticity(),
-          "+ then - should return to the starting value");
-    } finally {
-      disposeFrames();
-    }
+    DomeRelatedChangeDelegator.elasticityDown();
+    assertEquals(before, averageElasticity(),
+        "+ then - should return to the starting value");
   }
 
   @Test
   void lengthPlusMinusAreInverseSinglePixelSteps() throws Exception {
-    assumeTrue(!GraphicsEnvironment.isHeadless(), "needs a display");
-    bootApp();
-    try {
-      selectAllLinks();
-      final int before_px = averageLengthPx();
+    selectAllLinks();
+    final int before_px = averageLengthPx();
 
-      DomeRelatedChangeDelegator.lengthenLinks();
-      assertEquals(before_px + 1, averageLengthPx(),
-          "length + should increment by 1 pixel");
+    DomeRelatedChangeDelegator.lengthenLinks();
+    assertEquals(before_px + 1, averageLengthPx(),
+        "length + should increment by 1 pixel");
 
-      DomeRelatedChangeDelegator.shortenLinks();
-      assertEquals(before_px, averageLengthPx(),
-          "+ then - should return to the starting value");
-    } finally {
-      disposeFrames();
-    }
+    DomeRelatedChangeDelegator.shortenLinks();
+    assertEquals(before_px, averageLengthPx(),
+        "+ then - should return to the starting value");
   }
 
   @Test
   void radiusPlusMinusAreInverseSingleSteps() throws Exception {
-    assumeTrue(!GraphicsEnvironment.isHeadless(), "needs a display");
-    bootApp();
-    try {
-      selectAllNodes();
-      final int before = averageRadiusUnits();
+    selectAllNodes();
+    final int before = averageRadiusUnits();
 
-      DomeRelatedChangeDelegator.expand();
-      assertEquals(before + 1, averageRadiusUnits(),
-          "radius + should increment by 1");
+    DomeRelatedChangeDelegator.expand();
+    assertEquals(before + 1, averageRadiusUnits(),
+        "radius + should increment by 1");
 
-      DomeRelatedChangeDelegator.contract();
-      assertEquals(before, averageRadiusUnits(),
-          "+ then - should return to the starting value");
-    } finally {
-      disposeFrames();
-    }
+    DomeRelatedChangeDelegator.contract();
+    assertEquals(before, averageRadiusUnits(),
+        "+ then - should return to the starting value");
   }
 
   @Test
   void chargePlusMinusAreInverseSingleSteps() throws Exception {
-    assumeTrue(!GraphicsEnvironment.isHeadless(), "needs a display");
-    bootApp();
-    try {
-      selectAllNodes();
-      final int before = averageCharge();
+    selectAllNodes();
+    final int before = averageCharge();
 
-      DomeRelatedChangeDelegator.chargeUp();
-      assertEquals(before + 1, averageCharge(),
-          "charge + should increment by 1");
+    DomeRelatedChangeDelegator.chargeUp();
+    assertEquals(before + 1, averageCharge(),
+        "charge + should increment by 1");
 
-      DomeRelatedChangeDelegator.chargeDown();
-      assertEquals(before, averageCharge(),
-          "+ then - should return to the starting value");
-    } finally {
-      disposeFrames();
-    }
+    DomeRelatedChangeDelegator.chargeDown();
+    assertEquals(before, averageCharge(),
+        "+ then - should return to the starting value");
   }
 }
