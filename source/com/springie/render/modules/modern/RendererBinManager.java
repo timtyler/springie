@@ -54,7 +54,6 @@ public class RendererBinManager {
 
   private boolean last_show_bins;
 
-  private boolean last_show_active_bins;
 
   private boolean last_double_buffered;
 
@@ -212,7 +211,6 @@ public class RendererBinManager {
 
           bin.setUpActual(potential);
           bin.union.setToUnion(bin.actual, last_bin.actual);
-          widenUnionForActiveBinOutlines(bin, potential);
 
           // No tiles in the direct path (any stale ones were dropped in
           // render() when the mode changed).
@@ -239,32 +237,19 @@ public class RendererBinManager {
       }
     }
 
-    drawActiveBinOutlines(graphics, block_size);
+    drawActiveBinOutlines(graphics);
   }
 
   /**
-   * "Show active bins" support: the red outline is drawn at the bin's block
-   * border, which lies outside the content union that scrubs and blits
-   * normally cover. While the option is on (or was on last frame, to catch
-   * the toggle-off frame), widen the bin's painted region to the full block
-   * so a vacated bin's outline is scrubbed away instead of lingering on
-   * screen forever. Costs a slightly larger fill/blt per touched bin, but
-   * only while this debug option is enabled.
+   * "Show active bins": red outline around the content rectangle of every
+   * bin holding content this frame -- the same min/max rect the scrubs and
+   * blits use, so the outline hugs what the bin really touched. Drawn on
+   * the screen graphics after the bin pixels (not baked into the cached
+   * tiles), so toggling the option needs no tile invalidation; and because
+   * the outline lies inside the bin's paint union, the normal scrub/blit
+   * erases it when content moves or the option is turned off.
    */
-  private void widenUnionForActiveBinOutlines(RendererBin bin,
-      RectangleInt potential) {
-    if (show_active_bins || this.last_show_active_bins) {
-      bin.union.setTo(potential);
-    }
-  }
-
-  /**
-   * "Show active bins": red outline around every bin holding content this
-   * frame. Drawn on the screen graphics after the bin pixels (not baked
-   * into the cached tiles), so toggling the option needs no tile
-   * invalidation.
-   */
-  private void drawActiveBinOutlines(Graphics graphics, int block_size) {
+  private void drawActiveBinOutlines(Graphics graphics) {
     if (!show_active_bins) {
       return;
     }
@@ -272,9 +257,14 @@ public class RendererBinManager {
     graphics.setColor(Color.RED);
     for (int j = 0; j < this.number_of_bins_y; j++) {
       for (int i = 0; i < this.number_of_bins_x; i++) {
-        if (this.array[i][j].vector.size() > 0) {
-          graphics.drawRect(getPixelsFromBinX(i), getPixelsFromBinY(j),
-              block_size - 1, block_size - 1);
+        final RendererBin bin = this.array[i][j];
+        if (bin.vector.size() > 0) {
+          final RectangleInt actual = bin.actual;
+          // The bbox max is exclusive, but drawRect's far corner is
+          // inclusive: shrink by one so the outline stays inside the
+          // scrub/blit clip and is erased with everything else.
+          graphics.drawRect(actual.min_x, actual.min_y,
+              actual.max_x - actual.min_x - 1, actual.max_y - actual.min_y - 1);
         }
       }
     }
@@ -329,7 +319,6 @@ public class RendererBinManager {
 
         bin.setUpActual(potential);
         bin.union.setToUnion(bin.actual, last_bin.actual);
-        widenUnionForActiveBinOutlines(bin, potential);
 
         final boolean dirty = force_all_dirty || !binsEqual(v_this, v_last);
 
@@ -400,7 +389,7 @@ public class RendererBinManager {
       }
     }
 
-    drawActiveBinOutlines(graphics, block_size);
+    drawActiveBinOutlines(graphics);
   }
 
   /**
@@ -456,7 +445,6 @@ public class RendererBinManager {
     this.last_colour_b_number = ColourModifier.colour_b_number;
     this.last_redraw_deepest_first = FrEnd.redraw_deepest_first;
     this.last_show_bins = show_bins;
-    this.last_show_active_bins = show_active_bins;
     this.render_settings_valid = true;
   }
 
