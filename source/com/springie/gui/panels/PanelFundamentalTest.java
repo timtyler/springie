@@ -8,10 +8,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Button;
+import java.awt.Choice;
 import java.awt.Component;
 import java.awt.Label;
+import java.awt.event.ItemEvent;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import javax.swing.SwingUtilities;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -141,5 +145,56 @@ public class PanelFundamentalTest {
 
     assertTrue(Files.exists(file), "save must write the current file");
     assertTrue(Files.size(file) > 0, "saved file must have content");
+  }
+
+  @Test
+  void presetDropdownsSurviveToggleRoundTripAfterRepopulation()
+      throws Exception {
+    final PanelFundamental p = panel();
+    final Choice index = FrEnd.choose_preset_index.choice;
+    final Choice leaf = FrEnd.choose_initial.choice;
+
+    // Pick the Hexagonal index, as a user would: repopulating the leaf
+    // dropdown adds much longer item names (Choice.select fires no event,
+    // so dispatch the selection the way a user click would).
+    SwingUtilities.invokeAndWait(() -> {
+      index.select("Hexagonal");
+      index.dispatchEvent(new ItemEvent(index, ItemEvent.ITEM_STATE_CHANGED,
+          "Hexagonal", ItemEvent.SELECTED));
+    });
+    final int leafItems = leaf.getItemCount();
+    assertTrue(leafItems > 4, "the hexagonal index should offer many models");
+    final int leafWidth = leaf.getSize().width;
+    assertTrue(leafWidth > 0, "the leaf dropdown must be laid out");
+
+    try {
+      // Toggle out to the file card and back.
+      final ImageButton floppy = findFloppyButton();
+      SwingUtilities.invokeAndWait(() -> {
+        floppy.setState(false);
+        p.showPresetsCard(false);
+      });
+      SwingUtilities.invokeAndWait(() -> {
+        floppy.setState(true);
+        p.showPresetsCard(true);
+      });
+
+      // Both dropdowns must still be there, fully populated, and the leaf
+      // dropdown must not have grown: a wider dropdown wraps onto a clipped
+      // second row of the button bar's FlowLayout and looks like it vanished.
+      assertTrue(index.isShowing() && leaf.isShowing(),
+          "both preset dropdowns must still be visible");
+      assertEquals(leafItems, leaf.getItemCount(),
+          "toggling must not lose the repopulated models");
+      assertEquals(leafWidth, leaf.getSize().width,
+          "the leaf dropdown must keep its width after a toggle round trip");
+    } finally {
+      // Leave the shared statics as the other tests expect them.
+      SwingUtilities.invokeAndWait(() -> {
+        index.select("Presets");
+        index.dispatchEvent(new ItemEvent(index, ItemEvent.ITEM_STATE_CHANGED,
+            "Presets", ItemEvent.SELECTED));
+      });
+    }
   }
 }
