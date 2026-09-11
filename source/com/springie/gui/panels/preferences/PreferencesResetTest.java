@@ -146,7 +146,7 @@ class PreferencesResetTest {
           RendererBinManager.colour_modifier_wireframe);
       assertEquals(1, ElementRendererLink.strut_divisions);
       assertEquals(1, ElementRendererLink.cable_divisions);
-      assertEquals(4, RendererDelegator.link_sides);
+      assertEquals(3, RendererDelegator.link_sides);
       assertEquals(0xFF000000, RendererDelegator.color_background_number);
       assertEquals(2, PanelPreferencesRendererModern.render_label_when);
       assertTrue(RendererDelegator.renderer instanceof ModularRendererNew,

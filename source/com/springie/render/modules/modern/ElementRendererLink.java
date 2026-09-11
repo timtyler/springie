@@ -85,7 +85,14 @@ public final class ElementRendererLink {
 
     // Find two normalized vectors.
     final Double3D cross_1 = scratch_cross_1;
-    cross_1.set(-delta.y, delta.x, 0);
+    if (delta.x == 0 && delta.y == 0) {
+      // The link points straight at the viewer: every screen-plane
+      // direction is equally good (and normalizing the zero vector
+      // would poison every corner with NaN).
+      cross_1.set(1, 0, 0);
+    } else {
+      cross_1.set(-delta.y, delta.x, 0);
+    }
     cross_1.normalize();
 
     final Double3D orignial = scratch_original;

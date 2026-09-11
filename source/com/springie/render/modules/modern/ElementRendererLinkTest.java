@@ -29,7 +29,10 @@ import com.springie.render.RendererDelegator;
  * far side is culled with the same winding test the node polyhedra use:
  * each composite carries a single depth, so the painter's algorithm
  * cannot sort quads within it, and unculled far-side quads would paint
- * over the near side, making struts look transparent.
+ * over the near side, making struts look transparent. link_sides = 2 is
+ * the billboard special case: the two coplanar quads have opposite
+ * windings, so the culling keeps the one facing the viewer and every
+ * strut renders as a quad that always points at the user.
  */
 class ElementRendererLinkTest {
 
@@ -118,7 +121,7 @@ class ElementRendererLinkTest {
   }
 
   @ParameterizedTest
-  @ValueSource(ints = {3, 4, 6, 8})
+  @ValueSource(ints = {2, 3, 4, 6, 8})
   void onlyFrontFacingQuadsAreEmitted(int sides) {
     RendererDelegator.link_sides = sides;
     for (final boolean compression : new boolean[] {true, false}) {
@@ -350,6 +353,73 @@ class ElementRendererLinkTest {
             "side " + s + " of " + sides + " for direction (" + d[0] + ","
                 + d[1] + "," + d[2] + "): winding test must agree with the "
                 + "geometric facing (inside-out quads render the far wall)");
+      }
+    }
+  }
+
+  @Test
+  void twoSidedLinkIsAViewerFacingBillboard() {
+    // link_sides = 2 is the billboard special case: one quad per length
+    // division, always facing the viewer. cross_1 = (-delta.y, delta.x, 0)
+    // is exactly the cylindrical-billboard width direction (perpendicular
+    // to the link axis, facing the camera), so the two coplanar quads the
+    // tube loop builds have opposite windings and the culling keeps the
+    // one facing the viewer.
+    RendererDelegator.link_sides = 2;
+    final int[][] dirs =
+        {{512, 0, 0}, {0, 512, 0}, {512, 512, 0}, {1024, 512, 512}};
+    for (final int[] d : dirs) {
+      final Node a = nodeAt(0, 0, 0);
+      final Node b = nodeAt(d[0] << Coords.shift, d[1] << Coords.shift,
+          d[2] << Coords.shift);
+      final ArrayList<PolygonComposite> composites = render(
+          linkBetween(a, b, true), a, b);
+
+      // One segment: exactly one quad survives (the coplanar pair has
+      // opposite windings, so exactly one passes the winding test).
+      assertEquals(1, composites.size());
+      assertEquals(1, quadCount(composites),
+          "the billboard must emit exactly one quad for direction ("
+              + d[0] + "," + d[1] + "," + d[2] + ")");
+      final PolygonObject2D quad = composites.get(0).array[0];
+      assertTrue(ElementRendererNode.isVisible(quad.x, quad.y),
+          "the emitted billboard quad must face the camera");
+
+      // "Always points at the user" means the quad's width runs
+      // perpendicular to the link's screen projection. Corners are
+      // (p0+c1, p1+c1, p1-c1, p0-c1) up to the winding the culling kept:
+      // width = corner0-corner3, axis = corner1-corner0 either way.
+      final int wx = quad.x[0] - quad.x[3];
+      final int wy = quad.y[0] - quad.y[3];
+      final int ax = quad.x[1] - quad.x[0];
+      final int ay = quad.y[1] - quad.y[0];
+      assertTrue(wx * wx + wy * wy > 0,
+          "the billboard must have non-zero width");
+      final double dot = wx * (double) ax + wy * (double) ay;
+      final double cross = wx * (double) ay - wy * (double) ax;
+      assertTrue(Math.abs(dot) < 0.25 * Math.abs(cross),
+          "billboard width must be perpendicular to the link on screen");
+    }
+  }
+
+  @Test
+  void twoSidedEndOnLinkRendersWithoutNaN() {
+    // A link pointing straight at the viewer zeroes cross_1, and
+    // normalizing the zero vector used to poison every corner with NaN
+    // ((int) NaN collapses every corner to the origin).
+    RendererDelegator.link_sides = 2;
+    final Node a = nodeAt(0, 0, 0);
+    final Node b = nodeAt(0, 0, 512 << Coords.shift);
+    final ArrayList<PolygonComposite> composites = render(
+        linkBetween(a, b, true), a, b);
+    assertTrue(composites.size() >= 1);
+    for (final PolygonComposite composite : composites) {
+      assertTrue(composite.array.length >= 1);
+      for (final PolygonObject2D quad : composite.array) {
+        assertTrue(quad != null);
+        final RectangleInt box = quad.getBoundingBox();
+        assertTrue(box.max_x > box.min_x || box.max_y > box.min_y,
+            "an end-on billboard must not collapse to a point");
       }
     }
   }

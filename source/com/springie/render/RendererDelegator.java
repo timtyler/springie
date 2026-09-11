@@ -60,7 +60,7 @@ public final class RendererDelegator {
    * (3, 4, 6 or 8). 3 is fastest, 8 smoothest. The tube ends are left
    * open: capping them costs polygons without helping the picture.
    */
-  public static int link_sides = 4;
+  public static int link_sides = 3;
 
   static long time_last_ms;
 

@@ -195,11 +195,12 @@ public class PanelPreferencesRendererModern {
 			}
 		});
 
+		this.choose_link_sides.add("2", 2);
 		this.choose_link_sides.add("3", 3);
 		this.choose_link_sides.add("4", 4);
 		this.choose_link_sides.add("6", 6);
 		this.choose_link_sides.add("8", 8);
-		this.choose_link_sides.choice.select(this.choose_link_sides.num_to_str(4));
+		this.choose_link_sides.choice.select(this.choose_link_sides.num_to_str(3));
 		panel.add(this.choose_link_sides.choice);
 
 		return panel;
@@ -368,10 +369,10 @@ public class PanelPreferencesRendererModern {
 				.setValue(ElementRendererLink.cable_divisions);
 		reflectLabelCableDivisions();
 
-		// Strut/cable sides (4).
-		RendererDelegator.link_sides = 4;
+		// Strut/cable sides (3).
+		RendererDelegator.link_sides = 3;
 		this.choose_link_sides.choice.select(this.choose_link_sides
-				.num_to_str(4));
+				.num_to_str(3));
 
 		// Node polyhedron (Dodecahedron).
 		this.choose_polyhedron.choice.select(this.choose_polyhedron
