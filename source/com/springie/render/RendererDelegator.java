@@ -55,13 +55,12 @@ public final class RendererDelegator {
 
   public static int color_charge_number = 0xFF0000C0;
 
-  public static boolean fat_struts = true;
-
   /**
-   * Triangular struts: struts render as a 3-sided prism (3 quads) instead
-   * of the 4-quad fat strut. Faster, but lower quality (no bulged profile).
+   * Number of sides of the open tube that struts and cables render as
+   * (3, 4, 6 or 8). 3 is fastest, 8 smoothest. The tube ends are left
+   * open: capping them costs polygons without helping the picture.
    */
-  public static boolean triangular_struts = false;
+  public static int link_sides = 4;
 
   static long time_last_ms;
 

@@ -70,8 +70,7 @@ class PreferencesResetTest {
         RendererBinManager.colour_modifier_wireframe = ColourModifier.natural;
         ElementRendererLink.strut_divisions = 5;
         ElementRendererLink.cable_divisions = 6;
-        RendererDelegator.fat_struts = false;
-        RendererDelegator.triangular_struts = true;
+        RendererDelegator.link_sides = 6;
         RendererDelegator.color_background_number = 0xFFFF0000;
         PanelPreferencesRendererModern.render_label_when = 1;
 
@@ -147,8 +146,7 @@ class PreferencesResetTest {
           RendererBinManager.colour_modifier_wireframe);
       assertEquals(1, ElementRendererLink.strut_divisions);
       assertEquals(1, ElementRendererLink.cable_divisions);
-      assertTrue(RendererDelegator.fat_struts);
-      assertFalse(RendererDelegator.triangular_struts);
+      assertEquals(4, RendererDelegator.link_sides);
       assertEquals(0xFF000000, RendererDelegator.color_background_number);
       assertEquals(3, PanelPreferencesRendererModern.render_label_when);
       assertTrue(RendererDelegator.renderer instanceof ModularRendererNew,

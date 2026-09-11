@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.clazz.Clazz;
@@ -21,18 +23,17 @@ import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 
 /**
- * Pins the link/strut polygon contract of ElementRendererLink.
- *
- * A standard link segment is a two-quad ribbon; a triangular strut is a
- * 3-sided prism (three quads, one length division); cables are unaffected
- * by the triangular option (two quads is already the minimum).
+ * Pins the link tessellation contract of the modern renderer: a link
+ * renders as an open tube with link_sides sides, i.e. one quad per side
+ * per length division, for both struts and cables. The tube ends are
+ * left open (no caps).
  */
 class ElementRendererLinkTest {
 
+  private int saved_sides;
   private boolean saved_depth_is_relative;
-  private boolean saved_fat_struts;
-  private boolean saved_triangular_struts;
   private int saved_strut_divisions;
+  private int saved_cable_divisions;
 
   @BeforeEach
   void isolateStatics() {
@@ -40,22 +41,19 @@ class ElementRendererLinkTest {
     // need a booted app; with the absolute path colours pass through.
     this.saved_depth_is_relative = DeepObjectColourCalculator.depth_is_relative;
     DeepObjectColourCalculator.depth_is_relative = false;
-    // The fat-strut path reads ContextManager.getNodeManager(), so keep it
-    // off here; the multi-division ribbon path is covered via
-    // strut_divisions directly instead.
-    this.saved_fat_struts = RendererDelegator.fat_struts;
-    RendererDelegator.fat_struts = false;
-    this.saved_triangular_struts = RendererDelegator.triangular_struts;
+    this.saved_sides = RendererDelegator.link_sides;
     this.saved_strut_divisions = ElementRendererLink.strut_divisions;
+    this.saved_cable_divisions = ElementRendererLink.cable_divisions;
     ElementRendererLink.strut_divisions = 1;
+    ElementRendererLink.cable_divisions = 1;
   }
 
   @AfterEach
   void restoreStatics() {
     DeepObjectColourCalculator.depth_is_relative = this.saved_depth_is_relative;
-    RendererDelegator.fat_struts = this.saved_fat_struts;
-    RendererDelegator.triangular_struts = this.saved_triangular_struts;
+    RendererDelegator.link_sides = this.saved_sides;
     ElementRendererLink.strut_divisions = this.saved_strut_divisions;
+    ElementRendererLink.cable_divisions = this.saved_cable_divisions;
   }
 
   private static Node nodeAt(int x, int y, int z) {
@@ -75,65 +73,73 @@ class ElementRendererLinkTest {
         0xFF0000FF);
   }
 
-  @Test
-  void standardStrutIsTwoQuads() {
-    RendererDelegator.triangular_struts = false;
+  private static int quadCount(ArrayList<PolygonComposite> composites) {
+    int quads = 0;
+    for (final PolygonComposite composite : composites) {
+      quads += composite.array.length;
+    }
+    return quads;
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {3, 4, 6, 8})
+  void strutRendersOneQuadPerSide(int sides) {
+    RendererDelegator.link_sides = sides;
     final Node a = nodeAt(0, 0, 0);
     final Node b = nodeAt(512 << Coords.shift, 0, 0);
-    final Link link = linkBetween(a, b, true);
 
-    final ArrayList<PolygonComposite> composites = render(link, a, b);
+    final ArrayList<PolygonComposite> composites = render(
+        linkBetween(a, b, true), a, b);
 
     // One segment, no text label (the link is not selected).
     assertEquals(1, composites.size());
-    assertEquals(2, composites.get(0).array.length);
+    assertEquals(sides, quadCount(composites));
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {3, 4, 6, 8})
+  void cableRendersOneQuadPerSide(int sides) {
+    RendererDelegator.link_sides = sides;
+    final Node a = nodeAt(0, 0, 0);
+    final Node b = nodeAt(512 << Coords.shift, 0, 0);
+
+    final ArrayList<PolygonComposite> composites = render(
+        linkBetween(a, b, false), a, b);
+
+    assertEquals(1, composites.size());
+    assertEquals(sides, quadCount(composites));
   }
 
   @Test
-  void triangularStrutIsThreeQuads() {
-    RendererDelegator.triangular_struts = true;
+  void tubeQuadsAreNonDegenerate() {
+    RendererDelegator.link_sides = 6;
     final Node a = nodeAt(0, 0, 0);
-    final Node b = nodeAt(512 << Coords.shift, 0, 0);
-    final Link link = linkBetween(a, b, true);
+    final Node b = nodeAt(512 << Coords.shift, 256 << Coords.shift, 0);
 
-    final ArrayList<PolygonComposite> composites = render(link, a, b);
+    final ArrayList<PolygonComposite> composites = render(
+        linkBetween(a, b, true), a, b);
 
-    assertEquals(1, composites.size());
-    assertEquals(3, composites.get(0).array.length);
-    for (final PolygonObject2D quad : composites.get(0).array) {
-      final RectangleInt box = quad.getBoundingBox();
-      assertTrue(box.max_x > box.min_x && box.max_y > box.min_y,
-          "each side of the prism must be non-degenerate");
+    assertEquals(6, quadCount(composites));
+    for (final PolygonComposite composite : composites) {
+      for (final PolygonObject2D quad : composite.array) {
+        final RectangleInt box = quad.getBoundingBox();
+        assertTrue(box.max_x > box.min_x && box.max_y > box.min_y,
+            "every tube side must be a real quad, not a degenerate sliver");
+      }
     }
   }
 
   @Test
-  void triangularLeavesCablesAlone() {
-    RendererDelegator.triangular_struts = true;
+  void sidesMultiplyAcrossLengthDivisions() {
+    RendererDelegator.link_sides = 4;
+    ElementRendererLink.strut_divisions = 3;
     final Node a = nodeAt(0, 0, 0);
     final Node b = nodeAt(512 << Coords.shift, 0, 0);
-    final Link cable = linkBetween(a, b, false);
 
-    final ArrayList<PolygonComposite> composites = render(cable, a, b);
+    final ArrayList<PolygonComposite> composites = render(
+        linkBetween(a, b, true), a, b);
 
-    // Two quads is already the minimum; the triangular option must not
-    // make cables more expensive.
-    assertEquals(1, composites.size());
-    assertEquals(2, composites.get(0).array.length);
-  }
-
-  @Test
-  void multiDivisionRibbonStillTwoQuadsPerSegment() {
-    RendererDelegator.triangular_struts = false;
-    ElementRendererLink.strut_divisions = 2;
-    final Node a = nodeAt(0, 0, 0);
-    final Node b = nodeAt(512 << Coords.shift, 0, 0);
-    final Link link = linkBetween(a, b, true);
-
-    final ArrayList<PolygonComposite> composites = render(link, a, b);
-
-    assertEquals(2, composites.size());
-    assertEquals(2, composites.get(0).array.length);
-    assertEquals(2, composites.get(1).array.length);
+    assertEquals(3, composites.size());
+    assertEquals(12, quadCount(composites));
   }
 }

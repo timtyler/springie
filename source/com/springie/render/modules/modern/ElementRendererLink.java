@@ -4,7 +4,6 @@ package com.springie.render.modules.modern;
 
 import java.util.ArrayList;
 
-import com.springie.context.ContextManager;
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.links.Link;
 import com.springie.elements.nodes.Node;
@@ -28,15 +27,10 @@ public final class ElementRendererLink {
   private static final Vector3D scratch_delta_2 = new Vector3D(0, 0, 0);
   private static final Vector3D scratch_cross_1_int = new Vector3D(0, 0, 0);
   private static final Vector3D scratch_cross_2_int = new Vector3D(0, 0, 0);
-  private static final Vector3D scratch_cross_1_int_sf1 = new Vector3D(0, 0, 0);
-  private static final Vector3D scratch_cross_1_int_sf2 = new Vector3D(0, 0, 0);
-  private static final Vector3D scratch_cross_2_int_sf1 = new Vector3D(0, 0, 0);
-  private static final Vector3D scratch_cross_2_int_sf2 = new Vector3D(0, 0, 0);
   private static final Vector3D scratch_partial_start = new Vector3D(0, 0, 0);
   private static final Vector3D scratch_partial_end = new Vector3D(0, 0, 0);
-  private static final Vector3D scratch_tri_dir_1 = new Vector3D(0, 0, 0);
-  private static final Vector3D scratch_tri_dir_2 = new Vector3D(0, 0, 0);
-  private static final Vector3D scratch_tri_tmp = new Vector3D(0, 0, 0);
+  private static final Vector3D scratch_tube_dir = new Vector3D(0, 0, 0);
+  private static final Vector3D scratch_tube_tmp = new Vector3D(0, 0, 0);
   private static final Double3D scratch_cross_1 = new Double3D(0, 0, 0);
   private static final Double3D scratch_original = new Double3D(0, 0, 0);
   private static final Double3D scratch_cross_2 = new Double3D(0, 0, 0);
@@ -119,41 +113,12 @@ public final class ElementRendererLink {
     final Vector3D cross_2_int = scratch_cross_2_int;
     cross_2_int.set(c2_x, c2_y, c2_z);
 
-    // Triangular struts render as a 3-sided prism: 3 quads in a single
-    // length division, instead of the fat strut's 2 bulged divisions of
-    // 2 quads. Cables are already at 2 quads, the minimum, so they are
-    // unaffected.
-    final boolean triangular = RendererDelegator.triangular_struts
-        && link.type.compression;
+    // Struts and cables render as an open tube with link_sides sides:
+    // link_sides quads around the axis. The ends are left open; capping
+    // them costs polygons without helping the picture.
+    final int sides = RendererDelegator.link_sides;
 
-    // Three cross-section directions 120 degrees apart, for the
-    // triangular tube. Only used on the triangular path.
-    final Vector3D tri_dir_0 = cross_1_int;
-    final Vector3D tri_dir_1 = scratch_tri_dir_1;
-    tri_dir_1.set(cross_1_int);
-    tri_dir_1.multiplyBy(-0.5d);
-    scratch_tri_tmp.set(cross_2_int);
-    scratch_tri_tmp.multiplyBy(0.8660254037844386d);
-    tri_dir_1.addTuple3D(scratch_tri_tmp);
-    final Vector3D tri_dir_2 = scratch_tri_dir_2;
-    tri_dir_2.set(cross_1_int);
-    tri_dir_2.multiplyBy(-0.5d);
-    scratch_tri_tmp.set(cross_2_int);
-    scratch_tri_tmp.multiplyBy(-0.8660254037844386d);
-    tri_dir_2.addTuple3D(scratch_tri_tmp);
-
-    int strut_divisions_actual = strut_divisions;
-    if (triangular) {
-      strut_divisions_actual = 1;
-    } else if (RendererDelegator.fat_struts) {
-      if (ContextManager.getNodeManager().is_tensegrity) {
-        if (strut_divisions == 1) {
-          strut_divisions_actual = 2;
-        }
-      }
-    }
-
-    final int divisions = link.type.compression ? strut_divisions_actual
+    final int divisions = link.type.compression ? strut_divisions
         : cable_divisions;
 
     // One composite per segment, plus room for the optional text label.
@@ -167,6 +132,9 @@ public final class ElementRendererLink {
     for (int segment = 0; segment < divisions; segment++) {
       final int sp0 = segment + 0;
       final int sp1 = segment + 1;
+
+      final double sf1 = iv + mult * Math.sin(Math.PI * sp0 / divisions);
+      final double sf2 = iv + mult * Math.sin(Math.PI * sp1 / divisions);
 
       final Vector3D partial_start = scratch_partial_start;
       partial_start.set(point1);
@@ -195,19 +163,13 @@ public final class ElementRendererLink {
       final int new_colour = DeepObjectColourCalculator.getColourOfDeepObject(
           colour, z);
 
-      final PolygonObject2D[] array;
-      if (triangular) {
-        // Straight 3-sided prism: one quad per cross-section direction.
-        array = new PolygonObject2D[3];
-        array[0] = quadBetween(point0n, point1n, tri_dir_0, tri_dir_1,
+      final PolygonObject2D[] array = new PolygonObject2D[sides];
+      for (int side = 0; side < sides; side++) {
+        final double a0 = 2.0 * Math.PI * side / sides;
+        final double a1 = 2.0 * Math.PI * (side + 1) / sides;
+        array[side] = tubeQuad(point0n, point1n, cross_1_int, cross_2_int,
+            Math.cos(a0), Math.sin(a0), Math.cos(a1), Math.sin(a1), sf1, sf2,
             new_colour);
-        array[1] = quadBetween(point0n, point1n, tri_dir_1, tri_dir_2,
-            new_colour);
-        array[2] = quadBetween(point0n, point1n, tri_dir_2, tri_dir_0,
-            new_colour);
-      } else {
-        array = ribbonQuads(point0n, point1n, sp0, sp1, divisions, iv, mult,
-            cross_1_int, cross_2_int, new_colour);
       }
 
       return_vector.add(new PolygonComposite(array, z));
@@ -223,76 +185,41 @@ public final class ElementRendererLink {
   }
 
   /**
-   * One side of the triangular tube: the quad between two adjacent
-   * cross-section directions.
+   * One side of the open tube: the quad between two adjacent cross-section
+   * directions. The tube ends are left open (no caps).
    */
-  private static PolygonObject2D quadBetween(Point3D point0n, Point3D point1n,
-      Vector3D dir_a, Vector3D dir_b, int new_colour) {
+  private static PolygonObject2D tubeQuad(Point3D point0n, Point3D point1n,
+      Vector3D cross_1_int, Vector3D cross_2_int,
+      double cos_a, double sin_a, double cos_b, double sin_b,
+      double sf1, double sf2, int new_colour) {
     final Point3D[] quad_points = new Point3D[4];
-    quad_points[0] = new Point3D(point0n);
-    quad_points[0].addTuple3D(dir_a);
-    quad_points[1] = new Point3D(point0n);
-    quad_points[1].addTuple3D(dir_b);
-    quad_points[2] = new Point3D(point1n);
-    quad_points[2].addTuple3D(dir_b);
-    quad_points[3] = new Point3D(point1n);
-    quad_points[3].addTuple3D(dir_a);
+    quad_points[0] = tubeCorner(point0n, cross_1_int, cross_2_int,
+        cos_a, sin_a, sf1);
+    quad_points[1] = tubeCorner(point0n, cross_1_int, cross_2_int,
+        cos_b, sin_b, sf1);
+    quad_points[2] = tubeCorner(point1n, cross_1_int, cross_2_int,
+        cos_b, sin_b, sf2);
+    quad_points[3] = tubeCorner(point1n, cross_1_int, cross_2_int,
+        cos_a, sin_a, sf2);
     return new PolygonObject2D(quad_points, new_colour);
   }
 
   /**
-   * The standard two-quad ribbon for one link segment.
+   * One tube corner: base + sf * (cos_a * cross_1 + sin_a * cross_2).
    */
-  private static PolygonObject2D[] ribbonQuads(Point3D point0n, Point3D point1n,
-      int sp0, int sp1, int divisions, double iv, double mult,
-      Vector3D cross_1_int, Vector3D cross_2_int, int new_colour) {
-    final double sf1 = iv + mult * Math.sin(Math.PI * sp0 / divisions);
-    final double sf2 = iv + mult * Math.sin(Math.PI * sp1 / divisions);
-
-    final Vector3D cross_1_int_sf1 = scratch_cross_1_int_sf1;
-    cross_1_int_sf1.set(cross_1_int);
-    cross_1_int_sf1.multiplyBy(sf1);
-    final Vector3D cross_1_int_sf2 = scratch_cross_1_int_sf2;
-    cross_1_int_sf2.set(cross_1_int);
-    cross_1_int_sf2.multiplyBy(sf2);
-
-    final Vector3D cross_2_int_sf1 = scratch_cross_2_int_sf1;
-    cross_2_int_sf1.set(cross_2_int);
-    cross_2_int_sf1.multiplyBy(sf1);
-    final Vector3D cross_2_int_sf2 = scratch_cross_2_int_sf2;
-    cross_2_int_sf2.set(cross_2_int);
-    cross_2_int_sf2.multiplyBy(sf2);
-
-    // calculate coordinates of the first rectangle...
-
-    final Point3D[] r1_points = new Point3D[4];
-
-    r1_points[0] = new Point3D(point0n);
-    r1_points[0].addTuple3D(cross_2_int_sf1);
-    r1_points[1] = new Point3D(point0n);
-    r1_points[1].addTuple3D(cross_1_int_sf1);
-
-    r1_points[2] = new Point3D(point1n);
-    r1_points[2].addTuple3D(cross_1_int_sf2);
-    r1_points[3] = new Point3D(point1n);
-    r1_points[3].addTuple3D(cross_2_int_sf2);
-
-    // calculate coordinates of the second rectangle...
-
-    final Point3D[] r2_points = new Point3D[4];
-
-    r2_points[3] = r1_points[0];
-    r2_points[2] = new Point3D(point0n);
-    r2_points[2].subtractTuple3D(cross_1_int_sf1);
-
-    r2_points[1] = new Point3D(point1n);
-    r2_points[1].subtractTuple3D(cross_1_int_sf2);
-    r2_points[0] = r1_points[3];
-
-    final PolygonObject2D[] array = new PolygonObject2D[2];
-    array[0] = new PolygonObject2D(r1_points, new_colour);
-    array[1] = new PolygonObject2D(r2_points, new_colour);
-    return array;
+  private static Point3D tubeCorner(Point3D base, Vector3D cross_1_int,
+      Vector3D cross_2_int, double cos_a, double sin_a, double sf) {
+    final Vector3D dir = scratch_tube_dir;
+    dir.set(cross_1_int);
+    dir.multiplyBy(cos_a);
+    final Vector3D tmp = scratch_tube_tmp;
+    tmp.set(cross_2_int);
+    tmp.multiplyBy(sin_a);
+    dir.addTuple3D(tmp);
+    dir.multiplyBy(sf);
+    final Point3D corner = new Point3D(base);
+    corner.addTuple3D(dir);
+    return corner;
   }
 
   private static PolygonComposite addRelevantText(Link link, int min_z) {

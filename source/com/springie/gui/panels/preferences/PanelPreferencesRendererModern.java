@@ -65,9 +65,7 @@ public class PanelPreferencesRendererModern {
 
 	private Scrollbar scroll_bar_cable_divisions;
 
-	private Checkbox checkbox_fat_struts;
-
-	private Checkbox checkbox_triangular_struts;
+	private TTChoice choose_link_sides;
 
 	TTChoice choose_label_when;
 
@@ -96,8 +94,7 @@ public class PanelPreferencesRendererModern {
 
 		this.panel_misc.add(getPanelCableDivisions());
 		this.panel_misc.add(getPanelStrutDivisions());
-		this.panel_misc.add(getPanelFatStrutTensegrities());
-		this.panel_misc.add(getPanelTriangularStruts());
+		this.panel_misc.add(panelLinkSides());
 
 		this.panel_labels.add(getPanelLabelsWhen());
 
@@ -183,37 +180,29 @@ public class PanelPreferencesRendererModern {
 		return panel;
 	}
 
-	private Component getPanelFatStrutTensegrities() {
-		final Panel panel_fat_struts = new Panel();
-		this.checkbox_fat_struts = new Checkbox("Fat struts in tensegrities", RendererDelegator.fat_struts);
+	private Panel panelLinkSides() {
+		final Panel panel = new Panel();
+		final Label label = new Label("Strut/cable sides:");
+		panel.add(label);
 
-		this.checkbox_fat_struts.addItemListener(new ItemListener() {
+		this.choose_link_sides = new TTChoice(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				Forget.about(e);
-				RendererDelegator.fat_struts = PanelPreferencesRendererModern.this.checkbox_fat_struts.getState();
+				final String scs = (String) e.getItem();
+				final int val = PanelPreferencesRendererModern.this.choose_link_sides.str_to_num(scs);
+				RendererDelegator.link_sides = val;
 				FrEnd.main_canvas.forceResize();
 			}
 		});
 
-		panel_fat_struts.add(this.checkbox_fat_struts);
-		return panel_fat_struts;
-	}
+		this.choose_link_sides.add("3", 3);
+		this.choose_link_sides.add("4", 4);
+		this.choose_link_sides.add("6", 6);
+		this.choose_link_sides.add("8", 8);
+		this.choose_link_sides.choice.select(this.choose_link_sides.num_to_str(4));
+		panel.add(this.choose_link_sides.choice);
 
-	private Component getPanelTriangularStruts() {
-		final Panel panel_triangular_struts = new Panel();
-		this.checkbox_triangular_struts = new Checkbox("Toblerone struts",
-				RendererDelegator.triangular_struts);
-
-		this.checkbox_triangular_struts.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				Forget.about(e);
-				RendererDelegator.triangular_struts = PanelPreferencesRendererModern.this.checkbox_triangular_struts.getState();
-				FrEnd.main_canvas.forceResize();
-			}
-		});
-
-		panel_triangular_struts.add(this.checkbox_triangular_struts);
-		return panel_triangular_struts;
+		return panel;
 	}
 
 	private Panel panelNodePolyhedron() {
@@ -379,13 +368,10 @@ public class PanelPreferencesRendererModern {
 				.setValue(ElementRendererLink.cable_divisions);
 		reflectLabelCableDivisions();
 
-		// Fat struts in tensegrities.
-		RendererDelegator.fat_struts = true;
-		this.checkbox_fat_struts.setState(true);
-
-		// Triangular struts.
-		RendererDelegator.triangular_struts = false;
-		this.checkbox_triangular_struts.setState(false);
+		// Strut/cable sides (4).
+		RendererDelegator.link_sides = 4;
+		this.choose_link_sides.choice.select(this.choose_link_sides
+				.num_to_str(4));
 
 		// Node polyhedron (Dodecahedron).
 		this.choose_polyhedron.choice.select(this.choose_polyhedron
