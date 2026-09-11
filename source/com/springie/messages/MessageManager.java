@@ -107,11 +107,11 @@ public class MessageManager {
               case 0:
                 return ProceduralObject.tube;
               case 1:
-                return new Integer(
+                return Integer.valueOf(
                   FrEnd.panel_edit_generate.textfield_generate_tube_circumference
                     .getText());
               case 2:
-                return new Integer(
+                return Integer.valueOf(
                   FrEnd.panel_edit_generate.textfield_generate_tube_length
                     .getText());
               default:
@@ -129,7 +129,7 @@ public class MessageManager {
               case 0:
                 return ProceduralObject.string;
               case 1:
-                return new Integer(
+                return Integer.valueOf(
                   FrEnd.panel_edit_generate.textfield_generate_string_length
                     .getText());
               default:
@@ -147,7 +147,7 @@ public class MessageManager {
               case 0:
                 return ProceduralObject.free_nodes;
               case 1:
-                return new Integer(
+                return Integer.valueOf(
                   FrEnd.panel_edit_generate.textfield_generate_free_nodes
                     .getText());
               default:
@@ -165,7 +165,7 @@ public class MessageManager {
               case 0:
                 return ProceduralObject.sphere_pack;
               case 1:
-                return new Integer(
+                return Integer.valueOf(
                   FrEnd.panel_edit_generate.textfield_generate_sphere_pack
                     .getText());
               default:
@@ -183,15 +183,15 @@ public class MessageManager {
               case 0:
                 return ProceduralObject.matrix;
               case 1:
-                return new Integer(
+                return Integer.valueOf(
                   FrEnd.panel_edit_generate.textfield_generate_matrix_x
                     .getText());
               case 2:
-                return new Integer(
+                return Integer.valueOf(
                   FrEnd.panel_edit_generate.textfield_generate_matrix_y
                     .getText());
               case 3:
-                return new Integer(
+                return Integer.valueOf(
                   FrEnd.panel_edit_generate.textfield_generate_matrix_z
                     .getText());
               default:
@@ -432,7 +432,7 @@ public class MessageManager {
       case Message.MSG_DOUBLE_BUFFER_OLD:
         final boolean bool_db = FrEnd.panel_preferences_renderer_original.checkbox_db.getState();
         final String pref = Preferences.renderer_old_double_buffer; 
-        FrEnd.preferences.map.put(pref, new Boolean(bool_db));
+        FrEnd.preferences.map.put(pref, Boolean.valueOf(bool_db));
 
         FrEnd.postCleanup();
 
@@ -444,7 +444,7 @@ public class MessageManager {
       case Message.MSG_DOUBLE_BUFFER_NEW:
         final boolean bool_db1 = FrEnd.panel_preferences_renderer_modern.checkbox_db_new.getState();
         final String pref2 = Preferences.renderer_new_double_buffer;
-        FrEnd.preferences.map.put(pref2, new Boolean(bool_db1));
+        FrEnd.preferences.map.put(pref2, Boolean.valueOf(bool_db1));
 
         FrEnd.postCleanup();
 
