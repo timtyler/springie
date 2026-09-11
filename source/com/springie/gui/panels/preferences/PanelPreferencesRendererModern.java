@@ -67,6 +67,8 @@ public class PanelPreferencesRendererModern {
 
 	private Checkbox checkbox_fat_struts;
 
+	private Checkbox checkbox_triangular_struts;
+
 	TTChoice choose_label_when;
 
 	public static int render_label_when = 3;
@@ -95,6 +97,7 @@ public class PanelPreferencesRendererModern {
 		this.panel_misc.add(getPanelCableDivisions());
 		this.panel_misc.add(getPanelStrutDivisions());
 		this.panel_misc.add(getPanelFatStrutTensegrities());
+		this.panel_misc.add(getPanelTriangularStruts());
 
 		this.panel_labels.add(getPanelLabelsWhen());
 
@@ -194,6 +197,23 @@ public class PanelPreferencesRendererModern {
 
 		panel_fat_struts.add(this.checkbox_fat_struts);
 		return panel_fat_struts;
+	}
+
+	private Component getPanelTriangularStruts() {
+		final Panel panel_triangular_struts = new Panel();
+		this.checkbox_triangular_struts = new Checkbox("Toblerone struts",
+				RendererDelegator.triangular_struts);
+
+		this.checkbox_triangular_struts.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				Forget.about(e);
+				RendererDelegator.triangular_struts = PanelPreferencesRendererModern.this.checkbox_triangular_struts.getState();
+				FrEnd.main_canvas.forceResize();
+			}
+		});
+
+		panel_triangular_struts.add(this.checkbox_triangular_struts);
+		return panel_triangular_struts;
 	}
 
 	private Panel panelNodePolyhedron() {
@@ -362,6 +382,10 @@ public class PanelPreferencesRendererModern {
 		// Fat struts in tensegrities.
 		RendererDelegator.fat_struts = true;
 		this.checkbox_fat_struts.setState(true);
+
+		// Triangular struts.
+		RendererDelegator.triangular_struts = false;
+		this.checkbox_triangular_struts.setState(false);
 
 		// Node polyhedron (Dodecahedron).
 		this.choose_polyhedron.choice.select(this.choose_polyhedron

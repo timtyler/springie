@@ -57,6 +57,12 @@ public final class RendererDelegator {
 
   public static boolean fat_struts = true;
 
+  /**
+   * Triangular struts: struts render as a 3-sided prism (3 quads) instead
+   * of the 4-quad fat strut. Faster, but lower quality (no bulged profile).
+   */
+  public static boolean triangular_struts = false;
+
   static long time_last_ms;
 
   static int frame_count;
