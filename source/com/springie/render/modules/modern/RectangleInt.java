@@ -14,6 +14,13 @@ public class RectangleInt {
     this.max_y = max_y;
   }
 
+  public void setTo(RectangleInt other) {
+    this.min_x = other.min_x;
+    this.min_y = other.min_y;
+    this.max_x = other.max_x;
+    this.max_y = other.max_y;
+  }
+
   public void setToUnion(RectangleInt r1, RectangleInt r2) {
     this.min_x = Math.min(r1.min_x, r2.min_x);
     this.max_x = Math.max(r1.max_x, r2.max_x);
