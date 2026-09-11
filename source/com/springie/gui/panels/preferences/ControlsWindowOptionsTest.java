@@ -266,6 +266,43 @@ class ControlsWindowOptionsTest {
         "activating another window must not move the controls");
   }
 
+  @Test
+  void mainWindowPressMustNotActivateControls() throws Exception {
+    // Regression: the press branch used a plain toFront(), which could
+    // steal window activation and dismiss the model-selection dropdown
+    // in the main window (seen on Windows). A press must raise the
+    // controls without activating them, exactly like the activation
+    // branch.
+    final boolean[] raised = new boolean[1];
+    final boolean[] non_focusable_during_raise = new boolean[1];
+    final boolean[] focusable_after = new boolean[1];
+    SwingUtilities.invokeAndWait(() -> {
+      final Frame real_controls = FrEnd.frame_controls;
+      try {
+        FrEnd.frame_controls = new Frame() {
+          public void toFront() {
+            raised[0] = true;
+            non_focusable_during_raise[0] = !getFocusableWindowState();
+          }
+
+          public boolean isVisible() {
+            return true;
+          }
+        };
+        dispatchToStayOnTopListeners(mousePress(FrEnd.frame_main));
+      } finally {
+        FrEnd.frame_controls = real_controls;
+      }
+      focusable_after[0] = FrEnd.frame_controls.getFocusableWindowState();
+    });
+    assertTrue(raised[0],
+        "pressing main-window content should still bring the controls forward");
+    assertTrue(non_focusable_during_raise[0],
+        "the press raise must not activate the controls (dropdown!)");
+    assertTrue(focusable_after[0],
+        "the focusable state must be restored after the raise");
+  }
+
   /**
    * Delivers a synthetic event to every toolkit-level event listener, the
    * way the event queue would.

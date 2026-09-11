@@ -727,7 +727,10 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 					bringControlsForwardNonActivating();
 				} else if (e.getID() == MouseEvent.MOUSE_PRESSED
 						&& isMainWindowContent(e.getSource())) {
-					frame_controls.toFront();
+					// Non-activating: a plain toFront() here could steal
+					// window activation, which dismisses the model-selection
+					// dropdown in the main window (seen on Windows).
+					bringControlsForwardNonActivating();
 				}
 			}
 		};
