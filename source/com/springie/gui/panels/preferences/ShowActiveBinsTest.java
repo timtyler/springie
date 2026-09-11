@@ -12,7 +12,9 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
+import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
 import org.junit.jupiter.api.AfterAll;
@@ -43,6 +45,12 @@ class ShowActiveBinsTest {
 
   /** How long to keep painting and re-capturing before giving up. */
   private static final long POLL_DEADLINE_MS = 15000;
+
+  /** The most recent Robot capture, kept for failure diagnosis. */
+  private BufferedImage last_capture;
+
+  /** The screen area the most recent capture covered. */
+  private Rectangle last_capture_area;
 
   @BeforeAll
   static void boot() throws Exception {
@@ -136,7 +144,25 @@ class ShowActiveBinsTest {
       Thread.sleep(250);
     }
     fail(what + ": saw " + red + " red pixels, expected more than "
-        + (baseline_red + OUTLINE_RED_MARGIN));
+        + (baseline_red + OUTLINE_RED_MARGIN) + ". Failing capture saved to "
+        + saveFailureShot() + " (captured area " + this.last_capture_area
+        + ")");
+  }
+
+  /**
+   * Writes the most recent Robot capture to a PNG in the temp dir, so a
+   * failure can be diagnosed by looking at what the screen actually
+   * showed (covered window? misaligned capture? empty canvas?).
+   */
+  private String saveFailureShot() {
+    try {
+      final File file = new File(System.getProperty("java.io.tmpdir"),
+          "show-active-bins-failure.png");
+      ImageIO.write(this.last_capture, "png", file);
+      return file.getAbsolutePath();
+    } catch (Exception e) {
+      return "<could not save capture: " + e + ">";
+    }
   }
 
   /** Polls until the capture matches the baseline exactly, then returns. */
@@ -151,16 +177,24 @@ class ShowActiveBinsTest {
       }
       Thread.sleep(250);
     }
-    assertEquals(expected_red, red, what);
+    assertEquals(expected_red, red,
+        () -> what + ". Failing capture saved to " + saveFailureShot()
+            + " (captured area " + this.last_capture_area + ")");
   }
 
   private int countRedPixels() throws Exception {
     final Rectangle[] area = new Rectangle[1];
     SwingUtilities.invokeAndWait(() -> {
+      // The Robot captures the real screen, so make sure the main window
+      // is on top first: a covering window would hide the app (and its
+      // outlines) from the capture.
+      FrEnd.frame_main.toFront();
       final Point p = FrEnd.main_canvas.panel.getLocationOnScreen();
       area[0] = new Rectangle(p, FrEnd.main_canvas.panel.getSize());
     });
     final BufferedImage image = new Robot().createScreenCapture(area[0]);
+    this.last_capture = image;
+    this.last_capture_area = area[0];
     int count = 0;
     for (int y = 0; y < image.getHeight(); y++) {
       for (int x = 0; x < image.getWidth(); x++) {

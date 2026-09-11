@@ -183,8 +183,6 @@ public class TabbedPanel extends Panel implements MouseListener,
       ((CardLayout) getLayout()).show(this, this.names.get(i));
       repaint();
       final Component c = getComponent(i);
-      // ?
-      // c.postEvent(new Event(c, Event.WINDOW_EXPOSE, this));
       c.validate(); // is this enough?
     }
   }
@@ -249,7 +247,8 @@ public class TabbedPanel extends Panel implements MouseListener,
    */
 
   /** Allocates extra margins to give the cards some `body'. */
-  public Insets insets() {
+  @Override
+  public Insets getInsets() {
     return new Insets(this.margin_top + this.tabH + this.margin, this.margin,
         this.margin, this.margin);
   }
