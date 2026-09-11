@@ -49,8 +49,9 @@ public final class SquareRoot {
    * <p>The single-precision path below is exact, not approximate: a float
    * carries 24 bits of mantissa, so the float root is within 0.004 of the
    * true root, and the correction against the original {@code x} fixes the
-   * at-most-one residual step. Verified bit-identical to the old
-   * implementation over all 2^31 inputs (see SquareRootAnalysis).
+   * at-most-one residual step. Verified against {@code StrictMath.sqrt}
+   * over every perfect square and its neighbours, plus a reproducible
+   * sample of 1,000,000 random inputs (see SquareRootAnalysis).
    */
   public static int sqrt(int x) {
     if (x < 0) {
