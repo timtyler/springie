@@ -16,7 +16,6 @@ import com.springie.render.CachedLink;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.utilities.math.SquareRoot;
-import com.tifsoft.deprecated.OldMethods;
 
 public class LinkManager extends BaseElementManager<Link> {
   static int agent_counter;
@@ -344,8 +343,7 @@ public class LinkManager extends BaseElementManager<Link> {
           final java.awt.Polygon awt_polygon = cl.getStrutPolygon(point0,
               point1, l.getThicknesss());
 
-          if (OldMethods.isInsidePolygon(x >> Coords.shift, y >> Coords.shift,
-              awt_polygon)) {
+          if (awt_polygon.contains(x >> Coords.shift, y >> Coords.shift)) {
             if (l.nodes[0].pos.z < min) {
               best = l;
               min = l.nodes[0].pos.z;

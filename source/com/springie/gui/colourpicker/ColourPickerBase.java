@@ -13,7 +13,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import com.tifsoft.Forget;
-import com.tifsoft.deprecated.OldMethods;
 
 public class ColourPickerBase extends Component implements MouseListener,
     MouseMotionListener {
@@ -49,10 +48,8 @@ public class ColourPickerBase extends Component implements MouseListener,
   }
 
   void paintHelper() {
-    final OldMethods old = new OldMethods();
-
-    this.width = old.getWidth(this);
-    this.height = old.getHeight(this);
+    this.width = this.getWidth();
+    this.height = this.getHeight();
     this.range = this.width - this.margin * 2;
 
     if ((this.width != this.last_w) & (this.height != this.last_h)) {

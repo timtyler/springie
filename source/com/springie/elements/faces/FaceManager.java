@@ -9,7 +9,6 @@ import com.springie.elements.base.BaseElementManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.nodes.Node;
 import com.springie.render.Coords;
-import com.tifsoft.deprecated.OldMethods;
 
 public class FaceManager extends BaseElementManager<Face> {
   static int agent_counter;
@@ -182,7 +181,7 @@ public class FaceManager extends BaseElementManager<Face> {
         int av_z = sum_z / npoints;
 
         if (best_z > av_z) {
-          if (OldMethods.isInsidePolygon(x, y, awt_polygon)) {
+          if (awt_polygon.contains(x, y)) {
             best = p;
             best_z = av_z;
           }
