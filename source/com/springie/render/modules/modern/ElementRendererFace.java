@@ -38,9 +38,14 @@ public final class ElementRendererFace {
 
     final int opacity = face.clazz.colour >>> 24;
 
-    final int n = (opacity == 255) ? 1 : Face.number_of_render_divisions;
+    // "Face lines = 0" fills the face in a solid colour: a single
+    // full-coverage quad per edge, whatever the face's opacity.
+    final boolean solid_fill = (opacity == 255)
+        || (Face.number_of_render_divisions == 0);
 
-    final double opacity_d = opacity / 510.0D;
+    final int n = solid_fill ? 1 : Face.number_of_render_divisions;
+
+    final double opacity_d = solid_fill ? 0.5 : opacity / 510.0D;
 
     final double off_in = 0.5 - opacity_d;
     final double off_out = 0.5 + opacity_d;

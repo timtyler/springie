@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,13 +18,15 @@ import com.springie.elements.faces.FaceType;
 import com.springie.elements.faces.FaceTypeFactory;
 import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;
+import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 
 /**
  * The modern renderer draws faces as filled quads fanning from each edge
  * into the face centre (ElementRendererFace). At full opacity there is one
  * quad per edge; a translucent face class is drawn as concentric bands,
- * one per render division. These tests pin that contract, plus the colour
+ * one per render division; zero render divisions ("Face lines = 0") fills
+ * the face in a solid colour. These tests pin that contract, plus the colour
  * flow (face class colour, selection colour) into the quads.
  */
 class ElementRendererFaceTest {
@@ -92,6 +96,49 @@ class ElementRendererFaceTest {
     final PolygonComposite composite =
         ElementRendererFace.getPolygon(squareFace(0x80000000));
     assertEquals(4 * Face.number_of_render_divisions, composite.array.length);
+  }
+
+  @Test
+  void zeroDivisionsFillsTranslucentFaceSolid() {
+    Face.number_of_render_divisions = 0;
+    final PolygonComposite composite =
+        ElementRendererFace.getPolygon(squareFace(0x80000000));
+    // One full-coverage quad per edge, as in the opaque case.
+    // (On the old code this was an empty array: the face vanished.)
+    assertEquals(4, composite.array.length);
+
+    // Each solid quad spans from the face centre out to its edge, so
+    // every quad has a corner at the projected centre...
+    final int centre_x = Coords.getXCoords(0, 0);
+    final int centre_y = Coords.getYCoords(0, 0);
+    final Set<String> corners = new HashSet<>();
+    for (final PolygonObject2D quad : composite.array) {
+      boolean has_centre = false;
+      for (int i = 0; i < quad.x.length; i++) {
+        corners.add(quad.x[i] + "," + quad.y[i]);
+        if (quad.x[i] == centre_x && quad.y[i] == centre_y) {
+          has_centre = true;
+        }
+      }
+      assertTrue(has_centre, "each solid quad starts at the face centre");
+    }
+
+    // ...and together the quads reach every rim node (full coverage).
+    final int s = 1 << 16;
+    final int[][] nodes = {{-s, -s}, {s, -s}, {s, s}, {-s, s}};
+    for (final int[] node : nodes) {
+      final String rim = Coords.getXCoords(node[0], 0) + ","
+          + Coords.getYCoords(node[1], 0);
+      assertTrue(corners.contains(rim), "rim corner " + rim + " is covered");
+    }
+  }
+
+  @Test
+  void zeroDivisionsLeavesOpaqueFaceSolid() {
+    Face.number_of_render_divisions = 0;
+    final PolygonComposite composite =
+        ElementRendererFace.getPolygon(squareFace(0xFF000000));
+    assertEquals(4, composite.array.length);
   }
 
   @Test

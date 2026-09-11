@@ -53,6 +53,13 @@ public class CachedFace {
   }
 
   private void renderFace(Face face, int type) {
+    // "Face lines = 0" fills the face in a solid colour instead of
+    // drawing the concentric/segmented line pattern.
+    if (Face.number_of_render_divisions == 0) {
+      renderSolid(face);
+      return;
+    }
+
     switch (type) {
       case FaceRenderTypes.CONCENTRIC:
         renderThinConcentric(face, Face.number_of_render_divisions);
@@ -123,8 +130,29 @@ public class CachedFace {
     this.render_centre.y = sum_y / npoints;
   }
 
-  private void renderThinConcentric(Face face, int num) {
+  /**
+   * Fills the face outline in a solid colour. Used when "Face lines" is 0.
+   * The points in {@link #render} are already projected screen coordinates,
+   * refreshed by {@link #cache(Face, int)}.
+   */
+  private void renderSolid(Face face) {
     final int npoints = face.nodes.size();
+    if (this.render.size() != npoints) {
+      setUpRenderingScratchSpace(face);
+    }
+
+    final int[] xs = new int[npoints];
+    final int[] ys = new int[npoints];
+    for (int k = npoints; --k >= 0;) {
+      final Point p = (Point) this.render.get(k);
+      xs[k] = p.x;
+      ys[k] = p.y;
+    }
+
+    RendererDelegator.graphics_handle.fillPolygon(xs, ys, npoints);
+  }
+
+  private void renderThinConcentric(Face face, int num) {    final int npoints = face.nodes.size();
     final int rpoints = this.render.size();
     if (rpoints != npoints) {
       setUpRenderingScratchSpace(face);
