@@ -353,7 +353,7 @@ public class PanelPreferencesRendererModern {
 		this.checkbox_show_active_bins.setState(false);
 
 		// Bin size.
-		RendererBinManager.divisor = 192;
+		RendererBinManager.divisor = 340;
 		this.scroll_bar_bin_size.setValue(RendererBinManager.divisor);
 		reflectBinSizeNumber();
 

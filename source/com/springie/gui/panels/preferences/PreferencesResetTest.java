@@ -138,7 +138,7 @@ class PreferencesResetTest {
       assertEquals(Boolean.FALSE, FrEnd.preferences.map.get(
           Preferences.key_update_animation_when_pointer_over));
 
-      assertEquals(192, RendererBinManager.divisor);
+      assertEquals(340, RendererBinManager.divisor);
       assertFalse(RendererBinManager.show_bins);
       assertEquals(ColourModifier.natural,
           RendererBinManager.colour_modifier_filled);

@@ -12,7 +12,7 @@ import com.springie.context.ContextManager;
 import com.springie.render.RendererDelegator;
 
 public class RendererBinManager {
-  public static int divisor = 192;
+  public static int divisor = 340;
 
   int number_of_bins_x;
 
