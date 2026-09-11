@@ -3,8 +3,12 @@
 package com.springie.gui.panels;
 
 import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.CardLayout;
+import java.awt.FileDialog;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Label;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,11 +22,13 @@ import java.util.Iterator;
 import org.xml.sax.SAXException;
 
 import com.springie.FrEnd;
+import com.springie.context.ContextManager;
 import com.springie.gui.components.ButtonBar;
 import com.springie.gui.components.ChoiceWithDescription;
 import com.springie.gui.components.ImageButton;
 import com.springie.gui.components.TextFieldWrapper;
 import com.springie.gui.panels.preferences.ButtonMouseActionStrings;
+import com.springie.io.out.writers.spr.WriterSpr;
 import com.springie.messages.Message;
 import com.springie.messages.MessageManager;
 import com.springie.messages.NewMessage;
@@ -30,6 +36,7 @@ import com.springie.messages.NewMessageManager;
 import com.springie.presets.AddXMLModelIndexLeaves;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
+import com.springie.utilities.FilePath;
 import com.tifsoft.Forget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +70,22 @@ public class PanelFundamental {
 
   public ImageButton button_select_all_of_class;
 
+  private static final String CARD_PRESETS = "presets";
+
+  private static final String CARD_FILE = "file";
+
+  private CardLayout card_layout;
+
+  private Panel card_panel;
+
+  Panel card_presets;
+
+  Panel card_file;
+
+  private Label label_file_name;
+
+  public ImageButton button_file_presets;
+
   public PanelFundamental(MessageManager message_manager,
       NewMessageManager new_message_manager) {
     this.message_manager = message_manager;
@@ -86,9 +109,173 @@ public class PanelFundamental {
     this.panel.add(makePanelSelectAllOfClass());
     this.panel.add(makePanelZoomIn()); 
     this.panel.add(makePanelZoomOut()); 
-    this.panel.add(makePanelPresetIndex());
-    this.panel.add(makePanelInitialCvonfiguration());
+    this.panel.add(makePanelFilePresetsToggle());
+    this.panel.add(makePanelFileOrPresets());
     this.panel.add(makePanelRestart());
+  }
+
+  /**
+   * The floppy-disc toggle: pressed in shows the two preset dropdowns
+   * (the default); pressed out swaps them for the current filename plus
+   * Load and Save buttons. The launch button sits outside the cards, so
+   * it stays visible and active in both cases.
+   */
+  private Panel makePanelFilePresetsToggle() {
+    final Panel panel = new Panel();
+    panel.setLayout(new BorderLayout(0, 0));
+
+    this.button_file_presets = new ImageButton("floppy", null, "File", true);
+    this.button_file_presets.setRadio(true);
+
+    this.button_file_presets.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent arg0) {
+        Forget.about(arg0);
+        showPresetsCard(button_file_presets.getState());
+      }
+    });
+
+    panel.add(this.button_file_presets);
+    return panel;
+  }
+
+  private Panel makePanelFileOrPresets() {
+    final Panel panel = new Panel();
+    this.card_layout = new CardLayout();
+    panel.setLayout(this.card_layout);
+
+    this.card_presets = makePresetsCard();
+    this.card_file = makeFileCard();
+    panel.add(this.card_presets, CARD_PRESETS);
+    panel.add(this.card_file, CARD_FILE);
+    this.card_panel = panel;
+
+    this.card_layout.show(panel, CARD_PRESETS);
+    return panel;
+  }
+
+  private Panel makePresetsCard() {
+    final Panel panel = new Panel();
+    panel.setLayout(new FlowLayout());
+    panel.add(makePanelPresetIndex());
+    panel.add(makePanelInitialCvonfiguration());
+    return panel;
+  }
+
+  private Panel makeFileCard() {
+    final Panel panel = new Panel();
+    panel.setLayout(new FlowLayout());
+
+    this.label_file_name = new Label(leafOf(FrEnd.last_file_path));
+    panel.add(this.label_file_name);
+
+    final Button button_load = new Button("Load");
+    button_load.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent arg0) {
+        Forget.about(arg0);
+        chooseLoadFile();
+      }
+    });
+    panel.add(button_load);
+
+    final Button button_save = new Button("Save");
+    button_save.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent arg0) {
+        Forget.about(arg0);
+        chooseSaveFile();
+      }
+    });
+    panel.add(button_save);
+
+    return panel;
+  }
+
+  void showPresetsCard(boolean show_presets) {
+    if (show_presets) {
+      this.card_layout.show(this.card_panel, CARD_PRESETS);
+    } else {
+      reflectFileName();
+      this.card_layout.show(this.card_panel, CARD_FILE);
+    }
+  }
+
+  /** Shows the leaf of the file named by the load menu / save dialog. */
+  void reflectFileName() {
+    this.label_file_name.setText(leafOf(FrEnd.last_file_path));
+  }
+
+  /** The Load button: the same file dialog as the Load menu. */
+  void chooseLoadFile() {
+    final FileDialog fd = new FileDialog(FrEnd.frame_main, "Load objects",
+        FileDialog.LOAD);
+    fd.setVisible(true);
+    final String file = fd.getFile();
+    final String directory = fd.getDirectory();
+    fd.dispose();
+
+    if (file != null && !"".equals(file)) {
+      FrEnd.loadFile(new FilePath(directory, file));
+      reflectFileName();
+    }
+  }
+
+  /**
+   * The Save button: writes straight back to the current file when it is
+   * a local file from the load menu, otherwise falls back to a save-as
+   * dialog like the menu's "Save .SPR file as...".
+   */
+  void chooseSaveFile() {
+    final String current = FrEnd.last_file_path;
+    if (isLocalFile(current)) {
+      writeSprFile(stripFilePrefix(current));
+      return;
+    }
+
+    final FileDialog fd = new FileDialog(FrEnd.frame_main,
+        "Save .SPR file as:", FileDialog.SAVE);
+    fd.setFile(ensureExtension(leafOf(current), "spr"));
+    fd.setVisible(true);
+    final String directory = fd.getDirectory();
+    final String file = fd.getFile();
+    fd.dispose();
+
+    if (file != null && !"".equals(file)) {
+      final String file_path = directory + file;
+      writeSprFile(file_path);
+      FrEnd.setFilePath("file://" + file_path);
+      reflectFileName();
+    }
+  }
+
+  private static void writeSprFile(String file_path) {
+    new WriterSpr(ContextManager.getNodeManager()).write(file_path);
+  }
+
+  private static boolean isLocalFile(String path) {
+    return !(path.startsWith("http:") || path.startsWith("https:")
+        || path.startsWith("ftp:"));
+  }
+
+  private static String stripFilePrefix(String path) {
+    if (path.startsWith("file://")) {
+      return path.substring("file://".length());
+    }
+
+    return path;
+  }
+
+  private static String leafOf(String path) {
+    final int slash = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'));
+    return path.substring(slash + 1);
+  }
+
+  private static String ensureExtension(String leaf, String extension) {
+    final int len = leaf.length();
+    final int idx = leaf.lastIndexOf(".");
+    if (idx > len - 6) {
+      return leaf.substring(0, idx) + "." + extension;
+    }
+
+    return leaf + "." + extension;
   }
 
   private Panel makePanelControls() {
