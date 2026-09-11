@@ -14,6 +14,8 @@ import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
+import com.springie.gui.GuiTestSupport;
+import com.springie.gui.panels.UpdateEnabledComponents;
 
 /**
  * When nothing is selected, the Properties > Scalars tab must say so
@@ -34,6 +36,13 @@ class PanelControlsPropertiesScalarsTest {
 
     SwingUtilities.invokeAndWait(() -> FrEnd.main(new String[0]));
     try {
+      // The boot-time model load lands asynchronously and can flag a
+      // selection-driven GUI refresh; the first such refresh rebuilds this
+      // panel from the real (empty) selection. Let the boot settle and
+      // flush that refresh now, so it cannot race the assertions below.
+      GuiTestSupport.waitForBootModelLoadToSettle();
+      SwingUtilities.invokeAndWait(UpdateEnabledComponents::actuallyUpdate);
+
       SwingUtilities.invokeAndWait(() -> FrEnd.panel_edit_properties_scalars
           .resetPanel(false, false, false));
 
