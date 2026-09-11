@@ -173,9 +173,13 @@ public final class ElementRendererLink {
       }
       // Backface culling: a closed tube only shows its near side. The
       // far-side quads would otherwise paint over the near side -- each
+      // Backface culling: a closed tube only shows its near side. The
+      // far-side quads would otherwise paint over the near side -- each
       // composite carries a single depth, so the painter's algorithm
       // cannot sort quads within it -- making the strut look transparent.
       // Same winding test as the node polyhedra; culled in place.
+      // tubeQuad winds its corners so that, exactly like the node
+      // polyhedra, a quad facing the viewer passes the winding test.
       int front_count = 0;
       for (int side = 0; side < sides; side++) {
         final PolygonObject2D quad = quads[side];
@@ -209,20 +213,27 @@ public final class ElementRendererLink {
   /**
    * One side of the open tube: the quad between two adjacent cross-section
    * directions. The tube ends are left open (no caps).
+   *
+   * The corners are wound so the quad's facing matches the node
+   * polyhedra convention: a quad whose outward normal points at the
+   * viewer passes ElementRendererNode.isVisible, and is kept by the
+   * backface culling above.
+   *
+   * Package-visible for the winding-direction test.
    */
-  private static PolygonObject2D tubeQuad(Point3D point0n, Point3D point1n,
+  static PolygonObject2D tubeQuad(Point3D point0n, Point3D point1n,
       Vector3D cross_1_int, Vector3D cross_2_int,
       double cos_a, double sin_a, double cos_b, double sin_b,
       double sf1, double sf2, int new_colour) {
     final Point3D[] quad_points = new Point3D[4];
     quad_points[0] = tubeCorner(point0n, cross_1_int, cross_2_int,
         cos_a, sin_a, sf1);
-    quad_points[1] = tubeCorner(point0n, cross_1_int, cross_2_int,
-        cos_b, sin_b, sf1);
+    quad_points[1] = tubeCorner(point1n, cross_1_int, cross_2_int,
+        cos_a, sin_a, sf2);
     quad_points[2] = tubeCorner(point1n, cross_1_int, cross_2_int,
         cos_b, sin_b, sf2);
-    quad_points[3] = tubeCorner(point1n, cross_1_int, cross_2_int,
-        cos_a, sin_a, sf2);
+    quad_points[3] = tubeCorner(point0n, cross_1_int, cross_2_int,
+        cos_b, sin_b, sf1);
     return new PolygonObject2D(quad_points, new_colour);
   }
 
