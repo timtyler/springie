@@ -137,7 +137,7 @@ public class ReaderM {
         out.append("N X:" + x + " Y:" + y + " Z:" + z + " ");
         //Log.log("X:" + x + " Y:" + y + " Z:" + z + " ");
 
-        this.current_polygon.add(new Integer(this.node_number));
+        this.current_polygon.add(Integer.valueOf(this.node_number));
       } else if (this.in_polygon) {
         final double xd = Double.valueOf(token).doubleValue();
         token = getNextValidToken(st);
@@ -156,7 +156,7 @@ public class ReaderM {
           this.nodes.add(node);
           out.append("N X:" + node.x + " Y:" + node.y + " Z:" + node.z + " ");
         }
-        this.current_polygon.add(new Integer(this.node_number));
+        this.current_polygon.add(Integer.valueOf(this.node_number));
       }
     } while (true);
   }

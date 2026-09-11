@@ -206,7 +206,7 @@ public final class PNGReader {
     }
 
     this.is_colour_type = true;
-    this.vector.add(new Integer(getLocation()));
+    this.vector.add(Integer.valueOf(getLocation()));
     if (getColourMapSize() > 8192) {
       throw error(verbose ? "Implementation - too long colour map: " + getColourMapSize()
           : "");
@@ -250,7 +250,7 @@ public final class PNGReader {
     // old code...
     // pixels = new int[width * height];
     this.png_maker = new PNGMaker(this.input_stream, this.inflater, 512);
-    this.vector.add(new Integer(getLocation()));
+    this.vector.add(Integer.valueOf(getLocation()));
     final int j = (this.state * this.bit_depth + 7) / 8;
     // boolean flag = false;
     this.xb = new byte[j * this.width + 1];
@@ -410,7 +410,7 @@ public final class PNGReader {
   }
 
   private void santiyCheck() throws IOException {
-    this.vector.add(new Integer(getLocation()));
+    this.vector.add(Integer.valueOf(getLocation()));
     if (!getPLTEOrderProblem() || this.colour_type == 3 && !this.is_colour_type) {
       throw error(verbose ? "IDAT or PLTE absence" : "");
     }
@@ -423,7 +423,7 @@ public final class PNGReader {
   }
 
   private void changeGamma() throws IOException {
-    this.vector.add(new Integer(getLocation()));
+    this.vector.add(Integer.valueOf(getLocation()));
     if (this.is_colour_type || getPLTEOrderProblem()) {
       throw error(verbose ? "Late gAMA appeares" : "");
     }
@@ -448,7 +448,7 @@ public final class PNGReader {
     if (this.colour_type == 3 && !this.is_colour_type) {
       throw error(verbose ? "Early tRNS appeared" : "");
     }
-    this.vector.add(new Integer(getLocation()));
+    this.vector.add(Integer.valueOf(getLocation()));
     if ((this.ya & 0x400) == 0) {
       xp();
       return;
@@ -596,7 +596,7 @@ public final class PNGReader {
     if (getPLTEOrderProblem()) {
       this.bool3 = true;
     }
-    this.vector.add(new Integer(getLocation()));
+    this.vector.add(Integer.valueOf(getLocation()));
     if ((getLocation() & 0x20000000) != 0) {
       xp();
       return;

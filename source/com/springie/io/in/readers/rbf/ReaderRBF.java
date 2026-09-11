@@ -98,7 +98,7 @@ public final class ReaderRBF {
             final String st_l = st.nextToken();
             if (isANumber(st_l)) {
               final int l = (int) ((Double.valueOf(st_l).doubleValue() * sf));
-              v.add(new Integer(l));
+              v.add(Integer.valueOf(l));
               h.add("0");
               waiting_for_hidden = true;
             }

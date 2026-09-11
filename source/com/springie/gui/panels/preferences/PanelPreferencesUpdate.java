@@ -86,7 +86,7 @@ public class PanelPreferencesUpdate {
       public void itemStateChanged(ItemEvent e) {
         FrEnd.preferences.map.put(
             Preferences.key_update_animation_when_pointer_over,
-            new Boolean(((Checkbox) e.getSource()).getState()));
+            Boolean.valueOf(((Checkbox) e.getSource()).getState()));
       }
     });
     final Panel panel = new Panel();

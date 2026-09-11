@@ -121,7 +121,7 @@ public final class ReaderWRL {
                 current_face = new ArrayList<>();
                 current_group.faces.add(current_face);
               } else {
-                current_face.add(new Integer(v));
+                current_face.add(Integer.valueOf(v));
               }
             } else {
               finished = true;

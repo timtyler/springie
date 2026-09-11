@@ -16,7 +16,7 @@ public class ListOfIntegers extends BaseType {
   }
 
   public final void add(int i) {
-    this.list.add(new Integer(i));
+    this.list.add(Integer.valueOf(i));
   }
 
   public int retreive(int i) {

@@ -593,14 +593,12 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 		initial_type = initial_initial_type;
 
-		// TO DO - get rid of this legacy code
-
 		SetUpCode.clearAndThenAddInitialObjects();
 
 		if (!application) {
 			FrEnd.archive = getParameter("url");
 			final boolean focus = "true".equals(getParameter("focus"));
-			preferences.map.put(Preferences.key_update_animation_when_pointer_over, new Boolean(focus));
+			preferences.map.put(Preferences.key_update_animation_when_pointer_over, Boolean.valueOf(focus));
 		}
 	}
 

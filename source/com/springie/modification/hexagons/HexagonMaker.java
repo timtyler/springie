@@ -85,7 +85,7 @@ public class HexagonMaker {
 //      final Node candidate = (Node) this.node_manager.element
 //        .get(counter);
 //      if (candidate.clazz.colour == colour) {
-//        nodes.add(new Integer(counter));
+//        nodes.add(Integer.valueOf(counter));
 //        //nodes[idx++] = counter;
 //      }
 //    }
