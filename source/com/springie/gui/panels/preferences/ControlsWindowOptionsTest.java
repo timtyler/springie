@@ -6,12 +6,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.awt.AWTEvent;
 import java.awt.Checkbox;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dialog;
 import java.awt.Frame;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.Toolkit;
+import java.awt.event.AWTEventListener;
+import java.awt.event.MouseEvent;
 
 import javax.swing.SwingUtilities;
 
@@ -59,25 +62,24 @@ class ControlsWindowOptionsTest {
       // on the machine.
       states[1] = FrEnd.frame_controls.isAlwaysOnTop();
       states[2] = FrEnd.isControlsStayOnTopActive();
-      listener_count[0] = FrEnd.frame_main.getWindowListeners().length;
+      listener_count[0] = Toolkit.getDefaultToolkit().getAWTEventListeners().length;
     });
     assertTrue(states[0], "stay on top should default to true");
     assertFalse(states[1], "controls frame must not be always-on-top");
-    assertTrue(states[2], "the stay-on-top listener should be watching");
+    assertTrue(states[2], "the stay-on-top listener should be installed");
 
-    // Re-applying must not attach a second listener.
+    // Re-applying must not install a second listener.
     SwingUtilities.invokeAndWait(() -> {
       FrEnd.applyControlsWindowOptions();
-      listener_count[0] = FrEnd.frame_main.getWindowListeners().length
+      listener_count[0] = Toolkit.getDefaultToolkit().getAWTEventListeners().length
           - listener_count[0];
       states[2] = FrEnd.isControlsStayOnTopActive();
     });
     assertEquals(0, listener_count[0], "re-applying must not duplicate it");
     assertTrue(states[2]);
 
-    // Activating the main window brings the controls forward, without
-    // touching the system-wide flag. The other window listeners on the
-    // main frame ignore activation; only ours calls toFront.
+    // A mouse press inside the main window brings the controls forward,
+    // without touching the system-wide flag.
     final boolean[] brought_forward = new boolean[1];
     SwingUtilities.invokeAndWait(() -> {
       final Frame real_controls = FrEnd.frame_controls;
@@ -91,22 +93,71 @@ class ControlsWindowOptionsTest {
             return true;
           }
         };
-        final WindowEvent activated = new WindowEvent(FrEnd.frame_main,
-            WindowEvent.WINDOW_ACTIVATED);
-        for (final WindowListener listener
-            : FrEnd.frame_main.getWindowListeners()) {
-          listener.windowActivated(activated);
-        }
+        dispatchToStayOnTopListeners(
+            mousePress(FrEnd.frame_main));
       } finally {
         FrEnd.frame_controls = real_controls;
       }
     });
     assertTrue(brought_forward[0],
-        "activating the main window should bring the controls forward");
+        "pressing inside the main window should bring the controls forward");
     final boolean[] still_not_on_top = new boolean[1];
     SwingUtilities.invokeAndWait(
         () -> still_not_on_top[0] = FrEnd.frame_controls.isAlwaysOnTop());
     assertFalse(still_not_on_top[0]);
+
+    // A press inside the controls window itself must not yank it forward:
+    // that is the path menu clicks used to take, via window activation.
+    final boolean[] yanked = new boolean[1];
+    SwingUtilities.invokeAndWait(() -> {
+      final Frame real_controls = FrEnd.frame_controls;
+      try {
+        FrEnd.frame_controls = new Frame() {
+          public void toFront() {
+            yanked[0] = true;
+          }
+
+          public boolean isVisible() {
+            return true;
+          }
+        };
+        dispatchToStayOnTopListeners(
+            mousePress(FrEnd.frame_controls));
+      } finally {
+        FrEnd.frame_controls = real_controls;
+      }
+    });
+    assertFalse(yanked[0],
+        "presses outside the main window must not move the controls");
+
+    // A press inside an owned dialog (e.g. a file dialog) must be left
+    // alone too.
+    final boolean[] disturbed = new boolean[1];
+    SwingUtilities.invokeAndWait(() -> {
+      final Frame real_controls = FrEnd.frame_controls;
+      final Dialog dialog = new Dialog(FrEnd.frame_main, "test", false);
+      try {
+        FrEnd.frame_controls = new Frame() {
+          public void toFront() {
+            disturbed[0] = true;
+          }
+
+          public boolean isVisible() {
+            return true;
+          }
+        };
+        final Component button = new Component() {
+        };
+        dialog.add(button);
+        dialog.pack();
+        dispatchToStayOnTopListeners(mousePress(button));
+      } finally {
+        dialog.dispose();
+        FrEnd.frame_controls = real_controls;
+      }
+    });
+    assertFalse(disturbed[0],
+        "presses inside an owned dialog must not move the controls");
 
     SwingUtilities.invokeAndWait(() -> {
       FrEnd.controls_stay_on_top = false;
@@ -120,8 +171,9 @@ class ControlsWindowOptionsTest {
 
   @Test
   void stayOnTopFollowsRecreatedFrames() throws Exception {
-    // Booting again recreates the frames; the option must follow the new
-    // main window instead of staying attached to the discarded one.
+    // Booting again recreates the frames; the toolkit listener reads the
+    // current frame_main, so it follows the new main window with no
+    // re-attaching.
     GuiTestSupport.bootApp();
 
     final boolean[] brought_forward = new boolean[1];
@@ -138,18 +190,30 @@ class ControlsWindowOptionsTest {
             return true;
           }
         };
-        final WindowEvent activated = new WindowEvent(FrEnd.frame_main,
-            WindowEvent.WINDOW_ACTIVATED);
-        for (final WindowListener listener
-            : FrEnd.frame_main.getWindowListeners()) {
-          listener.windowActivated(activated);
-        }
+        dispatchToStayOnTopListeners(
+            mousePress(FrEnd.frame_main));
       } finally {
         FrEnd.frame_controls = real_controls;
       }
     });
     assertTrue(brought_forward[0],
         "after a fresh boot the new main window should drive stay-on-top");
+  }
+
+  /**
+   * Delivers a synthetic event to every toolkit-level event listener, the
+   * way the event queue would.
+   */
+  private static void dispatchToStayOnTopListeners(AWTEvent e) {
+    for (final AWTEventListener listener
+        : Toolkit.getDefaultToolkit().getAWTEventListeners()) {
+      listener.eventDispatched(e);
+    }
+  }
+
+  private static MouseEvent mousePress(Component source) {
+    return new MouseEvent(source, MouseEvent.MOUSE_PRESSED,
+        System.currentTimeMillis(), 0, 10, 10, 1, false);
   }
 
   @Test

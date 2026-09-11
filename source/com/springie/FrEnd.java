@@ -5,8 +5,10 @@
 package com.springie;
 
 import java.applet.Applet;
+import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
@@ -16,13 +18,13 @@ import java.awt.Panel;
 import java.awt.Point;
 import java.awt.Scrollbar;
 import java.awt.Toolkit;
+import java.awt.Window;
+import java.awt.event.AWTEventListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.InputEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 import com.springie.constants.Actions;
@@ -655,9 +657,11 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 	 * at startup.
 	 *
 	 * "Stay on top" keeps the controls above the main window only -- never
-	 * above every window on the machine. A window listener on the main
-	 * frame brings the controls forward whenever the main window is
-	 * activated.
+	 * above every window on the machine. A toolkit-level listener brings
+	 * the controls forward when the user presses the mouse inside the main
+	 * window. Presses on the menu bar need no special-casing: the native
+	 * menu bar is not an AWT component, so clicking Load/Save/... never
+	 * triggers the listener and the menus open normally.
 	 */
 	public static void applyControlsWindowOptions() {
 		// Never system-wide: the controls must not sit above other
@@ -684,14 +688,11 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		}
 	}
 
-	private static WindowListener controls_stay_on_top_listener;
-
-	/** The main frame the stay-on-top listener is attached to. */
-	private static Frame controls_stay_on_top_frame;
+	private static AWTEventListener controls_stay_on_top_listener;
 
 	/**
-	 * Whether the stay-on-top listener is currently watching the main
-	 * window. Exposed for the tests.
+	 * Whether the stay-on-top listener is currently installed. Exposed for
+	 * the tests.
 	 */
 	public static boolean isControlsStayOnTopActive() {
 		return controls_stay_on_top_listener != null;
@@ -702,36 +703,67 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 			return;
 		}
 
-		if (controls_stay_on_top_listener == null
-				|| controls_stay_on_top_frame != frame_main) {
-			// (Re)attach: the frames may have been recreated since the
-			// listener was last attached.
-			stopControlsStayOnTop();
-			controls_stay_on_top_listener = new WindowAdapter() {
-				public void windowActivated(WindowEvent e) {
-					Forget.about(e);
-					if (frame_controls != null && frame_controls.isVisible()) {
-						frame_controls.toFront();
-					}
-				}
-			};
-			frame_main.addWindowListener(controls_stay_on_top_listener);
-			controls_stay_on_top_frame = frame_main;
-			// Bring the controls forward once, now that the option is on.
-			// (Not on every apply: that would yank the window forward while
-			// the user works in another application.)
-			frame_controls.toFront();
+		if (controls_stay_on_top_listener != null) {
+			// Already installed. It reads the current frame_main, so it
+			// follows recreated frames with no re-attaching.
+			return;
 		}
+
+		controls_stay_on_top_listener = new AWTEventListener() {
+			public void eventDispatched(AWTEvent e) {
+				if (e.getID() == MouseEvent.MOUSE_PRESSED
+						&& isMainWindowContent(e.getSource())
+						&& frame_controls != null
+						&& frame_controls.isVisible()) {
+					frame_controls.toFront();
+				}
+			}
+		};
+		try {
+			Toolkit.getDefaultToolkit().addAWTEventListener(
+					controls_stay_on_top_listener, AWTEvent.MOUSE_EVENT_MASK);
+		} catch (SecurityException e) {
+			// Applets may not be allowed to listen to toolkit events.
+			Forget.about(e);
+			controls_stay_on_top_listener = null;
+			return;
+		}
+		// Bring the controls forward once, now that the option is on.
+		// (Not on every apply: that would yank the window forward while
+		// the user works in another application.)
+		frame_controls.toFront();
+	}
+
+	/**
+	 * True when the event source is the main window itself or a component
+	 * inside it -- but not inside one of its owned windows (such as a file
+	 * dialog), which must be left alone. The native menu bar is not a
+	 * component at all, so presses on Load/Save/... never reach this test.
+	 */
+	private static boolean isMainWindowContent(Object source) {
+		if (!(source instanceof Component)) {
+			return false;
+		}
+
+		Component c = (Component) source;
+		while (c != null && c != frame_main) {
+			if (c instanceof Window) {
+				// Inside an owned window (e.g. a file dialog), not the main
+				// window's own content.
+				return false;
+			}
+			c = c.getParent();
+		}
+
+		return c == frame_main;
 	}
 
 	private static void stopControlsStayOnTop() {
-		if (controls_stay_on_top_frame != null
-				&& controls_stay_on_top_listener != null) {
-			controls_stay_on_top_frame
-					.removeWindowListener(controls_stay_on_top_listener);
+		if (controls_stay_on_top_listener != null) {
+			Toolkit.getDefaultToolkit().removeAWTEventListener(
+					controls_stay_on_top_listener);
+			controls_stay_on_top_listener = null;
 		}
-		controls_stay_on_top_listener = null;
-		controls_stay_on_top_frame = null;
 	}
 
 	private static void startControlsDocking() {
