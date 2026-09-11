@@ -25,6 +25,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 import java.util.List;
 
 import com.springie.constants.Actions;
@@ -658,10 +659,14 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 	 *
 	 * "Stay on top" keeps the controls above the main window only -- never
 	 * above every window on the machine. A toolkit-level listener brings
-	 * the controls forward when the user presses the mouse inside the main
-	 * window. Presses on the menu bar need no special-casing: the native
-	 * menu bar is not an AWT component, so clicking Load/Save/... never
-	 * triggers the listener and the menus open normally.
+	 * the controls forward when the main window is activated (title bar,
+	 * task bar, Alt+Tab, ...) and when the mouse is pressed inside it.
+	 * The activation raise is done without activating the controls: the
+	 * old plain toFront() here stole focus mid-click and cancelled the
+	 * main window's menus on Windows. Presses on the menu bar need no
+	 * special-casing: the native menu bar is not an AWT component, so
+	 * clicking Load/Save/... never triggers the press branch and the menus
+	 * open normally.
 	 */
 	public static void applyControlsWindowOptions() {
 		// Never system-wide: the controls must not sit above other
@@ -711,17 +716,27 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 		controls_stay_on_top_listener = new AWTEventListener() {
 			public void eventDispatched(AWTEvent e) {
-				if (e.getID() == MouseEvent.MOUSE_PRESSED
-						&& isMainWindowContent(e.getSource())
-						&& frame_controls != null
-						&& frame_controls.isVisible()) {
+				if (frame_controls == null || !frame_controls.isVisible()) {
+					return;
+				}
+				if (e.getID() == WindowEvent.WINDOW_ACTIVATED
+						&& e.getSource() == frame_main) {
+					// The main window was activated by any path (content,
+					// title bar, task bar, Alt+Tab, ...): bring the controls
+					// back above it, without activating them -- stealing
+					// focus here is what used to cancel the main window's
+					// menus mid-click.
+					bringControlsForwardNonActivating();
+				} else if (e.getID() == MouseEvent.MOUSE_PRESSED
+						&& isMainWindowContent(e.getSource())) {
 					frame_controls.toFront();
 				}
 			}
 		};
 		try {
 			Toolkit.getDefaultToolkit().addAWTEventListener(
-					controls_stay_on_top_listener, AWTEvent.MOUSE_EVENT_MASK);
+					controls_stay_on_top_listener, AWTEvent.MOUSE_EVENT_MASK
+							| AWTEvent.WINDOW_EVENT_MASK);
 		} catch (SecurityException e) {
 			// Applets may not be allowed to listen to toolkit events.
 			Forget.about(e);
@@ -732,6 +747,28 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		// (Not on every apply: that would yank the window forward while
 		// the user works in another application.)
 		frame_controls.toFront();
+	}
+
+	/**
+	 * Raises the controls window above the main window without giving it
+	 * focus. A plain toFront() may activate the window, which is what used
+	 * to cancel the main window's menus when they were clicked while the
+	 * controls were on top. A momentarily non-focusable window is raised
+	 * without activation; the flag is restored immediately, synchronously
+	 * on this event dispatch, so nothing in between can observe it.
+	 */
+	private static void bringControlsForwardNonActivating() {
+		final boolean focusable = frame_controls.getFocusableWindowState();
+		try {
+			if (focusable) {
+				frame_controls.setFocusableWindowState(false);
+			}
+			frame_controls.toFront();
+		} finally {
+			if (focusable) {
+				frame_controls.setFocusableWindowState(true);
+			}
+		}
 	}
 
 	/**

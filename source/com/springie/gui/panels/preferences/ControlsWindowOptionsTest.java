@@ -15,6 +15,7 @@ import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 
 import javax.swing.SwingUtilities;
 
@@ -198,6 +199,71 @@ class ControlsWindowOptionsTest {
     });
     assertTrue(brought_forward[0],
         "after a fresh boot the new main window should drive stay-on-top");
+  }
+
+  @Test
+  void stayOnTopBringsControlsForwardOnMainWindowActivation()
+      throws Exception {
+    // Activating the main window by any path (title bar, task bar,
+    // Alt+Tab) must bring the controls back above it: the press branch
+    // alone misses all of these. The raise must not activate the
+    // controls -- stealing focus here is what used to cancel the main
+    // window's menus mid-click -- so the window is briefly made
+    // non-focusable around the toFront().
+    final boolean[] raised = new boolean[1];
+    final boolean[] non_focusable_during_raise = new boolean[1];
+    final boolean[] focusable_after = new boolean[1];
+    SwingUtilities.invokeAndWait(() -> {
+      final Frame real_controls = FrEnd.frame_controls;
+      try {
+        FrEnd.frame_controls = new Frame() {
+          public void toFront() {
+            raised[0] = true;
+            non_focusable_during_raise[0] = !getFocusableWindowState();
+          }
+
+          public boolean isVisible() {
+            return true;
+          }
+        };
+        dispatchToStayOnTopListeners(
+            new WindowEvent(FrEnd.frame_main, WindowEvent.WINDOW_ACTIVATED));
+      } finally {
+        FrEnd.frame_controls = real_controls;
+      }
+      focusable_after[0] = FrEnd.frame_controls.getFocusableWindowState();
+    });
+    assertTrue(raised[0],
+        "activating the main window should bring the controls forward");
+    assertTrue(non_focusable_during_raise[0],
+        "the activation raise must not activate the controls (menus!)");
+    assertTrue(focusable_after[0],
+        "the focusable state must be restored after the raise");
+
+    // Activating any other window must leave the controls alone.
+    final boolean[] disturbed = new boolean[1];
+    SwingUtilities.invokeAndWait(() -> {
+      final Frame real_controls = FrEnd.frame_controls;
+      final Frame other = new Frame();
+      try {
+        FrEnd.frame_controls = new Frame() {
+          public void toFront() {
+            disturbed[0] = true;
+          }
+
+          public boolean isVisible() {
+            return true;
+          }
+        };
+        dispatchToStayOnTopListeners(
+            new WindowEvent(other, WindowEvent.WINDOW_ACTIVATED));
+      } finally {
+        other.dispose();
+        FrEnd.frame_controls = real_controls;
+      }
+    });
+    assertFalse(disturbed[0],
+        "activating another window must not move the controls");
   }
 
   /**
