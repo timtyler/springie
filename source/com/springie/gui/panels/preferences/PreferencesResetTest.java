@@ -148,7 +148,7 @@ class PreferencesResetTest {
       assertEquals(1, ElementRendererLink.cable_divisions);
       assertEquals(4, RendererDelegator.link_sides);
       assertEquals(0xFF000000, RendererDelegator.color_background_number);
-      assertEquals(3, PanelPreferencesRendererModern.render_label_when);
+      assertEquals(2, PanelPreferencesRendererModern.render_label_when);
       assertTrue(RendererDelegator.renderer instanceof ModularRendererNew,
           "reset must restore the Modern renderer");
 

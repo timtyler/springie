@@ -69,7 +69,7 @@ public class PanelPreferencesRendererModern {
 
 	TTChoice choose_label_when;
 
-	public static int render_label_when = 3;
+	public static int render_label_when = 2;
 
 	public PanelPreferencesRendererModern(MessageManager message_manager) {
 		this.message_manager = message_manager;
@@ -377,8 +377,8 @@ public class PanelPreferencesRendererModern {
 		this.choose_polyhedron.choice.select(this.choose_polyhedron
 				.num_to_str(1));
 
-		// Show labels on selected nodes only.
-		render_label_when = 3;
+		// Show labels: never by default.
+		render_label_when = 2;
 		this.choose_label_when.choice.select(this.choose_label_when
 				.num_to_str(render_label_when));
 
