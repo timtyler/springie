@@ -15,6 +15,7 @@ import com.springie.gui.components.TabbedPanel;
 import com.springie.messages.MessageManager;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ModularRendererNew;
+import com.springie.render.modules.raytraced.ModularRendererRaytraced;
 
 public class PanelPreferencesDisplay {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -50,6 +51,7 @@ public class PanelPreferencesDisplay {
     });
 
     this.choose_display_type.add("Modern renderer   ", Quality.SOLID);
+    this.choose_display_type.add("Ray-traced renderer", Quality.RAYTRACED);
     this.choose_display_type.add("Original renderer ", Quality.THICK_OUTLINE);
     this.choose_display_type.choice.select(this.choose_display_type
         .num_to_str(Quality.SOLID));
@@ -112,6 +114,12 @@ public class PanelPreferencesDisplay {
     if (value == Quality.THICK_OUTLINE) {
       RendererDelegator.renderer = new com.springie.render.modules.original.ModularRendererOld();
       this.panel_main.add(FrEnd.panel_preferences_renderer_original.panel,
+          "Center");
+    } else if (value == Quality.RAYTRACED) {
+      RendererDelegator.renderer = new ModularRendererRaytraced();
+      // Shares the modern panel: the bin size lives there, and the
+      // ray-traced renderer uses the same bins as the default renderer.
+      this.panel_main.add(FrEnd.panel_preferences_renderer_modern.panel,
           "Center");
     } else {
       RendererDelegator.renderer = new ModularRendererNew();

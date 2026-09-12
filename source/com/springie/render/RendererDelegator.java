@@ -13,6 +13,7 @@ import com.springie.gui.panels.UpdateEnabledComponents;
 import com.springie.preferences.Preferences;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.modules.modern.ModularRendererNew;
+import com.springie.render.modules.raytraced.ModularRendererRaytraced;
 import com.springie.render.modules.modern.RendererBinManager;
 import com.springie.utilities.random.JUR;
 import com.springie.world.WorldManager;
@@ -69,7 +70,8 @@ public final class RendererDelegator {
   static int frame_count;
 
   public static void repaintAll() {
-    if (renderer instanceof ModularRendererNew) {
+    if (renderer instanceof ModularRendererNew
+        || renderer instanceof ModularRendererRaytraced) {
       repaint_some_objects = true;
     } else {
       repaint_all_objects = true;
@@ -78,7 +80,8 @@ public final class RendererDelegator {
 
 
   public static boolean isOldDoubleBuffer() {
-    if (renderer instanceof ModularRendererNew) {
+    if (renderer instanceof ModularRendererNew
+        || renderer instanceof ModularRendererRaytraced) {
       return false;
     }
     return isUnderlyingOldDoubleBuffer();
