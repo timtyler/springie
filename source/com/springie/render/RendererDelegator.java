@@ -222,14 +222,14 @@ public final class RendererDelegator {
   }
 
   /**
-   * Publishes a freshly computed readout to the Statistics tab. Called
+   * Publishes a freshly computed readout to the Display preferences. Called
    * from the paint path, so the AWT label is always touched on a thread
    * that may touch AWT.
    */
   static synchronized void refreshFpsLabel() {
     if (fps_dirty) {
       fps_dirty = false;
-      FrEnd.panel_statistics.label_fps_value.setText(fps_string);
+      FrEnd.panel_preferences_display.label_fps_value.setText(fps_string);
     }
   }
 

@@ -249,6 +249,9 @@ final class Raytracer {
    * The fill light: |normal . fill| scaled by the Fill light
    * percentage. Returns the 0-255 white to add, or 0 when the setting
    * is 0. Shadow-independent, so it lifts shadowed areas too.
+   *
+   * The fill runs at half the key light's strength: 100% fill adds at
+   * most ~127, so it models the dark side without flattening it.
    */
   private static int fillLight(Hit hit) {
     final int strength = RendererDelegator.fill_light;
@@ -262,7 +265,7 @@ final class Raytracer {
     if (dot > 1.0) {
       dot = 1.0;
     }
-    return (int) (strength * 2.55 * dot);
+    return (int) (strength * 1.275 * dot);
   }
 
   /**

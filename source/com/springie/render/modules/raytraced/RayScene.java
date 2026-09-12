@@ -16,7 +16,8 @@ import com.springie.render.RendererDelegator;
 
 /**
  * Builds an immutable ray-traceable snapshot of the model: nodes become
- * spheres, links become stretched spheres (ellipsoids), faces become triangle fans.
+ * spheres, struts become stretched spheres (ellipsoids), cables become
+ * open cylinders like the default renderer, faces become triangle fans.
  * Selection is baked in as a colour change, exactly like the default
  * renderer; there are no selection boxes or rings.
  */
@@ -73,8 +74,15 @@ final class RayScene {
       for (int s = 0; s < nodes.length - 1; s++) {
         final Node n1 = nodes[s];
         final Node n2 = nodes[s + 1];
-        primitives.add(new RTEllipsoid(n1.pos.x, n1.pos.y, n1.pos.z,
-            n2.pos.x, n2.pos.y, n2.pos.z, radius, colour));
+        if (link.type.compression) {
+          // A strut: stretched sphere, bulging mid-span.
+          primitives.add(new RTEllipsoid(n1.pos.x, n1.pos.y, n1.pos.z,
+              n2.pos.x, n2.pos.y, n2.pos.z, radius, colour));
+        } else {
+          // A cable: a plain cylinder, like the default renderer.
+          primitives.add(new RTCylinder(n1.pos.x, n1.pos.y, n1.pos.z,
+              n2.pos.x, n2.pos.y, n2.pos.z, radius, colour));
+        }
       }
     }
   }

@@ -100,18 +100,13 @@ public class PanelPreferencesRendererModern {
 
 		this.panel_labels.add(getPanelLabelsWhen());
 
-		final TabbedPanel tab_bins = new TabbedPanel();
+		final TabbedPanel tab_options = new TabbedPanel();
 
-		tab_bins.add("Bins", this.panel_bins);
-		tab_bins.add("Labels", this.panel_labels);
+		tab_options.add("Bins", this.panel_bins);
+		tab_options.add("Labels", this.panel_labels);
+		tab_options.add("Misc", this.panel_misc);
 
-		this.panel_main.add(tab_bins);
-
-		final TabbedPanel tab_misc = new TabbedPanel();
-
-		tab_misc.add("Misc", this.panel_misc);
-
-		this.panel_main.add(tab_misc);
+		this.panel_main.add(tab_options);
 	}
 
 	private void getPanelBins() {

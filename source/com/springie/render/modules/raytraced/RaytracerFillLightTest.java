@@ -163,4 +163,34 @@ public class RaytracerFillLightTest {
               + " < " + c30 + " < " + c100);
     }
   }
+
+  @Test
+  public void fullFillAddsAtMostHalfStrength() throws Exception {
+    // 100% fill is capped at half the key light's punch: with the hit
+    // normal exactly aligned to the fill direction the raw add must be
+    // (int)(100 * 1.275) = 127, not 255.
+    final java.lang.reflect.Method fillLight = Raytracer.class
+        .getDeclaredMethod("fillLight", Hit.class);
+    fillLight.setAccessible(true);
+    final java.lang.reflect.Field fx_field = Raytracer.class
+        .getDeclaredField("FILL_X");
+    final java.lang.reflect.Field fy_field = Raytracer.class
+        .getDeclaredField("FILL_Y");
+    final java.lang.reflect.Field fz_field = Raytracer.class
+        .getDeclaredField("FILL_Z");
+    fx_field.setAccessible(true);
+    fy_field.setAccessible(true);
+    fz_field.setAccessible(true);
+    final double fx = fx_field.getDouble(null);
+    final double fy = fy_field.getDouble(null);
+    final double fz = fz_field.getDouble(null);
+    final Hit hit = new Hit();
+    hit.nx = fx;
+    hit.ny = fy;
+    hit.nz = fz;
+    RendererDelegator.fill_light = 100;
+    final int added = (Integer) fillLight.invoke(null, hit);
+    assertEquals(127, added,
+        "100% fill at perfect alignment must add exactly 127");
+  }
 }

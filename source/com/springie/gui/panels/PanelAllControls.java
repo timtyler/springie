@@ -15,7 +15,6 @@ public class PanelAllControls {
     final TabbedPanel tab = new TabbedPanel();
     tab.add("Controls", FrEnd.panel_controls.panel);
     tab.add("Preferences", FrEnd.panel_preferences.panel);
-    tab.add("Statistics", FrEnd.panel_statistics.panel);
 
     this.panel.add(tab);
 

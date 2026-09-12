@@ -3,6 +3,7 @@
 package com.springie.gui.panels.preferences;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.event.ItemEvent;
@@ -31,6 +32,8 @@ public class PanelPreferencesDisplay {
   MessageManager message_manager;
 
   private TTChoice choose_display_type;
+
+  public Label label_fps_value;
 
   public PanelPreferencesDisplay(MessageManager message_manager) {
     this.message_manager = message_manager;
@@ -83,7 +86,18 @@ public class PanelPreferencesDisplay {
     
     this.panel_frame.setLayout(new BorderLayout());
 
-    this.panel_frame.add(panel_type, "North");
+    // Frames-per-second readout, kept next to the renderer options so it
+    // is visible while tuning the rendering settings.
+    final Panel panel_fps = new Panel();
+    panel_fps.add(new Label("Frames per second:", Label.RIGHT));
+    this.label_fps_value = new Label("X.XXXX", Label.LEFT);
+    panel_fps.add(this.label_fps_value);
+
+    final Panel panel_north = new Panel(new GridLayout(0, 1));
+    panel_north.add(panel_type);
+    panel_north.add(panel_fps);
+
+    this.panel_frame.add(panel_north, "North");
 
     this.panel_frame.add(this.panel_main, "Center");
 

@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 /**
- * Known-answer tests for the three primitive intersection routines.
+ * Known-answer tests for the four primitive intersection routines.
  */
 public class PrimitiveIntersectionTest {
   private static final double EPS = 1e-9;
@@ -53,6 +53,48 @@ public class PrimitiveIntersectionTest {
     // Would hit at t = 900, which is further than the recorded hit.
     assertFalse(sphere.intersect(ray(0, 0, -1000, 0, 0, 1), hit));
     assertEquals(500.0, hit.t, EPS);
+  }
+
+  @Test
+  public void cylinderSideHit() {
+    final Primitive cylinder = new RTCylinder(0, 0, 0, 0, 0, 1000, 50,
+        0xFFFFFF);
+    final Hit hit = new Hit();
+    assertTrue(cylinder.intersect(ray(200, 0, 500, -1, 0, 0), hit));
+    assertEquals(150.0, hit.t, EPS);
+    assertEquals(1.0, hit.nx, EPS);
+    assertEquals(0.0, hit.ny, EPS);
+    assertEquals(0.0, hit.nz, EPS);
+  }
+
+  @Test
+  public void cylinderMissesBeyondSegment() {
+    final Primitive cylinder = new RTCylinder(0, 0, 0, 0, 0, 1000, 50,
+        0xFFFFFF);
+    final Hit hit = new Hit();
+    // Passes beside the segment, beyond its far end.
+    assertFalse(cylinder.intersect(ray(200, 0, 1500, -1, 0, 0), hit));
+  }
+
+  @Test
+  public void cylinderMissesParallelOffset() {
+    final Primitive cylinder = new RTCylinder(0, 0, 0, 0, 0, 1000, 50,
+        0xFFFFFF);
+    final Hit hit = new Hit();
+    assertFalse(cylinder.intersect(ray(200, 0, -100, 0, 0, 1), hit));
+  }
+
+  @Test
+  public void zeroLengthCylinderNeverHitsAndHasPointBounds() {
+    final Primitive cylinder = new RTCylinder(10, 20, 30, 10, 20, 30, 50,
+        0xFFFFFF);
+    final Hit hit = new Hit();
+    // Aimed straight at the point: still no hit, and no NaN anywhere.
+    assertFalse(cylinder.intersect(ray(10, 20, -1000, 0, 0, 1), hit));
+    final AABB bounds = new AABB();
+    cylinder.writeBounds(bounds);
+    assertFalse(Double.isNaN(bounds.min_x + bounds.max_x + bounds.min_y
+        + bounds.max_y + bounds.min_z + bounds.max_z));
   }
 
   @Test

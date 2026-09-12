@@ -91,7 +91,6 @@ import com.springie.gui.panels.preferences.PanelPreferencesRendererSharedShow;
 import com.springie.gui.panels.preferences.PanelPreferencesStereo3D;
 import com.springie.gui.panels.preferences.PanelPreferencesUpdate;
 import com.springie.gui.panels.preferences.PanelPreferencesViewpoint;
-import com.springie.gui.panels.statistics.PanelStatistics;
 import com.springie.io.in.DataInput;
 import com.springie.messages.MessageManager;
 import com.springie.messages.NewMessageManager;
@@ -480,8 +479,6 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 	public static PanelPreferences panel_preferences = new PanelPreferences(message_manager);
 
 	public static PanelControls panel_controls = new PanelControls(message_manager);
-
-	public static PanelStatistics panel_statistics = new PanelStatistics(message_manager);
 
 	public static PanelAllControls panel_controls_all = new PanelAllControls();
 

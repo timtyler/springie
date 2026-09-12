@@ -19,15 +19,11 @@ public class PanelPreferencesRendererShared {
   }
 
   void makePanel() {
-    final TabbedPanel tab_show = new TabbedPanel();
-    tab_show.add("Show", FrEnd.panel_preferences_shared_show.panel);
+    final TabbedPanel tab = new TabbedPanel();
+    tab.add("Show", FrEnd.panel_preferences_shared_show.panel);
+    tab.add("Misc", FrEnd.panel_preferences_shared_misc.panel);
 
-    this.panel.add(tab_show);
-
-    final TabbedPanel tab_misc = new TabbedPanel();
-    tab_misc.add("Misc", FrEnd.panel_preferences_shared_misc.panel);
-
-    this.panel.add(tab_misc);
+    this.panel.add(tab);
   }
 
   public MessageManager getMessageManager() {
