@@ -9,7 +9,7 @@ public interface GUIStrings {
 
   String ABOUT_DESC = "Tensegrity simulator";
 
-  String ABOUT_VER = "Version: 1.02-beta-4 (2006-07-03)";
+  String ABOUT_VER = "Version: 1.03 (2026-09-11)";
 
   String ABOUT_PD = "Public Domain: No Rights Reserved";
 

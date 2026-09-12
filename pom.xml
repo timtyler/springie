@@ -18,7 +18,7 @@
 
   <groupId>com.springie</groupId>
   <artifactId>springie</artifactId>
-  <version>1.02-beta-5-SNAPSHOT</version>
+  <version>1.03</version>
   <packaging>jar</packaging>
   <name>Springie</name>
   <description>A tensegrity simulator using Java.</description>

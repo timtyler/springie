@@ -24,7 +24,7 @@ To package, use:
 mvn clean package
 
 To run, use:
-java -jar target/springie-1.02-beta-5-SNAPSHOT.jar
+java -jar target/springie-1.03.jar
 
 # ToDo
  * Add "temperature" control
