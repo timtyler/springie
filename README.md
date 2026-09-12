@@ -26,6 +26,12 @@ mvn clean package
 To run, use:
 java -jar target/springie-1.03.jar
 
+To build and run with one command, use:
+mvn package exec:exec
+
+To skip the tests for a faster build-and-run, use:
+mvn -DskipTests package exec:exec
+
 # ToDo
  * Add "temperature" control
  * Add "countdown-timer" concept
