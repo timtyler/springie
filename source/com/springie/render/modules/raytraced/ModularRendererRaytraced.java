@@ -112,6 +112,17 @@ public class ModularRendererRaytraced implements ModularRendererBase {
 
   private volatile boolean frame_done = true;
 
+  // The composed frame: background plus every published tile, blitted to
+  // the screen in one drawImage. Repaints never touch the screen with a
+  // clear or a half-drawn tile set, so there is no black flash between
+  // frames -- new tiles are painted over the old frame offscreen, and
+  // the result appears whole.
+  private BufferedImage frame_image;
+
+  // Set by the worker that publishes a frame; the next repaint
+  // re-composites frame_image and clears it.
+  private volatile boolean frame_staged;
+
   public void resize(int x, int y) {
     this.tiles = null;
   }
@@ -119,6 +130,19 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   public void reset() {
     this.tiles = null;
     this.frame_done = true;
+  }
+
+  /**
+   * Holds the model while a frame is rendering: every model state is
+   * rendered exactly once, in order, and the animation runs at render
+   * speed instead of skipping states to stay real-time. Released when
+   * the renderer is no longer current, so a mid-frame renderer switch
+   * cannot freeze the model.
+   */
+  @Override
+  public boolean holdModelForFrame() {
+    return this.frame_done == false
+        && RendererDelegator.renderer == this;
   }
 
   public void repaint(Graphics graphics, NodeManager manager) {
@@ -135,30 +159,62 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       startFrame(manager, signature);
     }
 
-    // Paint the background first: with "show bins" the tiles are shrunk
-    // by a margin, so the gutters between them show the background as
-    // black grid lines, exactly like the default renderer.
-    graphics.setColor(RendererDelegator.color_background);
-    graphics.fillRect(0, 0, width, height);
+    // Blit the composed frame in a single drawImage: the screen never
+    // sees the background clear or a partially drawn tile set, so there
+    // is no flicker. New frames are painted over the old one offscreen.
+    if (this.frame_image == null) {
+      this.frame_image =
+          new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+      this.frame_staged = true;
+    }
+    if (this.frame_staged) {
+      this.frame_image = compositeFrame(this.tiles, width, height);
+      this.frame_staged = false;
+    }
+    graphics.drawImage(this.frame_image, 0, 0, null);
 
     final boolean show_active = RendererBinManager.show_active_bins;
     final Tile[] tiles = this.tiles;
     for (int i = 0; i < tiles.length; i++) {
       final ShownTile shown = tiles[i].shown;
-      if (shown == null) {
-        continue;
-      }
-      graphics.drawImage(shown.image, tiles[i].x0, tiles[i].y0, null);
       // "Show active bins": red outline around the content rectangle of
       // every tile holding geometry, drawn on the screen graphics after
       // the tile pixels (not baked into the tiles), so toggling the
       // option needs no re-render.
-      if (show_active && shown.active) {
+      if (show_active && shown != null && shown.active) {
         graphics.setColor(Color.RED);
         graphics.drawRect(shown.min_x, shown.min_y,
             shown.max_x - shown.min_x, shown.max_y - shown.min_y);
       }
     }
+  }
+
+  /**
+   * Composes one whole frame offscreen: the background first (with "show
+   * bins" the tiles are shrunk by a margin, so the gutters between them
+   * show the background as black grid lines, exactly like the default
+   * renderer), then every published tile painted over it. Tiles with no
+   * published snapshot yet contribute nothing, so a frame in progress
+   * never shows half-rendered tiles.
+   */
+  static BufferedImage compositeFrame(Tile[] tiles, int width, int height) {
+    final BufferedImage frame =
+        new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+    final Graphics g = frame.getGraphics();
+    try {
+      g.setColor(RendererDelegator.color_background);
+      g.fillRect(0, 0, width, height);
+      for (int i = 0; i < tiles.length; i++) {
+        final ShownTile shown = tiles[i].shown;
+        if (shown == null) {
+          continue;
+        }
+        g.drawImage(shown.image, tiles[i].x0, tiles[i].y0, null);
+      }
+    } finally {
+      g.dispose();
+    }
+    return frame;
   }
 
   /**
@@ -201,6 +257,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     this.last_show_bins = show_bins;
     this.frame_done = true;
     this.frame_signature = -1L;
+    this.frame_image = null;
+    this.frame_staged = false;
   }
 
   private void startFrame(NodeManager manager, long signature) {
@@ -265,6 +323,9 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     // repaints never show a half-rendered frame.
     publishFrame(tiles);
     this.frame_done = true;
+    // The next repaint re-composites the offscreen frame and blits it
+    // whole; the screen never shows the frame being assembled.
+    this.frame_staged = true;
 
     // Ask the main loop for another pass so the finished frame displays,
     // even when the model is not animating.

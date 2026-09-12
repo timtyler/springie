@@ -192,23 +192,34 @@ public final class RendererDelegator {
   }
 
   static void passOnToUpdateMethods(Graphics graphics) {
-    RendererDelegator.incrementGenerationCount();
+    // A slow renderer (the ray-traced one) holds the model while its
+    // frame renders, so every model state is rendered exactly once, in
+    // order, and the animation runs at render speed rather than skipping
+    // states to stay real-time.
+    final boolean hold = renderer.holdModelForFrame();
 
-    if (!FrEnd.paused) {
-      ParticleManager.update();
-      LineFragmentManager.update();
-      Reproduction.handleReproduction(ContextManager.getNodeManager().creature_manager);
+    if (!hold) {
+      RendererDelegator.incrementGenerationCount();
+
+      if (!FrEnd.paused) {
+        ParticleManager.update();
+        LineFragmentManager.update();
+        Reproduction.handleReproduction(ContextManager.getNodeManager().creature_manager);
+      }
+
+      ContextManager.getNodeManager().nodeAndLinkUpdate();
     }
-
-    ContextManager.getNodeManager().nodeAndLinkUpdate();
 
     renderer.repaint(graphics, ContextManager.getNodeManager());
 
-    WorldManager.privateWorldUnbufferedUpdate();
+    if (!hold) {
+      WorldManager.privateWorldUnbufferedUpdate();
+    }
   }
 
   public static void callUpdateMethods() {
-    if (RendererDelegator.isOldDoubleBuffer()) {
+    if (RendererDelegator.isOldDoubleBuffer()
+        && !renderer.holdModelForFrame()) {
       RendererDelegator.graphics_handle = FrEnd.main_canvas.graphics_handle;
 
       ParticleManager.update();
