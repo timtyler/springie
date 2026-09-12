@@ -113,6 +113,8 @@ public interface GUIStrings {
 
   String GENERATE_SPHERE_PACK = "Make sphere pack";
 
+  String GENERATE_FACES_FROM_SELECTION = "Make faces";
+
   String CONTROLS_STEREO3D = "Stereo3D options";
 
   String XOR = "XOR rendering";

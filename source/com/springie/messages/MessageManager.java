@@ -176,6 +176,11 @@ public class MessageManager {
 
         break;
 
+      case Message.MSG_GENERATE_FACES_FROM_SELECTION:
+        new FaceMaker(node_manager).makeFacesFromSelection();
+
+        break;
+
       case Message.MSG_GENERATE_MATRIX:
         allNewProceduralObject(new ArgumentList() {
           public Object getArguments(int i) {

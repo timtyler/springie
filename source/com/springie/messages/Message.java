@@ -71,6 +71,7 @@ public interface Message {
   int MSG_EDIT_COLOUR_CARTESIAN = 95;
   int MSG_GENERATE_STRING = 96;
   int MSG_DOUBLE_BUFFER_NEW = 97;
+  int MSG_GENERATE_FACES_FROM_SELECTION = 99;
   //int MSG_INVERT_ALL_TYPE = 98;
 
   void placeholder();

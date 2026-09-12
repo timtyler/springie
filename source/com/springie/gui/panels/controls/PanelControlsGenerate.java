@@ -42,6 +42,8 @@ public class PanelControlsGenerate {
   }
 
   void makePanelGenerate() {
+    final Panel panel_generate_faces_from_selection = makeFacesFromSelectionGUI();
+
     final Panel panel_generate_tube = makeTubeGUI();
 
     final Panel panel_generate_free_nodes = makeFreeNodesGUI();
@@ -52,6 +54,7 @@ public class PanelControlsGenerate {
 
     final Panel panel_generate_string = makeStringGUI();        
 
+    this.panel.add(panel_generate_faces_from_selection);
     this.panel.add(panel_generate_tube);
     this.panel.add(panel_generate_free_nodes);
     this.panel.add(panel_generate_sphere_pack);
@@ -59,6 +62,20 @@ public class PanelControlsGenerate {
     //if (FrEnd.artificial_chemistry) {
       this.panel.add(panel_generate_string);
     //}
+  }
+
+  private Panel makeFacesFromSelectionGUI() {
+    final Button button = new Button(GUIStrings.GENERATE_FACES_FROM_SELECTION);
+    button.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        Forget.about(e);
+        getMessageManager().sendMessage(Message.MSG_GENERATE_FACES_FROM_SELECTION, 0, 0);
+      }
+    });
+
+    final Panel panel = new Panel();
+    panel.add(button);
+    return panel;
   }
 
   private Panel makeTubeGUI() {
