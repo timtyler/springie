@@ -80,6 +80,10 @@ public class PanelPreferencesRendererModern {
 
 	void makePanel() {
 		final TabbedPanel tab = new TabbedPanel();
+		// The shared Show/Misc options live here now, combined with the
+		// renderer-specific tabs to save the space of a second tab bar.
+		tab.add("Show", FrEnd.panel_preferences_shared_show.panel);
+		tab.add("Misc", FrEnd.panel_preferences_shared_misc.panel);
 		tab.add("Options", this.panel_main);
 
 		tab.add("Filtering", FrEnd.panel_preferences_renderer_modern_filters.panel);

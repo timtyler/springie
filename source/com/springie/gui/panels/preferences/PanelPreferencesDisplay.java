@@ -16,6 +16,7 @@ import com.springie.messages.MessageManager;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;
+import com.tifsoft.Forget;
 
 public class PanelPreferencesDisplay {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -29,6 +30,8 @@ public class PanelPreferencesDisplay {
   MessageManager message_manager;
 
   private TTChoice choose_display_type;
+
+  private TTChoice choose_antialiasing;
 
   public Label label_fps_value;
 
@@ -50,14 +53,16 @@ public class PanelPreferencesDisplay {
       }
     });
 
-    this.choose_display_type.add("Modern renderer   ", Quality.SOLID);
     this.choose_display_type.add("Ray-traced renderer", Quality.RAYTRACED);
+    this.choose_display_type.add("Modern renderer   ", Quality.SOLID);
     this.choose_display_type.add("Original renderer ", Quality.THICK_OUTLINE);
     this.choose_display_type.choice.select(this.choose_display_type
-        .num_to_str(Quality.SOLID));
+        .num_to_str(Quality.RAYTRACED));
 
     panel_type.add(label_type_1);
     panel_type.add(this.choose_display_type.choice);
+
+    final Panel panel_antialiasing = getAntiAliasingPanel();
 
     // ...
 
@@ -89,23 +94,24 @@ public class PanelPreferencesDisplay {
 
     final Panel panel_north_top = new Panel(new GridLayout(0, 1));
     panel_north_top.add(panel_type);
+    panel_north_top.add(panel_antialiasing);
     panel_north_top.add(panel_fps);
 
-    // The shared options are renderer options: Show/Misc sit directly
-    // under the frames-per-second readout instead of on their own tab.
+    // The shared Show/Misc options are tabs in the renderer tab bar
+    // below (combined with Options/Filtering/Colours to save space).
     final Panel panel_north = new Panel(new BorderLayout());
     panel_north.add(panel_north_top, "North");
-    panel_north.add(FrEnd.panel_preferences_shared.panel, "Center");
 
     this.panel_frame.add(panel_north, "North");
 
     this.panel_frame.add(this.panel_main, "Center");
 
     // Ray-traced-only options, shown under the shared renderer options
-    // while the ray-traced renderer is active.
+    // while the ray-traced renderer is active. The ray-tracer is the
+    // default for now, so the strip starts visible.
     this.panel_frame.add(FrEnd.panel_preferences_renderer_raytraced.panel,
         "South");
-    FrEnd.panel_preferences_renderer_raytraced.panel.setVisible(false);
+    FrEnd.panel_preferences_renderer_raytraced.panel.setVisible(true);
 
     this.panel_main.add(FrEnd.panel_preferences_renderer_modern.panel, "Center");
 
@@ -127,6 +133,31 @@ public class PanelPreferencesDisplay {
 
    public MessageManager getMessageManager() {
     return this.message_manager;
+  }
+
+  private Panel getAntiAliasingPanel() {
+    final Panel panel = new Panel();
+    panel.add(new Label("Anti-aliasing:", Label.RIGHT));
+
+    this.choose_antialiasing = new TTChoice(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        Forget.about(e);
+        final String scs = (String) e.getItem();
+        RendererDelegator.antialiasing =
+            PanelPreferencesDisplay.this.choose_antialiasing.str_to_num(scs);
+        // The cached tiles are the wrong resolution now.
+        FrEnd.main_canvas.forceResize();
+      }
+    });
+
+    this.choose_antialiasing.add("1x1", 1);
+    this.choose_antialiasing.add("2x2", 2);
+    this.choose_antialiasing.add("3x3", 3);
+    this.choose_antialiasing.choice
+        .select(this.choose_antialiasing.num_to_str(1));
+    panel.add(this.choose_antialiasing.choice);
+
+    return panel;
   }
 
   private void applyRendererType(int value) {
@@ -153,14 +184,19 @@ public class PanelPreferencesDisplay {
   }
 
   /**
-   * Restores the default renderer (Modern) and resets every renderer
-   * preference panel.
+   * Restores the default renderer (Ray-traced, for now) and resets every
+   * renderer preference panel.
    */
   public void resetToDefaults() {
     this.choose_display_type.choice.select(this.choose_display_type
-        .num_to_str(Quality.SOLID));
+        .num_to_str(Quality.RAYTRACED));
     // In case it was already selected (no item event fires then).
-    applyRendererType(Quality.SOLID);
+    applyRendererType(Quality.RAYTRACED);
+
+    // Anti-aliasing: 1x1 is off.
+    RendererDelegator.antialiasing = 1;
+    this.choose_antialiasing.choice
+        .select(this.choose_antialiasing.num_to_str(1));
 
     FrEnd.panel_preferences_renderer_original.resetToDefaults();
     FrEnd.panel_preferences_renderer_modern.resetToDefaults();

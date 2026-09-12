@@ -85,7 +85,6 @@ import com.springie.gui.panels.preferences.PanelPreferencesRendererModernColours
 import com.springie.gui.panels.preferences.PanelPreferencesRendererModernFilters;
 import com.springie.gui.panels.preferences.PanelPreferencesRendererOriginal;
 import com.springie.gui.panels.preferences.PanelPreferencesRendererRaytraced;
-import com.springie.gui.panels.preferences.PanelPreferencesRendererShared;
 import com.springie.gui.panels.preferences.PanelPreferencesRendererSharedMisc;
 import com.springie.gui.panels.preferences.PanelPreferencesRendererSharedShow;
 import com.springie.gui.panels.preferences.PanelPreferencesStereo3D;
@@ -448,9 +447,6 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 			message_manager);
 
 	public static PanelPreferencesRendererSharedMisc panel_preferences_shared_misc = new PanelPreferencesRendererSharedMisc(
-			message_manager);
-
-	public static PanelPreferencesRendererShared panel_preferences_shared = new PanelPreferencesRendererShared(
 			message_manager);
 
 	public static PanelPreferencesEdit panel_preferences_edit = new PanelPreferencesEdit(message_manager);
