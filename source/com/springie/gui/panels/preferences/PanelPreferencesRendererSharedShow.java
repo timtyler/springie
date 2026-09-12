@@ -187,7 +187,9 @@ public class PanelPreferencesRendererSharedShow {
         Forget.about(e);
         RendererDelegator.scenic_background =
             ((Checkbox) e.getSource()).getState();
-        RendererDelegator.repaintAll();
+        // The background is baked into the cached bin tiles; a full
+        // repaint is needed, not just the damage-repair pass.
+        RendererDelegator.repaint_all_objects = true;
       }
     });
     panel_background.add(this.checkbox_scenic_background);
