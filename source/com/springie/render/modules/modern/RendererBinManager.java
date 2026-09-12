@@ -42,52 +42,19 @@ public class RendererBinManager {
 
   public static int colour_modifier_wireframe = ColourModifier.darker;
 
-  // Dirty-bin skipping: only bins whose polygon content changed since last
-  // frame are re-rendered; the rest blit their cached tile. The render
-  // settings below also affect bin pixels, so any change in them marks every
-  // bin dirty. Compared field-by-field (not hashed) so a missed change can
-  // never silently corrupt the display.
-  private int last_colour_modifier_filled;
-
-  private int last_colour_modifier_wireframe;
-
-  private int last_colour_a_number;
-
-  private int last_colour_b_number;
-
-  private boolean last_redraw_deepest_first;
-
-  private boolean last_show_bins;
-
-
+  // Tiled rendering: each bin paints into an offscreen tile that is then
+  // blitted to the screen (the double-buffered path). Every bin holding
+  // content is re-rendered every frame; tiles are never reused across
+  // frames on the assumption their content is unchanged.
   private boolean last_double_buffered;
 
-  // Anti-aliasing factor in force when the cached tiles were rendered. A
+  // Anti-aliasing factor in force when the tiles were rendered. A
   // change means the tiles are the wrong resolution and must be dropped.
   private int last_antialiasing;
 
-  private boolean render_settings_valid;
-
   // The tile size in force when the tiles were created. show_bins changes
-  // the tile size, so the cached tiles must be dropped when it changes.
+  // the tile size, so the tiles must be dropped when it changes.
   private int last_block_size = -1;
-
-  // Set by RendererDelegator.renderDragBox after each frame: the drag box
-  // paints background over bin pixels after the bins have rendered, so the
-  // next frame must re-render every bin to repair the damage.
-  public static boolean drag_box_damaged_last_frame;
-
-  // Adaptive comparison: when no bin has been skippable for a while, the
-  // per-bin content comparison is pure overhead, so stop doing it for a
-  // while, then probe again. Purely a heuristic; correctness never depends
-  // on it. Instance state: only bins_current.render() is ever called.
-  private int frames_without_skips;
-
-  private int comparison_cooldown;
-
-  private static final int COOLDOWN_AFTER_N_EMPTY_FRAMES = 30;
-
-  private static final int COOLDOWN_LENGTH_FRAMES = 120;
 
   ArrayList<PolygonComposite> getVector(int x, int y) {
     return this.array[x][y].vector;
@@ -134,9 +101,8 @@ public class RendererBinManager {
       }
     }
 
-    // The cached tiles are gone, so the next render must treat every bin
-    // as dirty regardless of the settings comparison.
-    this.render_settings_valid = false;
+    // The tiles are gone, so the tiled path rebuilds them on the next
+    // render; the direct path repaints everything every frame anyway.
   }
 
   void add(int x, int y, PolygonComposite triangle) {
@@ -169,16 +135,14 @@ public class RendererBinManager {
 
     final int block_size = divisor - getMargin();
 
-    // The user's double-buffer preference is honoured: dirty-bin skipping
-    // only applies to the tiled (double-buffered) path, which is where it
-    // wins. With double-buffering off, bins paint directly every frame,
-    // exactly as before.
+    // The user's double-buffer preference is honoured: the tiled path
+    // renders each bin into an offscreen tile and blits it; with
+    // double-buffering off, bins paint directly every frame.
     final boolean double_buffered = RendererDelegator.isNewDoubleBuffer();
 
     if (double_buffered != this.last_double_buffered) {
-      // The tiling mode changed: drop all cached tiles. The tiled path
-      // rebuilds them below (every bin is forced dirty via the settings
-      // check); the direct path repaints everything every frame anyway.
+      // The tiling mode changed: drop all tiles. The tiled path rebuilds
+      // them below; the direct path repaints everything every frame anyway.
       for (int j = 0; j < this.number_of_bins_y; j++) {
         for (int i = 0; i < this.number_of_bins_x; i++) {
           this.array[i][j].image = null;
@@ -192,12 +156,12 @@ public class RendererBinManager {
       renderDirect(bins_last, graphics, block_size);
     }
 
-    rememberRenderSettings(double_buffered);
+    this.last_double_buffered = double_buffered;
   }
 
   /**
    * Direct painting path for when the double-buffer preference is off:
-   * no tiles, no skipping. Behaviour is the pre-dirty-bin behaviour.
+   * no tiles. Bins paint straight onto the screen every frame.
    */
   private void renderDirect(RendererBinManager bins_last, Graphics graphics,
       int block_size) {
@@ -285,8 +249,8 @@ public class RendererBinManager {
     final int aa = RendererDelegator.antialiasing;
 
     // The tile size changed (show_bins toggled), or the anti-aliasing
-    // factor changed: the cached tiles are the wrong size, so drop them.
-    // They are rebuilt below as bins go dirty.
+    // factor changed: the tiles are the wrong size, so drop them.
+    // They are rebuilt below.
     if (block_size != this.last_block_size || aa != this.last_antialiasing) {
       for (int j = 0; j < this.number_of_bins_y; j++) {
         for (int i = 0; i < this.number_of_bins_x; i++) {
@@ -300,18 +264,10 @@ public class RendererBinManager {
 
     final RectangleInt potential = new RectangleInt(0, 0, 0, 0);
 
-    // Dirty-bin skipping: only bins whose polygon content changed since last
-    // frame are re-rendered into their cached tile; every tile (dirty or
-    // not) is blitted below, so exposure damage self-heals on the next
-    // frame without any explicit invalidation.
-    if (comparison_cooldown > 0) {
-      comparison_cooldown--;
-    }
-    final boolean force_all_dirty = comparison_cooldown > 0
-        || drag_box_damaged_last_frame || renderSettingsChanged(true);
-
-    int skipped_this_frame = 0;
-
+    // Every bin holding content is re-rendered into its tile; every tile
+    // (and every vacated bin's repaired screen area) is blitted below, so
+    // exposure damage self-heals on the next frame without any explicit
+    // invalidation.
     for (int j = 0; j < this.number_of_bins_y; j++) {
       for (int i = 0; i < this.number_of_bins_x; i++) {
         final RendererBin bin = this.array[i][j];
@@ -319,8 +275,7 @@ public class RendererBinManager {
         final int size = v_this.size();
 
         final RendererBin last_bin = bins_last.array[i][j];
-        final ArrayList<PolygonComposite> v_last = last_bin.vector;
-        final int size_last = v_last.size();
+        final int size_last = last_bin.vector.size();
 
         if (size == 0 && size_last == 0) {
           continue;
@@ -334,10 +289,7 @@ public class RendererBinManager {
         bin.setUpActual(potential);
         bin.union.setToUnion(bin.actual, last_bin.actual);
 
-        final boolean dirty = force_all_dirty || !binsEqual(v_this, v_last);
-
-        if (dirty) {
-          if (size > 0) {
+        if (size > 0) {
             if (bin.image == null) {
               FrEnd.main_canvas.panel
                   .setBackground(RendererDelegator.color_background);
@@ -396,23 +348,6 @@ public class RendererBinManager {
             bin.image = null;
             bin.image_aa = null;
           }
-        } else {
-          // Clean bin: the cached tile already holds these pixels.
-          skipped_this_frame++;
-        }
-      }
-    }
-
-    // Adaptive comparison: when a fair probe found nothing skippable for a
-    // while, the comparison is pure overhead; cool down, then probe again.
-    if (!force_all_dirty) {
-      if (skipped_this_frame == 0) {
-        if (++frames_without_skips >= COOLDOWN_AFTER_N_EMPTY_FRAMES) {
-          comparison_cooldown = COOLDOWN_LENGTH_FRAMES;
-          frames_without_skips = 0;
-        }
-      } else {
-        frames_without_skips = 0;
       }
     }
 
@@ -474,9 +409,9 @@ public class RendererBinManager {
 
   /**
    * Rotates per-bin frame state after rendering: bins_last takes this
-   * frame's vectors and rectangles for next frame's dirty comparison, while
-   * the cached tiles stay on this manager for next frame's blit. (The tiles
-   * must not rotate: a clean bin next frame blits this frame's tile.)
+   * frame's vectors and rectangles for next frame's damage repair (the
+   * union of last frame's and this frame's content is scrubbed before
+   * repainting), while the tiles stay on this manager.
    */
   void rotateFrameState(RendererBinManager bins_last) {
     for (int j = 0; j < this.number_of_bins_y; j++) {
@@ -497,92 +432,6 @@ public class RendererBinManager {
         last_bin.union = union;
       }
     }
-  }
-
-  /**
-   * True when any render setting that affects bin pixels changed since last
-   * frame. Everything else that affects pixels is either baked into the
-   * polygon composites (caught by binsEqual) or goes through
-   * repaint_all_objects (which resets the bins and invalidates the
-   * settings).
-   */
-  private boolean renderSettingsChanged(boolean double_buffered) {
-    return !this.render_settings_valid
-        || this.last_double_buffered != double_buffered
-        || this.last_colour_modifier_filled != colour_modifier_filled
-        || this.last_colour_modifier_wireframe != colour_modifier_wireframe
-        || this.last_colour_a_number != ColourModifier.colour_a_number
-        || this.last_colour_b_number != ColourModifier.colour_b_number
-        || this.last_redraw_deepest_first != FrEnd.redraw_deepest_first
-        || this.last_show_bins != show_bins
-        || this.last_antialiasing != RendererDelegator.antialiasing;
-  }
-
-  private void rememberRenderSettings(boolean double_buffered) {
-    this.last_double_buffered = double_buffered;
-    this.last_colour_modifier_filled = colour_modifier_filled;
-    this.last_colour_modifier_wireframe = colour_modifier_wireframe;
-    this.last_colour_a_number = ColourModifier.colour_a_number;
-    this.last_colour_b_number = ColourModifier.colour_b_number;
-    this.last_redraw_deepest_first = FrEnd.redraw_deepest_first;
-    this.last_show_bins = show_bins;
-    this.last_antialiasing = RendererDelegator.antialiasing;
-    this.render_settings_valid = true;
-  }
-
-  /**
-   * Exact per-bin content comparison against last frame. Early-out on the
-   * first difference, so animating bins cost little; only truly static bins
-   * pay the full walk. Insertion order is compared as-is: equivalent
-   * content in a different order counts as dirty (a wasted redraw, never
-   * a missed one).
-   */
-  static boolean binsEqual(ArrayList<PolygonComposite> v_this,
-      ArrayList<PolygonComposite> v_last) {
-    final int size = v_this.size();
-    if (size != v_last.size()) {
-      return false;
-    }
-    for (int i = 0; i < size; i++) {
-      if (!compositesEqual(v_this.get(i), v_last.get(i))) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  private static boolean compositesEqual(PolygonComposite a,
-      PolygonComposite b) {
-    if (a.z != b.z) {
-      return false;
-    }
-    final PolygonObject2D[] aa = a.array;
-    final PolygonObject2D[] bb = b.array;
-    final int n = aa.length;
-    if (n != bb.length) {
-      return false;
-    }
-    for (int i = 0; i < n; i++) {
-      final PolygonObject2D pa = aa[i];
-      final PolygonObject2D pb = bb[i];
-      if (pa.colour != pb.colour) {
-        return false;
-      }
-      final int[] ax = pa.x;
-      final int[] ay = pa.y;
-      final int[] bx = pb.x;
-      final int[] by = pb.y;
-      final int m = ax.length;
-      if (m != bx.length || m != ay.length || m != by.length) {
-        return false;
-      }
-      for (int k = 0; k < m; k++) {
-        if (ax[k] != bx[k] || ay[k] != by[k]) {
-          return false;
-        }
-      }
-    }
-    return true;
   }
 
   private void renderThePolygon(Graphics graphics,

@@ -53,9 +53,8 @@ public class ModularRendererNew implements ModularRendererBase {
     this.bins_current.render(this.bins_last, graphics);
 
     // Rotate per-bin frame state: bins_last takes this frame's vectors and
-    // rectangles for next frame's dirty comparison. The cached tiles stay on
-    // bins_current (swapping the managers would leave clean bins blitting
-    // two-frames-old tiles).
+    // rectangles for next frame's damage repair (moved content is scrubbed
+    // over the union of last frame's and this frame's content rects).
     this.bins_current.rotateFrameState(this.bins_last);
 
     RendererDelegator.countRenderedFrame();
