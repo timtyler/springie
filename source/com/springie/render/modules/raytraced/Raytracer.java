@@ -127,7 +127,7 @@ final class Raytracer {
           hit.reset();
           final boolean struck = bvh.intersect(ray, hit, stack);
           final int rgb = struck ? shade(ray, hit, bvh, stack)
-              : backgroundAt(scenic, background_rgb, x0 + x, y0 + y);
+              : backgroundAt(scenic, background_rgb, ray, x0 + x, y0 + y);
           pixels[i++] = rgb;
           if (struck && stats != null) {
             stats.add(x, y);
@@ -162,7 +162,7 @@ final class Raytracer {
               rgb = shade(ray, hit, bvh, stack);
               struck = true;
             } else {
-              rgb = backgroundAt(scenic, background_rgb,
+              rgb = backgroundAt(scenic, background_rgb, ray,
                   (int) Math.round(sub_x), (int) Math.round(sub_y));
             }
             r += (rgb >> 16) & 0xFF;
@@ -181,15 +181,18 @@ final class Raytracer {
 
   /**
    * The background colour for a missed ray: the flat background colour,
-   * or the scenic grass/sky texture sampled at the pixel when it is
-   * enabled.
+   * or the scenic grass/sky texture when it is enabled. The texture is
+   * sampled pan-aware, so the background behaves like a world-fixed
+   * backdrop: panning the view slides the grass blades across the
+   * screen. Rays through the upper half of the screen (dy &lt; 0) take
+   * the distant-sky parallax rate; the rest take the near-grass rate.
    */
   private static int backgroundAt(BufferedImage scenic, int background_rgb,
-      int sx, int sy) {
+      Ray ray, int sx, int sy) {
     if (scenic == null) {
       return background_rgb;
     }
-    return ScenicBackground.sampleClamped(scenic, sx, sy);
+    return ScenicBackground.sampleWithPan(scenic, sx, sy, ray.dy < 0.0);
   }
 
   /**

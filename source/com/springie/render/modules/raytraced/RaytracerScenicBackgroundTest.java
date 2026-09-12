@@ -3,6 +3,7 @@
 package com.springie.render.modules.raytraced;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.image.BufferedImage;
 
@@ -115,5 +116,26 @@ public class RaytracerScenicBackgroundTest {
       assertEquals(0xFF112233, p,
           "miss must fall back to the flat background colour");
     }
+  }
+
+  @Test
+  public void panSlidesMissSamplesLikeAFixedBackdrop() {
+    // Pan the view right: geometry moves right on screen, so the
+    // world-fixed backdrop must sample left of the screen pixel.
+    Coords.shift_constant_x = 1920;
+    final int[] pixels = renderAllMiss(true);
+    final BufferedImage scenic = ScenicBackground.imageFor(200, 200);
+    final int grass_tx = (int) Math.round(
+        100 - ScenicBackground.GRASS_PARALLAX * 1920 / 192);
+    final int sky_tx = (int) Math.round(
+        100 - ScenicBackground.SKY_PARALLAX * 1920 / 192);
+    // Grass pixel: dy > 0 below the middle.
+    assertEquals(scenic.getRGB(grass_tx, 150), pixels[150 * 200 + 100],
+        "grass miss must sample left of the pixel after a right pan");
+    // Sky pixel: dy < 0 above the middle; moves less (distant).
+    assertEquals(scenic.getRGB(sky_tx, 50), pixels[50 * 200 + 100],
+        "sky miss must sample left of the pixel after a right pan");
+    assertTrue(100 - grass_tx > 100 - sky_tx,
+        "grass must slide further than the sky");
   }
 }

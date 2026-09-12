@@ -204,7 +204,19 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     final Graphics g = frame.getGraphics();
     try {
       if (RendererDelegator.scenic_background) {
-        g.drawImage(ScenicBackground.imageFor(width, height), 0, 0, null);
+        // Pan-aware, exactly like the tile miss samples, so the base
+        // matches the tiles at every boundary and while a frame is
+        // still rendering.
+        final BufferedImage scenic =
+            ScenicBackground.imageFor(width, height);
+        final int horizon = height / 2;
+        for (int y = 0; y < height; y++) {
+          final boolean sky = y < horizon;
+          for (int x = 0; x < width; x++) {
+            frame.setRGB(x, y,
+                ScenicBackground.sampleWithPan(scenic, x, y, sky));
+          }
+        }
       } else {
         g.setColor(RendererDelegator.color_background);
         g.fillRect(0, 0, width, height);
