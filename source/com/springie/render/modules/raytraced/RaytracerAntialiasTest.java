@@ -17,8 +17,8 @@ import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 
 /**
- * Anti-aliasing (RendererDelegator.antialiasing): a 2x2 or 3x3 grid of
- * sub-pixel rays per pixel, box-filtered. Flat regions must render
+ * Anti-aliasing (RendererDelegator.antialiasing): a 2x2, 3x3 or 4x4 grid
+ * of sub-pixel rays per pixel, box-filtered. Flat regions must render
  * identically to 1x1; silhouette edges must soften into blends.
  */
 public class RaytracerAntialiasTest {
@@ -222,5 +222,52 @@ public class RaytracerAntialiasTest {
 
     // Partially covered pixels still count as hits for the overlay.
     assertTrue(stats.hits > 0, "no hits recorded at 3x3");
+  }
+
+  @Test
+  public void fourByFourRendersABlend() {
+    RendererDelegator.antialiasing = 4;
+    final int[] pixels = new int[SIZE * SIZE];
+    final Raytracer.HitStats stats = new Raytracer.HitStats();
+    Raytracer.renderTile(0, 0, SIZE, SIZE, new RayCamera(), sphereScene(),
+        pixels, stats);
+
+    assertEquals(backgroundRgb(), pixels[0]);
+
+    final int interior = pixels[CENTRE_Y * SIZE + CENTRE_X];
+    assertNotEquals(backgroundRgb(), interior);
+
+    boolean found = false;
+    for (final int rgb : pixels) {
+      boolean blend = true;
+      for (final int shift : new int[] { 16, 8, 0 }) {
+        final int c = channel(rgb, shift);
+        if (c <= channel(backgroundRgb(), shift)
+            || c >= channel(interior, shift)) {
+          blend = false;
+          break;
+        }
+      }
+      if (blend) {
+        found = true;
+        break;
+      }
+    }
+    assertTrue(found, "4x4 produced no blended silhouette pixel");
+
+    // Partially covered pixels still count as hits for the overlay.
+    assertTrue(stats.hits > 0, "no hits recorded at 4x4");
+  }
+
+  @Test
+  public void fourByFourIsDeterministic() {
+    // The stratified jitter is seeded per pixel, so two renders must
+    // agree exactly.
+    final int[] first = render(4);
+    final int[] second = render(4);
+    for (int i = 0; i < first.length; i++) {
+      assertEquals(first[i], second[i],
+          "4x4 render differed at pixel " + i);
+    }
   }
 }

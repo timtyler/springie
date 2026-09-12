@@ -189,6 +189,7 @@ public class PanelPreferencesDisplay {
     this.choose_antialiasing.add("1x1", 1);
     this.choose_antialiasing.add("2x2", 2);
     this.choose_antialiasing.add("3x3", 3);
+    this.choose_antialiasing.add("4x4", 4);
     this.choose_antialiasing.choice
         .select(this.choose_antialiasing.num_to_str(1));
     panel.add(this.choose_antialiasing.choice);
