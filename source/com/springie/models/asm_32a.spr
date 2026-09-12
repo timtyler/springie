@@ -1,0 +1,1331 @@
+<?xml version="1.0"?>
+<tensegrity version="1.0">
+ <universe gravity_strength="2" charge_active="true">
+  <nodes>
+   <class blue="0.239">
+    <type radius="5505">
+     <node>
+      <position x="157081" y="171380" z="128069"/>
+      <velocity x="465" y="-282" z="242"/>
+     </node>
+     <node>
+      <position x="130822" y="168430" z="141218"/>
+      <velocity x="390" y="300" z="200"/>
+     </node>
+     <node>
+      <position x="159228" y="165169" z="100699"/>
+      <velocity x="514" y="66" z="167"/>
+     </node>
+     <node>
+      <position x="107872" y="162782" z="126828"/>
+      <velocity x="448" y="-12" z="356"/>
+     </node>
+     <node>
+      <position x="134659" y="159395" z="84564"/>
+      <velocity x="145" y="-215" z="201"/>
+     </node>
+     <node>
+      <position x="177690" y="159394" z="146369"/>
+      <velocity x="619" y="-85" z="-351"/>
+     </node>
+     <node>
+      <position x="135927" y="158578" z="168630"/>
+      <velocity x="670" y="-20" z="-195"/>
+     </node>
+     <node>
+      <position x="110275" y="156686" z="97904"/>
+      <velocity x="243" y="250" z="86"/>
+     </node>
+     <node>
+      <position x="165146" y="153537" z="173174"/>
+      <velocity x="303" y="36" z="132"/>
+     </node>
+     <node>
+      <position x="182087" y="150111" z="90907"/>
+      <velocity x="216" y="0"/>
+     </node>
+     <node>
+      <position x="199145" y="146233" z="136855"/>
+      <velocity x="176" y="-86" z="-126"/>
+     </node>
+     <node>
+      <position x="89071" y="143340" z="138084"/>
+      <velocity x="374" y="445" z="362"/>
+     </node>
+     <node>
+      <position x="202506" y="140591" z="108654"/>
+      <velocity x="198" y="-260" z="21"/>
+     </node>
+     <node>
+      <position x="117754" y="140517" z="178525"/>
+      <velocity x="274" y="253" z="121"/>
+     </node>
+     <node>
+      <position x="141961" y="139429" z="65104"/>
+      <velocity x="190" y="89" z="5"/>
+     </node>
+     <node>
+      <position x="91673" y="134630" z="91577"/>
+      <velocity x="98" y="273" z="-13"/>
+     </node>
+     <node>
+      <position x="170811" y="133463" z="69257"/>
+      <velocity x="-122" y="93" z="-240"/>
+     </node>
+     <node>
+      <position x="92187" y="132628" z="163547"/>
+      <velocity x="193" y="410" z="217"/>
+     </node>
+     <node>
+      <position x="173214" y="129309" z="184722"/>
+      <velocity x="661" y="32" z="-217"/>
+     </node>
+     <node>
+      <position x="78417" y="125533" z="115991"/>
+      <velocity x="250" y="299" z="-8"/>
+     </node>
+     <node>
+      <position x="206989" y="120285" z="151370"/>
+      <velocity x="196" y="-435" z="-217"/>
+     </node>
+     <node>
+      <position x="124688" y="117967" z="58549"/>
+      <velocity x="-46" y="190" z="126"/>
+     </node>
+     <node>
+      <position x="98484" y="116325" z="72438"/>
+      <velocity x="-436" y="286" z="-57"/>
+     </node>
+     <node>
+      <position x="126602" y="115135" z="193339"/>
+      <velocity x="467" y="-157" z="-35"/>
+     </node>
+     <node>
+      <position x="212865" y="112938" z="103634"/>
+      <velocity x="2" y="-239" z="-261"/>
+     </node>
+     <node>
+      <position x="152619" y="110874" z="197708"/>
+      <velocity x="80" y="-81" z="12"/>
+     </node>
+     <node>
+      <position x="180410" y="106393" z="66578"/>
+      <velocity x="-258" y="-20" z="140"/>
+     </node>
+     <node>
+      <position x="86169" y="103752" z="168416"/>
+      <velocity x="85" y="365" z="99"/>
+     </node>
+     <node>
+      <position x="214718" y="100508" z="131386"/>
+      <velocity x="80" y="-248" z="-120"/>
+     </node>
+     <node>
+      <position x="71035" y="98523" z="120888"/>
+      <velocity x="247" y="351" z="508"/>
+     </node>
+     <node>
+      <position x="202873" y="96677" z="83221"/>
+      <velocity x="-119" y="-195" z="-328"/>
+     </node>
+     <node>
+      <position x="106911" y="93394" z="187939"/>
+      <velocity x="374" y="296" z="301"/>
+     </node>
+     <node>
+      <position x="135883" y="90386" z="56073"/>
+      <velocity x="-117" y="336" z="263"/>
+     </node>
+     <node>
+      <position x="78152" y="88381" z="147660"/>
+      <velocity x="8" y="356" z="61"/>
+     </node>
+     <node>
+      <position x="94617" y="88084" z="78561"/>
+      <velocity x="92" y="343" z="308"/>
+     </node>
+     <node>
+      <position x="189452" y="84808" z="181368"/>
+      <velocity x="128" y="-147" z="-159"/>
+     </node>
+     <node>
+      <position x="163414" y="84631" z="56857"/>
+      <velocity x="-68" y="11" z="5"/>
+     </node>
+     <node>
+      <position x="163376" y="83526" z="194331"/>
+      <velocity x="97" y="-250" z="-163"/>
+     </node>
+     <node>
+      <position x="81038" y="79617" z="101220"/>
+      <velocity x="-218" y="285" z="93"/>
+     </node>
+     <node>
+      <position x="116124" y="71102" z="67585"/>
+      <velocity x="-156" y="256" z="94"/>
+     </node>
+     <node>
+      <position x="117587" y="67847" z="183979"/>
+      <velocity x="165" y="-122" z="-67"/>
+     </node>
+     <node>
+      <position x="195676" y="67796" z="88967"/>
+      <velocity x="-225" y="-156" z="-343"/>
+     </node>
+     <node>
+      <position x="195929" y="65531" z="162277"/>
+      <velocity x="-373" y="-422" z="-255"/>
+     </node>
+     <node>
+      <position x="146177" y="63237" z="186839"/>
+      <velocity x="398" y="-277" z="-8"/>
+     </node>
+     <node>
+      <position x="171961" y="60923" z="72982"/>
+      <velocity x="-195" y="141" z="138"/>
+     </node>
+     <node>
+      <position x="88111" y="60245" z="144734"/>
+      <velocity x="-199" y="209" z="-192"/>
+     </node>
+     <node>
+      <position x="199195" y="57811" z="114928"/>
+      <velocity x="-501" y="-70" z="-386"/>
+     </node>
+     <node>
+      <position x="91261" y="55282" z="116064"/>
+      <velocity x="-355" y="421" z="292"/>
+     </node>
+     <node>
+      <position x="107365" y="51087" z="161720"/>
+      <velocity x="-106" y="-110" z="-73"/>
+     </node>
+     <node>
+      <position x="124667" y="48839" z="81329"/>
+      <velocity x="-622" y="296" z="92"/>
+     </node>
+     <node>
+      <position x="153626" y="43062" z="167063"/>
+      <velocity x="-189" y="63" z="-60"/>
+     </node>
+     <node>
+      <position x="153442" y="42394" z="83350"/>
+      <velocity x="-331" y="171" z="-90"/>
+     </node>
+     <node>
+      <position x="179172" y="42307" z="155681"/>
+      <velocity x="-145" y="-496" z="-70"/>
+     </node>
+     <node>
+      <position x="110691" y="38843" z="106467"/>
+      <velocity x="-76" y="40" z="-415"/>
+     </node>
+     <node>
+      <position x="181069" y="36970" z="126158"/>
+      <velocity x="-261" y="-173" z="-314"/>
+     </node>
+     <node>
+      <position x="129850" y="34756" z="151969"/>
+      <velocity x="-515" y="-5" z="-91"/>
+     </node>
+     <node>
+      <position x="157767" y="32018" z="111481"/>
+      <velocity x="-58" y="-52" z="-102"/>
+     </node>
+     <node>
+      <position x="131988" y="27659" z="124569"/>
+      <velocity x="-141" y="-133" z="-174"/>
+     </node>
+    </type>
+   </class>
+   <class green="0.239">
+    <type radius="5505">
+     <node>
+      <position x="159974" y="187543" z="125924"/>
+      <velocity x="511" y="-137" z="-105"/>
+     </node>
+     <node>
+      <position x="126390" y="183918" z="144109"/>
+      <velocity x="463" y="-117" z="470"/>
+     </node>
+     <node>
+      <position x="162456" y="179695" z="96443"/>
+      <velocity x="125" y="-73" z="477"/>
+     </node>
+     <node>
+      <position x="100463" y="177346" z="128135"/>
+      <velocity x="760" y="41" z="106"/>
+     </node>
+     <node>
+      <position x="186208" y="172542" z="150615"/>
+      <velocity x="336" y="-96" z="109"/>
+     </node>
+     <node>
+      <position x="131246" y="172502" z="76125"/>
+      <velocity x="246" y="361" z="159"/>
+     </node>
+     <node>
+      <position x="131872" y="170267" z="179119"/>
+      <velocity x="583" y="-145" z="137"/>
+     </node>
+     <node>
+      <position x="103922" y="169661" z="91106"/>
+      <velocity x="427" y="148" z="237"/>
+     </node>
+     <node>
+      <position x="169691" y="163703" z="183804"/>
+      <velocity x="573" y="-383" z="-64"/>
+     </node>
+     <node>
+      <position x="192196" y="159919" z="83802"/>
+      <velocity x="327" y="-202" z="-21"/>
+     </node>
+     <node>
+      <position x="210209" y="156813" z="139750"/>
+      <velocity x="172" y="28" z="-88"/>
+     </node>
+     <node>
+      <position x="76461" y="152287" z="142367"/>
+      <velocity x="573" y="159" z="66"/>
+     </node>
+     <node>
+      <position x="112166" y="150353" z="189844"/>
+      <velocity x="578" y="56" z="268"/>
+     </node>
+     <node>
+      <position x="213967" y="149775" z="103699"/>
+      <velocity x="480" y="-328" z="-229"/>
+     </node>
+     <node>
+      <position x="140593" y="146158" z="51974"/>
+      <velocity x="209" y="84" z="197"/>
+     </node>
+     <node>
+      <position x="79986" y="140978" z="82339"/>
+      <velocity x="202" y="261" z="431"/>
+     </node>
+     <node>
+      <position x="79947" y="140008" z="170519"/>
+      <velocity x="328" y="132" z="255"/>
+     </node>
+     <node>
+      <position x="177300" y="138419" z="56618"/>
+      <velocity x="33" y="80" z="211"/>
+     </node>
+     <node>
+      <position x="178003" y="137886" z="197522"/>
+      <velocity x="403" y="-483" z="-15"/>
+     </node>
+     <node>
+      <position x="63365" y="129891" z="114204"/>
+      <velocity x="58" y="273" z="372"/>
+     </node>
+     <node>
+      <position x="220293" y="124249" z="159179"/>
+      <velocity x="331" y="-371" z="-213"/>
+     </node>
+     <node>
+      <position x="121586" y="123180" z="43788"/>
+      <velocity x="79" y="113" z="11"/>
+     </node>
+     <node>
+      <position x="88562" y="120718" z="61662"/>
+      <velocity x="-78" y="279" z="269"/>
+     </node>
+     <node>
+      <position x="123459" y="118869" z="209120"/>
+      <velocity x="426" y="21" z="219"/>
+     </node>
+     <node>
+      <position x="227556" y="114961" z="98156"/>
+      <velocity x="111" y="-329" z="-185"/>
+     </node>
+     <node>
+      <position x="194873" y="113447" z="175181"/>
+      <velocity x="198" y="-253" z="-218"/>
+     </node>
+     <node>
+      <position x="154029" y="113403" z="213651"/>
+      <velocity x="515" y="52" z="89"/>
+     </node>
+     <node>
+      <position x="187937" y="109008" z="53851"/>
+      <velocity x="-439" y="-97" z="-322"/>
+     </node>
+     <node>
+      <position x="72895" y="103547" z="177502"/>
+      <velocity x="131" y="208" z="129"/>
+     </node>
+     <node>
+      <position x="54831" y="100526" z="119223"/>
+      <velocity x="63" y="346" z="423"/>
+     </node>
+     <node>
+      <position x="230251" y="98193" z="133255"/>
+      <velocity x="102" y="-160" z="-201"/>
+     </node>
+     <node>
+      <position x="216347" y="97479" z="75340"/>
+      <velocity x="-99" y="-324" z="-353"/>
+     </node>
+     <node>
+      <position x="98833" y="90313" z="201593"/>
+      <velocity x="298" y="-22" z="139"/>
+     </node>
+     <node>
+      <position x="135595" y="87920" z="40670"/>
+      <velocity x="-223" y="164" z="184"/>
+     </node>
+     <node>
+      <position x="63068" y="86022" z="153682"/>
+      <velocity x="-131" y="284" z="381"/>
+     </node>
+     <node>
+      <position x="81937" y="84422" z="69637"/>
+      <velocity x="-343" y="464" z="131"/>
+     </node>
+     <node>
+      <position x="165776" y="81623" z="41771"/>
+      <velocity x="-259" y="284" z="-92"/>
+     </node>
+     <node>
+      <position x="200927" y="79754" z="192073"/>
+      <velocity x="149" y="-453" z="144"/>
+     </node>
+     <node>
+      <position x="167155" y="78204" z="209042"/>
+      <velocity x="311" y="-227" z="-16"/>
+     </node>
+     <node>
+      <position x="67742" y="74604" z="94821"/>
+      <velocity x="-122" y="472" z="191"/>
+     </node>
+     <node>
+      <position x="210049" y="73854" z="136237"/>
+      <velocity x="182" y="-385" z="-240"/>
+     </node>
+     <node>
+      <position x="110463" y="63276" z="55504"/>
+      <velocity x="-373" y="389" z="175"/>
+     </node>
+     <node>
+      <position x="109720" y="62741" z="197415"/>
+      <velocity x="220" y="114" z="51"/>
+     </node>
+     <node>
+      <position x="207444" y="60195" z="82567"/>
+      <velocity x="50" y="-341" z="-115"/>
+     </node>
+     <node>
+      <position x="207814" y="58791" z="170866"/>
+      <velocity x="122" y="-521" z="-340"/>
+     </node>
+     <node>
+      <position x="146994" y="55836" z="200614"/>
+      <velocity x="99" y="24" z="-347"/>
+     </node>
+     <node>
+      <position x="176811" y="51335" z="62477"/>
+      <velocity x="-385" y="-150" z="-247"/>
+     </node>
+     <node>
+      <position x="76079" y="50665" z="150481"/>
+      <velocity x="-107" y="67" z="144"/>
+     </node>
+     <node>
+      <position x="211477" y="48101" z="110484"/>
+      <velocity x="-301" y="-382" z="-392"/>
+     </node>
+     <node>
+      <position x="81000" y="43814" z="113135"/>
+      <velocity x="-182" y="353" z="156"/>
+     </node>
+     <node>
+      <position x="97230" y="40690" z="169157"/>
+      <velocity x="87" y="201" z="123"/>
+     </node>
+     <node>
+      <position x="119856" y="38676" z="70647"/>
+      <velocity x="-689" y="331" z="100"/>
+     </node>
+     <node>
+      <position x="157083" y="31251" z="73625"/>
+      <velocity x="-188" y="58" z="68"/>
+     </node>
+     <node>
+      <position x="157612" y="29668" z="175900"/>
+      <velocity x="-8" y="-288" z="75"/>
+     </node>
+     <node>
+      <position x="185355" y="29613" z="162433"/>
+      <velocity x="51" y="10" z="-305"/>
+     </node>
+     <node>
+      <position x="102558" y="26386" z="102362"/>
+      <velocity x="-250" y="437" z="20"/>
+     </node>
+     <node>
+      <position x="187737" y="23344" z="125243"/>
+      <velocity x="-257" y="-43" z="-195"/>
+     </node>
+     <node>
+      <position x="126611" y="20034" z="156982"/>
+      <velocity x="-379" y="120" z="85"/>
+     </node>
+     <node>
+      <position x="162405" y="16440" z="109025"/>
+      <velocity x="-515" y="-22" z="-252"/>
+     </node>
+     <node>
+      <position x="127884" y="12667" z="126063"/>
+      <velocity x="-267" y="10" z="-182"/>
+     </node>
+    </type>
+   </class>
+   <class green="0.113" blue="0.113">
+    <type radius="1966">
+     <node>
+      <position x="145505" y="143697" z="198654"/>
+      <velocity x="513" y="-168" z="-180"/>
+     </node>
+     <node>
+      <position x="64612" y="119475" z="146854"/>
+      <velocity x="121" y="375" z="193"/>
+     </node>
+     <node>
+      <position x="68572" y="108314" z="88404"/>
+      <velocity x="9" y="491" z="58"/>
+     </node>
+     <node>
+      <position x="218353" y="90399" z="164830"/>
+      <velocity x="-14" y="-204" z="-399"/>
+     </node>
+     <node>
+      <position x="132653" y="85761" z="209527"/>
+      <velocity x="357" y="11" z="-131"/>
+     </node>
+     <node>
+      <position x="83934" y="70869" z="176833"/>
+      <velocity x="66" y="367" z="160"/>
+     </node>
+     <node>
+      <position x="143991" y="56944" z="53758"/>
+      <velocity x="-166" y="234" z="-152"/>
+     </node>
+     <node>
+      <position x="179020" y="53104" z="188801"/>
+      <velocity x="148" y="-105" z="-207"/>
+     </node>
+     <node>
+      <position x="158539" y="17989" z="143060"/>
+      <velocity x="-394" y="128" z="-338"/>
+     </node>
+    </type>
+    <type radius="1497">
+     <node>
+      <position x="93847" y="124452" z="197682"/>
+      <velocity x="363" y="346" z="186"/>
+     </node>
+     <node>
+      <position x="59650" y="65266" z="126339"/>
+      <velocity x="-368" y="604" z="254"/>
+     </node>
+    </type>
+    <type radius="1519">
+     <node>
+      <position x="186930" y="107070" z="208430"/>
+      <velocity x="436" y="-414" z="-243"/>
+     </node>
+     <node>
+      <position x="212298" y="40597" z="144124"/>
+      <velocity x="79" y="-309" z="-232"/>
+     </node>
+     <node>
+      <position x="124253" y="33898" z="186218"/>
+      <velocity x="-170" y="-99" z="-176"/>
+     </node>
+     <node>
+      <position x="132122" y="15393" z="91239"/>
+      <velocity x="-294" y="263" z="-241"/>
+     </node>
+    </type>
+    <type radius="1985">
+     <node>
+      <position x="102962" y="165176" z="161232"/>
+      <velocity x="408" y="215" z="-237"/>
+     </node>
+     <node>
+      <position x="108560" y="148032" z="64378"/>
+      <velocity x="23" y="344" z="46"/>
+     </node>
+     <node>
+      <position x="198125" y="147804" z="171272"/>
+      <velocity x="220" y="-152" z="-251"/>
+     </node>
+     <node>
+      <position x="205040" y="128575" z="75587"/>
+      <velocity x="-48" y="-475" z="-119"/>
+     </node>
+     <node>
+      <position x="155779" y="115476" z="44145"/>
+      <velocity x="-124" y="292" z="9"/>
+     </node>
+     <node>
+      <position x="223050" y="80347" z="104814"/>
+      <velocity x="-294" y="-317" z="-612"/>
+     </node>
+     <node>
+      <position x="91055" y="53456" z="82348"/>
+      <velocity x="-288" y="336" z="-30"/>
+     </node>
+     <node>
+      <position x="100155" y="29326" z="137022"/>
+      <velocity x="-235" y="79" z="103"/>
+     </node>
+    </type>
+    <type radius="1543">
+     <node>
+      <position x="155846" y="184379" z="159222"/>
+      <velocity x="514" y="65" z="191"/>
+     </node>
+     <node>
+      <position x="165221" y="166537" z="65471"/>
+      <velocity x="234" y="80" z="-157"/>
+     </node>
+     <node>
+      <position x="77020" y="159785" z="110244"/>
+      <velocity x="307" y="303" z="144"/>
+     </node>
+     <node>
+      <position x="230139" y="131488" z="129019"/>
+      <velocity x="259" y="-215" z="-265"/>
+     </node>
+     <node>
+      <position x="101800" y="94056" z="46035"/>
+      <velocity x="-336" y="2" z="183"/>
+     </node>
+    </type>
+    <type radius="2007">
+     <node>
+      <position x="130384" y="182417" z="109493"/>
+      <velocity x="298" y="358" z="293"/>
+     </node>
+     <node>
+      <position x="186408" y="35394" z="92396"/>
+      <velocity x="-192" y="-220" z="-189"/>
+     </node>
+    </type>
+    <type radius="1945">
+     <node>
+      <position x="189713" y="171915" z="115999"/>
+      <velocity x="351" y="-448" z="-352"/>
+     </node>
+    </type>
+    <type radius="1562">
+     <node>
+      <position x="198406" y="76096" z="55804"/>
+      <velocity x="-65" y="-179" z="-78"/>
+     </node>
+    </type>
+   </class>
+  </nodes>
+  <links>
+   <class red="0.364" green="0.364">
+    <type length="34255" radius="983" elasticity="30">
+     <link nodes="138 46"/>
+     <link nodes="130 46"/>
+     <link nodes="147 46"/>
+     <link nodes="133 6"/>
+     <link nodes="118 6"/>
+     <link nodes="141 6"/>
+     <link nodes="133 1"/>
+     <link nodes="146 1"/>
+     <link nodes="141 1"/>
+     <link nodes="120 97"/>
+     <link nodes="139 97"/>
+     <link nodes="128 97"/>
+     <link nodes="132 110"/>
+     <link nodes="147 110"/>
+     <link nodes="124 110"/>
+     <link nodes="142 60"/>
+     <link nodes="146 60"/>
+     <link nodes="148 60"/>
+     <link nodes="121 83"/>
+     <link nodes="129 83"/>
+     <link nodes="135 83"/>
+     <link nodes="128 92"/>
+     <link nodes="123 92"/>
+     <link nodes="119 92"/>
+     <link nodes="142 72"/>
+     <link nodes="137 72"/>
+     <link nodes="134 72"/>
+     <link nodes="137 85"/>
+     <link nodes="136 85"/>
+     <link nodes="149 85"/>
+     <link nodes="147 106"/>
+     <link nodes="130 106"/>
+     <link nodes="138 106"/>
+     <link nodes="143 65"/>
+     <link nodes="134 65"/>
+     <link nodes="146 65"/>
+     <link nodes="145 91"/>
+     <link nodes="124 91"/>
+     <link nodes="137 91"/>
+    </type>
+    <type length="34624" radius="991" elasticity="30">
+     <link nodes="129 37"/>
+     <link nodes="125 37"/>
+     <link nodes="122 37"/>
+     <link nodes="147 56"/>
+     <link nodes="132 56"/>
+     <link nodes="126 56"/>
+     <link nodes="119 27"/>
+     <link nodes="123 27"/>
+     <link nodes="127 27"/>
+     <link nodes="148 12"/>
+     <link nodes="136 12"/>
+     <link nodes="144 12"/>
+     <link nodes="146 3"/>
+     <link nodes="143 3"/>
+     <link nodes="133 3"/>
+     <link nodes="119 11"/>
+     <link nodes="133 11"/>
+     <link nodes="143 11"/>
+     <link nodes="148 5"/>
+     <link nodes="141 5"/>
+     <link nodes="135 5"/>
+     <link nodes="149 36"/>
+     <link nodes="137 36"/>
+     <link nodes="124 36"/>
+     <link nodes="136 26"/>
+     <link nodes="137 26"/>
+     <link nodes="149 26"/>
+     <link nodes="137 21"/>
+     <link nodes="134 21"/>
+     <link nodes="145 21"/>
+     <link nodes="127 86"/>
+     <link nodes="119 86"/>
+     <link nodes="123 86"/>
+     <link nodes="125 96"/>
+     <link nodes="129 96"/>
+     <link nodes="122 96"/>
+     <link nodes="118 66"/>
+     <link nodes="141 66"/>
+     <link nodes="135 66"/>
+     <link nodes="122 90"/>
+     <link nodes="123 90"/>
+     <link nodes="127 90"/>
+     <link nodes="149 94"/>
+     <link nodes="137 94"/>
+     <link nodes="124 94"/>
+     <link nodes="126 116"/>
+     <link nodes="132 116"/>
+     <link nodes="147 116"/>
+     <link nodes="119 87"/>
+     <link nodes="128 87"/>
+     <link nodes="120 87"/>
+     <link nodes="138 82"/>
+     <link nodes="136 82"/>
+     <link nodes="144 82"/>
+    </type>
+    <type length="34377" radius="986" elasticity="30">
+     <link nodes="126 50"/>
+     <link nodes="131 50"/>
+     <link nodes="125 50"/>
+     <link nodes="142 2"/>
+     <link nodes="148 2"/>
+     <link nodes="146 2"/>
+     <link nodes="137 32"/>
+     <link nodes="124 32"/>
+     <link nodes="145 32"/>
+     <link nodes="148 10"/>
+     <link nodes="135 10"/>
+     <link nodes="144 10"/>
+     <link nodes="146 7"/>
+     <link nodes="143 7"/>
+     <link nodes="134 7"/>
+     <link nodes="134 14"/>
+     <link nodes="137 14"/>
+     <link nodes="142 14"/>
+     <link nodes="148 0"/>
+     <link nodes="141 0"/>
+     <link nodes="146 0"/>
+     <link nodes="139 38"/>
+     <link nodes="120 38"/>
+     <link nodes="128 38"/>
+     <link nodes="147 54"/>
+     <link nodes="130 54"/>
+     <link nodes="126 54"/>
+     <link nodes="140 53"/>
+     <link nodes="139 53"/>
+     <link nodes="132 53"/>
+     <link nodes="118 84"/>
+     <link nodes="129 84"/>
+     <link nodes="122 84"/>
+     <link nodes="145 79"/>
+     <link nodes="137 79"/>
+     <link nodes="134 79"/>
+     <link nodes="135 68"/>
+     <link nodes="144 68"/>
+     <link nodes="148 68"/>
+     <link nodes="126 117"/>
+     <link nodes="132 117"/>
+     <link nodes="140 117"/>
+     <link nodes="126 111"/>
+     <link nodes="125 111"/>
+     <link nodes="131 111"/>
+     <link nodes="147 114"/>
+     <link nodes="130 114"/>
+     <link nodes="126 114"/>
+     <link nodes="136 89"/>
+     <link nodes="149 89"/>
+     <link nodes="138 89"/>
+     <link nodes="132 113"/>
+     <link nodes="139 113"/>
+     <link nodes="140 113"/>
+     <link nodes="125 95"/>
+     <link nodes="121 95"/>
+     <link nodes="129 95"/>
+     <link nodes="125 103"/>
+     <link nodes="122 103"/>
+     <link nodes="131 103"/>
+     <link nodes="146 59"/>
+     <link nodes="141 59"/>
+     <link nodes="133 59"/>
+    </type>
+    <type length="33888" radius="969" elasticity="30">
+     <link nodes="142 16"/>
+     <link nodes="136 16"/>
+     <link nodes="137 16"/>
+     <link nodes="120 34"/>
+     <link nodes="139 34"/>
+     <link nodes="145 34"/>
+     <link nodes="132 49"/>
+     <link nodes="139 49"/>
+     <link nodes="124 49"/>
+     <link nodes="143 15"/>
+     <link nodes="120 15"/>
+     <link nodes="134 15"/>
+     <link nodes="144 20"/>
+     <link nodes="135 20"/>
+     <link nodes="121 20"/>
+     <link nodes="127 23"/>
+     <link nodes="118 23"/>
+     <link nodes="122 23"/>
+     <link nodes="131 100"/>
+     <link nodes="122 100"/>
+     <link nodes="123 100"/>
+     <link nodes="132 109"/>
+     <link nodes="124 109"/>
+     <link nodes="139 109"/>
+     <link nodes="149 104"/>
+     <link nodes="147 104"/>
+     <link nodes="124 104"/>
+     <link nodes="139 99"/>
+     <link nodes="124 99"/>
+     <link nodes="145 99"/>
+     <link nodes="138 88"/>
+     <link nodes="121 88"/>
+     <link nodes="144 88"/>
+    </type>
+    <type length="33394" radius="957" elasticity="30">
+     <link nodes="123 105"/>
+     <link nodes="128 105"/>
+     <link nodes="140 105"/>
+    </type>
+    <type length="34131" radius="977" elasticity="30">
+     <link nodes="121 28"/>
+     <link nodes="138 28"/>
+     <link nodes="144 28"/>
+     <link nodes="129 25"/>
+     <link nodes="118 25"/>
+     <link nodes="122 25"/>
+     <link nodes="128 33"/>
+     <link nodes="123 33"/>
+     <link nodes="119 33"/>
+     <link nodes="122 43"/>
+     <link nodes="131 43"/>
+     <link nodes="125 43"/>
+     <link nodes="147 44"/>
+     <link nodes="149 44"/>
+     <link nodes="124 44"/>
+     <link nodes="126 55"/>
+     <link nodes="140 55"/>
+     <link nodes="131 55"/>
+     <link nodes="125 102"/>
+     <link nodes="121 102"/>
+     <link nodes="130 102"/>
+     <link nodes="133 74"/>
+     <link nodes="119 74"/>
+     <link nodes="127 74"/>
+     <link nodes="129 76"/>
+     <link nodes="135 76"/>
+     <link nodes="118 76"/>
+     <link nodes="141 58"/>
+     <link nodes="146 58"/>
+     <link nodes="148 58"/>
+     <link nodes="131 115"/>
+     <link nodes="140 115"/>
+     <link nodes="126 115"/>
+    </type>
+    <type length="34501" radius="989" elasticity="30">
+     <link nodes="134 4"/>
+     <link nodes="142 4"/>
+     <link nodes="146 4"/>
+     <link nodes="149 30"/>
+     <link nodes="138 30"/>
+     <link nodes="136 30"/>
+     <link nodes="145 22"/>
+     <link nodes="134 22"/>
+     <link nodes="120 22"/>
+     <link nodes="121 35"/>
+     <link nodes="129 35"/>
+     <link nodes="125 35"/>
+     <link nodes="120 29"/>
+     <link nodes="119 29"/>
+     <link nodes="128 29"/>
+     <link nodes="138 24"/>
+     <link nodes="136 24"/>
+     <link nodes="144 24"/>
+     <link nodes="127 31"/>
+     <link nodes="122 31"/>
+     <link nodes="123 31"/>
+     <link nodes="135 8"/>
+     <link nodes="118 8"/>
+     <link nodes="141 8"/>
+     <link nodes="140 57"/>
+     <link nodes="132 57"/>
+     <link nodes="126 57"/>
+     <link nodes="146 63"/>
+     <link nodes="142 63"/>
+     <link nodes="134 63"/>
+     <link nodes="148 62"/>
+     <link nodes="141 62"/>
+     <link nodes="135 62"/>
+     <link nodes="120 80"/>
+     <link nodes="134 80"/>
+     <link nodes="145 80"/>
+     <link nodes="141 64"/>
+     <link nodes="118 64"/>
+     <link nodes="133 64"/>
+     <link nodes="148 71"/>
+     <link nodes="144 71"/>
+     <link nodes="136 71"/>
+    </type>
+    <type length="33764" radius="967" elasticity="30">
+     <link nodes="145 39"/>
+     <link nodes="139 39"/>
+     <link nodes="124 39"/>
+     <link nodes="123 40"/>
+     <link nodes="122 40"/>
+     <link nodes="131 40"/>
+     <link nodes="133 13"/>
+     <link nodes="127 13"/>
+     <link nodes="118 13"/>
+     <link nodes="138 41"/>
+     <link nodes="147 41"/>
+     <link nodes="149 41"/>
+     <link nodes="120 93"/>
+     <link nodes="145 93"/>
+     <link nodes="139 93"/>
+     <link nodes="140 107"/>
+     <link nodes="128 107"/>
+     <link nodes="139 107"/>
+     <link nodes="137 75"/>
+     <link nodes="142 75"/>
+     <link nodes="136 75"/>
+     <link nodes="133 70"/>
+     <link nodes="127 70"/>
+     <link nodes="118 70"/>
+     <link nodes="138 101"/>
+     <link nodes="149 101"/>
+     <link nodes="147 101"/>
+     <link nodes="121 78"/>
+     <link nodes="135 78"/>
+     <link nodes="144 78"/>
+    </type>
+    <type length="33640" radius="963" elasticity="30">
+     <link nodes="139 47"/>
+     <link nodes="140 47"/>
+     <link nodes="128 47"/>
+     <link nodes="143 73"/>
+     <link nodes="120 73"/>
+     <link nodes="134 73"/>
+     <link nodes="123 108"/>
+     <link nodes="140 108"/>
+     <link nodes="131 108"/>
+    </type>
+    <type length="34747" radius="995" elasticity="30">
+     <link nodes="133 69"/>
+     <link nodes="119 69"/>
+     <link nodes="143 69"/>
+     <link nodes="146 61"/>
+     <link nodes="133 61"/>
+     <link nodes="143 61"/>
+    </type>
+    <type length="34010" radius="974" elasticity="30">
+     <link nodes="121 42"/>
+     <link nodes="130 42"/>
+     <link nodes="125 42"/>
+     <link nodes="136 9"/>
+     <link nodes="148 9"/>
+     <link nodes="142 9"/>
+     <link nodes="119 19"/>
+     <link nodes="143 19"/>
+     <link nodes="120 19"/>
+     <link nodes="126 52"/>
+     <link nodes="125 52"/>
+     <link nodes="130 52"/>
+     <link nodes="119 17"/>
+     <link nodes="133 17"/>
+     <link nodes="127 17"/>
+     <link nodes="135 18"/>
+     <link nodes="118 18"/>
+     <link nodes="129 18"/>
+     <link nodes="132 51"/>
+     <link nodes="124 51"/>
+     <link nodes="147 51"/>
+     <link nodes="138 98"/>
+     <link nodes="121 98"/>
+     <link nodes="130 98"/>
+     <link nodes="136 67"/>
+     <link nodes="142 67"/>
+     <link nodes="148 67"/>
+     <link nodes="127 81"/>
+     <link nodes="118 81"/>
+     <link nodes="122 81"/>
+     <link nodes="120 77"/>
+     <link nodes="143 77"/>
+     <link nodes="119 77"/>
+     <link nodes="130 112"/>
+     <link nodes="125 112"/>
+     <link nodes="126 112"/>
+    </type>
+    <type length="33273" radius="952" elasticity="30">
+     <link nodes="140 48"/>
+     <link nodes="123 48"/>
+     <link nodes="131 48"/>
+    </type>
+    <type length="33151" radius="950" elasticity="30">
+     <link nodes="123 45"/>
+     <link nodes="140 45"/>
+     <link nodes="128 45"/>
+    </type>
+   </class>
+   <class red="0.741">
+    <type length="16574" radius="4977">
+     <link nodes="1 59"/>
+     <link nodes="18 76"/>
+     <link nodes="35 95"/>
+     <link nodes="13 70"/>
+     <link nodes="23 81"/>
+     <link nodes="43 103"/>
+     <link nodes="45 105"/>
+     <link nodes="48 108"/>
+     <link nodes="40 100"/>
+    </type>
+    <type length="16206" radius="4867">
+     <link nodes="0 58"/>
+     <link nodes="5 62"/>
+     <link nodes="20 78"/>
+     <link nodes="46 106"/>
+     <link nodes="15 73"/>
+     <link nodes="3 61"/>
+     <link nodes="6 64"/>
+     <link nodes="42 102"/>
+     <link nodes="56 116"/>
+     <link nodes="11 69"/>
+     <link nodes="52 112"/>
+     <link nodes="29 87"/>
+     <link nodes="17 74"/>
+     <link nodes="25 84"/>
+     <link nodes="37 96"/>
+     <link nodes="50 111"/>
+     <link nodes="33 92"/>
+     <link nodes="27 86"/>
+     <link nodes="55 115"/>
+     <link nodes="31 90"/>
+    </type>
+    <type length="15837" radius="4757">
+     <link nodes="9 67"/>
+     <link nodes="12 71"/>
+     <link nodes="30 89"/>
+     <link nodes="2 60"/>
+     <link nodes="24 82"/>
+     <link nodes="4 63"/>
+     <link nodes="10 68"/>
+     <link nodes="21 79"/>
+     <link nodes="41 101"/>
+     <link nodes="28 88"/>
+     <link nodes="7 65"/>
+     <link nodes="8 66"/>
+     <link nodes="34 93"/>
+     <link nodes="49 109"/>
+     <link nodes="54 114"/>
+     <link nodes="19 77"/>
+     <link nodes="53 113"/>
+     <link nodes="57 117"/>
+     <link nodes="47 107"/>
+    </type>
+    <type length="15470" radius="4644">
+     <link nodes="16 75"/>
+     <link nodes="36 94"/>
+     <link nodes="32 91"/>
+     <link nodes="22 80"/>
+     <link nodes="39 99"/>
+     <link nodes="51 110"/>
+     <link nodes="38 97"/>
+    </type>
+    <type length="15101" radius="4536">
+     <link nodes="26 85"/>
+     <link nodes="14 72"/>
+     <link nodes="44 104"/>
+    </type>
+   </class>
+   <class green="0.741">
+    <type length="32415" radius="4050">
+     <link nodes="98 88"/>
+     <link nodes="73 80"/>
+     <link nodes="100 90"/>
+    </type>
+    <type length="36099" radius="4510">
+     <link nodes="67 75"/>
+     <link nodes="89 85"/>
+     <link nodes="117 113"/>
+     <link nodes="105 92"/>
+     <link nodes="100 108"/>
+    </type>
+    <type length="36466" radius="4556">
+     <link nodes="60 67"/>
+     <link nodes="78 88"/>
+     <link nodes="66 62"/>
+     <link nodes="93 80"/>
+     <link nodes="93 99"/>
+     <link nodes="109 110"/>
+     <link nodes="77 73"/>
+     <link nodes="112 114"/>
+     <link nodes="112 102"/>
+     <link nodes="84 76"/>
+     <link nodes="92 87"/>
+     <link nodes="115 111"/>
+     <link nodes="103 111"/>
+     <link nodes="108 115"/>
+     <link nodes="100 103"/>
+    </type>
+    <type length="31308" radius="3911">
+     <link nodes="108 105"/>
+    </type>
+    <type length="37202" radius="4648">
+     <link nodes="82 71"/>
+     <link nodes="63 60"/>
+     <link nodes="91 79"/>
+     <link nodes="101 89"/>
+     <link nodes="62 58"/>
+     <link nodes="104 94"/>
+     <link nodes="73 65"/>
+     <link nodes="61 65"/>
+     <link nodes="64 66"/>
+     <link nodes="102 98"/>
+     <link nodes="116 110"/>
+     <link nodes="90 86"/>
+    </type>
+    <type length="37572" radius="4694">
+     <link nodes="88 82"/>
+     <link nodes="113 109"/>
+     <link nodes="74 70"/>
+     <link nodes="117 116"/>
+     <link nodes="105 107"/>
+     <link nodes="90 81"/>
+    </type>
+    <type length="33151" radius="4142">
+     <link nodes="82 89"/>
+     <link nodes="91 94"/>
+     <link nodes="106 101"/>
+     <link nodes="76 66"/>
+     <link nodes="87 77"/>
+     <link nodes="92 86"/>
+     <link nodes="103 96"/>
+    </type>
+    <type length="33888" radius="4234">
+     <link nodes="61 59"/>
+     <link nodes="115 117"/>
+    </type>
+    <type length="36835" radius="4602">
+     <link nodes="72 75"/>
+     <link nodes="94 85"/>
+     <link nodes="104 101"/>
+     <link nodes="80 79"/>
+     <link nodes="59 58"/>
+     <link nodes="64 59"/>
+     <link nodes="76 83"/>
+     <link nodes="114 106"/>
+     <link nodes="69 61"/>
+     <link nodes="69 77"/>
+     <link nodes="95 83"/>
+     <link nodes="87 97"/>
+     <link nodes="96 95"/>
+     <link nodes="96 84"/>
+     <link nodes="107 97"/>
+     <link nodes="81 70"/>
+     <link nodes="86 74"/>
+    </type>
+    <type length="33519" radius="4188">
+     <link nodes="85 75"/>
+     <link nodes="71 67"/>
+     <link nodes="79 72"/>
+     <link nodes="58 60"/>
+     <link nodes="65 63"/>
+     <link nodes="111 112"/>
+    </type>
+    <type length="32782" radius="4095">
+     <link nodes="62 68"/>
+     <link nodes="116 114"/>
+     <link nodes="95 102"/>
+     <link nodes="97 93"/>
+     <link nodes="74 69"/>
+     <link nodes="81 84"/>
+    </type>
+    <type length="32045" radius="4004">
+     <link nodes="110 104"/>
+     <link nodes="83 78"/>
+     <link nodes="107 113"/>
+    </type>
+    <type length="31677" radius="3959">
+     <link nodes="109 99"/>
+     <link nodes="70 64"/>
+    </type>
+    <type length="37939" radius="4740">
+     <link nodes="78 68"/>
+     <link nodes="99 91"/>
+    </type>
+    <type length="35730" radius="4464">
+     <link nodes="63 72"/>
+     <link nodes="68 71"/>
+     <link nodes="98 106"/>
+    </type>
+   </class>
+   <class blue="0.741">
+    <type length="26520" radius="3312">
+     <link nodes="24 30"/>
+     <link nodes="5 10"/>
+     <link nodes="18 8"/>
+     <link nodes="35 42"/>
+     <link nodes="38 34"/>
+     <link nodes="17 11"/>
+     <link nodes="23 25"/>
+     <link nodes="40 31"/>
+    </type>
+    <type length="29467" radius="3682">
+     <link nodes="9 16"/>
+     <link nodes="2 9"/>
+     <link nodes="20 28"/>
+     <link nodes="48 55"/>
+     <link nodes="40 43"/>
+    </type>
+    <type length="29836" radius="3727">
+     <link nodes="12 24"/>
+     <link nodes="14 16"/>
+     <link nodes="30 26"/>
+     <link nodes="4 14"/>
+     <link nodes="10 12"/>
+     <link nodes="32 21"/>
+     <link nodes="28 24"/>
+     <link nodes="44 36"/>
+     <link nodes="44 41"/>
+     <link nodes="1 0"/>
+     <link nodes="3 7"/>
+     <link nodes="39 32"/>
+     <link nodes="8 5"/>
+     <link nodes="34 22"/>
+     <link nodes="34 39"/>
+     <link nodes="49 51"/>
+     <link nodes="6 1"/>
+     <link nodes="19 15"/>
+     <link nodes="11 3"/>
+     <link nodes="11 19"/>
+     <link nodes="52 42"/>
+     <link nodes="29 38"/>
+     <link nodes="57 53"/>
+     <link nodes="37 25"/>
+     <link nodes="47 38"/>
+     <link nodes="27 17"/>
+     <link nodes="55 50"/>
+     <link nodes="43 50"/>
+     <link nodes="45 47"/>
+     <link nodes="45 33"/>
+     <link nodes="31 23"/>
+     <link nodes="40 48"/>
+    </type>
+    <type length="25784" radius="3221">
+     <link nodes="48 45"/>
+    </type>
+    <type length="30204" radius="3774">
+     <link nodes="4 2"/>
+     <link nodes="36 26"/>
+     <link nodes="5 0"/>
+     <link nodes="22 21"/>
+     <link nodes="46 54"/>
+     <link nodes="15 7"/>
+     <link nodes="56 51"/>
+     <link nodes="52 54"/>
+     <link nodes="57 56"/>
+     <link nodes="37 35"/>
+     <link nodes="23 13"/>
+     <link nodes="33 29"/>
+     <link nodes="31 27"/>
+    </type>
+    <type length="27257" radius="3405">
+     <link nodes="21 14"/>
+     <link nodes="56 54"/>
+     <link nodes="55 57"/>
+     <link nodes="43 37"/>
+    </type>
+    <type length="26888" radius="3360">
+     <link nodes="12 9"/>
+     <link nodes="0 2"/>
+     <link nodes="7 4"/>
+     <link nodes="46 41"/>
+     <link nodes="51 44"/>
+     <link nodes="29 19"/>
+     <link nodes="27 33"/>
+    </type>
+    <type length="27625" radius="3451">
+     <link nodes="32 36"/>
+     <link nodes="3 1"/>
+     <link nodes="50 52"/>
+    </type>
+    <type length="26152" radius="3267">
+     <link nodes="15 22"/>
+     <link nodes="49 39"/>
+     <link nodes="13 6"/>
+     <link nodes="47 53"/>
+    </type>
+    <type length="30572" radius="3819">
+     <link nodes="41 30"/>
+     <link nodes="20 10"/>
+     <link nodes="6 8"/>
+     <link nodes="53 49"/>
+     <link nodes="17 13"/>
+     <link nodes="25 18"/>
+    </type>
+    <type length="48253" radius="6030">
+     <link nodes="42 54"/>
+     <link nodes="35 25"/>
+    </type>
+    <type length="47886" radius="5984">
+     <link nodes="20 24"/>
+     <link nodes="18 35"/>
+    </type>
+    <type length="48990" radius="6121">
+     <link nodes="46 56"/>
+    </type>
+    <type length="48623" radius="6075">
+     <link nodes="28 46"/>
+    </type>
+    <type length="27993" radius="3497">
+     <link nodes="26 16"/>
+    </type>
+   </class>
+  </links>
+ </universe>
+</tensegrity>

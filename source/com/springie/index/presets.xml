@@ -2,6 +2,7 @@
 <heirarchy version="1.0"?>
  <node name="resource://models">
   <leaf name="moscow.spr" desc="Moscow"/>
+  <leaf name="asm_32a.spr" desc="ASM (32)a"/>
   <leaf name="t_sphere_32.spr" desc="Tensegrity"/>
   <leaf name="soccer.spr" desc="Soccer ball"/>
   <leaf name="icosahedron.spr" desc="Icosahedron"/>

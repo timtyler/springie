@@ -197,4 +197,14 @@ public class PanelFundamentalTest {
       });
     }
   }
+
+  @Test
+  void asm32aSitsJustUnderMoscowInTheDefaultPresets() throws Exception {
+    final Choice leaf = FrEnd.choose_initial.choice;
+    assertTrue(leaf.getItemCount() > 1, "the default preset index must offer models");
+    assertEquals("Moscow", leaf.getItem(0),
+        "Moscow must stay the first default preset");
+    assertEquals("ASM (32)a", leaf.getItem(1),
+        "ASM (32)a must sit just under Moscow in the default presets");
+  }
 }

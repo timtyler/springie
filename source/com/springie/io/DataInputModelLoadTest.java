@@ -40,7 +40,7 @@ class DataInputModelLoadTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"icosahedron", "moscow", "soccer", "t_sphere_32"})
+  @ValueSource(strings = {"asm_32a", "icosahedron", "moscow", "soccer", "t_sphere_32"})
   void bundledModelLoadsWithoutException(String name) {
     final DataInput input = new DataInput(this.manager);
     assertDoesNotThrow(() -> input.loadFile("resource://models/" + name + ".spr"),
