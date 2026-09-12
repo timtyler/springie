@@ -70,6 +70,13 @@ public class PanelFundamental {
 
   public ImageButton button_select_all_of_class;
 
+  /**
+   * The green check-mark button. It only makes sense while the controls
+   * live in their own frame; when docked they are already visible, so
+   * FrEnd greys it out instead of popping up an empty frame.
+   */
+  public ImageButton button_controls;
+
   private static final String CARD_PRESETS = "presets";
 
   private static final String CARD_FILE = "file";
@@ -126,6 +133,8 @@ public class PanelFundamental {
 
     this.button_file_presets = new ImageButton("floppy", null, "File", true);
     this.button_file_presets.setRadio(true);
+    this.button_file_presets
+        .setTooltipText("Toggle between model presets and file load/save");
 
     this.button_file_presets.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
@@ -283,17 +292,25 @@ public class PanelFundamental {
     panel.setLayout(new BorderLayout(0, 0));
     // panel.setLayout(new GridLayout(1, 1, 0, 0));
 
-    final ImageButton button_controls_edit = new ImageButton("controls", null,
+    this.button_controls = new ImageButton("controls", null,
         "Controls", false);
+    this.button_controls.setTooltipText("Show the controls window");
 
-    button_controls_edit.addActionListener(new ActionListener() {
+    this.button_controls.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
         Forget.about(arg0);
+        if (FrEnd.controls_window_mode == FrEnd.CONTROLS_DOCKED) {
+          // The controls are already visible, docked into the main
+          // window; the separate frame is empty in this mode, so don't
+          // pop it up. (The button is greyed out while docked, so this
+          // is only a backstop.)
+          return;
+        }
         FrEnd.frame_controls.setVisible(true);
       }
     });
 
-    panel.add(button_controls_edit);
+    panel.add(this.button_controls);
     return panel;
   }
 
@@ -343,6 +360,7 @@ public class PanelFundamental {
 
     this.button_paused = new ImageButton("pause", null, "Pause", false);
     this.button_paused.setRadio(true);
+    this.button_paused.setTooltipText("Pause / resume the simulation");
 
     this.button_paused.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
@@ -362,6 +380,7 @@ public class PanelFundamental {
 
     // Step...
     FrEnd.button_step = new ImageButton("step", null, "Step", false);
+    FrEnd.button_step.setTooltipText("Advance the simulation a number of steps");
     // this.button_paused.setRadio(true);
     // FrEnd.button_step = new Button(GUIStrings.STEP);
     FrEnd.button_step.addActionListener(new ActionListener() {
@@ -402,6 +421,8 @@ public class PanelFundamental {
     // panel.setLayout(new GridLayout(1, 1, 0, 0));
 
     FrEnd.button_restart = new ImageButton("restart", null, "Restart", false);
+    FrEnd.button_restart
+        .setTooltipText("Restart the simulation from the initial state");
 
     FrEnd.button_restart.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
@@ -493,6 +514,7 @@ public class PanelFundamental {
     panel.setLayout(new FlowLayout());
 
     this.button_delete = new ImageButton("delete", null, "Delete", false);
+    this.button_delete.setTooltipText("Delete the selected elements");
 
     this.button_delete.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
@@ -512,6 +534,8 @@ public class PanelFundamental {
 
     this.button_select_all_of_class = new ImageButton("select_all_of_class",
         null, "Select all of class", false);
+    this.button_select_all_of_class
+        .setTooltipText("Select all elements of the same class");
 
     this.button_select_all_of_class.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {

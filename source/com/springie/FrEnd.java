@@ -680,6 +680,16 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		} else {
 			undockControlsFromMain();
 		}
+
+		// The green check-mark "Controls" button only makes sense while
+		// the controls live in their own frame; when docked they are
+		// already visible, so grey it out instead of letting it pop up an
+		// empty frame.
+		if (panel_fundamental != null
+				&& panel_fundamental.button_controls != null) {
+			panel_fundamental.button_controls
+					.setEnabled(controls_window_mode != CONTROLS_DOCKED);
+		}
 	}
 
 	private static AWTEventListener controls_stay_on_top_listener;

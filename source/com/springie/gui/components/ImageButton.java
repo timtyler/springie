@@ -45,6 +45,29 @@ public class ImageButton extends Canvas implements ActionListener {
   private ActionListener listener;
 
   /**
+   * Hover help text. AWT has no built-in tooltips, so ImageButton shows
+   * its own small popup label after the pointer rests on the button.
+   * Defaults to the button's human-readable name; callers can override.
+   */
+  private String tooltip_text;
+
+  /** Delay before the tooltip appears, in milliseconds. */
+  private static final int TOOLTIP_DELAY_MS = 750;
+
+  private static java.util.Timer tooltip_timer;
+
+  private static java.awt.Window tooltip_window;
+
+  private static java.awt.Label tooltip_label;
+
+  /** The button whose tooltip is currently pending or showing. */
+  private static ImageButton tooltip_target;
+
+  private int tooltip_mouse_x;
+
+  private int tooltip_mouse_y;
+
+  /**
    * Create a new button with the given images, group, and initial state.
    */
   public ImageButton(ImageWrapper upImage, ImageWrapper downImage,
@@ -54,6 +77,7 @@ public class ImageButton extends Canvas implements ActionListener {
     this.button_image_down = downImage;
     this.group = group;
     this.name = name;
+    this.tooltip_text = name;
     setState(state);
   }
 
@@ -189,6 +213,7 @@ public class ImageButton extends Canvas implements ActionListener {
     Forget.about(evt);
     Forget.about(x);
     Forget.about(y);
+    cancelTooltip();
     this.button_pressed = true;
     repaint();
     return true;
@@ -220,11 +245,10 @@ public class ImageButton extends Canvas implements ActionListener {
 
   public boolean mouseEnter(Event evt, int x, int y) {
     Forget.about(evt);
-    Forget.about(x);
-    Forget.about(y);
 
     this.pointer_over = true;
     repaint();
+    scheduleTooltip(x, y);
     return true;
   }
 
@@ -234,6 +258,7 @@ public class ImageButton extends Canvas implements ActionListener {
     Forget.about(y);
 
     this.pointer_over = false;
+    cancelTooltip();
 
     repaint();
     return true;
@@ -255,5 +280,123 @@ public class ImageButton extends Canvas implements ActionListener {
 
   public void setRadio(boolean radio) {
     this.radio = radio;
+  }
+
+  /**
+   * Overrides the default tooltip (the button's name) with custom help
+   * text, shown while the pointer hovers over the button.
+   */
+  public void setTooltipText(String text) {
+    this.tooltip_text = text;
+  }
+
+  public String getTooltipText() {
+    return this.tooltip_text;
+  }
+
+  private void scheduleTooltip(int x, int y) {
+    cancelTooltip();
+    if (this.tooltip_text == null || this.tooltip_text.isEmpty()) {
+      return;
+    }
+    this.tooltip_mouse_x = x;
+    this.tooltip_mouse_y = y;
+    tooltip_target = this;
+    if (tooltip_timer == null) {
+      tooltip_timer = new java.util.Timer("ImageButton-tooltips", true);
+    }
+    final ImageButton target = this;
+    tooltip_timer.schedule(new java.util.TimerTask() {
+      public void run() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+          public void run() {
+            showTooltip(target);
+          }
+        });
+      }
+    }, TOOLTIP_DELAY_MS);
+  }
+
+  private static void cancelTooltip() {
+    tooltip_target = null;
+    if (tooltip_timer != null) {
+      tooltip_timer.cancel();
+      tooltip_timer = null;
+    }
+    if (tooltip_window != null) {
+      tooltip_window.setVisible(false);
+    }
+  }
+
+  private static void showTooltip(ImageButton target) {
+    if (tooltip_target != target || !target.pointer_over
+        || !target.isEnabled() || !target.isShowing()) {
+      return;
+    }
+    final String text = target.tooltip_text;
+    if (text == null || text.isEmpty()) {
+      return;
+    }
+    final java.awt.Point screen;
+    try {
+      screen = target.getLocationOnScreen();
+    } catch (java.awt.IllegalComponentStateException e) {
+      Forget.about(e);
+      return;
+    }
+    final java.awt.Window owner = findWindowAncestor(target);
+    if (owner == null) {
+      return;
+    }
+    if (tooltip_window == null || tooltip_window.getOwner() != owner) {
+      if (tooltip_window != null) {
+        tooltip_window.dispose();
+      }
+      tooltip_window = new java.awt.Window(owner);
+      final java.awt.Panel border = new java.awt.Panel() {
+        static final long serialVersionUID = 1L;
+
+        public java.awt.Insets getInsets() {
+          return new java.awt.Insets(1, 1, 1, 1);
+        }
+      };
+      border.setBackground(java.awt.Color.BLACK);
+      border.setLayout(new java.awt.BorderLayout());
+      tooltip_label = new java.awt.Label();
+      tooltip_label.setBackground(new java.awt.Color(255, 255, 225));
+      border.add(tooltip_label, java.awt.BorderLayout.CENTER);
+      tooltip_window.add(border);
+    }
+    if (!text.equals(tooltip_label.getText())) {
+      tooltip_label.setText(text);
+    }
+    tooltip_window.pack();
+    final java.awt.Dimension screen_size = java.awt.Toolkit.getDefaultToolkit()
+        .getScreenSize();
+    final java.awt.Dimension tip_size = tooltip_window.getSize();
+    int x = screen.x + target.tooltip_mouse_x + 14;
+    int y = screen.y + target.tooltip_mouse_y + 18;
+    if (x + tip_size.width > screen_size.width) {
+      x = screen_size.width - tip_size.width;
+    }
+    if (y + tip_size.height > screen_size.height) {
+      // No room below the cursor: show it above the button instead.
+      y = screen.y + target.tooltip_mouse_y - tip_size.height - 8;
+    }
+    if (x < 0) {
+      x = 0;
+    }
+    if (y < 0) {
+      y = 0;
+    }
+    tooltip_window.setLocation(x, y);
+    tooltip_window.setVisible(true);
+  }
+
+  private static java.awt.Window findWindowAncestor(java.awt.Component c) {
+    while (c != null && !(c instanceof java.awt.Window)) {
+      c = c.getParent();
+    }
+    return (java.awt.Window) c;
   }
 }
