@@ -65,6 +65,21 @@ public final class RendererDelegator {
    */
   public static int link_sides = 2;
 
+  /**
+   * Ray-traced glossiness as a percentage (0-100). 0 means matte: no
+   * reflection rays. Above 0, each surface hit blends its diffuse colour
+   * with the colour seen along the mirror reflection ray, 100% being a
+   * perfect mirror.
+   */
+  public static int glossiness = 50;
+
+  /**
+   * Ray-traced reflection depth (0-4). Caps how many times a ray may
+   * bounce off glossy surfaces; 0 disables bouncing even when glossiness
+   * is above 0.
+   */
+  public static int max_bounces = 2;
+
   static long time_last_ms;
 
   static int frame_count;

@@ -87,6 +87,12 @@ public class PanelPreferencesDisplay {
 
     this.panel_frame.add(this.panel_main, "Center");
 
+    // Ray-traced-only options, shown under the shared renderer options
+    // while the ray-traced renderer is active.
+    this.panel_frame.add(FrEnd.panel_preferences_renderer_raytraced.panel,
+        "South");
+    FrEnd.panel_preferences_renderer_raytraced.panel.setVisible(false);
+
     this.panel_main.add(FrEnd.panel_preferences_renderer_modern.panel, "Center");
 
     this.panel_renderer.setLayout(new BorderLayout());
@@ -111,11 +117,13 @@ public class PanelPreferencesDisplay {
 
   private void applyRendererType(int value) {
     this.panel_main.removeAll();
+    final boolean raytraced = value == Quality.RAYTRACED;
+    FrEnd.panel_preferences_renderer_raytraced.panel.setVisible(raytraced);
     if (value == Quality.THICK_OUTLINE) {
       RendererDelegator.renderer = new com.springie.render.modules.original.ModularRendererOld();
       this.panel_main.add(FrEnd.panel_preferences_renderer_original.panel,
           "Center");
-    } else if (value == Quality.RAYTRACED) {
+    } else if (raytraced) {
       RendererDelegator.renderer = new ModularRendererRaytraced();
       // Shares the modern panel: the bin size lives there, and the
       // ray-traced renderer uses the same bins as the default renderer.
@@ -142,6 +150,7 @@ public class PanelPreferencesDisplay {
 
     FrEnd.panel_preferences_renderer_original.resetToDefaults();
     FrEnd.panel_preferences_renderer_modern.resetToDefaults();
+    FrEnd.panel_preferences_renderer_raytraced.resetToDefaults();
     FrEnd.panel_preferences_renderer_modern_filters.resetToDefaults();
     FrEnd.panel_preferences_renderer_modern_colours.resetToDefaults();
     FrEnd.panel_preferences_shared_show.resetToDefaults();

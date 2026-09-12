@@ -42,7 +42,7 @@ public class TTChoice {
     while (enumeration.hasNext()) {
       final TTNumStr temp_pair = enumeration.next();
 
-      if (temp_pair.string == s) {
+      if (temp_pair.string.equals(s)) {
         return temp_pair.number;
       }
     }

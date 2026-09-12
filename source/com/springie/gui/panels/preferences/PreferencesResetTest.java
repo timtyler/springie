@@ -71,6 +71,8 @@ class PreferencesResetTest {
         ElementRendererLink.strut_divisions = 5;
         ElementRendererLink.cable_divisions = 6;
         RendererDelegator.link_sides = 6;
+        RendererDelegator.glossiness = 90;
+        RendererDelegator.max_bounces = 4;
         RendererDelegator.color_background_number = 0xFFFF0000;
         PanelPreferencesRendererModern.render_label_when = 1;
 
@@ -147,6 +149,8 @@ class PreferencesResetTest {
       assertEquals(3, ElementRendererLink.strut_divisions);
       assertEquals(1, ElementRendererLink.cable_divisions);
       assertEquals(2, RendererDelegator.link_sides);
+      assertEquals(50, RendererDelegator.glossiness);
+      assertEquals(2, RendererDelegator.max_bounces);
       assertEquals(0xFF000000, RendererDelegator.color_background_number);
       assertEquals(2, PanelPreferencesRendererModern.render_label_when);
       assertTrue(RendererDelegator.renderer instanceof ModularRendererNew,

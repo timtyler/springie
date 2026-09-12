@@ -7,9 +7,9 @@ import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.LightSource;
 
 /**
- * Renders one bin tile, pixel by pixel. One primary ray per pixel; no
- * shadow or reflection rays yet -- the shade() method is where those will
- * slot in later.
+ * Renders one bin tile, pixel by pixel. One primary ray per pixel, plus
+ * optional mirror-reflection rays when RendererDelegator.glossiness is
+ * above 0 (no shadow rays yet).
  *
  * <p>Lighting shares the default renderer's configuration
  * (LightSource.source_1) and its feel: brightness runs from half to full
@@ -92,7 +92,8 @@ final class Raytracer {
         camera.makeRay(x0 + x, y0 + y, ray);
         hit.reset();
         final boolean struck = bvh.intersect(ray, hit, stack);
-        final int rgb = struck ? shade(ray, hit) : BACKGROUND_RGB;
+        final int rgb = struck ? shade(ray, hit, bvh, stack, 0)
+            : BACKGROUND_RGB;
         pixels[i++] = rgb;
         if (struck && stats != null) {
           stats.add(x, y);
@@ -102,8 +103,8 @@ final class Raytracer {
   }
 
   /**
-   * Direct diffuse shading only. Shadow rays (towards LIGHT_*) and
-   * reflection rays (recursing into shade) will be added here.
+   * Diffuse shading, optionally blended with a mirror reflection. Shadow
+   * rays (towards LIGHT_*) are not traced yet.
    *
    * <p>Matches the default renderer: its [128, 255] brightness range, its
    * depth fog, and its packed-colour convention (0xRRGGBB -- red in the
@@ -111,7 +112,8 @@ final class Raytracer {
    * default renderer's colour code; byte positions are preserved all the
    * way to new Color(packed), so they are preserved here too).
    */
-  private static int shade(Ray ray, Hit hit) {
+  private static int shade(Ray ray, Hit hit, BVH bvh, int[] stack,
+      int depth) {
     double dot = hit.nx * LIGHT_X + hit.ny * LIGHT_Y + hit.nz * LIGHT_Z;
     if (dot < 0.0) {
       dot = -dot;
@@ -127,9 +129,49 @@ final class Raytracer {
     final int r = (fogged >> 16) & 0xFF;
     final int g = (fogged >> 8) & 0xFF;
     final int b = fogged & 0xFF;
-    final int or = (r * scaled) >> 8;
-    final int og = (g * scaled) >> 8;
-    final int ob = (b * scaled) >> 8;
+    int or = (r * scaled) >> 8;
+    int og = (g * scaled) >> 8;
+    int ob = (b * scaled) >> 8;
+
+    final int glossiness = RendererDelegator.glossiness;
+    if (glossiness > 0 && depth < RendererDelegator.max_bounces) {
+      final Ray reflected = new Ray();
+      reflect(ray, hit, reflected);
+      final Hit reflected_hit = new Hit();
+      final int reflected_rgb = bvh.intersect(reflected, reflected_hit,
+          stack) ? shade(reflected, reflected_hit, bvh, stack, depth + 1)
+          : BACKGROUND_RGB;
+      final int rr = (reflected_rgb >> 16) & 0xFF;
+      final int rg = (reflected_rgb >> 8) & 0xFF;
+      final int rb = reflected_rgb & 0xFF;
+      final int matte = 100 - glossiness;
+      or = (or * matte + rr * glossiness) / 100;
+      og = (og * matte + rg * glossiness) / 100;
+      ob = (ob * matte + rb * glossiness) / 100;
+    }
+
     return 0xFF000000 | (or << 16) | (og << 8) | ob;
+  }
+
+  /**
+   * Mirror reflection of the incoming ray about the surface normal. The
+   * origin is nudged along the normal so the ray does not re-hit the
+   * surface it just left.
+   */
+  private static void reflect(Ray ray, Hit hit, Ray reflected) {
+    final double px = ray.ox + ray.dx * hit.t;
+    final double py = ray.oy + ray.dy * hit.t;
+    final double pz = ray.oz + ray.dz * hit.t;
+    final double cosine = ray.dx * hit.nx + ray.dy * hit.ny + ray.dz
+        * hit.nz;
+    // Nudge off the surface on the side the ray came from, so the ray
+    // does not re-hit the surface it just left.
+    final double side = cosine < 0.0 ? 1.0 : -1.0;
+    reflected.ox = px + side * hit.nx;
+    reflected.oy = py + side * hit.ny;
+    reflected.oz = pz + side * hit.nz;
+    reflected.dx = ray.dx - 2.0 * cosine * hit.nx;
+    reflected.dy = ray.dy - 2.0 * cosine * hit.ny;
+    reflected.dz = ray.dz - 2.0 * cosine * hit.nz;
   }
 }

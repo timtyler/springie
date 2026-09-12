@@ -14,6 +14,7 @@ import com.springie.context.ContextManager;
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.render.Coords;
+import com.springie.render.RendererDelegator;
 
 /**
  * Renders a tile containing a single sphere through the full pipeline and
@@ -35,6 +36,8 @@ public class RaytracerPipelineTest {
 
   private boolean saved_depth_is_relative;
 
+  private int saved_glossiness;
+
   @BeforeEach
   public void setUp() {
     this.saved_x_pixels = Coords.x_pixels;
@@ -54,6 +57,11 @@ public class RaytracerPipelineTest {
     this.saved_manager = ContextManager.getNodeManager();
     this.saved_depth_is_relative =
         DeepObjectColourCalculator.depth_is_relative;
+
+    // These tests pin the diffuse pipeline; reflections are covered by
+    // RaytracerReflectionTest.
+    this.saved_glossiness = RendererDelegator.glossiness;
+    RendererDelegator.glossiness = 0;
   }
 
   @AfterEach
@@ -67,6 +75,7 @@ public class RaytracerPipelineTest {
     Coords.shift_constant_z = this.saved_shift_constant_z;
     ContextManager.setNodeManager(this.saved_manager);
     DeepObjectColourCalculator.depth_is_relative = this.saved_depth_is_relative;
+    RendererDelegator.glossiness = this.saved_glossiness;
   }
 
   /**
