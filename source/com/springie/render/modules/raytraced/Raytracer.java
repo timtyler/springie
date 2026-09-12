@@ -278,6 +278,9 @@ final class Raytracer {
    * most ~127, so it models the dark side without flattening it.
    */
   private static int fillLight(Hit hit) {
+    if (!RendererDelegator.fill_light_enabled) {
+      return 0;
+    }
     final int strength = RendererDelegator.fill_light;
     if (strength <= 0) {
       return 0;
@@ -321,16 +324,22 @@ final class Raytracer {
    * highlights are off or the geometry faces away.
    */
   private static int specularHighlight(Ray ray, Hit hit) {
+    if (!RendererDelegator.specular_enabled) {
+      return 0;
+    }
     return lobeHighlight(ray, hit, RendererDelegator.specular, 32.0);
   }
 
   /**
    * The glossy sheen: a broad Blinn-Phong lobe around the perfect mirror
    * direction, so surfaces look satiny rather than speckled. Returns the
-   * 0-255 white to add, or 0 when glossiness is 0 or the geometry faces
-   * away.
+   * 0-255 white to add, or 0 when glossiness is off or the geometry
+   * faces away.
    */
   private static int glossySheen(Ray ray, Hit hit) {
+    if (!RendererDelegator.glossiness_enabled) {
+      return 0;
+    }
     return lobeHighlight(ray, hit, RendererDelegator.glossiness, 8.0);
   }
 
@@ -339,10 +348,13 @@ final class Raytracer {
    * approximation of real reflectivity -- nothing when the surface faces
    * the viewer head-on, rising with the fifth power of the grazing angle
    * to the full configured strength at the silhouette. Returns the 0-255
-   * white to add, or 0 when fresnel is 0. Pure shading -- no rays, so the
+   * white to add, or 0 when fresnel is off. Pure shading -- no rays, so the
    * result is always smooth.
    */
   private static int fresnelRim(Ray ray, Hit hit) {
+    if (!RendererDelegator.fresnel_enabled) {
+      return 0;
+    }
     final int strength = RendererDelegator.fresnel;
     if (strength <= 0) {
       return 0;

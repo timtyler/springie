@@ -73,13 +73,16 @@ public final class RendererDelegator {
   public static int link_sides = 2;
 
   /**
-   * Ray-traced glossiness as a percentage (0-100). 0 means matte: no
-   * glossy sheen. Above 0, each lit surface gets a broad, smooth
-   * specular sheen whose strength follows the setting -- 50% means
-   * every pixel receives half-strength glossy light, never a per-pixel
-   * coin flip. Defaults to matte.
+   * Ray-traced glossiness as a percentage (10-100): each lit surface
+   * gets a broad, smooth specular sheen whose strength follows the
+   * setting -- 50% means every pixel receives half-strength glossy
+   * light, never a per-pixel coin flip. The glossiness_enabled
+   * checkbox is the off switch; the dropdown only shows while it is
+   * on. Defaults to off.
    */
-  public static int glossiness = 0;
+  public static boolean glossiness_enabled = false;
+
+  public static int glossiness = 50;
 
   /**
    * Ray-traced shadows. Each surface point casts a ray at the light; when
@@ -88,31 +91,40 @@ public final class RendererDelegator {
   public static boolean shadows = false;
 
   /**
-   * Ray-traced specular highlights as a percentage (0-100): the Blinn-Phong
-   * sparkle where a surface reflects the light straight at the viewer.
-   * 0 disables the highlight.
+   * Ray-traced specular highlights as a percentage (10-100): the
+   * Blinn-Phong sparkle where a surface reflects the light straight at
+   * the viewer. The specular_enabled checkbox is the off switch; the
+   * dropdown only shows while it is on. Defaults to on at 90%.
    */
+  public static boolean specular_enabled = true;
+
   public static int specular = 90;
 
   /**
-   * Fresnel rim light as a percentage (0-100). 0 disables it. Above 0,
-   * surfaces gain a view-dependent rim that follows Schlick's
-   * approximation: nothing head-on, rising to the full percentage of
-   * white light at silhouette (grazing) angles -- the look of real
-   * reflective surfaces, which mirror more at a glancing view. Like the
-   * specular highlight it needs direct light, so shadowed points get
-   * none. Defaults to off.
+   * Fresnel rim light as a percentage (10-100). Surfaces gain a
+   * view-dependent rim that follows Schlick's approximation: nothing
+   * head-on, rising to the full percentage of white light at
+   * silhouette (grazing) angles -- the look of real reflective
+   * surfaces, which mirror more at a glancing view. The
+   * fresnel_enabled checkbox is the off switch; the dropdown only
+   * shows while it is on. Like the specular highlight it needs direct
+   * light, so shadowed points get none. Defaults to off.
    */
-  public static int fresnel = 0;
+  public static boolean fresnel_enabled = false;
+
+  public static int fresnel = 50;
 
   /**
-   * Fill light as a percentage (0-100): a weak second light from the
+   * Fill light as a percentage (10-100): a weak second light from the
    * front-right, mirroring the key light's front-left azimuth, so
    * surfaces turned away from the key still model instead of sitting
    * at the flat diffuse floor. Shadow-independent, so it lifts
-   * shadowed areas too. 0 disables it; defaults to off.
+   * shadowed areas too. The fill_light_enabled checkbox is the off
+   * switch; the dropdown only shows while it is on. Defaults to off.
    */
-  public static int fill_light = 0;
+  public static boolean fill_light_enabled = false;
+
+  public static int fill_light = 50;
 
   /**
    * Anti-aliasing supersampling factor (1, 2 or 3): 1x1 is off, 2x2 and

@@ -49,6 +49,8 @@ public class RaytracerSpecularTest {
 
   private int saved_specular;
 
+  private boolean saved_specular_enabled;
+
   @BeforeEach
   public void setUp() {
     this.saved_x_pixels = Coords.x_pixels;
@@ -76,9 +78,11 @@ public class RaytracerSpecularTest {
     this.saved_glossiness = RendererDelegator.glossiness;
     this.saved_shadows = RendererDelegator.shadows;
     this.saved_specular = RendererDelegator.specular;
+    this.saved_specular_enabled = RendererDelegator.specular_enabled;
 
     RendererDelegator.glossiness = 0;
     RendererDelegator.shadows = false;
+    RendererDelegator.specular_enabled = true;
   }
 
   @AfterEach
@@ -96,6 +100,7 @@ public class RaytracerSpecularTest {
     RendererDelegator.glossiness = this.saved_glossiness;
     RendererDelegator.shadows = this.saved_shadows;
     RendererDelegator.specular = this.saved_specular;
+    RendererDelegator.specular_enabled = this.saved_specular_enabled;
   }
 
   private int centrePixel(Primitive[] primitives) {
@@ -117,6 +122,17 @@ public class RaytracerSpecularTest {
     // scaled = 236, (255 * 236) >> 8 = 235.
     assertEquals(0xFFEBEBEB, centrePixel(whiteSphere()),
         "specular 0% must leave the diffuse picture untouched");
+  }
+
+  @Test
+  public void disabledSpecularAddsNothing() {
+    RendererDelegator.specular = 0;
+    final int plain = centrePixel(whiteSphere());
+    RendererDelegator.specular_enabled = false;
+    RendererDelegator.specular = 100;
+    assertEquals(plain, centrePixel(whiteSphere()),
+        "a disabled specular must add nothing, even at 100% strength");
+    RendererDelegator.specular_enabled = true;
   }
 
   @Test

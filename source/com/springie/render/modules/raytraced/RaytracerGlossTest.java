@@ -49,6 +49,8 @@ public class RaytracerGlossTest {
 
   private int saved_glossiness;
 
+  private boolean saved_glossiness_enabled;
+
   private boolean saved_shadows;
 
   private int saved_specular;
@@ -78,9 +80,11 @@ public class RaytracerGlossTest {
         DeepObjectColourCalculator.depth_is_relative;
 
     this.saved_glossiness = RendererDelegator.glossiness;
+    this.saved_glossiness_enabled = RendererDelegator.glossiness_enabled;
     this.saved_shadows = RendererDelegator.shadows;
     this.saved_specular = RendererDelegator.specular;
 
+    RendererDelegator.glossiness_enabled = true;
     RendererDelegator.shadows = false;
     RendererDelegator.specular = 0;
   }
@@ -98,6 +102,7 @@ public class RaytracerGlossTest {
     DeepObjectColourCalculator.depth_is_relative = this.saved_depth_is_relative;
 
     RendererDelegator.glossiness = this.saved_glossiness;
+    RendererDelegator.glossiness_enabled = this.saved_glossiness_enabled;
     RendererDelegator.shadows = this.saved_shadows;
     RendererDelegator.specular = this.saved_specular;
   }
@@ -145,6 +150,17 @@ public class RaytracerGlossTest {
       assertTrue(levels[i] > levels[i - 1],
           "the sheen must grow with the gloss setting");
     }
+  }
+
+  @Test
+  public void disabledGlossAddsNothing() {
+    RendererDelegator.glossiness = 0;
+    final int plain = renderTile(greySphere())[100 * 200 + 100];
+    RendererDelegator.glossiness_enabled = false;
+    RendererDelegator.glossiness = 100;
+    assertEquals(plain, renderTile(greySphere())[100 * 200 + 100],
+        "a disabled gloss must add nothing, even at 100% strength");
+    RendererDelegator.glossiness_enabled = true;
   }
 
   @Test

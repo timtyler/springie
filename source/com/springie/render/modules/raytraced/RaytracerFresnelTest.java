@@ -52,6 +52,8 @@ public class RaytracerFresnelTest {
 
   private int saved_fresnel;
 
+  private boolean saved_fresnel_enabled;
+
   private int saved_antialiasing;
 
   @BeforeEach
@@ -82,8 +84,10 @@ public class RaytracerFresnelTest {
     this.saved_shadows = RendererDelegator.shadows;
     this.saved_specular = RendererDelegator.specular;
     this.saved_fresnel = RendererDelegator.fresnel;
+    this.saved_fresnel_enabled = RendererDelegator.fresnel_enabled;
     this.saved_antialiasing = RendererDelegator.antialiasing;
 
+    RendererDelegator.fresnel_enabled = true;
     RendererDelegator.glossiness = 0;
     RendererDelegator.shadows = false;
     RendererDelegator.specular = 0;
@@ -106,6 +110,7 @@ public class RaytracerFresnelTest {
     RendererDelegator.shadows = this.saved_shadows;
     RendererDelegator.specular = this.saved_specular;
     RendererDelegator.fresnel = this.saved_fresnel;
+    RendererDelegator.fresnel_enabled = this.saved_fresnel_enabled;
     RendererDelegator.antialiasing = this.saved_antialiasing;
   }
 
@@ -148,6 +153,17 @@ public class RaytracerFresnelTest {
     // (255 * 236) >> 8 = 235. The rim must add nothing when off.
     assertEquals(0xFFEBEBEB, render(0)[CENTRE * SIZE + CENTRE],
         "fresnel 0% must leave the diffuse picture untouched");
+  }
+
+  @Test
+  public void disabledFresnelAddsNothing() {
+    final int[] plain = render(0);
+    final int sil = silhouetteIndex(plain);
+    RendererDelegator.fresnel_enabled = false;
+    final int[] rimmed = render(100);
+    assertEquals(plain[sil], rimmed[sil],
+        "a disabled fresnel must add nothing, even at 100% strength");
+    RendererDelegator.fresnel_enabled = true;
   }
 
   @Test

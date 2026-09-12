@@ -55,6 +55,8 @@ public class RaytracerFillLightTest {
 
   private int saved_fill_light;
 
+  private boolean saved_fill_light_enabled;
+
   private int saved_antialiasing;
 
   @BeforeEach
@@ -86,12 +88,14 @@ public class RaytracerFillLightTest {
     this.saved_specular = RendererDelegator.specular;
     this.saved_fresnel = RendererDelegator.fresnel;
     this.saved_fill_light = RendererDelegator.fill_light;
+    this.saved_fill_light_enabled = RendererDelegator.fill_light_enabled;
     this.saved_antialiasing = RendererDelegator.antialiasing;
 
     RendererDelegator.glossiness = 0;
     RendererDelegator.shadows = false;
     RendererDelegator.specular = 0;
     RendererDelegator.fresnel = 0;
+    RendererDelegator.fill_light_enabled = true;
     RendererDelegator.antialiasing = 1;
   }
 
@@ -112,6 +116,7 @@ public class RaytracerFillLightTest {
     RendererDelegator.specular = this.saved_specular;
     RendererDelegator.fresnel = this.saved_fresnel;
     RendererDelegator.fill_light = this.saved_fill_light;
+    RendererDelegator.fill_light_enabled = this.saved_fill_light_enabled;
     RendererDelegator.antialiasing = this.saved_antialiasing;
   }
 
@@ -147,6 +152,15 @@ public class RaytracerFillLightTest {
               + Integer.toHexString(plain) + " -> "
               + Integer.toHexString(filled));
     }
+  }
+
+  @Test
+  public void disabledFillAddsNothing() {
+    final int plain = nearPole(0);
+    RendererDelegator.fill_light_enabled = false;
+    assertEquals(plain, nearPole(100),
+        "a disabled fill light must add nothing, even at 100% strength");
+    RendererDelegator.fill_light_enabled = true;
   }
 
   @Test

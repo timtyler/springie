@@ -3,13 +3,14 @@
 package com.springie.gui.panels.preferences;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Checkbox;
 import java.awt.Choice;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Label;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -28,18 +29,27 @@ import com.springie.render.RendererDelegator;
 /**
  * The ray-traced renderer's Glossiness, Shadows, Specular, Fresnel and
  * Fill light controls must offer the right entries, start at the
- * defaults, and drive the renderer.
+ * defaults, drive the renderer, and hide each strength dropdown while
+ * its effect is switched off.
  */
 class PanelPreferencesRendererRaytracedTest {
   private int saved_glossiness;
+
+  private boolean saved_glossiness_enabled;
 
   private boolean saved_shadows;
 
   private int saved_specular;
 
+  private boolean saved_specular_enabled;
+
   private int saved_fresnel;
 
+  private boolean saved_fresnel_enabled;
+
   private int saved_fill_light;
+
+  private boolean saved_fill_light_enabled;
 
   @BeforeAll
   static void boot() throws Exception {
@@ -54,81 +64,59 @@ class PanelPreferencesRendererRaytracedTest {
   @BeforeEach
   void save() {
     this.saved_glossiness = RendererDelegator.glossiness;
+    this.saved_glossiness_enabled = RendererDelegator.glossiness_enabled;
     this.saved_shadows = RendererDelegator.shadows;
     this.saved_specular = RendererDelegator.specular;
+    this.saved_specular_enabled = RendererDelegator.specular_enabled;
     this.saved_fresnel = RendererDelegator.fresnel;
+    this.saved_fresnel_enabled = RendererDelegator.fresnel_enabled;
     this.saved_fill_light = RendererDelegator.fill_light;
+    this.saved_fill_light_enabled = RendererDelegator.fill_light_enabled;
   }
 
   @AfterEach
   void restore() {
     RendererDelegator.glossiness = this.saved_glossiness;
+    RendererDelegator.glossiness_enabled = this.saved_glossiness_enabled;
     RendererDelegator.shadows = this.saved_shadows;
     RendererDelegator.specular = this.saved_specular;
+    RendererDelegator.specular_enabled = this.saved_specular_enabled;
     RendererDelegator.fresnel = this.saved_fresnel;
+    RendererDelegator.fresnel_enabled = this.saved_fresnel_enabled;
     RendererDelegator.fill_light = this.saved_fill_light;
+    RendererDelegator.fill_light_enabled = this.saved_fill_light_enabled;
   }
 
-  private static Choice glossinessDropdown() {
-    final Choice choice = findChoice(
-        FrEnd.panel_preferences_renderer_raytraced.panel, "50%");
-    assertNotNull(choice, "expected the Glossiness dropdown");
-    return choice;
+  /** The row panel holding the checkbox with the given label. */
+  private static Container effectRow(String label) {
+    final Container row = findCheckboxRow(
+        FrEnd.panel_preferences_renderer_raytraced.panel, label);
+    assertNotNull(row, "expected the " + label + " row");
+    return row;
   }
 
-  private static Choice specularDropdown() {
-    // The Glossiness and Specular dropdowns offer identical entries,
-    // so find the one sitting next to the "Specular:" label.
-    final Container parent = findLabelledPanel(
-        FrEnd.panel_preferences_renderer_raytraced.panel, "Specular:");
-    assertNotNull(parent, "expected the Specular panel");
-    final Choice choice = findChoice(parent, "50%");
-    assertNotNull(choice, "expected the Specular dropdown");
-    return choice;
-  }
-
-  private static Choice fillLightDropdown() {
-    final Container parent = findLabelledPanel(
-        FrEnd.panel_preferences_renderer_raytraced.panel, "Fill light:");
-    assertNotNull(parent, "expected the Fill light panel");
-    final Choice choice = findChoice(parent, "50%");
-    assertNotNull(choice, "expected the Fill light dropdown");
-    return choice;
-  }
-
-  private static Choice fresnelDropdown() {
-    final Container parent = findLabelledPanel(
-        FrEnd.panel_preferences_renderer_raytraced.panel, "Fresnel:");
-    assertNotNull(parent, "expected the Fresnel panel");
-    final Choice choice = findChoice(parent, "50%");
-    assertNotNull(choice, "expected the Fresnel dropdown");
-    return choice;
-  }
-
-  private static Checkbox shadowsCheckbox() {
+  private static Checkbox effectCheckbox(String label) {
     final Checkbox checkbox = findCheckbox(
-        FrEnd.panel_preferences_renderer_raytraced.panel, "Shadows");
-    assertNotNull(checkbox, "expected the Shadows checkbox");
+        FrEnd.panel_preferences_renderer_raytraced.panel, label);
+    assertNotNull(checkbox, "expected the " + label + " checkbox");
     return checkbox;
   }
 
-  private static Container findLabelledPanel(Container container,
-      String label_text) {
+  private static Choice effectDropdown(String label) {
+    final Choice choice = findChoice(effectRow(label));
+    assertNotNull(choice, "expected the " + label + " dropdown");
+    return choice;
+  }
+
+  private static Container findCheckboxRow(Container container,
+      String label) {
     for (final Component c : container.getComponents()) {
       if (c instanceof Container) {
-        boolean labelled = false;
-        for (final Component inner : ((Container) c).getComponents()) {
-          if (inner instanceof Label
-              && label_text.equals(((Label) inner).getText())) {
-            labelled = true;
-            break;
-          }
+        final Container inner = (Container) c;
+        if (findCheckbox(inner, label) != null) {
+          return inner;
         }
-        if (labelled) {
-          return (Container) c;
-        }
-        final Container found = findLabelledPanel((Container) c,
-            label_text);
+        final Container found = findCheckboxRow(inner, label);
         if (found != null) {
           return found;
         }
@@ -153,18 +141,13 @@ class PanelPreferencesRendererRaytracedTest {
     return null;
   }
 
-  private static Choice findChoice(Container container, String marker) {
+  private static Choice findChoice(Container container) {
     for (final Component c : container.getComponents()) {
       if (c instanceof Choice) {
-        final Choice choice = (Choice) c;
-        for (int i = 0; i < choice.getItemCount(); i++) {
-          if (marker.equals(choice.getItem(i))) {
-            return choice;
-          }
-        }
+        return (Choice) c;
       }
       if (c instanceof Container) {
-        final Choice found = findChoice((Container) c, marker);
+        final Choice found = findChoice((Container) c);
         if (found != null) {
           return found;
         }
@@ -201,119 +184,177 @@ class PanelPreferencesRendererRaytracedTest {
     });
   }
 
-  @Test
-  void glossinessDropdownOffersZeroToOneHundredInTens() {
-    final Choice choice = glossinessDropdown();
-    assertEquals(11, choice.getItemCount(),
-        "Glossiness must offer 0% to 100% in 10% steps");
-    for (int percent = 0; percent <= 100; percent += 10) {
-      assertEquals(percent + "%", choice.getItem(percent / 10),
-          "glossiness entry " + percent / 10 + " must be " + percent + "%");
+  private static void assertTenToOneHundredInTens(Choice choice,
+      String name) {
+    assertEquals(10, choice.getItemCount(),
+        name + " must offer 10% to 100% in 10% steps");
+    for (int percent = 10; percent <= 100; percent += 10) {
+      assertEquals(percent + "%", choice.getItem(percent / 10 - 1),
+          name + " entry " + (percent / 10 - 1) + " must be " + percent
+              + "%");
     }
-    assertEquals("0%", choice.getSelectedItem(),
-        "Glossiness must default to 0%");
   }
 
   @Test
-  void selectingGlossinessUpdatesTheRenderer() throws Exception {
-    pick(glossinessDropdown(), "70%");
+  void glossinessDefaultsOffWithHiddenDropdown() {
+    final Checkbox checkbox = effectCheckbox("Glossiness");
+    final Choice choice = effectDropdown("Glossiness");
+    assertFalse(checkbox.getState(), "Glossiness must default to off");
+    assertFalse(choice.isVisible(),
+        "the Glossiness dropdown must hide while the effect is off");
+    assertTenToOneHundredInTens(choice, "Glossiness");
+    assertEquals("50%", choice.getSelectedItem(),
+        "Glossiness strength must default to 50%");
+  }
+
+  @Test
+  void enablingGlossinessShowsItsDropdown() throws Exception {
+    final Checkbox checkbox = effectCheckbox("Glossiness");
+    final Choice choice = effectDropdown("Glossiness");
+    tick(checkbox, true);
+    assertTrue(RendererDelegator.glossiness_enabled);
+    assertTrue(choice.isVisible(),
+        "ticking Glossiness on must show its dropdown");
+    pick(choice, "70%");
     assertEquals(70, RendererDelegator.glossiness);
-    pick(glossinessDropdown(), "0%");
-    assertEquals(0, RendererDelegator.glossiness);
-  }
-
-  @Test
-  void resetRestoresRaytracedDefaults() throws Exception {
-    RendererDelegator.glossiness = 90;
-    RendererDelegator.shadows = true;
-    RendererDelegator.specular = 80;
-    RendererDelegator.fresnel = 70;
-    RendererDelegator.fill_light = 60;
-    SwingUtilities.invokeAndWait(
-        () -> FrEnd.panel_preferences_display.resetToDefaults());
-    assertEquals(0, RendererDelegator.glossiness);
-    assertEquals(false, RendererDelegator.shadows);
-    assertEquals(90, RendererDelegator.specular);
-    assertEquals(0, RendererDelegator.fresnel);
-    assertEquals(0, RendererDelegator.fill_light);
-    assertEquals("0%", glossinessDropdown().getSelectedItem());
-    assertEquals(false, shadowsCheckbox().getState());
-    assertEquals("90%", specularDropdown().getSelectedItem());
-    assertEquals("0%", fresnelDropdown().getSelectedItem());
-    assertEquals("0%", fillLightDropdown().getSelectedItem());
+    tick(checkbox, false);
+    assertFalse(RendererDelegator.glossiness_enabled);
+    assertFalse(choice.isVisible(),
+        "ticking Glossiness off must hide its dropdown again");
   }
 
   @Test
   void shadowsCheckboxDefaultsOffAndDrivesTheRenderer() throws Exception {
-    final Checkbox checkbox = shadowsCheckbox();
-    assertEquals(false, checkbox.getState(),
-        "Shadows must default to off");
+    final Checkbox checkbox = effectCheckbox("Shadows");
+    assertFalse(checkbox.getState(), "Shadows must default to off");
     tick(checkbox, true);
-    assertEquals(true, RendererDelegator.shadows);
+    assertTrue(RendererDelegator.shadows);
     tick(checkbox, false);
-    assertEquals(false, RendererDelegator.shadows);
+    assertFalse(RendererDelegator.shadows);
   }
 
   @Test
-  void specularDropdownOffersZeroToOneHundredInTens() {
-    final Choice choice = specularDropdown();
-    assertEquals(11, choice.getItemCount(),
-        "Specular must offer 0% to 100% in 10% steps");
-    for (int percent = 0; percent <= 100; percent += 10) {
-      assertEquals(percent + "%", choice.getItem(percent / 10),
-          "specular entry " + percent / 10 + " must be " + percent + "%");
-    }
+  void specularDefaultsOnWithVisibleDropdown() {
+    final Checkbox checkbox = effectCheckbox("Specular");
+    final Choice choice = effectDropdown("Specular");
+    assertTrue(checkbox.getState(), "Specular must default to on");
+    assertTrue(choice.isVisible(),
+        "the Specular dropdown must show while the effect is on");
+    assertTenToOneHundredInTens(choice, "Specular");
     assertEquals("90%", choice.getSelectedItem(),
-        "Specular must default to 90%");
+        "Specular strength must default to 90%");
+  }
+
+  @Test
+  void disablingSpecularHidesItsDropdown() throws Exception {
+    final Checkbox checkbox = effectCheckbox("Specular");
+    final Choice choice = effectDropdown("Specular");
+    tick(checkbox, false);
+    assertFalse(RendererDelegator.specular_enabled);
+    assertFalse(choice.isVisible(),
+        "ticking Specular off must hide its dropdown");
+    tick(checkbox, true);
+    assertTrue(RendererDelegator.specular_enabled);
+    assertTrue(choice.isVisible(),
+        "ticking Specular on must show its dropdown again");
   }
 
   @Test
   void selectingSpecularUpdatesTheRenderer() throws Exception {
-    pick(specularDropdown(), "100%");
+    pick(effectDropdown("Specular"), "100%");
     assertEquals(100, RendererDelegator.specular);
-    pick(specularDropdown(), "0%");
-    assertEquals(0, RendererDelegator.specular);
+    pick(effectDropdown("Specular"), "10%");
+    assertEquals(10, RendererDelegator.specular);
   }
 
   @Test
-  void fresnelDropdownOffersZeroToOneHundredInTens() {
-    final Choice choice = fresnelDropdown();
-    assertEquals(11, choice.getItemCount(),
-        "Fresnel must offer 0% to 100% in 10% steps");
-    for (int percent = 0; percent <= 100; percent += 10) {
-      assertEquals(percent + "%", choice.getItem(percent / 10),
-          "fresnel entry " + percent / 10 + " must be " + percent + "%");
-    }
-    assertEquals("0%", choice.getSelectedItem(),
-        "Fresnel must default to 0%");
+  void fresnelDefaultsOffWithHiddenDropdown() {
+    final Checkbox checkbox = effectCheckbox("Fresnel");
+    final Choice choice = effectDropdown("Fresnel");
+    assertFalse(checkbox.getState(), "Fresnel must default to off");
+    assertFalse(choice.isVisible(),
+        "the Fresnel dropdown must hide while the effect is off");
+    assertTenToOneHundredInTens(choice, "Fresnel");
+    assertEquals("50%", choice.getSelectedItem(),
+        "Fresnel strength must default to 50%");
   }
 
   @Test
-  void selectingFresnelUpdatesTheRenderer() throws Exception {
-    pick(fresnelDropdown(), "100%");
+  void enablingFresnelShowsItsDropdown() throws Exception {
+    final Checkbox checkbox = effectCheckbox("Fresnel");
+    final Choice choice = effectDropdown("Fresnel");
+    tick(checkbox, true);
+    assertTrue(RendererDelegator.fresnel_enabled);
+    assertTrue(choice.isVisible(),
+        "ticking Fresnel on must show its dropdown");
+    pick(choice, "100%");
     assertEquals(100, RendererDelegator.fresnel);
-    pick(fresnelDropdown(), "0%");
-    assertEquals(0, RendererDelegator.fresnel);
+    tick(checkbox, false);
+    assertFalse(RendererDelegator.fresnel_enabled);
+    assertFalse(choice.isVisible(),
+        "ticking Fresnel off must hide its dropdown again");
   }
 
   @Test
-  void fillLightDropdownOffersZeroToOneHundredInTens() {
-    final Choice choice = fillLightDropdown();
-    assertEquals(11, choice.getItemCount(),
-        "Fill light must offer 0% to 100% in 10% steps");
-    for (int percent = 0; percent <= 100; percent += 10) {
-      assertEquals(percent + "%", choice.getItem(percent / 10),
-          "fill light entry " + percent / 10 + " must be " + percent + "%");
-    }
-    assertEquals("0%", choice.getSelectedItem(),
-        "Fill light must default to 0%");
+  void fillLightDefaultsOffWithHiddenDropdown() {
+    final Checkbox checkbox = effectCheckbox("Fill light");
+    final Choice choice = effectDropdown("Fill light");
+    assertFalse(checkbox.getState(), "Fill light must default to off");
+    assertFalse(choice.isVisible(),
+        "the Fill light dropdown must hide while the effect is off");
+    assertTenToOneHundredInTens(choice, "Fill light");
+    assertEquals("50%", choice.getSelectedItem(),
+        "Fill light strength must default to 50%");
   }
 
   @Test
-  void selectingFillLightUpdatesTheRenderer() throws Exception {
-    pick(fillLightDropdown(), "100%");
+  void enablingFillLightShowsItsDropdown() throws Exception {
+    final Checkbox checkbox = effectCheckbox("Fill light");
+    final Choice choice = effectDropdown("Fill light");
+    tick(checkbox, true);
+    assertTrue(RendererDelegator.fill_light_enabled);
+    assertTrue(choice.isVisible(),
+        "ticking Fill light on must show its dropdown");
+    pick(choice, "100%");
     assertEquals(100, RendererDelegator.fill_light);
-    pick(fillLightDropdown(), "0%");
-    assertEquals(0, RendererDelegator.fill_light);
+    tick(checkbox, false);
+    assertFalse(RendererDelegator.fill_light_enabled);
+    assertFalse(choice.isVisible(),
+        "ticking Fill light off must hide its dropdown again");
+  }
+
+  @Test
+  void resetRestoresRaytracedDefaults() throws Exception {
+    tick(effectCheckbox("Glossiness"), true);
+    pick(effectDropdown("Glossiness"), "100%");
+    tick(effectCheckbox("Shadows"), true);
+    tick(effectCheckbox("Specular"), false);
+    pick(effectDropdown("Specular"), "10%");
+    tick(effectCheckbox("Fresnel"), true);
+    tick(effectCheckbox("Fill light"), true);
+    SwingUtilities.invokeAndWait(
+        () -> FrEnd.panel_preferences_display.resetToDefaults());
+
+    assertFalse(RendererDelegator.glossiness_enabled);
+    assertEquals(50, RendererDelegator.glossiness);
+    assertFalse(RendererDelegator.shadows);
+    assertTrue(RendererDelegator.specular_enabled);
+    assertEquals(90, RendererDelegator.specular);
+    assertFalse(RendererDelegator.fresnel_enabled);
+    assertEquals(50, RendererDelegator.fresnel);
+    assertFalse(RendererDelegator.fill_light_enabled);
+    assertEquals(50, RendererDelegator.fill_light);
+
+    assertFalse(effectCheckbox("Glossiness").getState());
+    assertFalse(effectDropdown("Glossiness").isVisible());
+    assertEquals("50%", effectDropdown("Glossiness").getSelectedItem());
+    assertFalse(effectCheckbox("Shadows").getState());
+    assertTrue(effectCheckbox("Specular").getState());
+    assertTrue(effectDropdown("Specular").isVisible());
+    assertEquals("90%", effectDropdown("Specular").getSelectedItem());
+    assertFalse(effectCheckbox("Fresnel").getState());
+    assertFalse(effectDropdown("Fresnel").isVisible());
+    assertFalse(effectCheckbox("Fill light").getState());
+    assertFalse(effectDropdown("Fill light").isVisible());
   }
 }
