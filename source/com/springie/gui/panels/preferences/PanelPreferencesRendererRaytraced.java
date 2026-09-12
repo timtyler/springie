@@ -16,7 +16,7 @@ import com.tifsoft.Forget;
 
 /**
  * Ray-traced renderer options: glossiness (the smooth satin sheen),
- * shadows, and specular highlights.
+ * shadows, specular highlights, and the Fresnel rim.
  */
 public class PanelPreferencesRendererRaytraced {
   public Panel panel = FrEnd.setUpPanelForFrame();
@@ -29,6 +29,8 @@ public class PanelPreferencesRendererRaytraced {
 
   private TTChoice choose_specular;
 
+  private TTChoice choose_fresnel;
+
   public PanelPreferencesRendererRaytraced(MessageManager message_manager) {
     this.message_manager = message_manager;
     makePanel();
@@ -38,6 +40,7 @@ public class PanelPreferencesRendererRaytraced {
     this.panel.add(panelGlossiness());
     this.panel.add(panelShadows());
     this.panel.add(panelSpecular());
+    this.panel.add(panelFresnel());
   }
 
   private Panel panelGlossiness() {
@@ -107,6 +110,31 @@ public class PanelPreferencesRendererRaytraced {
     return panel;
   }
 
+  private Panel panelFresnel() {
+    final Panel panel = new Panel();
+    final Label label = new Label("Fresnel:");
+    panel.add(label);
+
+    this.choose_fresnel = new TTChoice(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        Forget.about(e);
+        final String scs = (String) e.getItem();
+        final int val = PanelPreferencesRendererRaytraced.this.choose_fresnel
+            .str_to_num(scs);
+        RendererDelegator.fresnel = val;
+      }
+    });
+
+    for (int percent = 0; percent <= 100; percent += 10) {
+      this.choose_fresnel.add(percent + "%", percent);
+    }
+    this.choose_fresnel.choice.select(
+        this.choose_fresnel.num_to_str(RendererDelegator.fresnel));
+    panel.add(this.choose_fresnel.choice);
+
+    return panel;
+  }
+
   public void resetToDefaults() {
     RendererDelegator.glossiness = 0;
     this.choose_glossiness.choice.select(
@@ -118,5 +146,9 @@ public class PanelPreferencesRendererRaytraced {
     RendererDelegator.specular = 90;
     this.choose_specular.choice.select(
         this.choose_specular.num_to_str(90));
+
+    RendererDelegator.fresnel = 0;
+    this.choose_fresnel.choice.select(
+        this.choose_fresnel.num_to_str(0));
   }
 }

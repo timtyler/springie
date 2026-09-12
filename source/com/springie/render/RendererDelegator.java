@@ -88,6 +88,17 @@ public final class RendererDelegator {
   public static int specular = 90;
 
   /**
+   * Fresnel rim light as a percentage (0-100). 0 disables it. Above 0,
+   * surfaces gain a view-dependent rim that follows Schlick's
+   * approximation: nothing head-on, rising to the full percentage of
+   * white light at silhouette (grazing) angles -- the look of real
+   * reflective surfaces, which mirror more at a glancing view. Like the
+   * specular highlight it needs direct light, so shadowed points get
+   * none. Defaults to off.
+   */
+  public static int fresnel = 0;
+
+  /**
    * Anti-aliasing supersampling factor (1, 2 or 3): 1x1 is off, 2x2 and
    * 3x3 render that many sub-samples per pixel and average them with a
    * box filter. Affects the modern tiled renderer (tiles are rendered at

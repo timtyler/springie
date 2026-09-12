@@ -139,10 +139,11 @@ final class Raytracer {
   }
 
   /**
-   * Diffuse shading with optional shadows, a glossy sheen, and specular
-   * highlights. Shadow rays (towards LIGHT_*) are traced when
-   * RendererDelegator.shadows is set; the sheen and the highlight are
-   * smooth functions of the surface normal, so they can never speckle.
+   * Diffuse shading with optional shadows, a glossy sheen, specular
+   * highlights, and an optional Fresnel rim. Shadow rays (towards
+   * LIGHT_*) are traced when RendererDelegator.shadows is set; the sheen,
+   * the highlight and the rim are smooth functions of the surface normal,
+   * so they can never speckle.
    *
    * <p>Matches the default renderer: its [128, 255] brightness range, its
    * depth fog, and its packed-colour convention (0xRRGGBB -- red in the
@@ -191,6 +192,12 @@ final class Raytracer {
         og = Math.min(255, og + highlight);
         ob = Math.min(255, ob + highlight);
       }
+      final int rim = fresnelRim(ray, hit);
+      if (rim > 0) {
+        or = Math.min(255, or + rim);
+        og = Math.min(255, og + rim);
+        ob = Math.min(255, ob + rim);
+      }
     }
 
     return 0xFF000000 | (or << 16) | (og << 8) | ob;
@@ -236,6 +243,33 @@ final class Raytracer {
    */
   private static int glossySheen(Ray ray, Hit hit) {
     return lobeHighlight(ray, hit, RendererDelegator.glossiness, 8.0);
+  }
+
+  /**
+   * The Fresnel rim: a view-dependent brightness that follows Schlick's
+   * approximation of real reflectivity -- nothing when the surface faces
+   * the viewer head-on, rising with the fifth power of the grazing angle
+   * to the full configured strength at the silhouette. Returns the 0-255
+   * white to add, or 0 when fresnel is 0. Pure shading -- no rays, so the
+   * result is always smooth.
+   */
+  private static int fresnelRim(Ray ray, Hit hit) {
+    final int strength = RendererDelegator.fresnel;
+    if (strength <= 0) {
+      return 0;
+    }
+    // Cosine between the surface normal and the view direction (the ray
+    // points into the scene, so the view direction is its negation).
+    // The normal faces the camera on every hit, so this is in [0, 1].
+    double cosine = -(hit.nx * ray.dx + hit.ny * ray.dy + hit.nz * ray.dz);
+    if (cosine < 0.0) {
+      cosine = 0.0;
+    } else if (cosine > 1.0) {
+      cosine = 1.0;
+    }
+    final double facing = 1.0 - cosine;
+    final double schlick = facing * facing * facing * facing * facing;
+    return (int) (strength * 2.55 * schlick);
   }
 
   /**
