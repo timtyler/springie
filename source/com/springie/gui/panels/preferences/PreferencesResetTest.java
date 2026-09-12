@@ -25,7 +25,7 @@ import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ColourModifier;
 import com.springie.render.modules.modern.ElementRendererLink;
-import com.springie.render.modules.modern.ModularRendererNew;
+import com.springie.render.modules.raytraced.ModularRendererRaytraced;
 import com.springie.render.modules.modern.RendererBinManager;
 
 /**
@@ -97,24 +97,22 @@ class PreferencesResetTest {
         DeepObjectColourCalculator.factor = 100;
         DeepObjectColourCalculator.depth_is_relative = false;
 
-        FrEnd.controls_stay_on_top = false;
-        // Park the main window where the docked controls are sure to fit on
-        // its right, then dock.
-        FrEnd.frame_main.setLocation(100, 100);
-        FrEnd.controls_dock_with_main = true;
+        FrEnd.controls_window_mode = FrEnd.CONTROLS_DOCKED;
         FrEnd.applyControlsWindowOptions();
       });
 
-      // Docking snaps the controls window against the main window.
-      final int[] dock_geometry = new int[4];
+      // True docking: the controls panel is reparented into the main
+      // window's layout and the separate controls frame is hidden.
+      final Object[] dock_state = new Object[2];
+      final boolean[] dock_visible = new boolean[1];
       SwingUtilities.invokeAndWait(() -> {
-        dock_geometry[0] = FrEnd.frame_main.getX();
-        dock_geometry[1] = FrEnd.frame_main.getWidth();
-        dock_geometry[2] = FrEnd.frame_controls.getX();
-        dock_geometry[3] = FrEnd.frame_controls.getWidth();
+        dock_state[0] = FrEnd.panel_controls_all.panel.getParent();
+        dock_visible[0] = FrEnd.frame_controls.isVisible();
       });
-      assertEquals(dock_geometry[0] + dock_geometry[1], dock_geometry[2],
-          "controls window should sit against the main window when docked");
+      assertEquals(FrEnd.frame_main, dock_state[0],
+          "controls panel should be reparented into the main window when docked");
+      assertFalse(dock_visible[0],
+          "separate controls frame should be hidden when docked");
 
       SwingUtilities.invokeAndWait(
           () -> FrEnd.panel_preferences.resetPreferences());
@@ -171,8 +169,8 @@ class PreferencesResetTest {
       assertEquals(0xFF000000, RendererDelegator.color_background_number);
       assertEquals(false, RendererDelegator.scenic_background);
       assertEquals(2, PanelPreferencesRendererModern.render_label_when);
-      assertTrue(RendererDelegator.renderer instanceof ModularRendererNew,
-          "reset must restore the Modern renderer");
+      assertTrue(RendererDelegator.renderer instanceof ModularRendererRaytraced,
+          "reset must restore the Ray-traced renderer");
 
       assertEquals(2, Link.number_of_strut_render_divisions);
       assertEquals(1, Link.number_of_cable_render_divisions);
@@ -193,11 +191,16 @@ class PreferencesResetTest {
           .get(Preferences.renderer_old_double_buffer));
 
       // The controls window is back on top of the main window (never
-      // system-wide) and undocked.
-      assertTrue(FrEnd.controls_stay_on_top);
-      assertFalse(FrEnd.controls_dock_with_main);
+      // system-wide) and undocked: the panel is back in its own visible
+      // frame.
+      assertEquals(FrEnd.CONTROLS_ALWAYS_ON_TOP, FrEnd.controls_window_mode);
       assertFalse(FrEnd.frame_controls.isAlwaysOnTop());
       assertTrue(FrEnd.isControlsStayOnTopActive());
+      assertEquals(FrEnd.frame_controls,
+          FrEnd.panel_controls_all.panel.getParent(),
+          "reset should move the controls panel back to its own frame");
+      assertTrue(FrEnd.frame_controls.isVisible(),
+          "reset should make the controls frame visible again");
     } finally {
       GuiTestSupport.disposeFrames();
     }
