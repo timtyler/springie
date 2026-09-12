@@ -19,12 +19,15 @@ import javax.swing.SwingUtilities;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
 import com.springie.preferences.Preferences;
 import com.springie.render.RendererDelegator;
+import com.springie.render.modules.ModularRendererBase;
+import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.modern.RendererBinManager;
 
 /**
@@ -52,13 +55,40 @@ class ShowActiveBinsTest {
   /** The screen area the most recent capture covered. */
   private Rectangle last_capture_area;
 
+  /** The renderer the app booted with, restored after the tests. */
+  private static ModularRendererBase saved_renderer;
+
   @BeforeAll
   static void boot() throws Exception {
     GuiTestSupport.bootApp();
+    SwingUtilities.invokeAndWait(() -> {
+      saved_renderer = RendererDelegator.renderer;
+    });
+  }
+
+  /**
+   * This test exercises the modern renderer's tiled/direct paths, so pin
+   * the renderer before each test instead of depending on the app-wide
+   * default (currently the asynchronous ray-traced renderer, whose
+   * background frame publishing this test has no business waiting for).
+   * Per-test pinning matters because resetPreferences() (called by the
+   * first test) re-applies the Display panel default, which would swap
+   * the ray tracer back in from under the second test.
+   */
+  @BeforeEach
+  void pinModernRenderer() throws Exception {
+    SwingUtilities.invokeAndWait(() -> {
+      RendererDelegator.renderer = new ModularRendererNew();
+      FrEnd.main_canvas.forceResize();
+    });
   }
 
   @AfterAll
   static void dispose() throws Exception {
+    SwingUtilities.invokeAndWait(() -> {
+      RendererDelegator.renderer = saved_renderer;
+      FrEnd.main_canvas.forceResize();
+    });
     GuiTestSupport.disposeFrames();
   }
 
@@ -287,6 +317,8 @@ class ShowActiveBinsTest {
       }
       Thread.sleep(250);
     }
-    assertEquals(expected_red, red, what);
+    assertEquals(expected_red, red,
+        () -> what + ". Failing capture saved to " + saveFailureShot()
+            + " (captured area " + this.last_capture_area + ")");
   }
 }
