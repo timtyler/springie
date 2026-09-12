@@ -115,8 +115,8 @@ public class PanelPreferencesRendererRaytraced {
     RendererDelegator.shadows = false;
     this.checkbox_shadows.setState(false);
 
-    RendererDelegator.specular = 50;
+    RendererDelegator.specular = 90;
     this.choose_specular.choice.select(
-        this.choose_specular.num_to_str(50));
+        this.choose_specular.num_to_str(90));
   }
 }

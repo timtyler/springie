@@ -85,7 +85,7 @@ public final class RendererDelegator {
    * sparkle where a surface reflects the light straight at the viewer.
    * 0 disables the highlight.
    */
-  public static int specular = 50;
+  public static int specular = 90;
 
   static long time_last_ms;
 

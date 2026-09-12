@@ -152,7 +152,7 @@ class PreferencesResetTest {
       assertEquals(2, RendererDelegator.link_sides);
       assertEquals(0, RendererDelegator.glossiness);
       assertEquals(false, RendererDelegator.shadows);
-      assertEquals(50, RendererDelegator.specular);
+      assertEquals(90, RendererDelegator.specular);
       assertEquals(0xFF000000, RendererDelegator.color_background_number);
       assertEquals(2, PanelPreferencesRendererModern.render_label_when);
       assertTrue(RendererDelegator.renderer instanceof ModularRendererNew,

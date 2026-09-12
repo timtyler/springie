@@ -205,10 +205,10 @@ class PanelPreferencesRendererRaytracedTest {
         () -> FrEnd.panel_preferences_display.resetToDefaults());
     assertEquals(0, RendererDelegator.glossiness);
     assertEquals(false, RendererDelegator.shadows);
-    assertEquals(50, RendererDelegator.specular);
+    assertEquals(90, RendererDelegator.specular);
     assertEquals("0%", glossinessDropdown().getSelectedItem());
     assertEquals(false, shadowsCheckbox().getState());
-    assertEquals("50%", specularDropdown().getSelectedItem());
+    assertEquals("90%", specularDropdown().getSelectedItem());
   }
 
   @Test
@@ -231,8 +231,8 @@ class PanelPreferencesRendererRaytracedTest {
       assertEquals(percent + "%", choice.getItem(percent / 10),
           "specular entry " + percent / 10 + " must be " + percent + "%");
     }
-    assertEquals("50%", choice.getSelectedItem(),
-        "Specular must default to 50%");
+    assertEquals("90%", choice.getSelectedItem(),
+        "Specular must default to 90%");
   }
 
   @Test
