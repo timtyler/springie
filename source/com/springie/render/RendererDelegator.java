@@ -69,9 +69,10 @@ public final class RendererDelegator {
    * Ray-traced glossiness as a percentage (0-100). 0 means matte: no
    * reflection rays. Above 0, each surface hit blends its diffuse colour
    * with the colour seen along the mirror reflection ray, 100% being a
-   * perfect mirror.
+   * perfect mirror. Defaults to matte: reflections against the black
+   * background darken the picture, so gloss is opt-in.
    */
-  public static int glossiness = 50;
+  public static int glossiness = 0;
 
   /**
    * Ray-traced reflection depth (0-4). Caps how many times a ray may
@@ -79,6 +80,19 @@ public final class RendererDelegator {
    * is above 0.
    */
   public static int max_bounces = 2;
+
+  /**
+   * Ray-traced shadows. Each surface point casts a ray at the light; when
+   * something blocks it, the point gets ambient light only.
+   */
+  public static boolean shadows = false;
+
+  /**
+   * Ray-traced specular highlights as a percentage (0-100): the Blinn-Phong
+   * sparkle where a surface reflects the light straight at the viewer.
+   * 0 disables the highlight.
+   */
+  public static int specular = 50;
 
   static long time_last_ms;
 

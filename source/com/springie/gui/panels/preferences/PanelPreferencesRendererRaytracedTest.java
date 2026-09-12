@@ -5,9 +5,11 @@ package com.springie.gui.panels.preferences;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.awt.Checkbox;
 import java.awt.Choice;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Label;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -24,13 +26,18 @@ import com.springie.gui.GuiTestSupport;
 import com.springie.render.RendererDelegator;
 
 /**
- * The ray-traced renderer's Glossiness and Max bounces dropdowns must offer
- * the right entries, start at the defaults, and drive the renderer.
+ * The ray-traced renderer's Glossiness, Max bounces, Shadows and Specular
+ * controls must offer the right entries, start at the defaults, and drive
+ * the renderer.
  */
 class PanelPreferencesRendererRaytracedTest {
   private int saved_glossiness;
 
   private int saved_max_bounces;
+
+  private boolean saved_shadows;
+
+  private int saved_specular;
 
   @BeforeAll
   static void boot() throws Exception {
@@ -46,12 +53,16 @@ class PanelPreferencesRendererRaytracedTest {
   void save() {
     this.saved_glossiness = RendererDelegator.glossiness;
     this.saved_max_bounces = RendererDelegator.max_bounces;
+    this.saved_shadows = RendererDelegator.shadows;
+    this.saved_specular = RendererDelegator.specular;
   }
 
   @AfterEach
   void restore() {
     RendererDelegator.glossiness = this.saved_glossiness;
     RendererDelegator.max_bounces = this.saved_max_bounces;
+    RendererDelegator.shadows = this.saved_shadows;
+    RendererDelegator.specular = this.saved_specular;
   }
 
   private static Choice glossinessDropdown() {
@@ -68,6 +79,65 @@ class PanelPreferencesRendererRaytracedTest {
         FrEnd.panel_preferences_renderer_raytraced.panel, "0");
     assertNotNull(choice, "expected the Max bounces dropdown");
     return choice;
+  }
+
+  private static Choice specularDropdown() {
+    // The Glossiness and Specular dropdowns offer identical entries,
+    // so find the one sitting next to the "Specular:" label.
+    final Container parent = findLabelledPanel(
+        FrEnd.panel_preferences_renderer_raytraced.panel, "Specular:");
+    assertNotNull(parent, "expected the Specular panel");
+    final Choice choice = findChoice(parent, "50%");
+    assertNotNull(choice, "expected the Specular dropdown");
+    return choice;
+  }
+
+  private static Checkbox shadowsCheckbox() {
+    final Checkbox checkbox = findCheckbox(
+        FrEnd.panel_preferences_renderer_raytraced.panel, "Shadows");
+    assertNotNull(checkbox, "expected the Shadows checkbox");
+    return checkbox;
+  }
+
+  private static Container findLabelledPanel(Container container,
+      String label_text) {
+    for (final Component c : container.getComponents()) {
+      if (c instanceof Container) {
+        boolean labelled = false;
+        for (final Component inner : ((Container) c).getComponents()) {
+          if (inner instanceof Label
+              && label_text.equals(((Label) inner).getText())) {
+            labelled = true;
+            break;
+          }
+        }
+        if (labelled) {
+          return (Container) c;
+        }
+        final Container found = findLabelledPanel((Container) c,
+            label_text);
+        if (found != null) {
+          return found;
+        }
+      }
+    }
+    return null;
+  }
+
+  private static Checkbox findCheckbox(Container container, String label) {
+    for (final Component c : container.getComponents()) {
+      if (c instanceof Checkbox
+          && label.equals(((Checkbox) c).getLabel())) {
+        return (Checkbox) c;
+      }
+      if (c instanceof Container) {
+        final Checkbox found = findCheckbox((Container) c, label);
+        if (found != null) {
+          return found;
+        }
+      }
+    }
+    return null;
   }
 
   private static Choice findChoice(Container container, String marker) {
@@ -103,6 +173,21 @@ class PanelPreferencesRendererRaytracedTest {
     });
   }
 
+  private static void tick(Checkbox checkbox, boolean state)
+      throws Exception {
+    SwingUtilities.invokeAndWait(() -> {
+      // The panel reads the checkbox state, so set it before
+      // delivering the event the native peer would have delivered.
+      checkbox.setState(state);
+      final ItemEvent event = new ItemEvent(checkbox,
+          ItemEvent.ITEM_STATE_CHANGED, checkbox.getLabel(),
+          state ? ItemEvent.SELECTED : ItemEvent.DESELECTED);
+      for (final ItemListener listener : checkbox.getItemListeners()) {
+        listener.itemStateChanged(event);
+      }
+    });
+  }
+
   @Test
   void glossinessDropdownOffersZeroToOneHundredInTens() {
     final Choice choice = glossinessDropdown();
@@ -112,8 +197,8 @@ class PanelPreferencesRendererRaytracedTest {
       assertEquals(percent + "%", choice.getItem(percent / 10),
           "glossiness entry " + percent / 10 + " must be " + percent + "%");
     }
-    assertEquals("50%", choice.getSelectedItem(),
-        "Glossiness must default to 50%");
+    assertEquals("0%", choice.getSelectedItem(),
+        "Glossiness must default to 0%");
   }
 
   @Test
@@ -146,14 +231,52 @@ class PanelPreferencesRendererRaytracedTest {
   }
 
   @Test
-  void resetRestoresGlossinessAndBounces() throws Exception {
+  void resetRestoresRaytracedDefaults() throws Exception {
     RendererDelegator.glossiness = 90;
     RendererDelegator.max_bounces = 4;
+    RendererDelegator.shadows = true;
+    RendererDelegator.specular = 80;
     SwingUtilities.invokeAndWait(
         () -> FrEnd.panel_preferences_display.resetToDefaults());
-    assertEquals(50, RendererDelegator.glossiness);
+    assertEquals(0, RendererDelegator.glossiness);
     assertEquals(2, RendererDelegator.max_bounces);
-    assertEquals("50%", glossinessDropdown().getSelectedItem());
+    assertEquals(false, RendererDelegator.shadows);
+    assertEquals(50, RendererDelegator.specular);
+    assertEquals("0%", glossinessDropdown().getSelectedItem());
     assertEquals("2", maxBouncesDropdown().getSelectedItem());
+    assertEquals(false, shadowsCheckbox().getState());
+    assertEquals("50%", specularDropdown().getSelectedItem());
+  }
+
+  @Test
+  void shadowsCheckboxDefaultsOffAndDrivesTheRenderer() throws Exception {
+    final Checkbox checkbox = shadowsCheckbox();
+    assertEquals(false, checkbox.getState(),
+        "Shadows must default to off");
+    tick(checkbox, true);
+    assertEquals(true, RendererDelegator.shadows);
+    tick(checkbox, false);
+    assertEquals(false, RendererDelegator.shadows);
+  }
+
+  @Test
+  void specularDropdownOffersZeroToOneHundredInTens() {
+    final Choice choice = specularDropdown();
+    assertEquals(11, choice.getItemCount(),
+        "Specular must offer 0% to 100% in 10% steps");
+    for (int percent = 0; percent <= 100; percent += 10) {
+      assertEquals(percent + "%", choice.getItem(percent / 10),
+          "specular entry " + percent / 10 + " must be " + percent + "%");
+    }
+    assertEquals("50%", choice.getSelectedItem(),
+        "Specular must default to 50%");
+  }
+
+  @Test
+  void selectingSpecularUpdatesTheRenderer() throws Exception {
+    pick(specularDropdown(), "100%");
+    assertEquals(100, RendererDelegator.specular);
+    pick(specularDropdown(), "0%");
+    assertEquals(0, RendererDelegator.specular);
   }
 }

@@ -8,8 +8,8 @@ import com.springie.render.modules.modern.LightSource;
 
 /**
  * Renders one bin tile, pixel by pixel. One primary ray per pixel, plus
- * optional mirror-reflection rays when RendererDelegator.glossiness is
- * above 0 (no shadow rays yet).
+ * optional shadow rays, specular highlights, and mirror-reflection rays
+ * per the RendererDelegator settings.
  *
  * <p>Lighting shares the default renderer's configuration
  * (LightSource.source_1) and its feel: brightness runs from half to full
@@ -103,8 +103,9 @@ final class Raytracer {
   }
 
   /**
-   * Diffuse shading, optionally blended with a mirror reflection. Shadow
-   * rays (towards LIGHT_*) are not traced yet.
+   * Diffuse shading with optional shadows, specular highlights, and
+   * mirror reflection. Shadow rays (towards LIGHT_*) are traced when
+   * RendererDelegator.shadows is set.
    *
    * <p>Matches the default renderer: its [128, 255] brightness range, its
    * depth fog, and its packed-colour convention (0xRRGGBB -- red in the
@@ -121,6 +122,14 @@ final class Raytracer {
     if (dot > 1.0) {
       dot = 1.0;
     }
+
+    final boolean shadowed = RendererDelegator.shadows
+        && inShadow(ray, hit, bvh, stack);
+    if (shadowed) {
+      // Ambient light only: the diffuse boost and the specular
+      // highlight both need direct light.
+      dot = 0.0;
+    }
     final int scaled = 128 + (int) (127.0 * dot);
 
     final double pz = ray.oz + ray.dz * hit.t;
@@ -132,6 +141,15 @@ final class Raytracer {
     int or = (r * scaled) >> 8;
     int og = (g * scaled) >> 8;
     int ob = (b * scaled) >> 8;
+
+    if (!shadowed) {
+      final int highlight = specularHighlight(ray, hit);
+      if (highlight > 0) {
+        or = Math.min(255, or + highlight);
+        og = Math.min(255, og + highlight);
+        ob = Math.min(255, ob + highlight);
+      }
+    }
 
     final int glossiness = RendererDelegator.glossiness;
     if (glossiness > 0 && depth < RendererDelegator.max_bounces) {
@@ -151,6 +169,55 @@ final class Raytracer {
     }
 
     return 0xFF000000 | (or << 16) | (og << 8) | ob;
+  }
+
+  /**
+   * True when something blocks the light from the hit point. The ray is
+   * nudged off the surface towards the light so it does not shadow
+   * itself.
+   */
+  private static boolean inShadow(Ray ray, Hit hit, BVH bvh, int[] stack) {
+    final double px = ray.ox + ray.dx * hit.t;
+    final double py = ray.oy + ray.dy * hit.t;
+    final double pz = ray.oz + ray.dz * hit.t;
+    final double toward_light = hit.nx * LIGHT_X + hit.ny * LIGHT_Y
+        + hit.nz * LIGHT_Z;
+    final double side = toward_light > 0.0 ? 1.0 : -1.0;
+    final Ray shadow = new Ray();
+    shadow.ox = px + side * hit.nx;
+    shadow.oy = py + side * hit.ny;
+    shadow.oz = pz + side * hit.nz;
+    shadow.dx = LIGHT_X;
+    shadow.dy = LIGHT_Y;
+    shadow.dz = LIGHT_Z;
+    final Hit shadow_hit = new Hit();
+    return bvh.intersect(shadow, shadow_hit, stack);
+  }
+
+  /**
+   * Blinn-Phong highlight: how directly the surface reflects the light
+   * into the viewer. Returns the 0-255 white to add, or 0 when specular
+   * highlights are off or the geometry faces away.
+   */
+  private static int specularHighlight(Ray ray, Hit hit) {
+    final int specular = RendererDelegator.specular;
+    if (specular <= 0) {
+      return 0;
+    }
+    // Halfway between the light direction and the view direction.
+    final double hx = LIGHT_X - ray.dx;
+    final double hy = LIGHT_Y - ray.dy;
+    final double hz = LIGHT_Z - ray.dz;
+    final double length = Math.sqrt(hx * hx + hy * hy + hz * hz);
+    if (length < 1e-12) {
+      return 0;
+    }
+    final double cosine = (hit.nx * hx + hit.ny * hy + hit.nz * hz)
+        / length;
+    if (cosine <= 0.0) {
+      return 0;
+    }
+    return (int) (255.0 * Math.pow(cosine, 32.0) * specular / 100.0);
   }
 
   /**
