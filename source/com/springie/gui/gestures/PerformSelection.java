@@ -14,6 +14,7 @@ import com.springie.geometry.Point3D;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ModularRendererNew;
+import com.springie.render.modules.raytraced.ModularRendererRaytraced;
 
 public class PerformSelection {
 	public static int INFECTION_START = 64;
@@ -23,7 +24,10 @@ public class PerformSelection {
 	public static int IMMUNITY_START = 48;
 	
 	public void performSelection(int x, int y, boolean drag_is_possible) {
-		if (RendererDelegator.renderer instanceof ModularRendererNew) {
+		if (RendererDelegator.renderer instanceof ModularRendererNew
+				|| RendererDelegator.renderer instanceof ModularRendererRaytraced) {
+			// Link/face picking reads the projected caches this builds; the
+			// tiled renderers do not maintain them while drawing.
 			ContextManager.getNodeManager().nodeAndLinkRenderDummy();
 		}
 
