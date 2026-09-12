@@ -12,7 +12,9 @@ import java.util.ArrayList;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
+import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
+import com.springie.render.ScenicBackground;
 
 public class RendererBinManager {
   public static int divisor = 340;
@@ -660,8 +662,18 @@ public class RendererBinManager {
     final int block_size = divisor - getMargin();
 
     // graphics.setColor(new Color(rnd.nextInt() & 0x7F7F7F));
-    graphics.setColor(RendererDelegator.color_background);
-    graphics.fillRect(bin_min_x, bin_min_y, block_size, block_size);
+    if (RendererDelegator.scenic_background && Coords.x_pixels > 0
+        && Coords.y_pixels > 0) {
+      // Repaint the scenic background under the scrubbed bin.
+      final BufferedImage scenic = ScenicBackground.imageFor(
+          Coords.x_pixels, Coords.y_pixels);
+      graphics.drawImage(scenic, bin_min_x, bin_min_y,
+          bin_min_x + block_size, bin_min_y + block_size, bin_min_x,
+          bin_min_y, bin_min_x + block_size, bin_min_y + block_size, null);
+    } else {
+      graphics.setColor(RendererDelegator.color_background);
+      graphics.fillRect(bin_min_x, bin_min_y, block_size, block_size);
+    }
   }
 
   private int getMargin() {

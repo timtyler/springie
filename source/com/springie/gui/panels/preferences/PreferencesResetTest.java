@@ -78,6 +78,7 @@ class PreferencesResetTest {
         RendererDelegator.fill_light = 60;
         RendererDelegator.antialiasing = 3;
         RendererDelegator.color_background_number = 0xFFFF0000;
+        RendererDelegator.scenic_background = true;
         PanelPreferencesRendererModern.render_label_when = 1;
 
         Link.number_of_strut_render_divisions = 9;
@@ -160,6 +161,7 @@ class PreferencesResetTest {
       assertEquals(0, RendererDelegator.fill_light);
       assertEquals(1, RendererDelegator.antialiasing);
       assertEquals(0xFF000000, RendererDelegator.color_background_number);
+      assertEquals(false, RendererDelegator.scenic_background);
       assertEquals(2, PanelPreferencesRendererModern.render_label_when);
       assertTrue(RendererDelegator.renderer instanceof ModularRendererNew,
           "reset must restore the Modern renderer");

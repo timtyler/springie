@@ -18,6 +18,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
+import com.springie.render.ScenicBackground;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.modules.modern.RendererBinManager;
 
@@ -202,8 +203,12 @@ public class ModularRendererRaytraced implements ModularRendererBase {
         new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     final Graphics g = frame.getGraphics();
     try {
-      g.setColor(RendererDelegator.color_background);
-      g.fillRect(0, 0, width, height);
+      if (RendererDelegator.scenic_background) {
+        g.drawImage(ScenicBackground.imageFor(width, height), 0, 0, null);
+      } else {
+        g.setColor(RendererDelegator.color_background);
+        g.fillRect(0, 0, width, height);
+      }
       for (int i = 0; i < tiles.length; i++) {
         final ShownTile shown = tiles[i].shown;
         if (shown == null) {

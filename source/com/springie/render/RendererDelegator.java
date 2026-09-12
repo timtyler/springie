@@ -50,6 +50,13 @@ public final class RendererDelegator {
 
   public static Color color_background = new Color(color_background_number);
 
+  /**
+   * When true, the background is the procedural grass/sky texture
+   * (ScenicBackground) instead of the flat background colour, in both
+   * the default and the ray-traced renderer.
+   */
+  public static boolean scenic_background = false;
+
   public static int colour_selected_number = 0xFFFF0000;
 
   public static Color colour_selected = new Color(colour_selected_number);
@@ -245,8 +252,14 @@ public final class RendererDelegator {
         // first ensure there is no clip rectangle!
         graphics.setClip(0, 0, 19999, 19999);
         // then clear the big rectangle
-        graphics.setColor(color_background);
-        graphics.fillRect(0, 0, 19999, 19999);
+        if (RendererDelegator.scenic_background && Coords.x_pixels > 0
+            && Coords.y_pixels > 0) {
+          graphics.drawImage(ScenicBackground.imageFor(Coords.x_pixels,
+              Coords.y_pixels), 0, 0, null);
+        } else {
+          graphics.setColor(color_background);
+          graphics.fillRect(0, 0, 19999, 19999);
+        }
         renderer.reset();
         RendererDelegator.repaint_all_objects = false;
       }

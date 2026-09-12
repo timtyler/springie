@@ -3,9 +3,12 @@
 package com.springie.render.modules.raytraced;
 
 import java.util.Random;
+import java.awt.image.BufferedImage;
 
 import com.springie.geometry.Vector3D;
+import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
+import com.springie.render.ScenicBackground;
 import com.springie.render.modules.modern.LightSource;
 
 /**
@@ -107,6 +110,12 @@ final class Raytracer {
     // number is already in 0xRRGGBB packing.
     final int background_rgb =
         0xFF000000 | RendererDelegator.color_background_number;
+    // The scenic grass/sky texture, or null for the flat colour above.
+    // Sized to the full canvas; tile pixels address it directly.
+    final BufferedImage scenic = RendererDelegator.scenic_background
+        && Coords.x_pixels > 0 && Coords.y_pixels > 0
+            ? ScenicBackground.imageFor(Coords.x_pixels, Coords.y_pixels)
+            : null;
     // Anti-aliasing: an aa-by-aa grid of sub-pixel rays per pixel,
     // box-filtered. 1x1 is the historical single-ray path, untouched.
     final int aa = RendererDelegator.antialiasing;
@@ -118,7 +127,7 @@ final class Raytracer {
           hit.reset();
           final boolean struck = bvh.intersect(ray, hit, stack);
           final int rgb = struck ? shade(ray, hit, bvh, stack)
-              : background_rgb;
+              : backgroundAt(scenic, background_rgb, x0 + x, y0 + y);
           pixels[i++] = rgb;
           if (struck && stats != null) {
             stats.add(x, y);
@@ -144,15 +153,17 @@ final class Raytracer {
             (x0 + x) * 73856093L ^ (y0 + y) * 19349663L ^ 0x9E3779B9L);
         for (int sy = 0; sy < aa; sy++) {
           for (int sx = 0; sx < aa; sx++) {
-            camera.makeRay(x0 + x + (sx + jitter.nextDouble()) / aa,
-                y0 + y + (sy + jitter.nextDouble()) / aa, ray);
+            final double sub_x = x0 + x + (sx + jitter.nextDouble()) / aa;
+            final double sub_y = y0 + y + (sy + jitter.nextDouble()) / aa;
+            camera.makeRay(sub_x, sub_y, ray);
             hit.reset();
             final int rgb;
             if (bvh.intersect(ray, hit, stack)) {
               rgb = shade(ray, hit, bvh, stack);
               struck = true;
             } else {
-              rgb = background_rgb;
+              rgb = backgroundAt(scenic, background_rgb,
+                  (int) Math.round(sub_x), (int) Math.round(sub_y));
             }
             r += (rgb >> 16) & 0xFF;
             g += (rgb >> 8) & 0xFF;
@@ -166,6 +177,19 @@ final class Raytracer {
         }
       }
     }
+  }
+
+  /**
+   * The background colour for a missed ray: the flat background colour,
+   * or the scenic grass/sky texture sampled at the pixel when it is
+   * enabled.
+   */
+  private static int backgroundAt(BufferedImage scenic, int background_rgb,
+      int sx, int sy) {
+    if (scenic == null) {
+      return background_rgb;
+    }
+    return ScenicBackground.sampleClamped(scenic, sx, sy);
   }
 
   /**

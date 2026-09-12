@@ -36,6 +36,8 @@ public class PanelPreferencesRendererSharedShow {
 
   private Checkbox checkbox_render_charges;
 
+  public Checkbox checkbox_scenic_background;
+
   public PanelPreferencesRendererSharedShow(MessageManager message_manager) {
     this.message_manager = message_manager;
     makePanel();
@@ -168,10 +170,28 @@ public class PanelPreferencesRendererSharedShow {
     this.panel.add(panel_render_normal);
     this.panel.add(panel_render_charges);
     this.panel.add(panel_render_hidden);
+    this.panel.add(getBackgroundPanel());
 //    this.panel.add(panel_redraw_deepest_first);
 //    this.panel.add(panel_fog);
 //    this.panel.add(panel_visible_explosions);
 //    this.panel.add(panel_face_render_number);
+  }
+
+  private Panel getBackgroundPanel() {
+    final Panel panel_background = new Panel();
+    panel_background.add(new Label("Background:"));
+    this.checkbox_scenic_background = new Checkbox("Grass/sky",
+        RendererDelegator.scenic_background);
+    this.checkbox_scenic_background.addItemListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        Forget.about(e);
+        RendererDelegator.scenic_background =
+            ((Checkbox) e.getSource()).getState();
+        RendererDelegator.repaintAll();
+      }
+    });
+    panel_background.add(this.checkbox_scenic_background);
+    return panel_background;
   }
 
 
@@ -282,6 +302,7 @@ public class PanelPreferencesRendererSharedShow {
     getCheckboxRenderHiddenNodes().setState(false);
     getCheckboxRenderHiddenLinks().setState(false);
     getCheckboxRenderHiddenPolygons().setState(false);
+    this.checkbox_scenic_background.setState(false);
 
     // In case a checkbox was already in its default state (no item event).
     FrEnd.render_nodes = true;
@@ -291,6 +312,7 @@ public class PanelPreferencesRendererSharedShow {
     FrEnd.render_hidden_nodes = false;
     FrEnd.render_hidden_links = false;
     FrEnd.render_hidden_faces = false;
+    RendererDelegator.scenic_background = false;
 
     RendererDelegator.repaintAll();
   }
