@@ -17,7 +17,6 @@ import java.awt.event.ItemListener;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
-import com.springie.elements.links.Link;
 import com.springie.elements.nodes.Node;
 import com.springie.gui.GUIStrings;
 import com.springie.messages.Message;
@@ -42,8 +41,6 @@ public class PanelControlsUniverse {
 	public Checkbox checkbox_continuously_centre;
 
 	public Checkbox checkbox_collision_check;
-
-	public Checkbox checkbox_collide_self_only;
 
 	public Checkbox checkbox_links_disabled;
 
@@ -225,17 +222,6 @@ public class PanelControlsUniverse {
 		});
 		panel_links_disabled.add(this.checkbox_links_disabled);
 
-		final Panel panel_collide_self_only = new Panel();
-		this.checkbox_collide_self_only = new Checkbox(GUIStrings.CSO);
-		this.checkbox_collide_self_only.setState(FrEnd.collide_self_only);
-		this.checkbox_collide_self_only.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				Forget.about(e);
-				getMessageManager().sendMessage(Message.MSG_LINKLENGTH, Link.SHORT, 0);
-			}
-		});
-		panel_collide_self_only.add(this.checkbox_collide_self_only);
-
 		final Panel panel_bias = new Panel();
 		panel_bias.setLayout(new BorderLayout(0, 8));
 		panel_bias.add("West", new Label("Bias:", Label.RIGHT));
@@ -374,11 +360,6 @@ public class PanelControlsUniverse {
 		setCheckboxSilently(this.checkbox_links_disabled, true);
 		FrEnd.links_disabled = false;
 
-		// Collide self only (the listener sends a link-length message, so
-		// don't fire it here).
-		setCheckboxSilently(this.checkbox_collide_self_only, false);
-		FrEnd.collide_self_only = false;
-
 		// Charge.
 		ContextManager.getNodeManager().electrostatic.charge_active = true;
 		this.checkbox_charge_switch.setState(true);
@@ -500,10 +481,6 @@ public class PanelControlsUniverse {
 
 	public Checkbox getCheckbox3D() {
 		return this.checkbox_3D;
-	}
-
-	public Checkbox getCheckboxCollideSelfOnly() {
-		return this.checkbox_collide_self_only;
 	}
 
 	public Checkbox getCheckboxCollisionCheck() {

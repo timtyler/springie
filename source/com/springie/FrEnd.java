@@ -177,8 +177,6 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 	public static boolean controls_visible = true;
 
-	public static boolean collide_self_only;
-
 	public static int node_initial_size = 32;
 
 	public static boolean explosions = true;

@@ -11,6 +11,7 @@ import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.LinkManager;
+import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.io.in.readers.crudeclay.ReaderCrudeClay;
 import com.springie.io.in.readers.dat.ReaderDAT;
@@ -33,6 +34,7 @@ import com.springie.modification.automaticradius.AutomaticLinkRadius;
 import com.springie.modification.automaticradius.AutomaticNodeRadius;
 import com.springie.modification.automaticradius.DeriveLinkRadiusFromNodeRadius;
 import com.springie.modification.post.PostModification;
+import com.springie.world.World;
 import com.tifsoft.utilities.execute.Executor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,6 +74,31 @@ public class DataInput {
     link_manager.link_type_factory.array.clear();
     face_manager.face_type_factory.array.clear();
     this.manager_destination.clazz_factory.array.clear();
+
+    resetUniverseState();
+  }
+
+  /**
+   * Universe settings travel with the model, so loading a model starts
+   * from the defaults: attributes absent from the file must not inherit
+   * stale values from the previously loaded model.
+   */
+  private static void resetUniverseState() {
+    World.gravity_strength = 2;
+    World.gravity_active = false;
+    World.global_temperature = 6;
+    World.minimum_magnitude = 0;
+    Node.max_speed = Integer.MAX_VALUE;
+    Node.viscocity = 0;
+    FrEnd.three_d = true;
+    FrEnd.check_collisions = true;
+    FrEnd.links_disabled = false;
+    FrEnd.continuously_centre = false;
+    FrEnd.node_growth = false;
+    final NodeManager manager = ContextManager.getNodeManager();
+    if (manager != null) {
+      manager.electrostatic.charge_active = true;
+    }
   }
 
   public void addFromString(String s, NodeManager manager) {

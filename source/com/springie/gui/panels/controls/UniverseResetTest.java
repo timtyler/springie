@@ -38,7 +38,6 @@ class UniverseResetTest {
         FrEnd.three_d = false;
         FrEnd.check_collisions = false;
         FrEnd.links_disabled = true;
-        FrEnd.collide_self_only = true;
         FrEnd.continuously_centre = true;
         FrEnd.node_growth = true;
         ContextManager.getNodeManager().electrostatic.charge_active = false;
@@ -53,7 +52,6 @@ class UniverseResetTest {
         assertTrue(FrEnd.three_d);
         assertTrue(FrEnd.check_collisions);
         assertFalse(FrEnd.links_disabled);
-        assertFalse(FrEnd.collide_self_only);
         assertFalse(FrEnd.continuously_centre);
         assertFalse(FrEnd.node_growth);
         assertTrue(
@@ -76,8 +74,6 @@ class UniverseResetTest {
         // The links-disabled checkbox is inverted: checked means enabled.
         assertTrue(panel.checkbox_links_disabled.getState(),
             "links disabled checkbox");
-        assertFalse(panel.checkbox_collide_self_only.getState(),
-            "collide self only");
         assertFalse(panel.checkbox_continuously_centre.getState(),
             "continuously centre");
         assertFalse(panel.checkbox_node_growth.getState(), "node growth");

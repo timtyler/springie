@@ -84,10 +84,16 @@ public class WriterSpr {
 
 		final String g_v = "" + World.gravity_strength;
 		uni.add(new XMLWriterAttribute("gravity_strength", g_v));
-		if (World.gravity_active) {
-			final String g_b = "" + World.gravity_active;
-			uni.add(new XMLWriterAttribute("gravity_active", g_b));
-		}
+		uni.add(new XMLWriterAttribute("gravity_active", "" + World.gravity_active));
+
+		uni.add(new XMLWriterAttribute("temperature", "" + World.global_temperature));
+		uni.add(new XMLWriterAttribute("viscosity", "" + Node.viscocity));
+		uni.add(new XMLWriterAttribute("collision_check", "" + FrEnd.check_collisions));
+		uni.add(new XMLWriterAttribute("links_disabled", "" + FrEnd.links_disabled));
+		uni.add(new XMLWriterAttribute("continuously_centre", "" + FrEnd.continuously_centre));
+		uni.add(new XMLWriterAttribute("node_growth", "" + FrEnd.node_growth));
+		uni.add(new XMLWriterAttribute("speed_limit", "" + Node.max_speed));
+		uni.add(new XMLWriterAttribute("excite", "" + World.minimum_magnitude));
 
 		// 2D
 		if (!FrEnd.three_d) {
@@ -95,10 +101,7 @@ public class WriterSpr {
 		}
 
 		final ElectrostaticRepulsion electrostatic = ContextManager.getNodeManager().electrostatic;
-		if (electrostatic.charge_active) {
-			final String c_b = "" + electrostatic.charge_active;
-			uni.add(new XMLWriterAttribute("charge_active", c_b));
-		}
+		uni.add(new XMLWriterAttribute("charge_active", "" + electrostatic.charge_active));
 
 		recursivelyOutputAllNodes(uni);
 		recursivelyOutputAllLinks(uni);

@@ -43,8 +43,6 @@ public interface GUIStrings {
 
   String EXPLOSIONS = "Explosions";
 
-  String CSO = "Collide with self only";
-
   String GRAVITY = "Gravity";
 
   String NODES = "Nodes";

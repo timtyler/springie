@@ -312,7 +312,7 @@ public class ReaderSPR extends DefaultHandler {
             final int spi = (int) sp;
             this.out.append("GS:" + spi + " ");
           } else if ("gravity_active".equals(nam)) {
-            this.out.append("GA:" + ("true".equals(val) ? "1" : "0") + " ");
+            this.out.append("GO:" + ("true".equals(val) ? "1" : "0") + " ");
           } else if ("charge_strength".equals(nam)) {
             final double sp = Double.valueOf(val).doubleValue();
             final int spi = (int) sp;
@@ -321,7 +321,27 @@ public class ReaderSPR extends DefaultHandler {
             final int dimensions = Integer.parseInt(val);
             this.out.append("DIM:" + dimensions + " ");
           } else if ("charge_active".equals(nam)) {
-            this.out.append("CA:" + ("true".equals(val) ? "1" : "0") + " ");
+            this.out.append("CO:" + ("true".equals(val) ? "1" : "0") + " ");
+          } else if ("temperature".equals(nam)) {
+            final double sp = Double.valueOf(val).doubleValue();
+            this.out.append("TMP:" + (int) sp + " ");
+          } else if ("viscosity".equals(nam)) {
+            final double sp = Double.valueOf(val).doubleValue();
+            this.out.append("VS:" + (int) sp + " ");
+          } else if ("collision_check".equals(nam)) {
+            this.out.append("CC:" + ("true".equals(val) ? "1" : "0") + " ");
+          } else if ("links_disabled".equals(nam)) {
+            this.out.append("LD:" + ("true".equals(val) ? "1" : "0") + " ");
+          } else if ("continuously_centre".equals(nam)) {
+            this.out.append("CE:" + ("true".equals(val) ? "1" : "0") + " ");
+          } else if ("node_growth".equals(nam)) {
+            this.out.append("NW:" + ("true".equals(val) ? "1" : "0") + " ");
+          } else if ("speed_limit".equals(nam)) {
+            final double sp = Double.valueOf(val).doubleValue();
+            this.out.append("SL:" + (int) sp + " ");
+          } else if ("excite".equals(nam)) {
+            final double sp = Double.valueOf(val).doubleValue();
+            this.out.append("EX:" + (int) sp + " ");
           }
         }
       }

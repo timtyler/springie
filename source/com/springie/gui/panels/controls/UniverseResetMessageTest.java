@@ -18,7 +18,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
-import com.springie.elements.links.Link;
 import com.springie.gui.GuiTestSupport;
 
 /**
@@ -54,12 +53,10 @@ class UniverseResetMessageTest {
 
       // Scramble the toggle checkboxes with real clicks.
       final PanelControlsUniverse panel = FrEnd.panel_universe;
-      final int link_length = Link.link_display_length;
       clickCheckbox(panel.checkbox_continuously_centre, ItemEvent.SELECTED);
       clickCheckbox(panel.checkbox_node_growth, ItemEvent.SELECTED);
       clickCheckbox(panel.checkbox_collision_check, ItemEvent.DESELECTED);
       clickCheckbox(panel.checkbox_links_disabled, ItemEvent.DESELECTED);
-      clickCheckbox(panel.checkbox_collide_self_only, ItemEvent.SELECTED);
 
       // Let the queued toggles take effect, then drain.
       FrEnd.message_manager.process();
@@ -80,9 +77,6 @@ class UniverseResetMessageTest {
       assertFalse(FrEnd.node_growth);
       assertTrue(FrEnd.check_collisions);
       assertFalse(FrEnd.links_disabled);
-      assertFalse(FrEnd.collide_self_only);
-
-      Link.link_display_length = link_length;
     });
   }
 

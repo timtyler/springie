@@ -312,6 +312,38 @@ public final class ReaderTens {
                     FrEnd.three_d = temp == 3;
                     break;
 
+                  case Instructions.TMP:
+                    World.global_temperature = temp;
+                    break;
+
+                  case Instructions.VS:
+                    Node.viscocity = temp;
+                    break;
+
+                  case Instructions.CC:
+                    FrEnd.check_collisions = temp == 1;
+                    break;
+
+                  case Instructions.LD:
+                    FrEnd.links_disabled = temp == 1;
+                    break;
+
+                  case Instructions.CE:
+                    FrEnd.continuously_centre = temp == 1;
+                    break;
+
+                  case Instructions.NW:
+                    FrEnd.node_growth = temp == 1;
+                    break;
+
+                  case Instructions.SL:
+                    Node.max_speed = temp;
+                    break;
+
+                  case Instructions.EX:
+                    World.minimum_magnitude = temp;
+                    break;
+
                   // case Instructions.CS:
                   // ContextManager.getNodeManager().electrostatic.charge_strength = temp;
                   // break;

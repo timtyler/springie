@@ -42,7 +42,14 @@ public class Instructions {
     "RST_LNK_LEN", // 34
     "TE", // 35 // Tension
     "CP", // 36 // Compression
-    //"PH", // 38 // Phase?
+    "TMP", // 37 // Temperature
+    "VS", // 38 // Viscosity
+    "CC", // 39 // Collision check
+    "LD", // 40 // Links disabled
+    "CE", // 41 // Continuously centre
+    "NW", // 42 // Node growth
+    "SL", // 43 // Speed limit
+    "EX", // 44 // Excite
 //  "CS", // 29 // Charge strength
   };
 
@@ -83,4 +90,12 @@ public class Instructions {
   static final int RST_LNK_LEN = 34;
   static final int TE  = 35;
   static final int CP  = 36;
+  static final int TMP = 37;
+  static final int VS  = 38;
+  static final int CC  = 39;
+  static final int LD  = 40;
+  static final int CE  = 41;
+  static final int NW  = 42;
+  static final int SL  = 43;
+  static final int EX  = 44;
 }
