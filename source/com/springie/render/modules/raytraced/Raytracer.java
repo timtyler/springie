@@ -84,15 +84,53 @@ final class Raytracer {
     // number is already in 0xRRGGBB packing.
     final int background_rgb =
         0xFF000000 | RendererDelegator.color_background_number;
+    // Anti-aliasing: an aa-by-aa grid of sub-pixel rays per pixel,
+    // box-filtered. 1x1 is the historical single-ray path, untouched.
+    final int aa = RendererDelegator.antialiasing;
+    if (aa <= 1) {
+      int i = 0;
+      for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+          camera.makeRay(x0 + x, y0 + y, ray);
+          hit.reset();
+          final boolean struck = bvh.intersect(ray, hit, stack);
+          final int rgb = struck ? shade(ray, hit, bvh, stack)
+              : background_rgb;
+          pixels[i++] = rgb;
+          if (struck && stats != null) {
+            stats.add(x, y);
+          }
+        }
+      }
+      return;
+    }
+    final int samples = aa * aa;
     int i = 0;
     for (int y = 0; y < height; y++) {
       for (int x = 0; x < width; x++) {
-        camera.makeRay(x0 + x, y0 + y, ray);
-        hit.reset();
-        final boolean struck = bvh.intersect(ray, hit, stack);
-        final int rgb = struck ? shade(ray, hit, bvh, stack)
-            : background_rgb;
-        pixels[i++] = rgb;
+        long r = 0;
+        long g = 0;
+        long b = 0;
+        boolean struck = false;
+        for (int sy = 0; sy < aa; sy++) {
+          for (int sx = 0; sx < aa; sx++) {
+            camera.makeRay(x0 + x + (sx + 0.5) / aa,
+                y0 + y + (sy + 0.5) / aa, ray);
+            hit.reset();
+            final int rgb;
+            if (bvh.intersect(ray, hit, stack)) {
+              rgb = shade(ray, hit, bvh, stack);
+              struck = true;
+            } else {
+              rgb = background_rgb;
+            }
+            r += (rgb >> 16) & 0xFF;
+            g += (rgb >> 8) & 0xFF;
+            b += rgb & 0xFF;
+          }
+        }
+        pixels[i++] = 0xFF000000 | (int) (r / samples) << 16
+            | (int) (g / samples) << 8 | (int) (b / samples);
         if (struck && stats != null) {
           stats.add(x, y);
         }

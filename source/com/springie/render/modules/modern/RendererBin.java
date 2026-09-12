@@ -3,12 +3,17 @@
 package com.springie.render.modules.modern;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class RendererBin {
   ArrayList<PolygonComposite> vector = new ArrayList<>();
 
   Image image;
+
+  // Anti-aliased blit tile: the box-filtered 1x version of image, kept only
+  // while anti-aliasing is above 1x1.
+  BufferedImage image_aa;
 
   RectangleInt actual = new RectangleInt(0, 0, 0, 0);
 

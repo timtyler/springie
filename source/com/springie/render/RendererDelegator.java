@@ -87,6 +87,15 @@ public final class RendererDelegator {
    */
   public static int specular = 90;
 
+  /**
+   * Anti-aliasing supersampling factor (1, 2 or 3): 1x1 is off, 2x2 and
+   * 3x3 render that many sub-samples per pixel and average them with a
+   * box filter. Affects the modern tiled renderer (tiles are rendered at
+   * n-times resolution and downsampled on blit) and the ray-traced
+   * renderer (n-by-n sub-pixel rays per pixel). 1 is the default.
+   */
+  public static int antialiasing = 1;
+
   static long time_last_ms;
 
   static int frame_count;

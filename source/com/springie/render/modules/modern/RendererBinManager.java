@@ -4,6 +4,9 @@ package com.springie.render.modules.modern;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.Random;
 import java.util.ArrayList;
 
@@ -56,6 +59,10 @@ public class RendererBinManager {
 
 
   private boolean last_double_buffered;
+
+  // Anti-aliasing factor in force when the cached tiles were rendered. A
+  // change means the tiles are the wrong resolution and must be dropped.
+  private int last_antialiasing;
 
   private boolean render_settings_valid;
 
@@ -273,15 +280,20 @@ public class RendererBinManager {
   private void renderTiled(RendererBinManager bins_last, Graphics graphics,
       int block_size) {
 
-    // The tile size changed (show_bins toggled): the cached tiles are the
-    // wrong size, so drop them. They are rebuilt below as bins go dirty.
-    if (block_size != this.last_block_size) {
+    final int aa = RendererDelegator.antialiasing;
+
+    // The tile size changed (show_bins toggled), or the anti-aliasing
+    // factor changed: the cached tiles are the wrong size, so drop them.
+    // They are rebuilt below as bins go dirty.
+    if (block_size != this.last_block_size || aa != this.last_antialiasing) {
       for (int j = 0; j < this.number_of_bins_y; j++) {
         for (int i = 0; i < this.number_of_bins_x; i++) {
           this.array[i][j].image = null;
+          this.array[i][j].image_aa = null;
         }
       }
       this.last_block_size = block_size;
+      this.last_antialiasing = aa;
     }
 
     final RectangleInt potential = new RectangleInt(0, 0, 0, 0);
@@ -327,11 +339,29 @@ public class RendererBinManager {
             if (bin.image == null) {
               FrEnd.main_canvas.panel
                   .setBackground(RendererDelegator.color_background);
-              bin.image = FrEnd.main_canvas.createImage(block_size,
-                  block_size);
+              if (aa > 1) {
+                // Supersampled tile: rendered at aa-times resolution, then
+                // box-filtered down on blit. A BufferedImage guarantees
+                // readable pixels for the downsample.
+                bin.image = new BufferedImage(block_size * aa,
+                    block_size * aa, BufferedImage.TYPE_INT_RGB);
+              } else {
+                bin.image = FrEnd.main_canvas.createImage(block_size,
+                    block_size);
+              }
             }
             final Graphics graphics_paint = bin.image.getGraphics();
-            graphics_paint.translate(-potential.min_x, -potential.min_y);
+            if (aa > 1) {
+              // Render in screen coordinates scaled up: translate first,
+              // then scale, so a screen point p lands on tile pixel
+              // aa * (p - min). The clip and scrub below are in the same
+              // user space, so they scale along untouched.
+              graphics_paint.translate(-potential.min_x * aa,
+                  -potential.min_y * aa);
+              ((Graphics2D) graphics_paint).scale(aa, aa);
+            } else {
+              graphics_paint.translate(-potential.min_x, -potential.min_y);
+            }
             // Scrub the union of last frame's and this frame's content, so
             // moved content leaves no trail. Always scrub, even for newly
             // created tiles (createImage content is undefined).
@@ -348,11 +378,21 @@ public class RendererBinManager {
 
               renderThePolygon(graphics_paint, composite);
             }
+
+            if (aa > 1) {
+              // Box-filter the supersampled tile into the 1x blit tile.
+              if (bin.image_aa == null) {
+                bin.image_aa = new BufferedImage(block_size, block_size,
+                    BufferedImage.TYPE_INT_RGB);
+              }
+              downsampleTile((BufferedImage) bin.image, bin.image_aa, aa);
+            }
             graphics_paint.dispose();
           } else if (bin.image != null) {
             // Vacated bin: repair the screen directly and drop the tile.
             doScrubbing(graphics, potential, bin);
             bin.image = null;
+            bin.image_aa = null;
           }
         } else {
           // Clean bin: the cached tile already holds these pixels.
@@ -384,12 +424,50 @@ public class RendererBinManager {
           final RectangleInt union = bin.union;
           graphics.setClip(union.min_x, union.min_y, union.max_x - union.min_x,
               union.max_y - union.min_y);
-          graphics.drawImage(bin.image, bin_min_x, bin_min_y, null);
+          // Anti-aliased bins blit the box-filtered 1x tile; the 1x path
+          // blits the rendered tile directly, exactly as before.
+          final Image blit = aa > 1 && bin.image_aa != null ? bin.image_aa
+              : bin.image;
+          graphics.drawImage(blit, bin_min_x, bin_min_y, null);
         }
       }
     }
 
     drawActiveBinOutlines(graphics);
+  }
+
+  /**
+   * Box-filter downsample: averages each aa-by-aa block of the supersampled
+   * tile into one destination pixel. Integer division truncates, so the
+   * result can be at most one level darker per channel than the true mean.
+   */
+  static void downsampleTile(BufferedImage src, BufferedImage dst, int aa) {
+    final int w = dst.getWidth();
+    final int h = dst.getHeight();
+    final int sw = w * aa;
+    final int[] src_pixels = src.getRGB(0, 0, sw, h * aa, null, 0, sw);
+    final int[] dst_pixels = new int[w * h];
+    final int n = aa * aa;
+    for (int y = 0; y < h; y++) {
+      for (int x = 0; x < w; x++) {
+        long r = 0;
+        long g = 0;
+        long b = 0;
+        final int base = y * aa * sw + x * aa;
+        for (int dy = 0; dy < aa; dy++) {
+          final int row = base + dy * sw;
+          for (int dx = 0; dx < aa; dx++) {
+            final int rgb = src_pixels[row + dx];
+            r += (rgb >> 16) & 0xFF;
+            g += (rgb >> 8) & 0xFF;
+            b += rgb & 0xFF;
+          }
+        }
+        dst_pixels[y * w + x] = 0xFF000000 | (int) (r / n) << 16
+            | (int) (g / n) << 8 | (int) (b / n);
+      }
+    }
+    dst.setRGB(0, 0, w, h, dst_pixels, 0, w);
   }
 
   /**
@@ -434,7 +512,8 @@ public class RendererBinManager {
         || this.last_colour_a_number != ColourModifier.colour_a_number
         || this.last_colour_b_number != ColourModifier.colour_b_number
         || this.last_redraw_deepest_first != FrEnd.redraw_deepest_first
-        || this.last_show_bins != show_bins;
+        || this.last_show_bins != show_bins
+        || this.last_antialiasing != RendererDelegator.antialiasing;
   }
 
   private void rememberRenderSettings(boolean double_buffered) {
@@ -445,6 +524,7 @@ public class RendererBinManager {
     this.last_colour_b_number = ColourModifier.colour_b_number;
     this.last_redraw_deepest_first = FrEnd.redraw_deepest_first;
     this.last_show_bins = show_bins;
+    this.last_antialiasing = RendererDelegator.antialiasing;
     this.render_settings_valid = true;
   }
 

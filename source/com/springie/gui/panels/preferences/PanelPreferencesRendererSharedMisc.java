@@ -16,6 +16,7 @@ import com.springie.FrEnd;
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.faces.Face;
 import com.springie.gui.GUIStrings;
+import com.springie.gui.components.TTChoice;
 import com.springie.messages.MessageManager;
 import com.springie.render.RendererDelegator;
 import com.tifsoft.Forget;
@@ -40,6 +41,8 @@ public class PanelPreferencesRendererSharedMisc {
   private Scrollbar scroll_bar_face_render_number;
 
   private Label label_fog;
+
+  private TTChoice choose_antialiasing;
 
   //public Label label_fps_value;
 
@@ -101,11 +104,40 @@ public class PanelPreferencesRendererSharedMisc {
     
     final Panel panel_face_render_number = getFaceRenderNumber();
 
+    final Panel panel_antialiasing = getAntiAliasingPanel();
+
     this.panel.add(panel_redraw_deepest_first);
     this.panel.add(panel_visible_explosions);
     this.panel.add(panel_relative_fog);
     this.panel.add(panel_fog);
     this.panel.add(panel_face_render_number);
+    this.panel.add(panel_antialiasing);
+  }
+
+  private Panel getAntiAliasingPanel() {
+    final Panel panel = new Panel();
+    panel.add(new Label("Anti-aliasing:", Label.RIGHT));
+
+    this.choose_antialiasing = new TTChoice(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        Forget.about(e);
+        final String scs = (String) e.getItem();
+        RendererDelegator.antialiasing =
+            PanelPreferencesRendererSharedMisc.this.choose_antialiasing
+                .str_to_num(scs);
+        // The cached tiles are the wrong resolution now.
+        FrEnd.main_canvas.forceResize();
+      }
+    });
+
+    this.choose_antialiasing.add("1x1", 1);
+    this.choose_antialiasing.add("2x2", 2);
+    this.choose_antialiasing.add("3x3", 3);
+    this.choose_antialiasing.choice
+        .select(this.choose_antialiasing.num_to_str(1));
+    panel.add(this.choose_antialiasing.choice);
+
+    return panel;
   }
 
 
@@ -200,6 +232,11 @@ public class PanelPreferencesRendererSharedMisc {
     this.scroll_bar_face_render_number
         .setValue(Face.number_of_render_divisions);
     reflectLabelFaceRenderNumber();
+
+    // Anti-aliasing: 1x1 is off.
+    RendererDelegator.antialiasing = 1;
+    this.choose_antialiasing.choice
+        .select(this.choose_antialiasing.num_to_str(1));
 
     RendererDelegator.repaintAll();
   }

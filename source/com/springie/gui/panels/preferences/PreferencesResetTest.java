@@ -74,6 +74,7 @@ class PreferencesResetTest {
         RendererDelegator.glossiness = 90;
         RendererDelegator.shadows = true;
         RendererDelegator.specular = 80;
+        RendererDelegator.antialiasing = 3;
         RendererDelegator.color_background_number = 0xFFFF0000;
         PanelPreferencesRendererModern.render_label_when = 1;
 
@@ -153,6 +154,7 @@ class PreferencesResetTest {
       assertEquals(0, RendererDelegator.glossiness);
       assertEquals(false, RendererDelegator.shadows);
       assertEquals(90, RendererDelegator.specular);
+      assertEquals(1, RendererDelegator.antialiasing);
       assertEquals(0xFF000000, RendererDelegator.color_background_number);
       assertEquals(2, PanelPreferencesRendererModern.render_label_when);
       assertTrue(RendererDelegator.renderer instanceof ModularRendererNew,
