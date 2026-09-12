@@ -35,7 +35,7 @@ public final class ElementRendererLink {
   private static final Double3D scratch_original = new Double3D(0, 0, 0);
   private static final Double3D scratch_cross_2 = new Double3D(0, 0, 0);
 
-  public static int strut_divisions = 1;
+  public static int strut_divisions = 3;
 
   public static int cable_divisions = 1;
 

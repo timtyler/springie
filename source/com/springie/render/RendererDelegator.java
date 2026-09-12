@@ -57,10 +57,12 @@ public final class RendererDelegator {
 
   /**
    * Number of sides of the open tube that struts and cables render as
-   * (3, 4, 6 or 8). 3 is fastest, 8 smoothest. The tube ends are left
-   * open: capping them costs polygons without helping the picture.
+   * (2, 3, 4, 6 or 8). 2 is a cylindrical billboard that always faces
+   * the viewer; 3 is the fastest true tube, 8 the smoothest. The tube
+   * ends are left open: capping them costs polygons without helping
+   * the picture.
    */
-  public static int link_sides = 3;
+  public static int link_sides = 2;
 
   static long time_last_ms;
 

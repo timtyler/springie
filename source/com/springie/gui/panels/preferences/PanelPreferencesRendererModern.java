@@ -200,7 +200,7 @@ public class PanelPreferencesRendererModern {
 		this.choose_link_sides.add("4", 4);
 		this.choose_link_sides.add("6", 6);
 		this.choose_link_sides.add("8", 8);
-		this.choose_link_sides.choice.select(this.choose_link_sides.num_to_str(3));
+		this.choose_link_sides.choice.select(this.choose_link_sides.num_to_str(2));
 		panel.add(this.choose_link_sides.choice);
 
 		return panel;
@@ -359,7 +359,7 @@ public class PanelPreferencesRendererModern {
 		reflectBinSizeNumber();
 
 		// Strut and cable divisions.
-		ElementRendererLink.strut_divisions = 1;
+		ElementRendererLink.strut_divisions = 3;
 		this.scroll_bar_strut_divisions
 				.setValue(ElementRendererLink.strut_divisions);
 		reflectLabelStrutDivisions();
@@ -369,10 +369,10 @@ public class PanelPreferencesRendererModern {
 				.setValue(ElementRendererLink.cable_divisions);
 		reflectLabelCableDivisions();
 
-		// Strut/cable sides (3).
-		RendererDelegator.link_sides = 3;
+		// Strut/cable sides (2).
+		RendererDelegator.link_sides = 2;
 		this.choose_link_sides.choice.select(this.choose_link_sides
-				.num_to_str(3));
+				.num_to_str(2));
 
 		// Node polyhedron (Dodecahedron).
 		this.choose_polyhedron.choice.select(this.choose_polyhedron
