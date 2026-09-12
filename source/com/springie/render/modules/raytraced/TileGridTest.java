@@ -19,14 +19,19 @@ import com.springie.render.modules.modern.RendererBinManager;
 public class TileGridTest {
   private int saved_divisor;
 
+  private boolean saved_show_bins;
+
   @BeforeEach
   public void saveDivisor() {
     this.saved_divisor = RendererBinManager.divisor;
+    this.saved_show_bins = RendererBinManager.show_bins;
+    RendererBinManager.show_bins = false;
   }
 
   @AfterEach
   public void restoreDivisor() {
     RendererBinManager.divisor = this.saved_divisor;
+    RendererBinManager.show_bins = this.saved_show_bins;
   }
 
   private void checkGrid(int width, int height, int divisor) {
@@ -83,5 +88,49 @@ public class TileGridTest {
   @Test
   public void tinyCanvasIsOneTile() {
     checkGrid(100, 80, 340);
+  }
+
+  /**
+   * With "show bins" each tile is shrunk by the same 4px margin the
+   * default renderer leaves, so the background shows through as black
+   * grid lines. Origins stay on the divisor grid; tiles never overlap.
+   */
+  @Test
+  public void showBinsShrinksTilesByMargin() {
+    RendererBinManager.show_bins = true;
+    final int divisor = 340;
+    RendererBinManager.divisor = divisor;
+    final int width = 800;
+    final int height = 600;
+    final Tile[] tiles = ModularRendererRaytraced
+        .buildTileGrid(width, height);
+
+    final boolean[] covered = new boolean[width * height];
+    for (final Tile tile : tiles) {
+      assertTrue(tile.x0 % divisor == 0);
+      assertTrue(tile.y0 % divisor == 0);
+      assertTrue(tile.width > 0 && tile.width <= divisor - 4);
+      assertTrue(tile.height > 0 && tile.height <= divisor - 4);
+      assertEquals(Math.min(divisor - 4, width - tile.x0), tile.width);
+      assertEquals(Math.min(divisor - 4, height - tile.y0), tile.height);
+      for (int y = 0; y < tile.height; y++) {
+        for (int x = 0; x < tile.width; x++) {
+          final int index = (tile.y0 + y) * width + tile.x0 + x;
+          assertTrue(!covered[index], "pixel covered twice");
+          covered[index] = true;
+        }
+      }
+    }
+    // The 4px gutters are deliberately uncovered: they show the
+    // background as black grid lines.
+    int gutter_pixels = 0;
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x++) {
+        if (!covered[y * width + x]) {
+          gutter_pixels++;
+        }
+      }
+    }
+    assertTrue(gutter_pixels > 0, "expected uncovered gutter pixels");
   }
 }

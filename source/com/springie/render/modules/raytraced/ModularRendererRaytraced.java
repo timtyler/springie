@@ -2,6 +2,7 @@
 
 package com.springie.render.modules.raytraced;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -24,9 +25,10 @@ import com.springie.render.modules.modern.RendererBinManager;
  * A ray-traced renderer that lives alongside the default renderer.
  *
  * <p>It renders into the same bin tiles as the default renderer
- * (RendererBinManager.divisor blocks), one tile per worker thread, and each
- * finished tile is blitted to the screen as it completes -- resolution is
- * to the pixel, one primary ray per pixel.
+ * (RendererBinManager.divisor blocks), one tile per worker thread.
+ * Finished tiles are stored, not displayed: only when every tile of a
+ * frame is done is the whole frame blitted to the screen at once, so
+ * the user never sees a half-rendered frame.
  *
  * <p>The camera reproduces the default renderer's projection exactly (see
  * RayCamera), so the model appears at the same size and from the same
@@ -34,7 +36,7 @@ import com.springie.render.modules.modern.RendererBinManager;
  * triangle fans. Selection shows as a colour change only.
  *
  * <p>A frame renders a snapshot of the model: while a frame is in progress
- * repaints just display whatever tiles have finished, and a new frame
+ * repaints keep displaying the last complete frame, and a new frame
  * starts once the previous one completes and the scene (or view) changed.
  */
 public class ModularRendererRaytraced implements ModularRendererBase {
@@ -51,9 +53,19 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   static final class Tile {
     final int x0, y0, width, height;
 
+    // The tile currently being rendered (staging): replaced by the worker
+    // when its tile finishes.
     volatile BufferedImage image;
 
     volatile boolean done;
+
+    // Hit statistics for the staged image, written by the worker before
+    // done is set. Read only by the thread that observes every tile done.
+    Raytracer.HitStats stats;
+
+    // The last complete frame: the only thing repaint() ever draws. A
+    // single volatile write publishes the whole snapshot atomically.
+    volatile ShownTile shown;
 
     Tile(int x0, int y0, int width, int height) {
       this.x0 = x0;
@@ -63,11 +75,36 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     }
   }
 
+  /**
+   * One tile of a complete frame: its image plus, for the "show active
+   * bins" overlay, whether any ray hit geometry and the content rectangle
+   * (screen coordinates, inclusive) those hits covered.
+   */
+  static final class ShownTile {
+    final BufferedImage image;
+
+    final boolean active;
+
+    final int min_x, min_y, max_x, max_y;
+
+    ShownTile(BufferedImage image, boolean active, int min_x, int min_y,
+        int max_x, int max_y) {
+      this.image = image;
+      this.active = active;
+      this.min_x = min_x;
+      this.min_y = min_y;
+      this.max_x = max_x;
+      this.max_y = max_y;
+    }
+  }
+
   private Tile[] tiles;
 
   private int canvas_width = -1;
 
   private int canvas_height = -1;
+
+  private boolean last_show_bins;
 
   private volatile long frame_id;
 
@@ -87,9 +124,10 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   public void repaint(Graphics graphics, NodeManager manager) {
     final int width = Coords.x_pixels;
     final int height = Coords.y_pixels;
+    final boolean show_bins = RendererBinManager.show_bins;
     if (this.tiles == null || width != this.canvas_width
-        || height != this.canvas_height) {
-      buildTiles(width, height);
+        || height != this.canvas_height || show_bins != this.last_show_bins) {
+      buildTiles(width, height, show_bins);
     }
 
     final long signature = signature(manager);
@@ -97,21 +135,43 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       startFrame(manager, signature);
     }
 
+    // Paint the background first: with "show bins" the tiles are shrunk
+    // by a margin, so the gutters between them show the background as
+    // black grid lines, exactly like the default renderer.
+    graphics.setColor(RendererDelegator.color_background);
+    graphics.fillRect(0, 0, width, height);
+
+    final boolean show_active = RendererBinManager.show_active_bins;
     final Tile[] tiles = this.tiles;
     for (int i = 0; i < tiles.length; i++) {
-      final BufferedImage image = tiles[i].image;
-      if (image != null) {
-        graphics.drawImage(image, tiles[i].x0, tiles[i].y0, null);
+      final ShownTile shown = tiles[i].shown;
+      if (shown == null) {
+        continue;
+      }
+      graphics.drawImage(shown.image, tiles[i].x0, tiles[i].y0, null);
+      // "Show active bins": red outline around the content rectangle of
+      // every tile holding geometry, drawn on the screen graphics after
+      // the tile pixels (not baked into the tiles), so toggling the
+      // option needs no re-render.
+      if (show_active && shown.active) {
+        graphics.setColor(Color.RED);
+        graphics.drawRect(shown.min_x, shown.min_y,
+            shown.max_x - shown.min_x, shown.max_y - shown.min_y);
       }
     }
   }
 
   /**
    * Builds the tile grid: divisor-sized blocks covering the canvas, the
-   * same bins the default renderer uses.
+   * same bins the default renderer uses. With "show bins" each tile is
+   * shrunk by the same margin the default renderer leaves, so the
+   * background shows through as black grid lines between the tiles.
    */
   static Tile[] buildTileGrid(int width, int height) {
     final int divisor = RendererBinManager.divisor;
+    // Same margin as the default renderer's getMargin().
+    final int margin = RendererBinManager.show_bins ? 4 : 0;
+    final int block = divisor - margin;
     final int nx = width / divisor + 1;
     final int ny = height / divisor + 1;
     final Tile[] tiles = new Tile[nx * ny];
@@ -120,8 +180,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       for (int tx = 0; tx < nx; tx++) {
         final int x0 = tx * divisor;
         final int y0 = ty * divisor;
-        final int w = Math.min(divisor, width - x0);
-        final int h = Math.min(divisor, height - y0);
+        final int w = Math.min(block, width - x0);
+        final int h = Math.min(block, height - y0);
         if (w > 0 && h > 0) {
           tiles[i++] = new Tile(x0, y0, w, h);
         }
@@ -134,10 +194,11 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     return result;
   }
 
-  private void buildTiles(int width, int height) {
+  private void buildTiles(int width, int height, boolean show_bins) {
     this.tiles = buildTileGrid(width, height);
     this.canvas_width = width;
     this.canvas_height = height;
+    this.last_show_bins = show_bins;
     this.frame_done = true;
     this.frame_signature = -1L;
   }
@@ -173,8 +234,9 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       return;
     }
     final int[] pixels = new int[tile.width * tile.height];
+    final Raytracer.HitStats stats = new Raytracer.HitStats();
     Raytracer.renderTile(tile.x0, tile.y0, tile.width, tile.height, camera,
-        bvh, pixels);
+        bvh, pixels, stats);
     if (id != this.frame_id) {
       // Superseded by a newer frame; drop the work.
       return;
@@ -183,6 +245,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
         BufferedImage.TYPE_INT_RGB);
     image.setRGB(0, 0, tile.width, tile.height, pixels, 0, tile.width);
     tile.image = image;
+    tile.stats = stats;
     tile.done = true;
 
     boolean all_done = true;
@@ -192,16 +255,40 @@ public class ModularRendererRaytraced implements ModularRendererBase {
         break;
       }
     }
-    if (all_done) {
-      this.frame_done = true;
+    if (!all_done) {
+      // Not the last tile: store the work, but display nothing yet. The
+      // frame is blitted all at once when every tile is done.
+      return;
     }
 
-    // Ask the main loop for another pass so the finished tile displays,
+    // Last tile of the frame: publish every tile's snapshot at once, so
+    // repaints never show a half-rendered frame.
+    publishFrame(tiles);
+    this.frame_done = true;
+
+    // Ask the main loop for another pass so the finished frame displays,
     // even when the model is not animating.
     RendererDelegator.repaint_some_objects = true;
     if (FrEnd.main_canvas != null && FrEnd.main_canvas.panel != null) {
-      FrEnd.main_canvas.panel.repaint(tile.x0, tile.y0, tile.width,
-          tile.height);
+      FrEnd.main_canvas.panel.repaint();
+    }
+  }
+
+  /**
+   * Publishes every tile's finished snapshot at once. Repaints only ever
+   * draw the published snapshots, so the frame appears on screen whole --
+   * never tile by tile. The caller must have observed every tile done;
+   * each worker wrote its tile's image and stats before its (volatile)
+   * done flag, so they are visible here.
+   */
+  static void publishFrame(Tile[] tiles) {
+    for (int i = 0; i < tiles.length; i++) {
+      final Tile t = tiles[i];
+      final Raytracer.HitStats s = t.stats;
+      final boolean active = s != null && s.hits > 0;
+      t.shown = new ShownTile(t.image, active,
+          active ? t.x0 + s.min_x : 0, active ? t.y0 + s.min_y : 0,
+          active ? t.x0 + s.max_x : 0, active ? t.y0 + s.max_y : 0);
     }
   }
 
@@ -217,6 +304,10 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     sig = sig * 31 + Coords.shift_constant_y;
     sig = sig * 31 + Coords.shift_constant_z;
     sig = sig * 31 + RendererBinManager.divisor;
+    // The tile geometry (and the background gutters) follow show_bins;
+    // show_active_bins needs no new frame, its outlines are drawn over
+    // the finished frame on the screen graphics.
+    sig = sig * 31 + (RendererBinManager.show_bins ? 1 : 0);
     sig = sig * 31 + (FrEnd.render_nodes ? 1 : 0);
     sig = sig * 31 + (FrEnd.render_links ? 1 : 0);
     sig = sig * 31 + (FrEnd.render_faces ? 1 : 0);
