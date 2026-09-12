@@ -4,7 +4,8 @@ package com.springie.gui.panels.preferences;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
-import java.awt.Checkbox;
+import java.awt.Choice;
+import java.awt.Label;
 import java.awt.GridLayout;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
@@ -27,9 +28,7 @@ public class PanelPreferences {
 
   MessageManager message_manager;
 
-  private Checkbox checkbox_stay_on_top;
-
-  private Checkbox checkbox_dock_with_main;
+  private Choice choice_controls_window_mode;
 
   public PanelPreferences(MessageManager message_manager) {
     this.message_manager = message_manager;
@@ -54,31 +53,23 @@ public class PanelPreferences {
     // first the reset button, then the "Dock with main window" checkbox.)
     final Panel panel_south = new Panel(new GridLayout(0, 1));
 
-    final Panel panel_stay_on_top = new Panel();
-    this.checkbox_stay_on_top = new Checkbox(
-        GUIStrings.CONTROL_WINDOW_STAY_ON_TOP, FrEnd.controls_stay_on_top);
-    this.checkbox_stay_on_top.addItemListener(new ItemListener() {
+    final Panel panel_controls_mode = new Panel();
+    panel_controls_mode.add(new Label(GUIStrings.CONTROL_WINDOW_MODE));
+    this.choice_controls_window_mode = new Choice();
+    this.choice_controls_window_mode.add(GUIStrings.CONTROL_WINDOW_ALWAYS_ON_TOP);
+    this.choice_controls_window_mode.add(GUIStrings.CONTROL_WINDOW_FREE_FLOATING);
+    this.choice_controls_window_mode.add(GUIStrings.CONTROL_WINDOW_DOCKED);
+    this.choice_controls_window_mode.select(FrEnd.controls_window_mode);
+    this.choice_controls_window_mode.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         Forget.about(e);
-        FrEnd.controls_stay_on_top = ((Checkbox) e.getSource()).getState();
+        FrEnd.controls_window_mode =
+            ((Choice) e.getSource()).getSelectedIndex();
         FrEnd.applyControlsWindowOptions();
       }
     });
-    panel_stay_on_top.add(this.checkbox_stay_on_top);
-    panel_south.add(panel_stay_on_top);
-
-    final Panel panel_dock_with_main = new Panel();
-    this.checkbox_dock_with_main = new Checkbox(
-        GUIStrings.CONTROL_WINDOW_DOCK, FrEnd.controls_dock_with_main);
-    this.checkbox_dock_with_main.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
-        FrEnd.controls_dock_with_main = ((Checkbox) e.getSource()).getState();
-        FrEnd.applyControlsWindowOptions();
-      }
-    });
-    panel_dock_with_main.add(this.checkbox_dock_with_main);
-    panel_south.add(panel_dock_with_main);
+    panel_controls_mode.add(this.choice_controls_window_mode);
+    panel_south.add(panel_controls_mode);
 
     final Button button_reset = new Button(GUIStrings.RESET_PREFERENCES);
     button_reset.addActionListener(new ActionListener() {
@@ -104,11 +95,9 @@ public class PanelPreferences {
   public void resetPreferences() {
     FrEnd.preferences = new Preferences();
 
-    FrEnd.controls_stay_on_top = true;
-    FrEnd.controls_dock_with_main = false;
-    this.checkbox_stay_on_top.setState(true);
-    this.checkbox_dock_with_main.setState(false);
-    // In case a checkbox was already in its default state (no item event
+    FrEnd.controls_window_mode = FrEnd.CONTROLS_ALWAYS_ON_TOP;
+    this.choice_controls_window_mode.select(FrEnd.CONTROLS_ALWAYS_ON_TOP);
+    // In case the choice was already in its default state (no item event
     // fires then).
     FrEnd.applyControlsWindowOptions();
 

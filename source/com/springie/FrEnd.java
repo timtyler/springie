@@ -20,8 +20,6 @@ import java.awt.Scrollbar;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.AWTEventListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
@@ -334,15 +332,13 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 	public static Frame frame_controls;
 
-	public static boolean controls_stay_on_top = true;
+	/** The controls window can float above the main window, float freely,
+	 * or be docked into the main window's layout. */
+	public static final int CONTROLS_ALWAYS_ON_TOP = 0;
+	public static final int CONTROLS_FREE_FLOATING = 1;
+	public static final int CONTROLS_DOCKED = 2;
 
-	public static boolean controls_dock_with_main = false;
-
-	private static ComponentListener controls_dock_listener;
-
-	private static Frame controls_dock_frame;
-
-	private static Point controls_dock_last_main_location;
+	public static int controls_window_mode = CONTROLS_ALWAYS_ON_TOP;
 
 	public static Frame frame_panel_about;
 
@@ -673,16 +669,16 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 			}
 		}
 
-		if (controls_stay_on_top) {
+		if (controls_window_mode == CONTROLS_ALWAYS_ON_TOP) {
 			startControlsStayOnTop();
 		} else {
 			stopControlsStayOnTop();
 		}
 
-		if (controls_dock_with_main) {
-			startControlsDocking();
+		if (controls_window_mode == CONTROLS_DOCKED) {
+			dockControlsWithMain();
 		} else {
-			stopControlsDocking();
+			undockControlsFromMain();
 		}
 	}
 
@@ -799,69 +795,49 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		}
 	}
 
-	private static void startControlsDocking() {
+	/**
+	 * True docking: reparents the controls panel into the main window's
+	 * layout (BorderLayout.EAST) and hides the separate controls frame.
+	 * The layout manager keeps them joined -- no coordinate snapping.
+	 */
+	private static void dockControlsWithMain() {
 		if (frame_main == null || frame_controls == null) {
 			return;
 		}
-
-		if (controls_dock_frame == frame_main) {
-			// Already docked to this window; don't snap it again.
+		final java.awt.Panel controls_panel = panel_controls_all.panel;
+		if (controls_panel.getParent() == frame_main) {
+			// Already docked.
 			return;
 		}
-
-		stopControlsDocking();
-
-		if (controls_dock_listener == null) {
-			controls_dock_listener = new ComponentAdapter() {
-				public void componentMoved(ComponentEvent e) {
-					Forget.about(e);
-					final Point now = frame_main.getLocation();
-					final Point last = controls_dock_last_main_location;
-					controls_dock_last_main_location = now;
-					if (last != null && !now.equals(last)
-							&& frame_controls != null) {
-						final Point c = frame_controls.getLocation();
-						frame_controls.setLocation(c.x + now.x - last.x,
-								c.y + now.y - last.y);
-					}
-				}
-			};
-		}
-
-		snapControlsNextToMain();
-		frame_main.addComponentListener(controls_dock_listener);
-		controls_dock_frame = frame_main;
-		controls_dock_last_main_location = frame_main.getLocation();
-	}
-
-	private static void stopControlsDocking() {
-		if (controls_dock_frame != null && controls_dock_listener != null) {
-			controls_dock_frame.removeComponentListener(controls_dock_listener);
-		}
-		controls_dock_frame = null;
+		// Undock first (in case it was in the controls frame).
+		frame_controls.remove(controls_panel);
+		frame_main.add(controls_panel, java.awt.BorderLayout.EAST);
+		frame_main.validate();
+		frame_controls.setVisible(false);
 	}
 
 	/**
-	 * Places the controls window against the side of the main window.
+	 * Restores the controls panel to its own frame.
 	 */
-	private static void snapControlsNextToMain() {
-		int x = frame_main.getX() + frame_main.getWidth();
-		int y = frame_main.getY();
-
-		final Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-		if (x + frame_controls.getWidth() > screen.width) {
-			// No room on the right; try the left.
-			x = frame_main.getX() - frame_controls.getWidth();
-			if (x < 0) {
-				x = 0;
-			}
+	private static void undockControlsFromMain() {
+		if (frame_main == null || frame_controls == null) {
+			return;
 		}
-
-		if (y + frame_controls.getHeight() > screen.height) {
-			y = Math.max(0, screen.height - frame_controls.getHeight());
+		final java.awt.Panel controls_panel = panel_controls_all.panel;
+		if (controls_panel.getParent() == frame_controls) {
+			// Already undocked.
+			return;
 		}
-
-		frame_controls.setLocation(x, y);
+		frame_main.remove(controls_panel);
+		frame_main.validate();
+		frame_controls.add(controls_panel, "Center");
+		frame_controls.validate();
+		// Only show the frame if we're not in the middle of docking;
+		// the caller decides visibility for free-floating vs always-on-top.
+		// (Both need the frame visible.)
+		if (controls_window_mode != CONTROLS_DOCKED) {
+			frame_controls.setVisible(true);
+		}
 	}
 
 	static void setUpResolutionSelector2() {

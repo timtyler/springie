@@ -83,9 +83,11 @@ public interface GUIStrings {
 
   String RESET_UNIVERSE = "Reset universe";
 
-  String CONTROL_WINDOW_STAY_ON_TOP = "Stay on top of main window";
+  String CONTROL_WINDOW_MODE = "Controls window:";
+  String CONTROL_WINDOW_ALWAYS_ON_TOP = "Always on top";
+  String CONTROL_WINDOW_FREE_FLOATING = "Free floating";
+  String CONTROL_WINDOW_DOCKED = "Docked";
 
-  String CONTROL_WINDOW_DOCK = "Dock with main window";
 
   String DOME_REMOVE_POLYGONS = "Remove faces";
 
