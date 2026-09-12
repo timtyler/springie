@@ -32,7 +32,7 @@ import com.springie.render.modules.modern.RendererBinManager;
  *
  * <p>The camera reproduces the default renderer's projection exactly (see
  * RayCamera), so the model appears at the same size and from the same
- * angle. Nodes are spheres, links are open cylinders, faces are opaque
+ * angle. Nodes are spheres, links are stretched spheres (ellipsoids), faces are opaque
  * triangle fans. Selection shows as a colour change only.
  *
  * <p>A frame renders a snapshot of the model: while a frame is in progress

@@ -56,11 +56,11 @@ public class PrimitiveIntersectionTest {
   }
 
   @Test
-  public void cylinderSideHit() {
-    final Primitive cylinder = new RTCylinder(0, 0, 0, 0, 0, 1000, 50,
+  public void ellipsoidWaistHit() {
+    final Primitive ellipsoid = new RTEllipsoid(0, 0, 0, 0, 0, 1000, 50,
         0xFFFFFF);
     final Hit hit = new Hit();
-    assertTrue(cylinder.intersect(ray(200, 0, 500, -1, 0, 0), hit));
+    assertTrue(ellipsoid.intersect(ray(200, 0, 500, -1, 0, 0), hit));
     assertEquals(150.0, hit.t, EPS);
     assertEquals(1.0, hit.nx, EPS);
     assertEquals(0.0, hit.ny, EPS);
@@ -68,20 +68,48 @@ public class PrimitiveIntersectionTest {
   }
 
   @Test
-  public void cylinderMissesBeyondSegment() {
-    final Primitive cylinder = new RTCylinder(0, 0, 0, 0, 0, 1000, 50,
+  public void ellipsoidTipHit() {
+    // The ends taper to points: a ray down the axis hits the tip, which
+    // the old open-ended cylinder could never do.
+    final Primitive ellipsoid = new RTEllipsoid(0, 0, 0, 0, 0, 1000, 50,
         0xFFFFFF);
     final Hit hit = new Hit();
-    // Passes beside the segment, beyond its far end.
-    assertFalse(cylinder.intersect(ray(200, 0, 1500, -1, 0, 0), hit));
+    assertTrue(ellipsoid.intersect(ray(0, 0, 1200, 0, 0, -1), hit));
+    assertEquals(200.0, hit.t, EPS);
+    assertEquals(0.0, hit.nx, EPS);
+    assertEquals(0.0, hit.ny, EPS);
+    assertEquals(1.0, hit.nz, EPS);
   }
 
   @Test
-  public void cylinderMissesParallelOffset() {
-    final Primitive cylinder = new RTCylinder(0, 0, 0, 0, 0, 1000, 50,
+  public void ellipsoidTapersTowardEnds() {
+    // At z = 900 the cross-section has shrunk to 50 * 0.6 = 30, so the
+    // side hit lands nearer than the waist hit would.
+    final Primitive ellipsoid = new RTEllipsoid(0, 0, 0, 0, 0, 1000, 50,
         0xFFFFFF);
     final Hit hit = new Hit();
-    assertFalse(cylinder.intersect(ray(200, 0, -100, 0, 0, 1), hit));
+    assertTrue(ellipsoid.intersect(ray(100, 0, 900, -1, 0, 0), hit));
+    assertEquals(70.0, hit.t, EPS);
+    assertEquals(0.9912, hit.nx, 1e-4);
+    assertEquals(0.0, hit.ny, EPS);
+    assertEquals(0.1322, hit.nz, 1e-4);
+  }
+
+  @Test
+  public void ellipsoidMissesBeyondEnd() {
+    final Primitive ellipsoid = new RTEllipsoid(0, 0, 0, 0, 0, 1000, 50,
+        0xFFFFFF);
+    final Hit hit = new Hit();
+    // Passes beside the ellipsoid, beyond its far tip.
+    assertFalse(ellipsoid.intersect(ray(200, 0, 1500, -1, 0, 0), hit));
+  }
+
+  @Test
+  public void ellipsoidMissesParallelOffset() {
+    final Primitive ellipsoid = new RTEllipsoid(0, 0, 0, 0, 0, 1000, 50,
+        0xFFFFFF);
+    final Hit hit = new Hit();
+    assertFalse(ellipsoid.intersect(ray(200, 0, -100, 0, 0, 1), hit));
   }
 
   @Test
@@ -124,14 +152,14 @@ public class PrimitiveIntersectionTest {
   }
 
   @Test
-  public void zeroLengthCylinderNeverHitsAndHasPointBounds() {
-    final Primitive cylinder = new RTCylinder(10, 20, 30, 10, 20, 30, 50,
+  public void zeroLengthEllipsoidNeverHitsAndHasPointBounds() {
+    final Primitive ellipsoid = new RTEllipsoid(10, 20, 30, 10, 20, 30, 50,
         0xFFFFFF);
     final Hit hit = new Hit();
     // Aimed straight at the point: still no hit, and no NaN anywhere.
-    assertFalse(cylinder.intersect(ray(10, 20, -1000, 0, 0, 1), hit));
+    assertFalse(ellipsoid.intersect(ray(10, 20, -1000, 0, 0, 1), hit));
     final AABB bounds = new AABB();
-    cylinder.writeBounds(bounds);
+    ellipsoid.writeBounds(bounds);
     assertFalse(Double.isNaN(bounds.min_x + bounds.max_x + bounds.min_y
         + bounds.max_y + bounds.min_z + bounds.max_z));
   }

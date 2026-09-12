@@ -48,7 +48,7 @@ public class BVHTest {
       if (kind == 0) {
         primitives[i] = new RTSphere(cx, cy, cz, r, i);
       } else if (kind == 1) {
-        primitives[i] = new RTCylinder(cx, cy, cz, cx + 200.0, cy - 100.0,
+        primitives[i] = new RTEllipsoid(cx, cy, cz, cx + 200.0, cy - 100.0,
             cz + 300.0, r * 0.5, i);
       } else {
         primitives[i] = new RTTriangle(cx, cy, cz, cx + r, cy, cz, cx,
