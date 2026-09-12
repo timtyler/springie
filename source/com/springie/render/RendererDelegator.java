@@ -199,9 +199,10 @@ public final class RendererDelegator {
     final DragBoxManager drag_box_manager = FrEnd.perform_actions.drag_box_manager;
     final boolean repaint = drag_box_manager.drag_box_end != null;
 
-    // The drag box erases its old rectangle with the background colour after
-    // the bins have rendered, damaging their pixels; the next frame must
-    // re-render every bin to repair it.
+    // While a drag box is active every frame is fully repainted, which
+    // covers the previous rectangle; the flag forces the bins dirty so
+    // the modern renderer does not skip any. (The drag box itself is
+    // only ever drawn -- never erased -- so there is nothing to repair.)
     RendererBinManager.drag_box_damaged_last_frame = repaint;
 
     final RendererDragBox drag_box_renderer = ContextManager.getNodeManager().renderer.renderer_drag_box;
