@@ -286,6 +286,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     final RayCamera camera = new RayCamera();
     final Primitive[] primitives = RayScene.build(manager);
     final BVH bvh = new BVH(primitives);
+    final RTRing[] rings = RayScene.selectionRings(manager, camera.getEyeX(),
+        camera.getEyeY(), camera.getEyeZ());
 
     final Tile[] tiles = this.tiles;
     for (int i = 0; i < tiles.length; i++) {
@@ -293,14 +295,14 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       tile.done = false;
       POOL.execute(new Runnable() {
         public void run() {
-          renderTile(id, tiles, tile, camera, bvh);
+          renderTile(id, tiles, tile, camera, bvh, rings);
         }
       });
     }
   }
 
   private void renderTile(long id, Tile[] tiles, Tile tile, RayCamera camera,
-      BVH bvh) {
+      BVH bvh, RTRing[] rings) {
     if (RendererDelegator.renderer != this) {
       // The user switched to another renderer mid-frame: drop the tile
       // instead of burning CPU on an image nobody will display. Best
@@ -311,7 +313,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     final int[] pixels = new int[tile.width * tile.height];
     final Raytracer.HitStats stats = new Raytracer.HitStats();
     Raytracer.renderTile(tile.x0, tile.y0, tile.width, tile.height, camera,
-        bvh, pixels, stats);
+        bvh, rings, pixels, stats);
     if (id != this.frame_id) {
       // Superseded by a newer frame; drop the work.
       return;

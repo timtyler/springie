@@ -12,14 +12,19 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
+import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 
 /**
  * Builds an immutable ray-traceable snapshot of the model: nodes become
  * spheres, struts become stretched spheres (ellipsoids), cables become
  * open cylinders like the default renderer, faces become triangle fans.
- * Selection is baked in as a colour change, exactly like the default
- * renderer; there are no selection boxes or rings.
+ * Link and face selection is baked in as a colour change, exactly like
+ * the default renderer. Node selection is a red billboard ring around
+ * the node -- the ray-traced version of the default renderer's
+ * screen-space selection circle -- built separately by
+ * {@link #selectionRings} so it stays out of the BVH and can never cast
+ * shadows.
  */
 final class RayScene {
   private RayScene() {
@@ -47,9 +52,65 @@ final class RayScene {
       if (radius <= 0.0) {
         continue;
       }
+      // Selected nodes keep their class colour, like the default
+      // renderer; the selection itself is the billboard ring from
+      // selectionRings().
       primitives.add(new RTSphere(node.pos.x, node.pos.y, node.pos.z,
-          radius, colourOf(node.type.selected, node.clazz.colour)));
+          radius, node.clazz.colour));
     }
+  }
+
+  /**
+   * One billboard selection ring per selected node: a flat annulus in
+   * the plane through the node centre, perpendicular to the ray from
+   * the camera eye to that centre, so it always faces the viewer --
+   * exactly like the default renderer's screen-space selection circle.
+   *
+   * <p>The ring sits just outside the node: 5 to 7 pixels beyond its
+   * silhouette at the node's depth (the default renderer draws its
+   * circle 6 pixels out), in the same red (0xFF4040) the default
+   * renderer uses, unlit. Kept out of the BVH: selection rings never
+   * cast shadows, and when nothing is selected the array is empty, so
+   * the per-ray cost is a single length check.
+   *
+   * @param ex ey ez the camera eye position, in world units
+   */
+  static RTRing[] selectionRings(NodeManager manager, double ex, double ey,
+      double ez) {
+    if (!FrEnd.render_nodes) {
+      return new RTRing[0];
+    }
+    final List<RTRing> rings = new ArrayList<RTRing>();
+    final List<?> elements = manager.element;
+    final int n = elements.size();
+    for (int i = 0; i < n; i++) {
+      final Node node = (Node) elements.get(i);
+      if (!node.type.selected) {
+        continue;
+      }
+      final double radius = node.type.radius;
+      if (radius <= 0.0) {
+        continue;
+      }
+      final double nx = node.pos.x - ex;
+      final double ny = node.pos.y - ey;
+      final double nz = node.pos.z - ez;
+      final double length = Math.sqrt(nx * nx + ny * ny + nz * nz);
+      if (length <= 1e-9) {
+        // Degenerate: the node sits on the eye; no well-defined plane.
+        continue;
+      }
+      // World units per pixel at the node's depth, from the same
+      // projection the camera inverts (Coords.getRadius divides by
+      // exactly this).
+      final double world_per_pixel = Coords.shift_constant_z
+          + (node.pos.z >> Coords.shift_z);
+      final double inner = radius + 5.0 * world_per_pixel;
+      final double outer = radius + 7.0 * world_per_pixel;
+      rings.add(new RTRing(node.pos.x, node.pos.y, node.pos.z, nx / length,
+          ny / length, nz / length, inner, outer, 0xFF4040));
+    }
+    return rings.toArray(new RTRing[rings.size()]);
   }
 
   private static void addLinks(NodeManager manager,

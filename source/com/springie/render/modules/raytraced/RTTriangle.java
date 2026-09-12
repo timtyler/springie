@@ -48,6 +48,10 @@ final class RTTriangle implements Primitive {
     return this.colour;
   }
 
+  public boolean isUnlit() {
+    return false;
+  }
+
   public void writeBounds(AABB out) {
     out.addPoint(this.ax, this.ay, this.az);
     out.addPoint(this.ax + this.e1x, this.ay + this.e1y, this.az + this.e1z);

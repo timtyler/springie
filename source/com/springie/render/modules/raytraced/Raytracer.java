@@ -102,6 +102,35 @@ final class Raytracer {
 
   static void renderTile(int x0, int y0, int width, int height,
       RayCamera camera, BVH bvh, int[] pixels, HitStats stats) {
+    renderTile(x0, y0, width, height, camera, bvh, NO_RINGS, pixels, stats);
+  }
+
+  /**
+   * The selection rings live outside the BVH (they never cast shadows),
+   * so they ride along as a side array; when nothing is selected it is
+   * empty and the per-ray cost is a single length check.
+   */
+  private static final RTRing[] NO_RINGS = new RTRing[0];
+
+  /**
+   * The closest hit across the BVH scene and the selection rings. The
+   * rings live outside the BVH so they can never cast shadows; the
+   * shared Hit keeps whichever is closer.
+   */
+  private static boolean intersectScene(Ray ray, Hit hit, BVH bvh,
+      RTRing[] rings, int[] stack) {
+    boolean struck = bvh.intersect(ray, hit, stack);
+    for (int i = 0; i < rings.length; i++) {
+      if (rings[i].intersect(ray, hit)) {
+        struck = true;
+      }
+    }
+    return struck;
+  }
+
+  static void renderTile(int x0, int y0, int width, int height,
+      RayCamera camera, BVH bvh, RTRing[] rings, int[] pixels,
+      HitStats stats) {
     final Ray ray = new Ray();
     final Hit hit = new Hit();
     final int[] stack = new int[64];
@@ -125,7 +154,7 @@ final class Raytracer {
         for (int x = 0; x < width; x++) {
           camera.makeRay(x0 + x, y0 + y, ray);
           hit.reset();
-          final boolean struck = bvh.intersect(ray, hit, stack);
+          final boolean struck = intersectScene(ray, hit, bvh, rings, stack);
           final int rgb = struck ? shade(ray, hit, bvh, stack)
               : backgroundAt(scenic, background_rgb, ray, x0 + x, y0 + y);
           pixels[i++] = rgb;
@@ -158,7 +187,7 @@ final class Raytracer {
             camera.makeRay(sub_x, sub_y, ray);
             hit.reset();
             final int rgb;
-            if (bvh.intersect(ray, hit, stack)) {
+            if (intersectScene(ray, hit, bvh, rings, stack)) {
               rgb = shade(ray, hit, bvh, stack);
               struck = true;
             } else {
@@ -212,6 +241,14 @@ final class Raytracer {
    * way to new Color(packed), so they are preserved here too).
    */
   private static int shade(Ray ray, Hit hit, BVH bvh, int[] stack) {
+    if (hit.primitive.isUnlit()) {
+      // Overlay indicators like the selection ring: flat colour at
+      // full strength from any angle, fogged for depth like the
+      // default renderer's depth-shaded selection circle.
+      final double pz = ray.oz + ray.dz * hit.t;
+      return 0xFF000000 | Fog.applyFog(hit.primitive.getColour(), (int) pz);
+    }
+
     double dot = hit.nx * LIGHT_X + hit.ny * LIGHT_Y + hit.nz * LIGHT_Z;
     if (dot < 0.0) {
       dot = -dot;

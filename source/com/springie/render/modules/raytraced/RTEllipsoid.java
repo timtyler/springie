@@ -39,6 +39,10 @@ final class RTEllipsoid implements Primitive {
     return this.colour;
   }
 
+  public boolean isUnlit() {
+    return false;
+  }
+
   public void writeBounds(AABB out) {
     if (this.halfLength < 1e-9) {
       // Degenerate: a zero-length link contributes its point only, so no

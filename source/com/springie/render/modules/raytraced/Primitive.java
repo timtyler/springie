@@ -19,4 +19,11 @@ interface Primitive {
   void writeBounds(AABB out);
 
   int getColour();
+
+  /**
+   * Unlit primitives skip the whole lighting model and render in their
+   * flat colour (still depth-fogged): overlay indicators like the
+   * selection ring, which must read at full strength from any angle.
+   */
+  boolean isUnlit();
 }

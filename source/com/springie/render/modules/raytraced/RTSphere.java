@@ -22,6 +22,10 @@ final class RTSphere implements Primitive {
     return this.colour;
   }
 
+  public boolean isUnlit() {
+    return false;
+  }
+
   public void writeBounds(AABB out) {
     out.addPoint(this.cx - this.radius, this.cy - this.radius,
         this.cz - this.radius);
