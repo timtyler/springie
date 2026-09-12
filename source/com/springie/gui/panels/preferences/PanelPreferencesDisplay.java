@@ -12,7 +12,6 @@ import java.awt.event.ItemListener;
 import com.springie.FrEnd;
 import com.springie.constants.Quality;
 import com.springie.gui.components.TTChoice;
-import com.springie.gui.components.TabbedPanel;
 import com.springie.messages.MessageManager;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ModularRendererNew;
@@ -22,8 +21,6 @@ public class PanelPreferencesDisplay {
   public Panel panel = FrEnd.setUpPanelForFrame2();
 
   public Panel panel_renderer = FrEnd.setUpPanelForFrame();
-
-  public Panel panel_shared = FrEnd.setUpPanelForFrame();
 
   public Panel panel_frame = new Panel();
 
@@ -77,12 +74,9 @@ public class PanelPreferencesDisplay {
 //    FrEnd.choose_display_struts = choose_display_struts;
 
 
-    final TabbedPanel tab = new TabbedPanel();
-    tab.add("Renderer", this.panel_renderer);
-    
-    tab.add("Shared",  FrEnd.panel_preferences_shared.panel);
-
-    this.panel.add(tab);
+    // The shared renderer options (Show/Misc) sit under the
+    // frames-per-second readout now, so the only tab needed is gone.
+    this.panel.add(this.panel_renderer);
     
     this.panel_frame.setLayout(new BorderLayout());
 
@@ -93,9 +87,15 @@ public class PanelPreferencesDisplay {
     this.label_fps_value = new Label("X.XXXX", Label.LEFT);
     panel_fps.add(this.label_fps_value);
 
-    final Panel panel_north = new Panel(new GridLayout(0, 1));
-    panel_north.add(panel_type);
-    panel_north.add(panel_fps);
+    final Panel panel_north_top = new Panel(new GridLayout(0, 1));
+    panel_north_top.add(panel_type);
+    panel_north_top.add(panel_fps);
+
+    // The shared options are renderer options: Show/Misc sit directly
+    // under the frames-per-second readout instead of on their own tab.
+    final Panel panel_north = new Panel(new BorderLayout());
+    panel_north.add(panel_north_top, "North");
+    panel_north.add(FrEnd.panel_preferences_shared.panel, "Center");
 
     this.panel_frame.add(panel_north, "North");
 

@@ -13,6 +13,8 @@ public class PanelAllControls {
   public PanelAllControls() {
     //this.panel.setLayout(new BorderLayout());
     final TabbedPanel tab = new TabbedPanel();
+    tab.add("Model", FrEnd.panel_edit_model.panel);
+    tab.add("Universe", FrEnd.panel_universe.panel);
     tab.add("Controls", FrEnd.panel_controls.panel);
     tab.add("Preferences", FrEnd.panel_preferences.panel);
 

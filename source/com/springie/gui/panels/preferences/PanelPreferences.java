@@ -48,12 +48,13 @@ public class PanelPreferences {
     this.panel.setLayout(new BorderLayout());
     this.panel.add(tab, BorderLayout.CENTER);
 
-    // Compact strip: checkboxes on one row, the reset button on the next.
-    // (A single FlowLayout row wraps the button, and FlowLayout's preferred
-    // height ignores wrapping, so the button ended up clipped.)
+    // Compact strip: one control per row. (A single FlowLayout row wraps
+    // when the window is narrow, and FlowLayout's preferred height
+    // ignores wrapping, so the wrapped controls ended up clipped --
+    // first the reset button, then the "Dock with main window" checkbox.)
     final Panel panel_south = new Panel(new GridLayout(0, 1));
 
-    final Panel panel_window = new Panel();
+    final Panel panel_stay_on_top = new Panel();
     this.checkbox_stay_on_top = new Checkbox(
         GUIStrings.CONTROL_WINDOW_STAY_ON_TOP, FrEnd.controls_stay_on_top);
     this.checkbox_stay_on_top.addItemListener(new ItemListener() {
@@ -63,8 +64,10 @@ public class PanelPreferences {
         FrEnd.applyControlsWindowOptions();
       }
     });
-    panel_window.add(this.checkbox_stay_on_top);
+    panel_stay_on_top.add(this.checkbox_stay_on_top);
+    panel_south.add(panel_stay_on_top);
 
+    final Panel panel_dock_with_main = new Panel();
     this.checkbox_dock_with_main = new Checkbox(
         GUIStrings.CONTROL_WINDOW_DOCK, FrEnd.controls_dock_with_main);
     this.checkbox_dock_with_main.addItemListener(new ItemListener() {
@@ -74,8 +77,8 @@ public class PanelPreferences {
         FrEnd.applyControlsWindowOptions();
       }
     });
-    panel_window.add(this.checkbox_dock_with_main);
-    panel_south.add(panel_window);
+    panel_dock_with_main.add(this.checkbox_dock_with_main);
+    panel_south.add(panel_dock_with_main);
 
     final Button button_reset = new Button(GUIStrings.RESET_PREFERENCES);
     button_reset.addActionListener(new ActionListener() {

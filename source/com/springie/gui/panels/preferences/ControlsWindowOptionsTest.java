@@ -429,6 +429,49 @@ class ControlsWindowOptionsTest {
   }
 
   /**
+   * The window checkboxes must not be clipped by a wrapping FlowLayout:
+   * at the real 320px controls width the "Dock with main window"
+   * checkbox wrapped onto a second, invisible row and vanished.
+   */
+  @Test
+  void dockCheckboxIsFullyVisibleAtRealWindowWidth() throws Exception {
+    final Checkbox[] box = new Checkbox[1];
+    final boolean[] clipped = new boolean[1];
+    final String[] clip_details = new String[1];
+    SwingUtilities.invokeAndWait(() -> {
+      final Frame controls = FrEnd.frame_controls;
+      controls.setSize(320, 600);
+      controls.setVisible(true);
+      findTabbedPanel(controls).show("Preferences");
+      controls.validate();
+      box[0] = findCheckbox(FrEnd.panel_preferences.panel,
+          GUIStrings.CONTROL_WINDOW_DOCK);
+      // Walk up the ancestors: the checkbox rectangle must sit fully
+      // inside each of them, otherwise some parent is clipping it.
+      java.awt.Rectangle rect = box[0].getBounds();
+      for (Container parent = box[0].getParent(); parent != null;
+          parent = parent.getParent()) {
+        if (rect.x < 0 || rect.y < 0
+            || rect.x + rect.width > parent.getWidth()
+            || rect.y + rect.height > parent.getHeight()) {
+          clipped[0] = true;
+          clip_details[0] = "clipped by " + parent.getClass().getSimpleName()
+              + " " + parent.getWidth() + "x" + parent.getHeight()
+              + ", checkbox at " + rect;
+          break;
+        }
+        rect = new java.awt.Rectangle(parent.getX() + rect.x,
+            parent.getY() + rect.y, rect.width, rect.height);
+      }
+    });
+
+    assertNotNull(box[0], "expected the Dock checkbox");
+    assertFalse(clipped[0],
+        "the Dock checkbox must be fully visible at 320px width"
+            + (clip_details[0] == null ? "" : ": " + clip_details[0]));
+  }
+
+  /**
    * Polls until the controls window reaches the expected position, so the
    * test doesn't depend on how quickly the dock listener's move event is
    * delivered.
@@ -449,6 +492,23 @@ class ControlsWindowOptionsTest {
       }
       Thread.sleep(100);
     }
+  }
+
+  private static com.springie.gui.components.TabbedPanel findTabbedPanel(
+      Container root) {
+    for (final Component c : root.getComponents()) {
+      if (c instanceof com.springie.gui.components.TabbedPanel) {
+        return (com.springie.gui.components.TabbedPanel) c;
+      }
+      if (c instanceof Container) {
+        final com.springie.gui.components.TabbedPanel found =
+            findTabbedPanel((Container) c);
+        if (found != null) {
+          return found;
+        }
+      }
+    }
+    return null;
   }
 
   private static Checkbox findCheckbox(Container root, String label) {
