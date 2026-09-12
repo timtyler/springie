@@ -136,13 +136,13 @@ public class RaytracerSpecularTest {
   }
 
   @Test
-  public void fullSpecularRollsOffSoftly() {
+  public void fullSpecularBlowsOutToWhite() {
     RendererDelegator.specular = 100;
     // The highlight at the near pole adds ~73 per channel to the 235
-    // diffuse; the soft rolloff asymptotes instead of clipping:
-    // 255 - (255 - 235) * 255 / (255 + 73) = 240.
-    assertEquals(0xFFF0F0F0, centrePixel(whiteSphere()),
-        "specular 100% must roll the highlight off softly at the near pole");
+    // diffuse; the specular highlight keeps its original hard clip, so
+    // it punches through to white: min(255, 235 + 73) = 255.
+    assertEquals(0xFFFFFFFF, centrePixel(whiteSphere()),
+        "specular 100% must blow the near-pole highlight out to white");
   }
 
   @Test

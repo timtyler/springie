@@ -202,7 +202,8 @@ final class Raytracer {
    * is set; the fill, the sheen, the highlight and the rim are smooth
    * functions of the surface normal, so they can never speckle. Added
    * light rolls off softly towards 255 instead of clipping, so hot
-   * spots keep their detail.
+   * spots keep their detail -- except the specular highlight, which
+   * keeps its original hard clip and punches through to white.
    *
    * <p>Matches the default renderer: its [128, 255] brightness range, its
    * depth fog, and its packed-colour convention (0xRRGGBB -- red in the
@@ -249,9 +250,15 @@ final class Raytracer {
       final int sheen = glossySheen(ray, hit);
       final int highlight = specularHighlight(ray, hit);
       final int rim = fresnelRim(ray, hit);
-      or = softAdd(softAdd(softAdd(or, sheen), highlight), rim);
-      og = softAdd(softAdd(softAdd(og, sheen), highlight), rim);
-      ob = softAdd(softAdd(softAdd(ob, sheen), highlight), rim);
+      or = softAdd(softAdd(or, sheen), rim);
+      og = softAdd(softAdd(og, sheen), rim);
+      ob = softAdd(softAdd(ob, sheen), rim);
+      // The specular highlight keeps its original hard clip: at full
+      // strength it punches through to white instead of rolling off
+      // softly like the sheen and the rim do.
+      or = Math.min(255, or + highlight);
+      og = Math.min(255, og + highlight);
+      ob = Math.min(255, ob + highlight);
     }
 
     return 0xFF000000 | (or << 16) | (og << 8) | ob;
