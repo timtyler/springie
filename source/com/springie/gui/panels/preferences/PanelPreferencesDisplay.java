@@ -8,6 +8,8 @@ import java.awt.Label;
 import java.awt.Panel;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.springie.FrEnd;
 import com.springie.constants.Quality;
@@ -29,7 +31,12 @@ public class PanelPreferencesDisplay {
 
   MessageManager message_manager;
 
-  private TTChoice choose_display_type;
+  // The Display type dropdown appears twice: once at the top of the
+  // shared Renderer tab (modern and ray-traced renderers) and once in
+  // the original renderer's own Renderer tab, so the renderer can
+  // always be switched back. The copies stay in sync; Choice.select()
+  // does not fire item events, so syncing never recurses.
+  private final List<TTChoice> display_type_choices = new ArrayList<>();
 
   private TTChoice choose_antialiasing;
 
@@ -40,27 +47,57 @@ public class PanelPreferencesDisplay {
     makePanel();
   }
 
-  void makePanel() {
-    final Panel panel_type = new Panel();
-    final Label label_type_1 = new Label("Display type");
+  /**
+   * Builds one Display type row: the three renderer options. Every copy
+   * shares the same listener, which applies the newly chosen renderer
+   * and keeps the copies in sync.
+   */
+  private Panel makeDisplayTypePanel() {
+    final Panel panel = new Panel();
+    panel.add(new Label("Display type"));
 
-    this.choose_display_type = new TTChoice(new ItemListener() {
+    final TTChoice choice = new TTChoice(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        final String scs = (String) e.getItem();
-        final int value = PanelPreferencesDisplay.this.choose_display_type
-            .str_to_num(scs);
-        applyRendererType(value);
+        PanelPreferencesDisplay.this.onDisplayTypeChanged((String) e.getItem());
       }
     });
 
-    this.choose_display_type.add("Modern renderer   ", Quality.SOLID);
-    this.choose_display_type.add("Ray-traced renderer", Quality.RAYTRACED);
-    this.choose_display_type.add("Original renderer ", Quality.THICK_OUTLINE);
-    this.choose_display_type.choice.select(this.choose_display_type
-        .num_to_str(Quality.SOLID));
+    choice.add("Modern renderer   ", Quality.SOLID);
+    choice.add("Ray-traced renderer", Quality.RAYTRACED);
+    choice.add("Original renderer ", Quality.THICK_OUTLINE);
+    choice.choice.select(choice.num_to_str(Quality.SOLID));
 
-    panel_type.add(label_type_1);
-    panel_type.add(this.choose_display_type.choice);
+    panel.add(choice.choice);
+    this.display_type_choices.add(choice);
+    return panel;
+  }
+
+  /**
+   * Applies the newly chosen renderer and keeps every Display type
+   * copy showing the same choice. The first registered copy serves as
+   * the string-to-value prototype (all copies hold identical items);
+   * it always exists here because item events only fire on user
+   * interaction, long after construction. Choice.select() does not
+   * fire item events, so the sync cannot recurse.
+   */
+  private void onDisplayTypeChanged(String selected) {
+    final TTChoice proto = this.display_type_choices.get(0);
+    final int value = proto.str_to_num(selected);
+    for (final TTChoice c : this.display_type_choices) {
+      c.choice.select(c.num_to_str(value));
+    }
+    applyRendererType(value);
+  }
+
+  void makePanel() {
+    // The three renderer options live under the Renderer tab now: one
+    // copy at the top of the shared Renderer tab (modern and ray-traced
+    // renderers), one in the original renderer's own Renderer tab, so
+    // the renderer can always be switched back whichever is showing.
+    // Both panels exist already: they are built before this one.
+    FrEnd.panel_preferences_shared_show.panel.add(makeDisplayTypePanel(), 0);
+    FrEnd.panel_preferences_renderer_original.panel_renderer_tab
+        .add(makeDisplayTypePanel());
 
     final Panel panel_antialiasing = getAntiAliasingPanel();
 
@@ -79,8 +116,8 @@ public class PanelPreferencesDisplay {
 //    FrEnd.choose_display_struts = choose_display_struts;
 
 
-    // The shared renderer options (Show/Misc) sit under the
-    // frames-per-second readout now, so the only tab needed is gone.
+    // The Display panel is the frames-per-second readout, the
+    // anti-aliasing choice, and the renderer tab bar below.
     this.panel.add(this.panel_renderer);
     
     this.panel_frame.setLayout(new BorderLayout());
@@ -93,11 +130,10 @@ public class PanelPreferencesDisplay {
     panel_fps.add(this.label_fps_value);
 
     final Panel panel_north_top = new Panel(new GridLayout(0, 1));
-    panel_north_top.add(panel_type);
     panel_north_top.add(panel_antialiasing);
     panel_north_top.add(panel_fps);
 
-    // The shared Show/Misc options are tabs in the renderer tab bar
+    // The shared Renderer/Misc options are tabs in the renderer tab bar
     // below (combined with Options/Filtering/Colours to save space).
     final Panel panel_north = new Panel(new BorderLayout());
     panel_north.add(panel_north_top, "North");
@@ -107,11 +143,11 @@ public class PanelPreferencesDisplay {
     this.panel_frame.add(this.panel_main, "Center");
 
     // Ray-traced-only options, shown under the shared renderer options
-    // while the ray-traced renderer is active. The ray-tracer is the
-    // default for now, so the strip starts visible.
+    // while the ray-traced renderer is active. The modern renderer is
+    // the default, so the strip starts hidden.
     this.panel_frame.add(FrEnd.panel_preferences_renderer_raytraced.panel,
         "South");
-    FrEnd.panel_preferences_renderer_raytraced.panel.setVisible(true);
+    FrEnd.panel_preferences_renderer_raytraced.panel.setVisible(false);
 
     this.panel_main.add(FrEnd.panel_preferences_renderer_modern.panel, "Center");
 
@@ -188,9 +224,11 @@ public class PanelPreferencesDisplay {
    * preference panel.
    */
   public void resetToDefaults() {
-    this.choose_display_type.choice.select(this.choose_display_type
-        .num_to_str(Quality.SOLID));
-    // In case it was already selected (no item event fires then).
+    // In case it was already selected (no item event fires then),
+    // select the default on every copy before applying.
+    for (final TTChoice c : this.display_type_choices) {
+      c.choice.select(c.num_to_str(Quality.SOLID));
+    }
     applyRendererType(Quality.SOLID);
 
     // Anti-aliasing: 1x1 is off.

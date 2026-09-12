@@ -34,6 +34,13 @@ public class PanelPreferencesRendererOriginal {
 
   public Panel panel_main = FrEnd.setUpPanelForFrame2();
 
+  /**
+   * The Renderer tab: holds the Display type dropdown so the renderer
+   * can be switched back after picking the Original renderer.
+   * PanelPreferencesDisplay fills this in after construction.
+   */
+  public Panel panel_renderer_tab = FrEnd.setUpPanelForFrame2();
+
   MessageManager message_manager;
 
   public Checkbox checkbox_db;
@@ -63,6 +70,8 @@ public class PanelPreferencesRendererOriginal {
 
   void makePanel() {
     final TabbedPanel tab = new TabbedPanel();
+    tab.add("Renderer", this.panel_renderer_tab);
+
     tab.add("Options", this.panel_main);
     
     tab.add("Stereo 3D",  FrEnd.panel_preferences_stereo3d.panel);

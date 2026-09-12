@@ -69,11 +69,9 @@ class ShowActiveBinsTest {
   /**
    * This test exercises the modern renderer's tiled/direct paths, so pin
    * the renderer before each test instead of depending on the app-wide
-   * default (currently the asynchronous ray-traced renderer, whose
-   * background frame publishing this test has no business waiting for).
-   * Per-test pinning matters because resetPreferences() (called by the
-   * first test) re-applies the Display panel default, which would swap
-   * the ray tracer back in from under the second test.
+   * default. Per-test pinning matters because resetPreferences() (called
+   * by the first test) re-applies the Display panel default, which would
+   * swap a different renderer back in from under the second test.
    */
   @BeforeEach
   void pinModernRenderer() throws Exception {
