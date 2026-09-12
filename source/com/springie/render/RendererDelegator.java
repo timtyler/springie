@@ -30,8 +30,7 @@ public final class RendererDelegator {
     // ...
   }
 
-  // The ray-tracer is the default renderer for now.
-  public static ModularRendererBase renderer = new ModularRendererRaytraced();
+  public static ModularRendererBase renderer = new ModularRendererNew();
 
   public static int virgin_applet;
 

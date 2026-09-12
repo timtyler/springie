@@ -53,11 +53,11 @@ public class PanelPreferencesDisplay {
       }
     });
 
-    this.choose_display_type.add("Ray-traced renderer", Quality.RAYTRACED);
     this.choose_display_type.add("Modern renderer   ", Quality.SOLID);
+    this.choose_display_type.add("Ray-traced renderer", Quality.RAYTRACED);
     this.choose_display_type.add("Original renderer ", Quality.THICK_OUTLINE);
     this.choose_display_type.choice.select(this.choose_display_type
-        .num_to_str(Quality.RAYTRACED));
+        .num_to_str(Quality.SOLID));
 
     panel_type.add(label_type_1);
     panel_type.add(this.choose_display_type.choice);
@@ -184,14 +184,14 @@ public class PanelPreferencesDisplay {
   }
 
   /**
-   * Restores the default renderer (Ray-traced, for now) and resets every
-   * renderer preference panel.
+   * Restores the default renderer (Modern) and resets every renderer
+   * preference panel.
    */
   public void resetToDefaults() {
     this.choose_display_type.choice.select(this.choose_display_type
-        .num_to_str(Quality.RAYTRACED));
+        .num_to_str(Quality.SOLID));
     // In case it was already selected (no item event fires then).
-    applyRendererType(Quality.RAYTRACED);
+    applyRendererType(Quality.SOLID);
 
     // Anti-aliasing: 1x1 is off.
     RendererDelegator.antialiasing = 1;

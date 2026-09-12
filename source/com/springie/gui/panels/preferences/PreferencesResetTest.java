@@ -25,7 +25,7 @@ import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ColourModifier;
 import com.springie.render.modules.modern.ElementRendererLink;
-import com.springie.render.modules.raytraced.ModularRendererRaytraced;
+import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.modern.RendererBinManager;
 
 /**
@@ -169,8 +169,8 @@ class PreferencesResetTest {
       assertEquals(0xFF000000, RendererDelegator.color_background_number);
       assertEquals(false, RendererDelegator.scenic_background);
       assertEquals(2, PanelPreferencesRendererModern.render_label_when);
-      assertTrue(RendererDelegator.renderer instanceof ModularRendererRaytraced,
-          "reset must restore the Ray-traced renderer");
+      assertTrue(RendererDelegator.renderer instanceof ModularRendererNew,
+          "reset must restore the Modern renderer");
 
       assertEquals(2, Link.number_of_strut_render_divisions);
       assertEquals(1, Link.number_of_cable_render_divisions);
