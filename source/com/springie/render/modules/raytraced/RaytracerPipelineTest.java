@@ -99,6 +99,15 @@ public class RaytracerPipelineTest {
             + " far=" + far_brightness);
   }
 
+  /**
+   * The background colour, read live exactly as the renderer reads it.
+   * (It used to be frozen at class-load time; the colour picker changes
+   * it mid-session.)
+   */
+  private static int backgroundRgb() {
+    return 0xFF000000 | RendererDelegator.color_background_number;
+  }
+
   private int centreBrightnessAtDistance(double t) {
     final RayCamera camera = new RayCamera();
     final Ray ray = new Ray();
@@ -112,7 +121,7 @@ public class RaytracerPipelineTest {
     final int[] pixels = new int[200 * 200];
     Raytracer.renderTile(0, 0, 200, 200, camera, bvh, pixels);
     final int centre = pixels[100 * 200 + 100];
-    assertTrue(centre != Raytracer.BACKGROUND_RGB,
+    assertTrue(centre != backgroundRgb(),
         "sphere at t=" + t + " missed the centre pixel");
     return centre & 0xFFFFFF;
   }
@@ -132,19 +141,19 @@ public class RaytracerPipelineTest {
 
     // Sphere radius 3840 at depth divisor 192 covers ~20 pixels.
     final int centre = pixels[100 * 200 + 100];
-    assertNotEquals(Raytracer.BACKGROUND_RGB, centre);
+    assertNotEquals(backgroundRgb(), centre);
     // Lit from the front-ish: should be bright, not a dark smudge.
     // (Unsigned comparison: the pixel carries an opaque alpha.)
     assertTrue((centre & 0xFFFFFF) > 0x808080, "centre pixel too dark: "
         + Integer.toHexString(centre));
 
     // Well outside the sphere: background.
-    assertEquals(Raytracer.BACKGROUND_RGB, pixels[0]);
-    assertEquals(Raytracer.BACKGROUND_RGB, pixels[199 * 200 + 199]);
+    assertEquals(backgroundRgb(), pixels[0]);
+    assertEquals(backgroundRgb(), pixels[199 * 200 + 199]);
 
     // Roughly circular: symmetric pixels around the centre are shaded.
-    assertNotEquals(Raytracer.BACKGROUND_RGB, pixels[100 * 200 + 110]);
-    assertNotEquals(Raytracer.BACKGROUND_RGB, pixels[110 * 200 + 100]);
+    assertNotEquals(backgroundRgb(), pixels[100 * 200 + 110]);
+    assertNotEquals(backgroundRgb(), pixels[110 * 200 + 100]);
   }
 
   @Test
@@ -153,7 +162,7 @@ public class RaytracerPipelineTest {
     final int[] pixels = new int[64 * 64];
     Raytracer.renderTile(10, 10, 64, 64, new RayCamera(), bvh, pixels);
     for (final int pixel : pixels) {
-      assertEquals(Raytracer.BACKGROUND_RGB, pixel);
+      assertEquals(backgroundRgb(), pixel);
     }
   }
 }

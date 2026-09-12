@@ -16,9 +16,6 @@ import com.springie.render.modules.modern.LightSource;
  * with |normal . light|, so nothing ever goes fully black.
  */
 final class Raytracer {
-  // Background, in 0xAARRGGBB for BufferedImage.setRGB.
-  static final int BACKGROUND_RGB;
-
   private static final double LIGHT_X;
 
   private static final double LIGHT_Y;
@@ -32,10 +29,6 @@ final class Raytracer {
     LIGHT_X = source.x / length;
     LIGHT_Y = source.y / length;
     LIGHT_Z = source.z / length;
-
-    final int bg = RendererDelegator.color_background_number;
-    // The background number is already in 0xRRGGBB packing.
-    BACKGROUND_RGB = 0xFF000000 | bg;
   }
 
   private Raytracer() {
@@ -86,6 +79,11 @@ final class Raytracer {
     final Ray ray = new Ray();
     final Hit hit = new Hit();
     final int[] stack = new int[64];
+    // Read live, once per tile: the user can recolour the background
+    // mid-session (Colours > General > Background). The background
+    // number is already in 0xRRGGBB packing.
+    final int background_rgb =
+        0xFF000000 | RendererDelegator.color_background_number;
     int i = 0;
     for (int y = 0; y < height; y++) {
       for (int x = 0; x < width; x++) {
@@ -93,7 +91,7 @@ final class Raytracer {
         hit.reset();
         final boolean struck = bvh.intersect(ray, hit, stack);
         final int rgb = struck ? shade(ray, hit, bvh, stack)
-            : BACKGROUND_RGB;
+            : background_rgb;
         pixels[i++] = rgb;
         if (struck && stats != null) {
           stats.add(x, y);
