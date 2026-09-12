@@ -26,8 +26,10 @@ import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.modern.RendererBinManager;
 import com.springie.render.modules.modern.SimpleCube;
 import com.springie.render.modules.modern.SimpleDodecahedron;
+import com.springie.render.modules.modern.SimpleHexagon;
 import com.springie.render.modules.modern.SimpleIcosahedron;
 import com.springie.render.modules.modern.SimpleOctahedron;
+import com.springie.render.modules.modern.SimpleSquare;
 import com.tifsoft.Forget;
 
 public class PanelPreferencesRendererModern {
@@ -222,6 +224,10 @@ public class PanelPreferencesRendererModern {
 					ModularRendererNew.sphere_object = new SimpleCube();
 				} else if (val == 4) {
 					ModularRendererNew.sphere_object = new SimpleIcosahedron();
+				} else if (val == 5) {
+					ModularRendererNew.sphere_object = new SimpleSquare();
+				} else if (val == 6) {
+					ModularRendererNew.sphere_object = new SimpleHexagon();
 				}
 				RendererDelegator.repaintAll();
 			}
@@ -231,6 +237,8 @@ public class PanelPreferencesRendererModern {
 		this.choose_polyhedron.add("Octahedron", 2);
 		this.choose_polyhedron.add("Cube", 3);
 		this.choose_polyhedron.add("Icosahedron", 4);
+		this.choose_polyhedron.add("Square", 5);
+		this.choose_polyhedron.add("Hexagon", 6);
 		this.choose_polyhedron.choice.select(this.choose_polyhedron.num_to_str(1));
 		panel.add(this.choose_polyhedron.choice);
 
@@ -375,6 +383,7 @@ public class PanelPreferencesRendererModern {
 				.num_to_str(2));
 
 		// Node polyhedron (Dodecahedron).
+		ModularRendererNew.sphere_object = new SimpleDodecahedron();
 		this.choose_polyhedron.choice.select(this.choose_polyhedron
 				.num_to_str(1));
 
