@@ -72,7 +72,6 @@ class PreferencesResetTest {
         ElementRendererLink.cable_divisions = 6;
         RendererDelegator.link_sides = 6;
         RendererDelegator.glossiness = 90;
-        RendererDelegator.max_bounces = 4;
         RendererDelegator.shadows = true;
         RendererDelegator.specular = 80;
         RendererDelegator.color_background_number = 0xFFFF0000;
@@ -152,7 +151,6 @@ class PreferencesResetTest {
       assertEquals(1, ElementRendererLink.cable_divisions);
       assertEquals(2, RendererDelegator.link_sides);
       assertEquals(0, RendererDelegator.glossiness);
-      assertEquals(2, RendererDelegator.max_bounces);
       assertEquals(false, RendererDelegator.shadows);
       assertEquals(50, RendererDelegator.specular);
       assertEquals(0xFF000000, RendererDelegator.color_background_number);

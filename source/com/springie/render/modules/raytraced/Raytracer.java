@@ -8,8 +8,8 @@ import com.springie.render.modules.modern.LightSource;
 
 /**
  * Renders one bin tile, pixel by pixel. One primary ray per pixel, plus
- * optional shadow rays, specular highlights, and mirror-reflection rays
- * per the RendererDelegator settings.
+ * optional shadow rays; specular highlights and the glossy sheen are pure
+ * shading math, no extra rays.
  *
  * <p>Lighting shares the default renderer's configuration
  * (LightSource.source_1) and its feel: brightness runs from half to full
@@ -92,7 +92,7 @@ final class Raytracer {
         camera.makeRay(x0 + x, y0 + y, ray);
         hit.reset();
         final boolean struck = bvh.intersect(ray, hit, stack);
-        final int rgb = struck ? shade(ray, hit, bvh, stack, 0)
+        final int rgb = struck ? shade(ray, hit, bvh, stack)
             : BACKGROUND_RGB;
         pixels[i++] = rgb;
         if (struck && stats != null) {
@@ -103,9 +103,10 @@ final class Raytracer {
   }
 
   /**
-   * Diffuse shading with optional shadows, specular highlights, and
-   * mirror reflection. Shadow rays (towards LIGHT_*) are traced when
-   * RendererDelegator.shadows is set.
+   * Diffuse shading with optional shadows, a glossy sheen, and specular
+   * highlights. Shadow rays (towards LIGHT_*) are traced when
+   * RendererDelegator.shadows is set; the sheen and the highlight are
+   * smooth functions of the surface normal, so they can never speckle.
    *
    * <p>Matches the default renderer: its [128, 255] brightness range, its
    * depth fog, and its packed-colour convention (0xRRGGBB -- red in the
@@ -113,8 +114,7 @@ final class Raytracer {
    * default renderer's colour code; byte positions are preserved all the
    * way to new Color(packed), so they are preserved here too).
    */
-  private static int shade(Ray ray, Hit hit, BVH bvh, int[] stack,
-      int depth) {
+  private static int shade(Ray ray, Hit hit, BVH bvh, int[] stack) {
     double dot = hit.nx * LIGHT_X + hit.ny * LIGHT_Y + hit.nz * LIGHT_Z;
     if (dot < 0.0) {
       dot = -dot;
@@ -126,8 +126,8 @@ final class Raytracer {
     final boolean shadowed = RendererDelegator.shadows
         && inShadow(ray, hit, bvh, stack);
     if (shadowed) {
-      // Ambient light only: the diffuse boost and the specular
-      // highlight both need direct light.
+      // Ambient light only: the diffuse boost, the glossy sheen and
+      // the specular highlight all need direct light.
       dot = 0.0;
     }
     final int scaled = 128 + (int) (127.0 * dot);
@@ -143,29 +143,18 @@ final class Raytracer {
     int ob = (b * scaled) >> 8;
 
     if (!shadowed) {
+      final int sheen = glossySheen(ray, hit);
+      if (sheen > 0) {
+        or = Math.min(255, or + sheen);
+        og = Math.min(255, og + sheen);
+        ob = Math.min(255, ob + sheen);
+      }
       final int highlight = specularHighlight(ray, hit);
       if (highlight > 0) {
         or = Math.min(255, or + highlight);
         og = Math.min(255, og + highlight);
         ob = Math.min(255, ob + highlight);
       }
-    }
-
-    final int glossiness = RendererDelegator.glossiness;
-    if (glossiness > 0 && depth < RendererDelegator.max_bounces) {
-      final Ray reflected = new Ray();
-      reflect(ray, hit, reflected);
-      final Hit reflected_hit = new Hit();
-      final int reflected_rgb = bvh.intersect(reflected, reflected_hit,
-          stack) ? shade(reflected, reflected_hit, bvh, stack, depth + 1)
-          : BACKGROUND_RGB;
-      final int rr = (reflected_rgb >> 16) & 0xFF;
-      final int rg = (reflected_rgb >> 8) & 0xFF;
-      final int rb = reflected_rgb & 0xFF;
-      final int matte = 100 - glossiness;
-      or = (or * matte + rr * glossiness) / 100;
-      og = (og * matte + rg * glossiness) / 100;
-      ob = (ob * matte + rb * glossiness) / 100;
     }
 
     return 0xFF000000 | (or << 16) | (og << 8) | ob;
@@ -200,8 +189,29 @@ final class Raytracer {
    * highlights are off or the geometry faces away.
    */
   private static int specularHighlight(Ray ray, Hit hit) {
-    final int specular = RendererDelegator.specular;
-    if (specular <= 0) {
+    return lobeHighlight(ray, hit, RendererDelegator.specular, 32.0);
+  }
+
+  /**
+   * The glossy sheen: a broad Blinn-Phong lobe around the perfect mirror
+   * direction, so surfaces look satiny rather than speckled. Returns the
+   * 0-255 white to add, or 0 when glossiness is 0 or the geometry faces
+   * away.
+   */
+  private static int glossySheen(Ray ray, Hit hit) {
+    return lobeHighlight(ray, hit, RendererDelegator.glossiness, 8.0);
+  }
+
+  /**
+   * Shared lobe math: the halfway vector between the light direction
+   * and the view direction, raised to the given exponent and scaled by
+   * the 0-100 strength. A small exponent gives a broad satin sheen, a
+   * large one a tight sparkle. Pure shading -- no rays, so the result is
+   * always smooth.
+   */
+  private static int lobeHighlight(Ray ray, Hit hit, int strength,
+      double exponent) {
+    if (strength <= 0) {
       return 0;
     }
     // Halfway between the light direction and the view direction.
@@ -217,28 +227,6 @@ final class Raytracer {
     if (cosine <= 0.0) {
       return 0;
     }
-    return (int) (255.0 * Math.pow(cosine, 32.0) * specular / 100.0);
-  }
-
-  /**
-   * Mirror reflection of the incoming ray about the surface normal. The
-   * origin is nudged along the normal so the ray does not re-hit the
-   * surface it just left.
-   */
-  private static void reflect(Ray ray, Hit hit, Ray reflected) {
-    final double px = ray.ox + ray.dx * hit.t;
-    final double py = ray.oy + ray.dy * hit.t;
-    final double pz = ray.oz + ray.dz * hit.t;
-    final double cosine = ray.dx * hit.nx + ray.dy * hit.ny + ray.dz
-        * hit.nz;
-    // Nudge off the surface on the side the ray came from, so the ray
-    // does not re-hit the surface it just left.
-    final double side = cosine < 0.0 ? 1.0 : -1.0;
-    reflected.ox = px + side * hit.nx;
-    reflected.oy = py + side * hit.ny;
-    reflected.oz = pz + side * hit.nz;
-    reflected.dx = ray.dx - 2.0 * cosine * hit.nx;
-    reflected.dy = ray.dy - 2.0 * cosine * hit.ny;
-    reflected.dz = ray.dz - 2.0 * cosine * hit.nz;
+    return (int) (255.0 * Math.pow(cosine, exponent) * strength / 100.0);
   }
 }

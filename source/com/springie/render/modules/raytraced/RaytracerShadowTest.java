@@ -47,8 +47,6 @@ public class RaytracerShadowTest {
 
   private int saved_glossiness;
 
-  private int saved_max_bounces;
-
   private boolean saved_shadows;
 
   private int saved_specular;
@@ -70,11 +68,14 @@ public class RaytracerShadowTest {
     Coords.shift_constant_z = 192;
 
     this.saved_manager = ContextManager.getNodeManager();
+    // Fog is a no-op without a model; without this, a GUI test that
+    // booted the app earlier in the same JVM would leave fog active
+    // and the exact pixel assertions below would fail.
+    ContextManager.setNodeManager(null);
     this.saved_depth_is_relative =
         DeepObjectColourCalculator.depth_is_relative;
 
     this.saved_glossiness = RendererDelegator.glossiness;
-    this.saved_max_bounces = RendererDelegator.max_bounces;
     this.saved_shadows = RendererDelegator.shadows;
     this.saved_specular = RendererDelegator.specular;
 
@@ -95,7 +96,6 @@ public class RaytracerShadowTest {
     DeepObjectColourCalculator.depth_is_relative = this.saved_depth_is_relative;
 
     RendererDelegator.glossiness = this.saved_glossiness;
-    RendererDelegator.max_bounces = this.saved_max_bounces;
     RendererDelegator.shadows = this.saved_shadows;
     RendererDelegator.specular = this.saved_specular;
   }

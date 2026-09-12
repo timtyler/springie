@@ -26,14 +26,12 @@ import com.springie.gui.GuiTestSupport;
 import com.springie.render.RendererDelegator;
 
 /**
- * The ray-traced renderer's Glossiness, Max bounces, Shadows and Specular
- * controls must offer the right entries, start at the defaults, and drive
- * the renderer.
+ * The ray-traced renderer's Glossiness, Shadows and Specular controls
+ * must offer the right entries, start at the defaults, and drive the
+ * renderer.
  */
 class PanelPreferencesRendererRaytracedTest {
   private int saved_glossiness;
-
-  private int saved_max_bounces;
 
   private boolean saved_shadows;
 
@@ -52,7 +50,6 @@ class PanelPreferencesRendererRaytracedTest {
   @BeforeEach
   void save() {
     this.saved_glossiness = RendererDelegator.glossiness;
-    this.saved_max_bounces = RendererDelegator.max_bounces;
     this.saved_shadows = RendererDelegator.shadows;
     this.saved_specular = RendererDelegator.specular;
   }
@@ -60,7 +57,6 @@ class PanelPreferencesRendererRaytracedTest {
   @AfterEach
   void restore() {
     RendererDelegator.glossiness = this.saved_glossiness;
-    RendererDelegator.max_bounces = this.saved_max_bounces;
     RendererDelegator.shadows = this.saved_shadows;
     RendererDelegator.specular = this.saved_specular;
   }
@@ -69,15 +65,6 @@ class PanelPreferencesRendererRaytracedTest {
     final Choice choice = findChoice(
         FrEnd.panel_preferences_renderer_raytraced.panel, "50%");
     assertNotNull(choice, "expected the Glossiness dropdown");
-    return choice;
-  }
-
-  private static Choice maxBouncesDropdown() {
-    // The Glossiness dropdown's first entry is "0%"; the bounce
-    // dropdown's is "0".
-    final Choice choice = findChoice(
-        FrEnd.panel_preferences_renderer_raytraced.panel, "0");
-    assertNotNull(choice, "expected the Max bounces dropdown");
     return choice;
   }
 
@@ -202,19 +189,6 @@ class PanelPreferencesRendererRaytracedTest {
   }
 
   @Test
-  void maxBouncesDropdownOffersZeroToFour() {
-    final Choice choice = maxBouncesDropdown();
-    assertEquals(5, choice.getItemCount(),
-        "Max bounces must offer 0 to 4");
-    for (int bounces = 0; bounces <= 4; bounces++) {
-      assertEquals("" + bounces, choice.getItem(bounces),
-          "bounce entry " + bounces + " must be \"" + bounces + "\"");
-    }
-    assertEquals("2", choice.getSelectedItem(),
-        "Max bounces must default to 2");
-  }
-
-  @Test
   void selectingGlossinessUpdatesTheRenderer() throws Exception {
     pick(glossinessDropdown(), "70%");
     assertEquals(70, RendererDelegator.glossiness);
@@ -223,27 +197,16 @@ class PanelPreferencesRendererRaytracedTest {
   }
 
   @Test
-  void selectingMaxBouncesUpdatesTheRenderer() throws Exception {
-    pick(maxBouncesDropdown(), "4");
-    assertEquals(4, RendererDelegator.max_bounces);
-    pick(maxBouncesDropdown(), "0");
-    assertEquals(0, RendererDelegator.max_bounces);
-  }
-
-  @Test
   void resetRestoresRaytracedDefaults() throws Exception {
     RendererDelegator.glossiness = 90;
-    RendererDelegator.max_bounces = 4;
     RendererDelegator.shadows = true;
     RendererDelegator.specular = 80;
     SwingUtilities.invokeAndWait(
         () -> FrEnd.panel_preferences_display.resetToDefaults());
     assertEquals(0, RendererDelegator.glossiness);
-    assertEquals(2, RendererDelegator.max_bounces);
     assertEquals(false, RendererDelegator.shadows);
     assertEquals(50, RendererDelegator.specular);
     assertEquals("0%", glossinessDropdown().getSelectedItem());
-    assertEquals("2", maxBouncesDropdown().getSelectedItem());
     assertEquals(false, shadowsCheckbox().getState());
     assertEquals("50%", specularDropdown().getSelectedItem());
   }

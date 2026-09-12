@@ -16,15 +16,19 @@ import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 
 /**
- * Specular highlights through the full tile pipeline.
+ * The glossy sheen through the full tile pipeline.
  *
  * <p>The centre pixel's primary ray runs straight down +z from the eye
  * (25600, 25600, -196608), so a sphere centred on (25600, 25600, 0) is
- * hit exactly at its near pole. The light sits mostly behind the camera,
- * so the near pole is close to the perfect mirror direction and carries
- * a strong highlight. No model is loaded, so Fog.applyFog is a no-op.
+ * hit exactly at its near pole. No model is loaded, so Fog.applyFog is
+ * a no-op and every expected value is exact.
+ *
+ * <p>The sheen is pure shading math on the surface normal -- it must be
+ * smooth. The smoothness test scatters small bright spheres where a
+ * mirror ray would have hit them chaotically (the old implementation
+ * speckled here); the sheen must not care.
  */
-public class RaytracerSpecularTest {
+public class RaytracerGlossTest {
   private static final double EX = 100 << Coords.shift;
 
   private static final double EY = 100 << Coords.shift;
@@ -77,8 +81,8 @@ public class RaytracerSpecularTest {
     this.saved_shadows = RendererDelegator.shadows;
     this.saved_specular = RendererDelegator.specular;
 
-    RendererDelegator.glossiness = 0;
     RendererDelegator.shadows = false;
+    RendererDelegator.specular = 0;
   }
 
   @AfterEach
@@ -98,47 +102,89 @@ public class RaytracerSpecularTest {
     RendererDelegator.specular = this.saved_specular;
   }
 
-  private int centrePixel(Primitive[] primitives) {
+  private int[] renderTile(Primitive[] primitives) {
     final BVH bvh = new BVH(primitives);
     final RayCamera camera = new RayCamera();
     final int[] pixels = new int[200 * 200];
     Raytracer.renderTile(0, 0, 200, 200, camera, bvh, pixels);
-    return pixels[100 * 200 + 100];
+    return pixels;
   }
 
-  private Primitive[] whiteSphere() {
-    return new Primitive[] { new RTSphere(EX, EY, 0.0, 20000.0, 0xFFFFFF) };
+  private Primitive[] greySphere() {
+    return new Primitive[] { new RTSphere(EX, EY, 0.0, 20000.0, 0x808080) };
   }
 
   @Test
-  public void zeroSpecularIsPureDiffuse() {
-    RendererDelegator.specular = 0;
+  public void zeroGlossIsPureDiffuse() {
+    RendererDelegator.glossiness = 0;
     // Diffuse only: |normal . light| = 0.85092 at the near pole,
-    // scaled = 236, (255 * 236) >> 8 = 235.
-    assertEquals(0xFFEBEBEB, centrePixel(whiteSphere()),
-        "specular 0% must leave the diffuse picture untouched");
+    // scaled = 236, (128 * 236) >> 8 = 118.
+    assertEquals(0xFF767676, renderTile(greySphere())[100 * 200 + 100],
+        "gloss 0% must leave the diffuse picture untouched");
   }
 
   @Test
-  public void fullSpecularBlowsOutTheHighlight() {
-    RendererDelegator.specular = 100;
-    // The highlight at the near pole adds ~73 per channel to the 235
-    // diffuse, clamping to white.
-    assertEquals(0xFFFFFFFF, centrePixel(whiteSphere()),
-        "specular 100% must blow out the highlight at the near pole");
+  public void fullGlossBlowsOutTheSheen() {
+    RendererDelegator.glossiness = 100;
+    // The broad sheen at the near pole adds ~187 per channel to the
+    // 118 diffuse, clamping to white.
+    assertEquals(0xFFFFFFFF, renderTile(greySphere())[100 * 200 + 100],
+        "gloss 100% must blow out the sheen at the near pole");
   }
 
   @Test
-  public void partialSpecularIsBetween() {
-    RendererDelegator.specular = 100;
-    final int full = centrePixel(whiteSphere());
-    RendererDelegator.specular = 10;
-    final int partial = centrePixel(whiteSphere());
-    RendererDelegator.specular = 0;
-    final int none = centrePixel(whiteSphere());
-    assertTrue(partial > none,
-        "specular 10% must brighten the pole over 0%");
-    assertTrue(full >= partial,
-        "specular must grow monotonically with the setting");
+  public void sheenGrowsMonotonically() {
+    final int[] levels = new int[4];
+    final int[] settings = { 0, 10, 50, 100 };
+    for (int i = 0; i < settings.length; i++) {
+      RendererDelegator.glossiness = settings[i];
+      levels[i] = renderTile(greySphere())[100 * 200 + 100];
+    }
+    for (int i = 1; i < levels.length; i++) {
+      assertTrue(levels[i] > levels[i - 1],
+          "the sheen must grow with the gloss setting");
+    }
+  }
+
+  @Test
+  public void sheenIsSmoothInABusyScene() {
+    // Small bright spheres parked between the camera and the grey
+    // sphere, off the centre axis: a mirror ray from the central disc
+    // would strike them chaotically, but the sheen must not notice.
+    final Primitive[] scene = new Primitive[] {
+        new RTSphere(EX, EY, 0.0, 20000.0, 0x808080),
+        new RTSphere(EX + 40000.0, EY + 10000.0, -100000.0, 5000.0,
+            0xFFFF00),
+        new RTSphere(EX - 35000.0, EY - 20000.0, -100000.0, 5000.0,
+            0xFFFF00),
+        new RTSphere(EX + 15000.0, EY - 45000.0, -90000.0, 5000.0,
+            0xFFFF00),
+        new RTSphere(EX - 10000.0, EY + 40000.0, -90000.0, 5000.0,
+            0xFFFF00) };
+    RendererDelegator.glossiness = 100;
+    final int[] pixels = renderTile(scene);
+    int worst = 0;
+    for (int y = 80; y < 120; y++) {
+      for (int x = 80; x < 120; x++) {
+        final int p = pixels[y * 200 + x];
+        final int right = pixels[y * 200 + x + 1];
+        final int down = pixels[(y + 1) * 200 + x];
+        worst = Math.max(worst, channelDiff(p, right));
+        worst = Math.max(worst, channelDiff(p, down));
+      }
+    }
+    assertTrue(worst < 16,
+        "adjacent pixels in the sheen must differ by less than 16 per"
+            + " channel, but differed by " + worst);
+  }
+
+  private static int channelDiff(int a, int b) {
+    int worst = 0;
+    for (int shift = 0; shift < 24; shift += 8) {
+      final int diff = Math.abs(((a >> shift) & 0xFF)
+          - ((b >> shift) & 0xFF));
+      worst = Math.max(worst, diff);
+    }
+    return worst;
   }
 }

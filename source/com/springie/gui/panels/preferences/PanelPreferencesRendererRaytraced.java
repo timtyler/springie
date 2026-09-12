@@ -15,8 +15,8 @@ import com.springie.render.RendererDelegator;
 import com.tifsoft.Forget;
 
 /**
- * Ray-traced renderer options: glossiness (how mirror-like surfaces are),
- * the maximum reflection bounce depth, shadows, and specular highlights.
+ * Ray-traced renderer options: glossiness (the smooth satin sheen),
+ * shadows, and specular highlights.
  */
 public class PanelPreferencesRendererRaytraced {
   public Panel panel = FrEnd.setUpPanelForFrame();
@@ -24,8 +24,6 @@ public class PanelPreferencesRendererRaytraced {
   MessageManager message_manager;
 
   private TTChoice choose_glossiness;
-
-  private TTChoice choose_max_bounces;
 
   private Checkbox checkbox_shadows;
 
@@ -38,7 +36,6 @@ public class PanelPreferencesRendererRaytraced {
 
   void makePanel() {
     this.panel.add(panelGlossiness());
-    this.panel.add(panelMaxBounces());
     this.panel.add(panelShadows());
     this.panel.add(panelSpecular());
   }
@@ -64,31 +61,6 @@ public class PanelPreferencesRendererRaytraced {
     this.choose_glossiness.choice.select(
         this.choose_glossiness.num_to_str(RendererDelegator.glossiness));
     panel.add(this.choose_glossiness.choice);
-
-    return panel;
-  }
-
-  private Panel panelMaxBounces() {
-    final Panel panel = new Panel();
-    final Label label = new Label("Max bounces:");
-    panel.add(label);
-
-    this.choose_max_bounces = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
-        final String scs = (String) e.getItem();
-        final int val = PanelPreferencesRendererRaytraced.this.choose_max_bounces
-            .str_to_num(scs);
-        RendererDelegator.max_bounces = val;
-      }
-    });
-
-    for (int bounces = 0; bounces <= 4; bounces++) {
-      this.choose_max_bounces.add("" + bounces, bounces);
-    }
-    this.choose_max_bounces.choice.select(
-        this.choose_max_bounces.num_to_str(RendererDelegator.max_bounces));
-    panel.add(this.choose_max_bounces.choice);
 
     return panel;
   }
@@ -139,10 +111,6 @@ public class PanelPreferencesRendererRaytraced {
     RendererDelegator.glossiness = 0;
     this.choose_glossiness.choice.select(
         this.choose_glossiness.num_to_str(0));
-
-    RendererDelegator.max_bounces = 2;
-    this.choose_max_bounces.choice.select(
-        this.choose_max_bounces.num_to_str(2));
 
     RendererDelegator.shadows = false;
     this.checkbox_shadows.setState(false);
