@@ -351,6 +351,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
           active ? t.x0 + s.min_x : 0, active ? t.y0 + s.min_y : 0,
           active ? t.x0 + s.max_x : 0, active ? t.y0 + s.max_y : 0);
     }
+    // One completed frame, however many AWT paints it takes to display.
+    RendererDelegator.countRenderedFrame();
   }
 
   /**

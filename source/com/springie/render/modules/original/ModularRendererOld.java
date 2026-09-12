@@ -6,6 +6,7 @@ package com.springie.render.modules.original;
 import java.awt.Graphics;
 
 import com.springie.FrEnd;
+import com.springie.render.RendererDelegator;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.render.modules.ModularRendererBase;
 import com.tifsoft.Forget;
@@ -24,6 +25,8 @@ public class ModularRendererOld implements ModularRendererBase {
     } else {
       manager.nodeAndLinkRenderNormal();
     }
+
+    RendererDelegator.countRenderedFrame();
   }
 
   public void resize(int x, int y) {

@@ -91,6 +91,11 @@ public final class RendererDelegator {
 
   static int frame_count;
 
+  // Last computed readout, waiting for the next paint to publish it.
+  static String fps_string;
+
+  static boolean fps_dirty;
+
   public static void repaintAll() {
     if (renderer instanceof ModularRendererNew
         || renderer instanceof ModularRendererRaytraced) {
@@ -149,24 +154,53 @@ public final class RendererDelegator {
 
     renderDragBox(graphics);
 
-    updateFramePerSecondCounter();
-    
+    refreshFpsLabel();
+
     UpdateEnabledComponents.actuallyUpdate();
   }
 
-  private static void updateFramePerSecondCounter() {
+  /**
+   * Records one fully rendered frame for the Statistics tab's
+   * frames-per-second readout. Each renderer calls this exactly once
+   * per completed frame -- never once per AWT paint, which in
+   * ray-traced mode fires far more often than the asynchronous
+   * renderer completes frames.
+   *
+   * <p>The readout refreshes every 50 frames, or every 2 seconds when
+   * frames are slow (a ray-traced frame can take seconds), whichever
+   * comes first. The label itself is updated on the paint path, so
+   * this stays headless-safe for unit tests.
+   */
+  public static synchronized void countRenderedFrame() {
+    final long now = System.currentTimeMillis();
+    if (frame_count == 0) {
+      // Start the window at the first frame, not at class load.
+      time_last_ms = now;
+    }
     frame_count++;
-    if (frame_count == 50) {
-      long time_this_ms = System.currentTimeMillis();
-      final long duration = time_this_ms - time_last_ms;
+    final long duration = now - time_last_ms;
+    if (frame_count >= 50 || duration >= 2000) {
       final double fps = frame_count / (duration / 1000.0D);
-      time_last_ms = time_this_ms;
+      time_last_ms = now;
       frame_count = 0;
       String fps_str = "" + fps;
       if (fps_str.length() > 5) {
         fps_str = fps_str.substring(0, 5);
       }
-      FrEnd.panel_statistics.label_fps_value.setText(fps_str);
+      fps_string = fps_str;
+      fps_dirty = true;
+    }
+  }
+
+  /**
+   * Publishes a freshly computed readout to the Statistics tab. Called
+   * from the paint path, so the AWT label is always touched on a thread
+   * that may touch AWT.
+   */
+  static synchronized void refreshFpsLabel() {
+    if (fps_dirty) {
+      fps_dirty = false;
+      FrEnd.panel_statistics.label_fps_value.setText(fps_string);
     }
   }
 

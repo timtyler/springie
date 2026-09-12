@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import com.springie.FrEnd;
+import com.springie.render.RendererDelegator;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.Link;
@@ -56,6 +57,8 @@ public class ModularRendererNew implements ModularRendererBase {
     // bins_current (swapping the managers would leave clean bins blitting
     // two-frames-old tiles).
     this.bins_current.rotateFrameState(this.bins_last);
+
+    RendererDelegator.countRenderedFrame();
   }
 
   private void addFacesToBins(NodeManager manager, int mask) {
