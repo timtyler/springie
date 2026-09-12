@@ -294,8 +294,18 @@ public final class RendererDelegator {
     drag_box_renderer.draw(graphics, FrEnd.perform_actions.drag_box_manager);
 
     if (repaint) {
-      FrEnd.main_canvas.panel.repaint();
-      repaint_some_objects = true;
+      // The ray-traced renderer blits a whole frame per paint; asking for
+      // another repaint here turns every drag into a tight repaint loop,
+      // and each blit erases the box before it is redrawn -- the box
+      // flickers. The ray tracer already repaints on mouse moves (via
+      // DragBoxManager.drag) and when frames complete, which is enough
+      // to keep the box up to date.
+      final boolean raytraced = RendererDelegator.renderer
+          instanceof com.springie.render.modules.raytraced.ModularRendererRaytraced;
+      if (!raytraced) {
+        FrEnd.main_canvas.panel.repaint();
+        repaint_some_objects = true;
+      }
     }
   }
 

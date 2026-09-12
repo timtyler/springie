@@ -18,8 +18,6 @@ import com.springie.modification.pre.PrepareToModifyLinkTypes;
 import com.springie.modification.pre.PrepareToModifyNodeTypes;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
-import com.springie.render.RendererDragBox;
-import com.tifsoft.Forget;
 
 public class DragBoxManager {
   public Point drag_box_start;
@@ -31,10 +29,6 @@ public class DragBoxManager {
   public void drag(int x, int y) {
     if (FrEnd.button_virginity) {
       this.drag_box_start = new Point(x, y);
-
-      final RendererDragBox renderer = ContextManager.getNodeManager().renderer.renderer_drag_box;
-      renderer.min = new Point(0, 0);
-      renderer.max = new Point(0, 0);
     }
 
     this.drag_box_end = new Point(x, y);
@@ -42,15 +36,17 @@ public class DragBoxManager {
   }
 
   public void terminate(int x, int y) {
-    Forget.about(x);
-    Forget.about(y);
-
     this.list_of_nodes = new ArrayList<>();
 
     if (this.drag_box_start != null) {
-      final RendererDragBox renderer = ContextManager.getNodeManager().renderer.renderer_drag_box;
-      final Point min = renderer.min;
-      final Point max = renderer.max;
+      // The selection box comes from the gesture itself (press point and
+      // release point), not from the renderer-cached box: the cache is only
+      // updated on paint, so a release processed before the next paint
+      // would select with a stale rectangle.
+      final Point min = new Point(
+          Math.min(this.drag_box_start.x, x), Math.min(this.drag_box_start.y, y));
+      final Point max = new Point(
+          Math.max(this.drag_box_start.x, x), Math.max(this.drag_box_start.y, y));
 
       // prepare
       if (FrEnd.panel_edit_select_main.checkbox_select_nodes.getState()) {
