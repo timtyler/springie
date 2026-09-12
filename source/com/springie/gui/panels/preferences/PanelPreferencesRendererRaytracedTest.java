@@ -26,9 +26,9 @@ import com.springie.gui.GuiTestSupport;
 import com.springie.render.RendererDelegator;
 
 /**
- * The ray-traced renderer's Glossiness, Shadows, Specular and Fresnel
- * controls must offer the right entries, start at the defaults, and
- * drive the renderer.
+ * The ray-traced renderer's Glossiness, Shadows, Specular, Fresnel and
+ * Fill light controls must offer the right entries, start at the
+ * defaults, and drive the renderer.
  */
 class PanelPreferencesRendererRaytracedTest {
   private int saved_glossiness;
@@ -38,6 +38,8 @@ class PanelPreferencesRendererRaytracedTest {
   private int saved_specular;
 
   private int saved_fresnel;
+
+  private int saved_fill_light;
 
   @BeforeAll
   static void boot() throws Exception {
@@ -55,6 +57,7 @@ class PanelPreferencesRendererRaytracedTest {
     this.saved_shadows = RendererDelegator.shadows;
     this.saved_specular = RendererDelegator.specular;
     this.saved_fresnel = RendererDelegator.fresnel;
+    this.saved_fill_light = RendererDelegator.fill_light;
   }
 
   @AfterEach
@@ -63,6 +66,7 @@ class PanelPreferencesRendererRaytracedTest {
     RendererDelegator.shadows = this.saved_shadows;
     RendererDelegator.specular = this.saved_specular;
     RendererDelegator.fresnel = this.saved_fresnel;
+    RendererDelegator.fill_light = this.saved_fill_light;
   }
 
   private static Choice glossinessDropdown() {
@@ -80,6 +84,15 @@ class PanelPreferencesRendererRaytracedTest {
     assertNotNull(parent, "expected the Specular panel");
     final Choice choice = findChoice(parent, "50%");
     assertNotNull(choice, "expected the Specular dropdown");
+    return choice;
+  }
+
+  private static Choice fillLightDropdown() {
+    final Container parent = findLabelledPanel(
+        FrEnd.panel_preferences_renderer_raytraced.panel, "Fill light:");
+    assertNotNull(parent, "expected the Fill light panel");
+    final Choice choice = findChoice(parent, "50%");
+    assertNotNull(choice, "expected the Fill light dropdown");
     return choice;
   }
 
@@ -215,16 +228,19 @@ class PanelPreferencesRendererRaytracedTest {
     RendererDelegator.shadows = true;
     RendererDelegator.specular = 80;
     RendererDelegator.fresnel = 70;
+    RendererDelegator.fill_light = 60;
     SwingUtilities.invokeAndWait(
         () -> FrEnd.panel_preferences_display.resetToDefaults());
     assertEquals(0, RendererDelegator.glossiness);
     assertEquals(false, RendererDelegator.shadows);
     assertEquals(90, RendererDelegator.specular);
     assertEquals(0, RendererDelegator.fresnel);
+    assertEquals(0, RendererDelegator.fill_light);
     assertEquals("0%", glossinessDropdown().getSelectedItem());
     assertEquals(false, shadowsCheckbox().getState());
     assertEquals("90%", specularDropdown().getSelectedItem());
     assertEquals("0%", fresnelDropdown().getSelectedItem());
+    assertEquals("0%", fillLightDropdown().getSelectedItem());
   }
 
   @Test
@@ -278,5 +294,26 @@ class PanelPreferencesRendererRaytracedTest {
     assertEquals(100, RendererDelegator.fresnel);
     pick(fresnelDropdown(), "0%");
     assertEquals(0, RendererDelegator.fresnel);
+  }
+
+  @Test
+  void fillLightDropdownOffersZeroToOneHundredInTens() {
+    final Choice choice = fillLightDropdown();
+    assertEquals(11, choice.getItemCount(),
+        "Fill light must offer 0% to 100% in 10% steps");
+    for (int percent = 0; percent <= 100; percent += 10) {
+      assertEquals(percent + "%", choice.getItem(percent / 10),
+          "fill light entry " + percent / 10 + " must be " + percent + "%");
+    }
+    assertEquals("0%", choice.getSelectedItem(),
+        "Fill light must default to 0%");
+  }
+
+  @Test
+  void selectingFillLightUpdatesTheRenderer() throws Exception {
+    pick(fillLightDropdown(), "100%");
+    assertEquals(100, RendererDelegator.fill_light);
+    pick(fillLightDropdown(), "0%");
+    assertEquals(0, RendererDelegator.fill_light);
   }
 }

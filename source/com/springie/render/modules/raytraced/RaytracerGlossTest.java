@@ -124,12 +124,13 @@ public class RaytracerGlossTest {
   }
 
   @Test
-  public void fullGlossBlowsOutTheSheen() {
+  public void fullGlossRollsOffSoftly() {
     RendererDelegator.glossiness = 100;
     // The broad sheen at the near pole adds ~187 per channel to the
-    // 118 diffuse, clamping to white.
-    assertEquals(0xFFFFFFFF, renderTile(greySphere())[100 * 200 + 100],
-        "gloss 100% must blow out the sheen at the near pole");
+    // 118 diffuse; the soft rolloff asymptotes instead of clipping:
+    // 255 - (255 - 118) * 255 / (255 + 187) = 176.
+    assertEquals(0xFFB0B0B0, renderTile(greySphere())[100 * 200 + 100],
+        "gloss 100% must roll the sheen off softly at the near pole");
   }
 
   @Test

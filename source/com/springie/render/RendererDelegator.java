@@ -99,6 +99,15 @@ public final class RendererDelegator {
   public static int fresnel = 0;
 
   /**
+   * Fill light as a percentage (0-100): a weak second light from the
+   * front-right, mirroring the key light's front-left azimuth, so
+   * surfaces turned away from the key still model instead of sitting
+   * at the flat diffuse floor. Shadow-independent, so it lifts
+   * shadowed areas too. 0 disables it; defaults to off.
+   */
+  public static int fill_light = 0;
+
+  /**
    * Anti-aliasing supersampling factor (1, 2 or 3): 1x1 is off, 2x2 and
    * 3x3 render that many sub-samples per pixel and average them with a
    * box filter. Affects the modern tiled renderer (tiles are rendered at

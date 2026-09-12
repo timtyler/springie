@@ -75,6 +75,7 @@ class PreferencesResetTest {
         RendererDelegator.shadows = true;
         RendererDelegator.specular = 80;
         RendererDelegator.fresnel = 70;
+        RendererDelegator.fill_light = 60;
         RendererDelegator.antialiasing = 3;
         RendererDelegator.color_background_number = 0xFFFF0000;
         PanelPreferencesRendererModern.render_label_when = 1;
@@ -156,6 +157,7 @@ class PreferencesResetTest {
       assertEquals(false, RendererDelegator.shadows);
       assertEquals(90, RendererDelegator.specular);
       assertEquals(0, RendererDelegator.fresnel);
+      assertEquals(0, RendererDelegator.fill_light);
       assertEquals(1, RendererDelegator.antialiasing);
       assertEquals(0xFF000000, RendererDelegator.color_background_number);
       assertEquals(2, PanelPreferencesRendererModern.render_label_when);

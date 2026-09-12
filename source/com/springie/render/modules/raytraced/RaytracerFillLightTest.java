@@ -16,15 +16,17 @@ import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 
 /**
- * Specular highlights through the full tile pipeline.
+ * The fill light through the full tile pipeline: a weak second light
+ * from the front-right that lifts surfaces turned away from the key,
+ * shadow-independent.
  *
- * <p>The centre pixel's primary ray runs straight down +z from the eye
- * (25600, 25600, -196608), so a sphere centred on (25600, 25600, 0) is
- * hit exactly at its near pole. The light sits mostly behind the camera,
- * so the near pole is close to the perfect mirror direction and carries
- * a strong highlight. No model is loaded, so Fog.applyFog is a no-op.
+ * <p>The centre pixel's primary ray runs straight down +z, so a white
+ * sphere centred on that ray is hit exactly at its near pole. The fill
+ * direction mirrors the key light's azimuth, so |normal . fill| at the
+ * pole equals |normal . light|: 0.85092. No model is loaded, so
+ * Fog.applyFog is a no-op.
  */
-public class RaytracerSpecularTest {
+public class RaytracerFillLightTest {
   private static final double EX = 100 << Coords.shift;
 
   private static final double EY = 100 << Coords.shift;
@@ -48,6 +50,12 @@ public class RaytracerSpecularTest {
   private boolean saved_shadows;
 
   private int saved_specular;
+
+  private int saved_fresnel;
+
+  private int saved_fill_light;
+
+  private int saved_antialiasing;
 
   @BeforeEach
   public void setUp() {
@@ -76,9 +84,15 @@ public class RaytracerSpecularTest {
     this.saved_glossiness = RendererDelegator.glossiness;
     this.saved_shadows = RendererDelegator.shadows;
     this.saved_specular = RendererDelegator.specular;
+    this.saved_fresnel = RendererDelegator.fresnel;
+    this.saved_fill_light = RendererDelegator.fill_light;
+    this.saved_antialiasing = RendererDelegator.antialiasing;
 
     RendererDelegator.glossiness = 0;
     RendererDelegator.shadows = false;
+    RendererDelegator.specular = 0;
+    RendererDelegator.fresnel = 0;
+    RendererDelegator.antialiasing = 1;
   }
 
   @AfterEach
@@ -96,50 +110,57 @@ public class RaytracerSpecularTest {
     RendererDelegator.glossiness = this.saved_glossiness;
     RendererDelegator.shadows = this.saved_shadows;
     RendererDelegator.specular = this.saved_specular;
+    RendererDelegator.fresnel = this.saved_fresnel;
+    RendererDelegator.fill_light = this.saved_fill_light;
+    RendererDelegator.antialiasing = this.saved_antialiasing;
   }
 
-  private int centrePixel(Primitive[] primitives) {
+  private int nearPole(int fill) {
+    RendererDelegator.fill_light = fill;
+    final Primitive[] primitives = new Primitive[] { new RTSphere(EX, EY,
+        0.0, 20000.0, 0xFFFFFF) };
     final BVH bvh = new BVH(primitives);
-    final RayCamera camera = new RayCamera();
     final int[] pixels = new int[200 * 200];
-    Raytracer.renderTile(0, 0, 200, 200, camera, bvh, pixels);
+    Raytracer.renderTile(0, 0, 200, 200, new RayCamera(), bvh, pixels);
     return pixels[100 * 200 + 100];
   }
 
-  private Primitive[] whiteSphere() {
-    return new Primitive[] { new RTSphere(EX, EY, 0.0, 20000.0, 0xFFFFFF) };
+  private static int channel(int rgb, int shift) {
+    return (rgb >> shift) & 0xFF;
   }
 
   @Test
-  public void zeroSpecularIsPureDiffuse() {
-    RendererDelegator.specular = 0;
+  public void zeroFillIsPureDiffuse() {
     // Diffuse only: |normal . light| = 0.85092 at the near pole,
     // scaled = 236, (255 * 236) >> 8 = 235.
-    assertEquals(0xFFEBEBEB, centrePixel(whiteSphere()),
-        "specular 0% must leave the diffuse picture untouched");
+    assertEquals(0xFFEBEBEB, nearPole(0),
+        "fill 0% must leave the diffuse picture untouched");
   }
 
   @Test
-  public void fullSpecularRollsOffSoftly() {
-    RendererDelegator.specular = 100;
-    // The highlight at the near pole adds ~73 per channel to the 235
-    // diffuse; the soft rolloff asymptotes instead of clipping:
-    // 255 - (255 - 235) * 255 / (255 + 73) = 240.
-    assertEquals(0xFFF0F0F0, centrePixel(whiteSphere()),
-        "specular 100% must roll the highlight off softly at the near pole");
+  public void fillLiftsTheNearPole() {
+    final int plain = nearPole(0);
+    final int filled = nearPole(100);
+    for (final int shift : new int[] { 16, 8, 0 }) {
+      assertTrue(channel(filled, shift) > channel(plain, shift),
+          "fill 100% must lift the near pole, channel " + shift + ": "
+              + Integer.toHexString(plain) + " -> "
+              + Integer.toHexString(filled));
+    }
   }
 
   @Test
-  public void partialSpecularIsBetween() {
-    RendererDelegator.specular = 100;
-    final int full = centrePixel(whiteSphere());
-    RendererDelegator.specular = 10;
-    final int partial = centrePixel(whiteSphere());
-    RendererDelegator.specular = 0;
-    final int none = centrePixel(whiteSphere());
-    assertTrue(partial > none,
-        "specular 10% must brighten the pole over 0%");
-    assertTrue(full >= partial,
-        "specular must grow monotonically with the setting");
+  public void fillGrowsMonotonically() {
+    final int none = nearPole(0);
+    final int some = nearPole(30);
+    final int full = nearPole(100);
+    for (final int shift : new int[] { 16, 8, 0 }) {
+      final int c0 = channel(none, shift);
+      final int c30 = channel(some, shift);
+      final int c100 = channel(full, shift);
+      assertTrue(c30 > c0 && c30 < c100,
+          "fill must grow monotonically at the near pole: " + c0
+              + " < " + c30 + " < " + c100);
+    }
   }
 }

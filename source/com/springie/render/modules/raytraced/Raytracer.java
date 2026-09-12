@@ -2,6 +2,8 @@
 
 package com.springie.render.modules.raytraced;
 
+import java.util.Random;
+
 import com.springie.geometry.Vector3D;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.LightSource;
@@ -22,6 +24,19 @@ final class Raytracer {
 
   private static final double LIGHT_Z;
 
+  /**
+   * The fill light: front-right, mirroring the key light's front-left
+   * azimuth, so surfaces turned away from the key still model instead
+   * of sitting at the flat diffuse floor. Weaker by convention -- the
+   * Fill light percentage scales it -- and shadow-independent, the way
+   * a photographer's fill lifts the shadows.
+   */
+  private static final double FILL_X;
+
+  private static final double FILL_Y;
+
+  private static final double FILL_Z;
+
   static {
     final Vector3D source = LightSource.source_1;
     final double length = Math.sqrt(source.x * source.x + source.y * source.y
@@ -29,6 +44,14 @@ final class Raytracer {
     LIGHT_X = source.x / length;
     LIGHT_Y = source.y / length;
     LIGHT_Z = source.z / length;
+
+    final double fx = -source.x;
+    final double fy = -source.y;
+    final double fz = source.z;
+    final double fill_length = Math.sqrt(fx * fx + fy * fy + fz * fz);
+    FILL_X = fx / fill_length;
+    FILL_Y = fy / fill_length;
+    FILL_Z = fz / fill_length;
   }
 
   private Raytracer() {
@@ -112,10 +135,17 @@ final class Raytracer {
         long g = 0;
         long b = 0;
         boolean struck = false;
+        // Stratified jitter: one sample per stratum, randomly placed
+        // inside it. Same ray count as the regular grid, but edges near
+        // the pixel axes no longer alias in lockstep. Seeded per pixel
+        // so a render is deterministic run to run and independent of
+        // tile boundaries.
+        final Random jitter = new Random(
+            (x0 + x) * 73856093L ^ (y0 + y) * 19349663L ^ 0x9E3779B9L);
         for (int sy = 0; sy < aa; sy++) {
           for (int sx = 0; sx < aa; sx++) {
-            camera.makeRay(x0 + x + (sx + 0.5) / aa,
-                y0 + y + (sy + 0.5) / aa, ray);
+            camera.makeRay(x0 + x + (sx + jitter.nextDouble()) / aa,
+                y0 + y + (sy + jitter.nextDouble()) / aa, ray);
             hit.reset();
             final int rgb;
             if (bvh.intersect(ray, hit, stack)) {
@@ -139,11 +169,13 @@ final class Raytracer {
   }
 
   /**
-   * Diffuse shading with optional shadows, a glossy sheen, specular
-   * highlights, and an optional Fresnel rim. Shadow rays (towards
-   * LIGHT_*) are traced when RendererDelegator.shadows is set; the sheen,
-   * the highlight and the rim are smooth functions of the surface normal,
-   * so they can never speckle.
+   * Diffuse shading with optional shadows, a fill light, a glossy
+   * sheen, specular highlights, and an optional Fresnel rim. Shadow
+   * rays (towards LIGHT_*) are traced when RendererDelegator.shadows
+   * is set; the fill, the sheen, the highlight and the rim are smooth
+   * functions of the surface normal, so they can never speckle. Added
+   * light rolls off softly towards 255 instead of clipping, so hot
+   * spots keep their detail.
    *
    * <p>Matches the default renderer: its [128, 255] brightness range, its
    * depth fog, and its packed-colour convention (0xRRGGBB -- red in the
@@ -179,28 +211,58 @@ final class Raytracer {
     int og = (g * scaled) >> 8;
     int ob = (b * scaled) >> 8;
 
+    // The fill light is shadow-independent: it lifts the shadowed
+    // areas too, the way a photographer's fill does.
+    final int fill = fillLight(hit);
+    or = softAdd(or, fill);
+    og = softAdd(og, fill);
+    ob = softAdd(ob, fill);
+
     if (!shadowed) {
       final int sheen = glossySheen(ray, hit);
-      if (sheen > 0) {
-        or = Math.min(255, or + sheen);
-        og = Math.min(255, og + sheen);
-        ob = Math.min(255, ob + sheen);
-      }
       final int highlight = specularHighlight(ray, hit);
-      if (highlight > 0) {
-        or = Math.min(255, or + highlight);
-        og = Math.min(255, og + highlight);
-        ob = Math.min(255, ob + highlight);
-      }
       final int rim = fresnelRim(ray, hit);
-      if (rim > 0) {
-        or = Math.min(255, or + rim);
-        og = Math.min(255, og + rim);
-        ob = Math.min(255, ob + rim);
-      }
+      or = softAdd(softAdd(softAdd(or, sheen), highlight), rim);
+      og = softAdd(softAdd(softAdd(og, sheen), highlight), rim);
+      ob = softAdd(softAdd(softAdd(ob, sheen), highlight), rim);
     }
 
     return 0xFF000000 | (or << 16) | (og << 8) | ob;
+  }
+
+  /**
+   * Adds white light with a soft shoulder instead of a hard clip at
+   * 255: small adds behave linearly, large ones asymptote to 255, so
+   * hot spots keep their detail instead of blowing out to flat white.
+   */
+  private static int softAdd(int base, int add) {
+    if (add <= 0) {
+      return base;
+    }
+    if (base >= 255) {
+      return 255;
+    }
+    return 255 - (255 - base) * 255 / (255 + add);
+  }
+
+  /**
+   * The fill light: |normal . fill| scaled by the Fill light
+   * percentage. Returns the 0-255 white to add, or 0 when the setting
+   * is 0. Shadow-independent, so it lifts shadowed areas too.
+   */
+  private static int fillLight(Hit hit) {
+    final int strength = RendererDelegator.fill_light;
+    if (strength <= 0) {
+      return 0;
+    }
+    double dot = hit.nx * FILL_X + hit.ny * FILL_Y + hit.nz * FILL_Z;
+    if (dot < 0.0) {
+      dot = -dot;
+    }
+    if (dot > 1.0) {
+      dot = 1.0;
+    }
+    return (int) (strength * 2.55 * dot);
   }
 
   /**

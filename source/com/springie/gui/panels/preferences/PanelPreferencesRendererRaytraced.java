@@ -16,7 +16,7 @@ import com.tifsoft.Forget;
 
 /**
  * Ray-traced renderer options: glossiness (the smooth satin sheen),
- * shadows, specular highlights, and the Fresnel rim.
+ * shadows, specular highlights, the Fresnel rim, and the fill light.
  */
 public class PanelPreferencesRendererRaytraced {
   public Panel panel = FrEnd.setUpPanelForFrame();
@@ -31,6 +31,8 @@ public class PanelPreferencesRendererRaytraced {
 
   private TTChoice choose_fresnel;
 
+  private TTChoice choose_fill_light;
+
   public PanelPreferencesRendererRaytraced(MessageManager message_manager) {
     this.message_manager = message_manager;
     makePanel();
@@ -41,6 +43,7 @@ public class PanelPreferencesRendererRaytraced {
     this.panel.add(panelShadows());
     this.panel.add(panelSpecular());
     this.panel.add(panelFresnel());
+    this.panel.add(panelFillLight());
   }
 
   private Panel panelGlossiness() {
@@ -135,6 +138,31 @@ public class PanelPreferencesRendererRaytraced {
     return panel;
   }
 
+  private Panel panelFillLight() {
+    final Panel panel = new Panel();
+    final Label label = new Label("Fill light:");
+    panel.add(label);
+
+    this.choose_fill_light = new TTChoice(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        Forget.about(e);
+        final String scs = (String) e.getItem();
+        final int val = PanelPreferencesRendererRaytraced.this.choose_fill_light
+            .str_to_num(scs);
+        RendererDelegator.fill_light = val;
+      }
+    });
+
+    for (int percent = 0; percent <= 100; percent += 10) {
+      this.choose_fill_light.add(percent + "%", percent);
+    }
+    this.choose_fill_light.choice.select(
+        this.choose_fill_light.num_to_str(RendererDelegator.fill_light));
+    panel.add(this.choose_fill_light.choice);
+
+    return panel;
+  }
+
   public void resetToDefaults() {
     RendererDelegator.glossiness = 0;
     this.choose_glossiness.choice.select(
@@ -150,5 +178,9 @@ public class PanelPreferencesRendererRaytraced {
     RendererDelegator.fresnel = 0;
     this.choose_fresnel.choice.select(
         this.choose_fresnel.num_to_str(0));
+
+    RendererDelegator.fill_light = 0;
+    this.choose_fill_light.choice.select(
+        this.choose_fill_light.num_to_str(0));
   }
 }
