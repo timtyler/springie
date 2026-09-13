@@ -18,6 +18,7 @@ import java.awt.event.ItemListener;
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.Node;
+import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.GUIStrings;
 import com.springie.messages.NewMessageManager;
 import com.springie.messages.commands.NodeGrowthMessage;
@@ -411,16 +412,13 @@ public class PanelControlsUniverse {
 		reflectViscocity();
 
 		// Collision checks.
-		setCheckboxSilently(this.checkbox_collision_check, true);
 		FrEnd.check_collisions = true;
 
 		// Link forces (checked means enabled).
-		setCheckboxSilently(this.checkbox_links_disabled, true);
 		FrEnd.links_disabled = false;
 
 		// Charge.
 		ContextManager.getNodeManager().electrostatic.charge_active = true;
-		this.checkbox_charge_switch.setState(true);
 
 		// Muscles.
 		Muscles.enabled = false;
@@ -429,12 +427,11 @@ public class PanelControlsUniverse {
 		setCheckboxSilently(this.checkbox_muscles, false);
 		reflectMuscles();
 
-		// Continuously centre and node growth (their listeners queue toggle
-		// messages, so don't fire them here).
-		setCheckboxSilently(this.checkbox_continuously_centre, false);
+		// Continuously centre and node growth.
 		FrEnd.continuously_centre = false;
-		setCheckboxSilently(this.checkbox_node_growth, false);
 		FrEnd.node_growth = false;
+
+		reflectUniverseToggles();
 
 		if (FrEnd.development_version) {
 			// Speed limit.
@@ -497,6 +494,25 @@ public class PanelControlsUniverse {
 
 	public void reflect3D() {
 		this.checkbox_3D.setState(FrEnd.three_d);
+	}
+
+	/**
+	 * Reflects the universe toggle checkboxes from the current simulation
+	 * statics. Model files carry their own universe settings, so a load (or
+	 * a model switch) can change the statics from under the UI; without this
+	 * the checkboxes keep showing the previous model's values (e.g. Moscow
+	 * ships collision_check=false while the box stayed on). The toggle
+	 * listeners must not fire here: several of them invert the static.
+	 */
+	public void reflectUniverseToggles() {
+		setCheckboxSilently(this.checkbox_collision_check, FrEnd.check_collisions);
+		// The box reads "enable link forces": checked means not disabled.
+		setCheckboxSilently(this.checkbox_links_disabled, !FrEnd.links_disabled);
+		setCheckboxSilently(this.checkbox_continuously_centre, FrEnd.continuously_centre);
+		setCheckboxSilently(this.checkbox_node_growth, FrEnd.node_growth);
+		final NodeManager manager = ContextManager.getNodeManager();
+		setCheckboxSilently(this.checkbox_charge_switch,
+				manager != null && manager.electrostatic.charge_active);
 	}
 
 	public void reflectImpact() {

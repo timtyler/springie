@@ -881,6 +881,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		FrEnd.panel_universe.reflect3D();
 		FrEnd.panel_universe.reflectMuscles();
 		FrEnd.panel_universe.checkbox_muscles.setState(Muscles.enabled);
+		FrEnd.panel_universe.reflectUniverseToggles();
 
 		FrEnd.panel_controls_statistics.updateGUIToReflectPropertiesChange();
 
