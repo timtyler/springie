@@ -428,6 +428,8 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 	public static PanelControlsProperties panel_edit_properties = new PanelControlsProperties(message_manager);
 
+	public static PanelControls panel_controls = new PanelControls(message_manager);
+
 	public static PanelControlsModify panel_edit_model = new PanelControlsModify(message_manager);
 
 	public static PanelFundamental panel_fundamental = new PanelFundamental(message_manager, new_message_manager);
@@ -474,8 +476,6 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 	public static PanelPreferencesDisplay panel_preferences_display = new PanelPreferencesDisplay(message_manager);
 
 	public static PanelPreferences panel_preferences = new PanelPreferences(message_manager);
-
-	public static PanelControls panel_controls = new PanelControls(message_manager);
 
 	public static PanelAllControls panel_controls_all = new PanelAllControls();
 

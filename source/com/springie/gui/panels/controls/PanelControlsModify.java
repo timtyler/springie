@@ -23,6 +23,7 @@ public class PanelControlsModify {
     this.panel.setLayout(new BorderLayout());
     final TabbedPanel tab = new TabbedPanel();
     tab.add("Properties", FrEnd.panel_edit_properties.panel);
+    tab.add("Controls", FrEnd.panel_controls.panel);
 //    tab.add("Delete", FrEnd.panel_edit_delete.panel);
 //    tab.add("Edit", FrEnd.panel_edit_edit.panel);
 
