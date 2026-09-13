@@ -25,15 +25,19 @@ public class Link extends BaseElement {
 
   /**
    * Per-link muscle controller; null means uncontrolled. The controller is
-   * updated once per dynamics step and drives {@link #rest_length_scale}.
+   * updated once per dynamics step and drives {@link #adjusted_rest_length}.
    */
   public Controller controller;
 
   /**
-   * Rest-length scale commanded by the controller, in fixed point;
-   * {@link Muscles#UNITY} means the unscaled rest length.
+   * The rest length after the controller has acted, in fixed point.
+   * Starts equal to the default rest length ({@link LinkType#length});
+   * the controller rewrites it every dynamics step. Read through
+   * {@link #getEffectiveRestLength()}: while muscles are disabled, or
+   * when no controller is attached, the link uses its default rest
+   * length exactly as before.
    */
-  public int rest_length_scale = Muscles.UNITY;
+  public int adjusted_rest_length;
 
   public static int number_of_strut_render_divisions = 2;
 
@@ -73,6 +77,9 @@ public class Link extends BaseElement {
     this.nodes[1] = e2;
     this.type = type;
     this.clazz = clazz;
+    // NB: readers build a scratch link with a null type and install the
+    // real type later via set(...), which refreshes this too.
+    this.adjusted_rest_length = type == null ? 0 : type.length;
   }
 
   Link(Node e1, Node e2, Link l) {
@@ -98,6 +105,7 @@ public class Link extends BaseElement {
     this.nodes[0] = e1;
     this.nodes[1] = e2;
     this.type = new LinkType(l, e);
+    this.adjusted_rest_length = this.type.length;
   }
 
   void set(Node e1, Node e2, LinkType type, Clazz clazz) {
@@ -106,6 +114,7 @@ public class Link extends BaseElement {
     this.nodes[1] = e2;
     this.type = type;
     this.clazz = clazz;
+    this.adjusted_rest_length = type == null ? 0 : type.length;
   }
 
   // DANGER
@@ -113,7 +122,7 @@ public class Link extends BaseElement {
     this.type = l.type;
     this.clazz = l.clazz;
     this.controller = l.controller;
-    this.rest_length_scale = l.rest_length_scale;
+    this.adjusted_rest_length = l.adjusted_rest_length;
 
     this.nodes = new Node[2];
     this.nodes[0] = l.nodes[0];
@@ -129,13 +138,18 @@ public class Link extends BaseElement {
   }
 
   /**
-   * The rest length with the muscle controller's scale applied, in fixed
-   * point. While muscles are disabled this is exactly {@code type.length},
-   * so unmuscled models behave exactly as before.
+   * The rest length the elastic force uses, in fixed point.
+   *
+   * <p>Every link has a default rest length ({@code type.length}) and an
+   * adjusted rest length (what the controller last wrote). While muscles
+   * are disabled, or when no controller is attached, this is exactly
+   * {@code type.length}, so unmuscled models behave exactly as before.
    */
   public int getEffectiveRestLength() {
-    final int scale = Muscles.enabled ? this.rest_length_scale : Muscles.UNITY;
-    return (int) (((long) this.type.length * scale) >> Coords.shift);
+    if (!Muscles.enabled || this.controller == null) {
+      return this.type.length;
+    }
+    return this.adjusted_rest_length;
   }
 
   public int getActualLength() {

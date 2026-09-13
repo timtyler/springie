@@ -4,8 +4,16 @@ import com.springie.utilities.random.Hortensius32Fast;
 
 
 public class Oscillator {
+  /**
+   * Pulse depth, as a fixed-point fraction of the rest length: 0.25
+   * shortens and lengthens each driven link by up to 25%.
+   */
   public int amplitude;
-  public int frequency;
+
+  /** Oscillator period, in dynamics ticks. */
+  public int period_ticks;
+
+  /** Phase offset into the cycle, in ticks. */
   public int phase;
 
   public int getAmplitude() {
@@ -20,17 +28,29 @@ public class Oscillator {
   public void setPhase(int phase) {
     this.phase = phase;
   }
+  public int getPeriodTicks() {
+    return this.period_ticks;
+  }
+  public void setPeriodTicks(int period_ticks) {
+    this.period_ticks = period_ticks;
+  }
+
+  /**
+   * Rest-length scale factor at the given dynamics tick, in fixed point:
+   * UNITY + amplitude * sin(2 * pi * (tick + phase) / period_ticks).
+   * Controllers linked to this oscillator write it onto their links as
+   * the adjusted rest length; amplitude and phase live here, not in the
+   * links.
+   */
+  public int getScale(long tick) {
+    final double radians = 2.0 * Math.PI * (tick + this.phase) / this.period_ticks;
+    return Muscles.UNITY + (int) (this.amplitude * Math.sin(radians));
+  }
 
   final void mutate() {
     final Hortensius32Fast rnd = new Hortensius32Fast();
 
     this.amplitude += (rnd.nextInt() >> 24) & 255;
     this.phase += (rnd.nextInt() >> 24) & 255;
-  }
-  public int getFrequency() {
-    return this.frequency;
-  }
-  public void setFrequency(int frequency) {
-    this.frequency = frequency;
   }
 }

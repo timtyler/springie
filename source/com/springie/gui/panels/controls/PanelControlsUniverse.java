@@ -201,7 +201,7 @@ public class PanelControlsUniverse {
 		this.scroll_bar_muscles_amplitude = new Scrollbar(Scrollbar.HORIZONTAL, 25, 1, 0, 51);
 		this.scroll_bar_muscles_amplitude.addAdjustmentListener(new AdjustmentListener() {
 			public void adjustmentValueChanged(AdjustmentEvent e) {
-				Muscles.amplitude = e.getValue() * Muscles.UNITY / 100;
+				Muscles.activeOscillator().setAmplitude(e.getValue() * Muscles.UNITY / 100);
 				reflectMuscles();
 			}
 		});
@@ -218,7 +218,7 @@ public class PanelControlsUniverse {
 		this.scroll_bar_muscles_period = new Scrollbar(Scrollbar.HORIZONTAL, 120, 10, 20, 610);
 		this.scroll_bar_muscles_period.addAdjustmentListener(new AdjustmentListener() {
 			public void adjustmentValueChanged(AdjustmentEvent e) {
-				Muscles.period_ticks = e.getValue();
+				Muscles.activeOscillator().setPeriodTicks(e.getValue());
 				reflectMuscles();
 			}
 		});
@@ -425,8 +425,8 @@ public class PanelControlsUniverse {
 
 		// Muscles.
 		Muscles.enabled = false;
-		Muscles.amplitude = 25 * Muscles.UNITY / 100;
-		Muscles.period_ticks = 120;
+		Muscles.activeOscillator().setAmplitude(25 * Muscles.UNITY / 100);
+		Muscles.activeOscillator().setPeriodTicks(120);
 		setCheckboxSilently(this.checkbox_muscles, false);
 		reflectMuscles();
 
@@ -506,12 +506,12 @@ public class PanelControlsUniverse {
 	}
 
 	public void reflectMuscles() {
-		final int amplitude_percent = Muscles.amplitude * 100 / Muscles.UNITY;
+		final int amplitude_percent = Muscles.activeOscillator().getAmplitude() * 100 / Muscles.UNITY;
 		this.scroll_bar_muscles_amplitude.setValue(amplitude_percent);
 		this.label_muscles_amplitude.setText("" + amplitude_percent);
 
-		this.scroll_bar_muscles_period.setValue(Muscles.period_ticks);
-		this.label_muscles_period.setText("" + Muscles.period_ticks);
+		this.scroll_bar_muscles_period.setValue(Muscles.activeOscillator().getPeriodTicks());
+		this.label_muscles_period.setText("" + Muscles.activeOscillator().getPeriodTicks());
 	}
 
 	public Label getLabelBias() {

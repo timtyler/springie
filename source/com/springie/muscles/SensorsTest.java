@@ -94,14 +94,15 @@ class SensorsTest {
   }
 
   @Test
-  void strainUsesTheEffectiveRestLength() {
+  void strainUsesTheAdjustedRestLength() {
     final Link link = makeLink(100 << Coords.shift);
-    link.rest_length_scale = Muscles.UNITY / 2;
+    link.controller = new GlobalOscillatorController(Muscles.active_oscillator);
+    link.adjusted_rest_length = link.type.length / 2;
 
     Muscles.enabled = true;
     try {
-      // The link sits at its unscaled rest length, but the controller has
-      // halved the effective rest length, so the link reads as stretched.
+      // The link sits at its default rest length, but the controller has
+      // halved the adjusted rest length, so the link reads as stretched.
       assertTrue(Sensors.stretch(link) > 0);
       assertTrue(Sensors.compression(link) == 0);
     } finally {

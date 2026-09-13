@@ -14,8 +14,9 @@ import com.springie.muscles.Muscles;
 /**
  * Attaches and detaches muscle controllers to links.
  *
- * <p>Phases are staggered across the muscled links so the global pulse
- * travels as a wave instead of breathing in unison.
+ * <p>Every attached controller is linked to the active oscillator
+ * ({@link Muscles#active_oscillator}); amplitude, period and phase live
+ * in the oscillator, so links carry no oscillator state of their own.
  */
 public final class MuscleTools {
   private MuscleTools() {
@@ -48,8 +49,7 @@ public final class MuscleTools {
   private static void attach(List<Link> targets) {
     final int count = targets.size();
     for (int i = 0; i < count; i++) {
-      final int phase = count == 0 ? 0 : (i * Muscles.period_ticks) / count;
-      targets.get(i).controller = new GlobalOscillatorController(phase);
+      targets.get(i).controller = new GlobalOscillatorController(Muscles.active_oscillator);
     }
   }
 
@@ -59,7 +59,7 @@ public final class MuscleTools {
     for (int temp = n_o_l; --temp >= 0;) {
       final Link link = (Link) link_manager.element.get(temp);
       link.controller = null;
-      link.rest_length_scale = Muscles.UNITY;
+      link.adjusted_rest_length = link.type.length;
     }
   }
 }

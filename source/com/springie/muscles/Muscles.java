@@ -8,9 +8,10 @@ import com.springie.render.Coords;
  * Global muscle configuration.
  *
  * <p>Each link carries its own {@link Controller}, which senses the link and
- * drives its rest length. This class holds the shared settings; the first
- * behaviour is a global oscillator (see {@link GlobalOscillatorController}),
- * so every muscled link pulses in time, offset by its own phase.
+ * drives its rest length. This class holds the shared settings: a bank of
+ * {@link Oscillator}s, exactly one of which is active. Controllers are
+ * linked to an oscillator by index; amplitude, period and phase live in
+ * the oscillator, so links carry no oscillator state of their own.
  */
 public final class Muscles {
   private Muscles() {
@@ -22,18 +23,33 @@ public final class Muscles {
 
   /**
    * Master switch. While false, controllers are not updated and every link
-   * uses its unscaled rest length, so disabled muscles cost a single
+   * uses its default rest length, so disabled muscles cost a single
    * static check per dynamics step.
    */
   public static boolean enabled = false;
 
   /**
-   * Pulse depth, as a fixed-point fraction of the rest length:
-   * 0.25 (that is, {@code (int) (0.25 * UNITY)}) shortens and lengthens
-   * each muscled link by up to 25%.
+   * The oscillator bank. Slots beyond the active one start empty, ready
+   * for experiments (and, later, evolution) to fill.
    */
-  public static int amplitude = (int) (0.25 * UNITY);
+  public static final int NUMBER_OF_OSCILLATORS = 8;
 
-  /** Oscillator period, in dynamics ticks. */
-  public static int period_ticks = 120;
+  /** The oscillators; only the active slot is guaranteed to exist. */
+  public static final Oscillator[] oscillators = new Oscillator[NUMBER_OF_OSCILLATORS];
+
+  /** Index of the active oscillator: the one new controllers link to. */
+  public static int active_oscillator = 0;
+
+  static {
+    final Oscillator first = new Oscillator();
+    first.amplitude = (int) (0.25 * UNITY);
+    first.period_ticks = 120;
+    first.phase = 0;
+    oscillators[0] = first;
+  }
+
+  /** Returns the currently-active oscillator. */
+  public static Oscillator activeOscillator() {
+    return oscillators[active_oscillator];
+  }
 }

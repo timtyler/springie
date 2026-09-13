@@ -97,8 +97,8 @@ public class DataInput {
     FrEnd.continuously_centre = false;
     FrEnd.node_growth = false;
     Muscles.enabled = false;
-    Muscles.amplitude = 25 * Muscles.UNITY / 100;
-    Muscles.period_ticks = 120;
+    Muscles.activeOscillator().setAmplitude(25 * Muscles.UNITY / 100);
+    Muscles.activeOscillator().setPeriodTicks(120);
     final NodeManager manager = ContextManager.getNodeManager();
     if (manager != null) {
       manager.electrostatic.charge_active = true;

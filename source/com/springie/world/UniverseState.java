@@ -61,8 +61,8 @@ public final class UniverseState {
     state.charge_active = electrostatic != null && electrostatic.charge_active;
 
     state.muscles_enabled = Muscles.enabled;
-    state.muscles_amplitude = Muscles.amplitude;
-    state.muscles_period_ticks = Muscles.period_ticks;
+    state.muscles_amplitude = Muscles.activeOscillator().getAmplitude();
+    state.muscles_period_ticks = Muscles.activeOscillator().getPeriodTicks();
 
     return state;
   }
@@ -88,7 +88,7 @@ public final class UniverseState {
     }
 
     Muscles.enabled = this.muscles_enabled;
-    Muscles.amplitude = this.muscles_amplitude;
-    Muscles.period_ticks = this.muscles_period_ticks;
+    Muscles.activeOscillator().setAmplitude(this.muscles_amplitude);
+    Muscles.activeOscillator().setPeriodTicks(this.muscles_period_ticks);
   }
 }

@@ -9,8 +9,8 @@ import com.springie.elements.links.Link;
  *
  * <p>Each link may carry one controller. It is called once per dynamics
  * step, before link forces are computed, and may both <em>sense</em> (via
- * {@link Sensors}: is this strut compressed? is it stretched?) and
- * <em>actuate</em>, by writing {@link Link#rest_length_scale}.
+ * {@link Sensors}: how compressed or stretched is this link?) and
+ * <em>actuate</em>, by writing {@link Link#adjusted_rest_length}.
  *
  * <p>The first behaviour is a global oscillator ({@link GlobalOscillatorController});
  * sensor-driven behaviours - reacting to compression, or to a node being
@@ -20,7 +20,7 @@ public interface Controller {
   /**
    * Advances the controller by one dynamics step.
    *
-   * @param link the link under control; write {@code link.rest_length_scale}
+   * @param link the link under control; write {@code link.adjusted_rest_length}
    *             to change its rest length for this step
    * @param tick the world's dynamics-step counter
    */

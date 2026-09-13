@@ -3,27 +3,36 @@
 package com.springie.muscles;
 
 import com.springie.elements.links.Link;
+import com.springie.render.Coords;
 
 /**
- * The first controller behaviour: every muscled link pulses with the global
- * oscillator defined by {@link Muscles#amplitude} and
- * {@link Muscles#period_ticks}.
+ * The first controller behaviour: the link follows one of the global
+ * oscillators ({@link Muscles#oscillators}). Every dynamics step the
+ * link's adjusted rest length is rewritten from the oscillator's sine
+ * wave.
  *
- * <p>Each link carries its own {@link #phase} offset, in ticks, into the
- * shared cycle - stagger the phases around a model and the pulse travels
- * as a wave instead of breathing in unison.
+ * <p>The controller holds only the oscillator's index -- amplitude, period
+ * and phase all live in the oscillator, and links carry no oscillator
+ * state of their own.
  */
 public class GlobalOscillatorController implements Controller {
-  /** Per-link phase offset into the global cycle, in ticks. */
-  public int phase;
+  /** Index into {@link Muscles#oscillators}: the oscillator this link follows. */
+  public int oscillator_index;
 
-  public GlobalOscillatorController(int phase) {
-    this.phase = phase;
+  public GlobalOscillatorController(int oscillator_index) {
+    this.oscillator_index = oscillator_index;
   }
 
   @Override
   public void update(Link link, long tick) {
-    final double radians = 2.0 * Math.PI * (tick + this.phase) / Muscles.period_ticks;
-    link.rest_length_scale = Muscles.UNITY + (int) (Muscles.amplitude * Math.sin(radians));
+    if (this.oscillator_index < 0 || this.oscillator_index >= Muscles.oscillators.length) {
+      return;
+    }
+    final Oscillator oscillator = Muscles.oscillators[this.oscillator_index];
+    if (oscillator == null) {
+      return;
+    }
+    final int scale = oscillator.getScale(tick);
+    link.adjusted_rest_length = (int) (((long) link.type.length * scale) >> Coords.shift);
   }
 }

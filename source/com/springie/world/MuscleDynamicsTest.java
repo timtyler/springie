@@ -43,21 +43,21 @@ class MuscleDynamicsTest {
 
     this.old_enabled = Muscles.enabled;
     this.old_check_collisions = FrEnd.check_collisions;
-    this.old_amplitude = Muscles.amplitude;
-    this.old_period = Muscles.period_ticks;
+    this.old_amplitude = Muscles.activeOscillator().getAmplitude();
+    this.old_period = Muscles.activeOscillator().getPeriodTicks();
 
     FrEnd.check_collisions = false;
     Muscles.enabled = true;
-    Muscles.amplitude = (int) (0.4 * Muscles.UNITY);
-    Muscles.period_ticks = 40;
+    Muscles.activeOscillator().setAmplitude((int) (0.4 * Muscles.UNITY));
+    Muscles.activeOscillator().setPeriodTicks(40);
   }
 
   @AfterEach
   void tearDown() {
     Muscles.enabled = this.old_enabled;
     FrEnd.check_collisions = this.old_check_collisions;
-    Muscles.amplitude = this.old_amplitude;
-    Muscles.period_ticks = this.old_period;
+    Muscles.activeOscillator().setAmplitude(this.old_amplitude);
+    Muscles.activeOscillator().setPeriodTicks(this.old_period);
   }
 
   /** A horizontal chain of links; muscled when asked. */
@@ -83,8 +83,9 @@ class MuscleDynamicsTest {
       final Link link = new Link(nodes[i], nodes[i + 1],
           link_types.getNew(100 << Coords.shift, 50), new Clazz(0));
       if (muscled) {
-        // Staggered phases: the pulse travels along the chain.
-        link.controller = new GlobalOscillatorController(i * 8);
+        // Every controller follows the active oscillator; the whole chain
+        // breathes in unison.
+        link.controller = new GlobalOscillatorController(Muscles.active_oscillator);
       }
       world.getLinkManager().element.add(link);
     }

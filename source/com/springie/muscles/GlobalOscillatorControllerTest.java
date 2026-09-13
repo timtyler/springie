@@ -20,14 +20,19 @@ import com.springie.geometry.Point3D;
 import com.springie.render.Coords;
 
 /**
- * The global oscillator drives each link's rest-length scale through a sine
- * wave; per-link phase offsets shift the wave in time.
+ * Each controller is linked to one oscillator by index; every dynamics
+ * step it rewrites the link's adjusted rest length from that oscillator's
+ * sine wave. Amplitude, period and phase live in the oscillator -- links
+ * carry none of it.
  */
 class GlobalOscillatorControllerTest {
 
   private boolean old_enabled;
+  private int old_active;
   private int old_amplitude;
   private int old_period;
+  private int old_phase;
+  private Oscillator old_slot_1;
 
   @BeforeEach
   void setUp() {
@@ -35,19 +40,31 @@ class GlobalOscillatorControllerTest {
     assumeTrue(!GraphicsEnvironment.isHeadless(), "needs a display");
 
     this.old_enabled = Muscles.enabled;
-    this.old_amplitude = Muscles.amplitude;
-    this.old_period = Muscles.period_ticks;
+    this.old_active = Muscles.active_oscillator;
+    this.old_slot_1 = Muscles.oscillators[1];
+
+    final Oscillator active = Muscles.activeOscillator();
+    this.old_amplitude = active.getAmplitude();
+    this.old_period = active.getPeriodTicks();
+    this.old_phase = active.getPhase();
 
     Muscles.enabled = true;
-    Muscles.amplitude = (int) (0.25 * Muscles.UNITY);
-    Muscles.period_ticks = 100;
+    Muscles.active_oscillator = 0;
+    active.setAmplitude((int) (0.25 * Muscles.UNITY));
+    active.setPeriodTicks(100);
+    active.setPhase(0);
   }
 
   @AfterEach
   void tearDown() {
     Muscles.enabled = this.old_enabled;
-    Muscles.amplitude = this.old_amplitude;
-    Muscles.period_ticks = this.old_period;
+    Muscles.active_oscillator = this.old_active;
+    Muscles.oscillators[1] = this.old_slot_1;
+
+    final Oscillator active = Muscles.activeOscillator();
+    active.setAmplitude(this.old_amplitude);
+    active.setPeriodTicks(this.old_period);
+    active.setPhase(this.old_phase);
   }
 
   private static Link makeLink() {
@@ -60,46 +77,61 @@ class GlobalOscillatorControllerTest {
   }
 
   @Test
-  void scaleFollowsASineWave() {
+  void adjustedLengthFollowsTheOscillatorSineWave() {
     final Link link = makeLink();
-    final Controller controller = new GlobalOscillatorController(0);
+    final int rest_length = link.type.length;
+    final Controller controller = new GlobalOscillatorController(Muscles.active_oscillator);
 
     controller.update(link, 0);
-    assertEquals(Muscles.UNITY, link.rest_length_scale, 2, "sin(0) == 0");
+    assertEquals(rest_length, link.adjusted_rest_length, 2, "sin(0) == 0");
 
     controller.update(link, 25);
-    assertEquals(Muscles.UNITY + Muscles.amplitude, link.rest_length_scale, 2,
+    assertEquals(rest_length + rest_length / 4, link.adjusted_rest_length, 2,
         "quarter period: full positive amplitude");
 
     controller.update(link, 50);
-    assertEquals(Muscles.UNITY, link.rest_length_scale, 2, "half period: back to rest");
+    assertEquals(rest_length, link.adjusted_rest_length, 2, "half period: back to rest");
 
     controller.update(link, 75);
-    assertEquals(Muscles.UNITY - Muscles.amplitude, link.rest_length_scale, 2,
+    assertEquals(rest_length - rest_length / 4, link.adjusted_rest_length, 2,
         "three-quarter period: full negative amplitude");
   }
 
   @Test
-  void phaseShiftsTheWaveInTime() {
-    final Link at_phase_0 = makeLink();
-    final Link at_phase_25 = makeLink();
+  void controllerFollowsItsLinkedOscillatorNotTheActiveOne() {
+    final Oscillator second = new Oscillator();
+    second.setAmplitude((int) (0.5 * Muscles.UNITY));
+    second.setPeriodTicks(100);
+    second.setPhase(0);
+    Muscles.oscillators[1] = second;
 
-    new GlobalOscillatorController(0).update(at_phase_0, 25);
-    new GlobalOscillatorController(25).update(at_phase_25, 0);
+    final Link link = makeLink();
+    new GlobalOscillatorController(1).update(link, 25);
 
-    assertEquals(at_phase_0.rest_length_scale, at_phase_25.rest_length_scale,
-        "a phase offset of N ticks equals starting N ticks later");
+    assertEquals(link.type.length + link.type.length / 2, link.adjusted_rest_length, 2,
+        "a controller linked to oscillator 1 must follow oscillator 1's amplitude, "
+            + "even while oscillator 0 is active");
   }
 
   @Test
-  void differentPhasesDisagree() {
-    final Link link_a = makeLink();
-    final Link link_b = makeLink();
+  void phaseLivesInTheOscillator() {
+    Muscles.activeOscillator().setPhase(25);
 
-    new GlobalOscillatorController(0).update(link_a, 25);
-    new GlobalOscillatorController(50).update(link_b, 25);
+    final Link link = makeLink();
+    new GlobalOscillatorController(Muscles.active_oscillator).update(link, 0);
 
-    assertTrue(Math.abs(link_a.rest_length_scale - link_b.rest_length_scale)
-        > Muscles.amplitude, "opposite phases must pull in opposite directions");
+    assertEquals(link.type.length + link.type.length / 4, link.adjusted_rest_length, 2,
+        "a 25-tick phase on the oscillator must shift the wave, with no phase stored in the link");
+  }
+
+  @Test
+  void missingOscillatorLeavesTheLinkAlone() {
+    final Link link = makeLink();
+    final int before = link.adjusted_rest_length;
+
+    new GlobalOscillatorController(7).update(link, 25);
+
+    assertTrue(link.adjusted_rest_length == before,
+        "an empty oscillator slot must not touch the link");
   }
 }
