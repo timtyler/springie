@@ -27,6 +27,7 @@ import com.springie.gui.components.ButtonBar;
 import com.springie.gui.components.ChoiceWithDescription;
 import com.springie.gui.components.ImageButton;
 import com.springie.gui.components.TextFieldWrapper;
+import com.springie.gui.components.WrapLayout;
 import com.springie.gui.panels.preferences.ButtonMouseActionStrings;
 import com.springie.io.out.writers.spr.WriterSpr;
 import com.springie.messages.Message;
@@ -106,7 +107,10 @@ public class PanelFundamental {
   void makePanelGenerate() {
     initialSetup();
     // this.panel.setLayout(new GridLayout(1, 0, 0, 0));
-    this.panel.setLayout(new FlowLayout());
+    // A wrapping layout that reports its wrapped height, so the bar grows
+    // to two rows when the window narrows instead of clipping the second
+    // row (FlowLayout's preferred height ignores wrapping).
+    this.panel.setLayout(new WrapLayout());
 
     makePanelMouseActions(this.panel);
     this.panel.add(makePanelControls());
@@ -164,7 +168,7 @@ public class PanelFundamental {
 
   private Panel makePresetsCard() {
     final Panel panel = new Panel();
-    panel.setLayout(new FlowLayout());
+    panel.setLayout(new WrapLayout());
     panel.add(makePanelPresetIndex());
     panel.add(makePanelInitialCvonfiguration());
     return panel;
@@ -172,7 +176,7 @@ public class PanelFundamental {
 
   private Panel makeFileCard() {
     final Panel panel = new Panel();
-    panel.setLayout(new FlowLayout());
+    panel.setLayout(new WrapLayout());
 
     this.label_file_name = new Label(leafOf(FrEnd.last_file_path));
     panel.add(this.label_file_name);

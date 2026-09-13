@@ -29,6 +29,12 @@ public class ButtonBar extends Panel implements ItemSelectable {
 
   ItemListener listener;
 
+  public ButtonBar() {
+    // Wrap instead of clipping if the bar ever gets narrower than the
+    // buttons; the height is recomputed for the wrapped rows.
+    setLayout(new WrapLayout());
+  }
+
   public void add(String name, String description) {
     this.name = name;
     this.description = description;
