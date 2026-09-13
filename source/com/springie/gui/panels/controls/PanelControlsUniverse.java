@@ -212,7 +212,7 @@ public class PanelControlsUniverse {
 		panel_collision_check.add(this.checkbox_collision_check);
 
 		final Panel panel_links_disabled = new Panel();
-		this.checkbox_links_disabled = new Checkbox(GUIStrings.LINKS_DISABLED);
+		this.checkbox_links_disabled = new Checkbox(GUIStrings.ENABLE_LINK_FORCES);
 		this.checkbox_links_disabled.setState(true);
 		this.checkbox_links_disabled.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
@@ -356,7 +356,7 @@ public class PanelControlsUniverse {
 		setCheckboxSilently(this.checkbox_collision_check, true);
 		FrEnd.check_collisions = true;
 
-		// Links disabled (checkbox is inverted: checked means enabled).
+		// Link forces (checked means enabled).
 		setCheckboxSilently(this.checkbox_links_disabled, true);
 		FrEnd.links_disabled = false;
 

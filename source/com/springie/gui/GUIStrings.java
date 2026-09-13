@@ -37,7 +37,7 @@ public interface GUIStrings {
 
   String collision_check = "Detect collisions";
 
-  String LINKS_DISABLED = "Disable links";
+  String ENABLE_LINK_FORCES = "Enable link forces";
 
   String STARFIELD = "Starfield";
 
