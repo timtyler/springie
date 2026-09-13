@@ -22,7 +22,14 @@ public class PerformSelection {
 	public static int VIRUS_RELEASE2 = 55;
 	public static int VIRUS_RELEASE3 = 50;
 	public static int IMMUNITY_START = 48;
-	
+
+	// Single-click pick arbitration: when candidates from several element
+	// types match the click, only one of them is kept.
+	private static final int PICK_NONE = 0;
+	private static final int PICK_NODE = 1;
+	private static final int PICK_LINK = 2;
+	private static final int PICK_FACE = 3;
+
 	public void performSelection(int x, int y, boolean drag_is_possible) {
 		if (RendererDelegator.renderer instanceof ModularRendererNew
 				|| RendererDelegator.renderer instanceof ModularRendererRaytraced) {
@@ -33,39 +40,108 @@ public class PerformSelection {
 
 		final BaseElement dragged_element = FrEnd.dragged_element;
 
-		if ((dragged_element == null) || (dragged_element instanceof Node)) {
-			if (FrEnd.panel_edit_select_main.checkbox_select_nodes.getState()) {
-				final boolean change_or_selected = doSelectNodes(x, y, drag_is_possible);
-				if (change_or_selected) {
-					if (FrEnd.dragged_element == null) {
-						return;
-					}
+		if (dragged_element != null) {
+			// Mid-drag (this also covers the click event that follows a
+			// press): keep driving the dragged element, but never pick up
+			// additional items while a drag is in progress.
+			if (dragged_element instanceof Node) {
+				if (FrEnd.panel_edit_select_main.checkbox_select_nodes.getState()) {
+					doSelectNodes(x, y, drag_is_possible);
 				}
 			}
+			if (FrEnd.panel_edit_select_main.checkbox_select_links.getState()) {
+				doSelectLinks(x, y, drag_is_possible);
+			}
+			return;
 		}
 
+		// Fresh click: take the nearest candidate from every enabled element
+		// type, then select only the one nearest to the viewer (smallest z).
+		// A click overlapping e.g. a node and a face used to select both.
+		final Node node;
+		if (FrEnd.panel_edit_select_main.checkbox_select_nodes.getState()) {
+			node = ContextManager.getNodeManager().isThereOne(x, y);
+		} else {
+			node = null;
+		}
+
+		final Link link;
 		if (FrEnd.panel_edit_select_main.checkbox_select_links.getState()) {
-			final boolean change_or_selected = doSelectLinks(x, y, drag_is_possible);
-			if (change_or_selected) {
-				if (FrEnd.dragged_element == null) {
-					return;
-				}
-			}
+			link = ContextManager.getLinkManager().isThereOne(x, y);
+		} else {
+			link = null;
 		}
 
+		final Face face;
 		if (FrEnd.panel_edit_select_main.checkbox_select_faces.getState()) {
-			final boolean change_or_selected = doSelectPolygons(x, y);
-			if (change_or_selected) {
-				if (FrEnd.dragged_element == null) {
-					return;
-				}
-			}
+			face = ContextManager.getFaceManager().isThereOne(x, y);
+		} else {
+			face = null;
 		}
 
-		if (FrEnd.dragged_element == null) {
+		final int pick = nearestPick(node, link, face);
+
+		final boolean hit;
+		if (pick == PICK_NODE) {
+			hit = doSelectNodes(x, y, drag_is_possible);
+		} else if (pick == PICK_LINK) {
+			hit = doSelectLinks(x, y, drag_is_possible);
+		} else if (pick == PICK_FACE) {
+			hit = doSelectPolygons(x, y);
+		} else {
+			hit = false;
+		}
+
+		if (hit) {
+			// With the no-drag tool there is nothing more to do; otherwise
+			// a drag has started and dragged_element is now set.
+			if (FrEnd.dragged_element == null) {
+				return;
+			}
+		} else {
+			// Nothing under the cursor: as before, the GUI is refreshed,
+			// anything selected is dropped, and this is where a drag-box
+			// gesture starts.
+			FrEnd.updateGUIToReflectSelectionChange();
 			conditionallyDeselectAll();
 			FrEnd.perform_actions.drag_box_manager.drag(x, y);
 		}
+	}
+
+	// Chooses the click candidate nearest to the viewer. Every picker
+	// already defines "nearest" as the smallest z, so the same depth is
+	// used here; ties keep the historical node > link > face precedence.
+	private static int nearestPick(Node node, Link link, Face face) {
+		int pick = PICK_NONE;
+		int best_z = Integer.MAX_VALUE;
+
+		if (node != null) {
+			best_z = node.pos.z;
+			pick = PICK_NODE;
+		}
+
+		if (link != null && link.nodes[0].pos.z < best_z) {
+			best_z = link.nodes[0].pos.z;
+			pick = PICK_LINK;
+		}
+
+		if (face != null && averageZ(face) < best_z) {
+			pick = PICK_FACE;
+		}
+
+		return pick;
+	}
+
+	private static int averageZ(Face face) {
+		final int npoints = face.nodes.size();
+		if (npoints == 0) {
+			return Integer.MAX_VALUE;
+		}
+		int sum_z = 0;
+		for (int i = 0; i < npoints; i++) {
+			sum_z += ((Node) face.nodes.get(i)).pos.z;
+		}
+		return sum_z / npoints;
 	}
 
 	// performInfection

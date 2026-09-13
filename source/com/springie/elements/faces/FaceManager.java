@@ -168,7 +168,7 @@ public class FaceManager extends BaseElementManager<Face> {
           final Node n = (Node) p.nodes.get(i);
 
           int nx = Coords.getXCoordsInternal(n.pos.x, n.pos.z);
-          int ny = Coords.getXCoordsInternal(n.pos.y, n.pos.z);
+          int ny = Coords.getYCoordsInternal(n.pos.y, n.pos.z);
           awt_points_x[i] = nx;
           awt_points_y[i] = ny;
 
