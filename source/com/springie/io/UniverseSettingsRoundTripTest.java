@@ -190,9 +190,10 @@ class UniverseSettingsRoundTripTest {
 
   @Test
   void loadingOldModelResetsAbsentAttributesToDefaults() {
-    // The bundled Moscow predates the new attributes: its universe tag
-    // carries only gravity_strength and charge_active. Stale values from
-    // the previous model must not leak through.
+    // The bundled Moscow was re-saved with a full universe tag, but it
+    // still predates the muscle attributes (and has no dimensions tag):
+    // attributes absent from the file must not inherit stale values from
+    // the previously loaded model.
     setUniverse(42, true, 777, 123456, 66, 987654, false, false, true,
         true, true, false);
     setMuscles(true, 100, 33);
@@ -201,21 +202,21 @@ class UniverseSettingsRoundTripTest {
         .loadFile("resource://models/moscow.spr");
 
     // From the file...
-    assertEquals(2, World.gravity_strength, "gravity_strength");
-    assertTrue(
+    assertEquals(0, World.gravity_strength, "gravity_strength");
+    assertFalse(World.gravity_active, "gravity_active");
+    assertFalse(
         ContextManager.getNodeManager().electrostatic.charge_active,
         "charge active");
-    // ...everything else back at the defaults.
-    assertFalse(World.gravity_active, "gravity_active");
     assertEquals(6, World.global_temperature, "temperature");
     assertEquals(0, World.minimum_magnitude, "excite");
     assertEquals(0, Node.viscocity, "viscosity");
     assertEquals(Integer.MAX_VALUE, Node.max_speed, "speed limit");
-    assertTrue(FrEnd.three_d, "3D");
-    assertTrue(FrEnd.check_collisions, "collision check");
+    assertFalse(FrEnd.check_collisions, "collision check");
     assertFalse(FrEnd.links_disabled, "links disabled");
     assertFalse(FrEnd.continuously_centre, "continuously centre");
     assertFalse(FrEnd.node_growth, "node growth");
+    // ...absent attributes back at the defaults.
+    assertTrue(FrEnd.three_d, "3D");
     assertMuscles(false, 85 * Muscles.UNITY / 100, 12);
   }
 }
