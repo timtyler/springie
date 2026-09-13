@@ -54,6 +54,23 @@ class ModelManagerTest {
   }
 
   @Test
+  void slotCreationDefersUntilTheNodeManagerExists() {
+    // The Models menu is built before applet.init() installs the node
+    // manager; getSlots() must not capture a null manager then (that NPE'd
+    // every later File > Load in DataInput.resetWorkspaces).
+    ContextManager.setNodeManager(null);
+    assertEquals(0, ModelManager.getSlots().size(),
+        "no slot may be created while the manager is missing");
+
+    final NodeManager manager = new NodeManager();
+    ContextManager.setNodeManager(manager);
+    assertEquals(1, ModelManager.getSlots().size(),
+        "the slot is created once the manager exists");
+    assertTrue(ModelManager.getActiveSlot().manager == manager,
+        "the slot wraps the live manager, never null");
+  }
+
+  @Test
   void loadNewModelAddsASlotAndSwitchesToIt() {
     final ModelSlot first = ModelManager.getActiveSlot();
 

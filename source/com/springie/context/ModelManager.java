@@ -24,12 +24,22 @@ public final class ModelManager {
     // static only
   }
 
-  /** Creates the first slot from the boot model, if none exists yet. */
+  /**
+   * Creates the first slot from the boot model, once a node manager exists.
+   * The Models menu is built before applet.init() installs the node manager,
+   * so this must tolerate being called too early: leaving the slot list empty
+   * and retrying on the next call. (Capturing the slot early pinned a null
+   * manager, which made every later File > Load throw NPE in
+   * DataInput.resetWorkspaces.)
+   */
   private static void ensureInitialized() {
     if (!slots.isEmpty()) {
       return;
     }
     final NodeManager manager = ContextManager.getNodeManager();
+    if (manager == null) {
+      return;
+    }
     final String path = FrEnd.last_file_path;
     slots.add(new ModelSlot(leafName(path), manager,
         UniverseState.capture(manager), path));

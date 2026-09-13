@@ -64,17 +64,21 @@ public class DataInput {
   }
 
   public void resetWorkspaces() {
-    final LinkManager link_manager = this.manager_destination.getLinkManager();
-    final FaceManager face_manager = this.manager_destination.getFaceManager();
+    // The shared FrEnd.data_input is constructed with a null destination;
+    // fall back to the live manager so reset paths never see a null.
+    final NodeManager destination = this.manager_destination != null
+        ? this.manager_destination : ContextManager.getNodeManager();
+    final LinkManager link_manager = destination.getLinkManager();
+    final FaceManager face_manager = destination.getFaceManager();
 
-    this.manager_destination.initial_reset();
+    destination.initial_reset();
     link_manager.reset();
     face_manager.reset();
 
-    this.manager_destination.node_type_factory.array.clear();
+    destination.node_type_factory.array.clear();
     link_manager.link_type_factory.array.clear();
     face_manager.face_type_factory.array.clear();
-    this.manager_destination.clazz_factory.array.clear();
+    destination.clazz_factory.array.clear();
 
     resetUniverseState();
   }
