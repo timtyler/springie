@@ -63,7 +63,7 @@ public class PanelPreferencesDisplay {
       }
     });
 
-    choice.add("Modern renderer   ", Quality.SOLID);
+    choice.add("Polygon renderer  ", Quality.SOLID);
     choice.add("Ray-traced renderer", Quality.RAYTRACED);
     choice.add("Original renderer ", Quality.THICK_OUTLINE);
     choice.choice.select(choice.num_to_str(Quality.SOLID));

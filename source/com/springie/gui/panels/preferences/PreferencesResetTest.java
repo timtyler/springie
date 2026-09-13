@@ -172,7 +172,7 @@ class PreferencesResetTest {
       assertEquals(false, RendererDelegator.scenic_background);
       assertEquals(2, PanelPreferencesRendererModern.render_label_when);
       assertTrue(RendererDelegator.renderer instanceof ModularRendererNew,
-          "reset must restore the Modern renderer");
+          "reset must restore the Polygon renderer");
 
       assertEquals(2, Link.number_of_strut_render_divisions);
       assertEquals(1, Link.number_of_cable_render_divisions);

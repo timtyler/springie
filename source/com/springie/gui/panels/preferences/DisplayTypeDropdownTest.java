@@ -29,7 +29,7 @@ import com.springie.render.modules.original.ModularRendererOld;
 /**
  * The Display type dropdown (the three renderer options) lives under the
  * Renderer tab now, not at the top of the Display panel. It appears twice:
- * once at the top of the shared Renderer tab (modern and ray-traced
+ * once at the top of the shared Renderer tab (polygon and ray-traced
  * renderers) and once in the original renderer's own Renderer tab, so that
  * picking the Original renderer never strands the user with no way back.
  * The two copies stay in sync.
@@ -45,10 +45,10 @@ class DisplayTypeDropdownTest {
     GuiTestSupport.bootApp();
   }
 
-  /** Pin the Modern renderer before each test; also restores the state. */
+  /** Pin the Polygon renderer before each test; also restores the state. */
   @BeforeEach
-  void pinModernRenderer() throws Exception {
-    selectRenderer(sharedDropdown(), "Modern");
+  void pinPolygonRenderer() throws Exception {
+    selectRenderer(sharedDropdown(), "Polygon");
   }
 
   /** The Display type row: a "Display type" label plus the dropdown. */
@@ -189,13 +189,13 @@ class DisplayTypeDropdownTest {
         "the two dropdowns must stay in sync");
 
     // Switch back from inside the original renderer's tab bar.
-    selectRenderer(originalTab, "Modern");
+    selectRenderer(originalTab, "Polygon");
     SwingUtilities.invokeAndWait(() -> {
       assertTrue(RendererDelegator.renderer instanceof ModularRendererNew,
-          "picking Modern must swap the modern renderer back in");
+          "picking Polygon must swap the polygon renderer back in");
       assertSame(FrEnd.panel_preferences_renderer_modern.panel,
           FrEnd.panel_preferences_display.panel_main.getComponent(0),
-          "the Display panel must show the modern renderer's tabs again");
+          "the Display panel must show the polygon renderer's tabs again");
     });
     assertEquals(selectedItem(originalTab), selectedItem(shared),
         "the shared dropdown must follow the switch back");
