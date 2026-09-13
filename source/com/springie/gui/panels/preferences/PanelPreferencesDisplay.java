@@ -3,7 +3,6 @@
 package com.springie.gui.panels.preferences;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.event.ItemEvent;
@@ -90,16 +89,19 @@ public class PanelPreferencesDisplay {
   }
 
   void makePanel() {
-    // The three renderer options live under the Renderer tab now: one
-    // copy at the top of the shared Renderer tab (modern and ray-traced
-    // renderers), one in the original renderer's own Renderer tab, so
-    // the renderer can always be switched back whichever is showing.
-    // Both panels exist already: they are built before this one.
+    // The Display type dropdown, the anti-aliasing choice and the
+    // frames-per-second readout live at the top of the shared Renderer
+    // tab (modern and ray-traced renderers), so the rendering settings
+    // sit together; one Display type copy also goes in the original
+    // renderer's own Renderer tab, so the renderer can always be
+    // switched back whichever is showing. Anti-aliasing only applies
+    // to the modern and ray-traced renderers. All three panels exist
+    // already: they are built before this one.
     FrEnd.panel_preferences_shared_show.panel.add(makeDisplayTypePanel(), 0);
+    FrEnd.panel_preferences_shared_show.panel.add(getAntiAliasingPanel(), 1);
+    FrEnd.panel_preferences_shared_show.panel.add(getFpsPanel(), 2);
     FrEnd.panel_preferences_renderer_original.panel_renderer_tab
         .add(makeDisplayTypePanel());
-
-    final Panel panel_antialiasing = getAntiAliasingPanel();
 
     // ...
 
@@ -116,29 +118,12 @@ public class PanelPreferencesDisplay {
 //    FrEnd.choose_display_struts = choose_display_struts;
 
 
-    // The Display panel is the frames-per-second readout, the
-    // anti-aliasing choice, and the renderer tab bar below.
+    // The Display panel is the renderer tab bar; the rendering
+    // settings (Display type, anti-aliasing, frames-per-second) live
+    // under its Renderer tab.
     this.panel.add(this.panel_renderer);
-    
+
     this.panel_frame.setLayout(new BorderLayout());
-
-    // Frames-per-second readout, kept next to the renderer options so it
-    // is visible while tuning the rendering settings.
-    final Panel panel_fps = new Panel();
-    panel_fps.add(new Label("Frames per second:", Label.RIGHT));
-    this.label_fps_value = new Label("X.XXXX", Label.LEFT);
-    panel_fps.add(this.label_fps_value);
-
-    final Panel panel_north_top = new Panel(new GridLayout(0, 1));
-    panel_north_top.add(panel_antialiasing);
-    panel_north_top.add(panel_fps);
-
-    // The shared Renderer/Misc options are tabs in the renderer tab bar
-    // below (combined with Options/Filtering/Colours to save space).
-    final Panel panel_north = new Panel(new BorderLayout());
-    panel_north.add(panel_north_top, "North");
-
-    this.panel_frame.add(panel_north, "North");
 
     this.panel_frame.add(this.panel_main, "Center");
 
@@ -195,6 +180,16 @@ public class PanelPreferencesDisplay {
     panel.add(this.choose_antialiasing.choice);
 
     return panel;
+  }
+
+  private Panel getFpsPanel() {
+    // Frames-per-second readout, kept next to the renderer options so it
+    // is visible while tuning the rendering settings.
+    final Panel panel_fps = new Panel();
+    panel_fps.add(new Label("Frames per second:", Label.RIGHT));
+    this.label_fps_value = new Label("X.XXXX", Label.LEFT);
+    panel_fps.add(this.label_fps_value);
+    return panel_fps;
   }
 
   private void applyRendererType(int value) {
