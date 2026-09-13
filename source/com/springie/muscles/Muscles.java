@@ -42,8 +42,8 @@ public final class Muscles {
 
   static {
     final Oscillator first = new Oscillator();
-    first.amplitude = (int) (0.25 * UNITY);
-    first.period_ticks = 120;
+    first.amplitude = (int) (0.85 * UNITY);
+    first.period_ticks = 12;
     first.phase = 0;
     oscillators[0] = first;
   }
