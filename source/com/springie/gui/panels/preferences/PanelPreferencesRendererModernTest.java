@@ -7,8 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Choice;
+import java.awt.Checkbox;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Panel;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -18,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
+import com.springie.gui.components.TabbedPanel;
 import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.modern.SimpleCube;
 import com.springie.render.modules.modern.SimpleDodecahedron;
@@ -95,8 +98,7 @@ public class PanelPreferencesRendererModernTest {
   }
 
   @Test
-  void eachPolyhedronOptionInstallsItsRendererShape() {
-    final Choice choice = polyhedronDropdown();
+  void eachPolyhedronOptionInstallsItsRendererShape() {    final Choice choice = polyhedronDropdown();
     final String[] items = {"Dodecahedron", "Octahedron", "Cube",
         "Icosahedron", "Square", "Hexagon"};
     final Class<?>[] shapes = {SimpleDodecahedron.class, SimpleOctahedron.class,
@@ -109,5 +111,66 @@ public class PanelPreferencesRendererModernTest {
     }
     // Leave the default shape installed.
     pickPolyhedron(choice, "Dodecahedron");
+  }
+
+  /**
+   * The old top-level Misc tab is merged into Options: the shared Misc
+   * panel is no longer a tab card, its rows moved into the nested Misc
+   * sub-tab alongside the modern rows.
+   */
+  @Test
+  void miscTabIsMergedIntoTheOptionsTab() {
+    final Panel shared_misc_panel = FrEnd.panel_preferences_shared_misc.panel;
+    assertEquals(0, shared_misc_panel.getComponentCount(),
+        "the old Misc tab panel must be empty after its rows move");
+
+    final TabbedPanel top_tabs = findTabbedPanel(
+        FrEnd.panel_preferences_renderer_modern.panel);
+    assertNotNull(top_tabs, "expected the top-level tab bar");
+    for (final Component card : top_tabs.getComponents()) {
+      assertTrue(card != shared_misc_panel,
+          "the shared Misc panel must not be a top-level tab card");
+    }
+
+    final Panel panel_misc = FrEnd.panel_preferences_renderer_modern.panel_misc;
+    // A modern row...
+    assertNotNull(polyhedronDropdown(),
+        "the Node polyhedron dropdown must stay on the Misc sub-tab");
+    // ...and the shared rows.
+    assertNotNull(findCheckbox(panel_misc, "Render deepest objects first"),
+        "the shared deepest-first checkbox must move to the Misc sub-tab");
+    assertNotNull(findCheckbox(panel_misc, "Fog depth is relative"),
+        "the shared fog checkbox must move to the Misc sub-tab");
+  }
+
+  private static TabbedPanel findTabbedPanel(Container container) {
+    for (final Component c : container.getComponents()) {
+      if (c instanceof TabbedPanel) {
+        return (TabbedPanel) c;
+      }
+      if (c instanceof Container) {
+        final TabbedPanel found = findTabbedPanel((Container) c);
+        if (found != null) {
+          return found;
+        }
+      }
+    }
+    return null;
+  }
+
+  private static Checkbox findCheckbox(Container container, String label) {
+    for (final Component c : container.getComponents()) {
+      if (c instanceof Checkbox
+          && label.equals(((Checkbox) c).getLabel())) {
+        return (Checkbox) c;
+      }
+      if (c instanceof Container) {
+        final Checkbox found = findCheckbox((Container) c, label);
+        if (found != null) {
+          return found;
+        }
+      }
+    }
+    return null;
   }
 }

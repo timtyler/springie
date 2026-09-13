@@ -4,6 +4,7 @@ package com.springie.gui.panels.preferences;
 
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
+import java.awt.Component;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.Scrollbar;
@@ -172,6 +173,19 @@ public class PanelPreferencesRendererSharedMisc {
   }
   public Label getLabelFaceRenderNumber() {
     return this.label_face_render_number;
+  }
+
+  /**
+   * Hands the built rows to another panel, so the old top-level Misc tab
+   * can be merged into the Options tab's nested Misc sub-tab. This panel
+   * is left empty afterwards.
+   */
+  void moveRowsInto(Panel target) {
+    final Component[] rows = this.panel.getComponents();
+    this.panel.removeAll();
+    for (int i = 0; i < rows.length; i++) {
+      target.add(rows[i]);
+    }
   }
 
   /**

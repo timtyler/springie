@@ -80,7 +80,7 @@ public class PanelPreferencesRendererModern {
 
 	void makePanel() {
 		final TabbedPanel tab = new TabbedPanel();
-		// The shared Show/Misc options live here now, combined with the
+		// The shared renderer options live here now, combined with the
 		// renderer-specific tabs to save the space of a second tab bar.
 		// The ray-traced-only options (Glossiness, Shadows, Specular,
 		// Fresnel, Fill light) sit at the bottom of the Renderer tab,
@@ -95,7 +95,8 @@ public class PanelPreferencesRendererModern {
 				java.awt.BorderLayout.SOUTH);
 		FrEnd.panel_preferences_renderer_raytraced.panel.setVisible(false);
 		tab.add("Renderer", panel_renderer_tab);
-		tab.add("Misc", FrEnd.panel_preferences_shared_misc.panel);
+		// The old top-level Misc tab is merged into the Options tab: its
+		// rows move into the nested Misc sub-tab below.
 		tab.add("Options", this.panel_main);
 
 		tab.add("Filtering", FrEnd.panel_preferences_renderer_modern_filters.panel);
@@ -113,6 +114,10 @@ public class PanelPreferencesRendererModern {
 		this.panel_misc.add(getPanelCableDivisions());
 		this.panel_misc.add(getPanelStrutDivisions());
 		this.panel_misc.add(panelLinkSides());
+
+		// The shared Misc rows (deepest-first, explosions, fog, face
+		// lines) join the modern Misc rows in the one Misc sub-tab.
+		FrEnd.panel_preferences_shared_misc.moveRowsInto(this.panel_misc);
 
 		this.panel_labels.add(getPanelLabelsWhen());
 
