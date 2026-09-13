@@ -10,10 +10,8 @@ import java.awt.event.ActionListener;
 
 import com.springie.FrEnd;
 import com.springie.gui.GUIStrings;
-import com.springie.gui.components.TabbedPanel;
 import com.springie.gui.components.TextFieldWrapper;
 import com.springie.messages.NewMessageManager;
-import com.springie.messages.commands.GenerateFacesFromSelectionMessage;
 import com.springie.messages.commands.GenerateFreeNodesMessage;
 import com.springie.messages.commands.GenerateMatrixMessage;
 import com.springie.messages.commands.GenerateSpherePackMessage;
@@ -48,8 +46,6 @@ public class PanelControlsGenerate {
   }
 
   void makePanelGenerate() {
-    final Panel panel_generate_faces_from_selection = makeFacesFromSelectionGUI();
-
     final Panel panel_generate_tube = makeTubeGUI();
 
     final Panel panel_generate_free_nodes = makeFreeNodesGUI();
@@ -58,9 +54,7 @@ public class PanelControlsGenerate {
 
     final Panel panel_generate_matrix = makeMatrixGUI();
 
-    final Panel panel_generate_string = makeStringGUI();        
-
-    final TabbedPanel tab = new TabbedPanel();
+    final Panel panel_generate_string = makeStringGUI();
 
     final Panel panel_shapes = FrEnd.setUpPanelForFrame2();
     panel_shapes.add(panel_generate_tube);
@@ -68,27 +62,8 @@ public class PanelControlsGenerate {
     panel_shapes.add(panel_generate_sphere_pack);
     panel_shapes.add(panel_generate_string);
     panel_shapes.add(panel_generate_free_nodes);
-    tab.add("Shapes", panel_shapes);
 
-    final Panel panel_faces = FrEnd.setUpPanelForFrame2();
-    panel_faces.add(panel_generate_faces_from_selection);
-    tab.add("Faces", panel_faces);
-
-    this.panel.add(tab);
-  }
-
-  private Panel makeFacesFromSelectionGUI() {
-    final Button button = new Button(GUIStrings.GENERATE_FACES_FROM_SELECTION);
-    button.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
-        getNewMessageManager().add(new GenerateFacesFromSelectionMessage());
-      }
-    });
-
-    final Panel panel = new Panel();
-    panel.add(button);
-    return panel;
+    this.panel.add(panel_shapes);
   }
 
   private Panel makeTubeGUI() {

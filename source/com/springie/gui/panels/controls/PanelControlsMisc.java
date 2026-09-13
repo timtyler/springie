@@ -28,6 +28,7 @@ import com.springie.messages.commands.AutomaticNodeRadiusMessage;
 import com.springie.messages.commands.ColourCartesianMessage;
 import com.springie.messages.commands.ConnectNodesToNearestNodesMessage;
 import com.springie.messages.commands.EqualiseLinkLengthsMessage;
+import com.springie.messages.commands.GenerateFacesFromSelectionMessage;
 import com.springie.messages.commands.MusclesAddAllMessage;
 import com.springie.messages.commands.MusclesAddSelectedMessage;
 import com.springie.messages.commands.MusclesRemoveMessage;
@@ -230,8 +231,7 @@ public class PanelControlsMisc {
     final Panel panel_face_reverse = new Panel();
     panel_face_reverse.add(this.button_face_reverse);
 
-    final Panel panel_prismatic_projection = new Panel();
-    panel_prismatic_projection.add(button_prismatic_projection);
+    final Panel panel_prismatic_projection = new Panel();    panel_prismatic_projection.add(button_prismatic_projection);
     this.textfield_prismatic_projection = new TextFieldWrapper("-0.2");
     panel_prismatic_projection.add(this.textfield_prismatic_projection);
 
@@ -351,6 +351,7 @@ public class PanelControlsMisc {
     panel_faces.add(panel_add_polygons);
     panel_faces.add(panel_add_stellations);
     panel_faces.add(panel_face_reverse);
+    panel_faces.add(makeFacesFromSelectionGUI());
     tab.add("Faces", panel_faces);
 
     final Panel panel_more = FrEnd.setUpPanelForFrame2();
@@ -434,6 +435,20 @@ public class PanelControlsMisc {
     panel_edit_equalise_link_lengths
         .add(this.button_edit_equalise_link_lengths);
     return panel_edit_equalise_link_lengths;
+  }
+
+  private Panel makeFacesFromSelectionGUI() {
+    final Button button = new Button(GUIStrings.GENERATE_FACES_FROM_SELECTION);
+    button.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        Forget.about(e);
+        getNewMessageManager().add(new GenerateFacesFromSelectionMessage());
+      }
+    });
+
+    final Panel panel = new Panel();
+    panel.add(button);
+    return panel;
   }
 
   private Panel getMusclesAddSelectedPanel() {
