@@ -11,6 +11,15 @@ public class RendererDragBox {
 
   public Point max = new Point(0, 0);
 
+  /**
+   * The previous frame's rectangle. The tiled renderer skips empty
+   * bins, so it must be told to repaint the bins under both the old
+   * and the new rectangle -- otherwise the old one leaves a trail.
+   */
+  public Point last_min = new Point(0, 0);
+
+  public Point last_max = new Point(0, 0);
+
   public void draw(Graphics g, DragBoxManager drag_box_manager) {
     drawDragBox(g, drag_box_manager);
   }
@@ -43,6 +52,11 @@ public class RendererDragBox {
   private void cacheDragBoxCoordinates(DragBoxManager drag_box_manager) {
     final Point one = drag_box_manager.drag_box_start;
     final Point two = drag_box_manager.drag_box_end;
+
+    this.last_min.x = this.min.x;
+    this.last_min.y = this.min.y;
+    this.last_max.x = this.max.x;
+    this.last_max.y = this.max.y;
 
     this.min.x = Math.min(one.x, two.x);
     this.max.x = Math.max(one.x, two.x);

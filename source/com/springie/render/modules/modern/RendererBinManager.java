@@ -172,6 +172,7 @@ public class RendererBinManager {
       int block_size) {
     final int px = RendererDelegator.pixellation;
     final RectangleInt potential = new RectangleInt(0, 0, 0, 0);
+    final RectangleInt drag_damage = getDragBoxDamage();
 
     for (int j = 0; j < this.number_of_bins_y; j++) {
       for (int i = 0; i < this.number_of_bins_x; i++) {
@@ -190,6 +191,11 @@ public class RendererBinManager {
 
           bin.setUpActual(potential);
           bin.union.setToUnion(bin.actual, last_bin.actual);
+          if (drag_damage != null) {
+            // A drag-box selection draws on the screen: include its
+            // damage in the scrubbed union.
+            bin.union.setToUnion(bin.union, drag_damage);
+          }
 
           if (px > 1 && size > 0) {
             // Pixellated direct painting: render the bin at 1/px
@@ -227,8 +233,12 @@ public class RendererBinManager {
             }
             tile_graphics.dispose();
 
-            graphics.setClip(potential.min_x, potential.min_y, block_size,
-                block_size);
+            // Clip the upscaled blit to the content union, not the full
+            // bin: the scratch tile is only scrubbed over the union, so
+            // pixels outside it are stale and would smear as trails.
+            final RectangleInt union = bin.union;
+            graphics.setClip(union.min_x, union.min_y,
+                union.max_x - union.min_x, union.max_y - union.min_y);
             paintPixellated(graphics, coarse_tile, potential.min_x,
                 potential.min_y, block_size, block_size);
             continue;
@@ -254,6 +264,16 @@ public class RendererBinManager {
 
               renderThePolygon(graphics, composite);
             }
+          }
+        } else if (drag_damage != null) {
+          // Empty bin under a drag-box selection: scrub the damaged
+          // area so the old rectangle leaves no trail.
+          potential.min_x = getPixelsFromBinX(i);
+          potential.min_y = getPixelsFromBinY(j);
+          potential.max_x = potential.min_x + block_size;
+          potential.max_y = potential.min_y + block_size;
+          if (rectsIntersect(potential, drag_damage)) {
+            scrubDragDamage(graphics, potential, drag_damage);
           }
         }
       }
@@ -325,6 +345,12 @@ public class RendererBinManager {
 
     final RectangleInt potential = new RectangleInt(0, 0, 0, 0);
 
+    // A drag-box selection is draw-only (never erased): the tiled
+    // renderer skips empty bins, so without this the old rectangle
+    // would leave a trail. Bins under the old or new rectangle are
+    // repainted even when empty.
+    final RectangleInt drag_damage = getDragBoxDamage();
+
     // Every bin holding content is re-rendered into its tile; every tile
     // (and every vacated bin's repaired screen area) is blitted below, so
     // exposure damage self-heals on the next frame without any explicit
@@ -339,6 +365,19 @@ public class RendererBinManager {
         final int size_last = last_bin.vector.size();
 
         if (size == 0 && size_last == 0) {
+          // Empty bin: normally skipped. But a drag-box selection
+          // draws directly on the screen, so bins under its old or new
+          // rectangle must be scrubbed even when empty -- otherwise the
+          // old rectangle leaves a trail.
+          if (drag_damage != null) {
+            potential.min_x = getPixelsFromBinX(i);
+            potential.min_y = getPixelsFromBinY(j);
+            potential.max_x = potential.min_x + block_size;
+            potential.max_y = potential.min_y + block_size;
+            if (rectsIntersect(potential, drag_damage)) {
+              scrubDragDamage(graphics, potential, drag_damage);
+            }
+          }
           continue;
         }
 
@@ -349,6 +388,11 @@ public class RendererBinManager {
 
         bin.setUpActual(potential);
         bin.union.setToUnion(bin.actual, last_bin.actual);
+        if (drag_damage != null) {
+          // A drag-box selection draws on the screen: include its
+          // damage in the scrubbed union.
+          bin.union.setToUnion(bin.union, drag_damage);
+        }
 
         if (size > 0) {
             if (bin.image == null) {
@@ -664,6 +708,75 @@ public class RendererBinManager {
 
   private int getMargin() {
     return RendererBinManager.show_bins ? 4 : 0;
+  }
+
+  /**
+   * The screen region damaged by a drag-box selection: the union of the
+   * previous and current rectangles, expanded by the box's line
+   * thickness. Null when no drag is active.
+   */
+  private RectangleInt getDragBoxDamage() {
+    if (FrEnd.perform_actions == null
+        || FrEnd.perform_actions.drag_box_manager == null
+        || FrEnd.perform_actions.drag_box_manager.drag_box_end == null) {
+      return null;
+    }
+    final com.springie.render.RendererDragBox box = ContextManager
+        .getNodeManager().renderer.renderer_drag_box;
+    // The box caches its coordinates on draw; on the very first frame
+    // they may not be set yet, so fall back to the manager's points.
+    int min_x = Math.min(box.min.x, box.last_min.x);
+    int min_y = Math.min(box.min.y, box.last_min.y);
+    int max_x = Math.max(box.max.x, box.last_max.x);
+    int max_y = Math.max(box.max.y, box.last_max.y);
+    if (max_x <= min_x || max_y <= min_y) {
+      final java.awt.Point one =
+          FrEnd.perform_actions.drag_box_manager.drag_box_start;
+      final java.awt.Point two =
+          FrEnd.perform_actions.drag_box_manager.drag_box_end;
+      if (one == null || two == null) {
+        return null;
+      }
+      min_x = Math.min(one.x, two.x);
+      max_x = Math.max(one.x, two.x);
+      min_y = Math.min(one.y, two.y);
+      max_y = Math.max(one.y, two.y);
+    }
+    final int pad = 4; // the drag-box lines are drawn 3px thick
+    final RectangleInt damage = new RectangleInt(0, 0, 0, 0);
+    damage.min_x = Coords.getPixelFromInternalCoords(min_x) - pad;
+    damage.min_y = Coords.getPixelFromInternalCoords(min_y) - pad;
+    damage.max_x = Coords.getPixelFromInternalCoords(max_x) + pad;
+    damage.max_y = Coords.getPixelFromInternalCoords(max_y) + pad;
+    return damage;
+  }
+
+  private static boolean rectsIntersect(RectangleInt a, RectangleInt b) {
+    return a.min_x < b.max_x && a.max_x > b.min_x && a.min_y < b.max_y
+        && a.max_y > b.min_y;
+  }
+
+  /**
+   * Scrubs the drag-damaged part of an empty bin straight onto the
+   * screen, erasing the old drag-box rectangle. (Bins with content go
+   * through the normal tile path, whose union scrub covers the damage.)
+   */
+  private void scrubDragDamage(Graphics graphics, RectangleInt potential,
+      RectangleInt damage) {
+    final int x0 = Math.max(potential.min_x, damage.min_x);
+    final int y0 = Math.max(potential.min_y, damage.min_y);
+    final int x1 = Math.min(potential.max_x, damage.max_x);
+    final int y1 = Math.min(potential.max_y, damage.max_y);
+    graphics.setClip(x0, y0, x1 - x0, y1 - y0);
+    if (RendererDelegator.scenic_background && Coords.x_pixels > 0
+        && Coords.y_pixels > 0) {
+      final BufferedImage scenic = ScenicBackground.imageFor(
+          Coords.x_pixels, Coords.y_pixels);
+      graphics.drawImage(scenic, x0, y0, x1, y1, x0, y0, x1, y1, null);
+    } else {
+      graphics.setColor(RendererDelegator.color_background);
+      graphics.fillRect(x0, y0, x1 - x0, y1 - y0);
+    }
   }
 
   private void getSortedNodeDepthIndex(final ArrayList<PolygonComposite> v_this,
