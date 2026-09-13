@@ -15,6 +15,10 @@ public class NewMessageManager {
     this.messages.add(msg);
   }
 
+  public final int size() {
+    return this.messages.size();
+  }
+
   public final void process() {
     final int number_of_messages = this.messages.size();
 

@@ -30,8 +30,9 @@ import com.springie.gui.components.TextFieldWrapper;
 import com.springie.gui.components.WrapLayout;
 import com.springie.gui.panels.preferences.ButtonMouseActionStrings;
 import com.springie.io.out.writers.spr.WriterSpr;
-import com.springie.messages.Message;
-import com.springie.messages.MessageManager;
+import com.springie.messages.commands.DeleteSelectedMessage;
+import com.springie.messages.commands.PresetChosenMessage;
+import com.springie.messages.commands.SelectClazzMessage;
 import com.springie.messages.NewMessage;
 import com.springie.messages.NewMessageManager;
 import com.springie.presets.AddXMLModelIndexLeaves;
@@ -46,8 +47,6 @@ public class PanelFundamental {
   private static final Logger logger = LoggerFactory.getLogger(PanelFundamental.class);
 
   public Panel panel = FrEnd.setUpPanelForFrame2();
-
-  MessageManager message_manager;
 
   NewMessageManager new_message_manager;
 
@@ -94,9 +93,7 @@ public class PanelFundamental {
 
   public ImageButton button_file_presets;
 
-  public PanelFundamental(MessageManager message_manager,
-      NewMessageManager new_message_manager) {
-    this.message_manager = message_manager;
+  public PanelFundamental(NewMessageManager new_message_manager) {
     this.new_message_manager = new_message_manager;
     makePanelGenerate();
     // Insets i = panel.insets();
@@ -526,7 +523,7 @@ public class PanelFundamental {
     this.button_delete.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
         Forget.about(arg0);
-        getMessageManager().sendMessage(Message.MSG_DELETE, 0, 0);
+        getNewMessageManager().add(new DeleteSelectedMessage());
       }
     });
 
@@ -547,7 +544,7 @@ public class PanelFundamental {
     this.button_select_all_of_class.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
         Forget.about(arg0);
-        getMessageManager().sendMessage(Message.MSG_SELECT_CLAZZ, 0, 0);
+        getNewMessageManager().add(new SelectClazzMessage());
       }
     });
 
@@ -597,7 +594,7 @@ public class PanelFundamental {
 
       public void keyPressed(KeyEvent arg0) {
         if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-          getMessageManager().sendMessage(Message.MSG_PRESET_CHOSEN, 0, 0);
+          getNewMessageManager().add(new PresetChosenMessage());
         }
       }
 
@@ -644,10 +641,6 @@ public class PanelFundamental {
     final Iterator<String> e = FrEnd.choose_preset_index.hashtable.keySet().iterator();
     final String initial = e.next();
     return initial;
-  }
-
-  public MessageManager getMessageManager() {
-    return this.message_manager;
   }
 
   public NewMessageManager getNewMessageManager() {

@@ -19,8 +19,9 @@ import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.Node;
 import com.springie.gui.GUIStrings;
-import com.springie.messages.Message;
-import com.springie.messages.MessageManager;
+import com.springie.messages.NewMessageManager;
+import com.springie.messages.commands.NodeGrowthMessage;
+import com.springie.messages.commands.ContinuouslyCentreMessage;
 import com.springie.muscles.Muscles;
 import com.springie.render.RendererDelegator;
 import com.springie.world.World;
@@ -29,7 +30,7 @@ import com.tifsoft.Forget;
 public class PanelControlsUniverse {
 	public Panel panel = FrEnd.setUpPanelForFrame2();
 
-	MessageManager message_manager;
+	NewMessageManager new_message_manager;
 
 	public Checkbox checkbox_3D;
 
@@ -93,8 +94,8 @@ public class PanelControlsUniverse {
 
 	Scrollbar scroll_bar_friction;
 
-	public PanelControlsUniverse(MessageManager message_manager) {
-		this.message_manager = message_manager;
+	public PanelControlsUniverse(NewMessageManager new_message_manager) {
+		this.new_message_manager = new_message_manager;
 		makeEditMiscPanel();
 	}
 
@@ -119,7 +120,7 @@ public class PanelControlsUniverse {
 		this.checkbox_node_growth.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				Forget.about(e);
-				getMessageManager().sendMessage(Message.MSG_NODE_GROWTH, 0, 0);
+				getNewMessageManager().add(new NodeGrowthMessage());
 			}
 		});
 		panel_node_growth.add(this.checkbox_node_growth);
@@ -232,7 +233,7 @@ public class PanelControlsUniverse {
 		this.checkbox_continuously_centre.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				Forget.about(e);
-				getMessageManager().sendMessage(Message.MSG_CONTINUOUSLY_CENTRE, 0, 0);
+				getNewMessageManager().add(new ContinuouslyCentreMessage());
 			}
 		});
 		panel_continuously_centre.add(this.checkbox_continuously_centre);
@@ -554,8 +555,8 @@ public class PanelControlsUniverse {
 		return this.label_viscocity;
 	}
 
-	public MessageManager getMessageManager() {
-		return this.message_manager;
+	public NewMessageManager getNewMessageManager() {
+		return this.new_message_manager;
 	}
 
 	public Checkbox getCheckbox3D() {

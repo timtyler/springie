@@ -10,9 +10,11 @@ import java.awt.event.ActionListener;
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.gui.GUIStrings;
-import com.springie.messages.Message;
-import com.springie.messages.MessageManager;
 import com.springie.messages.NewMessage;
+import com.springie.messages.commands.DeleteSelectedMessage;
+import com.springie.messages.commands.RemoveLinkAndFuseEndsMessage;
+import com.springie.messages.commands.RemoveLinksMessage;
+import com.springie.messages.commands.RemovePolygonsMessage;
 import com.springie.messages.NewMessageManager;
 import com.springie.modification.links.FuseSelectedNodes;
 import com.tifsoft.Forget;
@@ -20,7 +22,6 @@ import com.tifsoft.Forget;
 public class PanelControlsDelete {
   public Panel panel = FrEnd.setUpPanelForFrame2();
 
-  MessageManager message_manager;
   NewMessageManager new_message_manager;
 
   public Button button_delete_selection;
@@ -35,8 +36,7 @@ public class PanelControlsDelete {
 
   public Button button_edit_fuse_nodes;
   
-  public PanelControlsDelete(MessageManager message_manager, NewMessageManager new_message_manager) {
-    this.message_manager = message_manager;
+  public PanelControlsDelete(NewMessageManager new_message_manager) {
     this.new_message_manager = new_message_manager;
     makePanel();
   }
@@ -47,7 +47,7 @@ public class PanelControlsDelete {
     this.button_delete_selection.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_DELETE, 0, 0);
+        getNewMessageManager().add(new DeleteSelectedMessage());
       }
     });
     panel_delete.add(this.button_delete_selection);
@@ -66,7 +66,7 @@ public class PanelControlsDelete {
     this.button_edit_remove_polygons.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_EDIT_REMOVE_POLYGONS, 0, 0);
+        getNewMessageManager().add(new RemovePolygonsMessage());
       }
     });
     final Panel panel = new Panel();
@@ -79,7 +79,7 @@ public class PanelControlsDelete {
     this.button_edit_remove_links.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_EDIT_REMOVE_LINKS, 0, 0);
+        getNewMessageManager().add(new RemoveLinksMessage());
       }
     });
     final Panel panel = new Panel();
@@ -116,8 +116,7 @@ public class PanelControlsDelete {
         .addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
             Forget.about(e);
-            getMessageManager().sendMessage(
-                Message.MSG_EDIT_REMOVE_LINK_AND_FUSE_ENDS, 0, 0);
+            getNewMessageManager().add(new RemoveLinkAndFuseEndsMessage());
           }
         });
     final Panel panel_edit_remove_link_and_fuse_ends = new Panel();
@@ -149,10 +148,6 @@ public class PanelControlsDelete {
     return panel_edit_fuse_selected_nodes;
   }
 
-  public MessageManager getMessageManager() {
-    return this.message_manager;
-  }
-  
   public NewMessageManager getNewMessageManager() {
     return this.new_message_manager;
   }

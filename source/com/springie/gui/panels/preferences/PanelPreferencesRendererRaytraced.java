@@ -10,7 +10,6 @@ import java.awt.event.ItemListener;
 
 import com.springie.FrEnd;
 import com.springie.gui.components.TTChoice;
-import com.springie.messages.MessageManager;
 import com.springie.render.RendererDelegator;
 import com.tifsoft.Forget;
 
@@ -25,7 +24,6 @@ import com.tifsoft.Forget;
 public class PanelPreferencesRendererRaytraced {
   public Panel panel = FrEnd.setUpPanelForFrame();
 
-  MessageManager message_manager;
 
   private Effect effect_glossiness;
 
@@ -45,8 +43,7 @@ public class PanelPreferencesRendererRaytraced {
    */
   Panel[] effect_rows;
 
-  public PanelPreferencesRendererRaytraced(MessageManager message_manager) {
-    this.message_manager = message_manager;
+  public PanelPreferencesRendererRaytraced() {
     makePanel();
   }
 

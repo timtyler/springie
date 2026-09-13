@@ -20,10 +20,6 @@ From `source/ToDo.txt` (still present there too):
 
 - The tifsoft SAX driver doesn't handle QName/URI attributes. Pre-existing,
   no functional impact on the app. Decision: leave the driver as is.
-- The old deprecated message queue
-  (`com.springie.messages.{Message,MessageObj,MessageManager}`) is still
-  live. Migrating every handler to the new message classes is a real
-  refactor, not a bug fix.
 - Muscle period 2 is an identically zero drive
   (`sin(pi * t) = 0` at every integer tick), so 3 is the effective slider
   minimum. Cosmetic quirk, not worth hiding.
@@ -32,6 +28,12 @@ From `source/ToDo.txt` (still present there too):
 
 (Kept brief — full history is in git.)
 
+- 2026-09-13: removed the old deprecated message queue
+  (`com.springie.messages.{Message,MessageObj,MessageManager}`). Every
+  handler is now a `NewMessage` subclass in
+  `com.springie.messages.commands`, drained per frame by
+  `MessagePump`; the old per-frame `generation` bump semantics are
+  preserved.
 - 2026-09-13: muscle amplitude scrollbar arrows were swallowed by
   fixed-point truncation on the display readback (right arrow did nothing,
   left arrow skipped by twos). Fixed by rounding to nearest.

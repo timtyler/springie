@@ -17,8 +17,8 @@ import com.springie.FrEnd;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TTChoice;
 import com.springie.gui.components.TabbedPanel;
-import com.springie.messages.Message;
-import com.springie.messages.MessageManager;
+import com.springie.messages.NewMessageManager;
+import com.springie.messages.commands.DoubleBufferNewMessage;
 import com.springie.preferences.Preferences;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ElementRendererLink;
@@ -52,7 +52,7 @@ public class PanelPreferencesRendererModern {
 	 */
 	Panel[] raytraced_rows;
 
-	MessageManager message_manager;
+	NewMessageManager new_message_manager;
 
 	public Checkbox checkbox_db_new;
 
@@ -80,8 +80,8 @@ public class PanelPreferencesRendererModern {
 
 	public static int render_label_when = 2;
 
-	public PanelPreferencesRendererModern(MessageManager message_manager) {
-		this.message_manager = message_manager;
+	public PanelPreferencesRendererModern(NewMessageManager new_message_manager) {
+		this.new_message_manager = new_message_manager;
 		makePanel();
 	}
 
@@ -163,7 +163,7 @@ public class PanelPreferencesRendererModern {
 		this.checkbox_db_new.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				Forget.about(e);
-				getMessageManager().sendMessage(Message.MSG_DOUBLE_BUFFER_NEW, 0, 0);
+				getNewMessageManager().add(new DoubleBufferNewMessage());
 			}
 		});
 
@@ -434,7 +434,7 @@ public class PanelPreferencesRendererModern {
 		FrEnd.main_canvas.forceResize();
 	}
 
-	public MessageManager getMessageManager() {
-		return this.message_manager;
+	public NewMessageManager getNewMessageManager() {
+		return this.new_message_manager;
 	}
 }

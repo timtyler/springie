@@ -23,8 +23,9 @@ import com.springie.elements.nodes.Node;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TabbedPanel;
 import com.springie.gui.components.TTChoice;
-import com.springie.messages.Message;
-import com.springie.messages.MessageManager;
+import com.springie.messages.NewMessageManager;
+import com.springie.messages.commands.DoubleBufferOldMessage;
+import com.springie.messages.commands.LinkLengthMessage;
 import com.springie.preferences.Preferences;
 import com.springie.render.RendererDelegator;
 import com.tifsoft.Forget;
@@ -41,7 +42,7 @@ public class PanelPreferencesRendererOriginal {
    */
   public Panel panel_renderer_tab = FrEnd.setUpPanelForFrame2();
 
-  MessageManager message_manager;
+  NewMessageManager new_message_manager;
 
   public Checkbox checkbox_db;
 
@@ -63,8 +64,8 @@ public class PanelPreferencesRendererOriginal {
 
   private Label label_node_render_number;
 
-  public PanelPreferencesRendererOriginal(MessageManager message_manager) {
-    this.message_manager = message_manager;
+  public PanelPreferencesRendererOriginal(NewMessageManager new_message_manager) {
+    this.new_message_manager = new_message_manager;
     makePanel();
   }
 
@@ -133,7 +134,7 @@ public class PanelPreferencesRendererOriginal {
     this.checkbox_shortlinks.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_LINKLENGTH, Link.SHORT, 0);
+        getNewMessageManager().add(new LinkLengthMessage(Link.SHORT));
       }
     });
 
@@ -141,7 +142,7 @@ public class PanelPreferencesRendererOriginal {
     this.checkbox_longlinks.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_LINKLENGTH, Link.LONG, 0);
+        getNewMessageManager().add(new LinkLengthMessage(Link.LONG));
       }
     });
 
@@ -191,7 +192,7 @@ public class PanelPreferencesRendererOriginal {
     this.checkbox_db.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_DOUBLE_BUFFER_OLD, 0, 0);
+        getNewMessageManager().add(new DoubleBufferOldMessage());
       }
     });
 
@@ -669,7 +670,7 @@ public class PanelPreferencesRendererOriginal {
     RendererDelegator.repaintAll();
   }
 
-  public MessageManager getMessageManager() {
-    return this.message_manager;
+  public NewMessageManager getNewMessageManager() {
+    return this.new_message_manager;
   }
 }

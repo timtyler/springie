@@ -13,7 +13,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import com.springie.FrEnd;
-import com.springie.messages.MessageManager;
 import com.springie.render.RendererDelegator;
 import com.springie.render.Coords;
 import com.tifsoft.Forget;
@@ -35,10 +34,7 @@ public class PanelPreferencesViewpoint {
 
   private Checkbox checkbox_merge;
 
-  MessageManager message_manager;
-
-  public PanelPreferencesViewpoint(MessageManager message_manager) {
-    this.message_manager = message_manager;
+  public PanelPreferencesViewpoint() {
     makePanel();
   }
 
@@ -170,7 +166,4 @@ public class PanelPreferencesViewpoint {
     reflectTranslateZ();
   }
 
-  public MessageManager getMessageManager() {
-    return this.message_manager;
-  }
 }

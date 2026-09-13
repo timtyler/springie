@@ -16,16 +16,14 @@ import com.springie.context.ContextManager;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TTChoice;
 import com.springie.gui.panels.UpdateEnabledComponents;
-import com.springie.messages.Message;
-import com.springie.messages.MessageManager;
 import com.springie.messages.NewMessage;
 import com.springie.messages.NewMessageManager;
+import com.springie.messages.commands.SelectClazzMessage;
+import com.springie.messages.commands.SelectTypeMessage;
 import com.tifsoft.Forget;
 
 public class PanelControlsSelectMain {
   public Panel panel = FrEnd.setUpPanelForFrame2();
-
-  MessageManager message_manager;
 
   NewMessageManager new_message_manager;
 
@@ -57,9 +55,7 @@ public class PanelControlsSelectMain {
 
   private Panel panel_type_selector;
 
-  public PanelControlsSelectMain(MessageManager message_manager,
-      NewMessageManager new_message_manager) {
-    this.message_manager = message_manager;
+  public PanelControlsSelectMain(NewMessageManager new_message_manager) {
     this.new_message_manager = new_message_manager;
     makePanel();
   }
@@ -76,7 +72,7 @@ public class PanelControlsSelectMain {
     this.button_select_clazz.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_SELECT_CLAZZ, 0, 0);
+        getNewMessageManager().add(new SelectClazzMessage());
       }
     });
     panel_select_all.add(this.button_select_clazz);
@@ -85,7 +81,7 @@ public class PanelControlsSelectMain {
     this.button_select_type.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_SELECT_TYPE, 0, 0);
+        getNewMessageManager().add(new SelectTypeMessage());
       }
     });
     panel_select_all.add(this.button_select_type);
@@ -102,7 +98,7 @@ public class PanelControlsSelectMain {
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             FrEnd.prepareToModifyAllTypes();
-            MessageManager.selectAllOfType();
+            selectAllOfType();
             FrEnd.postCleanup();
             return null;
           }
@@ -118,7 +114,7 @@ public class PanelControlsSelectMain {
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             FrEnd.prepareToModifyAllTypes();
-            MessageManager.deselectAllOfType();
+            deselectAllOfType();
             FrEnd.postCleanup();
             return null;
           }
@@ -135,7 +131,7 @@ public class PanelControlsSelectMain {
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             FrEnd.prepareToModifyAllTypes();
-            MessageManager.invertAllOfType();
+            invertAllOfType();
             FrEnd.postCleanup();
             return null;
           }
@@ -324,11 +320,52 @@ public class PanelControlsSelectMain {
     return panel_select_all;
   }
 
-  public MessageManager getMessageManager() {
-    return this.message_manager;
-  }
-
   public NewMessageManager getNewMessageManager() {
     return this.new_message_manager;
+  }
+
+  public static void deselectAllOfType() {
+    final PanelControlsSelectMain panel = FrEnd.panel_edit_select_main;
+    if (panel.checkbox_select_nodes.getState()) {
+      ContextManager.getNodeManager().deselectAll();
+    }
+
+    if (panel.checkbox_select_links.getState()) {
+      ContextManager.getLinkManager().deselectAll();
+    }
+
+    if (panel.checkbox_select_faces.getState()) {
+      ContextManager.getFaceManager().deselectAll();
+    }
+  }
+
+  public static void selectAllOfType() {
+    final PanelControlsSelectMain panel = FrEnd.panel_edit_select_main;
+    if (panel.checkbox_select_nodes.getState()) {
+      ContextManager.getNodeManager().selectAll();
+    }
+
+    if (panel.checkbox_select_links.getState()) {
+      ContextManager.getLinkManager().selectAll();
+    }
+
+    if (panel.checkbox_select_faces.getState()) {
+      ContextManager.getFaceManager().selectAll();
+    }
+  }
+
+  public static void invertAllOfType() {
+    final PanelControlsSelectMain panel = FrEnd.panel_edit_select_main;
+    if (panel.checkbox_select_nodes.getState()) {
+      ContextManager.getNodeManager().selectionInvert();
+    }
+
+    if (panel.checkbox_select_links.getState()) {
+      ContextManager.getLinkManager().selectionInvert();
+    }
+
+    if (panel.checkbox_select_faces.getState()) {
+      ContextManager.getFaceManager().selectionInvert();
+    }
   }
 }

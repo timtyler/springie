@@ -16,7 +16,12 @@ import java.awt.image.ImageObserver;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
-import com.springie.messages.Message;
+import com.springie.messages.commands.DeleteSelectedMessage;
+import com.springie.messages.commands.DeselectAllMessage;
+import com.springie.messages.commands.SelectAllMessage;
+import com.springie.messages.commands.SelectClazzMessage;
+import com.springie.messages.commands.SelectTypeMessage;
+import com.springie.messages.MessagePump;
 import com.springie.messages.NewMessage;
 
 public class MainCanvas {
@@ -159,24 +164,24 @@ public class MainCanvas {
         switch (c) {
           case 'a':
           case 'A':
-            FrEnd.message_manager.sendMessage(Message.MSG_SELECT_ALL, 0, 0);
+            FrEnd.new_message_manager.add(new SelectAllMessage());
 
             break;
 
           case 'z':
           case 'Z':
-            FrEnd.message_manager.sendMessage(Message.MSG_DESELECT_ALL, 0, 0);
+            FrEnd.new_message_manager.add(new DeselectAllMessage());
 
             break;
 
           case 'c':
           case 'C':
-            FrEnd.message_manager.sendMessage(Message.MSG_SELECT_CLAZZ, 0, 0);
+            FrEnd.new_message_manager.add(new SelectClazzMessage());
             break;
 
           case 't':
           case 'T':
-            FrEnd.message_manager.sendMessage(Message.MSG_SELECT_TYPE, 0, 0);
+            FrEnd.new_message_manager.add(new SelectTypeMessage());
             break;
 
           case 'P':
@@ -196,7 +201,7 @@ public class MainCanvas {
 
         switch (e.getKeyCode()) {
           case KeyEvent.VK_DELETE:
-            FrEnd.message_manager.sendMessage(Message.MSG_DELETE, 0, 0);
+            FrEnd.new_message_manager.add(new DeleteSelectedMessage());
 
             break;
 
@@ -351,10 +356,7 @@ public class MainCanvas {
   }
 
   private void processAllMessages() {
-    if (FrEnd.message_manager.current_message != 0) {
-      FrEnd.message_manager.process();
-    }
-    FrEnd.new_message_manager.process();
+    MessagePump.processAll();
   }
 
   public void setUpCoordsSize() {

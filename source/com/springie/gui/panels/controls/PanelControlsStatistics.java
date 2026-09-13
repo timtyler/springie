@@ -12,12 +12,10 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.io.out.WriteFloatingPoint;
-import com.springie.messages.MessageManager;
 
 public class PanelControlsStatistics {
   public Panel panel = FrEnd.setUpPanelForFrame2();
 
-  MessageManager message_manager;
 
   public Label label_main_statistics;
 
@@ -37,8 +35,7 @@ public class PanelControlsStatistics {
 
   public static int length_of_shortest_link;
 
-  public PanelControlsStatistics(MessageManager message_manager) {
-    this.message_manager = message_manager;
+  public PanelControlsStatistics() {
     makePanel();
     updateGUIToReflectSelectionChange();
   }

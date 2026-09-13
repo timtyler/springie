@@ -7,15 +7,11 @@ import java.awt.Panel;
 
 import com.springie.FrEnd;
 import com.springie.gui.components.TabbedPanel;
-import com.springie.messages.MessageManager;
-import com.springie.messages.NewMessageManager;
 
 public class PanelControlsEdit {
   public Panel panel = FrEnd.setUpPanelForFrame2();
 
-  MessageManager message_manager;
 
-  NewMessageManager new_message_manager;
 
   public Button button_edit_make_motionless;
 
@@ -23,10 +19,7 @@ public class PanelControlsEdit {
 
   public Button button_edit_reverse;
 
-  public PanelControlsEdit(MessageManager message_manager,
-      NewMessageManager new_message_manager) {
-    this.message_manager = message_manager;
-    this.new_message_manager = new_message_manager;
+  public PanelControlsEdit() {
     makePanel();
   }
 
@@ -37,11 +30,5 @@ public class PanelControlsEdit {
     this.panel.add(tab);
   }
 
-  public MessageManager getMessageManager() {
-    return this.message_manager;
-  }
 
-  public NewMessageManager getNewMessageManager() {
-    return this.new_message_manager;
-  }
 }

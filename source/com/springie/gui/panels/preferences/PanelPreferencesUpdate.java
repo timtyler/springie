@@ -12,14 +12,12 @@ import com.springie.FrEnd;
 import com.springie.constants.Delay;
 import com.springie.gui.components.TTChoice;
 import com.springie.gui.components.TextFieldWrapper;
-import com.springie.messages.MessageManager;
 import com.springie.preferences.Preferences;
 import com.springie.render.RendererInfoButton;
 
 public class PanelPreferencesUpdate {
   public Panel panel = FrEnd.setUpPanelForFrame2();
 
-  MessageManager message_manager;
 
   TTChoice choose_left_action;
 
@@ -31,8 +29,7 @@ public class PanelPreferencesUpdate {
 
   private Checkbox checkbox_animate_pointer_over;
 
-  public PanelPreferencesUpdate(MessageManager message_manager) {
-    this.message_manager = message_manager;
+  public PanelPreferencesUpdate() {
     makePanel();
   }
 
@@ -112,9 +109,6 @@ public class PanelPreferencesUpdate {
     return panel;
   }
 
-  public MessageManager getMessageManager() {
-    return this.message_manager;
-  }
 
   /**
    * Restores the default update preferences: delay 2, step size 1, the

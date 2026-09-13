@@ -7,15 +7,12 @@ import java.awt.Panel;
 
 import com.springie.FrEnd;
 import com.springie.gui.components.TabbedPanel;
-import com.springie.messages.MessageManager;
 
 public class PanelControlsProperties {
   public Panel panel = FrEnd.setUpPanelForFrame2();
 
-  MessageManager message_manager;
 
-  public PanelControlsProperties(MessageManager message_manager) {
-    this.message_manager = message_manager;
+  public PanelControlsProperties() {
     makePanel();
   }
 
@@ -38,7 +35,4 @@ public class PanelControlsProperties {
     this.panel.add(tab_flags, "South");
   }
 
-  public MessageManager getMessageManager() {
-    return this.message_manager;
-  }
 }

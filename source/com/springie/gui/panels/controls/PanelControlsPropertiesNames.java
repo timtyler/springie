@@ -15,7 +15,6 @@ import com.springie.elements.base.BaseElement;
 import com.springie.elements.selection.SelectionManager;
 import com.springie.gui.components.TTChoice;
 import com.springie.gui.components.TextFieldWrapper;
-import com.springie.messages.MessageManager;
 import com.springie.messages.NewMessage;
 import com.springie.messages.NewMessageManager;
 import com.springie.utilities.general.Executor;
@@ -25,8 +24,6 @@ import com.tifsoft.Forget;
 
 public class PanelControlsPropertiesNames {
   public Panel panel = FrEnd.setUpPanelForFrame2();
-
-  MessageManager message_manager;
 
   public TextFieldWrapper textfield = new TextFieldWrapper(8);
 
@@ -135,9 +132,7 @@ public class PanelControlsPropertiesNames {
 
   public Executor action = this.action_select;
 
-  public PanelControlsPropertiesNames(MessageManager message_manager,
-      NewMessageManager new_message_manager) {
-    this.message_manager = message_manager;
+  public PanelControlsPropertiesNames(NewMessageManager new_message_manager) {
     this.new_message_manager = new_message_manager;
     makePanel();
   }
@@ -346,10 +341,6 @@ public class PanelControlsPropertiesNames {
 
   public NewMessageManager getNewMessageManager() {
     return this.new_message_manager;
-  }
-
-  public MessageManager getMessageManager() {
-    return this.message_manager;
   }
 
   public void updateSuffix() {

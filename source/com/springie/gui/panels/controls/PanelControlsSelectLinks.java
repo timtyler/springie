@@ -11,13 +11,11 @@ import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.gui.components.TTChoice;
-import com.springie.messages.MessageManager;
 import com.tifsoft.Forget;
 
 public class PanelControlsSelectLinks {
   public Panel panel = FrEnd.setUpPanelForFrame2();
 
-  MessageManager message_manager;
 
   TTChoice choice_link_definition;
 
@@ -66,8 +64,7 @@ public class PanelControlsSelectLinks {
 
   public static FilterSelectLinks comparator = filter_any_member;
 
-  public PanelControlsSelectLinks(MessageManager message_manager) {
-    this.message_manager = message_manager;
+  public PanelControlsSelectLinks() {
     makePanel();
   }
 
@@ -139,7 +136,4 @@ public class PanelControlsSelectLinks {
     return panel_select_all;
   }
 
-  public MessageManager getMessageManager() {
-    return this.message_manager;
-  }
 }

@@ -6,15 +6,12 @@ import java.awt.Panel;
 
 import com.springie.FrEnd;
 import com.springie.gui.components.TabbedPanel;
-import com.springie.messages.MessageManager;
 
 public class PanelControlsSelect {
   public Panel panel = FrEnd.setUpPanelForFrame2();
 
-  MessageManager message_manager;
 
-  public PanelControlsSelect(MessageManager message_manager) {
-    this.message_manager = message_manager;
+  public PanelControlsSelect() {
     makePanel();
   }
 
@@ -27,7 +24,4 @@ public class PanelControlsSelect {
     this.panel.add(tab);
   }
   
-  public MessageManager getMessageManager() {
-    return this.message_manager;
-  }
 }

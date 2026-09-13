@@ -59,7 +59,7 @@ class UniverseResetMessageTest {
       clickCheckbox(panel.checkbox_links_disabled, ItemEvent.DESELECTED);
 
       // Let the queued toggles take effect, then drain.
-      FrEnd.message_manager.process();
+      FrEnd.new_message_manager.process();
       assertTrue(FrEnd.continuously_centre);
       assertTrue(FrEnd.node_growth);
       assertFalse(FrEnd.check_collisions);
@@ -69,10 +69,10 @@ class UniverseResetMessageTest {
       // The reset must restore the statics without queueing anything that
       // a later process() would turn back.
       panel.resetUniverse();
-      assertEquals(0, FrEnd.message_manager.current_message,
+      assertEquals(0, FrEnd.new_message_manager.size(),
           "resetUniverse must not enqueue messages");
 
-      FrEnd.message_manager.process();
+      FrEnd.new_message_manager.process();
       assertFalse(FrEnd.continuously_centre);
       assertFalse(FrEnd.node_growth);
       assertTrue(FrEnd.check_collisions);
@@ -94,10 +94,10 @@ class UniverseResetMessageTest {
       FrEnd.continuously_centre = false;
 
       // The click queued a toggle message...
-      assertEquals(1, FrEnd.message_manager.current_message);
+      assertEquals(1, FrEnd.new_message_manager.size());
 
       // ...which flips the static back when the queue is processed.
-      FrEnd.message_manager.process();
+      FrEnd.new_message_manager.process();
       assertTrue(FrEnd.continuously_centre,
           "a queued toggle undoes the reset -- this is why the reset updates the checkboxes silently");
 
@@ -123,8 +123,8 @@ class UniverseResetMessageTest {
   }
 
   private static void drainMessageQueue() {
-    while (FrEnd.message_manager.current_message > 0) {
-      FrEnd.message_manager.process();
+    while (FrEnd.new_message_manager.size() > 0) {
+      FrEnd.new_message_manager.process();
     }
   }
 

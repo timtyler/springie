@@ -10,12 +10,9 @@ import java.awt.event.ItemListener;
 import com.springie.FrEnd;
 import com.springie.constants.Actions;
 import com.springie.gui.components.TTChoice;
-import com.springie.messages.MessageManager;
 
 public class PanelPreferencesEdit {
   public Panel panel = FrEnd.setUpPanelForFrame2();
-
-  MessageManager message_manager;
 
   TTChoice choose_left_action;
 
@@ -23,8 +20,7 @@ public class PanelPreferencesEdit {
 
   TTChoice choose_right_action;
 
-  public PanelPreferencesEdit(MessageManager message_manager) {
-    this.message_manager = message_manager;
+  public PanelPreferencesEdit() {
     makePanel();
   }
 
@@ -157,7 +153,4 @@ public class PanelPreferencesEdit {
     FrEnd.action_right_type = Actions.ROTATE;
   }
 
-  public MessageManager getMessageManager() {
-    return this.message_manager;
-  }
 }

@@ -18,8 +18,21 @@ import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TabbedPanel;
 import com.springie.gui.components.TTChoice;
 import com.springie.gui.components.TextFieldWrapper;
-import com.springie.messages.Message;
-import com.springie.messages.MessageManager;
+import com.springie.messages.commands.AddCentralHubMessage;
+import com.springie.messages.commands.AddInnerEdenNodesMessage;
+import com.springie.messages.commands.AddPolygonsMessage;
+import com.springie.messages.commands.AddStellationsMessage;
+import com.springie.messages.commands.AddTriaxialNodesMessage;
+import com.springie.messages.commands.AutomaticLinkRadiusMessage;
+import com.springie.messages.commands.AutomaticNodeRadiusMessage;
+import com.springie.messages.commands.ColourCartesianMessage;
+import com.springie.messages.commands.ConnectNodesToNearestNodesMessage;
+import com.springie.messages.commands.EqualiseLinkLengthsMessage;
+import com.springie.messages.commands.MusclesAddAllMessage;
+import com.springie.messages.commands.MusclesAddSelectedMessage;
+import com.springie.messages.commands.MusclesRemoveMessage;
+import com.springie.messages.commands.ResetLinkLengthsMessage;
+import com.springie.messages.commands.SplitLinksMessage;
 import com.springie.messages.NewMessage;
 import com.springie.messages.NewMessageManager;
 import com.springie.modification.faces.FaceReverser;
@@ -31,7 +44,6 @@ import com.tifsoft.Forget;
 public class PanelControlsMisc {
   public Panel panel = FrEnd.setUpPanelForFrame2();
 
-  MessageManager message_manager;
 
   NewMessageManager new_message_manager;
 
@@ -99,9 +111,7 @@ public class PanelControlsMisc {
 
   TextFieldWrapper textfield_extend_links;
 
-  public PanelControlsMisc(MessageManager message_manager,
-      NewMessageManager new_message_manager) {
-    this.message_manager = message_manager;
+  public PanelControlsMisc(NewMessageManager new_message_manager) {
     this.new_message_manager = new_message_manager;
     makeEditMiscPanel();
   }
@@ -112,7 +122,7 @@ public class PanelControlsMisc {
     button_add_nodes_inner_eden.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_ADD_NODES_INNER_EDEN, 0, 0);
+        getNewMessageManager().add(new AddInnerEdenNodesMessage());
       }
     });
     final Panel panel_add_nodes_inner_eden = new Panel();
@@ -124,7 +134,7 @@ public class PanelControlsMisc {
     this.button_split_links.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_EDIT_SPLIT_LINKS, 0, 0);
+        getNewMessageManager().add(new SplitLinksMessage());
       }
     });
     final Panel panel_split_links = new Panel();
@@ -138,7 +148,7 @@ public class PanelControlsMisc {
     this.button_add_stellations.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_ADD_STELLATIONS, 0, 0);
+        getNewMessageManager().add(new AddStellationsMessage());
       }
     });
 
@@ -234,7 +244,7 @@ public class PanelControlsMisc {
     this.button_hex_triaxial.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_ADD_NODES_TRIAXIAL, 0, 0);
+        getNewMessageManager().add(new AddTriaxialNodesMessage());
       }
     });
     final Panel panel_add_nodes_triaxial = new Panel();
@@ -248,8 +258,7 @@ public class PanelControlsMisc {
         .addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
             Forget.about(e);
-            getMessageManager().sendMessage(
-                Message.MSG_CONNECT_NODES_TO_NEAREST_NODES, 0, 0);
+            getNewMessageManager().add(new ConnectNodesToNearestNodesMessage());
           }
         });
     final Panel panel_add_links_outer_hex = new Panel();
@@ -263,7 +272,7 @@ public class PanelControlsMisc {
     this.button_add_faces.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_EDIT_ADD_POLYGONS, 0, 0);
+        getNewMessageManager().add(new AddPolygonsMessage());
       }
     });
     final Panel panel_add_polygons = new Panel();
@@ -402,8 +411,7 @@ public class PanelControlsMisc {
     this.button_edit_reset_link_lengths.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_DOME_LINKS_RESET_LENGTHS,
-            0, 0);
+        getNewMessageManager().add(new ResetLinkLengthsMessage());
       }
     });
     final Panel panel_edit_reset_link_lengths = new Panel();
@@ -418,8 +426,7 @@ public class PanelControlsMisc {
         .addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
             Forget.about(e);
-            getMessageManager().sendMessage(
-                Message.MSG_DOME_LINKS_EQUALISE_LINK_LENGTHS, 0, 0);
+            getNewMessageManager().add(new EqualiseLinkLengthsMessage());
           }
         });
 
@@ -436,8 +443,7 @@ public class PanelControlsMisc {
         .addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
             Forget.about(e);
-            getMessageManager().sendMessage(
-                Message.MSG_MUSCLES_ADD_SELECTED, 0, 0);
+            getNewMessageManager().add(new MusclesAddSelectedMessage());
           }
         });
 
@@ -454,8 +460,7 @@ public class PanelControlsMisc {
         .addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
             Forget.about(e);
-            getMessageManager().sendMessage(
-                Message.MSG_MUSCLES_ADD_ALL, 0, 0);
+            getNewMessageManager().add(new MusclesAddAllMessage());
           }
         });
 
@@ -472,8 +477,7 @@ public class PanelControlsMisc {
         .addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
             Forget.about(e);
-            getMessageManager().sendMessage(
-                Message.MSG_MUSCLES_REMOVE, 0, 0);
+            getNewMessageManager().add(new MusclesRemoveMessage());
           }
         });
 
@@ -489,8 +493,7 @@ public class PanelControlsMisc {
     this.button_automatic_link_radius.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_EDIT_AUTOMATIC_LINK_RADIUS,
-            0, 0);
+        getNewMessageManager().add(new AutomaticLinkRadiusMessage());
       }
     });
 
@@ -508,8 +511,7 @@ public class PanelControlsMisc {
     this.button_automatic_node_radius.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_EDIT_AUTOMATIC_NODE_RADIUS,
-            0, 0);
+        getNewMessageManager().add(new AutomaticNodeRadiusMessage());
       }
     });
 
@@ -526,7 +528,7 @@ public class PanelControlsMisc {
     this.button_add_central_hub.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_EDIT_ADD_CENTRAL_HUB, 0, 0);
+        getNewMessageManager().add(new AddCentralHubMessage());
       }
     });
     final Panel panel = new Panel();
@@ -673,8 +675,7 @@ public class PanelControlsMisc {
     this.button_cartesian_colourer.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager()
-            .sendMessage(Message.MSG_EDIT_COLOUR_CARTESIAN, 0, 0);
+        getNewMessageManager().add(new ColourCartesianMessage());
       }
     });
     panel.add(this.button_cartesian_colourer);
@@ -692,10 +693,6 @@ public class PanelControlsMisc {
   // private void testTemp2() {
   // testTemp();
   // }
-
-  public MessageManager getMessageManager() {
-    return this.message_manager;
-  }
 
   public NewMessageManager getNewMessageManager() {
     return this.new_message_manager;

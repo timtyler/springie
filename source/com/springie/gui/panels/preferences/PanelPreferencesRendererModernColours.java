@@ -9,7 +9,6 @@ import com.springie.FrEnd;
 import com.springie.gui.colourpicker.ColorPicker;
 import com.springie.gui.colourpicker.ColorPickerInformer;
 import com.springie.gui.components.TabbedPanel;
-import com.springie.messages.MessageManager;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ElementRendererLink;
 
@@ -22,8 +21,6 @@ public class PanelPreferencesRendererModernColours {
 
   final TabbedPanel tab_colours_label = new TabbedPanel();
 
-  MessageManager message_manager;
-
   ColorPicker panel_colors_charges;
 
   ColorPicker panel_colours_selection;
@@ -34,8 +31,7 @@ public class PanelPreferencesRendererModernColours {
 
   ColorPicker panel_colours_label_background;
 
-  public PanelPreferencesRendererModernColours(MessageManager message_manager) {
-    this.message_manager = message_manager;
+  public PanelPreferencesRendererModernColours() {
     makePanel();
   }
 
@@ -133,7 +129,4 @@ public class PanelPreferencesRendererModernColours {
     RendererDelegator.repaint_all_objects = true;
   }
 
-  public MessageManager getMessageManager() {
-    return this.message_manager;
-  }
 }

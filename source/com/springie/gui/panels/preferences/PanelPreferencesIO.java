@@ -14,14 +14,11 @@ import java.awt.event.ItemListener;
 
 import com.springie.FrEnd;
 import com.springie.gui.components.TTChoice;
-import com.springie.messages.MessageManager;
 import com.springie.preferences.Preferences;
 import com.tifsoft.Forget;
 
 public class PanelPreferencesIO {
   public Panel panel = FrEnd.setUpPanelForFrame2();
-
-  MessageManager message_manager;
 
   private Scrollbar scroll_bar_import_scale;
 
@@ -49,8 +46,7 @@ public class PanelPreferencesIO {
 
   private Checkbox checkbox_merge;
 
-  public PanelPreferencesIO(MessageManager message_manager) {
-    this.message_manager = message_manager;
+  public PanelPreferencesIO() {
     makePanel();
   }
 
@@ -253,7 +249,4 @@ public class PanelPreferencesIO {
         .get(Preferences.key_output_pov_sky));
   }
 
-  public MessageManager getMessageManager() {
-    return this.message_manager;
-  }
 }

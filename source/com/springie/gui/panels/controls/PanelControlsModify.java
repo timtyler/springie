@@ -7,15 +7,12 @@ import java.awt.Panel;
 
 import com.springie.FrEnd;
 import com.springie.gui.components.TabbedPanel;
-import com.springie.messages.MessageManager;
 
 public class PanelControlsModify {
   public Panel panel = new Panel();
 
-  MessageManager message_manager;
 
-  public PanelControlsModify(MessageManager message_manager) {
-    this.message_manager = message_manager;
+  public PanelControlsModify() {
     makePanel();
   }
 

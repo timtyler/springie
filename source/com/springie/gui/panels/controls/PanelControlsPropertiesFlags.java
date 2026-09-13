@@ -17,14 +17,17 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.messages.Message;
-import com.springie.messages.MessageManager;
+import com.springie.messages.commands.HideFlagMessage;
+import com.springie.messages.commands.FixFlagMessage;
+import com.springie.messages.commands.DisableFlagMessage;
+import com.springie.messages.commands.RopeFlagMessage;
+import com.springie.messages.NewMessageManager;
 import com.tifsoft.Forget;
 
 public class PanelControlsPropertiesFlags {
   public Panel panel = FrEnd.setUpPanelForFrame2();
 
-  MessageManager message_manager;
+  NewMessageManager new_message_manager;
 
   public Checkbox checkbox_pinned;
 
@@ -36,8 +39,8 @@ public class PanelControlsPropertiesFlags {
 
   public Checkbox checkbox_disabled;
 
-  public PanelControlsPropertiesFlags(MessageManager message_manager) {
-    this.message_manager = message_manager;
+  public PanelControlsPropertiesFlags(NewMessageManager new_message_manager) {
+    this.new_message_manager = new_message_manager;
     resetPanel(false, false, false);
   }
 
@@ -47,7 +50,7 @@ public class PanelControlsPropertiesFlags {
     this.checkbox_hidden.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_EDIT_HIDE_FLAG, 0, 0);
+        getNewMessageManager().add(new HideFlagMessage());
       }
     });
     if (nodes || links || faces) {
@@ -58,7 +61,7 @@ public class PanelControlsPropertiesFlags {
     this.checkbox_pinned.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_EDIT_FIXED_FLAG, 0, 0);
+        getNewMessageManager().add(new FixFlagMessage());
       }
     });
     if (nodes) {
@@ -70,7 +73,7 @@ public class PanelControlsPropertiesFlags {
     this.checkbox_disabled.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_EDIT_DISABLED_FLAG, 0, 0);
+        getNewMessageManager().add(new DisableFlagMessage());
       }
     });
     if (links) {
@@ -88,7 +91,7 @@ public class PanelControlsPropertiesFlags {
     this.checkbox_compression.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_EDIT_ROPE_FLAG, 0, 0);
+        getNewMessageManager().add(new RopeFlagMessage());
       }
     });
 
@@ -101,7 +104,7 @@ public class PanelControlsPropertiesFlags {
     this.checkbox_tension.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_EDIT_ROPE_FLAG, 0, 0);
+        getNewMessageManager().add(new RopeFlagMessage());
       }
     });
     if (links) {
@@ -213,7 +216,7 @@ public class PanelControlsPropertiesFlags {
     return false;
   }
 
-  public MessageManager getMessageManager() {
-    return this.message_manager;
+  public NewMessageManager getNewMessageManager() {
+    return this.new_message_manager;
   }
 }

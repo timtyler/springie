@@ -16,8 +16,22 @@ import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TextFieldWrapper;
-import com.springie.messages.Message;
-import com.springie.messages.MessageManager;
+import com.springie.messages.NewMessageManager;
+import com.springie.messages.commands.AlterLengthMessage;
+import com.springie.messages.commands.AlterRadiusMessage;
+import com.springie.messages.commands.AlterChargeMessage;
+import com.springie.messages.commands.AlterElasticityMessage;
+import com.springie.messages.commands.AlterStiffnessMessage;
+import com.springie.messages.commands.LengthenLinksMessage;
+import com.springie.messages.commands.ShortenLinksMessage;
+import com.springie.messages.commands.ExpandNodesMessage;
+import com.springie.messages.commands.ContractNodesMessage;
+import com.springie.messages.commands.ChargeUpMessage;
+import com.springie.messages.commands.ChargeDownMessage;
+import com.springie.messages.commands.ElasticityUpMessage;
+import com.springie.messages.commands.ElasticityDownMessage;
+import com.springie.messages.commands.StiffnessUpMessage;
+import com.springie.messages.commands.StiffnessDownMessage;
 import com.springie.metrics.AverageChargeGetter;
 import com.springie.metrics.AverageElasticityGetter;
 import com.springie.metrics.AverageLengthGetter;
@@ -29,7 +43,7 @@ import com.tifsoft.Forget;
 public class PanelControlsPropertiesScalars {
   public Panel panel = FrEnd.setUpPanelForFrame2();
 
-  MessageManager message_manager;
+  NewMessageManager new_message_manager;
 
   public Scrollbar scroll_bar_elasticity;
 
@@ -113,8 +127,8 @@ public class PanelControlsPropertiesScalars {
 
   private int radius_shift = 7;
 
-  public PanelControlsPropertiesScalars(MessageManager message_manager) {
-    this.message_manager = message_manager;
+  public PanelControlsPropertiesScalars(NewMessageManager new_message_manager) {
+    this.new_message_manager = new_message_manager;
     resetPanel(false, false, false);
   }
 
@@ -165,7 +179,7 @@ public class PanelControlsPropertiesScalars {
     this.scroll_bar_length.addAdjustmentListener(new AdjustmentListener() {
       public void adjustmentValueChanged(AdjustmentEvent e) {
         final int length = e.getValue();
-        getMessageManager().sendMessage(Message.MSG_ALTER_LENGTH, length << Coords.shift, 0);
+        getNewMessageManager().add(new AlterLengthMessage(length << Coords.shift));
         reflectLength();
       }
     });
@@ -179,7 +193,7 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_lengths_up.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_SCALE_LINKS_UP, 0, 0);
+        getNewMessageManager().add(new LengthenLinksMessage());
       }
     });
 
@@ -187,7 +201,7 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_lengths_down.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_SCALE_LINKS_DOWN, 0, 0);
+        getNewMessageManager().add(new ShortenLinksMessage());
       }
     });
 
@@ -211,7 +225,7 @@ public class PanelControlsPropertiesScalars {
     this.scroll_bar_radius.addAdjustmentListener(new AdjustmentListener() {
       public void adjustmentValueChanged(AdjustmentEvent e) {
         final int radius = e.getValue();
-        getMessageManager().sendMessage(Message.MSG_ALTER_RADIUS, radius << PanelControlsPropertiesScalars.this.radius_shift, 0);
+        getNewMessageManager().add(new AlterRadiusMessage(radius << PanelControlsPropertiesScalars.this.radius_shift));
       }
     });
 
@@ -223,7 +237,7 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_radius_up.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_DOME_NODES_EXPAND, 0, 0);
+        getNewMessageManager().add(new ExpandNodesMessage());
       }
     });
 
@@ -231,7 +245,7 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_radius_down.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_DOME_NODES_CONTRACT, 0, 0);
+        getNewMessageManager().add(new ContractNodesMessage());
       }
     });
 
@@ -255,7 +269,7 @@ public class PanelControlsPropertiesScalars {
     this.scroll_bar_charge.addAdjustmentListener(new AdjustmentListener() {
       public void adjustmentValueChanged(AdjustmentEvent e) {
         final int charge = e.getValue();
-        getMessageManager().sendMessage(Message.MSG_ALTER_CHARGE, charge, 0);
+        getNewMessageManager().add(new AlterChargeMessage(charge));
       }
     });
 
@@ -267,7 +281,7 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_charge_up.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_EDIT_CHARGE_UP, 0, 0);
+        getNewMessageManager().add(new ChargeUpMessage());
       }
     });
 
@@ -275,7 +289,7 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_charge_down.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_EDIT_CHARGE_DOWN, 0, 0);
+        getNewMessageManager().add(new ChargeDownMessage());
       }
     });
 
@@ -299,8 +313,7 @@ public class PanelControlsPropertiesScalars {
     this.scroll_bar_elasticity.addAdjustmentListener(new AdjustmentListener() {
       public void adjustmentValueChanged(AdjustmentEvent e) {
         final int elasticity = e.getValue();
-        getMessageManager().sendMessage(Message.MSG_ALTER_ELASTICITY,
-            elasticity, 0);
+        getNewMessageManager().add(new AlterElasticityMessage(elasticity));
         reflectElasticity();
       }
     });
@@ -311,7 +324,7 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_elasticity_up.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_CHANGE_ELASTICITY_UP, 0, 0);
+        getNewMessageManager().add(new ElasticityUpMessage());
       }
     });
 
@@ -319,8 +332,7 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_elasticity_down.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_CHANGE_ELASTICITY_DOWN, 0,
-            0);
+        getNewMessageManager().add(new ElasticityDownMessage());
       }
     });
 
@@ -343,8 +355,7 @@ public class PanelControlsPropertiesScalars {
     this.scroll_bar_damping.addAdjustmentListener(new AdjustmentListener() {
       public void adjustmentValueChanged(AdjustmentEvent e) {
         final int damping = e.getValue();
-        getMessageManager()
-            .sendMessage(Message.MSG_ALTER_STIFFNESS, damping, 0);
+        getNewMessageManager().add(new AlterStiffnessMessage(damping));
         reflectStiffness();
       }
     });
@@ -355,7 +366,7 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_damping_up.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_CHANGE_STIFFNESS_UP, 0, 0);
+        getNewMessageManager().add(new StiffnessUpMessage());
       }
     });
 
@@ -363,8 +374,7 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_damping_down.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager()
-            .sendMessage(Message.MSG_CHANGE_STIFFNESS_DOWN, 0, 0);
+        getNewMessageManager().add(new StiffnessDownMessage());
       }
     });
 
@@ -470,7 +480,7 @@ public class PanelControlsPropertiesScalars {
     return this.label_length;
   }
 
-  public MessageManager getMessageManager() {
-    return this.message_manager;
+  public NewMessageManager getNewMessageManager() {
+    return this.new_message_manager;
   }
 }

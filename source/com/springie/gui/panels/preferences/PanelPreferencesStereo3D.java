@@ -15,14 +15,11 @@ import java.awt.event.ItemListener;
 import com.springie.FrEnd;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.components.TTChoice;
-import com.springie.messages.MessageManager;
 import com.springie.render.RendererDelegator;
 import com.tifsoft.Forget;
 
 public class PanelPreferencesStereo3D {
   public Panel panel = FrEnd.setUpPanelForFrame2();
-
-  MessageManager message_manager;
 
   Scrollbar scroll_bar_eye_distance;
 
@@ -38,8 +35,7 @@ public class PanelPreferencesStereo3D {
 
   protected Object getEyeDistanceScaleFactor;
 
-  public PanelPreferencesStereo3D(MessageManager message_manager) {
-    this.message_manager = message_manager;
+  public PanelPreferencesStereo3D() {
     makePanel();
   }
 
@@ -151,7 +147,4 @@ public class PanelPreferencesStereo3D {
     return this.choice_eye_right;
   }
 
-  public MessageManager getMessageManager() {
-    return this.message_manager;
-  }
 }

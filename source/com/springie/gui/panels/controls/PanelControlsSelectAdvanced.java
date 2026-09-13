@@ -12,16 +12,15 @@ import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TextFieldWrapper;
-import com.springie.messages.Message;
-import com.springie.messages.MessageManager;
 import com.springie.messages.NewMessage;
 import com.springie.messages.NewMessageManager;
+import com.springie.messages.commands.SelectFacesWithNSidesMessage;
+import com.springie.messages.commands.SpreadSelectionViaLinksMessage;
 import com.tifsoft.Forget;
 
 public class PanelControlsSelectAdvanced {
   public Panel panel = FrEnd.setUpPanelForFrame2();
 
-  MessageManager message_manager;
   NewMessageManager new_message_manager;
 
   public Button button_edit_spread_selection_via_links;
@@ -32,8 +31,7 @@ public class PanelControlsSelectAdvanced {
 
   public TextFieldWrapper textfield_select_faces_with_n_sides;
 
-  public PanelControlsSelectAdvanced(MessageManager message_manager, NewMessageManager new_message_manager) {
-    this.message_manager = message_manager;
+  public PanelControlsSelectAdvanced(NewMessageManager new_message_manager) {
     this.new_message_manager = new_message_manager;
     makePanel();
   }
@@ -52,8 +50,7 @@ public class PanelControlsSelectAdvanced {
         .addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
             Forget.about(e);
-            getMessageManager().sendMessage(
-                Message.MSG_EDIT_SPREAD_SELECTION_VIA_LINKS, 0, 0);
+            getNewMessageManager().add(new SpreadSelectionViaLinksMessage());
           }
         });
     final Panel panel = new Panel();
@@ -69,8 +66,7 @@ public class PanelControlsSelectAdvanced {
     button_select_faces.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(
-          Message.MSG_SELECT_ALL_FACES_WITH_N_SIDES, 0, 0);
+        getNewMessageManager().add(new SelectFacesWithNSidesMessage());
       }
     });
     panel.add(button_select_faces);
@@ -115,10 +111,6 @@ public class PanelControlsSelectAdvanced {
     return panel;
   }
 
-  public MessageManager getMessageManager() {
-    return this.message_manager;
-  }
-  
   public NewMessageManager getNewMessageManager() {
     return this.new_message_manager;
   }

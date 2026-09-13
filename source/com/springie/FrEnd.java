@@ -90,7 +90,7 @@ import com.springie.gui.panels.preferences.PanelPreferencesStereo3D;
 import com.springie.gui.panels.preferences.PanelPreferencesUpdate;
 import com.springie.gui.panels.preferences.PanelPreferencesViewpoint;
 import com.springie.io.in.DataInput;
-import com.springie.messages.MessageManager;
+import com.springie.messages.MessagePump;
 import com.springie.messages.NewMessageManager;
 import com.springie.muscles.Muscles;
 import com.springie.messages.SystemMessages;
@@ -294,8 +294,6 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 	static Hortensius32Fast rnd = new Hortensius32Fast();
 
-	public static MessageManager message_manager = new MessageManager();
-
 	public static NewMessageManager new_message_manager = new NewMessageManager();
 
 	public static int last_mousex;
@@ -385,9 +383,9 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 	public static Preferences preferences = new Preferences();
 
-	public static PanelControlsMisc panel_edit_misc = new PanelControlsMisc(message_manager, new_message_manager);
+	public static PanelControlsMisc panel_edit_misc = new PanelControlsMisc(new_message_manager);
 
-	public static PanelControlsGenerate panel_edit_generate = new PanelControlsGenerate(message_manager);
+	public static PanelControlsGenerate panel_edit_generate = new PanelControlsGenerate(new_message_manager);
 
 	public static ColorPicker panel_edit_color = new ColorPicker(new ColorPickerInformer() {
 		public void inform(int colour) {
@@ -396,86 +394,72 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		}
 	});
 
-	public static PanelControlsDelete panel_edit_delete = new PanelControlsDelete(message_manager, new_message_manager);
+	public static PanelControlsDelete panel_edit_delete = new PanelControlsDelete(new_message_manager);
 
-	public static PanelControlsVelocities panel_edit_velocities = new PanelControlsVelocities(message_manager,
-			new_message_manager);
+	public static PanelControlsVelocities panel_edit_velocities = new PanelControlsVelocities(new_message_manager);
 
-	public static PanelControlsEdit panel_edit_edit = new PanelControlsEdit(message_manager, new_message_manager);
+	public static PanelControlsEdit panel_edit_edit = new PanelControlsEdit();
 
-	public static PanelControlsUniverse panel_universe = new PanelControlsUniverse(message_manager);
+	public static PanelControlsUniverse panel_universe = new PanelControlsUniverse(new_message_manager);
 
-	public static PanelControlsSelectAdvanced panel_edit_select_advanced = new PanelControlsSelectAdvanced(
-			message_manager, new_message_manager);
+	public static PanelControlsSelectAdvanced panel_edit_select_advanced = new PanelControlsSelectAdvanced(new_message_manager);
 
-	public static PanelControlsSelectLinks panel_edit_select_links = new PanelControlsSelectLinks(message_manager);
+	public static PanelControlsSelectLinks panel_edit_select_links = new PanelControlsSelectLinks();
 
-	public static PanelControlsSelectMain panel_edit_select_main = new PanelControlsSelectMain(message_manager,
-			new_message_manager);
+	public static PanelControlsSelectMain panel_edit_select_main = new PanelControlsSelectMain(new_message_manager);
 
-	public static PanelControlsSelect panel_edit_select = new PanelControlsSelect(message_manager);
+	public static PanelControlsSelect panel_edit_select = new PanelControlsSelect();
 
-	public static PanelControlsPropertiesFlags panel_edit_properties_flags = new PanelControlsPropertiesFlags(
-			message_manager);
+	public static PanelControlsPropertiesFlags panel_edit_properties_flags = new PanelControlsPropertiesFlags(new_message_manager);
 
-	public static PanelControlsPropertiesNames panel_edit_properties_names = new PanelControlsPropertiesNames(
-			message_manager, new_message_manager);
+	public static PanelControlsPropertiesNames panel_edit_properties_names = new PanelControlsPropertiesNames(new_message_manager);
 
-	public static PanelControlsStatistics panel_controls_statistics = new PanelControlsStatistics(message_manager);
+	public static PanelControlsStatistics panel_controls_statistics = new PanelControlsStatistics();
 
-	public static PanelControlsPropertiesScalars panel_edit_properties_scalars = new PanelControlsPropertiesScalars(
-			message_manager);
+	public static PanelControlsPropertiesScalars panel_edit_properties_scalars = new PanelControlsPropertiesScalars(new_message_manager);
 
-	public static PanelControlsProperties panel_edit_properties = new PanelControlsProperties(message_manager);
+	public static PanelControlsProperties panel_edit_properties = new PanelControlsProperties();
 
-	public static PanelControls panel_controls = new PanelControls(message_manager);
+	public static PanelControls panel_controls = new PanelControls();
 
-	public static PanelControlsModify panel_edit_model = new PanelControlsModify(message_manager);
+	public static PanelControlsModify panel_edit_model = new PanelControlsModify();
 
-	public static PanelFundamental panel_fundamental = new PanelFundamental(message_manager, new_message_manager);
+	public static PanelFundamental panel_fundamental = new PanelFundamental(new_message_manager);
 
 	public static PanelAbout panel_about = new PanelAbout();
 
 	public static PanelHelp panel_help = new PanelHelp();
 
-	public static PanelPreferencesViewpoint panel_preferences_viewpoint = new PanelPreferencesViewpoint(
-			message_manager);
+	public static PanelPreferencesViewpoint panel_preferences_viewpoint = new PanelPreferencesViewpoint();
 
-	public static PanelPreferencesStereo3D panel_preferences_stereo3d = new PanelPreferencesStereo3D(message_manager);
+	public static PanelPreferencesStereo3D panel_preferences_stereo3d = new PanelPreferencesStereo3D();
 
-	public static PanelPreferencesRendererSharedShow panel_preferences_shared_show = new PanelPreferencesRendererSharedShow(
-			message_manager);
+	public static PanelPreferencesRendererSharedShow panel_preferences_shared_show = new PanelPreferencesRendererSharedShow();
 
-	public static PanelPreferencesRendererSharedMisc panel_preferences_shared_misc = new PanelPreferencesRendererSharedMisc(
-			message_manager);
+	public static PanelPreferencesRendererSharedMisc panel_preferences_shared_misc = new PanelPreferencesRendererSharedMisc();
 
-	public static PanelPreferencesEdit panel_preferences_edit = new PanelPreferencesEdit(message_manager);
+	public static PanelPreferencesEdit panel_preferences_edit = new PanelPreferencesEdit();
 
-	public static PanelPreferencesUpdate panel_preferences_update = new PanelPreferencesUpdate(message_manager);
+	public static PanelPreferencesUpdate panel_preferences_update = new PanelPreferencesUpdate();
 
-	public static PanelPreferencesIO panel_preferences_io = new PanelPreferencesIO(message_manager);
+	public static PanelPreferencesIO panel_preferences_io = new PanelPreferencesIO();
 
-	public static PanelPreferencesRendererOriginal panel_preferences_renderer_original = new PanelPreferencesRendererOriginal(
-			message_manager);
+	public static PanelPreferencesRendererOriginal panel_preferences_renderer_original = new PanelPreferencesRendererOriginal(new_message_manager);
 
-	public static PanelPreferencesRendererModernFilters panel_preferences_renderer_modern_filters = new PanelPreferencesRendererModernFilters(
-			message_manager);
+	public static PanelPreferencesRendererModernFilters panel_preferences_renderer_modern_filters = new PanelPreferencesRendererModernFilters();
 
-	public static PanelPreferencesRendererModernColours panel_preferences_renderer_modern_colours = new PanelPreferencesRendererModernColours(
-			message_manager);
+	public static PanelPreferencesRendererModernColours panel_preferences_renderer_modern_colours = new PanelPreferencesRendererModernColours();
 
 	// Built before the modern panel: the modern panel's Renderer tab
 	// shows these ray-traced-only options at its bottom (South) while
 	// the ray-traced renderer is active.
-	public static PanelPreferencesRendererRaytraced panel_preferences_renderer_raytraced = new PanelPreferencesRendererRaytraced(
-			message_manager);
+	public static PanelPreferencesRendererRaytraced panel_preferences_renderer_raytraced = new PanelPreferencesRendererRaytraced();
 
-	public static PanelPreferencesRendererModern panel_preferences_renderer_modern = new PanelPreferencesRendererModern(
-			message_manager);
+	public static PanelPreferencesRendererModern panel_preferences_renderer_modern = new PanelPreferencesRendererModern(new_message_manager);
 
-	public static PanelPreferencesDisplay panel_preferences_display = new PanelPreferencesDisplay(message_manager);
+	public static PanelPreferencesDisplay panel_preferences_display = new PanelPreferencesDisplay();
 
-	public static PanelPreferences panel_preferences = new PanelPreferences(message_manager);
+	public static PanelPreferences panel_preferences = new PanelPreferences();
 
 	public static PanelAllControls panel_controls_all = new PanelAllControls();
 
@@ -950,10 +934,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 			}
 
 			if (RendererDelegator.isOldDoubleBuffer()) {
-				if (message_manager.current_message != 0) {
-					message_manager.process();
-				}
-				new_message_manager.process();
+				MessagePump.processAll();
 
 				RendererDelegator.redrawChanged(main_canvas.graphics_handle);
 			}

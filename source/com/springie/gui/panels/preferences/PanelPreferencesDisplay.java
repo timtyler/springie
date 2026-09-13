@@ -13,7 +13,6 @@ import java.util.List;
 import com.springie.FrEnd;
 import com.springie.constants.Quality;
 import com.springie.gui.components.TTChoice;
-import com.springie.messages.MessageManager;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;
@@ -28,8 +27,6 @@ public class PanelPreferencesDisplay {
 
   public Panel panel_main = FrEnd.setUpPanelForFrame();
 
-  MessageManager message_manager;
-
   // The Display type dropdown appears twice: once at the top of the
   // shared Renderer tab (modern and ray-traced renderers) and once in
   // the original renderer's own Renderer tab, so the renderer can
@@ -43,8 +40,7 @@ public class PanelPreferencesDisplay {
 
   public Label label_fps_value;
 
-  public PanelPreferencesDisplay(MessageManager message_manager) {
-    this.message_manager = message_manager;
+  public PanelPreferencesDisplay() {
     makePanel();
   }
 
@@ -111,7 +107,6 @@ public class PanelPreferencesDisplay {
 
     // ...
 
-
 //    final TTChoice choose_display_struts = new TTChoice(new ItemListener() {
 //      public void itemStateChanged(ItemEvent e) {
 //        final String scs = (String) e.getItem();
@@ -122,7 +117,6 @@ public class PanelPreferencesDisplay {
 //    });
 //
 //    FrEnd.choose_display_struts = choose_display_struts;
-
 
     // The Display panel is the renderer tab bar; the rendering
     // settings (Display type, anti-aliasing, frames-per-second) live
@@ -149,10 +143,6 @@ public class PanelPreferencesDisplay {
 //    if (FrEnd.development_version) {
 //      this.panel_shared.add(panel_fps);
 //    }
-  }
-
-   public MessageManager getMessageManager() {
-    return this.message_manager;
   }
 
   private Panel getAntiAliasingPanel() {

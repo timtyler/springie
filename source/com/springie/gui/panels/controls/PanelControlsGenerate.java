@@ -12,14 +12,19 @@ import com.springie.FrEnd;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TabbedPanel;
 import com.springie.gui.components.TextFieldWrapper;
-import com.springie.messages.Message;
-import com.springie.messages.MessageManager;
+import com.springie.messages.NewMessageManager;
+import com.springie.messages.commands.GenerateFacesFromSelectionMessage;
+import com.springie.messages.commands.GenerateFreeNodesMessage;
+import com.springie.messages.commands.GenerateMatrixMessage;
+import com.springie.messages.commands.GenerateSpherePackMessage;
+import com.springie.messages.commands.GenerateStringMessage;
+import com.springie.messages.commands.GenerateTubeMessage;
 import com.tifsoft.Forget;
 
 public class PanelControlsGenerate {
   public Panel panel = FrEnd.setUpPanelForFrame2();
 
-  MessageManager message_manager;
+  NewMessageManager new_message_manager;
 
   public TextFieldWrapper textfield_generate_tube_length;
 
@@ -37,8 +42,8 @@ public class PanelControlsGenerate {
 
   public TextFieldWrapper textfield_generate_string_length;
 
-  public PanelControlsGenerate(MessageManager message_manager) {
-    this.message_manager = message_manager;
+  public PanelControlsGenerate(NewMessageManager new_message_manager) {
+    this.new_message_manager = new_message_manager;
     makePanelGenerate();
   }
 
@@ -77,7 +82,7 @@ public class PanelControlsGenerate {
     button.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_GENERATE_FACES_FROM_SELECTION, 0, 0);
+        getNewMessageManager().add(new GenerateFacesFromSelectionMessage());
       }
     });
 
@@ -91,7 +96,7 @@ public class PanelControlsGenerate {
     button.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_GENERATE_TUBE, 0, 0);
+        getNewMessageManager().add(new GenerateTubeMessage());
       }
     });
 
@@ -114,7 +119,7 @@ public class PanelControlsGenerate {
     button.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_GENERATE_STRING, 0, 0);
+        getNewMessageManager().add(new GenerateStringMessage());
       }
     });
 
@@ -133,7 +138,7 @@ public class PanelControlsGenerate {
     button.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_GENERATE_MATRIX, 0, 0);
+        getNewMessageManager().add(new GenerateMatrixMessage());
       }
     });
 
@@ -161,7 +166,7 @@ public class PanelControlsGenerate {
     button.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_GENERATE_FREE_NODES, 0, 0);
+        getNewMessageManager().add(new GenerateFreeNodesMessage());
       }
     });
 
@@ -182,7 +187,7 @@ public class PanelControlsGenerate {
     button.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);
-        getMessageManager().sendMessage(Message.MSG_GENERATE_SPHERE_PACK, 0, 0);
+        getNewMessageManager().add(new GenerateSpherePackMessage());
       }
     });
 
@@ -197,7 +202,7 @@ public class PanelControlsGenerate {
     return panel;
   }
 
-  public MessageManager getMessageManager() {
-    return this.message_manager;
+  public NewMessageManager getNewMessageManager() {
+    return this.new_message_manager;
   }
 }

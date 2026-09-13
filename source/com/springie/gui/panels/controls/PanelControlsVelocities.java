@@ -10,7 +10,6 @@ import java.awt.event.ActionListener;
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.gui.GUIStrings;
-import com.springie.messages.MessageManager;
 import com.springie.messages.NewMessage;
 import com.springie.messages.NewMessageManager;
 import com.springie.modification.velocity.MotionlessMaker;
@@ -19,7 +18,6 @@ import com.tifsoft.Forget;
 public class PanelControlsVelocities {
 	public Panel panel = FrEnd.setUpPanelForFrame2();
 
-	MessageManager message_manager;
 	NewMessageManager new_message_manager;
 
 	public Button button_edit_make_motionless;
@@ -28,8 +26,7 @@ public class PanelControlsVelocities {
 
 	public Button button_edit_reverse;
 
-	public PanelControlsVelocities(MessageManager message_manager, NewMessageManager new_message_manager) {
-		this.message_manager = message_manager;
+	public PanelControlsVelocities(NewMessageManager new_message_manager) {
 		this.new_message_manager = new_message_manager;
 		makePanel();
 	}
@@ -114,9 +111,6 @@ public class PanelControlsVelocities {
 		return panel;
 	}
 
-	public MessageManager getMessageManager() {
-		return this.message_manager;
-	}
 
 	public NewMessageManager getNewMessageManager() {
 		return this.new_message_manager;

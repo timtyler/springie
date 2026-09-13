@@ -16,7 +16,6 @@ import java.awt.event.ItemListener;
 import com.springie.FrEnd;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TabbedPanel;
-import com.springie.messages.MessageManager;
 import com.springie.preferences.Preferences;
 import com.springie.render.RendererDelegator;
 import com.tifsoft.Forget;
@@ -26,12 +25,10 @@ public class PanelPreferences {
 
   public Panel panel_centre = FrEnd.setUpPanelForFrame2();
 
-  MessageManager message_manager;
 
   private Choice choice_controls_window_mode;
 
-  public PanelPreferences(MessageManager message_manager) {
-    this.message_manager = message_manager;
+  public PanelPreferences() {
     makePanel();
   }
 
@@ -114,7 +111,4 @@ public class PanelPreferences {
     return this.panel;
   }
 
-  public MessageManager getMessageManager() {
-    return this.message_manager;
-  }
 }

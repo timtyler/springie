@@ -17,7 +17,6 @@ import com.springie.FrEnd;
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.faces.Face;
 import com.springie.gui.GUIStrings;
-import com.springie.messages.MessageManager;
 import com.springie.render.RendererDelegator;
 import com.tifsoft.Forget;
 
@@ -26,7 +25,6 @@ public class PanelPreferencesRendererSharedMisc {
 
   public Panel panel_shared = FrEnd.setUpPanelForFrame();
 
-  MessageManager message_manager;
 
   public Checkbox checkbox_explosions;
 
@@ -51,8 +49,7 @@ public class PanelPreferencesRendererSharedMisc {
 
   //public Label label_fps_value;
 
-  public PanelPreferencesRendererSharedMisc(MessageManager message_manager) {
-    this.message_manager = message_manager;
+  public PanelPreferencesRendererSharedMisc() {
     makePanel();
   }
 
@@ -226,7 +223,4 @@ public class PanelPreferencesRendererSharedMisc {
     RendererDelegator.repaintAll();
   }
 
-  public MessageManager getMessageManager() {
-    return this.message_manager;
-  }
 }

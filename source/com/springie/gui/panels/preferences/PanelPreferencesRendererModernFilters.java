@@ -13,7 +13,6 @@ import com.springie.gui.colourpicker.ColorPicker;
 import com.springie.gui.colourpicker.ColorPickerInformer;
 import com.springie.gui.components.TabbedPanel;
 import com.springie.gui.components.TTChoice;
-import com.springie.messages.MessageManager;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ColourModifier;
 import com.springie.render.modules.modern.RendererBinManager;
@@ -29,14 +28,11 @@ public class PanelPreferencesRendererModernFilters {
 
   public ColorPicker panel_colour_filter_b;
 
-  MessageManager message_manager;
-
   private TTChoice choose_colour_modifier_filled;
 
   private TTChoice choose_colour_modifier_wireframe;
 
-  public PanelPreferencesRendererModernFilters(MessageManager message_manager) {
-    this.message_manager = message_manager;
+  public PanelPreferencesRendererModernFilters() {
     makePanel();
   }
 
@@ -166,7 +162,4 @@ public class PanelPreferencesRendererModernFilters {
   }
 
   
-  public MessageManager getMessageManager() {
-    return this.message_manager;
-  }
 }
