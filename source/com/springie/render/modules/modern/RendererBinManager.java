@@ -52,6 +52,10 @@ public class RendererBinManager {
   // change means the tiles are the wrong resolution and must be dropped.
   private int last_antialiasing;
 
+  // Pixellation factor in force when the tiles were rendered. A change
+  // means the tiles are the wrong resolution and must be dropped.
+  private int last_pixellation;
+
   // The tile size in force when the tiles were created. show_bins changes
   // the tile size, so the tiles must be dropped when it changes.
   private int last_block_size = -1;
@@ -165,6 +169,7 @@ public class RendererBinManager {
    */
   private void renderDirect(RendererBinManager bins_last, Graphics graphics,
       int block_size) {
+    final int px = RendererDelegator.pixellation;
     final RectangleInt potential = new RectangleInt(0, 0, 0, 0);
 
     for (int j = 0; j < this.number_of_bins_y; j++) {
@@ -185,9 +190,57 @@ public class RendererBinManager {
           bin.setUpActual(potential);
           bin.union.setToUnion(bin.actual, last_bin.actual);
 
+          if (px > 1 && size > 0) {
+            // Pixellated direct painting: render the bin at 1/px
+            // resolution into a scratch tile, then nearest-neighbour
+            // upsample and paint the full bin. The scratch tiles are
+            // reused across frames while the factor is unchanged.
+            final int coarse = (block_size + px - 1) / px;
+            BufferedImage coarse_tile = (BufferedImage) bin.image;
+            if (coarse_tile == null || coarse_tile.getWidth() != coarse) {
+              coarse_tile = new BufferedImage(coarse, coarse,
+                  BufferedImage.TYPE_INT_RGB);
+              bin.image = coarse_tile;
+            }
+            final Graphics2D tile_graphics =
+                (Graphics2D) coarse_tile.getGraphics();
+            final double scale = 1.0 / px;
+            tile_graphics.translate(-potential.min_x * scale,
+                -potential.min_y * scale);
+            tile_graphics.scale(scale, scale);
+            // The scratch tile starts undefined: always scrub it.
+            doScrubbing(tile_graphics, potential, bin);
+
+            getSortedNodeDepthIndex(v_this, FrEnd.redraw_deepest_first);
+
+            tile_graphics.setClip(potential.min_x, potential.min_y,
+                block_size, block_size);
+
+            for (int c = size; --c >= 0;) {
+              final int index = this.node_depth_index[c];
+              final PolygonComposite composite = v_this.get(index);
+
+              renderThePolygon(tile_graphics, composite);
+            }
+            tile_graphics.dispose();
+
+            if (bin.image_px == null
+                || bin.image_px.getWidth() != block_size) {
+              bin.image_px = new BufferedImage(block_size, block_size,
+                  BufferedImage.TYPE_INT_RGB);
+            }
+            upsampleTile(coarse_tile, bin.image_px, px);
+            graphics.setClip(potential.min_x, potential.min_y, block_size,
+                block_size);
+            graphics.drawImage(bin.image_px, potential.min_x,
+                potential.min_y, null);
+            continue;
+          }
+
           // No tiles in the direct path (any stale ones were dropped in
           // render() when the mode changed).
           bin.image = null;
+          bin.image_px = null;
 
           if (size > 0) {
             if (size_last > 0) {
@@ -247,20 +300,33 @@ public class RendererBinManager {
       int block_size) {
 
     final int aa = RendererDelegator.antialiasing;
+    final int px = RendererDelegator.pixellation;
 
-    // The tile size changed (show_bins toggled), or the anti-aliasing
-    // factor changed: the tiles are the wrong size, so drop them.
-    // They are rebuilt below.
-    if (block_size != this.last_block_size || aa != this.last_antialiasing) {
+    // The tile size changed (show_bins toggled), or the anti-aliasing or
+    // pixellation factor changed: the tiles are the wrong size, so drop
+    // them. They are rebuilt below.
+    if (block_size != this.last_block_size || aa != this.last_antialiasing
+        || px != this.last_pixellation) {
       for (int j = 0; j < this.number_of_bins_y; j++) {
         for (int i = 0; i < this.number_of_bins_x; i++) {
           this.array[i][j].image = null;
           this.array[i][j].image_aa = null;
+          this.array[i][j].image_px = null;
         }
       }
       this.last_block_size = block_size;
       this.last_antialiasing = aa;
+      this.last_pixellation = px;
     }
+
+    // Pixellated tiles are rendered at 1/px resolution: the coarse tile
+    // covers the bin with ceil(block_size / px) pixels per side, then
+    // gets nearest-neighbour upsampled to the full bin size on blit.
+    final int coarse_w = (block_size + px - 1) / px;
+    final int coarse_h = (block_size + px - 1) / px;
+    // The render tile: anti-aliasing supersamples the coarse tile.
+    final int render_w = coarse_w * aa;
+    final int render_h = coarse_h * aa;
 
     final RectangleInt potential = new RectangleInt(0, 0, 0, 0);
 
@@ -293,26 +359,29 @@ public class RendererBinManager {
             if (bin.image == null) {
               FrEnd.main_canvas.panel
                   .setBackground(RendererDelegator.color_background);
-              if (aa > 1) {
-                // Supersampled tile: rendered at aa-times resolution, then
-                // box-filtered down on blit. A BufferedImage guarantees
-                // readable pixels for the downsample.
-                bin.image = new BufferedImage(block_size * aa,
-                    block_size * aa, BufferedImage.TYPE_INT_RGB);
+              if (aa > 1 || px > 1) {
+                // Rendered at aa / px resolution, then box-filtered
+                // (anti-aliasing) and/or nearest-neighbour upsampled
+                // (pixellation) on blit. A BufferedImage guarantees
+                // readable pixels for the resampling.
+                bin.image = new BufferedImage(render_w, render_h,
+                    BufferedImage.TYPE_INT_RGB);
               } else {
                 bin.image = FrEnd.main_canvas.createImage(block_size,
                     block_size);
               }
             }
             final Graphics graphics_paint = bin.image.getGraphics();
-            if (aa > 1) {
-              // Render in screen coordinates scaled up: translate first,
-              // then scale, so a screen point p lands on tile pixel
-              // aa * (p - min). The clip and scrub below are in the same
-              // user space, so they scale along untouched.
-              graphics_paint.translate(-potential.min_x * aa,
-                  -potential.min_y * aa);
-              ((Graphics2D) graphics_paint).scale(aa, aa);
+            if (aa > 1 || px > 1) {
+              // Render in screen coordinates scaled by aa / px: translate
+              // first, then scale, so a screen point p lands on tile pixel
+              // (aa / px) * (p - min). The clip and scrub below are in the
+              // same user space, so they scale along untouched.
+              final Graphics2D graphics_2d = (Graphics2D) graphics_paint;
+              final double scale = (double) aa / px;
+              graphics_2d.translate(-potential.min_x * scale,
+                  -potential.min_y * scale);
+              graphics_2d.scale(scale, scale);
             } else {
               graphics_paint.translate(-potential.min_x, -potential.min_y);
             }
@@ -334,12 +403,24 @@ public class RendererBinManager {
             }
 
             if (aa > 1) {
-              // Box-filter the supersampled tile into the 1x blit tile.
+              // Box-filter the supersampled tile into the coarse tile
+              // (the full bin size while pixellation is off).
               if (bin.image_aa == null) {
-                bin.image_aa = new BufferedImage(block_size, block_size,
+                bin.image_aa = new BufferedImage(coarse_w, coarse_h,
                     BufferedImage.TYPE_INT_RGB);
               }
               downsampleTile((BufferedImage) bin.image, bin.image_aa, aa);
+            }
+            if (px > 1) {
+              // Nearest-neighbour upsample the coarse tile into the full
+              // bin-size blit tile: one colour per px-by-px block.
+              if (bin.image_px == null) {
+                bin.image_px = new BufferedImage(block_size, block_size,
+                    BufferedImage.TYPE_INT_RGB);
+              }
+              final BufferedImage coarse = aa > 1 ? bin.image_aa
+                  : (BufferedImage) bin.image;
+              upsampleTile(coarse, bin.image_px, px);
             }
             graphics_paint.dispose();
           } else if (bin.image != null) {
@@ -347,6 +428,7 @@ public class RendererBinManager {
             doScrubbing(graphics, potential, bin);
             bin.image = null;
             bin.image_aa = null;
+            bin.image_px = null;
           }
       }
     }
@@ -361,9 +443,11 @@ public class RendererBinManager {
           final RectangleInt union = bin.union;
           graphics.setClip(union.min_x, union.min_y, union.max_x - union.min_x,
               union.max_y - union.min_y);
-          // Anti-aliased bins blit the box-filtered 1x tile; the 1x path
+          // Pixellated bins blit the nearest-neighbour upsampled tile;
+          // anti-aliased bins blit the box-filtered tile; the 1x path
           // blits the rendered tile directly, exactly as before.
-          final Image blit = aa > 1 && bin.image_aa != null ? bin.image_aa
+          final Image blit = px > 1 && bin.image_px != null ? bin.image_px
+              : aa > 1 && bin.image_aa != null ? bin.image_aa
               : bin.image;
           graphics.drawImage(blit, bin_min_x, bin_min_y, null);
         }
@@ -402,6 +486,31 @@ public class RendererBinManager {
         }
         dst_pixels[y * w + x] = 0xFF000000 | (int) (r / n) << 16
             | (int) (g / n) << 8 | (int) (b / n);
+      }
+    }
+    dst.setRGB(0, 0, w, h, dst_pixels, 0, w);
+  }
+
+  /**
+   * Nearest-neighbour upsample: replicates each source pixel across a
+   * px-by-px block of the destination, so the destination shows one flat
+   * colour per block -- the pixellated look. Source rows/columns past the
+   * destination edge (when the sizes are not exact multiples) clamp to
+   * the last source row/column.
+   */
+  static void upsampleTile(BufferedImage src, BufferedImage dst, int px) {
+    final int sw = src.getWidth();
+    final int sh = src.getHeight();
+    final int w = dst.getWidth();
+    final int h = dst.getHeight();
+    final int[] src_pixels = src.getRGB(0, 0, sw, sh, null, 0, sw);
+    final int[] dst_pixels = new int[w * h];
+    for (int y = 0; y < h; y++) {
+      final int sy = Math.min(y / px, sh - 1);
+      final int dst_row = y * w;
+      final int src_row = sy * sw;
+      for (int x = 0; x < w; x++) {
+        dst_pixels[dst_row + x] = src_pixels[src_row + Math.min(x / px, sw - 1)];
       }
     }
     dst.setRGB(0, 0, w, h, dst_pixels, 0, w);

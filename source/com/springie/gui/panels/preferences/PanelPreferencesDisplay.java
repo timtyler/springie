@@ -39,6 +39,8 @@ public class PanelPreferencesDisplay {
 
   private TTChoice choose_antialiasing;
 
+  private TTChoice choose_pixellation;
+
   public Label label_fps_value;
 
   public PanelPreferencesDisplay(MessageManager message_manager) {
@@ -89,17 +91,18 @@ public class PanelPreferencesDisplay {
   }
 
   void makePanel() {
-    // The Display type dropdown, the anti-aliasing choice and the
-    // frames-per-second readout live at the top of the shared Renderer
-    // tab (modern and ray-traced renderers), so the rendering settings
-    // sit together; one Display type copy also goes in the original
-    // renderer's own Renderer tab, so the renderer can always be
-    // switched back whichever is showing. Anti-aliasing only applies
-    // to the modern and ray-traced renderers. All three panels exist
-    // already: they are built before this one.
+    // The Display type dropdown, the anti-aliasing and pixellation
+    // choices and the frames-per-second readout live at the top of the
+    // shared Renderer tab (modern and ray-traced renderers), so the
+    // rendering settings sit together; one Display type copy also goes
+    // in the original renderer's own Renderer tab, so the renderer can
+    // always be switched back whichever is showing. Anti-aliasing and
+    // pixellation only apply to the modern and ray-traced renderers.
+    // All three panels exist already: they are built before this one.
     FrEnd.panel_preferences_shared_show.panel.add(makeDisplayTypePanel(), 0);
     FrEnd.panel_preferences_shared_show.panel.add(getAntiAliasingPanel(), 1);
-    FrEnd.panel_preferences_shared_show.panel.add(getFpsPanel(), 2);
+    FrEnd.panel_preferences_shared_show.panel.add(getPixellationPanel(), 2);
+    FrEnd.panel_preferences_shared_show.panel.add(getFpsPanel(), 3);
     FrEnd.panel_preferences_renderer_original.panel_renderer_tab
         .add(makeDisplayTypePanel());
 
@@ -175,6 +178,32 @@ public class PanelPreferencesDisplay {
     return panel;
   }
 
+  private Panel getPixellationPanel() {
+    final Panel panel = new Panel();
+    panel.add(new Label("Pixellated:", Label.RIGHT));
+
+    this.choose_pixellation = new TTChoice(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        Forget.about(e);
+        final String scs = (String) e.getItem();
+        RendererDelegator.pixellation =
+            PanelPreferencesDisplay.this.choose_pixellation.str_to_num(scs);
+        // The cached tiles are the wrong resolution now.
+        FrEnd.main_canvas.forceResize();
+      }
+    });
+
+    this.choose_pixellation.add("1x1", 1);
+    this.choose_pixellation.add("2x2", 2);
+    this.choose_pixellation.add("3x3", 3);
+    this.choose_pixellation.add("4x4", 4);
+    this.choose_pixellation.choice
+        .select(this.choose_pixellation.num_to_str(1));
+    panel.add(this.choose_pixellation.choice);
+
+    return panel;
+  }
+
   private Panel getFpsPanel() {
     // Frames-per-second readout, kept next to the renderer options so it
     // is visible while tuning the rendering settings.
@@ -224,6 +253,11 @@ public class PanelPreferencesDisplay {
     RendererDelegator.antialiasing = 1;
     this.choose_antialiasing.choice
         .select(this.choose_antialiasing.num_to_str(1));
+
+    // Pixellation: 1x1 is off.
+    RendererDelegator.pixellation = 1;
+    this.choose_pixellation.choice
+        .select(this.choose_pixellation.num_to_str(1));
 
     FrEnd.panel_preferences_renderer_original.resetToDefaults();
     FrEnd.panel_preferences_renderer_modern.resetToDefaults();

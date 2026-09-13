@@ -403,6 +403,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     sig = sig * 31 + RendererDelegator.fill_light;
     sig = sig * 31 + (RendererDelegator.fill_light_enabled ? 1 : 0);
     sig = sig * 31 + RendererDelegator.antialiasing;
+    sig = sig * 31 + RendererDelegator.pixellation;
     sig = sig * 31 + RendererDelegator.generation;
 
     final List<?> nodes = manager.element;

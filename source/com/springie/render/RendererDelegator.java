@@ -136,6 +136,16 @@ public final class RendererDelegator {
    */
   public static int antialiasing = 1;
 
+  /**
+   * Pixellation factor (1 to 4): 1x1 is off, 2x2, 3x3 and 4x4 render one
+   * colour per n-by-n screen block and replicate it across the block,
+   * producing a blocky, pixellated display -- the opposite of
+   * anti-aliasing. Affects the modern tiled renderer (tiles are rendered
+   * at 1/n resolution and nearest-neighbour upsampled on blit) and the
+   * ray-traced renderer (one ray per n-by-n block). 1 is the default.
+   */
+  public static int pixellation = 1;
+
   static long time_last_ms;
 
   static int frame_count;

@@ -148,6 +148,18 @@ final class Raytracer {
     // Anti-aliasing: an aa-by-aa grid of sub-pixel rays per pixel,
     // box-filtered. 1x1 is the historical single-ray path, untouched.
     final int aa = RendererDelegator.antialiasing;
+    // Pixellation: one shade per px-by-px screen block, replicated
+    // across the block. With anti-aliasing off the representative ray
+    // goes through the block's top-left pixel, so the pixellated image
+    // is exactly the 1x1 image subsampled and replicated; with
+    // anti-aliasing on the sub-pixel rays spread across the whole
+    // block, resolving each coarse pixel.
+    final int px = RendererDelegator.pixellation;
+    if (px > 1) {
+      renderTilePixellated(x0, y0, width, height, camera, bvh, rings,
+          pixels, stats, scenic, background_rgb, px, aa);
+      return;
+    }
     if (aa <= 1) {
       int i = 0;
       for (int y = 0; y < height; y++) {
@@ -203,6 +215,92 @@ final class Raytracer {
             | (int) (g / samples) << 8 | (int) (b / samples);
         if (struck && stats != null) {
           stats.add(x, y);
+        }
+      }
+    }
+  }
+
+  /**
+   * Pixellated tile rendering: one shade per px-by-px block, replicated
+   * across the block. Blocks align to screen coordinates, so neighbouring
+   * tiles agree on block boundaries and no seams appear. With
+   * anti-aliasing off the block's top-left pixel is shaded; with it on,
+   * the aa-by-aa stratified samples spread across the whole block.
+   */
+  private static void renderTilePixellated(int x0, int y0, int width,
+      int height, RayCamera camera, BVH bvh, RTRing[] rings, int[] pixels,
+      HitStats stats, BufferedImage scenic, int background_rgb, int px,
+      int aa) {
+    final Ray ray = new Ray();
+    final Hit hit = new Hit();
+    final int[] stack = new int[64];
+    final int x1 = x0 + width;
+    final int y1 = y0 + height;
+    // Screen-aligned blocks: the first block may start before the tile.
+    final int bx0 = (x0 / px) * px;
+    final int by0 = (y0 / px) * px;
+    final int samples = aa * aa;
+    for (int by = by0; by < y1; by += px) {
+      for (int bx = bx0; bx < x1; bx += px) {
+        final int rgb;
+        final boolean struck;
+        if (aa <= 1) {
+          camera.makeRay(bx, by, ray);
+          hit.reset();
+          if (intersectScene(ray, hit, bvh, rings, stack)) {
+            rgb = shade(ray, hit, bvh, stack);
+            struck = true;
+          } else {
+            rgb = backgroundAt(scenic, background_rgb, ray, bx, by);
+            struck = false;
+          }
+        } else {
+          long r = 0;
+          long g = 0;
+          long b = 0;
+          boolean hit_any = false;
+          // Seeded per block, like the per-pixel path, so a render is
+          // deterministic run to run and independent of tile boundaries.
+          final Random jitter = new Random(
+              bx * 73856093L ^ by * 19349663L ^ 0x9E3779B9L);
+          for (int sy = 0; sy < aa; sy++) {
+            for (int sx = 0; sx < aa; sx++) {
+              final double sub_x = bx + (sx + jitter.nextDouble()) * px / aa;
+              final double sub_y = by + (sy + jitter.nextDouble()) * px / aa;
+              camera.makeRay(sub_x, sub_y, ray);
+              hit.reset();
+              final int sample_rgb;
+              if (intersectScene(ray, hit, bvh, rings, stack)) {
+                sample_rgb = shade(ray, hit, bvh, stack);
+                hit_any = true;
+              } else {
+                sample_rgb = backgroundAt(scenic, background_rgb, ray,
+                    (int) Math.round(sub_x), (int) Math.round(sub_y));
+              }
+              r += (sample_rgb >> 16) & 0xFF;
+              g += (sample_rgb >> 8) & 0xFF;
+              b += sample_rgb & 0xFF;
+            }
+          }
+          rgb = 0xFF000000 | (int) (r / samples) << 16
+              | (int) (g / samples) << 8 | (int) (b / samples);
+          struck = hit_any;
+        }
+        // Replicate the block colour across the tile.
+        final int xs = Math.max(bx, x0);
+        final int ys = Math.max(by, y0);
+        final int xe = Math.min(bx + px, x1);
+        final int ye = Math.min(by + px, y1);
+        for (int y = ys; y < ye; y++) {
+          final int row = (y - y0) * width;
+          for (int x = xs; x < xe; x++) {
+            pixels[row + (x - x0)] = rgb;
+          }
+        }
+        if (struck && stats != null) {
+          // The block hit: extend the hit box over the whole block.
+          stats.add(xs - x0, ys - y0);
+          stats.add(xe - 1 - x0, ye - 1 - y0);
         }
       }
     }

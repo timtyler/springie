@@ -81,6 +81,7 @@ class PreferencesResetTest {
         RendererDelegator.fill_light = 60;
         RendererDelegator.fill_light_enabled = true;
         RendererDelegator.antialiasing = 3;
+        RendererDelegator.pixellation = 4;
         RendererDelegator.color_background_number = 0xFFFF0000;
         RendererDelegator.scenic_background = true;
         PanelPreferencesRendererModern.render_label_when = 1;
@@ -166,6 +167,7 @@ class PreferencesResetTest {
       assertEquals(50, RendererDelegator.fill_light);
       assertEquals(false, RendererDelegator.fill_light_enabled);
       assertEquals(1, RendererDelegator.antialiasing);
+      assertEquals(1, RendererDelegator.pixellation);
       assertEquals(0xFF000000, RendererDelegator.color_background_number);
       assertEquals(false, RendererDelegator.scenic_background);
       assertEquals(2, PanelPreferencesRendererModern.render_label_when);
