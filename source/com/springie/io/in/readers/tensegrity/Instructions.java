@@ -50,6 +50,9 @@ public class Instructions {
     "NW", // 42 // Node growth
     "SL", // 43 // Speed limit
     "EX", // 44 // Excite
+    "ME", // 45 // Muscles enabled
+    "MA", // 46 // Muscles amplitude
+    "MP", // 47 // Muscles period
 //  "CS", // 29 // Charge strength
   };
 
@@ -98,4 +101,7 @@ public class Instructions {
   static final int NW  = 42;
   static final int SL  = 43;
   static final int EX  = 44;
+  static final int ME  = 45;
+  static final int MA  = 46;
+  static final int MP  = 47;
 }

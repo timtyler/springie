@@ -18,6 +18,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.io.in.DataInput;
 import com.springie.io.out.Serialiser;
+import com.springie.muscles.Muscles;
 import com.springie.world.World;
 
 /**
@@ -42,6 +43,9 @@ class UniverseSettingsRoundTripTest {
   private boolean saved_continuously_centre;
   private boolean saved_node_growth;
   private boolean saved_charge_active;
+  private boolean saved_muscles_enabled;
+  private int saved_muscles_amplitude;
+  private int saved_muscles_period_ticks;
 
   @BeforeEach
   void setUp() {
@@ -61,6 +65,10 @@ class UniverseSettingsRoundTripTest {
     this.saved_continuously_centre = FrEnd.continuously_centre;
     this.saved_node_growth = FrEnd.node_growth;
     this.saved_charge_active = this.manager.electrostatic.charge_active;
+    this.saved_muscles_enabled = Muscles.enabled;
+    this.saved_muscles_amplitude = Muscles.activeOscillator().getAmplitude();
+    this.saved_muscles_period_ticks =
+        Muscles.activeOscillator().getPeriodTicks();
   }
 
   @AfterEach
@@ -78,6 +86,10 @@ class UniverseSettingsRoundTripTest {
     FrEnd.node_growth = this.saved_node_growth;
     ContextManager.getNodeManager().electrostatic.charge_active =
         this.saved_charge_active;
+    Muscles.enabled = this.saved_muscles_enabled;
+    Muscles.activeOscillator().setAmplitude(this.saved_muscles_amplitude);
+    Muscles.activeOscillator()
+        .setPeriodTicks(this.saved_muscles_period_ticks);
   }
 
   private static void setUniverse(int gravity_strength,
@@ -125,6 +137,22 @@ class UniverseSettingsRoundTripTest {
         "charge active");
   }
 
+  private static void setMuscles(boolean enabled, int amplitude,
+      int period_ticks) {
+    Muscles.enabled = enabled;
+    Muscles.activeOscillator().setAmplitude(amplitude);
+    Muscles.activeOscillator().setPeriodTicks(period_ticks);
+  }
+
+  private static void assertMuscles(boolean enabled, int amplitude,
+      int period_ticks) {
+    assertEquals(enabled, Muscles.enabled, "muscles enabled");
+    assertEquals(amplitude, Muscles.activeOscillator().getAmplitude(),
+        "muscles amplitude");
+    assertEquals(period_ticks, Muscles.activeOscillator().getPeriodTicks(),
+        "muscles period");
+  }
+
   @Test
   void universeSettingsSurviveSaveAndLoad() throws Exception {
     new DataInput(this.manager)
@@ -133,11 +161,13 @@ class UniverseSettingsRoundTripTest {
     // Non-default universe state, saved with the model.
     setUniverse(42, true, 777, 123456, 66, 987654, false, false, true,
         true, true, false);
+    setMuscles(true, 100, 33);
     final String spr = new Serialiser(this.manager).toString();
 
     // Scramble to unrelated values, proving the load overwrites them.
     setUniverse(7, false, 8, 9, 10, 11, true, true, false, false, false,
         true);
+    setMuscles(false, 200, 44);
 
     // Round-trip through a real file: XML -> SAX -> tokens -> parse,
     // exactly like File > Open.
@@ -155,6 +185,7 @@ class UniverseSettingsRoundTripTest {
 
     assertUniverse(42, true, 777, 123456, 66, 987654, false, false, true,
         true, true, false);
+    assertMuscles(true, 100, 33);
   }
 
   @Test
@@ -164,6 +195,7 @@ class UniverseSettingsRoundTripTest {
     // the previous model must not leak through.
     setUniverse(42, true, 777, 123456, 66, 987654, false, false, true,
         true, true, false);
+    setMuscles(true, 100, 33);
 
     new DataInput(this.manager)
         .loadFile("resource://models/moscow.spr");
@@ -184,5 +216,6 @@ class UniverseSettingsRoundTripTest {
     assertFalse(FrEnd.links_disabled, "links disabled");
     assertFalse(FrEnd.continuously_centre, "continuously centre");
     assertFalse(FrEnd.node_growth, "node growth");
+    assertMuscles(false, 85 * Muscles.UNITY / 100, 12);
   }
 }

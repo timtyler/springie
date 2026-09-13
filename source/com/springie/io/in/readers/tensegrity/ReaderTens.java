@@ -15,6 +15,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
 import com.springie.modification.resize.LinkResetter;
+import com.springie.muscles.Muscles;
 import com.springie.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -342,6 +343,18 @@ public final class ReaderTens {
 
                   case Instructions.EX:
                     World.minimum_magnitude = temp;
+                    break;
+
+                  case Instructions.ME:
+                    Muscles.enabled = temp == 1;
+                    break;
+
+                  case Instructions.MA:
+                    Muscles.activeOscillator().setAmplitude(temp);
+                    break;
+
+                  case Instructions.MP:
+                    Muscles.activeOscillator().setPeriodTicks(temp);
                     break;
 
                   // case Instructions.CS:

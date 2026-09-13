@@ -423,8 +423,8 @@ public class PanelControlsUniverse {
 
 		// Muscles.
 		Muscles.enabled = false;
-		Muscles.activeOscillator().setAmplitude(25 * Muscles.UNITY / 100);
-		Muscles.activeOscillator().setPeriodTicks(120);
+		Muscles.activeOscillator().setAmplitude(85 * Muscles.UNITY / 100);
+		Muscles.activeOscillator().setPeriodTicks(12);
 		setCheckboxSilently(this.checkbox_muscles, false);
 		reflectMuscles();
 

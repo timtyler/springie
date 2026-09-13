@@ -24,6 +24,7 @@ import com.springie.io.out.GarbageCollection;
 import com.springie.io.out.WriteFloatingPoint;
 import com.springie.modification.post.PostModification;
 import com.springie.modification.redundancy.RedundancyRemover;
+import com.springie.muscles.Muscles;
 import com.springie.render.Coords;
 import com.springie.world.World;
 import com.tifsoft.xml.writer.XMLWriterAttribute;
@@ -102,6 +103,10 @@ public class WriterSpr {
 
 		final ElectrostaticRepulsion electrostatic = ContextManager.getNodeManager().electrostatic;
 		uni.add(new XMLWriterAttribute("charge_active", "" + electrostatic.charge_active));
+
+		uni.add(new XMLWriterAttribute("muscles_enabled", "" + Muscles.enabled));
+		uni.add(new XMLWriterAttribute("muscles_amplitude", "" + Muscles.activeOscillator().getAmplitude()));
+		uni.add(new XMLWriterAttribute("muscles_period", "" + Muscles.activeOscillator().getPeriodTicks()));
 
 		recursivelyOutputAllNodes(uni);
 		recursivelyOutputAllLinks(uni);

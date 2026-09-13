@@ -342,6 +342,14 @@ public class ReaderSPR extends DefaultHandler {
           } else if ("excite".equals(nam)) {
             final double sp = Double.valueOf(val).doubleValue();
             this.out.append("EX:" + (int) sp + " ");
+          } else if ("muscles_enabled".equals(nam)) {
+            this.out.append("ME:" + ("true".equals(val) ? "1" : "0") + " ");
+          } else if ("muscles_amplitude".equals(nam)) {
+            final double sp = Double.valueOf(val).doubleValue();
+            this.out.append("MA:" + (int) sp + " ");
+          } else if ("muscles_period".equals(nam)) {
+            final double sp = Double.valueOf(val).doubleValue();
+            this.out.append("MP:" + (int) sp + " ");
           }
         }
       }
