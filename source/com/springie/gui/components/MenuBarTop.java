@@ -2,9 +2,11 @@
 
 package com.springie.gui.components;
 
+import java.awt.CheckboxMenuItem;
 import java.awt.FileDialog;
 import java.awt.Menu;
 import java.awt.MenuBar;
+import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -12,6 +14,8 @@ import java.io.FilenameFilter;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
+import com.springie.context.ModelManager;
+import com.springie.context.ModelSlot;
 import com.springie.gui.frames.FrameMain;
 import com.springie.io.out.writers.eig.WriterEIG;
 import com.springie.io.out.writers.fdl.WriterFDL;
@@ -36,6 +40,10 @@ public class MenuBarTop extends MenuBar {
 
   static final String LOAD_DATA = "Load objects...";
 
+  static final String LOAD_MODEL = "Load model...";
+
+  static final String CLOSE_MODEL = "Close current model";
+
   static final String SAVE_AS_SPR = "Save .SPR file as...";
 
   static final String SAVE_AS_FDL = "Save .FDL file as...";
@@ -56,6 +64,8 @@ public class MenuBarTop extends MenuBar {
     this.add(makeLoadMenu());
 
     this.add(makeSaveMenu());
+
+    this.add(makeModelsMenu());
 
     this.add(makeWindowMenu());
 
@@ -81,6 +91,77 @@ public class MenuBarTop extends MenuBar {
       }
     });
     return file;
+  }
+
+  private Menu models_menu;
+
+  private Menu makeModelsMenu() {
+    this.models_menu = new Menu("Models", true);
+    rebuildModelsMenu();
+    ModelManager.addChangeListener(new Runnable() {
+      public void run() {
+        // Slot changes can originate off the menu (e.g. presets), so
+        // hop onto the event thread before touching AWT.
+        java.awt.EventQueue.invokeLater(new Runnable() {
+          public void run() {
+            rebuildModelsMenu();
+          }
+        });
+      }
+    });
+    return this.models_menu;
+  }
+
+  private void rebuildModelsMenu() {
+    final Menu menu = this.models_menu;
+    menu.removeAll();
+
+    final MenuItem load = new MenuItem(LOAD_MODEL);
+    load.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        chooseLoadNewModel();
+      }
+    });
+    menu.add(load);
+    menu.addSeparator();
+
+    final java.util.List<ModelSlot> slots = ModelManager.getSlots();
+    final int active = ModelManager.getActiveIndex();
+    for (int i = 0; i < slots.size(); i++) {
+      final ModelSlot slot = slots.get(i);
+      final CheckboxMenuItem item = new CheckboxMenuItem(slot.name,
+          i == active);
+      final int index = i;
+      item.addItemListener(new java.awt.event.ItemListener() {
+        public void itemStateChanged(java.awt.event.ItemEvent e) {
+          ModelManager.switchTo(index);
+        }
+      });
+      menu.add(item);
+    }
+    menu.addSeparator();
+
+    final MenuItem close = new MenuItem(CLOSE_MODEL);
+    close.setEnabled(slots.size() > 1);
+    close.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        ModelManager.closeActiveSlot();
+      }
+    });
+    menu.add(close);
+  }
+
+  private void chooseLoadNewModel() {
+    final FileDialog fd = new FileDialog(this.frame.getAppletFrame(),
+      "Load model", FileDialog.LOAD);
+    fd.setVisible(true);
+    final String returnedstring = fd.getFile();
+    fd.setVisible(false);
+
+    if (isAcceptableFileName(returnedstring)) {
+      final FilePath fp = new FilePath(fd.getDirectory(), returnedstring);
+      FrEnd.loadFileAsNewModel(fp);
+    }
   }
 
   private Menu makeWindowMenu() {

@@ -59,7 +59,7 @@ public final class ReaderTens {
     Face current_polygon = new Face(new ArrayList<>());
     int current_face_number = -1;
 
-    setUpUniverseProperties();
+    setUpUniverseProperties(node_manager);
 
     int i = 0;
 
@@ -305,7 +305,7 @@ public final class ReaderTens {
                     break;
 
                   case Instructions.CO:
-                    ContextManager.getNodeManager().electrostatic.charge_active = temp == 1;
+                    node_manager.electrostatic.charge_active = temp == 1;
                     break;
 
                   case Instructions.DIM:
@@ -568,9 +568,9 @@ public final class ReaderTens {
   }
 
   //?
-  private static void setUpUniverseProperties() {
+  private static void setUpUniverseProperties(NodeManager node_manager) {
     FrEnd.three_d = true;
-    ContextManager.getNodeManager().electrostatic.charge_active = true;
+    node_manager.electrostatic.charge_active = true;
     World.gravity_active = false;
     World.gravity_strength = 10;
   }

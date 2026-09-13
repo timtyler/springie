@@ -32,6 +32,7 @@ import com.springie.constants.FrameFrequency;
 import com.springie.constants.Quality;
 import com.springie.constants.ToolTypes;
 import com.springie.context.ContextManager;
+import com.springie.context.ModelManager;
 import com.springie.elements.base.BaseElement;
 import com.springie.elements.links.Link;
 import com.springie.elements.nodes.Node;
@@ -1178,8 +1179,13 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 	public static void loadFile(FilePath filepath) {
 		final String path = "file://" + filepath;
-		FrEnd.setFilePath(path);
-		FrEnd.data_input.loadFile(path);
+		ModelManager.replaceCurrentModel(path);
+	}
+
+	/** Loads a model file as an additional model, keeping the current one. */
+	public static void loadFileAsNewModel(FilePath filepath) {
+		final String path = "file://" + filepath;
+		ModelManager.loadNewModel(path);
 	}
 
 	public String getAppletInfo() {

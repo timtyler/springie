@@ -324,6 +324,11 @@ public class DataInput {
 
     this.manager_destination.merge(temp_manager);
 
+    // The file's charge setting was applied to the temporary manager
+    // during parsing; carry it over to the destination.
+    this.manager_destination.electrostatic.charge_active =
+        temp_manager.electrostatic.charge_active;
+
     this.manager_destination.makeSureNoClazzesOrTypesAreFlagged();
     
     ContextManager.getNodeManager().nodes_have_been_deleted = true;
