@@ -683,16 +683,6 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		} else {
 			undockControlsFromMain();
 		}
-
-		// The green check-mark "Controls" button only makes sense while
-		// the controls live in their own frame; when docked they are
-		// already visible, so grey it out instead of letting it pop up an
-		// empty frame.
-		if (panel_fundamental != null
-				&& panel_fundamental.button_controls != null) {
-			panel_fundamental.button_controls
-					.setEnabled(controls_window_mode != CONTROLS_DOCKED);
-		}
 	}
 
 	private static AWTEventListener controls_stay_on_top_listener;
@@ -825,6 +815,8 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		// Undock first (in case it was in the controls frame).
 		frame_controls.remove(controls_panel);
 		frame_main.add(controls_panel, java.awt.BorderLayout.EAST);
+		// A fresh dock shows the panel: the toggle may have hidden it.
+		controls_panel.setVisible(true);
 		frame_main.validate();
 		frame_controls.setVisible(false);
 	}
@@ -844,6 +836,8 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		frame_main.remove(controls_panel);
 		frame_main.validate();
 		frame_controls.add(controls_panel, "Center");
+		// The toggle may have hidden it while docked.
+		controls_panel.setVisible(true);
 		frame_controls.validate();
 		// Only show the frame if we're not in the middle of docking;
 		// the caller decides visibility for free-floating vs always-on-top.

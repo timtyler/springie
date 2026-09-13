@@ -298,16 +298,19 @@ public class PanelFundamental {
 
     this.button_controls = new ImageButton("controls", null,
         "Controls", false);
-    this.button_controls.setTooltipText("Show the controls window");
+    this.button_controls.setTooltipText("Show/hide the controls");
 
     this.button_controls.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
         Forget.about(arg0);
         if (FrEnd.controls_window_mode == FrEnd.CONTROLS_DOCKED) {
-          // The controls are already visible, docked into the main
-          // window; the separate frame is empty in this mode, so don't
-          // pop it up. (The button is greyed out while docked, so this
-          // is only a backstop.)
+          // The controls live docked in the main window: toggle the
+          // docked panel, so the button still operates -- hiding them
+          // gives the canvas the full window width.
+          final java.awt.Panel controls_panel =
+              FrEnd.panel_controls_all.panel;
+          controls_panel.setVisible(!controls_panel.isVisible());
+          FrEnd.frame_main.validate();
           return;
         }
         FrEnd.frame_controls.setVisible(true);

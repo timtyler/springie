@@ -28,10 +28,10 @@ import com.springie.gui.components.ImageButton;
  * The green check-mark "Controls" button at the bottom of the main
  * window, and the hover tooltips on the bottom-bar buttons.
  *
- * The Controls button's job is to show the controls frame. Once the
- * controls are docked into the main window that frame is empty (the
- * panel was reparented out of it), so the button must grey out instead
- * of popping up an empty frame.
+ * The Controls button's job is to show the controls. Undocked it shows
+ * the controls frame; docked it toggles the docked panel inside the
+ * main window, so the button keeps operating instead of greying out.
+ * It never pops up the empty controls frame while docked.
  */
 class ControlsButtonDockTest {
 
@@ -86,11 +86,11 @@ class ControlsButtonDockTest {
     final String[] tooltip = new String[1];
     SwingUtilities.invokeAndWait(() -> tooltip[0] = FrEnd.panel_fundamental.button_controls
         .getTooltipText());
-    assertEquals("Show the controls window", tooltip[0]);
+    assertEquals("Show/hide the controls", tooltip[0]);
   }
 
   @Test
-  void controlsButtonIsGreyedOutWhenDocked() throws Exception {
+  void controlsButtonStaysEnabledWhenDocked() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       FrEnd.controls_window_mode = FrEnd.CONTROLS_DOCKED;
       FrEnd.applyControlsWindowOptions();
@@ -98,25 +98,39 @@ class ControlsButtonDockTest {
     final boolean[] enabled = new boolean[1];
     SwingUtilities.invokeAndWait(() -> enabled[0] = FrEnd.panel_fundamental.button_controls
         .isEnabled());
-    assertFalse(enabled[0],
-        "Controls button must grey out while the controls are docked");
+    assertTrue(enabled[0],
+        "Controls button must stay enabled while the controls are docked");
   }
 
   @Test
-  void controlsButtonDoesNotPopUpAnEmptyFrameWhenDocked() throws Exception {
+  void controlsButtonTogglesTheDockedPanel() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       FrEnd.controls_window_mode = FrEnd.CONTROLS_DOCKED;
       FrEnd.applyControlsWindowOptions();
-      // ImageButton has no doClick; fire the action path directly.
-      FrEnd.panel_fundamental.button_controls
-          .actionPerformed(new ActionEvent(
-              FrEnd.panel_fundamental.button_controls,
-              ActionEvent.ACTION_PERFORMED, "Controls"));
     });
-    final boolean[] visible = new boolean[1];
+    // ImageButton has no doClick; fire the action path directly.
+    SwingUtilities.invokeAndWait(() -> FrEnd.panel_fundamental.button_controls
+        .actionPerformed(new ActionEvent(
+            FrEnd.panel_fundamental.button_controls,
+            ActionEvent.ACTION_PERFORMED, "Controls")));
+    final boolean[] hidden = new boolean[1];
     SwingUtilities.invokeAndWait(
-        () -> visible[0] = FrEnd.frame_controls.isVisible());
-    assertFalse(visible[0],
+        () -> hidden[0] = !FrEnd.panel_controls_all.panel.isVisible());
+    assertTrue(hidden[0],
+        "docked Controls button must hide the docked panel");
+    SwingUtilities.invokeAndWait(() -> FrEnd.panel_fundamental.button_controls
+        .actionPerformed(new ActionEvent(
+            FrEnd.panel_fundamental.button_controls,
+            ActionEvent.ACTION_PERFORMED, "Controls")));
+    final boolean[] shown = new boolean[1];
+    SwingUtilities.invokeAndWait(
+        () -> shown[0] = FrEnd.panel_controls_all.panel.isVisible());
+    assertTrue(shown[0],
+        "docked Controls button must show the docked panel again");
+    final boolean[] frame_visible = new boolean[1];
+    SwingUtilities.invokeAndWait(
+        () -> frame_visible[0] = FrEnd.frame_controls.isVisible());
+    assertFalse(frame_visible[0],
         "docked controls must not pop up the (empty) controls frame");
   }
 
