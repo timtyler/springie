@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<tensegrity version="1.0">
+ <universe gravity_strength="0" gravity_active="false" charge_active="false">
+ <nodes>
+ <class red="0.95" green="0.65" blue="0.25">
+ <type radius="3009">
+ <node>
+ <position x="102400" y="99072" z="124800"/>
+ <velocity x="0" y="0" z="0"/>
+ </node>
+ <node>
+ <position x="102400" y="99072" z="28800"/>
+ <velocity x="0" y="0" z="0"/>
+ </node>
+ <node>
+ <position x="102400" y="163072" z="28800"/>
+ <velocity x="0" y="0" z="0"/>
+ </node>
+ <node>
+ <position x="102400" y="163072" z="124800"/>
+ <velocity x="0" y="0" z="0"/>
+ </node>
+ <node>
+ <position x="134400" y="83072" z="76800"/>
+ <velocity x="0" y="0" z="0"/>
+ </node>
+ <node>
+ <position x="134400" y="179072" z="76800"/>
+ <velocity x="0" y="0" z="0"/>
+ </node>
+ <node>
+ <position x="70400" y="179072" z="76800"/>
+ <velocity x="0" y="0" z="0"/>
+ </node>
+ <node>
+ <position x="70400" y="83072" z="76800"/>
+ <velocity x="0" y="0" z="0"/>
+ </node>
+ <node>
+ <position x="150400" y="131072" z="108800"/>
+ <velocity x="0" y="0" z="0"/>
+ </node>
+ <node>
+ <position x="54400" y="131072" z="108800"/>
+ <velocity x="0" y="0" z="0"/>
+ </node>
+ <node>
+ <position x="54400" y="131072" z="44800"/>
+ <velocity x="0" y="0" z="0"/>
+ </node>
+ <node>
+ <position x="150400" y="131072" z="44800"/>
+ <velocity x="0" y="0" z="0"/>
+ </node>
+ </type>
+ </class>
+ </nodes>
+ <links>
+ <class red="0.25" green="0.35" blue="0.9">
+ <type length="97920" radius="6208" elasticity="300" damping="100" tension="false">
+ <link nodes="0 1"/>
+ <link nodes="2 3"/>
+ <link nodes="4 5"/>
+ <link nodes="6 7"/>
+ <link nodes="8 9"/>
+ <link nodes="10 11"/>
+ </type>
+ </class>
+ <class red="0.75" green="0.75" blue="0.75">
+ <type length="58669" radius="985" elasticity="200" damping="100" compression="false">
+ <link nodes="10 6"/>
+ <link nodes="10 7"/>
+ <link nodes="10 2"/>
+ <link nodes="10 1"/>
+ <link nodes="9 6"/>
+ <link nodes="9 7"/>
+ <link nodes="9 3"/>
+ <link nodes="9 0"/>
+ <link nodes="6 2"/>
+ <link nodes="6 3"/>
+ <link nodes="7 1"/>
+ <link nodes="7 0"/>
+ <link nodes="2 5"/>
+ <link nodes="2 11"/>
+ <link nodes="3 5"/>
+ <link nodes="3 8"/>
+ <link nodes="1 4"/>
+ <link nodes="1 11"/>
+ <link nodes="0 4"/>
+ <link nodes="0 8"/>
+ <link nodes="5 11"/>
+ <link nodes="5 8"/>
+ <link nodes="4 11"/>
+ <link nodes="4 8"/>
+ </type>
+ </class>
+ </links>
+ </universe>
+</tensegrity>
