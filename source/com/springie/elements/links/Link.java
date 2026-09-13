@@ -9,6 +9,8 @@ import com.springie.elements.nodes.Node;
 import com.springie.explosions.fragments.LineFragmentManager;
 import com.springie.geometry.Point3D;
 import com.springie.gui.panels.controls.PanelControlsSelectLinks;
+import com.springie.muscles.Controller;
+import com.springie.muscles.Muscles;
 import com.springie.render.Coords;
 import com.springie.utilities.math.SquareRoot;
 import com.springie.utilities.random.JUR;
@@ -20,6 +22,18 @@ public class Link extends BaseElement {
   public int[] lengths;
 
   public LinkType type;
+
+  /**
+   * Per-link muscle controller; null means uncontrolled. The controller is
+   * updated once per dynamics step and drives {@link #rest_length_scale}.
+   */
+  public Controller controller;
+
+  /**
+   * Rest-length scale commanded by the controller, in fixed point;
+   * {@link Muscles#UNITY} means the unscaled rest length.
+   */
+  public int rest_length_scale = Muscles.UNITY;
 
   public static int number_of_strut_render_divisions = 2;
 
@@ -98,6 +112,8 @@ public class Link extends BaseElement {
   void set(Link l) {
     this.type = l.type;
     this.clazz = l.clazz;
+    this.controller = l.controller;
+    this.rest_length_scale = l.rest_length_scale;
 
     this.nodes = new Node[2];
     this.nodes[0] = l.nodes[0];
@@ -110,6 +126,16 @@ public class Link extends BaseElement {
     this.nodes = new Node[2];
     this.nodes[0] = e1;
     this.nodes[1] = e2;
+  }
+
+  /**
+   * The rest length with the muscle controller's scale applied, in fixed
+   * point. While muscles are disabled this is exactly {@code type.length},
+   * so unmuscled models behave exactly as before.
+   */
+  public int getEffectiveRestLength() {
+    final int scale = Muscles.enabled ? this.rest_length_scale : Muscles.UNITY;
+    return (int) (((long) this.type.length * scale) >> Coords.shift);
   }
 
   public int getActualLength() {
@@ -133,7 +159,7 @@ public class Link extends BaseElement {
     }
 
     // first get preferred length...
-    int total_rest_length = this.type.length >> Coords.shift;
+    int total_rest_length = getEffectiveRestLength() >> Coords.shift;
 
     if (total_rest_length < 1) {
       total_rest_length = 1;

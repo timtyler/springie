@@ -90,6 +90,12 @@ public class PanelControlsMisc {
 
   public Button button_extend_links;
 
+  public Button button_muscles_add_selected;
+
+  public Button button_muscles_add_all;
+
+  public Button button_muscles_remove;
+
   TextFieldWrapper textfield_extend_links;
 
   public PanelControlsMisc(MessageManager message_manager,
@@ -313,6 +319,10 @@ public class PanelControlsMisc {
     this.panel.add(getEqualiseLinkLengthsPanel());
     this.panel.add(getResetLinkLengthsPanel());
 
+    this.panel.add(getMusclesAddSelectedPanel());
+    this.panel.add(getMusclesAddAllPanel());
+    this.panel.add(getMusclesRemovePanel());
+
     this.panel.add(panel_add_polygons);
 
     this.panel.add(panel_add_stellations);
@@ -419,6 +429,60 @@ public class PanelControlsMisc {
     panel_edit_equalise_link_lengths
         .add(this.button_edit_equalise_link_lengths);
     return panel_edit_equalise_link_lengths;
+  }
+
+  private Panel getMusclesAddSelectedPanel() {
+    this.button_muscles_add_selected = new Button(
+        GUIStrings.MUSCLES_ADD_SELECTED);
+    this.button_muscles_add_selected
+        .addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            Forget.about(e);
+            getMessageManager().sendMessage(
+                Message.MSG_MUSCLES_ADD_SELECTED, 0, 0);
+          }
+        });
+
+    final Panel panel_muscles_add_selected = new Panel();
+    panel_muscles_add_selected
+        .add(this.button_muscles_add_selected);
+    return panel_muscles_add_selected;
+  }
+
+  private Panel getMusclesAddAllPanel() {
+    this.button_muscles_add_all = new Button(
+        GUIStrings.MUSCLES_ADD_ALL);
+    this.button_muscles_add_all
+        .addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            Forget.about(e);
+            getMessageManager().sendMessage(
+                Message.MSG_MUSCLES_ADD_ALL, 0, 0);
+          }
+        });
+
+    final Panel panel_muscles_add_all = new Panel();
+    panel_muscles_add_all
+        .add(this.button_muscles_add_all);
+    return panel_muscles_add_all;
+  }
+
+  private Panel getMusclesRemovePanel() {
+    this.button_muscles_remove = new Button(
+        GUIStrings.MUSCLES_REMOVE);
+    this.button_muscles_remove
+        .addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            Forget.about(e);
+            getMessageManager().sendMessage(
+                Message.MSG_MUSCLES_REMOVE, 0, 0);
+          }
+        });
+
+    final Panel panel_muscles_remove = new Panel();
+    panel_muscles_remove
+        .add(this.button_muscles_remove);
+    return panel_muscles_remove;
   }
 
   private Panel getAutomaticLinkRadiusPanel() {

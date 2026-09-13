@@ -21,6 +21,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.gui.GUIStrings;
 import com.springie.messages.Message;
 import com.springie.messages.MessageManager;
+import com.springie.muscles.Muscles;
 import com.springie.render.RendererDelegator;
 import com.springie.world.World;
 import com.tifsoft.Forget;
@@ -44,6 +45,8 @@ public class PanelControlsUniverse {
 
 	public Checkbox checkbox_links_disabled;
 
+	public Checkbox checkbox_muscles;
+
 	Label label_gravity;
 	Label label_temperature;
 
@@ -61,6 +64,10 @@ public class PanelControlsUniverse {
 
 	Label label_friction;
 
+	Label label_muscles_amplitude;
+
+	Label label_muscles_period;
+
 	Scrollbar scroll_bar_noc;
 
 	Scrollbar scroll_bar_n;
@@ -77,6 +84,10 @@ public class PanelControlsUniverse {
 	Scrollbar scroll_bar_bias;
 
 	Scrollbar scroll_bar_limit;
+
+	Scrollbar scroll_bar_muscles_amplitude;
+
+	Scrollbar scroll_bar_muscles_period;
 
 	Scrollbar scroll_bar_impact;
 
@@ -171,6 +182,51 @@ public class PanelControlsUniverse {
 			}
 		});
 		panel_charge_switch.add(this.checkbox_charge_switch);
+
+		// START MUSCLES SWITCH
+		final Panel panel_muscles_switch = new Panel();
+		this.checkbox_muscles = new Checkbox(GUIStrings.MUSCLES);
+		this.checkbox_muscles.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				Forget.about(e);
+				Muscles.enabled = ((Checkbox) e.getSource()).getState();
+			}
+		});
+		panel_muscles_switch.add(this.checkbox_muscles);
+
+		final Panel panel_muscles_amplitude = new Panel();
+		panel_muscles_amplitude.setLayout(new BorderLayout(0, 8));
+		panel_muscles_amplitude.add("West", new Label("Muscle amplitude %:", Label.RIGHT));
+
+		this.scroll_bar_muscles_amplitude = new Scrollbar(Scrollbar.HORIZONTAL, 25, 1, 0, 51);
+		this.scroll_bar_muscles_amplitude.addAdjustmentListener(new AdjustmentListener() {
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				Muscles.amplitude = e.getValue() * Muscles.UNITY / 100;
+				reflectMuscles();
+			}
+		});
+
+		panel_muscles_amplitude.add("Center", this.scroll_bar_muscles_amplitude);
+
+		this.label_muscles_amplitude = new Label("25", Label.LEFT);
+		panel_muscles_amplitude.add("East", this.label_muscles_amplitude);
+
+		final Panel panel_muscles_period = new Panel();
+		panel_muscles_period.setLayout(new BorderLayout(0, 8));
+		panel_muscles_period.add("West", new Label("Muscle period (ticks):", Label.RIGHT));
+
+		this.scroll_bar_muscles_period = new Scrollbar(Scrollbar.HORIZONTAL, 120, 10, 20, 610);
+		this.scroll_bar_muscles_period.addAdjustmentListener(new AdjustmentListener() {
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				Muscles.period_ticks = e.getValue();
+				reflectMuscles();
+			}
+		});
+
+		panel_muscles_period.add("Center", this.scroll_bar_muscles_period);
+
+		this.label_muscles_period = new Label("120", Label.LEFT);
+		panel_muscles_period.add("East", this.label_muscles_period);
 
 		final Panel panel_continuously_centre = new Panel();
 		this.checkbox_continuously_centre = new Checkbox(GUIStrings.CONTINUOUSLY_CENTRE);
@@ -306,6 +362,9 @@ public class PanelControlsUniverse {
 		this.panel.add(panel_collision_check);
 		this.panel.add(panel_links_disabled);
 		this.panel.add(panel_charge_switch);
+		this.panel.add(panel_muscles_switch);
+		this.panel.add(panel_muscles_amplitude);
+		this.panel.add(panel_muscles_period);
 
 		if (FrEnd.development_version) {
 			this.panel.add(panel_bias); // bias...
@@ -363,6 +422,13 @@ public class PanelControlsUniverse {
 		// Charge.
 		ContextManager.getNodeManager().electrostatic.charge_active = true;
 		this.checkbox_charge_switch.setState(true);
+
+		// Muscles.
+		Muscles.enabled = false;
+		Muscles.amplitude = 25 * Muscles.UNITY / 100;
+		Muscles.period_ticks = 120;
+		setCheckboxSilently(this.checkbox_muscles, false);
+		reflectMuscles();
 
 		// Continuously centre and node growth (their listeners queue toggle
 		// messages, so don't fire them here).
@@ -437,6 +503,15 @@ public class PanelControlsUniverse {
 		this.scroll_bar_impact.setValue(World.minimum_magnitude >> 6);
 
 		this.label_impact.setText("" + (World.minimum_magnitude >> 6));
+	}
+
+	public void reflectMuscles() {
+		final int amplitude_percent = Muscles.amplitude * 100 / Muscles.UNITY;
+		this.scroll_bar_muscles_amplitude.setValue(amplitude_percent);
+		this.label_muscles_amplitude.setText("" + amplitude_percent);
+
+		this.scroll_bar_muscles_period.setValue(Muscles.period_ticks);
+		this.label_muscles_period.setText("" + Muscles.period_ticks);
 	}
 
 	public Label getLabelBias() {

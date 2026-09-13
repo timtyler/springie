@@ -46,6 +46,12 @@ public class World extends BaseElementManager<Node> {
 
 	public Node associated_node;
 
+	/**
+	 * Dynamics-step counter, one per world (so per model). Muscle
+	 * controllers use it as their clock.
+	 */
+	public long tick = 0;
+
 	public NodeTypeFactory node_type_factory = new NodeTypeFactory();
 
 	public ClazzFactory clazz_factory = new ClazzFactory();
@@ -169,7 +175,8 @@ public class World extends BaseElementManager<Node> {
 	public void wrappedLinkExerciser(LinkManager link_manager) {
 		zeroDeltaVelocity();
 
-		link_manager.applyElasticForceOrigAll();
+		this.tick++;
+		link_manager.applyElasticForceOrigAll(this.tick);
 
 		// link_manager.applyElasticForceAll();
 		// link_manager.applyDampingForceAll();

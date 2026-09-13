@@ -34,6 +34,7 @@ import com.springie.modification.automaticradius.AutomaticLinkRadius;
 import com.springie.modification.automaticradius.AutomaticNodeRadius;
 import com.springie.modification.automaticradius.DeriveLinkRadiusFromNodeRadius;
 import com.springie.modification.post.PostModification;
+import com.springie.muscles.Muscles;
 import com.springie.world.World;
 import com.tifsoft.utilities.execute.Executor;
 import org.slf4j.Logger;
@@ -95,6 +96,9 @@ public class DataInput {
     FrEnd.links_disabled = false;
     FrEnd.continuously_centre = false;
     FrEnd.node_growth = false;
+    Muscles.enabled = false;
+    Muscles.amplitude = 25 * Muscles.UNITY / 100;
+    Muscles.period_ticks = 120;
     final NodeManager manager = ContextManager.getNodeManager();
     if (manager != null) {
       manager.electrostatic.charge_active = true;

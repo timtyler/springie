@@ -92,6 +92,7 @@ import com.springie.gui.panels.preferences.PanelPreferencesViewpoint;
 import com.springie.io.in.DataInput;
 import com.springie.messages.MessageManager;
 import com.springie.messages.NewMessageManager;
+import com.springie.muscles.Muscles;
 import com.springie.messages.SystemMessages;
 import com.springie.modification.colour.ColourChanger;
 import com.springie.modification.post.PostModification;
@@ -894,6 +895,8 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		FrEnd.panel_universe.reflectGravity();
 		FrEnd.panel_universe.reflectTemperature();
 		FrEnd.panel_universe.reflect3D();
+		FrEnd.panel_universe.reflectMuscles();
+		FrEnd.panel_universe.checkbox_muscles.setState(Muscles.enabled);
 
 		FrEnd.panel_controls_statistics.updateGUIToReflectPropertiesChange();
 

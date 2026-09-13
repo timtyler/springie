@@ -73,6 +73,9 @@ public interface Message {
   int MSG_DOUBLE_BUFFER_NEW = 97;
   int MSG_GENERATE_FACES_FROM_SELECTION = 99;
   //int MSG_INVERT_ALL_TYPE = 98;
+  int MSG_MUSCLES_ADD_SELECTED = 100;
+  int MSG_MUSCLES_ADD_ALL = 101;
+  int MSG_MUSCLES_REMOVE = 102;
 
   void placeholder();
 }

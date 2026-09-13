@@ -17,6 +17,7 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.selection.SelectionSpreader;
 import com.springie.gui.panels.controls.PanelControlsSelectMain;
 import com.springie.modification.DomeRelatedChangeDelegator;
+import com.springie.modification.MuscleTools;
 import com.springie.modification.automaticradius.AutomaticLinkRadius;
 import com.springie.modification.automaticradius.AutomaticNodeRadius;
 import com.springie.modification.colour.ColourClassificationCartesian;
@@ -428,6 +429,18 @@ public class MessageManager {
 
       case Message.MSG_DOME_LINKS_RESET_LENGTHS:
         DomeRelatedChangeDelegator.resetLinkLengths();
+        break;
+
+      case Message.MSG_MUSCLES_ADD_SELECTED:
+        MuscleTools.addToSelected();
+        break;
+
+      case Message.MSG_MUSCLES_ADD_ALL:
+        MuscleTools.addToAll();
+        break;
+
+      case Message.MSG_MUSCLES_REMOVE:
+        MuscleTools.remove();
         break;
 
 //      case Message.MSG_DOME_MAKE_MOTIONLESS:

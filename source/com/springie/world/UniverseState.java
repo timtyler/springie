@@ -11,6 +11,7 @@ import com.springie.FrEnd;
 import com.springie.elements.electrostatics.ElectrostaticRepulsion;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
+import com.springie.muscles.Muscles;
 
 public final class UniverseState {
   public int gravity_strength;
@@ -28,6 +29,10 @@ public final class UniverseState {
   public boolean node_growth;
 
   public boolean charge_active;
+
+  public boolean muscles_enabled;
+  public int muscles_amplitude;
+  public int muscles_period_ticks;
 
   private UniverseState() {
     // use capture()
@@ -55,6 +60,10 @@ public final class UniverseState {
         ? manager.electrostatic : null;
     state.charge_active = electrostatic != null && electrostatic.charge_active;
 
+    state.muscles_enabled = Muscles.enabled;
+    state.muscles_amplitude = Muscles.amplitude;
+    state.muscles_period_ticks = Muscles.period_ticks;
+
     return state;
   }
 
@@ -77,5 +86,9 @@ public final class UniverseState {
     if (manager != null) {
       manager.electrostatic.charge_active = this.charge_active;
     }
+
+    Muscles.enabled = this.muscles_enabled;
+    Muscles.amplitude = this.muscles_amplitude;
+    Muscles.period_ticks = this.muscles_period_ticks;
   }
 }

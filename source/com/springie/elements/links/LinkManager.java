@@ -12,6 +12,8 @@ import com.springie.elements.clazz.Clazz;
 import com.springie.elements.lists.ListOfIntegers;
 import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;
+import com.springie.muscles.Controller;
+import com.springie.muscles.Muscles;
 import com.springie.render.CachedLink;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
@@ -311,11 +313,20 @@ public class LinkManager extends BaseElementManager<Link> {
 //    }
 //  }
     
-  public final void applyElasticForceOrigAll() {
+  public final void applyElasticForceOrigAll(long tick) {
+    // A single static check when muscles are disabled; per-link controller
+    // updates only run while they are enabled.
+    final boolean muscles = Muscles.enabled;
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final Link l = (Link) this.element.get(temp);
       if (!l.type.disabled) {
+        if (muscles) {
+          final Controller controller = l.controller;
+          if (controller != null) {
+            controller.update(l, tick);
+          }
+        }
         l.applyElasticForceOrig();
       }
     }

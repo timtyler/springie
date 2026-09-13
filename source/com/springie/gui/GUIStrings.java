@@ -103,6 +103,14 @@ public interface GUIStrings {
 
   String CHARGE = "Charge";
 
+  String MUSCLES = "Muscles";
+
+  String MUSCLES_ADD_SELECTED = "Muscles for selected links";
+
+  String MUSCLES_ADD_ALL = "Muscles for all links";
+
+  String MUSCLES_REMOVE = "Remove muscles";
+
   String GENERATE_MATRIX = "Make matrix";
 
   String GENERATE_FREE_NODES = "Make free nodes";
