@@ -330,6 +330,13 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 	public static Panel panel_with_controls_at_bottom;
 
+	/**
+	 * The inner area of the main window: holds the canvas (Center) and the
+	 * docked controls panel (East). The bottom bar lives in the outer
+	 * South, so it spans the full window width in every docking mode.
+	 */
+	public static Panel panel_main_area;
+
 	public static Frame frame_controls;
 
 	/** The controls window can float above the main window, float freely,
@@ -541,7 +548,12 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 		setUpFrames();
 
-		add("Center", main_canvas.panel);
+		// The docked controls dock into this inner panel (East), never
+		// into the outer layout: the bottom bar above keeps the full
+		// window width whatever the docking option.
+		panel_main_area = new Panel(new BorderLayout(0, 0));
+		panel_main_area.add("Center", main_canvas.panel);
+		add("Center", panel_main_area);
 
 		greyStepIfNeeded();
 
@@ -786,24 +798,27 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 	/**
 	 * True docking: reparents the controls panel into the main window's
-	 * layout (BorderLayout.EAST) and hides the separate controls frame.
-	 * The layout manager keeps them joined -- no coordinate snapping.
+	 * inner area (panel_main_area, BorderLayout.EAST, beside the canvas)
+	 * and hides the separate controls frame. The layout manager keeps
+	 * them joined -- no coordinate snapping. The bottom bar stays in the
+	 * outer South, so it spans the full window width while docked.
 	 */
 	private static void dockControlsWithMain() {
-		if (frame_main == null || frame_controls == null) {
+		if (frame_main == null || frame_controls == null
+				|| panel_main_area == null) {
 			return;
 		}
 		final java.awt.Panel controls_panel = panel_controls_all.panel;
-		if (controls_panel.getParent() == frame_main) {
+		if (controls_panel.getParent() == panel_main_area) {
 			// Already docked.
 			return;
 		}
 		// Undock first (in case it was in the controls frame).
 		frame_controls.remove(controls_panel);
-		frame_main.add(controls_panel, java.awt.BorderLayout.EAST);
+		panel_main_area.add(controls_panel, java.awt.BorderLayout.EAST);
 		// A fresh dock shows the panel: the toggle may have hidden it.
 		controls_panel.setVisible(true);
-		frame_main.validate();
+		panel_main_area.validate();
 		frame_controls.setVisible(false);
 	}
 
@@ -811,7 +826,8 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 	 * Restores the controls panel to its own frame.
 	 */
 	private static void undockControlsFromMain() {
-		if (frame_main == null || frame_controls == null) {
+		if (frame_main == null || frame_controls == null
+				|| panel_main_area == null) {
 			return;
 		}
 		final java.awt.Panel controls_panel = panel_controls_all.panel;
@@ -819,8 +835,8 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 			// Already undocked.
 			return;
 		}
-		frame_main.remove(controls_panel);
-		frame_main.validate();
+		panel_main_area.remove(controls_panel);
+		panel_main_area.validate();
 		frame_controls.add(controls_panel, "Center");
 		// The toggle may have hidden it while docked.
 		controls_panel.setVisible(true);

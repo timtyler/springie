@@ -31,8 +31,8 @@ import com.springie.gui.GuiTestSupport;
 /**
  * The controls-window mode on the Preferences tab: a three-way choice
  * between always-on-top, free floating, and docked. Docked reparents the
- * controls panel into the main window's layout (BorderLayout.EAST) --
- * true docking, not a snapped separate window.
+ * controls panel into the main window's inner area (panel_main_area,
+ * BorderLayout.EAST) -- true docking, not a snapped separate window.
  */
 class ControlsWindowOptionsTest {
 
@@ -119,8 +119,9 @@ class ControlsWindowOptionsTest {
       parent[0] = FrEnd.panel_controls_all.panel.getParent();
       frame_visible[0] = FrEnd.frame_controls.isVisible();
     });
-    assertEquals(FrEnd.frame_main, parent[0],
-        "docked controls panel must be reparented into the main window");
+    assertEquals(FrEnd.panel_main_area, parent[0],
+        "docked controls panel must be reparented into the main window's"
+            + " inner area (beside the canvas, above the bottom bar)");
     assertFalse(frame_visible[0],
         "separate controls frame must be hidden while docked");
   }
@@ -152,9 +153,9 @@ class ControlsWindowOptionsTest {
       FrEnd.controls_window_mode = FrEnd.CONTROLS_DOCKED;
       FrEnd.applyControlsWindowOptions();
       FrEnd.applyControlsWindowOptions(); // Second time.
-      // Count how many times the controls panel appears in frame_main.
+      // Count how many times the controls panel appears in the inner area.
       count[0] = 0;
-      for (Component c : FrEnd.frame_main.getComponents()) {
+      for (Component c : FrEnd.panel_main_area.getComponents()) {
         if (c == FrEnd.panel_controls_all.panel) {
           count[0]++;
         }

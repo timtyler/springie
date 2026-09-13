@@ -110,8 +110,9 @@ class PreferencesResetTest {
         dock_state[0] = FrEnd.panel_controls_all.panel.getParent();
         dock_visible[0] = FrEnd.frame_controls.isVisible();
       });
-      assertEquals(FrEnd.frame_main, dock_state[0],
-          "controls panel should be reparented into the main window when docked");
+      assertEquals(FrEnd.panel_main_area, dock_state[0],
+          "controls panel should be reparented into the main window's"
+              + " inner area when docked");
       assertFalse(dock_visible[0],
           "separate controls frame should be hidden when docked");
 
@@ -198,9 +199,10 @@ class PreferencesResetTest {
       assertEquals(FrEnd.CONTROLS_DOCKED, FrEnd.controls_window_mode);
       assertFalse(FrEnd.frame_controls.isAlwaysOnTop());
       assertFalse(FrEnd.isControlsStayOnTopActive());
-      assertEquals(FrEnd.frame_main,
+      assertEquals(FrEnd.panel_main_area,
           FrEnd.panel_controls_all.panel.getParent(),
-          "reset should dock the controls panel into the main window");
+          "reset should dock the controls panel into the main window's"
+              + " inner area");
       assertFalse(FrEnd.frame_controls.isVisible(),
           "reset should hide the separate controls frame when docked");
     } finally {
