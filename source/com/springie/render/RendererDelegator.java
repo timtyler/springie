@@ -94,11 +94,11 @@ public final class RendererDelegator {
    * Ray-traced specular highlights as a percentage (10-100): the
    * Blinn-Phong sparkle where a surface reflects the light straight at
    * the viewer. The specular_enabled checkbox is the off switch; the
-   * dropdown only shows while it is on. Defaults to on at 90%.
+   * dropdown only shows while it is on. Defaults to on at 100%.
    */
   public static boolean specular_enabled = true;
 
-  public static int specular = 90;
+  public static int specular = 100;
 
   /**
    * Fresnel rim light as a percentage (10-100). Surfaces gain a

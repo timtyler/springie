@@ -82,7 +82,19 @@ public class PanelPreferencesRendererModern {
 		final TabbedPanel tab = new TabbedPanel();
 		// The shared Show/Misc options live here now, combined with the
 		// renderer-specific tabs to save the space of a second tab bar.
-		tab.add("Renderer", FrEnd.panel_preferences_shared_show.panel);
+		// The ray-traced-only options (Glossiness, Shadows, Specular,
+		// Fresnel, Fill light) sit at the bottom of the Renderer tab,
+		// shown only while the ray-traced renderer is active. BorderLayout
+		// gives the strip its full preferred height and leaves no gap
+		// while it is hidden (the modern renderer is the default).
+		final Panel panel_renderer_tab = FrEnd.setUpPanelForFrame();
+		panel_renderer_tab.setLayout(new java.awt.BorderLayout());
+		panel_renderer_tab.add(FrEnd.panel_preferences_shared_show.panel,
+				java.awt.BorderLayout.CENTER);
+		panel_renderer_tab.add(FrEnd.panel_preferences_renderer_raytraced.panel,
+				java.awt.BorderLayout.SOUTH);
+		FrEnd.panel_preferences_renderer_raytraced.panel.setVisible(false);
+		tab.add("Renderer", panel_renderer_tab);
 		tab.add("Misc", FrEnd.panel_preferences_shared_misc.panel);
 		tab.add("Options", this.panel_main);
 

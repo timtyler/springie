@@ -44,12 +44,11 @@ class ControlsWindowOptionsTest {
   @AfterEach
   void restoreOptions() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.controls_window_mode = FrEnd.CONTROLS_ALWAYS_ON_TOP;
+      // Known-good state for the next test: docked (the default).
+      // Docking hides the separate controls frame; undocking tests
+      // make it visible again themselves.
+      FrEnd.controls_window_mode = FrEnd.CONTROLS_DOCKED;
       FrEnd.applyControlsWindowOptions();
-      // Known-good state for the next test: undocked and visible. (The
-      // frame starts hidden at boot until the user opens it via the menu,
-      // so apply() alone does not guarantee visibility.)
-      FrEnd.frame_controls.setVisible(true);
     });
   }
 
@@ -59,17 +58,17 @@ class ControlsWindowOptionsTest {
   }
 
   @Test
-  void modeDefaultsToAlwaysOnTop() throws Exception {
+  void modeDefaultsToDocked() throws Exception {
     final int[] mode = new int[1];
     final boolean[] stay_on_top = new boolean[1];
     SwingUtilities.invokeAndWait(() -> {
       mode[0] = FrEnd.controls_window_mode;
       stay_on_top[0] = FrEnd.isControlsStayOnTopActive();
     });
-    assertEquals(FrEnd.CONTROLS_ALWAYS_ON_TOP, mode[0],
-        "controls window mode must default to always-on-top");
-    assertTrue(stay_on_top[0],
-        "stay-on-top listener must be active in always-on-top mode");
+    assertEquals(FrEnd.CONTROLS_DOCKED, mode[0],
+        "controls window mode must default to docked");
+    assertFalse(stay_on_top[0],
+        "stay-on-top listener must be off in docked mode");
   }
 
   @Test
@@ -191,16 +190,16 @@ class ControlsWindowOptionsTest {
   }
 
   @Test
-  void resetRestoresAlwaysOnTop() throws Exception {
+  void resetRestoresDocked() throws Exception {
     final int[] mode = new int[1];
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.controls_window_mode = FrEnd.CONTROLS_DOCKED;
+      FrEnd.controls_window_mode = FrEnd.CONTROLS_ALWAYS_ON_TOP;
       FrEnd.applyControlsWindowOptions();
       FrEnd.panel_preferences.resetPreferences();
       mode[0] = FrEnd.controls_window_mode;
     });
-    assertEquals(FrEnd.CONTROLS_ALWAYS_ON_TOP, mode[0],
-        "reset must restore always-on-top mode");
+    assertEquals(FrEnd.CONTROLS_DOCKED, mode[0],
+        "reset must restore docked mode");
   }
 
   @Test
@@ -212,6 +211,8 @@ class ControlsWindowOptionsTest {
 
     final boolean[] brought_forward = new boolean[1];
     SwingUtilities.invokeAndWait(() -> {
+      FrEnd.controls_window_mode = FrEnd.CONTROLS_ALWAYS_ON_TOP;
+      FrEnd.applyControlsWindowOptions();
       assertTrue(FrEnd.isControlsStayOnTopActive());
       final Frame real_controls = FrEnd.frame_controls;
       try {
@@ -247,6 +248,8 @@ class ControlsWindowOptionsTest {
     final boolean[] non_focusable_during_raise = new boolean[1];
     final boolean[] focusable_after = new boolean[1];
     SwingUtilities.invokeAndWait(() -> {
+      FrEnd.controls_window_mode = FrEnd.CONTROLS_ALWAYS_ON_TOP;
+      FrEnd.applyControlsWindowOptions();
       final Frame real_controls = FrEnd.frame_controls;
       try {
         FrEnd.frame_controls = new Frame() {
@@ -310,6 +313,8 @@ class ControlsWindowOptionsTest {
     final boolean[] non_focusable_during_raise = new boolean[1];
     final boolean[] focusable_after = new boolean[1];
     SwingUtilities.invokeAndWait(() -> {
+      FrEnd.controls_window_mode = FrEnd.CONTROLS_ALWAYS_ON_TOP;
+      FrEnd.applyControlsWindowOptions();
       final Frame real_controls = FrEnd.frame_controls;
       try {
         FrEnd.frame_controls = new Frame() {
@@ -362,6 +367,10 @@ class ControlsWindowOptionsTest {
     final String[] clip_details = new String[1];
     SwingUtilities.invokeAndWait(() -> {
       final Frame controls = FrEnd.frame_controls;
+      // Undock first: docked, the controls (with the Preferences tab)
+      // live in the main window, not in this frame.
+      FrEnd.controls_window_mode = FrEnd.CONTROLS_ALWAYS_ON_TOP;
+      FrEnd.applyControlsWindowOptions();
       controls.setSize(320, 600);
       controls.setVisible(true);
       findTabbedPanel(controls).show("Preferences");

@@ -338,7 +338,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 	public static final int CONTROLS_FREE_FLOATING = 1;
 	public static final int CONTROLS_DOCKED = 2;
 
-	public static int controls_window_mode = CONTROLS_ALWAYS_ON_TOP;
+	public static int controls_window_mode = CONTROLS_DOCKED;
 
 	public static Frame frame_panel_about;
 
@@ -460,10 +460,13 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 	public static PanelPreferencesRendererModernColours panel_preferences_renderer_modern_colours = new PanelPreferencesRendererModernColours(
 			message_manager);
 
-	public static PanelPreferencesRendererModern panel_preferences_renderer_modern = new PanelPreferencesRendererModern(
+	// Built before the modern panel: the modern panel's Renderer tab
+	// shows these ray-traced-only options at its bottom (South) while
+	// the ray-traced renderer is active.
+	public static PanelPreferencesRendererRaytraced panel_preferences_renderer_raytraced = new PanelPreferencesRendererRaytraced(
 			message_manager);
 
-	public static PanelPreferencesRendererRaytraced panel_preferences_renderer_raytraced = new PanelPreferencesRendererRaytraced(
+	public static PanelPreferencesRendererModern panel_preferences_renderer_modern = new PanelPreferencesRendererModern(
 			message_manager);
 
 	public static PanelPreferencesDisplay panel_preferences_display = new PanelPreferencesDisplay(message_manager);

@@ -127,13 +127,6 @@ public class PanelPreferencesDisplay {
 
     this.panel_frame.add(this.panel_main, "Center");
 
-    // Ray-traced-only options, shown under the shared renderer options
-    // while the ray-traced renderer is active. The modern renderer is
-    // the default, so the strip starts hidden.
-    this.panel_frame.add(FrEnd.panel_preferences_renderer_raytraced.panel,
-        "South");
-    FrEnd.panel_preferences_renderer_raytraced.panel.setVisible(false);
-
     this.panel_main.add(FrEnd.panel_preferences_renderer_modern.panel, "Center");
 
     this.panel_renderer.setLayout(new BorderLayout());

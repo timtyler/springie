@@ -95,8 +95,8 @@ public class PanelPreferences {
   public void resetPreferences() {
     FrEnd.preferences = new Preferences();
 
-    FrEnd.controls_window_mode = FrEnd.CONTROLS_ALWAYS_ON_TOP;
-    this.choice_controls_window_mode.select(FrEnd.CONTROLS_ALWAYS_ON_TOP);
+    FrEnd.controls_window_mode = FrEnd.CONTROLS_DOCKED;
+    this.choice_controls_window_mode.select(FrEnd.CONTROLS_DOCKED);
     // In case the choice was already in its default state (no item event
     // fires then).
     FrEnd.applyControlsWindowOptions();

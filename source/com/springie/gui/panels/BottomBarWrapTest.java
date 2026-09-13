@@ -36,6 +36,16 @@ class BottomBarWrapTest {
   @BeforeAll
   static void boot() throws Exception {
     GuiTestSupport.bootApp();
+    // The bottom bar only gets the full window width while the controls
+    // are undocked: docked (the default) takes ~290px off the main
+    // window's width, so at 360px the bar would be 70px wide and the
+    // 227px presets card could never fit -- a physical constraint, not
+    // a wrapping bug. This test is about the bar's own wrapping, so
+    // undock the controls first.
+    SwingUtilities.invokeAndWait(() -> {
+      FrEnd.controls_window_mode = FrEnd.CONTROLS_FREE_FLOATING;
+      FrEnd.applyControlsWindowOptions();
+    });
   }
 
   @AfterAll

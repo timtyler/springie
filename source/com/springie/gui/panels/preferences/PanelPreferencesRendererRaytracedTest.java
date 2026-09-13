@@ -241,8 +241,8 @@ class PanelPreferencesRendererRaytracedTest {
     assertTrue(choice.isVisible(),
         "the Specular dropdown must show while the effect is on");
     assertTenToOneHundredInTens(choice, "Specular");
-    assertEquals("90%", choice.getSelectedItem(),
-        "Specular strength must default to 90%");
+    assertEquals("100%", choice.getSelectedItem(),
+        "Specular strength must default to 100%");
   }
 
   @Test
@@ -339,7 +339,7 @@ class PanelPreferencesRendererRaytracedTest {
     assertEquals(50, RendererDelegator.glossiness);
     assertFalse(RendererDelegator.shadows);
     assertTrue(RendererDelegator.specular_enabled);
-    assertEquals(90, RendererDelegator.specular);
+    assertEquals(100, RendererDelegator.specular);
     assertFalse(RendererDelegator.fresnel_enabled);
     assertEquals(50, RendererDelegator.fresnel);
     assertFalse(RendererDelegator.fill_light_enabled);
@@ -351,7 +351,7 @@ class PanelPreferencesRendererRaytracedTest {
     assertFalse(effectCheckbox("Shadows").getState());
     assertTrue(effectCheckbox("Specular").getState());
     assertTrue(effectDropdown("Specular").isVisible());
-    assertEquals("90%", effectDropdown("Specular").getSelectedItem());
+    assertEquals("100%", effectDropdown("Specular").getSelectedItem());
     assertFalse(effectCheckbox("Fresnel").getState());
     assertFalse(effectDropdown("Fresnel").isVisible());
     assertFalse(effectCheckbox("Fill light").getState());

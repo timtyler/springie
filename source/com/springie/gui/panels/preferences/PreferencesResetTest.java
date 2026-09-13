@@ -159,7 +159,7 @@ class PreferencesResetTest {
       assertEquals(50, RendererDelegator.glossiness);
       assertEquals(false, RendererDelegator.glossiness_enabled);
       assertEquals(false, RendererDelegator.shadows);
-      assertEquals(90, RendererDelegator.specular);
+      assertEquals(100, RendererDelegator.specular);
       assertEquals(true, RendererDelegator.specular_enabled);
       assertEquals(50, RendererDelegator.fresnel);
       assertEquals(false, RendererDelegator.fresnel_enabled);
@@ -190,17 +190,17 @@ class PreferencesResetTest {
       assertEquals(Boolean.FALSE, FrEnd.preferences.map
           .get(Preferences.renderer_old_double_buffer));
 
-      // The controls window is back on top of the main window (never
-      // system-wide) and undocked: the panel is back in its own visible
-      // frame.
-      assertEquals(FrEnd.CONTROLS_ALWAYS_ON_TOP, FrEnd.controls_window_mode);
+      // Reset restores the docked default: the controls panel lives in
+      // the main window, the separate controls frame is hidden, and the
+      // stay-on-top listener is off (it only applies to always-on-top).
+      assertEquals(FrEnd.CONTROLS_DOCKED, FrEnd.controls_window_mode);
       assertFalse(FrEnd.frame_controls.isAlwaysOnTop());
-      assertTrue(FrEnd.isControlsStayOnTopActive());
-      assertEquals(FrEnd.frame_controls,
+      assertFalse(FrEnd.isControlsStayOnTopActive());
+      assertEquals(FrEnd.frame_main,
           FrEnd.panel_controls_all.panel.getParent(),
-          "reset should move the controls panel back to its own frame");
-      assertTrue(FrEnd.frame_controls.isVisible(),
-          "reset should make the controls frame visible again");
+          "reset should dock the controls panel into the main window");
+      assertFalse(FrEnd.frame_controls.isVisible(),
+          "reset should hide the separate controls frame when docked");
     } finally {
       GuiTestSupport.disposeFrames();
     }

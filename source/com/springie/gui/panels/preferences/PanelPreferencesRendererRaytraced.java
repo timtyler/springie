@@ -67,7 +67,7 @@ public class PanelPreferencesRendererRaytraced {
           public void setStrength(int percent) {
             RendererDelegator.specular = percent;
           }
-        }, true, 90);
+        }, true, 100);
     this.panel.add(this.effect_specular.panel);
 
     this.effect_fresnel = effectPanel("Fresnel",
