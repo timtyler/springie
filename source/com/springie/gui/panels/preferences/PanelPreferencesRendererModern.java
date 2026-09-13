@@ -45,6 +45,13 @@ public class PanelPreferencesRendererModern {
 
 	public Panel panel_misc = FrEnd.setUpPanelForFrame2();
 
+	/**
+	 * The ray-traced-only option rows, shown at the bottom of the
+	 * single-layout Renderer tab while the ray-traced renderer is
+	 * active. Added and removed by {@link #setRaytracedRowsVisible}.
+	 */
+	Panel[] raytraced_rows;
+
 	MessageManager message_manager;
 
 	public Checkbox checkbox_db_new;
@@ -82,19 +89,14 @@ public class PanelPreferencesRendererModern {
 		final TabbedPanel tab = new TabbedPanel();
 		// The shared renderer options live here now, combined with the
 		// renderer-specific tabs to save the space of a second tab bar.
-		// The ray-traced-only options (Glossiness, Shadows, Specular,
-		// Fresnel, Fill light) sit at the bottom of the Renderer tab,
-		// shown only while the ray-traced renderer is active. BorderLayout
-		// gives the strip its full preferred height and leaves no gap
-		// while it is hidden (the modern renderer is the default).
-		final Panel panel_renderer_tab = FrEnd.setUpPanelForFrame();
-		panel_renderer_tab.setLayout(new java.awt.BorderLayout());
-		panel_renderer_tab.add(FrEnd.panel_preferences_shared_show.panel,
-				java.awt.BorderLayout.CENTER);
-		panel_renderer_tab.add(FrEnd.panel_preferences_renderer_raytraced.panel,
-				java.awt.BorderLayout.SOUTH);
-		FrEnd.panel_preferences_renderer_raytraced.panel.setVisible(false);
-		tab.add("Renderer", panel_renderer_tab);
+		// The whole Renderer tab is one GridLayout (the shared panel
+		// itself): the ray-traced-only options (Glossiness, Shadows,
+		// Specular, Fresnel, Fill light) are added and removed at the
+		// bottom when the renderer is switched -- a GridLayout gives
+		// invisible components space, so setVisible cannot hide them.
+		this.raytraced_rows =
+				FrEnd.panel_preferences_renderer_raytraced.takeEffectRows();
+		tab.add("Renderer", FrEnd.panel_preferences_shared_show.panel);
 		// The old top-level Misc tab is merged into the Options tab: its
 		// rows move into the nested Misc sub-tab below.
 		tab.add("Options", this.panel_main);
@@ -129,6 +131,26 @@ public class PanelPreferencesRendererModern {
 		tab_options.add("Misc", this.panel_misc);
 
 		this.panel_main.add(tab_options);
+	}
+
+	/**
+	 * Shows or hides the ray-traced-only option rows at the bottom of
+	 * the Renderer tab. The rows are added and removed (rather than
+	 * shown/hidden) because the tab's GridLayout gives invisible
+	 * components space. Idempotent: any rows already present are
+	 * removed first, so a repeated call cannot duplicate them.
+	 */
+	void setRaytracedRowsVisible(boolean visible) {
+		final Panel tab = FrEnd.panel_preferences_shared_show.panel;
+		for (final Panel row : this.raytraced_rows) {
+			tab.remove(row);
+		}
+		if (visible) {
+			for (final Panel row : this.raytraced_rows) {
+				tab.add(row);
+			}
+		}
+		tab.validate();
 	}
 
 	private void getPanelBins() {

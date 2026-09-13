@@ -11,6 +11,7 @@ import java.awt.Checkbox;
 import java.awt.Choice;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Panel;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -89,17 +90,24 @@ class PanelPreferencesRendererRaytracedTest {
 
   /** The row panel holding the checkbox with the given label. */
   private static Container effectRow(String label) {
-    final Container row = findCheckboxRow(
-        FrEnd.panel_preferences_renderer_raytraced.panel, label);
-    assertNotNull(row, "expected the " + label + " row");
-    return row;
+    for (final Panel row : FrEnd.panel_preferences_renderer_raytraced.effect_rows) {
+      if (findCheckbox(row, label) != null) {
+        return row;
+      }
+    }
+    assertNotNull(null, "expected the " + label + " row");
+    return null;
   }
 
   private static Checkbox effectCheckbox(String label) {
-    final Checkbox checkbox = findCheckbox(
-        FrEnd.panel_preferences_renderer_raytraced.panel, label);
-    assertNotNull(checkbox, "expected the " + label + " checkbox");
-    return checkbox;
+    for (final Panel row : FrEnd.panel_preferences_renderer_raytraced.effect_rows) {
+      final Checkbox checkbox = findCheckbox(row, label);
+      if (checkbox != null) {
+        return checkbox;
+      }
+    }
+    assertNotNull(null, "expected the " + label + " checkbox");
+    return null;
   }
 
   private static Choice effectDropdown(String label) {

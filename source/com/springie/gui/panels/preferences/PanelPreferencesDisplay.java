@@ -220,7 +220,7 @@ public class PanelPreferencesDisplay {
   private void applyRendererType(int value) {
     this.panel_main.removeAll();
     final boolean raytraced = value == Quality.RAYTRACED;
-    FrEnd.panel_preferences_renderer_raytraced.panel.setVisible(raytraced);
+    FrEnd.panel_preferences_renderer_modern.setRaytracedRowsVisible(raytraced);
     if (value == Quality.THICK_OUTLINE) {
       RendererDelegator.renderer = new com.springie.render.modules.original.ModularRendererOld();
       this.panel_main.add(FrEnd.panel_preferences_renderer_original.panel,

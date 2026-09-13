@@ -185,4 +185,63 @@ public class PanelPreferencesRendererModernTest {
     }
     return null;
   }
+
+  /**
+   * The Renderer tab is one layout: the tab card is the shared panel
+   * itself (a single GridLayout), not a BorderLayout wrapping two nested
+   * panels. The ray-traced rows are added and removed at the bottom on
+   * renderer switch, and every row gets the same height.
+   */
+  @Test
+  void rendererTabIsOneLayout() throws Exception {
+    final Panel tab = FrEnd.panel_preferences_shared_show.panel;
+    assertTrue(tab.getLayout() instanceof java.awt.GridLayout,
+        "the Renderer tab must be a single GridLayout");
+    // No nested panels holding rows: every row is a direct child.
+    for (final Component row : tab.getComponents()) {
+      assertTrue(row instanceof Panel,
+          "each Renderer tab row must be a direct child Panel");
+    }
+
+    final PanelPreferencesRendererModern modern =
+        FrEnd.panel_preferences_renderer_modern;
+    final int shared_rows = tab.getComponentCount();
+
+    // Switch to ray-traced: the five rows appear at the bottom.
+    javax.swing.SwingUtilities.invokeAndWait(() ->
+        modern.setRaytracedRowsVisible(true));
+    assertEquals(shared_rows + 5, tab.getComponentCount(),
+        "ray-traced must add its five rows to the one layout");
+    assertNotNull(findCheckbox(tab, "Glossiness"),
+        "the Glossiness row must be on the Renderer tab");
+    assertNotNull(findCheckbox(tab, "Fill light"),
+        "the Fill light row must be on the Renderer tab");
+
+    // Uniform spacing: one GridLayout gives every row the same height.
+    tab.doLayout();
+    int height = -1;
+    for (final Component row : tab.getComponents()) {
+      if (height < 0) {
+        height = row.getHeight();
+      }
+      assertEquals(height, row.getHeight(),
+          "every Renderer tab row must have the same height");
+    }
+
+    // Switch back: the rows leave, no duplicates on repeat.
+    javax.swing.SwingUtilities.invokeAndWait(() -> {
+      modern.setRaytracedRowsVisible(false);
+      modern.setRaytracedRowsVisible(false);
+    });
+    assertEquals(shared_rows, tab.getComponentCount(),
+        "leaving ray-traced must remove its rows again");
+    javax.swing.SwingUtilities.invokeAndWait(() -> {
+      modern.setRaytracedRowsVisible(true);
+      modern.setRaytracedRowsVisible(true);
+    });
+    assertEquals(shared_rows + 5, tab.getComponentCount(),
+        "repeated switches must not duplicate the rows");
+    javax.swing.SwingUtilities.invokeAndWait(() ->
+        modern.setRaytracedRowsVisible(false));
+  }
 }

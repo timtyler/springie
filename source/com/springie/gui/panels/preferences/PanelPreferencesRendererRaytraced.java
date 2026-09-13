@@ -3,6 +3,7 @@
 package com.springie.gui.panels.preferences;
 
 import java.awt.Checkbox;
+import java.awt.Component;
 import java.awt.Panel;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -35,6 +36,14 @@ public class PanelPreferencesRendererRaytraced {
   private Effect effect_fresnel;
 
   private Effect effect_fill_light;
+
+  /**
+   * The five effect rows, detached from {@link #panel} by
+   * {@link #takeEffectRows()}. The Renderer tab adds them directly to its
+   * single layout (a GridLayout gives invisible components space, so they
+   * are added and removed on renderer switch instead of shown/hidden).
+   */
+  Panel[] effect_rows;
 
   public PanelPreferencesRendererRaytraced(MessageManager message_manager) {
     this.message_manager = message_manager;
@@ -95,6 +104,21 @@ public class PanelPreferencesRendererRaytraced {
           }
         }, false, 50);
     this.panel.add(this.effect_fill_light.panel);
+  }
+
+  /**
+   * Detaches the five effect rows from {@link #panel} and returns them.
+   * The Renderer tab owns the single layout now; it adds and removes
+   * these rows when the renderer is switched.
+   */
+  Panel[] takeEffectRows() {
+    final Component[] rows = this.panel.getComponents();
+    this.effect_rows = new Panel[rows.length];
+    for (int i = 0; i < rows.length; i++) {
+      this.effect_rows[i] = (Panel) rows[i];
+      this.panel.remove(rows[i]);
+    }
+    return this.effect_rows;
   }
 
   private interface EffectSetter {
