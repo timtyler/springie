@@ -24,8 +24,8 @@ import com.springie.render.RendererDelegator;
  * <p>Geometry mirrors RaytracerGlossTest: the centre pixel's ray runs
  * straight down +z from the eye (25600, 25600, -196608), so pixel
  * (100 + k, 100) pierces the ring plane k * 192 world units off axis.
- * The sphere has radius 512; the ring spans 512 + 5*192 = 1472 to
- * 512 + 7*192 = 1856, so pixel (108, 100) at 1536 is ring, and pixel
+ * The sphere has radius 512; the ring spans 512 * 4/3 = 683 to
+ * 683 + 8*192 = 2219, so pixel (108, 100) at 1536 is ring, and pixel
  * (120, 100) at 3840 is background.
  */
 public class RaytracerSelectionRingTest {

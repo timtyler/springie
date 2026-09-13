@@ -68,14 +68,16 @@ class RaySceneSelectionTest {
   }
 
   @Test
-  void ringSitsJustOutsideTheNode() {
+  void ringSitsOutsideTheNode() {
     // The ring plane is z = 0 with normal (0, 0, 1): a ray from the
     // eye, offset sideways, pierces the plane exactly its offset from
-    // the node centre. Mid-annulus hits; the hole misses.
+    // the node centre. Mid-annulus hits; the hole misses. The ring
+    // starts at 4/3 the node radius, like the default renderer's.
     final double world_per_pixel = Coords.shift_constant_z
         + (0 >> Coords.shift_z);
-    final double mid = RADIUS + 6.0 * world_per_pixel;
-    final double in_hole = RADIUS + 2.0 * world_per_pixel;
+    final double inner = RADIUS * 4.0 / 3.0;
+    final double mid = inner + 4.0 * world_per_pixel;
+    final double in_hole = RADIUS + 0.5 * world_per_pixel;
 
     final RTRing[] rings = RayScene.selectionRings(this.manager, 25600,
         25600, -196608);

@@ -105,8 +105,11 @@ final class RayScene {
       // exactly this).
       final double world_per_pixel = Coords.shift_constant_z
           + (node.pos.z >> Coords.shift_z);
-      final double inner = radius + 5.0 * world_per_pixel;
-      final double outer = radius + 7.0 * world_per_pixel;
+      // Like the default renderer's selection ring: a prominent annulus
+      // starting at 4/3 the node radius, several pixels thick, so the
+      // selection reads as red at a glance.
+      final double inner = radius * 4.0 / 3.0;
+      final double outer = inner + 8.0 * world_per_pixel;
       rings.add(new RTRing(node.pos.x, node.pos.y, node.pos.z, nx / length,
           ny / length, nz / length, inner, outer, 0xFF4040));
     }
