@@ -198,7 +198,7 @@ public class PanelControlsUniverse {
 		panel_muscles_amplitude.setLayout(new BorderLayout(0, 8));
 		panel_muscles_amplitude.add("West", new Label("Muscle amplitude %:", Label.RIGHT));
 
-		this.scroll_bar_muscles_amplitude = new Scrollbar(Scrollbar.HORIZONTAL, 25, 1, 0, 51);
+		this.scroll_bar_muscles_amplitude = new Scrollbar(Scrollbar.HORIZONTAL, 25, 1, 0, 201);
 		this.scroll_bar_muscles_amplitude.addAdjustmentListener(new AdjustmentListener() {
 			public void adjustmentValueChanged(AdjustmentEvent e) {
 				Muscles.activeOscillator().setAmplitude(e.getValue() * Muscles.UNITY / 100);
@@ -215,7 +215,7 @@ public class PanelControlsUniverse {
 		panel_muscles_period.setLayout(new BorderLayout(0, 8));
 		panel_muscles_period.add("West", new Label("Muscle period (ticks):", Label.RIGHT));
 
-		this.scroll_bar_muscles_period = new Scrollbar(Scrollbar.HORIZONTAL, 120, 10, 20, 610);
+		this.scroll_bar_muscles_period = new Scrollbar(Scrollbar.HORIZONTAL, 120, 10, 2, 610);
 		this.scroll_bar_muscles_period.addAdjustmentListener(new AdjustmentListener() {
 			public void adjustmentValueChanged(AdjustmentEvent e) {
 				Muscles.activeOscillator().setPeriodTicks(e.getValue());
