@@ -207,4 +207,16 @@ public class PanelFundamentalTest {
     assertEquals("ASM (32)a", leaf.getItem(1),
         "ASM (32)a must sit just under Moscow in the default presets");
   }
+
+  @Test
+  void cubeIsOfferedInTheDefaultPresets() throws Exception {
+    final Choice leaf = FrEnd.choose_initial.choice;
+    boolean found = false;
+    for (int i = 0; i < leaf.getItemCount(); i++) {
+      if ("Cube".equals(leaf.getItem(i))) {
+        found = true;
+      }
+    }
+    assertTrue(found, "Cube must be offered in the default presets");
+  }
 }

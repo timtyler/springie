@@ -6,5 +6,6 @@
   <leaf name="t_sphere_32.spr" desc="Tensegrity"/>
   <leaf name="soccer.spr" desc="Soccer ball"/>
   <leaf name="icosahedron.spr" desc="Icosahedron"/>
+  <leaf name="cube.spr" desc="Cube"/>
  </node>
 </heirarchy>
