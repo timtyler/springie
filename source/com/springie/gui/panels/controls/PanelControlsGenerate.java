@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 
 import com.springie.FrEnd;
 import com.springie.gui.GUIStrings;
+import com.springie.gui.components.TabbedPanel;
 import com.springie.gui.components.TextFieldWrapper;
 import com.springie.messages.Message;
 import com.springie.messages.MessageManager;
@@ -54,14 +55,21 @@ public class PanelControlsGenerate {
 
     final Panel panel_generate_string = makeStringGUI();        
 
-    this.panel.add(panel_generate_faces_from_selection);
-    this.panel.add(panel_generate_tube);
-    this.panel.add(panel_generate_free_nodes);
-    this.panel.add(panel_generate_sphere_pack);
-    this.panel.add(panel_generate_matrix);
-    //if (FrEnd.artificial_chemistry) {
-      this.panel.add(panel_generate_string);
-    //}
+    final TabbedPanel tab = new TabbedPanel();
+
+    final Panel panel_shapes = FrEnd.setUpPanelForFrame2();
+    panel_shapes.add(panel_generate_tube);
+    panel_shapes.add(panel_generate_matrix);
+    panel_shapes.add(panel_generate_sphere_pack);
+    panel_shapes.add(panel_generate_string);
+    panel_shapes.add(panel_generate_free_nodes);
+    tab.add("Shapes", panel_shapes);
+
+    final Panel panel_faces = FrEnd.setUpPanelForFrame2();
+    panel_faces.add(panel_generate_faces_from_selection);
+    tab.add("Faces", panel_faces);
+
+    this.panel.add(tab);
   }
 
   private Panel makeFacesFromSelectionGUI() {

@@ -15,6 +15,7 @@ import com.springie.FrEnd;
 import com.springie.constants.ToolTypes;
 import com.springie.context.ContextManager;
 import com.springie.gui.GUIStrings;
+import com.springie.gui.components.TabbedPanel;
 import com.springie.gui.components.TTChoice;
 import com.springie.gui.components.TextFieldWrapper;
 import com.springie.messages.Message;
@@ -314,48 +315,45 @@ public class PanelControlsMisc {
 //    final Panel panel_edit_make_motionless = new Panel();
 //    panel_edit_make_motionless.add(this.button_edit_make_motionless);
 //
-    this.panel.add(panel_dimple);
+    final TabbedPanel tab = new TabbedPanel();
 
-    this.panel.add(getEqualiseLinkLengthsPanel());
-    this.panel.add(getResetLinkLengthsPanel());
+    final Panel panel_muscles = FrEnd.setUpPanelForFrame2();
+    panel_muscles.add(getMusclesAddSelectedPanel());
+    panel_muscles.add(getMusclesAddAllPanel());
+    panel_muscles.add(getMusclesRemovePanel());
+    tab.add("Muscles", panel_muscles);
 
-    this.panel.add(getMusclesAddSelectedPanel());
-    this.panel.add(getMusclesAddAllPanel());
-    this.panel.add(getMusclesRemovePanel());
+    final Panel panel_links = FrEnd.setUpPanelForFrame2();
+    panel_links.add(getEqualiseLinkLengthsPanel());
+    panel_links.add(getResetLinkLengthsPanel());
+    panel_links.add(panel_extend_links);
+    panel_links.add(panel_split_links);
+    panel_links.add(panel_add_links_outer_hex);
+    panel_links.add(getAutomaticLinkRadiusPanel());
+    tab.add("Links", panel_links);
 
-    this.panel.add(panel_add_polygons);
+    final Panel panel_nodes = FrEnd.setUpPanelForFrame2();
+    panel_nodes.add(panel_add_nodes_triaxial);
+    panel_nodes.add(getAutomaticNodeRadiusPanel());
+    panel_nodes.add(panel_dimple);
+    tab.add("Nodes", panel_nodes);
 
-    this.panel.add(panel_add_stellations);
+    final Panel panel_faces = FrEnd.setUpPanelForFrame2();
+    panel_faces.add(panel_add_polygons);
+    panel_faces.add(panel_add_stellations);
+    panel_faces.add(panel_face_reverse);
+    tab.add("Faces", panel_faces);
 
-    this.panel.add(panel_extend_links);
-
-    this.panel.add(panel_split_links);
-
-    this.panel.add(getAddCentralHubPanel());
-
-    this.panel.add(getAutomaticLinkRadiusPanel());
-    this.panel.add(getAutomaticNodeRadiusPanel());
-    this.panel.add(getCartesianColourerPanel());
-    
-    this.panel.add(panel_prismatic_projection);
-
-    this.panel.add(panel_add_nodes_triaxial);
-
-    this.panel.add(panel_add_links_outer_hex);
-
-    //this.panel.add(panel_edit_make_motionless);
-
-    this.panel.add(panel_face_reverse);
-
-    // this.panel.add(getSpreadSelectionViaLinksPanel());
-    //
-    // this.panel.add(getSelectAllNodesWithNLinkPanel());
-    // this.panel.add(getSelectAllFacesWithNSidesPanel());
-    // this.panel.add(getClearPanel());
-    //
+    final Panel panel_more = FrEnd.setUpPanelForFrame2();
+    panel_more.add(panel_prismatic_projection);
+    panel_more.add(getAddCentralHubPanel());
+    panel_more.add(getCartesianColourerPanel());
     if (FrEnd.development_version) {
-      this.panel.add(panel_tool);
+      panel_more.add(panel_tool);
     }
+    tab.add("More", panel_more);
+
+    this.panel.add(tab);
   }
 
 //  private Panel getPanelRemoveLinkAndFuseEnds() {
