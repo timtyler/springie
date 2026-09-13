@@ -92,9 +92,10 @@ public class PanelPreferencesDisplay {
 
   void makePanel() {
     // The Display type dropdown, the anti-aliasing and pixellation
-    // choices and the frames-per-second readout live at the top of the
-    // shared Renderer tab (modern and ray-traced renderers), so the
-    // rendering settings sit together; one Display type copy also goes
+    // choices, the "deepest first" checkbox and the frames-per-second
+    // readout live at the top of the shared Renderer tab (modern and
+    // ray-traced renderers), so the rendering settings sit together; one
+    // Display type copy also goes
     // in the original renderer's own Renderer tab, so the renderer can
     // always be switched back whichever is showing. Anti-aliasing and
     // pixellation only apply to the modern and ray-traced renderers.
@@ -102,7 +103,9 @@ public class PanelPreferencesDisplay {
     FrEnd.panel_preferences_shared_show.panel.add(makeDisplayTypePanel(), 0);
     FrEnd.panel_preferences_shared_show.panel.add(getAntiAliasingPanel(), 1);
     FrEnd.panel_preferences_shared_show.panel.add(getPixellationPanel(), 2);
-    FrEnd.panel_preferences_shared_show.panel.add(getFpsPanel(), 3);
+    FrEnd.panel_preferences_shared_show.panel.add(
+        FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first, 3);
+    FrEnd.panel_preferences_shared_show.panel.add(getFpsPanel(), 4);
     FrEnd.panel_preferences_renderer_original.panel_renderer_tab
         .add(makeDisplayTypePanel());
 

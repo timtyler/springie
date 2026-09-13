@@ -115,8 +115,9 @@ public class PanelPreferencesRendererModern {
 		this.panel_misc.add(getPanelStrutDivisions());
 		this.panel_misc.add(panelLinkSides());
 
-		// The shared Misc rows (deepest-first, explosions, fog, face
-		// lines) join the modern Misc rows in the one Misc sub-tab.
+		// The shared Misc rows (explosions, fog, face lines) join the modern
+		// Misc rows in the one Misc sub-tab. ("Render deepest objects
+		// first" lives on the Renderer tab instead.)
 		FrEnd.panel_preferences_shared_misc.moveRowsInto(this.panel_misc);
 
 		this.panel_labels.add(getPanelLabelsWhen());

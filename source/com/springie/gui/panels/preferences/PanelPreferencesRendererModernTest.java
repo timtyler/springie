@@ -116,7 +116,8 @@ public class PanelPreferencesRendererModernTest {
   /**
    * The old top-level Misc tab is merged into Options: the shared Misc
    * panel is no longer a tab card, its rows moved into the nested Misc
-   * sub-tab alongside the modern rows.
+   * sub-tab alongside the modern rows -- except "Render deepest objects
+   * first", which lives on the Renderer tab.
    */
   @Test
   void miscTabIsMergedIntoTheOptionsTab() {
@@ -136,11 +137,22 @@ public class PanelPreferencesRendererModernTest {
     // A modern row...
     assertNotNull(polyhedronDropdown(),
         "the Node polyhedron dropdown must stay on the Misc sub-tab");
-    // ...and the shared rows.
-    assertNotNull(findCheckbox(panel_misc, "Render deepest objects first"),
-        "the shared deepest-first checkbox must move to the Misc sub-tab");
+    // ...and the shared rows (but not deepest-first: Renderer tab).
     assertNotNull(findCheckbox(panel_misc, "Fog depth is relative"),
         "the shared fog checkbox must move to the Misc sub-tab");
+    assertTrue(findCheckbox(panel_misc, "Render deepest objects first")
+        == null, "deepest-first must not be on the Misc sub-tab");
+
+    // Deepest-first sits on the Renderer tab, between Pixellated and FPS.
+    final Panel renderer_tab = FrEnd.panel_preferences_shared_show.panel;
+    final Checkbox deepest_first =
+        findCheckbox(renderer_tab, "Render deepest objects first");
+    assertNotNull(deepest_first,
+        "deepest-first must be on the Renderer tab");
+    assertTrue(
+        renderer_tab.getComponent(3)
+            == FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first,
+        "deepest-first must sit at Renderer tab row 3, before the FPS readout");
   }
 
   private static TabbedPanel findTabbedPanel(Container container) {

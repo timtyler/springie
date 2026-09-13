@@ -32,6 +32,13 @@ public class PanelPreferencesRendererSharedMisc {
 
   public Checkbox checkbox_redraw_deepest_first;
 
+  /**
+   * The "Render deepest objects first" row. It lives on the Renderer tab,
+   * not in this panel: PanelPreferencesDisplay adds it to the shared
+   * Renderer tab when that is built (after this panel).
+   */
+  Panel panel_redraw_deepest_first;
+
   private Label label_face_render_number;
 
   public Checkbox checkbox_relative_fog;
@@ -77,6 +84,7 @@ public class PanelPreferencesRendererSharedMisc {
     panel_visible_explosions.add(this.checkbox_explosions);
 
     final Panel panel_redraw_deepest_first = new Panel();
+    this.panel_redraw_deepest_first = panel_redraw_deepest_first;
     this.checkbox_redraw_deepest_first = new Checkbox(
         "Render deepest objects first");
     this.checkbox_redraw_deepest_first.addItemListener(new ItemListener() {
@@ -102,7 +110,8 @@ public class PanelPreferencesRendererSharedMisc {
     
     final Panel panel_face_render_number = getFaceRenderNumber();
 
-    this.panel.add(panel_redraw_deepest_first);
+    // panel_redraw_deepest_first is not added here: it lives on the
+    // Renderer tab (added by PanelPreferencesDisplay).
     this.panel.add(panel_visible_explosions);
     this.panel.add(panel_relative_fog);
     this.panel.add(panel_fog);
