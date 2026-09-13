@@ -16,11 +16,6 @@ public class RendererBin {
   // holds the coarse (1/n resolution) tile instead.
   BufferedImage image_aa;
 
-  // Pixellated blit tile: image_aa (or image, when anti-aliasing is off)
-  // nearest-neighbour upsampled to the full bin size, kept only while
-  // pixellation is above 1x1.
-  BufferedImage image_px;
-
   RectangleInt actual = new RectangleInt(0, 0, 0, 0);
 
   RectangleInt union = new RectangleInt(0, 0, 0, 0);
