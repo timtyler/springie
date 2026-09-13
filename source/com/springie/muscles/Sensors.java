@@ -32,13 +32,25 @@ public final class Sensors {
     return (int) (((long) (actual - rest) << Coords.shift) / rest);
   }
 
-  /** True when the link is shorter than its (effective) rest length. */
-  public static boolean isCompressed(Link link) {
-    return strain(link) < 0;
+  /**
+   * Returns the link's compression in fixed point: how far below its
+   * (effective) rest length it currently is, as a fraction of rest length.
+   * Zero at or above rest length; grows the harder the link is squashed
+   * (a strut being compressed, a cable gone slack). Quantified so a
+   * controller can react in proportion -- stiffen or contract harder
+   * when more compressed -- rather than on a boolean edge.
+   */
+  public static int compression(Link link) {
+    return Math.max(0, -strain(link));
   }
 
-  /** True when the link is longer than its (effective) rest length. */
-  public static boolean isStretched(Link link) {
-    return strain(link) > 0;
+  /**
+   * Returns the link's stretch in fixed point: how far above its
+   * (effective) rest length it currently is, as a fraction of rest length.
+   * Zero at or below rest length; grows the further the link is pulled
+   * past rest (a cable under tension). Quantified for the same reason.
+   */
+  public static int stretch(Link link) {
+    return Math.max(0, strain(link));
   }
 }

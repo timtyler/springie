@@ -2,7 +2,6 @@
 
 package com.springie.muscles;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -51,21 +50,37 @@ class SensorsTest {
   }
 
   @Test
-  void compressedLinkHasNegativeStrain() {
+  void compressedLinkReportsCompressionMagnitude() {
     final Link link = makeLink(50 << Coords.shift);
 
-    assertTrue(Sensors.isCompressed(link));
-    assertFalse(Sensors.isStretched(link));
-    assertTrue(Sensors.strain(link) < 0);
+    final int compression = Sensors.compression(link);
+    final int stretch = Sensors.stretch(link);
+    final int strain = Sensors.strain(link);
+
+    assertTrue(compression > 0, "a squashed link should report compression");
+    assertTrue(stretch == 0, "a squashed link should report no stretch");
+    // Half the rest length: compression should be ~0.5 of rest length.
+    assertTrue(compression > (int) (0.4 * Muscles.UNITY)
+        && compression < (int) (0.6 * Muscles.UNITY),
+        "compression should quantify ~0.5, was " + compression);
+    assertTrue(strain < 0);
   }
 
   @Test
-  void stretchedLinkHasPositiveStrain() {
+  void stretchedLinkReportsStretchMagnitude() {
     final Link link = makeLink(200 << Coords.shift);
 
-    assertTrue(Sensors.isStretched(link));
-    assertFalse(Sensors.isCompressed(link));
-    assertTrue(Sensors.strain(link) > 0);
+    final int compression = Sensors.compression(link);
+    final int stretch = Sensors.stretch(link);
+    final int strain = Sensors.strain(link);
+
+    assertTrue(stretch > 0, "a pulled link should report stretch");
+    assertTrue(compression == 0, "a pulled link should report no compression");
+    // Twice the rest length: stretch should be ~1.0 of rest length.
+    assertTrue(stretch > (int) (0.9 * Muscles.UNITY)
+        && stretch < (int) (1.1 * Muscles.UNITY),
+        "stretch should quantify ~1.0, was " + stretch);
+    assertTrue(strain > 0);
   }
 
   @Test
@@ -87,7 +102,8 @@ class SensorsTest {
     try {
       // The link sits at its unscaled rest length, but the controller has
       // halved the effective rest length, so the link reads as stretched.
-      assertTrue(Sensors.isStretched(link));
+      assertTrue(Sensors.stretch(link) > 0);
+      assertTrue(Sensors.compression(link) == 0);
     } finally {
       Muscles.enabled = false;
     }
