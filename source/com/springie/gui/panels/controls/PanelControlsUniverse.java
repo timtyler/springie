@@ -127,7 +127,16 @@ public class PanelControlsUniverse {
 		// START GRAVITY
 		final Panel panel_gravity = new Panel();
 		panel_gravity.setLayout(new BorderLayout(0, 8));
-		panel_gravity.add("West", new Label("Gravity:", Label.RIGHT));
+		this.checkbox_gravity_switch = new Checkbox(GUIStrings.GRAVITY);
+		this.checkbox_gravity_switch.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				Forget.about(e);
+				final boolean active = ((Checkbox) e.getSource()).getState();
+				World.gravity_active = active;
+				scroll_bar_gravity.setEnabled(active);
+			}
+		});
+		panel_gravity.add("West", this.checkbox_gravity_switch);
 
 		this.scroll_bar_gravity = new Scrollbar(Scrollbar.HORIZONTAL, 10, 80, 0, 580);
 		this.scroll_bar_gravity.addAdjustmentListener(new AdjustmentListener() {
@@ -137,6 +146,7 @@ public class PanelControlsUniverse {
 				getLabelGravity().setText("" + temp);
 			}
 		});
+		this.scroll_bar_gravity.setEnabled(World.gravity_active);
 
 		panel_gravity.add("Center", this.scroll_bar_gravity);
 
@@ -161,17 +171,6 @@ public class PanelControlsUniverse {
 
 		this.label_temperature = new Label("" + World.global_temperature, Label.LEFT);
 		panel_temperature.add("East", this.label_temperature);
-
-		// START GRAVITY SWITCH
-		final Panel panel_gravity_switch = new Panel();
-		this.checkbox_gravity_switch = new Checkbox(GUIStrings.GRAVITY);
-		this.checkbox_gravity_switch.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				Forget.about(e);
-				World.gravity_active = ((Checkbox) e.getSource()).getState();
-			}
-		});
-		panel_gravity_switch.add(this.checkbox_gravity_switch);
 
 		final Panel panel_charge_switch = new Panel();
 		this.checkbox_charge_switch = new Checkbox(GUIStrings.CHARGE, true);
@@ -198,7 +197,7 @@ public class PanelControlsUniverse {
 		panel_muscles_amplitude.setLayout(new BorderLayout(0, 8));
 		panel_muscles_amplitude.add("West", new Label("Muscle amplitude %:", Label.RIGHT));
 
-		this.scroll_bar_muscles_amplitude = new Scrollbar(Scrollbar.HORIZONTAL, 25, 1, 0, 201);
+		this.scroll_bar_muscles_amplitude = new Scrollbar(Scrollbar.HORIZONTAL, 85, 1, 0, 201);
 		this.scroll_bar_muscles_amplitude.addAdjustmentListener(new AdjustmentListener() {
 			public void adjustmentValueChanged(AdjustmentEvent e) {
 				Muscles.activeOscillator().setAmplitude(e.getValue() * Muscles.UNITY / 100);
@@ -208,14 +207,14 @@ public class PanelControlsUniverse {
 
 		panel_muscles_amplitude.add("Center", this.scroll_bar_muscles_amplitude);
 
-		this.label_muscles_amplitude = new Label("25", Label.LEFT);
+		this.label_muscles_amplitude = new Label("85", Label.LEFT);
 		panel_muscles_amplitude.add("East", this.label_muscles_amplitude);
 
 		final Panel panel_muscles_period = new Panel();
 		panel_muscles_period.setLayout(new BorderLayout(0, 8));
 		panel_muscles_period.add("West", new Label("Muscle period (ticks):", Label.RIGHT));
 
-		this.scroll_bar_muscles_period = new Scrollbar(Scrollbar.HORIZONTAL, 120, 10, 2, 610);
+		this.scroll_bar_muscles_period = new Scrollbar(Scrollbar.HORIZONTAL, 12, 10, 2, 610);
 		this.scroll_bar_muscles_period.addAdjustmentListener(new AdjustmentListener() {
 			public void adjustmentValueChanged(AdjustmentEvent e) {
 				Muscles.activeOscillator().setPeriodTicks(e.getValue());
@@ -225,7 +224,7 @@ public class PanelControlsUniverse {
 
 		panel_muscles_period.add("Center", this.scroll_bar_muscles_period);
 
-		this.label_muscles_period = new Label("120", Label.LEFT);
+		this.label_muscles_period = new Label("12", Label.LEFT);
 		panel_muscles_period.add("East", this.label_muscles_period);
 
 		final Panel panel_continuously_centre = new Panel();
@@ -354,7 +353,6 @@ public class PanelControlsUniverse {
 		this.panel.add(panel_viscocity);
 		this.panel.add(panel_temperature);
 		this.panel.add(panel_gravity);
-		this.panel.add(panel_gravity_switch);
 
 		this.panel.add(panel_continuously_centre);
 		this.panel.add(panel_node_growth);
@@ -487,6 +485,7 @@ public class PanelControlsUniverse {
 
 		this.label_gravity.setText("" + World.gravity_strength);
 		this.checkbox_gravity_switch.setState(World.gravity_active);
+		this.scroll_bar_gravity.setEnabled(World.gravity_active);
 	}
 
 	public void reflectTemperature() {
