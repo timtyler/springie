@@ -506,7 +506,12 @@ public class PanelControlsUniverse {
 	}
 
 	public void reflectMuscles() {
-		final int amplitude_percent = Muscles.activeOscillator().getAmplitude() * 100 / Muscles.UNITY;
+		// Round to nearest: the scrollbar moves in whole percents, but the
+		// amplitude is stored in fixed point, so a truncating readback would
+		// snap single-step arrow clicks straight back (and make the left
+		// arrow skip values).
+		final int amplitude_percent = (Muscles.activeOscillator().getAmplitude() * 100 + Muscles.UNITY / 2)
+				/ Muscles.UNITY;
 		this.scroll_bar_muscles_amplitude.setValue(amplitude_percent);
 		this.label_muscles_amplitude.setText("" + amplitude_percent);
 
