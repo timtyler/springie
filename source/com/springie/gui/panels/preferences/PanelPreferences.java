@@ -47,8 +47,13 @@ public class PanelPreferences {
     //tab.add("Stereo3D", FrEnd.panel_preferences_stereo3d.panel);
     tab.add("Editing", FrEnd.panel_preferences_edit.panel);
     tab.add("Animation", FrEnd.panel_preferences_update.panel);
-    tab.add("Import", FrEnd.panel_preferences_import.panel);
-    tab.add("POV-Ray export", FrEnd.panel_preferences_pov_export.panel);
+    // One top-level tab for both, each keeping its own panel: six tabs
+    // directly under Preferences was too many.
+    final TabbedPanel tab_import_export = new TabbedPanel();
+    tab_import_export.add("Import", FrEnd.panel_preferences_import.panel);
+    tab_import_export.add("POV-Ray export",
+        FrEnd.panel_preferences_pov_export.panel);
+    tab.add("Import/Export", tab_import_export);
 
     this.panel.setLayout(new BorderLayout());
     this.panel.add(tab, BorderLayout.CENTER);
