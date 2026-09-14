@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.render.Coords;
+import com.springie.render.DepthSort;
 import com.springie.render.RendererDelegator;
 import com.springie.render.ScenicBackground;
 
@@ -26,9 +27,11 @@ public class RendererBinManager {
 
   private RendererBin[][] array;
 
+  // The frame's global depth sort: an ascending-z permutation of the
+  // frame's composite list, filled by distribute(). Reused across frames.
   private int[] node_depth_index = new int[0];
 
-  // Scratch buffers for the depth sort, reused across bins and frames.
+  // Scratch buffers for the global depth sort, reused across frames.
   private int[] sort_keys = new int[0];
 
   private int[] sort_scratch = new int[0];
@@ -143,6 +146,48 @@ public class RendererBinManager {
     }
   }
 
+  /**
+   * Sorts the frame's composites once, globally -- ascending by z,
+   * stable -- and distributes them to the bins in that order. Every
+   * bin's vector is therefore pre-sorted, so render() needs no per-bin
+   * sort: with deepest-first on, each bin holds ascending-z order; with
+   * it off, the creation order, at zero sort cost (the old identity
+   * index did the same). Either way the render loops walk each bin's
+   * vector from the end backwards, exactly the draw order the old
+   * per-bin sorts produced: a stable sort of a subsequence equals the
+   * subsequence of the stable sort.
+   *
+   * The sort buffers are reused across frames; the only per-frame work
+   * besides the sort itself is the distribution, which the old code did
+   * anyway.
+   */
+  void distribute(ArrayList<PolygonComposite> all, boolean deepest_first) {
+    final int size = all.size();
+    if (deepest_first) {
+      if (this.node_depth_index.length < size) {
+        this.node_depth_index = new int[size];
+      }
+      if (this.sort_keys.length < size) {
+        this.sort_keys = new int[size];
+        this.sort_scratch = new int[size];
+      }
+      final int[] index = this.node_depth_index;
+      final int[] keys = this.sort_keys;
+      for (int i = size; --i >= 0;) {
+        index[i] = i;
+        keys[i] = all.get(i).z;
+      }
+      DepthSort.sort(index, keys, size, this.sort_scratch);
+      for (int i = 0; i < size; i++) {
+        add(all.get(index[i]));
+      }
+    } else {
+      for (int i = 0; i < size; i++) {
+        add(all.get(i));
+      }
+    }
+  }
+
   public void render(RendererBinManager bins_last, Graphics graphics) {
     ContextManager.getNodeManager().depth_range = null;
 
@@ -234,16 +279,15 @@ public class RendererBinManager {
             // The scratch tile starts undefined: always scrub it.
             doScrubbing(tile_graphics, potential, bin);
 
-            getSortedNodeDepthIndex(v_this, FrEnd.redraw_deepest_first);
-
+            // The bin's vector is already in draw order (see
+            // distribute): ascending by z with deepest-first on, drawn
+            // from the end backwards -- deepest first -- and creation
+            // order with it off. No per-bin sort.
             tile_graphics.setClip(potential.min_x, potential.min_y,
                 block_size, block_size);
 
             for (int c = size; --c >= 0;) {
-              final int index = this.node_depth_index[c];
-              final PolygonComposite composite = v_this.get(index);
-
-              renderThePolygon(tile_graphics, composite);
+              renderThePolygon(tile_graphics, v_this.get(c));
             }
             tile_graphics.dispose();
 
@@ -267,16 +311,15 @@ public class RendererBinManager {
               doScrubbing(graphics, potential, bin);
             }
 
-            getSortedNodeDepthIndex(v_this, FrEnd.redraw_deepest_first);
-
+            // The bin's vector is already in draw order (see
+            // distribute): ascending by z with deepest-first on, drawn
+            // from the end backwards -- deepest first -- and creation
+            // order with it off. No per-bin sort.
             graphics.setClip(potential.min_x, potential.min_y, block_size,
                 block_size);
 
             for (int c = size; --c >= 0;) {
-              final int index = this.node_depth_index[c];
-              final PolygonComposite composite = v_this.get(index);
-
-              renderThePolygon(graphics, composite);
+              renderThePolygon(graphics, v_this.get(c));
             }
           }
         } else if (drag_damage != null) {
@@ -447,16 +490,15 @@ public class RendererBinManager {
             // created tiles (createImage content is undefined).
             doScrubbing(graphics_paint, potential, bin);
 
-            getSortedNodeDepthIndex(v_this, FrEnd.redraw_deepest_first);
-
+            // The bin's vector is already in draw order (see
+            // distribute): ascending by z with deepest-first on, drawn
+            // from the end backwards -- deepest first -- and creation
+            // order with it off. No per-bin sort.
             graphics_paint.setClip(potential.min_x, potential.min_y,
                 block_size, block_size);
 
             for (int c = size; --c >= 0;) {
-              final int index = this.node_depth_index[c];
-              final PolygonComposite composite = v_this.get(index);
-
-              renderThePolygon(graphics_paint, composite);
+              renderThePolygon(graphics_paint, v_this.get(c));
             }
 
             if (aa > 1) {
@@ -828,85 +870,6 @@ public class RendererBinManager {
     } else {
       graphics.setColor(RendererDelegator.color_background);
       graphics.fillRect(x0, y0, x1 - x0, y1 - y0);
-    }
-  }
-
-  private void getSortedNodeDepthIndex(final ArrayList<PolygonComposite> v_this,
-      boolean deepest_first) {
-    final int size = v_this.size();
-    setUpNewNodeDepthIndex(size);
-
-    if (deepest_first) {
-      sort(v_this);
-    }
-  }
-
-  private void setUpNewNodeDepthIndex(int number_of_nodes) {
-    if (this.node_depth_index.length < number_of_nodes) {
-      this.node_depth_index = new int[number_of_nodes];
-    }
-    final int[] index = this.node_depth_index;
-    for (int temp = number_of_nodes; --temp >= 0;) {
-      index[temp] = temp;
-    }
-  }
-
-  // Stable bottom-up merge sort of the depth index, ascending by z.
-  // (The caller draws the index from the end backwards, deepest first.)
-  // Replaces the old O(n^2) bubble sort; same observable order.
-  private void sort(ArrayList<PolygonComposite> vector) {
-    final int size = vector.size();
-    if (size < 2) {
-      return;
-    }
-    if (this.sort_keys.length < size) {
-      this.sort_keys = new int[size];
-      this.sort_scratch = new int[size];
-    }
-    final int[] index = this.node_depth_index;
-    final int[] keys = this.sort_keys;
-    for (int i = size; --i >= 0;) {
-      keys[i] = vector.get(i).z;
-    }
-
-    int[] src = index;
-    int[] dst = this.sort_scratch;
-    for (int width = 1; width < size; width <<= 1) {
-      final int step = width << 1;
-      for (int lo = 0; lo < size; lo += step) {
-        int mid = lo + width;
-        if (mid > size) {
-          mid = size;
-        }
-        int hi = lo + step;
-        if (hi > size) {
-          hi = size;
-        }
-        int i = lo;
-        int j = mid;
-        int k = lo;
-        while (i < mid && j < hi) {
-          // Strictly-less takes from the right run; ties take from the
-          // left run, which keeps the sort stable.
-          if (keys[src[j]] < keys[src[i]]) {
-            dst[k++] = src[j++];
-          } else {
-            dst[k++] = src[i++];
-          }
-        }
-        while (i < mid) {
-          dst[k++] = src[i++];
-        }
-        while (j < hi) {
-          dst[k++] = src[j++];
-        }
-      }
-      final int[] temp = src;
-      src = dst;
-      dst = temp;
-    }
-    if (src != index) {
-      System.arraycopy(src, 0, index, 0, size);
     }
   }
 

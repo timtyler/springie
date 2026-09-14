@@ -24,6 +24,7 @@ import com.springie.modification.velocity.DampOverallVelocities;
 import com.springie.presets.PresetObjects;
 import com.springie.render.CachedNode;
 import com.springie.render.Coords;
+import com.springie.render.DepthSort;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;
 import com.springie.utilities.math.SquareRoot;
@@ -57,6 +58,11 @@ public class NodeManager extends World {
 	public Range depth_range;
 
 	int[] node_depth_index = new int[1];
+
+	// Scratch buffers for the node depth sort, reused across frames.
+	private double[] node_sort_keys = new double[0];
+
+	private int[] node_sort_scratch = new int[0];
 
 	public ElectrostaticRepulsion electrostatic = new ElectrostaticRepulsion();
 
@@ -356,31 +362,22 @@ public class NodeManager extends World {
 	}
 
 	private void performTheNodeSort() {
-		// perform a dimwitted bubble sort... TODO improve sort...
-		// Log.log("sortIndex");
+		// Stable bottom-up merge sort, ascending by z -- the same
+		// observable order the old O(n^2) bubble sort produced (both are
+		// stable with the same strict comparison), without the quadratic
+		// worst case. The index is not rebuilt here: sorting the previous
+		// frame's permutation is still correct, and usually nearly sorted.
 		final int number_of_nodes = this.element.size();
-
-		for (int i = number_of_nodes - 1; --i >= 0;) {
-			boolean flipped = false;
-			for (int j = 0; j <= i; j++) {
-				final int k = j + 1;
-				final int j1 = this.node_depth_index[j];
-				final int k1 = this.node_depth_index[k];
-				final Node a = (Node) this.element.get(j1);
-				final Node b = (Node) this.element.get(k1);
-				if (a.pos.z > b.pos.z) {
-					int temp = this.node_depth_index[j];
-					this.node_depth_index[j] = this.node_depth_index[k];
-					this.node_depth_index[k] = temp;
-
-					flipped = true;
-				}
-			}
-
-			if (!flipped) {
-				return;
-			}
+		if (this.node_sort_keys.length < number_of_nodes) {
+			this.node_sort_keys = new double[number_of_nodes];
+			this.node_sort_scratch = new int[number_of_nodes];
 		}
+		final double[] keys = this.node_sort_keys;
+		for (int i = number_of_nodes; --i >= 0;) {
+			keys[i] = ((Node) this.element.get(i)).pos.z;
+		}
+		DepthSort.sort(this.node_depth_index, keys, number_of_nodes,
+				this.node_sort_scratch);
 	}
 
 	final void agentExpansion() {

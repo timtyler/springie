@@ -25,6 +25,14 @@ public class ModularRendererNew implements ModularRendererBase {
 
   public static ObjectBase sphere_object = new SimpleDodecahedron();
 
+  /**
+   * The frame's composites in creation order, reused across frames.
+   * distribute() sorts them globally before binning, so the bins arrive
+   * at render() pre-sorted and no per-bin sort is needed.
+   */
+  private final ArrayList<PolygonComposite> frame_composites =
+      new ArrayList<>();
+
   public void resize(int x, int y) {
     this.bins_current.resize(x, y);
     this.bins_last.resize(x, y);
@@ -40,13 +48,21 @@ public class ModularRendererNew implements ModularRendererBase {
 
     this.bins_current.clear();
 
+    final ArrayList<PolygonComposite> all = this.frame_composites;
+    all.clear();
+
     final int mask = 0xFFFFFFFF;
 
-    addNodesToBins(manager, mask);
+    addNodesToBins(manager, mask, all);
 
-    addLinksToBins(manager, mask);
+    addLinksToBins(manager, mask, all);
 
-    addFacesToBins(manager, mask);
+    addFacesToBins(manager, mask, all);
+
+    // One global depth sort, then distribute to the bins in sorted
+    // order: every bin's vector arrives at render() pre-sorted, so the
+    // per-bin sorts are gone.
+    this.bins_current.distribute(all, FrEnd.redraw_deepest_first);
 
     // do the drawing operations, offscreen if needed...
 
@@ -60,7 +76,8 @@ public class ModularRendererNew implements ModularRendererBase {
     RendererDelegator.countRenderedFrame();
   }
 
-  private void addFacesToBins(NodeManager manager, int mask) {
+  private void addFacesToBins(NodeManager manager, int mask,
+      ArrayList<PolygonComposite> all) {
     Forget.about(mask);
     if (FrEnd.render_faces) {
       final FaceManager face_manager = manager.getFaceManager();
@@ -73,12 +90,13 @@ public class ModularRendererNew implements ModularRendererBase {
 
         final PolygonComposite polygons = ElementRendererFace.getPolygon(face);
 
-        this.bins_current.add(polygons);
+        all.add(polygons);
       }
     }
   }
 
-  private void addLinksToBins(NodeManager manager, int mask) {
+  private void addLinksToBins(NodeManager manager, int mask,
+      ArrayList<PolygonComposite> all) {
     if (FrEnd.render_links) {
       final LinkManager link_manager = manager.getLinkManager();
       final int number = link_manager.element.size();
@@ -100,7 +118,7 @@ public class ModularRendererNew implements ModularRendererBase {
             final int polygons_size = polygons.size();
             for (int pci = polygons_size; --pci >= 0;) {
               final PolygonComposite pc = polygons.get(pci);
-              this.bins_current.add(pc);
+              all.add(pc);
             }
           }
         }
@@ -108,7 +126,8 @@ public class ModularRendererNew implements ModularRendererBase {
     }
   }
 
-  private void addNodesToBins(NodeManager manager, int mask) {
+  private void addNodesToBins(NodeManager manager, int mask,
+      ArrayList<PolygonComposite> all) {
     Forget.about(mask);
 
     final int number_of_nodes = manager.element.size();
@@ -125,7 +144,7 @@ public class ModularRendererNew implements ModularRendererBase {
         if (!node.type.hidden) {
           final PolygonComposite polygons = ElementRendererNode.get(
               ModularRendererNew.sphere_object, node);
-          this.bins_current.add(polygons);
+          all.add(polygons);
         }
       }
     }
