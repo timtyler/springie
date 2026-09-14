@@ -49,8 +49,9 @@ public class PanelPreferencesRendererModernTest {
 
   private static Choice polyhedronDropdown() {
     final Choice choice = findChoice(
-        FrEnd.panel_preferences_shared_show.panel);
-    assertNotNull(choice, "expected the Node polyhedron dropdown on the Renderer tab");
+        FrEnd.panel_preferences_shared_show.panel_main);
+    assertNotNull(choice,
+        "expected the Node polyhedron dropdown on the Main sub-tab");
     return choice;
   }
 
@@ -114,13 +115,13 @@ public class PanelPreferencesRendererModernTest {
   }
 
   /**
-   * The old Options tab is flattened into the Renderer tab: the Bins
-   * and Misc rows move under the shared rows there, so there is just
-   * the one layout. "Render deepest objects first" and "Show labels
-   * on:" keep their slots at the top, after Pixellation.
+   * The Renderer tab holds "Main", "Bins" and "Fog" sub-tabs: the Bins
+   * rows move to Bins, the fog rows to Fog, everything else to Main.
+   * "Render deepest objects first" and "Show labels on:" keep their
+   * slots at the top of Main, after Pixellation.
    */
   @Test
-  void optionsTabIsFlattenedIntoTheRendererTab() {
+  void rendererTabHasMainBinsAndFogSubTabs() {
     final Panel shared_misc_panel = FrEnd.panel_preferences_shared_misc.panel;
     assertEquals(0, shared_misc_panel.getComponentCount(),
         "the old Misc tab panel must be empty after its rows move");
@@ -143,24 +144,29 @@ public class PanelPreferencesRendererModernTest {
         colours_tabs.getComponent(2) == FrEnd.panel_preferences_renderer_modern_filters.panel,
         "the Filters card must hold the filters panel");
 
-    final Panel renderer_tab = FrEnd.panel_preferences_shared_show.panel;
+    final Panel main_tab = FrEnd.panel_preferences_shared_show.panel_main;
+    final Panel bins_tab = FrEnd.panel_preferences_shared_show.panel_bins;
+    final Panel fog_tab = FrEnd.panel_preferences_shared_show.panel_fog;
     // A modern row...
     assertNotNull(polyhedronDropdown(),
-        "the Node polyhedron dropdown must move to the Renderer tab");
-    // ...and the shared rows.
-    assertNotNull(findCheckbox(renderer_tab, "Fog depth is relative"),
-        "the shared fog checkbox must move to the Renderer tab");
+        "the Node polyhedron dropdown must move to the Main sub-tab");
+    // ...the Bins rows...
+    assertNotNull(findCheckbox(bins_tab, "Show rendering bins"),
+        "the Show-bins checkbox must move to the Bins sub-tab");
+    // ...and the fog rows.
+    assertNotNull(findCheckbox(fog_tab, "Fog depth is relative"),
+        "the shared fog checkbox must move to the Fog sub-tab");
 
     // Deepest-first keeps its slot, after Pixellation...
     assertTrue(
-        renderer_tab.getComponent(4)
+        main_tab.getComponent(4)
             == FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first,
-        "deepest-first must sit at Renderer tab row 4, after Pixellation");
+        "deepest-first must sit at Main sub-tab row 4, after Pixellation");
     // ...followed by the labels row.
     assertTrue(
-        renderer_tab.getComponent(5)
+        main_tab.getComponent(5)
             == FrEnd.panel_preferences_renderer_modern.panel_labels_row,
-        "the labels row must sit at Renderer tab row 5, after deepest-first");
+        "the labels row must sit at Main sub-tab row 5, after deepest-first");
   }
 
   private static TabbedPanel findTabbedPanel(Container container) {
@@ -195,45 +201,49 @@ public class PanelPreferencesRendererModernTest {
   }
 
   /**
-   * The Renderer tab is one layout: the tab card is the shared panel
-   * itself (a single GridLayout), not a BorderLayout wrapping two nested
-   * panels. The ray-traced rows are added and removed at the bottom on
-   * renderer switch, and every row gets the same height.
+   * Each Renderer sub-tab (Main, Bins, Fog) is one layout: a single
+   * GridLayout whose rows are direct children, so every row gets the
+   * same height. The ray-traced rows are added and removed at the
+   * bottom of Main on renderer switch.
    */
   @Test
-  void rendererTabIsOneLayout() throws Exception {
-    final Panel tab = FrEnd.panel_preferences_shared_show.panel;
-    assertTrue(tab.getLayout() instanceof java.awt.GridLayout,
-        "the Renderer tab must be a single GridLayout");
-    // No nested panels holding rows: every row is a direct child.
-    for (final Component row : tab.getComponents()) {
-      assertTrue(row instanceof Panel,
-          "each Renderer tab row must be a direct child Panel");
+  void rendererSubTabsAreOneLayoutEach() throws Exception {
+    final Panel main_tab = FrEnd.panel_preferences_shared_show.panel_main;
+    final Panel bins_tab = FrEnd.panel_preferences_shared_show.panel_bins;
+    final Panel fog_tab = FrEnd.panel_preferences_shared_show.panel_fog;
+    for (final Panel tab : new Panel[] { main_tab, bins_tab, fog_tab }) {
+      assertTrue(tab.getLayout() instanceof java.awt.GridLayout,
+          "each Renderer sub-tab must be a single GridLayout");
+      // No nested panels holding rows: every row is a direct child.
+      for (final Component row : tab.getComponents()) {
+        assertTrue(row instanceof Panel,
+            "each Renderer sub-tab row must be a direct child Panel");
+      }
     }
 
     final PanelPreferencesRendererModern modern =
         FrEnd.panel_preferences_renderer_modern;
-    final int shared_rows = tab.getComponentCount();
+    final int main_rows = main_tab.getComponentCount();
 
-    // Switch to ray-traced: the five rows appear at the bottom.
+    // Switch to ray-traced: the five rows appear at the bottom of Main.
     javax.swing.SwingUtilities.invokeAndWait(() ->
         modern.setRaytracedRowsVisible(true));
-    assertEquals(shared_rows + 5, tab.getComponentCount(),
-        "ray-traced must add its five rows to the one layout");
-    assertNotNull(findCheckbox(tab, "Glossiness"),
-        "the Glossiness row must be on the Renderer tab");
-    assertNotNull(findCheckbox(tab, "Fill light"),
-        "the Fill light row must be on the Renderer tab");
+    assertEquals(main_rows + 5, main_tab.getComponentCount(),
+        "ray-traced must add its five rows to the Main sub-tab");
+    assertNotNull(findCheckbox(main_tab, "Glossiness"),
+        "the Glossiness row must be on the Main sub-tab");
+    assertNotNull(findCheckbox(main_tab, "Fill light"),
+        "the Fill light row must be on the Main sub-tab");
 
     // Uniform spacing: one GridLayout gives every row the same height.
-    tab.doLayout();
+    main_tab.doLayout();
     int height = -1;
-    for (final Component row : tab.getComponents()) {
+    for (final Component row : main_tab.getComponents()) {
       if (height < 0) {
         height = row.getHeight();
       }
       assertEquals(height, row.getHeight(),
-          "every Renderer tab row must have the same height");
+          "every Main sub-tab row must have the same height");
     }
 
     // Switch back: the rows leave, no duplicates on repeat.
@@ -241,13 +251,13 @@ public class PanelPreferencesRendererModernTest {
       modern.setRaytracedRowsVisible(false);
       modern.setRaytracedRowsVisible(false);
     });
-    assertEquals(shared_rows, tab.getComponentCount(),
+    assertEquals(main_rows, main_tab.getComponentCount(),
         "leaving ray-traced must remove its rows again");
     javax.swing.SwingUtilities.invokeAndWait(() -> {
       modern.setRaytracedRowsVisible(true);
       modern.setRaytracedRowsVisible(true);
     });
-    assertEquals(shared_rows + 5, tab.getComponentCount(),
+    assertEquals(main_rows + 5, main_tab.getComponentCount(),
         "repeated switches must not duplicate the rows");
     javax.swing.SwingUtilities.invokeAndWait(() ->
         modern.setRaytracedRowsVisible(false));

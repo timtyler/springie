@@ -2,6 +2,7 @@
 
 package com.springie.gui.panels.preferences;
 
+import java.awt.BorderLayout;
 import java.awt.Checkbox;
 import java.awt.Label;
 import java.awt.Panel;
@@ -9,6 +10,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import com.springie.FrEnd;
+import com.springie.gui.components.TabbedPanel;
 import com.springie.render.RendererDelegator;
 import com.tifsoft.Forget;
 
@@ -16,6 +18,22 @@ public class PanelPreferencesRendererSharedShow {
   public Panel panel = FrEnd.setUpPanelForFrame2();
 
   public Panel panel_shared = FrEnd.setUpPanelForFrame();
+
+  /**
+   * The "Main" sub-tab of the Renderer tab: the primary renderer
+   * options live here.
+   */
+  public Panel panel_main = FrEnd.setUpPanelForFrame2();
+
+  /**
+   * The "Bins" sub-tab of the Renderer tab: bin size and bin display.
+   */
+  public Panel panel_bins = FrEnd.setUpPanelForFrame2();
+
+  /**
+   * The "Fog" sub-tab of the Renderer tab: the fog controls.
+   */
+  public Panel panel_fog = FrEnd.setUpPanelForFrame2();
 
 
   public Checkbox checkbox_redraw_deepest_first;
@@ -164,15 +182,24 @@ public class PanelPreferencesRendererSharedShow {
 
     // Common preferences...
 
-    this.panel.add(panel_render_normal);
-    this.panel.add(panel_render_charges);
-    this.panel.add(panel_render_hidden);
-    this.panel.add(getBackgroundPanel());
+    this.panel_main.add(panel_render_normal);
+    this.panel_main.add(panel_render_charges);
+    this.panel_main.add(panel_render_hidden);
+    this.panel_main.add(getBackgroundPanel());
+
+    // The Renderer tab is split into sub-tabs: the bin controls and the
+    // fog controls each get their own, everything else stays on Main.
+    final TabbedPanel sub_tabs = new TabbedPanel();
+    sub_tabs.add("Main", this.panel_main);
+    sub_tabs.add("Bins", this.panel_bins);
+    sub_tabs.add("Fog", this.panel_fog);
+    this.panel.setLayout(new BorderLayout());
+    this.panel.add(sub_tabs, BorderLayout.CENTER);
+  }
 //    this.panel.add(panel_redraw_deepest_first);
 //    this.panel.add(panel_fog);
 //    this.panel.add(panel_visible_explosions);
 //    this.panel.add(panel_face_render_number);
-  }
 
   private Panel getBackgroundPanel() {
     final Panel panel_background = new Panel();

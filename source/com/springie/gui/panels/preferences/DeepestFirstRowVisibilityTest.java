@@ -55,7 +55,7 @@ class DeepestFirstRowVisibilityTest {
   private static Choice sharedDropdown() throws Exception {
     final Choice[] found = new Choice[1];
     SwingUtilities.invokeAndWait(() -> {
-      final Panel tab = FrEnd.panel_preferences_shared_show.panel;
+      final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;
       for (int i = 0; i < tab.getComponentCount() && found[0] == null; i++) {
         found[0] = findChoice(tab.getComponent(i));
       }
@@ -108,7 +108,7 @@ class DeepestFirstRowVisibilityTest {
   private static boolean rowShownOnTab() throws Exception {
     final boolean[] shown = new boolean[1];
     SwingUtilities.invokeAndWait(() -> {
-      final Panel tab = FrEnd.panel_preferences_shared_show.panel;
+      final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;
       final Panel row = deepestFirstRow();
       shown[0] = false;
       for (int i = 0; i < tab.getComponentCount(); i++) {
@@ -123,7 +123,7 @@ class DeepestFirstRowVisibilityTest {
   private static int rowIndexOnTab() throws Exception {
     final int[] index = new int[1];
     SwingUtilities.invokeAndWait(() -> {
-      final Panel tab = FrEnd.panel_preferences_shared_show.panel;
+      final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;
       final Panel row = deepestFirstRow();
       index[0] = -1;
       for (int i = 0; i < tab.getComponentCount(); i++) {
@@ -172,7 +172,7 @@ class DeepestFirstRowVisibilityTest {
     selectRenderer("Polygon");
     final int[] count = new int[1];
     SwingUtilities.invokeAndWait(() -> {
-      final Panel tab = FrEnd.panel_preferences_shared_show.panel;
+      final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;
       final Panel row = deepestFirstRow();
       for (int i = 0; i < tab.getComponentCount(); i++) {
         if (tab.getComponent(i) == row) {

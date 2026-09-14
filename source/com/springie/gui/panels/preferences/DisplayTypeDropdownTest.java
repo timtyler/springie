@@ -79,7 +79,7 @@ class DisplayTypeDropdownTest {
   }
 
   private static Choice sharedDropdown() throws Exception {
-    return displayTypeChoice(FrEnd.panel_preferences_shared_show.panel);
+    return displayTypeChoice(FrEnd.panel_preferences_shared_show.panel_main);
   }
 
   private static Choice originalTabDropdown() throws Exception {
@@ -142,11 +142,11 @@ class DisplayTypeDropdownTest {
 
   @Test
   void rendererTabStartsWithDisplayType() throws Exception {
-    final Panel shared = FrEnd.panel_preferences_shared_show.panel;
+    final Panel shared = FrEnd.panel_preferences_shared_show.panel_main;
     final Choice dropdown = sharedDropdown();
-    assertNotNull(dropdown, "the shared Renderer tab must hold a dropdown");
+    assertNotNull(dropdown, "the Main sub-tab must hold a dropdown");
     assertTrue(hasDisplayTypeLabel(shared),
-        "the shared Renderer tab must label it 'Renderer:'");
+        "the Main sub-tab must label it 'Renderer:'");
     assertEquals(3, dropdown.getItemCount(),
         "the dropdown must offer the three renderers");
 

@@ -46,7 +46,7 @@ class PixellationDropdownTest {
   private static Choice pixellationChoice() throws Exception {
     final Choice[] found = new Choice[1];
     SwingUtilities.invokeAndWait(() -> {
-      final Panel holder = FrEnd.panel_preferences_shared_show.panel;
+      final Panel holder = FrEnd.panel_preferences_shared_show.panel_main;
       for (int i = 0; i < holder.getComponentCount() && found[0] == null;
           i++) {
         final Component row = holder.getComponent(i);

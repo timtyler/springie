@@ -25,19 +25,19 @@ import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
 
 /**
- * The rasterizer-geometry rows ("Node polyhedron", "Strut divisions",
- * "Cable divisions", "Strut/cable sides") configure the modern
- * renderer's tube and node tessellation, which the ray-traced renderer
- * ignores. They are removed from the Renderer tab while ray-tracing is
+ * The rows that do not apply to the ray-traced renderer ("Node
+ * polyhedron", "Cable divisions", "Strut divisions", "Strut/cable
+ * sides", "Face lines") configure rasterizer-only concepts. They are
+ * removed from the Renderer tab's Main sub-tab while ray-tracing is
  * active and restored to their usual slot for the rasterizers -- added
  * and removed rather than shown/hidden, because the tab's GridLayout
  * gives invisible components space.
  */
-class GeometryRowsVisibilityTest {
+class RaytracedHiddenRowsVisibilityTest {
 
   private static final String[] LABELS = {
       "Node polyhedron:", "Cable divisions:", "Strut divisions:",
-      "Strut/cable sides:" };
+      "Strut/cable sides:", "Face lines:" };
 
   @BeforeAll
   static void boot() throws Exception {
@@ -59,7 +59,7 @@ class GeometryRowsVisibilityTest {
   private static Choice sharedDropdown() throws Exception {
     final Choice[] found = new Choice[1];
     SwingUtilities.invokeAndWait(() -> {
-      final Panel tab = FrEnd.panel_preferences_shared_show.panel;
+      final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;
       for (int i = 0; i < tab.getComponentCount() && found[0] == null; i++) {
         found[0] = findChoice(tab.getComponent(i));
       }
@@ -109,7 +109,7 @@ class GeometryRowsVisibilityTest {
   private static Panel findRowByLabel(final String label) throws Exception {
     final Panel[] found = new Panel[1];
     SwingUtilities.invokeAndWait(() -> {
-      final Panel tab = FrEnd.panel_preferences_shared_show.panel;
+      final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;
       for (int i = 0; i < tab.getComponentCount() && found[0] == null; i++) {
         final Component component = tab.getComponent(i);
         if (component instanceof Panel && hasLabel((Panel) component, label)) {
@@ -134,7 +134,7 @@ class GeometryRowsVisibilityTest {
   private static int indexOfRow(Panel row) throws Exception {
     final int[] index = new int[1];
     SwingUtilities.invokeAndWait(() -> {
-      final Panel tab = FrEnd.panel_preferences_shared_show.panel;
+      final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;
       index[0] = -1;
       for (int i = 0; i < tab.getComponentCount(); i++) {
         if (tab.getComponent(i) == row) {
@@ -149,7 +149,7 @@ class GeometryRowsVisibilityTest {
   void geometryRowsAreShownUnderThePolygonRenderer() throws Exception {
     for (final String label : LABELS) {
       assertNotNull(findRowByLabel(label),
-          "the '" + label + "' row must be on the Renderer tab");
+          "the '" + label + "' row must be on the Main sub-tab");
     }
   }
 
@@ -185,7 +185,7 @@ class GeometryRowsVisibilityTest {
     selectRenderer("Polygon");
     selectRenderer("Polygon");
     SwingUtilities.invokeAndWait(() -> {
-      final Panel tab = FrEnd.panel_preferences_shared_show.panel;
+      final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;
       for (final String label : LABELS) {
         int count = 0;
         for (int i = 0; i < tab.getComponentCount(); i++) {

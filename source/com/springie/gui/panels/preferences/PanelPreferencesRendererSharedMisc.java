@@ -4,7 +4,6 @@ package com.springie.gui.panels.preferences;
 
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
-import java.awt.Component;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.Scrollbar;
@@ -37,6 +36,24 @@ public class PanelPreferencesRendererSharedMisc {
    */
   Panel panel_redraw_deepest_first;
 
+  /**
+   * The "Face lines:" row. It lives on the Renderer tab's Main sub-tab,
+   * not in this panel (see moveRowsInto).
+   */
+  Panel panel_face_lines;
+
+  /**
+   * The "Fog depth is relative" row. It lives on the Renderer tab's Fog
+   * sub-tab, not in this panel (see moveRowsInto).
+   */
+  Panel panel_relative_fog_row;
+
+  /**
+   * The "Fog:" slider row. It lives on the Renderer tab's Fog sub-tab,
+   * not in this panel (see moveRowsInto).
+   */
+  Panel panel_fog_row;
+
   private Label label_face_render_number;
 
   public Checkbox checkbox_relative_fog;
@@ -68,6 +85,7 @@ public class PanelPreferencesRendererSharedMisc {
 
 //    final Panel panel_bin_size = getBinSizePanel();
     final Panel panel_fog = getFogPanel();
+    this.panel_fog_row = panel_fog;
 
     final Panel panel_visible_explosions = new Panel();
     this.checkbox_explosions = new Checkbox(GUIStrings.EXPLOSIONS);
@@ -94,6 +112,7 @@ public class PanelPreferencesRendererSharedMisc {
     panel_redraw_deepest_first.add(this.checkbox_redraw_deepest_first);
     
     final Panel panel_relative_fog = new Panel();
+    this.panel_relative_fog_row = panel_relative_fog;
     this.checkbox_relative_fog = new Checkbox(
         "Fog depth is relative");
     this.checkbox_relative_fog.addItemListener(new ItemListener() {
@@ -106,6 +125,7 @@ public class PanelPreferencesRendererSharedMisc {
     panel_relative_fog.add(this.checkbox_relative_fog);
     
     final Panel panel_face_render_number = getFaceRenderNumber();
+    this.panel_face_lines = panel_face_render_number;
 
     // panel_redraw_deepest_first is not added here: it lives on the
     // Renderer tab (added by PanelPreferencesDisplay).
@@ -182,16 +202,18 @@ public class PanelPreferencesRendererSharedMisc {
   }
 
   /**
-   * Hands the built rows to another panel, so the old top-level Misc tab
-   * can be merged into the Options tab's nested Misc sub-tab. This panel
-   * is left empty afterwards.
+   * Hands the built rows to the Renderer tab's sub-tabs: the fog rows go
+   * to "Fog", everything else to "Main". "Face lines" joins the
+   * tessellation rows just above the explosions row, so the rows hidden
+   * while ray-tracing stay contiguous. This panel is left empty
+   * afterwards.
    */
-  void moveRowsInto(Panel target) {
-    final Component[] rows = this.panel.getComponents();
+  void moveRowsInto(Panel main_target, Panel fog_target) {
+    fog_target.add(this.panel_relative_fog_row);
+    fog_target.add(this.panel_fog_row);
+    main_target.add(this.panel_face_lines);
+    main_target.add(this.checkbox_explosions.getParent());
     this.panel.removeAll();
-    for (int i = 0; i < rows.length; i++) {
-      target.add(rows[i]);
-    }
   }
 
   /**

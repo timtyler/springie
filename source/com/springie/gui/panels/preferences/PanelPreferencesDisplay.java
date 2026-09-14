@@ -90,21 +90,27 @@ public class PanelPreferencesDisplay {
     // The Renderer: dropdown, the frames-per-second readout, the
     // anti-aliasing and pixellation choices, the "deepest first"
     // checkbox and the "Show labels on" choice live at the top of the
-    // shared Renderer tab (modern and ray-traced renderers), so the
-    // rendering settings sit together; one Renderer: copy also goes
+    // shared Renderer tab's Main sub-tab (modern and ray-traced
+    // renderers), so the rendering settings sit together; one Renderer:
+    // copy also goes
     // in the original renderer's own Renderer tab, so the renderer can
     // always be switched back whichever is showing. Anti-aliasing and
     // pixellation only apply to the modern and ray-traced renderers;
     // "Show labels on" only applies to the modern renderer and is
     // hidden otherwise (see applyRendererType).
     // All three panels exist already: they are built before this one.
-    FrEnd.panel_preferences_shared_show.panel.add(makeDisplayTypePanel(), 0);
-    FrEnd.panel_preferences_shared_show.panel.add(getFpsPanel(), 1);
-    FrEnd.panel_preferences_shared_show.panel.add(getAntiAliasingPanel(), 2);
-    FrEnd.panel_preferences_shared_show.panel.add(getPixellationPanel(), 3);
-    FrEnd.panel_preferences_shared_show.panel.add(
+    // The Renderer tab's "Main" sub-tab holds the top rows: the display
+    // type, the frames-per-second readout, the anti-aliasing and
+    // pixellation choices, the "deepest first" checkbox and the "Show
+    // labels on" choice.
+    final Panel renderer_main = FrEnd.panel_preferences_shared_show.panel_main;
+    renderer_main.add(makeDisplayTypePanel(), 0);
+    renderer_main.add(getFpsPanel(), 1);
+    renderer_main.add(getAntiAliasingPanel(), 2);
+    renderer_main.add(getPixellationPanel(), 3);
+    renderer_main.add(
         FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first, 4);
-    FrEnd.panel_preferences_shared_show.panel.add(
+    renderer_main.add(
         FrEnd.panel_preferences_renderer_modern.panel_labels_row, 5);
     FrEnd.panel_preferences_renderer_original.panel_renderer_tab
         .add(makeDisplayTypePanel(), 0);
@@ -219,11 +225,11 @@ public class PanelPreferencesDisplay {
     // option is hidden there (and the sort itself is skipped).
     FrEnd.panel_preferences_renderer_modern
         .setDeepestFirstRowVisible(!raytraced);
-    // Node/tube tessellation ("Node polyhedron", "Strut divisions",
-    // "Cable divisions", "Strut/cable sides") is a rasterizer concept
+    // The rasterizer-only rows ("Node polyhedron", "Cable/Strut
+    // divisions", "Strut/cable sides", "Face lines") configure concepts
     // the ray-traced renderer ignores, so those rows are hidden there.
     FrEnd.panel_preferences_renderer_modern
-        .setGeometryRowsVisible(!raytraced);
+        .setRaytracedHiddenRowsVisible(!raytraced);
     // Labels are a modern-renderer feature, so the option is hidden for
     // the other renderers.
     FrEnd.panel_preferences_renderer_modern
