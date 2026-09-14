@@ -107,7 +107,7 @@ public class PanelPreferencesDisplay {
     FrEnd.panel_preferences_shared_show.panel.add(
         FrEnd.panel_preferences_renderer_modern.panel_labels_row, 5);
     FrEnd.panel_preferences_renderer_original.panel_renderer_tab
-        .add(makeDisplayTypePanel());
+        .add(makeDisplayTypePanel(), 0);
 
     // ...
 

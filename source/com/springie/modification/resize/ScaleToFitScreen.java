@@ -7,7 +7,7 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
-import com.springie.gui.panels.preferences.PanelPreferencesIO;
+import com.springie.gui.panels.preferences.PanelPreferencesImport;
 import com.springie.render.Coords;
 
 public final class ScaleToFitScreen {
@@ -63,7 +63,7 @@ public final class ScaleToFitScreen {
 
     final Vector3D scale = new Vector3D(0, 0, 0);
     
-    final int sf = 10 * PanelPreferencesIO.import_scale;
+    final int sf = 10 * PanelPreferencesImport.import_scale;
 
     scale.x = (max_screen_size_x * sf) / (max.x - min.x + 1);
     scale.y = (max_screen_size_y * sf) / (max.y - min.y + 1);

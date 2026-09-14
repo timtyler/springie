@@ -3,19 +3,15 @@
 package com.springie.gui.panels.preferences;
 
 import java.awt.BorderLayout;
-import java.awt.Checkbox;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.Scrollbar;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 import com.springie.FrEnd;
 import com.springie.render.RendererDelegator;
 import com.springie.render.Coords;
-import com.tifsoft.Forget;
 
 public class PanelPreferencesViewpoint {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -32,23 +28,11 @@ public class PanelPreferencesViewpoint {
 
   private Label label_translate_z;
 
-  private Checkbox checkbox_merge;
-
   public PanelPreferencesViewpoint() {
     makePanel();
   }
 
   void makePanel() {
-    final Panel panel_merge = new Panel();
-    this.checkbox_merge = new Checkbox("Merge structures");
-    this.checkbox_merge.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
-        FrEnd.merge = ((Checkbox) e.getSource()).getState();
-      }
-    });
-    panel_merge.add(this.checkbox_merge);
-
     final Panel panel_translate_view_x = getTranslateViewXPanel();
 
     final Panel panel_translate_view_y = getTranslateViewYPanel();
@@ -152,12 +136,9 @@ public class PanelPreferencesViewpoint {
   }
 
   /**
-   * Restores the default viewpoint: no merging and no translation shift.
+   * Restores the default viewpoint: no translation shift.
    */
   public void resetToDefaults() {
-    FrEnd.merge = false;
-    this.checkbox_merge.setState(false);
-
     Coords.shift_constant_x = 0;
     Coords.shift_constant_y = 0;
     Coords.shift_constant_z = Coords.shift_shifted - (Coords.shift_shifted >> 2);

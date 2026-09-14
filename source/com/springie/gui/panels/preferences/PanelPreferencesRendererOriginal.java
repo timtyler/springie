@@ -5,6 +5,7 @@ package com.springie.gui.panels.preferences;
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
 import java.awt.CheckboxGroup;
+import java.awt.Component;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.Scrollbar;
@@ -21,7 +22,6 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkRenderType;
 import com.springie.elements.nodes.Node;
 import com.springie.gui.GUIStrings;
-import com.springie.gui.components.TabbedPanel;
 import com.springie.gui.components.TTChoice;
 import com.springie.messages.NewMessageManager;
 import com.springie.messages.commands.DoubleBufferOldMessage;
@@ -33,12 +33,10 @@ import com.tifsoft.Forget;
 public class PanelPreferencesRendererOriginal {
   public Panel panel = FrEnd.setUpPanelForFrame2();
 
-  public Panel panel_main = FrEnd.setUpPanelForFrame2();
-
   /**
-   * The Renderer tab: holds the Display type dropdown so the renderer
-   * can be switched back after picking the Original renderer.
-   * PanelPreferencesDisplay fills this in after construction.
+   * The one Renderer layout: the Display type dropdown (inserted at the
+   * top by PanelPreferencesDisplay after construction), the old Options
+   * rows, and the anaglyph stereo rows at the bottom.
    */
   public Panel panel_renderer_tab = FrEnd.setUpPanelForFrame2();
 
@@ -70,14 +68,10 @@ public class PanelPreferencesRendererOriginal {
   }
 
   void makePanel() {
-    final TabbedPanel tab = new TabbedPanel();
-    tab.add("Renderer", this.panel_renderer_tab);
-
-    tab.add("Options", this.panel_main);
-    
-    tab.add("Stereo 3D",  FrEnd.panel_preferences_stereo3d.panel);
-
-    this.panel.add(tab);
+    // One layout: the old Options and Stereo 3D tabs are flattened into
+    // the Renderer tab. (PanelPreferencesDisplay inserts the Renderer:
+    // dropdown at the top after construction.)
+    this.panel.add(this.panel_renderer_tab);
     
     final Panel panel_node_render_type = panelNodeRenderType();
     
@@ -212,21 +206,30 @@ public class PanelPreferencesRendererOriginal {
 
     // Old preferences...
 
-    this.panel_main.add(panel_node_render_type);
-    this.panel_main.add(panel_node_render_number);
+    this.panel_renderer_tab.add(panel_node_render_type);
+    this.panel_renderer_tab.add(panel_node_render_number);
 
-    this.panel_main.add(panel_link_display_struts);
-    this.panel_main.add(panel_strut_render_number);
+    this.panel_renderer_tab.add(panel_link_display_struts);
+    this.panel_renderer_tab.add(panel_strut_render_number);
 
-    this.panel_main.add(panel_link_display_cable);
-    this.panel_main.add(panel_cable_render_number);
+    this.panel_renderer_tab.add(panel_link_display_cable);
+    this.panel_renderer_tab.add(panel_cable_render_number);
 
-    this.panel_main.add(panel_link_length);
+    this.panel_renderer_tab.add(panel_link_length);
 
-    this.panel_main.add(panel_face_render_type);
-    //this.panel_main.add(panel_face_render_number);
+    this.panel_renderer_tab.add(panel_face_render_type);
+    //this.panel_renderer_tab.add(panel_face_render_number);
 
-    this.panel_main.add(panel_double_buffering);
+    this.panel_renderer_tab.add(panel_double_buffering);
+
+    // The anaglyph stereo rows join the one layout at the bottom.
+    // (Stereo 3D is only honoured by the original renderer.)
+    final Panel stereo_panel = FrEnd.panel_preferences_stereo3d.panel;
+    final Component[] stereo_rows = stereo_panel.getComponents();
+    stereo_panel.removeAll();
+    for (final Component row : stereo_rows) {
+      this.panel_renderer_tab.add(row);
+    }
   }
 
   private Panel panelNodeRenderType() {

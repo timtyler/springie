@@ -125,13 +125,23 @@ public class PanelPreferencesRendererModernTest {
     assertEquals(0, shared_misc_panel.getComponentCount(),
         "the old Misc tab panel must be empty after its rows move");
 
-    // No Options tab anymore: the top-level bar is Renderer |
-    // Filtering | Colours.
+    // No Options tab anymore, and Filtering moved under Colours: the
+    // top-level bar is Renderer | Colours.
     final TabbedPanel top_tabs = findTabbedPanel(
         FrEnd.panel_preferences_renderer_modern.panel);
     assertNotNull(top_tabs, "expected the top-level tab bar");
-    assertEquals(3, top_tabs.getComponentCount(),
-        "the top-level tab bar must be Renderer, Filtering and Colours");
+    assertEquals(2, top_tabs.getComponentCount(),
+        "the top-level tab bar must be Renderer and Colours");
+
+    // Filtering now lives as the Filters card under Colours, holding
+    // the filters panel (Filled:/Wireframe: rows plus the Colour-A/B
+    // nested tabs).
+    final TabbedPanel colours_tabs = FrEnd.panel_preferences_renderer_modern_colours.tab_colours_main;
+    assertEquals(3, colours_tabs.getComponentCount(),
+        "the Colours bar must be General, Label and Filters");
+    assertTrue(
+        colours_tabs.getComponent(2) == FrEnd.panel_preferences_renderer_modern_filters.panel,
+        "the Filters card must hold the filters panel");
 
     final Panel renderer_tab = FrEnd.panel_preferences_shared_show.panel;
     // A modern row...

@@ -4,6 +4,7 @@ package com.springie.gui.panels.preferences;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
+import java.awt.Checkbox;
 import java.awt.Choice;
 import java.awt.Label;
 import java.awt.GridLayout;
@@ -18,6 +19,7 @@ import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TabbedPanel;
 import com.springie.preferences.Preferences;
 import com.springie.render.RendererDelegator;
+import com.springie.render.RendererInfoButton;
 import com.tifsoft.Forget;
 
 public class PanelPreferences {
@@ -27,6 +29,12 @@ public class PanelPreferences {
 
 
   private Choice choice_controls_window_mode;
+
+  /**
+   * Lives on the permanent bottom strip (not in the Animation tab):
+   * it stays reachable even when the toolbar is hidden.
+   */
+  public Checkbox checkbox_display_bottom_toolbar;
 
   public PanelPreferences() {
     makePanel();
@@ -38,8 +46,9 @@ public class PanelPreferences {
     tab.add("Viewpoint", FrEnd.panel_preferences_viewpoint.panel);
     //tab.add("Stereo3D", FrEnd.panel_preferences_stereo3d.panel);
     tab.add("Editing", FrEnd.panel_preferences_edit.panel);
-    tab.add("Update", FrEnd.panel_preferences_update.panel);
-    tab.add("I/O", FrEnd.panel_preferences_io.panel);
+    tab.add("Animation", FrEnd.panel_preferences_update.panel);
+    tab.add("Import", FrEnd.panel_preferences_import.panel);
+    tab.add("POV-Ray export", FrEnd.panel_preferences_pov_export.panel);
 
     this.panel.setLayout(new BorderLayout());
     this.panel.add(tab, BorderLayout.CENTER);
@@ -67,6 +76,23 @@ public class PanelPreferences {
     });
     panel_controls_mode.add(this.choice_controls_window_mode);
     panel_south.add(panel_controls_mode);
+
+    this.checkbox_display_bottom_toolbar = new Checkbox(
+        "Display bottom toolbar", FrEnd.viewer);
+    this.checkbox_display_bottom_toolbar.addItemListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        final RendererInfoButton infoButton = FrEnd.main_canvas
+            .getInfoButton();
+        if (((Checkbox) e.getSource()).getState()) {
+          infoButton.hide();
+        } else {
+          infoButton.show();
+        }
+      }
+    });
+    final Panel panel_toolbar = new Panel();
+    panel_toolbar.add(this.checkbox_display_bottom_toolbar);
+    panel_south.add(panel_toolbar);
 
     final Button button_reset = new Button(GUIStrings.RESET_PREFERENCES);
     button_reset.addActionListener(new ActionListener() {
@@ -102,7 +128,11 @@ public class PanelPreferences {
     FrEnd.panel_preferences_viewpoint.resetToDefaults();
     FrEnd.panel_preferences_edit.resetToDefaults();
     FrEnd.panel_preferences_update.resetToDefaults();
-    FrEnd.panel_preferences_io.resetToDefaults();
+    FrEnd.panel_preferences_import.resetToDefaults();
+    FrEnd.panel_preferences_pov_export.resetToDefaults();
+
+    // Unchecked means the toolbar is displayed (default).
+    this.checkbox_display_bottom_toolbar.setState(FrEnd.viewer);
 
     RendererDelegator.repaintAll();
   }

@@ -78,7 +78,8 @@ import com.springie.gui.panels.controls.PanelControlsVelocities;
 import com.springie.gui.panels.preferences.PanelPreferences;
 import com.springie.gui.panels.preferences.PanelPreferencesDisplay;
 import com.springie.gui.panels.preferences.PanelPreferencesEdit;
-import com.springie.gui.panels.preferences.PanelPreferencesIO;
+import com.springie.gui.panels.preferences.PanelPreferencesImport;
+import com.springie.gui.panels.preferences.PanelPreferencesPOVExport;
 import com.springie.gui.panels.preferences.PanelPreferencesRendererModern;
 import com.springie.gui.panels.preferences.PanelPreferencesRendererModernColours;
 import com.springie.gui.panels.preferences.PanelPreferencesRendererModernFilters;
@@ -449,7 +450,9 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 	public static PanelPreferencesUpdate panel_preferences_update = new PanelPreferencesUpdate();
 
-	public static PanelPreferencesIO panel_preferences_io = new PanelPreferencesIO();
+	public static PanelPreferencesImport panel_preferences_import = new PanelPreferencesImport();
+
+	public static PanelPreferencesPOVExport panel_preferences_pov_export = new PanelPreferencesPOVExport();
 
 	public static PanelPreferencesRendererOriginal panel_preferences_renderer_original = new PanelPreferencesRendererOriginal(new_message_manager);
 

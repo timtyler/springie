@@ -3,7 +3,6 @@
 package com.springie.gui.panels.preferences;
 
 import java.awt.BorderLayout;
-import java.awt.Checkbox;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.Scrollbar;
@@ -15,12 +14,9 @@ import java.awt.event.ItemListener;
 import com.springie.FrEnd;
 import com.springie.gui.components.TTChoice;
 import com.springie.preferences.Preferences;
-import com.tifsoft.Forget;
 
-public class PanelPreferencesIO {
+public class PanelPreferencesPOVExport {
   public Panel panel = FrEnd.setUpPanelForFrame2();
-
-  private Scrollbar scroll_bar_import_scale;
 
   private Scrollbar scroll_bar_pov_view_height;
 
@@ -29,10 +25,6 @@ public class PanelPreferencesIO {
   private Label label_pov_view_height;
 
   private Label label_pov_immersion_depth;
-
-  private Label label_import_scale;
-
-  public static int import_scale = 94;
 
   public static int pov_immersion_depth;
 
@@ -44,58 +36,16 @@ public class PanelPreferencesIO {
 
   private TTChoice choose_pov_sky;
 
-  private Checkbox checkbox_merge;
-
-  public PanelPreferencesIO() {
+  public PanelPreferencesPOVExport() {
     makePanel();
   }
 
   void makePanel() {
-    final Panel panel_merge = new Panel();
-    this.checkbox_merge = new Checkbox(
-        "Merge new structures with the scene");
-    this.checkbox_merge.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
-        FrEnd.merge = ((Checkbox) e.getSource()).getState();
-      }
-    });
-    panel_merge.add(this.checkbox_merge);
-
-    this.panel.add(panel_merge);
-    this.panel.add(setUpSliderImportScale());
     this.panel.add(setUpSliderPOVViewHeight());
     this.panel.add(setUpSliderPOVImmersionDepth());
     this.panel.add(getPOVSkyPanel());
     this.panel.add(getPOVGroundPanel());
     this.panel.add(getPOVCompressionPanel());
-  }
-
-  private Panel setUpSliderImportScale() {
-    final Panel panel = new Panel();
-    panel.setLayout(new BorderLayout(0, 8));
-    panel.add("West", new Label("Import scale:", Label.RIGHT));
-
-    this.scroll_bar_import_scale = new Scrollbar(Scrollbar.HORIZONTAL,
-        import_scale, 10, 0, 110);
-    this.scroll_bar_import_scale
-        .addAdjustmentListener(new AdjustmentListener() {
-          public void adjustmentValueChanged(AdjustmentEvent e) {
-            import_scale = e.getValue();
-            reflectImportScale();
-          }
-        });
-    panel.add("Center", this.scroll_bar_import_scale);
-    this.label_import_scale = new Label("" + import_scale, Label.LEFT);
-
-    panel.add("East", this.label_import_scale);
-
-    return panel;
-  }
-
-  public void reflectImportScale() {
-    this.scroll_bar_import_scale.setValue(import_scale);
-    this.label_import_scale.setText("" + import_scale);
   }
 
   private Panel setUpSliderPOVImmersionDepth() {
@@ -220,21 +170,11 @@ public class PanelPreferencesIO {
     return panel;
   }
 
-  protected TTChoice getChooseRightAction() {
-    return this.choose_pov_ground;
-  }
-
   /**
-   * Restores the default I/O preferences. The POV choices read their defaults
-   * from the (freshly reset) Preferences map.
+   * Restores the default POV-Ray export preferences. The POV choices read
+   * their defaults from the (freshly reset) Preferences map.
    */
   public void resetToDefaults() {
-    FrEnd.merge = false;
-    this.checkbox_merge.setState(false);
-
-    import_scale = 94;
-    reflectImportScale();
-
     pov_immersion_depth = 0;
     reflectPOVImmersionDepth();
 
@@ -248,5 +188,4 @@ public class PanelPreferencesIO {
     this.choose_pov_sky.choice.select((String) FrEnd.preferences.map
         .get(Preferences.key_output_pov_sky));
   }
-
 }

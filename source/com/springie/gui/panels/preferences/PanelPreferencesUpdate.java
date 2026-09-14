@@ -13,7 +13,6 @@ import com.springie.constants.Delay;
 import com.springie.gui.components.TTChoice;
 import com.springie.gui.components.TextFieldWrapper;
 import com.springie.preferences.Preferences;
-import com.springie.render.RendererInfoButton;
 
 public class PanelPreferencesUpdate {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -24,8 +23,6 @@ public class PanelPreferencesUpdate {
   TTChoice choose_right_action;
 
   // private Checkbox checkbox_animate_pointer_over;
-
-  public Checkbox checkbox_display_bottom_toolbar;
 
   private Checkbox checkbox_animate_pointer_over;
 
@@ -69,7 +66,6 @@ public class PanelPreferencesUpdate {
     this.panel.add(getAnimatePointerOverPanel());
     this.panel.add(panel_delay);
     this.panel.add(panel_step_size);
-    this.panel.add(getHideBottomToolbarPanel());
   }
 
   private Panel getAnimatePointerOverPanel() {
@@ -91,28 +87,9 @@ public class PanelPreferencesUpdate {
     return panel;
   }
 
-  private Panel getHideBottomToolbarPanel() {
-    this.checkbox_display_bottom_toolbar = new Checkbox(
-        "Display bottom toolbar", FrEnd.viewer);
-    this.checkbox_display_bottom_toolbar.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
-        RendererInfoButton infoButton = FrEnd.main_canvas.getInfoButton();
-		if (((Checkbox) e.getSource()).getState()) {
-          infoButton.hide();
-        } else {
-          infoButton.show();
-        }
-      }
-    });
-    final Panel panel = new Panel();
-    panel.add(this.checkbox_display_bottom_toolbar);
-    return panel;
-  }
-
-
   /**
-   * Restores the default update preferences: delay 2, step size 1, the
-   * animation and toolbar checkboxes back to their defaults.
+   * Restores the default animation preferences: delay 2, step size 1,
+   * and the animation checkbox back to its default.
    */
   public void resetToDefaults() {
     FrEnd.choose_delay.choice.select(FrEnd.choose_delay
@@ -126,8 +103,5 @@ public class PanelPreferencesUpdate {
         .booleanValue();
     this.checkbox_animate_pointer_over
         .setState(animate_when_pointer_over);
-
-    // Unchecked means the toolbar is displayed (default).
-    this.checkbox_display_bottom_toolbar.setState(FrEnd.viewer);
   }
 }

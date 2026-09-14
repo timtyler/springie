@@ -99,8 +99,6 @@ public class PanelPreferencesRendererModern {
 				FrEnd.panel_preferences_renderer_raytraced.takeEffectRows();
 		tab.add("Renderer", FrEnd.panel_preferences_shared_show.panel);
 
-		tab.add("Filtering", FrEnd.panel_preferences_renderer_modern_filters.panel);
-
 		tab.add("Colours", FrEnd.panel_preferences_renderer_modern_colours.panel);
 
 		this.panel.add(tab);

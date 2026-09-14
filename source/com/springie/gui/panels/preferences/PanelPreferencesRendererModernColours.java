@@ -94,6 +94,10 @@ public class PanelPreferencesRendererModernColours {
 
     this.tab_colours_main.add("General", this.tab_colours_general);
     this.tab_colours_main.add("Label", this.tab_colours_label);
+    // The colour filters live here too: the Filled:/Wireframe: choices
+    // pick "Colour-A"/"Colour-B", whose pickers sit on this card.
+    this.tab_colours_main.add("Filters",
+        FrEnd.panel_preferences_renderer_modern_filters.panel);
 
     this.panel.add(this.tab_colours_main);
   }

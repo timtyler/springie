@@ -16,7 +16,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
 import com.springie.geometry.Point3D;
-import com.springie.gui.panels.preferences.PanelPreferencesIO;
+import com.springie.gui.panels.preferences.PanelPreferencesPOVExport;
 import com.springie.io.out.AreThereAny;
 import com.springie.io.out.GarbageCollection;
 import com.springie.io.out.WriteFloatingPoint;
@@ -72,8 +72,8 @@ public class WriterPOV {
 			try {
 				this.out = new FileWriter(filename);
 
-				final float height_above_water = PanelPreferencesIO.pov_view_height / 50F;
-				final float immersion_level = PanelPreferencesIO.pov_immersion_depth / 50F;
+				final float height_above_water = PanelPreferencesPOVExport.pov_view_height / 50F;
+				final float immersion_level = PanelPreferencesPOVExport.pov_immersion_depth / 50F;
 
 				writeHeader(height_above_water, immersion_level);
 

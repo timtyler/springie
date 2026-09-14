@@ -56,9 +56,9 @@ class PreferencesResetTest {
         Coords.shift_constant_x = 12345;
         Coords.shift_constant_y = -999;
 
-        PanelPreferencesIO.import_scale = 5;
-        PanelPreferencesIO.pov_view_height = 99;
-        PanelPreferencesIO.pov_immersion_depth = 77;
+        PanelPreferencesImport.import_scale = 5;
+        PanelPreferencesPOVExport.pov_view_height = 99;
+        PanelPreferencesPOVExport.pov_immersion_depth = 77;
         FrEnd.preferences.map.put(Preferences.key_output_pov_sky, "black");
         FrEnd.preferences.map.put(Preferences.key_output_pov_ground, "rock");
         FrEnd.preferences.map.put(Preferences.key_output_pov_compression,
@@ -137,9 +137,9 @@ class PreferencesResetTest {
       assertEquals(Coords.shift_shifted - (Coords.shift_shifted >> 2),
           Coords.shift_constant_z);
 
-      assertEquals(94, PanelPreferencesIO.import_scale);
-      assertEquals(50, PanelPreferencesIO.pov_view_height);
-      assertEquals(0, PanelPreferencesIO.pov_immersion_depth);
+      assertEquals(94, PanelPreferencesImport.import_scale);
+      assertEquals(50, PanelPreferencesPOVExport.pov_view_height);
+      assertEquals(0, PanelPreferencesPOVExport.pov_immersion_depth);
       assertEquals("white",
           FrEnd.preferences.map.get(Preferences.key_output_pov_sky));
       assertEquals("none",
