@@ -2,13 +2,17 @@
 package com.springie.messages;
 
 import com.springie.FrEnd;
+import com.springie.context.ModelManager;
 
 public class SystemMessages {
   public NewMessage getRestartMessage() {
     final NewMessage message = new NewMessage(null) {
       public Object execute() {
-        FrEnd.data_input.loadFile("" + FrEnd.next_file_path);
-        FrEnd.reflectValuesInGUIAfterPropertyEditing();
+        // Route through the ModelManager: the shared FrEnd.data_input keeps
+        // the NodeManager it was first given, so after a model switch it
+        // would load the preset into a stale, invisible manager and the
+        // restart would appear to do nothing.
+        ModelManager.replaceCurrentModel("" + FrEnd.next_file_path);
         return null;
       }
     };

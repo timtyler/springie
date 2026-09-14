@@ -3,6 +3,8 @@
 package com.springie.messages.commands;
 
 import com.springie.FrEnd;
+import com.springie.context.ContextManager;
+import com.springie.io.in.DataInput;
 import com.springie.messages.NewMessage;
 import com.springie.render.SetUpCode;
 
@@ -12,7 +14,10 @@ public class PresetChosenMessage extends NewMessage {
   }
 
   public Object execute() {
-    FrEnd.data_input.resetWorkspaces();
+    // Bind the reset to the live manager: the shared FrEnd.data_input
+    // keeps the NodeManager it was first given, so after a model switch
+    // it would wipe a background model's workspace instead.
+    new DataInput(ContextManager.getNodeManager()).resetWorkspaces();
     SetUpCode.clearAndThenAddInitialObjects();
     FrEnd.reflectValuesInGUIAfterPropertyEditing();
 

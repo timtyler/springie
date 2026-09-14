@@ -159,6 +159,15 @@ public class PanelControlsSelectMain {
 
   public void resetPanelTypeSelector(boolean nodes, boolean links,
       boolean faces) {
+    // Rebuilding the row must not flip the checkboxes back on: remember
+    // their states first (a type that was never built defaults to on).
+    final boolean nodes_checked = this.checkbox_select_nodes == null
+        || this.checkbox_select_nodes.getState();
+    final boolean links_checked = this.checkbox_select_links == null
+        || this.checkbox_select_links.getState();
+    final boolean faces_checked = this.checkbox_select_faces == null
+        || this.checkbox_select_faces.getState();
+
     this.panel_type_selector.removeAll();
 
     final boolean any = nodes || links || faces;
@@ -168,7 +177,8 @@ public class PanelControlsSelectMain {
     }
 
     if (nodes) {
-      this.checkbox_select_nodes = new Checkbox(GUIStrings.NODES, true);
+      this.checkbox_select_nodes = new Checkbox(GUIStrings.NODES,
+          nodes_checked);
       this.checkbox_select_nodes.addItemListener(new ItemListener() {
         public void itemStateChanged(ItemEvent e) {
           Forget.about(e);
@@ -179,7 +189,8 @@ public class PanelControlsSelectMain {
     }
 
     if (links) {
-      this.checkbox_select_links = new Checkbox(GUIStrings.LINKS, true);
+      this.checkbox_select_links = new Checkbox(GUIStrings.LINKS,
+          links_checked);
       this.checkbox_select_links.addItemListener(new ItemListener() {
         public void itemStateChanged(ItemEvent e) {
           Forget.about(e);
@@ -188,9 +199,10 @@ public class PanelControlsSelectMain {
       });
       this.panel_type_selector.add(this.checkbox_select_links);
     }
-    
+
     if (faces) {
-      this.checkbox_select_faces = new Checkbox(GUIStrings.FACES, true);
+      this.checkbox_select_faces = new Checkbox(GUIStrings.FACES,
+          faces_checked);
       this.checkbox_select_faces.addItemListener(new ItemListener() {
         public void itemStateChanged(ItemEvent e) {
           Forget.about(e);
