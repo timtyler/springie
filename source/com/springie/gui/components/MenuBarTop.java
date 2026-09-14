@@ -175,10 +175,15 @@ public class MenuBarTop extends MenuBar {
             AddXMLModelIndexLeaves.getLeaves(index.getValue());
         for (Map.Entry<String, String> leaf : leaves.entrySet()) {
           final MenuItem item = new MenuItem(leaf.getKey());
+          final String index_name = index.getKey();
+          final String leaf_name = leaf.getKey();
           final String path = leaf.getValue();
           item.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
               Forget.about(e);
+              // Keep the bottom-bar preset dropdowns showing the same
+              // preset that was just chosen here.
+              FrEnd.panel_fundamental.selectPreset(index_name, leaf_name);
               FrEnd.next_file_path = path;
               FrEnd.new_message_manager
                   .add(FrEnd.system_messages.getRestartMessage());

@@ -2,6 +2,7 @@
 
 package com.springie.gui.components;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -12,6 +13,8 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Menu;
 import java.awt.MenuBar;
 import java.awt.MenuItem;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.SwingUtilities;
 
@@ -102,6 +105,38 @@ class ModelsMenuTest {
     }
     assertTrue(indexes > 0, "at least one preset index, got " + indexes);
     assertTrue(leaves > 0, "at least one preset model, got " + leaves);
+  }
+
+  @Test
+  void choosingPresetFromMenuUpdatesBottomBarDropdowns() throws Exception {
+    final Menu models = findModelsMenu();
+    assertNotNull(models, "Models menu");
+
+    Menu presets = null;
+    for (int i = 0; i < models.getItemCount(); i++) {
+      final MenuItem item = models.getItem(i);
+      if (item instanceof Menu && "Presets".equals(item.getLabel())) {
+        presets = (Menu) item;
+      }
+    }
+    assertNotNull(presets, "Presets submenu");
+
+    final Menu index_menu = (Menu) presets.getItem(0);
+    final MenuItem leaf = index_menu.getItem(0);
+    final ActionListener[] listeners = leaf.getActionListeners();
+    assertTrue(listeners.length > 0, "leaf has an action");
+
+    SwingUtilities.invokeAndWait(() -> listeners[0].actionPerformed(
+        new ActionEvent(leaf, ActionEvent.ACTION_PERFORMED, leaf.getLabel())));
+
+    assertEquals(index_menu.getLabel(),
+        FrEnd.choose_preset_index.choice.getSelectedItem(),
+        "index dropdown follows the menu");
+    assertEquals(leaf.getLabel(),
+        FrEnd.choose_initial.choice.getSelectedItem(),
+        "leaf dropdown follows the menu");
+    assertEquals(FrEnd.choose_initial.hashtable.get(leaf.getLabel()),
+        FrEnd.next_file_path, "next_file_path follows the menu");
   }
 
   @Test

@@ -637,6 +637,33 @@ public class PanelFundamental {
     FrEnd.next_file_path = (String) FrEnd.choose_initial.hashtable.get(selected);
   }
 
+  /**
+   * Shows the given preset in the bottom-bar dropdowns, as if the user had
+   * picked it there: selects the index, repopulates the leaf dropdown for
+   * that index, selects the leaf, and points next_file_path at it. Used by
+   * the Models menu's Presets submenu so the two stay in agreement.
+   */
+  public void selectPreset(String index_name, String leaf_description) {
+    if (FrEnd.choose_preset_index == null || FrEnd.choose_initial == null) {
+      return;
+    }
+    if (!FrEnd.choose_preset_index.hashtable.containsKey(index_name)) {
+      return;
+    }
+    // Programmatic select() fires no item event, so drive the same path
+    // the index dropdown's own listener uses.
+    FrEnd.choose_preset_index.choice.select(index_name);
+    final String path =
+        (String) FrEnd.choose_preset_index.hashtable.get(index_name);
+    setUpLeafIndex(path);
+
+    if (FrEnd.choose_initial.hashtable.containsKey(leaf_description)) {
+      FrEnd.choose_initial.choice.select(leaf_description);
+      FrEnd.next_file_path =
+          (String) FrEnd.choose_initial.hashtable.get(leaf_description);
+    }
+  }
+
   public static String getXMLIndexPath() {
     final Iterator<String> e = FrEnd.choose_preset_index.hashtable.keySet().iterator();
     final String initial = e.next();
