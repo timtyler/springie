@@ -27,7 +27,7 @@ public class PanelPreferencesDisplay {
 
   public Panel panel_main = FrEnd.setUpPanelForFrame();
 
-  // The Display type dropdown appears twice: once at the top of the
+  // The Renderer: dropdown appears twice: once at the top of the
   // shared Renderer tab (modern and ray-traced renderers) and once in
   // the original renderer's own Renderer tab, so the renderer can
   // always be switched back. The copies stay in sync; Choice.select()
@@ -45,13 +45,13 @@ public class PanelPreferencesDisplay {
   }
 
   /**
-   * Builds one Display type row: the three renderer options. Every copy
+   * Builds one Renderer: row: the three renderer options. Every copy
    * shares the same listener, which applies the newly chosen renderer
    * and keeps the copies in sync.
    */
   private Panel makeDisplayTypePanel() {
     final Panel panel = new Panel();
-    panel.add(new Label("Display type"));
+    panel.add(new Label("Renderer:"));
 
     final TTChoice choice = new TTChoice(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
@@ -87,21 +87,25 @@ public class PanelPreferencesDisplay {
   }
 
   void makePanel() {
-    // The Display type dropdown, the anti-aliasing and pixellation
-    // choices, the "deepest first" checkbox and the frames-per-second
-    // readout live at the top of the shared Renderer tab (modern and
-    // ray-traced renderers), so the rendering settings sit together; one
-    // Display type copy also goes
+    // The Renderer: dropdown, the frames-per-second readout, the
+    // anti-aliasing and pixellation choices, the "deepest first"
+    // checkbox and the "Show labels on" choice live at the top of the
+    // shared Renderer tab (modern and ray-traced renderers), so the
+    // rendering settings sit together; one Renderer: copy also goes
     // in the original renderer's own Renderer tab, so the renderer can
     // always be switched back whichever is showing. Anti-aliasing and
-    // pixellation only apply to the modern and ray-traced renderers.
+    // pixellation only apply to the modern and ray-traced renderers;
+    // "Show labels on" only applies to the modern renderer and is
+    // hidden otherwise (see applyRendererType).
     // All three panels exist already: they are built before this one.
     FrEnd.panel_preferences_shared_show.panel.add(makeDisplayTypePanel(), 0);
-    FrEnd.panel_preferences_shared_show.panel.add(getAntiAliasingPanel(), 1);
-    FrEnd.panel_preferences_shared_show.panel.add(getPixellationPanel(), 2);
+    FrEnd.panel_preferences_shared_show.panel.add(getFpsPanel(), 1);
+    FrEnd.panel_preferences_shared_show.panel.add(getAntiAliasingPanel(), 2);
+    FrEnd.panel_preferences_shared_show.panel.add(getPixellationPanel(), 3);
     FrEnd.panel_preferences_shared_show.panel.add(
-        FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first, 3);
-    FrEnd.panel_preferences_shared_show.panel.add(getFpsPanel(), 4);
+        FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first, 4);
+    FrEnd.panel_preferences_shared_show.panel.add(
+        FrEnd.panel_preferences_renderer_modern.panel_labels_row, 5);
     FrEnd.panel_preferences_renderer_original.panel_renderer_tab
         .add(makeDisplayTypePanel());
 
@@ -215,6 +219,10 @@ public class PanelPreferencesDisplay {
     // option is hidden there (and the sort itself is skipped).
     FrEnd.panel_preferences_renderer_modern
         .setDeepestFirstRowVisible(!raytraced);
+    // Labels are a modern-renderer feature, so the option is hidden for
+    // the other renderers.
+    FrEnd.panel_preferences_renderer_modern
+        .setLabelsRowVisible(value == Quality.SOLID);
     if (value == Quality.THICK_OUTLINE) {
       RendererDelegator.renderer = new com.springie.render.modules.original.ModularRendererOld();
       this.panel_main.add(FrEnd.panel_preferences_renderer_original.panel,

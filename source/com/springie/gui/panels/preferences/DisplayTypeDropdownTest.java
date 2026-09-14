@@ -27,7 +27,7 @@ import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.original.ModularRendererOld;
 
 /**
- * The Display type dropdown (the three renderer options) lives under the
+ * The Renderer: dropdown (the three renderer options) lives under the
  * Renderer tab now, not at the top of the Display panel. It appears twice:
  * once at the top of the shared Renderer tab (polygon and ray-traced
  * renderers) and once in the original renderer's own Renderer tab, so that
@@ -51,7 +51,7 @@ class DisplayTypeDropdownTest {
     selectRenderer(sharedDropdown(), "Polygon");
   }
 
-  /** The Display type row: a "Display type" label plus the dropdown. */
+  /** The Renderer: row: a "Renderer:" label plus the dropdown. */
   private static Choice displayTypeChoice(Panel holder) throws Exception {
     final Choice[] found = new Choice[1];
     SwingUtilities.invokeAndWait(() -> {
@@ -90,7 +90,7 @@ class DisplayTypeDropdownTest {
   private static boolean hasDisplayTypeLabel(Panel holder) throws Exception {
     final boolean[] found = new boolean[1];
     SwingUtilities.invokeAndWait(() -> {
-      found[0] = findLabel(holder, "Display type");
+      found[0] = findLabel(holder, "Renderer:");
     });
     return found[0];
   }
@@ -146,7 +146,7 @@ class DisplayTypeDropdownTest {
     final Choice dropdown = sharedDropdown();
     assertNotNull(dropdown, "the shared Renderer tab must hold a dropdown");
     assertTrue(hasDisplayTypeLabel(shared),
-        "the shared Renderer tab must label it 'Display type'");
+        "the shared Renderer tab must label it 'Renderer:'");
     assertEquals(3, dropdown.getItemCount(),
         "the dropdown must offer the three renderers");
 
@@ -157,7 +157,7 @@ class DisplayTypeDropdownTest {
     });
     assertTrue(first[0] instanceof Panel
         && findChoice(first[0]) == dropdown,
-        "the Display type row must sit at the top of the Renderer tab");
+        "the Renderer: row must sit at the top of the Renderer tab");
   }
 
   @Test

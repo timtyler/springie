@@ -30,7 +30,7 @@ import com.springie.render.modules.modern.SimpleOctahedron;
 import com.springie.render.modules.modern.SimpleSquare;
 
 /**
- * The "Node polyhedron" dropdown on the modern renderer Misc tab must offer
+ * The "Node polyhedron" dropdown on the modern renderer tab must offer
  * all six shapes, and picking one must install the matching renderer shape.
  * The synthetic ItemEvent stands in for the one the native peer delivers;
  * the listener only flips a repaint flag besides swapping the shape.
@@ -49,8 +49,8 @@ public class PanelPreferencesRendererModernTest {
 
   private static Choice polyhedronDropdown() {
     final Choice choice = findChoice(
-        FrEnd.panel_preferences_renderer_modern.panel_misc);
-    assertNotNull(choice, "expected the Node polyhedron dropdown on the Misc tab");
+        FrEnd.panel_preferences_shared_show.panel);
+    assertNotNull(choice, "expected the Node polyhedron dropdown on the Renderer tab");
     return choice;
   }
 
@@ -114,45 +114,43 @@ public class PanelPreferencesRendererModernTest {
   }
 
   /**
-   * The old top-level Misc tab is merged into Options: the shared Misc
-   * panel is no longer a tab card, its rows moved into the nested Misc
-   * sub-tab alongside the modern rows -- except "Render deepest objects
-   * first", which lives on the Renderer tab.
+   * The old Options tab is flattened into the Renderer tab: the Bins
+   * and Misc rows move under the shared rows there, so there is just
+   * the one layout. "Render deepest objects first" and "Show labels
+   * on:" keep their slots at the top, after Pixellation.
    */
   @Test
-  void miscTabIsMergedIntoTheOptionsTab() {
+  void optionsTabIsFlattenedIntoTheRendererTab() {
     final Panel shared_misc_panel = FrEnd.panel_preferences_shared_misc.panel;
     assertEquals(0, shared_misc_panel.getComponentCount(),
         "the old Misc tab panel must be empty after its rows move");
 
+    // No Options tab anymore: the top-level bar is Renderer |
+    // Filtering | Colours.
     final TabbedPanel top_tabs = findTabbedPanel(
         FrEnd.panel_preferences_renderer_modern.panel);
     assertNotNull(top_tabs, "expected the top-level tab bar");
-    for (final Component card : top_tabs.getComponents()) {
-      assertTrue(card != shared_misc_panel,
-          "the shared Misc panel must not be a top-level tab card");
-    }
+    assertEquals(3, top_tabs.getComponentCount(),
+        "the top-level tab bar must be Renderer, Filtering and Colours");
 
-    final Panel panel_misc = FrEnd.panel_preferences_renderer_modern.panel_misc;
+    final Panel renderer_tab = FrEnd.panel_preferences_shared_show.panel;
     // A modern row...
     assertNotNull(polyhedronDropdown(),
-        "the Node polyhedron dropdown must stay on the Misc sub-tab");
-    // ...and the shared rows (but not deepest-first: Renderer tab).
-    assertNotNull(findCheckbox(panel_misc, "Fog depth is relative"),
-        "the shared fog checkbox must move to the Misc sub-tab");
-    assertTrue(findCheckbox(panel_misc, "Render deepest objects first")
-        == null, "deepest-first must not be on the Misc sub-tab");
+        "the Node polyhedron dropdown must move to the Renderer tab");
+    // ...and the shared rows.
+    assertNotNull(findCheckbox(renderer_tab, "Fog depth is relative"),
+        "the shared fog checkbox must move to the Renderer tab");
 
-    // Deepest-first sits on the Renderer tab, between Pixellated and FPS.
-    final Panel renderer_tab = FrEnd.panel_preferences_shared_show.panel;
-    final Checkbox deepest_first =
-        findCheckbox(renderer_tab, "Render deepest objects first");
-    assertNotNull(deepest_first,
-        "deepest-first must be on the Renderer tab");
+    // Deepest-first keeps its slot, after Pixellation...
     assertTrue(
-        renderer_tab.getComponent(3)
+        renderer_tab.getComponent(4)
             == FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first,
-        "deepest-first must sit at Renderer tab row 3, before the FPS readout");
+        "deepest-first must sit at Renderer tab row 4, after Pixellation");
+    // ...followed by the labels row.
+    assertTrue(
+        renderer_tab.getComponent(5)
+            == FrEnd.panel_preferences_renderer_modern.panel_labels_row,
+        "the labels row must sit at Renderer tab row 5, after deepest-first");
   }
 
   private static TabbedPanel findTabbedPanel(Container container) {

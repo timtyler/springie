@@ -35,13 +35,14 @@ import com.tifsoft.Forget;
 public class PanelPreferencesRendererModern {
 	public Panel panel = FrEnd.setUpPanelForFrame2();
 
-	public Panel panel_main = FrEnd.setUpPanelForFrame2();
-
-	// final TabbedPanel tab_colours_main = new TabbedPanel();
-
 	public Panel panel_bins = FrEnd.setUpPanelForFrame2();
 
-	public Panel panel_labels = FrEnd.setUpPanelForFrame2();
+	/**
+	 * The "Show labels on:" row. It lives on the shared Renderer tab
+	 * (added there by PanelPreferencesDisplay), shown only while the
+	 * modern renderer is active -- labels are a modern-renderer feature.
+	 */
+	public Panel panel_labels_row;
 
 	public Panel panel_misc = FrEnd.setUpPanelForFrame2();
 
@@ -97,9 +98,6 @@ public class PanelPreferencesRendererModern {
 		this.raytraced_rows =
 				FrEnd.panel_preferences_renderer_raytraced.takeEffectRows();
 		tab.add("Renderer", FrEnd.panel_preferences_shared_show.panel);
-		// The old top-level Misc tab is merged into the Options tab: its
-		// rows move into the nested Misc sub-tab below.
-		tab.add("Options", this.panel_main);
 
 		tab.add("Filtering", FrEnd.panel_preferences_renderer_modern_filters.panel);
 
@@ -118,19 +116,32 @@ public class PanelPreferencesRendererModern {
 		this.panel_misc.add(panelLinkSides());
 
 		// The shared Misc rows (explosions, fog, face lines) join the modern
-		// Misc rows in the one Misc sub-tab. ("Render deepest objects
-		// first" lives on the Renderer tab instead.)
+		// Misc rows. ("Render deepest objects first" lives on the Renderer
+		// tab instead.)
 		FrEnd.panel_preferences_shared_misc.moveRowsInto(this.panel_misc);
 
-		this.panel_labels.add(getPanelLabelsWhen());
+		this.panel_labels_row = getPanelLabelsWhen();
 
-		final TabbedPanel tab_options = new TabbedPanel();
+		// The old Options tab is flattened into the Renderer tab: the
+		// Bins and Misc rows move under the shared rows there, so there
+		// is just the one layout. (PanelPreferencesDisplay inserts the
+		// top rows at fixed indices afterwards, so the final order is
+		// stable.)
+		final Panel renderer_tab = FrEnd.panel_preferences_shared_show.panel;
+		moveRowsInto(renderer_tab, this.panel_bins);
+		moveRowsInto(renderer_tab, this.panel_misc);
+	}
 
-		tab_options.add("Bins", this.panel_bins);
-		tab_options.add("Labels", this.panel_labels);
-		tab_options.add("Misc", this.panel_misc);
-
-		this.panel_main.add(tab_options);
+	/**
+	 * Moves every row from one panel into another, leaving the source
+	 * empty afterwards.
+	 */
+	private static void moveRowsInto(Panel target, Panel source) {
+		final Component[] rows = source.getComponents();
+		source.removeAll();
+		for (final Component row : rows) {
+			target.add(row);
+		}
 	}
 
 	/**
@@ -170,7 +181,26 @@ public class PanelPreferencesRendererModern {
 		tab.remove(row);
 		if (visible) {
 			// Keep the row in its usual slot, right after Pixellation.
-			tab.add(row, Math.min(3, tab.getComponentCount()));
+			tab.add(row, Math.min(4, tab.getComponentCount()));
+		}
+		tab.validate();
+	}
+
+	/**
+	 * Shows or hides the "Show labels on:" row on the Renderer tab.
+	 * Labels are a modern-renderer feature, so the row is removed while
+	 * another renderer is active. Added and removed (never just hidden)
+	 * because the tab's GridLayout gives invisible components space.
+	 * Idempotent: the row is removed first, so a repeated call cannot
+	 * duplicate it.
+	 */
+	void setLabelsRowVisible(boolean visible) {
+		final Panel tab = FrEnd.panel_preferences_shared_show.panel;
+		tab.remove(this.panel_labels_row);
+		if (visible) {
+			// Keep the row in its usual slot, right after the
+			// "Render deepest objects first" row.
+			tab.add(this.panel_labels_row, Math.min(5, tab.getComponentCount()));
 		}
 		tab.validate();
 	}
@@ -221,7 +251,7 @@ public class PanelPreferencesRendererModern {
 		this.panel_bins.add(panel_bin_size);
 	}
 
-	private Component getPanelLabelsWhen() {
+	private Panel getPanelLabelsWhen() {
 		final Panel panel = new Panel();
 		panel.add(new Label("Show labels on:", Label.RIGHT));
 

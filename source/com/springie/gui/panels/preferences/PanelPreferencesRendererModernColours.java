@@ -87,13 +87,13 @@ public class PanelPreferencesRendererModernColours {
 
     this.tab_colours_general.add("Background", this.panel_colors_background.panel);
     this.tab_colours_general.add("Selection", this.panel_colours_selection.panel);
+    this.tab_colours_general.add("Charges", this.panel_colors_charges.panel);
 
     this.tab_colours_label.add("Background", this.panel_colours_label_background.panel);
     this.tab_colours_label.add("Foreground", this.panel_colors_label.panel);
 
     this.tab_colours_main.add("General", this.tab_colours_general);
     this.tab_colours_main.add("Label", this.tab_colours_label);
-    this.tab_colours_main.add("Charges", this.panel_colors_charges.panel);
 
     this.panel.add(this.tab_colours_main);
   }

@@ -143,7 +143,7 @@ class DeepestFirstRowVisibilityTest {
   void rowIsShownUnderThePolygonRenderer() throws Exception {
     assertTrue(rowShownOnTab(),
         "the deepest-first row must be on the Renderer tab for the polygon renderer");
-    assertEquals(3, rowIndexOnTab(),
+    assertEquals(4, rowIndexOnTab(),
         "the deepest-first row must keep its usual slot, after Pixellation");
   }
 
@@ -161,7 +161,7 @@ class DeepestFirstRowVisibilityTest {
     selectRenderer("Polygon");
     assertTrue(rowShownOnTab(),
         "the deepest-first row must return to the Renderer tab");
-    assertEquals(3, rowIndexOnTab(),
+    assertEquals(4, rowIndexOnTab(),
         "the restored row must sit in its usual slot, after Pixellation");
   }
 
