@@ -196,6 +196,10 @@ public class RendererBinManager {
             // damage in the scrubbed union.
             bin.union.setToUnion(bin.union, drag_damage);
           }
+          if (px > 1) {
+            // Cover the pixellation bleed (see expandByBleed).
+            expandByBleed(bin.union, px);
+          }
 
           if (px > 1 && size > 0) {
             // Pixellated direct painting: render the bin at 1/px
@@ -392,6 +396,10 @@ public class RendererBinManager {
           // A drag-box selection draws on the screen: include its
           // damage in the scrubbed union.
           bin.union.setToUnion(bin.union, drag_damage);
+        }
+        if (px > 1) {
+          // Cover the pixellation bleed (see expandByBleed).
+          expandByBleed(bin.union, px);
         }
 
         if (size > 0) {
@@ -671,6 +679,23 @@ public class RendererBinManager {
   // Scratch rect for the snapped scrub clip, reused across bins and
   // frames to stay out of the render loop's allocations.
   private final RectangleInt scrub_rect = new RectangleInt(0, 0, 0, 0);
+
+  /**
+   * Expands a damage rect by the pixellation bleed margin. The coarse
+   * tile rasterization plus nearest-neighbour upscale can colour a full
+   * px-by-px block from a sub-block sliver of polygon, so rendered
+   * pixels can land up to px outside the integer content bbox. The
+   * scrub and the blit clip must cover that bleed or it survives as
+   * trails. Package-visible for the tests.
+   */
+  static void expandByBleed(RectangleInt rect, int px) {
+    if (rect.min_x < rect.max_x && rect.min_y < rect.max_y) {
+      rect.min_x -= px;
+      rect.min_y -= px;
+      rect.max_x += px;
+      rect.max_y += px;
+    }
+  }
 
   /**
    * Snaps a screen-space scrub rect out to whole coarse pixellation

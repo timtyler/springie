@@ -125,4 +125,28 @@ public class RendererBinManagerPixellationTest {
       }
     }
   }
+
+  @Test
+  public void bleedExpansionCoversUpscaleOverhang() {
+    // The coarse rasterization plus nearest-neighbour upscale can
+    // colour a full px-by-px block from a sub-block sliver of polygon,
+    // so the damage rect must grow by px on every side to cover the
+    // bleed, or it survives as trails.
+    final RectangleInt rect = new RectangleInt(100, 100, 110, 110);
+    RendererBinManager.expandByBleed(rect, 2);
+    assertEquals(98, rect.min_x);
+    assertEquals(98, rect.min_y);
+    assertEquals(112, rect.max_x);
+    assertEquals(112, rect.max_y);
+  }
+
+  @Test
+  public void bleedExpansionLeavesEmptyRectsAlone() {
+    // The empty-bin sentinel (min > max) must not be expanded.
+    final RectangleInt rect = new RectangleInt(Integer.MAX_VALUE,
+        Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
+    RendererBinManager.expandByBleed(rect, 2);
+    assertEquals(Integer.MAX_VALUE, rect.min_x);
+    assertEquals(Integer.MIN_VALUE, rect.max_x);
+  }
 }
