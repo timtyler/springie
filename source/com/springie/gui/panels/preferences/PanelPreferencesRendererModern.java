@@ -53,6 +53,14 @@ public class PanelPreferencesRendererModern {
 	 */
 	Panel[] raytraced_rows;
 
+	/**
+	 * The rasterizer-geometry rows ("Node polyhedron", "Strut divisions",
+	 * "Cable divisions", "Strut/cable sides"): tessellation settings for
+	 * the modern renderer's tubes and nodes, meaningless while
+	 * ray-tracing. Removed from the Renderer tab then, restored after.
+	 */
+	Panel[] geometry_rows;
+
 	NewMessageManager new_message_manager;
 
 	public Checkbox checkbox_db_new;
@@ -107,11 +115,19 @@ public class PanelPreferencesRendererModern {
 
 		getPanelBins();
 
+		final Panel panel_cable_divisions = getPanelCableDivisions();
+		final Panel panel_strut_divisions = getPanelStrutDivisions();
+		final Panel panel_link_sides = panelLinkSides();
+
 		this.panel_misc.add(panel_node_polyhedron);
 
-		this.panel_misc.add(getPanelCableDivisions());
-		this.panel_misc.add(getPanelStrutDivisions());
-		this.panel_misc.add(panelLinkSides());
+		this.panel_misc.add(panel_cable_divisions);
+		this.panel_misc.add(panel_strut_divisions);
+		this.panel_misc.add(panel_link_sides);
+
+		this.geometry_rows = new Panel[] {
+				panel_node_polyhedron, panel_cable_divisions,
+				panel_strut_divisions, panel_link_sides };
 
 		// The shared Misc rows (explosions, fog, face lines) join the modern
 		// Misc rows. ("Render deepest objects first" lives on the Renderer
@@ -180,6 +196,43 @@ public class PanelPreferencesRendererModern {
 		if (visible) {
 			// Keep the row in its usual slot, right after Pixellation.
 			tab.add(row, Math.min(4, tab.getComponentCount()));
+		}
+		tab.validate();
+	}
+
+	/**
+	 * Shows or hides the rasterizer-geometry rows ("Node polyhedron",
+	 * "Strut divisions", "Cable divisions", "Strut/cable sides") on the
+	 * Renderer tab. They configure the modern renderer's tube and node
+	 * tessellation, which the ray-traced renderer ignores, so they are
+	 * removed while ray-tracing is active and restored to their usual
+	 * slot (just above the shared misc rows) for the rasterizers. Like
+	 * the other conditional rows they are added and removed (never just
+	 * hidden) because the tab's GridLayout gives invisible components
+	 * space. Idempotent: the rows are removed first, so a repeated call
+	 * cannot duplicate them. The restore slot is found dynamically from
+	 * the explosions row, which never moves, so interleaved changes to
+	 * the rows above cannot misplace them.
+	 */
+	void setGeometryRowsVisible(boolean visible) {
+		final Panel tab = FrEnd.panel_preferences_shared_show.panel;
+		for (final Panel row : this.geometry_rows) {
+			tab.remove(row);
+		}
+		if (visible) {
+			final Component anchor = FrEnd.panel_preferences_shared_misc.checkbox_explosions
+					.getParent();
+			int index = tab.getComponentCount();
+			final Component[] components = tab.getComponents();
+			for (int i = 0; i < components.length; i++) {
+				if (components[i] == anchor) {
+					index = i;
+					break;
+				}
+			}
+			for (final Panel row : this.geometry_rows) {
+				tab.add(row, index++);
+			}
 		}
 		tab.validate();
 	}

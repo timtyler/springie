@@ -219,6 +219,11 @@ public class PanelPreferencesDisplay {
     // option is hidden there (and the sort itself is skipped).
     FrEnd.panel_preferences_renderer_modern
         .setDeepestFirstRowVisible(!raytraced);
+    // Node/tube tessellation ("Node polyhedron", "Strut divisions",
+    // "Cable divisions", "Strut/cable sides") is a rasterizer concept
+    // the ray-traced renderer ignores, so those rows are hidden there.
+    FrEnd.panel_preferences_renderer_modern
+        .setGeometryRowsVisible(!raytraced);
     // Labels are a modern-renderer feature, so the option is hidden for
     // the other renderers.
     FrEnd.panel_preferences_renderer_modern
