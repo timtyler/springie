@@ -5,6 +5,15 @@ package com.springie.render.modules.modern;
 public class PolygonComposite {
   PolygonObject2D[] array;
 
+  /**
+   * How many leading entries of array are live this frame. The link
+   * renderer reuses its quad arrays across frames and compacts the
+   * front-facing quads in place, so array.length is the capacity while
+   * count is the live prefix. Freshly built composites have
+   * count == array.length.
+   */
+  int count;
+
   int z;
 
   RectangleInt bounding_box;
@@ -12,6 +21,7 @@ public class PolygonComposite {
   public PolygonComposite(PolygonObject2D[] array, int z) {
     super();
     this.array = array;
+    this.count = array.length;
     this.z = z;
   }
 
@@ -19,7 +29,7 @@ public class PolygonComposite {
     if (this.bounding_box == null) {
       this.bounding_box = new RectangleInt(Integer.MAX_VALUE,
           Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
-      final int size = this.array.length;
+      final int size = this.count;
       for (int i = 0; i < size; i++) {
         final PolygonObject2D polygon = this.array[i];
         final RectangleInt bounding = polygon.getBoundingBox();

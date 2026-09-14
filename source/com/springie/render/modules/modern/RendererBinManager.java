@@ -43,6 +43,14 @@ public class RendererBinManager {
 
   public static int colour_modifier_wireframe = ColourModifier.darker;
 
+  /**
+   * Monotonic frame counter, bumped once per render() call. Polygons
+   * cache their modifier-adjusted colours against it, so the adjustment
+   * is computed once per polygon per frame however many bins the
+   * polygon lands in.
+   */
+  static int render_frame;
+
   // Tiled rendering: each bin paints into an offscreen tile that is then
   // blitted to the screen (the double-buffered path). Every bin holding
   // content is re-rendered every frame; tiles are never reused across
@@ -137,6 +145,8 @@ public class RendererBinManager {
 
   public void render(RendererBinManager bins_last, Graphics graphics) {
     ContextManager.getNodeManager().depth_range = null;
+
+    render_frame++;
 
     final int block_size = divisor - getMargin();
 
@@ -590,13 +600,15 @@ public class RendererBinManager {
 
   private void renderThePolygon(Graphics graphics,
       final PolygonComposite composite) {
-    final int size = composite.array.length;
+    final int size = composite.count;
+    final int frame = render_frame;
     if (colour_modifier_filled != 0) {
       for (int i = size; --i >= 0;) {
         final PolygonObject2D polygon = composite.array[i];
-        final int colour = getModifiedColour(polygon.colour,
-            colour_modifier_filled);
-        polygon.fill(graphics, colour);
+        if (polygon.colour_cache_frame != frame) {
+          cacheModifiedColours(polygon, frame);
+        }
+        polygon.fill(graphics, polygon.colour_cache_filled);
       }
     }
 
@@ -604,11 +616,26 @@ public class RendererBinManager {
       // for (int i = 0; i < size; i++) {
       for (int i = size; --i >= 0;) {
         final PolygonObject2D polygon = composite.array[i];
-        final int colour = getModifiedColour(polygon.colour,
-            colour_modifier_wireframe);
-        polygon.draw(graphics, colour);
+        if (polygon.colour_cache_frame != frame) {
+          cacheModifiedColours(polygon, frame);
+        }
+        polygon.draw(graphics, polygon.colour_cache_wireframe);
       }
     }
+  }
+
+  /**
+   * Computes a polygon's modifier-adjusted fill/draw colours once per
+   * frame. The modifiers are frame-constant, and the polygon's own
+   * colour is rewritten before each frame's render, so caching against
+   * the frame counter is exact.
+   */
+  private void cacheModifiedColours(PolygonObject2D polygon, int frame) {
+    polygon.colour_cache_filled = getModifiedColour(polygon.colour,
+        colour_modifier_filled);
+    polygon.colour_cache_wireframe = getModifiedColour(polygon.colour,
+        colour_modifier_wireframe);
+    polygon.colour_cache_frame = frame;
   }
 
   int getModifiedColour(int colour, int modifier) {

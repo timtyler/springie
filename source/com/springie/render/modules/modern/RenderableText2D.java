@@ -2,7 +2,6 @@
 
 package com.springie.render.modules.modern;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -25,13 +24,13 @@ public class RenderableText2D extends PolygonObject2D {
   }
 
   public void fill(Graphics graphics, int colour) {
-    graphics.setColor(new Color(colour));
+    graphics.setColor(PolygonObject2D.colorFor(colour));
     graphics.fillPolygon(this.x, this.y, this.x.length);
 
     final Font font = new Font("monospaced", Font.BOLD, this.point_size);
 
     graphics.setFont(font);
-    graphics.setColor(new Color(this.colour_fg));
+    graphics.setColor(PolygonObject2D.colorFor(this.colour_fg));
 
     final FontMetrics fm = graphics.getFontMetrics();
     final int dy = fm.getDescent();
@@ -41,7 +40,7 @@ public class RenderableText2D extends PolygonObject2D {
   }
 
   public void draw(Graphics graphics, int colour) {
-    graphics.setColor(new Color(colour));
+    graphics.setColor(PolygonObject2D.colorFor(colour));
     graphics.drawPolygon(this.x, this.y, this.x.length);
   }
 }

@@ -115,9 +115,20 @@ class ElementRendererLinkTest {
   private static int quadCount(ArrayList<PolygonComposite> composites) {
     int quads = 0;
     for (final PolygonComposite composite : composites) {
-      quads += composite.array.length;
+      quads += composite.count;
     }
     return quads;
+  }
+
+  /**
+   * The live quads of a composite: the leading count entries of its
+   * reused backing array. Backface-culled quads are compacted out of
+   * this prefix; the tail holds stale quads from previous frames.
+   */
+  private static PolygonObject2D[] liveQuads(PolygonComposite composite) {
+    final PolygonObject2D[] live = new PolygonObject2D[composite.count];
+    System.arraycopy(composite.array, 0, live, 0, composite.count);
+    return live;
   }
 
   @ParameterizedTest
@@ -136,7 +147,7 @@ class ElementRendererLinkTest {
       assertTrue(quads >= 1 && quads <= sides,
           "culling must keep the front of the tube: some quads, not all, not none");
       for (final PolygonComposite composite : composites) {
-        for (final PolygonObject2D quad : composite.array) {
+        for (final PolygonObject2D quad : liveQuads(composite)) {
           assertTrue(ElementRendererNode.isVisible(quad.x, quad.y),
               "every emitted quad must face the camera; an unculled "
                   + "far-side quad paints over the near side");
@@ -170,7 +181,7 @@ class ElementRendererLinkTest {
 
     assertTrue(quadCount(composites) >= 1);
     for (final PolygonComposite composite : composites) {
-      for (final PolygonObject2D quad : composite.array) {
+      for (final PolygonObject2D quad : liveQuads(composite)) {
         final RectangleInt box = quad.getBoundingBox();
         assertTrue(box.max_x > box.min_x && box.max_y > box.min_y,
             "every tube side must be a real quad, not a degenerate sliver");
@@ -193,9 +204,9 @@ class ElementRendererLinkTest {
           linkBetween(a, b, true), a, b);
       assertTrue(composites.size() >= 1);
       for (final PolygonComposite composite : composites) {
-        assertTrue(composite.array.length >= 1,
+        assertTrue(composite.count >= 1,
             "a culled-to-nothing tube must fall back to the whole tube");
-        for (final PolygonObject2D quad : composite.array) {
+        for (final PolygonObject2D quad : liveQuads(composite)) {
           assertTrue(quad != null, "culled slots must not leak nulls");
         }
       }
@@ -414,8 +425,8 @@ class ElementRendererLinkTest {
         linkBetween(a, b, true), a, b);
     assertTrue(composites.size() >= 1);
     for (final PolygonComposite composite : composites) {
-      assertTrue(composite.array.length >= 1);
-      for (final PolygonObject2D quad : composite.array) {
+      assertTrue(composite.count >= 1);
+      for (final PolygonObject2D quad : liveQuads(composite)) {
         assertTrue(quad != null);
         final RectangleInt box = quad.getBoundingBox();
         assertTrue(box.max_x > box.min_x || box.max_y > box.min_y,

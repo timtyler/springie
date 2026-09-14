@@ -317,7 +317,7 @@ public final class ElementRendererNode {
   private static PolygonComposite combine(ArrayList<PolygonObject2D> polygon_vector,
       PolygonComposite composite) {
     final int size_1 = polygon_vector.size();
-    final int size_2 = composite.array.length;
+    final int size_2 = composite.count;
 
     final PolygonObject2D[] out = new PolygonObject2D[size_1 + size_2];
 

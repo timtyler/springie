@@ -3,6 +3,7 @@
 package com.springie.render.modules.modern;
 
 import java.util.ArrayList;
+import java.util.WeakHashMap;
 
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.links.Link;
@@ -34,6 +35,95 @@ public final class ElementRendererLink {
   private static final Double3D scratch_cross_1 = new Double3D(0, 0, 0);
   private static final Double3D scratch_original = new Double3D(0, 0, 0);
   private static final Double3D scratch_cross_2 = new Double3D(0, 0, 0);
+
+  // Scratch corners for the in-place tube-quad path, reused across quads,
+  // segments and frames. PolygonObject2D.set consumes them immediately
+  // (projecting into the polygon's own arrays), so reuse is safe.
+  private static final Point3D[] scratch_corners = new Point3D[] {
+      new Point3D(0, 0, 0), new Point3D(0, 0, 0),
+      new Point3D(0, 0, 0), new Point3D(0, 0, 0) };
+
+  /**
+   * Per-link render cache. A link's tube tessellation (divisions x sides
+   * quads per node pair) keeps its shape unless the tessellation
+   * signature changes, so the polygon objects are built once and their
+   * corners recomputed in place every frame instead of allocating tens
+   * of thousands of objects per frame. Entries vanish when their link
+   * is deleted (WeakHashMap); rendering is single-threaded, so no
+   * synchronization is needed.
+   */
+  private static final WeakHashMap<Link, LinkCache> link_caches =
+      new WeakHashMap<>();
+
+  private static final class LinkCache {
+    final ArrayList<PairCache> pairs = new ArrayList<>(2);
+  }
+
+  private static final class PairCache {
+    final Node node_1;
+
+    final Node node_2;
+
+    int divisions;
+
+    int sides;
+
+    ArrayList<PolygonComposite> list;
+
+    PolygonComposite[] composites;
+
+    PolygonObject2D[][] quads;
+
+    PairCache(Node node_1, Node node_2) {
+      this.node_1 = node_1;
+      this.node_2 = node_2;
+    }
+  }
+
+  /**
+   * Returns the reusable polygon structures for one node pair of a link,
+   * rebuilding them when the tessellation signature (divisions, sides)
+   * changed since the last frame. Package-visible for the tests.
+   */
+  static PairCache getPairCache(Link link, Node node_1, Node node_2,
+      int divisions, int sides) {
+    LinkCache link_cache = link_caches.get(link);
+    if (link_cache == null) {
+      link_cache = new LinkCache();
+      link_caches.put(link, link_cache);
+    }
+    final ArrayList<PairCache> pairs = link_cache.pairs;
+    final int n = pairs.size();
+    for (int i = 0; i < n; i++) {
+      final PairCache pair = pairs.get(i);
+      if (pair.node_1 == node_1 && pair.node_2 == node_2) {
+        if (pair.divisions != divisions || pair.sides != sides) {
+          buildPairCache(pair, divisions, sides);
+        }
+        return pair;
+      }
+    }
+    final PairCache pair = new PairCache(node_1, node_2);
+    buildPairCache(pair, divisions, sides);
+    pairs.add(pair);
+    return pair;
+  }
+
+  private static void buildPairCache(PairCache pair, int divisions,
+      int sides) {
+    pair.divisions = divisions;
+    pair.sides = sides;
+    pair.list = new ArrayList<>(divisions + 1);
+    pair.composites = new PolygonComposite[divisions];
+    pair.quads = new PolygonObject2D[divisions][sides];
+    for (int segment = 0; segment < divisions; segment++) {
+      for (int side = 0; side < sides; side++) {
+        pair.quads[segment][side] = new PolygonObject2D(4);
+      }
+      pair.composites[segment] = new PolygonComposite(pair.quads[segment],
+          0);
+    }
+  }
 
   public static int strut_divisions = 3;
 
@@ -129,8 +219,16 @@ public final class ElementRendererLink {
         : cable_divisions;
 
     // One composite per segment, plus room for the optional text label.
-    final ArrayList<PolygonComposite> return_vector = new ArrayList<>(
-        divisions + 1);
+    // The polygon structures are cached per link and rewritten in place
+    // each frame; only the tessellation signature (divisions, sides)
+    // triggers a rebuild. The cached objects are also referenced by
+    // last frame's bins for damage repair, which reads only their count
+    // and cached rectangles -- never the rewritten geometry -- so
+    // in-place updates are safe.
+    final PairCache pair_cache = getPairCache(link, node_1, node_2,
+        divisions, sides);
+    final ArrayList<PolygonComposite> return_vector = pair_cache.list;
+    return_vector.clear();
     final boolean simple = divisions == 1;
     final double iv = simple ? 1 : 0.4d;
     final double mult = link.type.compression ? 0.6d : -0.1d;
@@ -170,13 +268,13 @@ public final class ElementRendererLink {
       final int new_colour = DeepObjectColourCalculator.getColourOfDeepObject(
           colour, z);
 
-      final PolygonObject2D[] quads = new PolygonObject2D[sides];
+      final PolygonObject2D[] quads = pair_cache.quads[segment];
       for (int side = 0; side < sides; side++) {
         final double a0 = 2.0 * Math.PI * side / sides;
         final double a1 = 2.0 * Math.PI * (side + 1) / sides;
-        quads[side] = tubeQuad(point0n, point1n, cross_1_int, cross_2_int,
-            Math.cos(a0), Math.sin(a0), Math.cos(a1), Math.sin(a1), sf1, sf2,
-            new_colour);
+        writeTubeQuad(quads[side], point0n, point1n, cross_1_int,
+            cross_2_int, Math.cos(a0), Math.sin(a0), Math.cos(a1),
+            Math.sin(a1), sf1, sf2, new_colour);
       }
       // Backface culling: a closed tube only shows its near side. The
       // far-side quads would otherwise paint over the near side -- each
@@ -194,18 +292,17 @@ public final class ElementRendererLink {
           quads[front_count++] = quad;
         }
       }
-      final PolygonObject2D[] array;
-      if (front_count == 0 || front_count == sides) {
-        // Degenerate end-on view: nothing faced the camera, so quads[]
-        // is untouched and still holds the whole tube; keep it rather
-        // than emit an empty composite.
-        array = quads;
-      } else {
-        array = new PolygonObject2D[front_count];
-        System.arraycopy(quads, 0, array, 0, front_count);
-      }
+      final PolygonComposite composite = pair_cache.composites[segment];
+      composite.z = z;
+      // The culling already compacted the survivors to the front of the
+      // reused array in place; record how many are live instead of
+      // allocating a trimmed copy. The degenerate end-on view keeps the
+      // whole tube, exactly as before.
+      composite.count =
+          (front_count == 0 || front_count == sides) ? sides : front_count;
+      composite.bounding_box = null;
 
-      return_vector.add(new PolygonComposite(array, z));
+      return_vector.add(composite);
     }
 
     final int render_label_when = PanelPreferencesRendererModern.render_label_when;
@@ -215,6 +312,34 @@ public final class ElementRendererLink {
     }
 
     return return_vector;
+  }
+
+  /**
+   * Rewrites a tube quad's corners into an existing polygon, with no
+   * allocation. The corners land in the shared scratch array and are
+   * consumed immediately by PolygonObject2D.set.
+   */
+  static void writeTubeQuad(PolygonObject2D out, Point3D point0n,
+      Point3D point1n, Vector3D cross_1_int, Vector3D cross_2_int,
+      double cos_a, double sin_a, double cos_b, double sin_b,
+      double sf1, double sf2, int new_colour) {
+    writeTubeCorners(scratch_corners, point0n, point1n, cross_1_int,
+        cross_2_int, cos_a, sin_a, cos_b, sin_b, sf1, sf2);
+    out.set(scratch_corners, new_colour);
+  }
+
+  private static void writeTubeCorners(Point3D[] corners, Point3D point0n,
+      Point3D point1n, Vector3D cross_1_int, Vector3D cross_2_int,
+      double cos_a, double sin_a, double cos_b, double sin_b,
+      double sf1, double sf2) {
+    tubeCornerInto(corners[0], point0n, cross_1_int, cross_2_int,
+        cos_a, sin_a, sf1);
+    tubeCornerInto(corners[1], point1n, cross_1_int, cross_2_int,
+        cos_a, sin_a, sf2);
+    tubeCornerInto(corners[2], point1n, cross_1_int, cross_2_int,
+        cos_b, sin_b, sf2);
+    tubeCornerInto(corners[3], point0n, cross_1_int, cross_2_int,
+        cos_b, sin_b, sf1);
   }
 
   /**
@@ -232,23 +357,22 @@ public final class ElementRendererLink {
       Vector3D cross_1_int, Vector3D cross_2_int,
       double cos_a, double sin_a, double cos_b, double sin_b,
       double sf1, double sf2, int new_colour) {
+    writeTubeCorners(scratch_corners, point0n, point1n, cross_1_int,
+        cross_2_int, cos_a, sin_a, cos_b, sin_b, sf1, sf2);
     final Point3D[] quad_points = new Point3D[4];
-    quad_points[0] = tubeCorner(point0n, cross_1_int, cross_2_int,
-        cos_a, sin_a, sf1);
-    quad_points[1] = tubeCorner(point1n, cross_1_int, cross_2_int,
-        cos_a, sin_a, sf2);
-    quad_points[2] = tubeCorner(point1n, cross_1_int, cross_2_int,
-        cos_b, sin_b, sf2);
-    quad_points[3] = tubeCorner(point0n, cross_1_int, cross_2_int,
-        cos_b, sin_b, sf1);
+    for (int i = 0; i < 4; i++) {
+      quad_points[i] = new Point3D(scratch_corners[i]);
+    }
     return new PolygonObject2D(quad_points, new_colour);
   }
 
   /**
-   * One tube corner: base + sf * (cos_a * cross_1 + sin_a * cross_2).
+   * In-place tube corner: out = base + sf * (cos_a * cross_1 + sin_a *
+   * cross_2). Same arithmetic as the old allocating tubeCorner.
    */
-  private static Point3D tubeCorner(Point3D base, Vector3D cross_1_int,
-      Vector3D cross_2_int, double cos_a, double sin_a, double sf) {
+  private static void tubeCornerInto(Point3D out, Point3D base,
+      Vector3D cross_1_int, Vector3D cross_2_int, double cos_a,
+      double sin_a, double sf) {
     final Vector3D dir = scratch_tube_dir;
     dir.set(cross_1_int);
     dir.multiplyBy(cos_a);
@@ -257,9 +381,8 @@ public final class ElementRendererLink {
     tmp.multiplyBy(sin_a);
     dir.addTuple3D(tmp);
     dir.multiplyBy(sf);
-    final Point3D corner = new Point3D(base);
-    corner.addTuple3D(dir);
-    return corner;
+    out.set(base);
+    out.addTuple3D(dir);
   }
 
   private static PolygonComposite addRelevantText(Link link, int min_z) {
