@@ -153,6 +153,28 @@ public class PanelPreferencesRendererModern {
 		tab.validate();
 	}
 
+	/**
+	 * Shows or hides the "Render deepest objects first" row on the
+	 * Renderer tab. The depth sort is meaningless for the ray-traced
+	 * renderer (occlusion is resolved per ray by the BVH), so the row is
+	 * removed while ray-tracing is active and restored for the
+	 * rasterizer renderers. Like the ray-traced rows, it is added and
+	 * removed (never just hidden) because the tab's GridLayout gives
+	 * invisible components space. Idempotent: the row is removed first,
+	 * so a repeated call cannot duplicate it.
+	 */
+	void setDeepestFirstRowVisible(boolean visible) {
+		final Panel tab = FrEnd.panel_preferences_shared_show.panel;
+		final Panel row =
+			FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first;
+		tab.remove(row);
+		if (visible) {
+			// Keep the row in its usual slot, right after Pixellation.
+			tab.add(row, Math.min(3, tab.getComponentCount()));
+		}
+		tab.validate();
+	}
+
 	private void getPanelBins() {
 		final Panel panel_bin_size = getBinSizePanel();
 

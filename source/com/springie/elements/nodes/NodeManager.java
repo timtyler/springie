@@ -24,6 +24,8 @@ import com.springie.modification.velocity.DampOverallVelocities;
 import com.springie.presets.PresetObjects;
 import com.springie.render.CachedNode;
 import com.springie.render.Coords;
+import com.springie.render.RendererDelegator;
+import com.springie.render.modules.raytraced.ModularRendererRaytraced;
 import com.springie.utilities.math.SquareRoot;
 import com.springie.world.World;
 import com.tifsoft.Forget;
@@ -342,7 +344,13 @@ public class NodeManager extends World {
 			setUpNewNodeDepthIndex();
 		}
 
-		if (FrEnd.redraw_deepest_first) {
+		if (FrEnd.redraw_deepest_first
+			&& !(RendererDelegator.renderer instanceof ModularRendererRaytraced)) {
+			// The ray-traced renderer resolves occlusion per ray through
+			// its BVH and never reads the sorted order, so the sort is
+			// pure cost there -- it runs inside nodeAndLinkRenderDummy()
+			// on every selection gesture. Skip it while ray-tracing is
+			// active.
 			performTheNodeSort();
 		}
 	}

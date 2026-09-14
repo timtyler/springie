@@ -211,6 +211,10 @@ public class PanelPreferencesDisplay {
     this.panel_main.removeAll();
     final boolean raytraced = value == Quality.RAYTRACED;
     FrEnd.panel_preferences_renderer_modern.setRaytracedRowsVisible(raytraced);
+    // The depth sort does not apply to the ray-traced renderer, so its
+    // option is hidden there (and the sort itself is skipped).
+    FrEnd.panel_preferences_renderer_modern
+        .setDeepestFirstRowVisible(!raytraced);
     if (value == Quality.THICK_OUTLINE) {
       RendererDelegator.renderer = new com.springie.render.modules.original.ModularRendererOld();
       this.panel_main.add(FrEnd.panel_preferences_renderer_original.panel,
