@@ -25,6 +25,17 @@ public final class ModelManager {
   }
 
   /**
+   * Clears the model slots for a fresh boot. The slots are JVM-static, so
+   * without this a second FrEnd.main() in the same JVM (as the GUI tests
+   * do) would keep the first boot's slot, and replaceCurrentModel would
+   * load the new model into that stale, invisible manager.
+   */
+  public static void reset() {
+    slots.clear();
+    active_index = 0;
+  }
+
+  /**
    * Creates the first slot from the boot model, once a node manager exists.
    * The Models menu is built before applet.init() installs the node manager,
    * so this must tolerate being called too early: leaving the slot list empty
