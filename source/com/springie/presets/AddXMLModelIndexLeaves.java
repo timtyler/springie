@@ -5,6 +5,7 @@ package com.springie.presets;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -20,12 +21,37 @@ public class AddXMLModelIndexLeaves extends DefaultHandler {
 
   ChoiceWithDescription choice;
 
+  /** When set, leaves are collected here instead of in the AWT choice. */
+  LinkedHashMap<String, String> sink;
+
   int index;
 
   ArrayList<String> directories = new ArrayList<>();
 
   //private String name2;
   //private String desc;
+
+  /**
+   * Parses an index XML into an ordered map of description to path, without
+   * touching AWT: the instance addLeaves populates a ChoiceWithDescription,
+   * which cannot be created headless.
+   */
+  public static LinkedHashMap<String, String> getLeaves(String source)
+    throws IOException, SAXException {
+
+    final XMLReader xr = new com.tifsoft.xml.driver.Driver();
+
+    final AddXMLModelIndexLeaves handler = new AddXMLModelIndexLeaves();
+    xr.setContentHandler(handler);
+    xr.setErrorHandler(handler);
+    final LinkedHashMap<String, String> leaves = new LinkedHashMap<>();
+    handler.sink = leaves;
+
+    final Reader reader = new ResourceLoader().getReader(source);
+    xr.parse(new InputSource(reader));
+
+    return leaves;
+  }
 
   public String addLeaves(ChoiceWithDescription choice, String source)
     throws IOException, SAXException {
@@ -93,7 +119,11 @@ public class AddXMLModelIndexLeaves extends DefaultHandler {
         path += "" + name2;
         //Log.log("Add:" + this.desc + " -> " + path);
 
-        this.choice.add(desc, path);
+        if (this.sink != null) {
+          this.sink.put(desc, path);
+        } else {
+          this.choice.add(desc, path);
+        }
       }
     }
   }

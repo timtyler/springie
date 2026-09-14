@@ -2,6 +2,7 @@
 
 package com.springie.gui.components;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
@@ -56,7 +57,6 @@ class ModelsMenuTest {
     final Menu models = findModelsMenu();
     assertNotNull(models, "Models menu");
 
-    boolean has_load = false;
     boolean has_close = false;
     boolean has_checkbox = false;
     for (int i = 0; i < models.getItemCount(); i++) {
@@ -64,18 +64,44 @@ class ModelsMenuTest {
       if (item == null) {
         continue; // separator
       }
-      if (MenuBarTop.LOAD_MODEL.equals(item.getLabel())) {
-        has_load = true;
-      } else if (MenuBarTop.CLOSE_MODEL.equals(item.getLabel())) {
+      assertFalse("Load model...".equals(item.getLabel()),
+          "no Load model... item");
+      if (MenuBarTop.CLOSE_MODEL.equals(item.getLabel())) {
         has_close = true;
       } else if (item instanceof CheckboxMenuItem) {
         has_checkbox = true;
       }
     }
 
-    assertTrue(has_load, "Load model... item");
     assertTrue(has_close, "Close current model item");
     assertTrue(has_checkbox, "at least one model checkbox");
+  }
+
+  @Test
+  void modelsMenuHasPresetsSubmenu() {
+    final Menu models = findModelsMenu();
+    assertNotNull(models, "Models menu");
+
+    Menu presets = null;
+    for (int i = 0; i < models.getItemCount(); i++) {
+      final MenuItem item = models.getItem(i);
+      if (item instanceof Menu && "Presets".equals(item.getLabel())) {
+        presets = (Menu) item;
+      }
+    }
+    assertNotNull(presets, "Presets submenu");
+
+    int indexes = 0;
+    int leaves = 0;
+    for (int i = 0; i < presets.getItemCount(); i++) {
+      final MenuItem index = presets.getItem(i);
+      if (index instanceof Menu) {
+        indexes++;
+        leaves += ((Menu) index).getItemCount();
+      }
+    }
+    assertTrue(indexes > 0, "at least one preset index, got " + indexes);
+    assertTrue(leaves > 0, "at least one preset model, got " + leaves);
   }
 
   @Test

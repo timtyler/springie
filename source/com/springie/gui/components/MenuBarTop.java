@@ -11,6 +11,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
@@ -23,11 +30,14 @@ import com.springie.io.out.writers.off.WriterOFF;
 import com.springie.io.out.writers.pov.WriterPOV;
 import com.springie.io.out.writers.spr.WriterSpr;
 import com.springie.io.out.writers.wrl.WriterWRL;
+import com.springie.presets.AddXMLModelIndexLeaves;
 import com.springie.utilities.FilePath;
 import com.tifsoft.Forget;
 
 public class MenuBarTop extends MenuBar {
   static final long serialVersionUID = 1250; 
+
+  private static final Logger logger = LoggerFactory.getLogger(MenuBarTop.class);
   static final String QUIT = "Quit";
 
   private static final String CONTROLS = "Controls...";
@@ -39,8 +49,6 @@ public class MenuBarTop extends MenuBar {
   static final String ABOUT = "About...";
 
   static final String LOAD_DATA = "Load objects...";
-
-  static final String LOAD_MODEL = "Load model...";
 
   static final String CLOSE_MODEL = "Close current model";
 
@@ -116,13 +124,10 @@ public class MenuBarTop extends MenuBar {
     final Menu menu = this.models_menu;
     menu.removeAll();
 
-    final MenuItem load = new MenuItem(LOAD_MODEL);
-    load.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        chooseLoadNewModel();
-      }
-    });
-    menu.add(load);
+    if (this.presets_menu == null) {
+      this.presets_menu = makePresetsMenu();
+    }
+    menu.add(this.presets_menu);
     menu.addSeparator();
 
     final java.util.List<ModelSlot> slots = ModelManager.getSlots();
@@ -151,17 +156,42 @@ public class MenuBarTop extends MenuBar {
     menu.add(close);
   }
 
-  private void chooseLoadNewModel() {
-    final FileDialog fd = new FileDialog(this.frame.getAppletFrame(),
-      "Load model", FileDialog.LOAD);
-    fd.setVisible(true);
-    final String returnedstring = fd.getFile();
-    fd.setVisible(false);
+  private Menu presets_menu;
 
-    if (isAcceptableFileName(returnedstring)) {
-      final FilePath fp = new FilePath(fd.getDirectory(), returnedstring);
-      FrEnd.loadFileAsNewModel(fp);
+  /**
+   * The preset models, mirroring the bottom-bar preset dropdowns: one
+   * submenu per preset index, one item per model. Choosing one loads it
+   * exactly as the restart button does. Built once and reused across menu
+   * rebuilds, so the index files are not re-parsed on every slot change.
+   */
+  private Menu makePresetsMenu() {
+    final Menu presets = new Menu("Presets");
+    try {
+      final LinkedHashMap<String, String> indexes =
+          AddXMLModelIndexLeaves.getLeaves(FrEnd.model_index);
+      for (Map.Entry<String, String> index : indexes.entrySet()) {
+        final Menu index_menu = new Menu(index.getKey());
+        final LinkedHashMap<String, String> leaves =
+            AddXMLModelIndexLeaves.getLeaves(index.getValue());
+        for (Map.Entry<String, String> leaf : leaves.entrySet()) {
+          final MenuItem item = new MenuItem(leaf.getKey());
+          final String path = leaf.getValue();
+          item.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+              Forget.about(e);
+              FrEnd.next_file_path = path;
+              FrEnd.new_message_manager
+                  .add(FrEnd.system_messages.getRestartMessage());
+            }
+          });
+          index_menu.add(item);
+        }
+        presets.add(index_menu);
+      }
+    } catch (IOException | SAXException e) {
+      logger.error("Could not build the Presets menu", e);
     }
+    return presets;
   }
 
   private Menu makeWindowMenu() {
