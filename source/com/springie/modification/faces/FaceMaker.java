@@ -34,22 +34,14 @@ public class FaceMaker {
   }
 
   /**
-   * Creates a face for every minimal cycle in the selected nodes and
-   * links (see FaceCycleFinder for the algorithm). Cycles that already
+   * Creates a face for every minimal cycle in the selected links (see
+   * FaceCycleFinder for the algorithm). Only links need to be selected:
+   * the nodes are taken from the links' endpoints. Cycles that already
    * exist as polygons are skipped, and the new faces are selected.
    *
    * @return the number of faces created
    */
   public int makeFacesFromSelection() {
-    final ArrayList<Node> selected_nodes = new ArrayList<>();
-    final int number_of_nodes = this.node_manager.element.size();
-    for (int i = number_of_nodes; --i >= 0;) {
-      final Node node = (Node) this.node_manager.element.get(i);
-      if (node.type.selected) {
-        selected_nodes.add(node);
-      }
-    }
-
     final ArrayList<Link> selected_links = new ArrayList<>();
     final int number_of_links = this.link_manager.element.size();
     for (int i = number_of_links; --i >= 0;) {
@@ -63,7 +55,7 @@ public class FaceMaker {
 
     int created = 0;
     final ArrayList<ArrayList<Node>> cycles = FaceCycleFinder
-      .findFaceCycles(selected_nodes, selected_links);
+      .findFaceCycles(selected_links);
     for (ArrayList<Node> cycle : cycles) {
       if (polygon_manager.isThereAPolygonWithNodes(cycle)) {
         continue;

@@ -203,4 +203,61 @@ class FaceCycleFinderTest {
       links(link(a, b), link(b, c), link(c, d), link(d, a))).isEmpty(),
       "links through the unselected node cannot form a face");
   }
+
+  @Test
+  void linksOnlyOverloadDerivesNodesFromEndpoints() {
+    // The caller no longer needs to select nodes: the finder takes
+    // them from the links' endpoints, and endpoint selection state
+    // is irrelevant.
+    final Node a = node(0, 0, 0);
+    final Node b = node(1, 0, 0);
+    final Node c = node(1, 1, 0);
+    final Node d = node(0, 1, 0);
+    a.type.selected = false;
+    b.type.selected = false;
+    c.type.selected = false;
+    d.type.selected = false;
+    final ArrayList<Link> ls = links(link(a, b), link(b, c), link(c, d),
+      link(d, a));
+
+    final ArrayList<ArrayList<Node>> faces = FaceCycleFinder
+      .findFaceCycles(ls);
+
+    assertEquals(1, faces.size(), "a square loop is one face");
+    assertEquals(4, faces.get(0).size());
+    assertIsCycle(faces.get(0), ls);
+  }
+
+  @Test
+  void linksOnlyOverloadFindsCubeFaces() {
+    final Node[] v = new Node[8];
+    for (int i = 0; i < 8; i++) {
+      v[i] = node(i & 1, (i >> 1) & 1, (i >> 2) & 1);
+      v[i].type.selected = false;
+    }
+    final ArrayList<Link> ls = new ArrayList<>();
+    for (int i = 0; i < 8; i++) {
+      for (int bit = 0; bit < 3; bit++) {
+        final int j = i ^ (1 << bit);
+        if (j > i) {
+          ls.add(link(v[i], v[j]));
+        }
+      }
+    }
+
+    final ArrayList<ArrayList<Node>> faces = FaceCycleFinder
+      .findFaceCycles(ls);
+
+    assertEquals(6, faces.size(), "a cube wireframe has six faces");
+    for (ArrayList<Node> face : faces) {
+      assertEquals(4, face.size(), "every cube face is a quad");
+      assertIsCycle(face, ls);
+    }
+  }
+
+  @Test
+  void linksOnlyOverloadWithNoLinksFindsNothing() {
+    assertTrue(FaceCycleFinder.findFaceCycles(new ArrayList<Link>())
+      .isEmpty(), "no links, no faces");
+  }
 }

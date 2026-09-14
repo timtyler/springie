@@ -54,6 +54,29 @@ public class FaceCycleFinder {
   }
 
   /**
+   * Convenience overload: the faces are bounded by the links alone, so
+   * the caller only needs to supply the selected links -- the node set
+   * is derived from the links' endpoints.
+   *
+   * @return one node list per face found, each in cycle order
+   */
+  public static ArrayList<ArrayList<Node>> findFaceCycles(
+      ArrayList<Link> links) {
+    final IdentityHashMap<Node, Boolean> seen = new IdentityHashMap<>();
+    final ArrayList<Node> nodes = new ArrayList<>();
+    for (Link link : links) {
+      for (Node endpoint : link.nodes) {
+        if (endpoint != null && seen.put(endpoint, Boolean.TRUE) == null) {
+          nodes.add(endpoint);
+        }
+      }
+    }
+    return findFaceCycles(nodes, links);
+  }
+
+  /**
+   * @param nodes the nodes that may take part in faces; a link touching
+   * a node outside this list is ignored
    * @return one node list per face found, each in cycle order
    */
   public static ArrayList<ArrayList<Node>> findFaceCycles(
