@@ -2,7 +2,6 @@
 
 package com.springie.render.modules.raytraced;
 
-import java.util.Random;
 import java.awt.image.BufferedImage;
 
 import com.springie.geometry.Vector3D;
@@ -134,6 +133,15 @@ final class Raytracer {
     final Ray ray = new Ray();
     final Hit hit = new Hit();
     final int[] stack = new int[64];
+    // One reusable jitter source per tile: reseeded per pixel with the
+    // same seed the per-pixel Random used, so the sub-pixel rays are
+    // bit-identical with none of the allocation.
+    final JitterRandom jitter = new JitterRandom();
+    // Scratch shadow-query instances, reused across the tile's pixels:
+    // one tile is rendered by one worker thread, so these are thread-local
+    // by construction.
+    final Ray shadow_ray = new Ray();
+    final Hit shadow_hit = new Hit();
     // Read live, once per tile: the user can recolour the background
     // mid-session (Colours > General > Background). The background
     // number is already in 0xRRGGBB packing.
@@ -167,7 +175,7 @@ final class Raytracer {
           camera.makeRay(x0 + x, y0 + y, ray);
           hit.reset();
           final boolean struck = intersectScene(ray, hit, bvh, rings, stack);
-          final int rgb = struck ? shade(ray, hit, bvh, stack)
+          final int rgb = struck ? shade(ray, hit, bvh, stack, shadow_ray, shadow_hit)
               : backgroundAt(scenic, background_rgb, ray, x0 + x, y0 + y);
           pixels[i++] = rgb;
           if (struck && stats != null) {
@@ -190,7 +198,7 @@ final class Raytracer {
         // the pixel axes no longer alias in lockstep. Seeded per pixel
         // so a render is deterministic run to run and independent of
         // tile boundaries.
-        final Random jitter = new Random(
+        jitter.setSeed(
             (x0 + x) * 73856093L ^ (y0 + y) * 19349663L ^ 0x9E3779B9L);
         for (int sy = 0; sy < aa; sy++) {
           for (int sx = 0; sx < aa; sx++) {
@@ -200,7 +208,7 @@ final class Raytracer {
             hit.reset();
             final int rgb;
             if (intersectScene(ray, hit, bvh, rings, stack)) {
-              rgb = shade(ray, hit, bvh, stack);
+              rgb = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
               struck = true;
             } else {
               rgb = backgroundAt(scenic, background_rgb, ray,
@@ -234,6 +242,15 @@ final class Raytracer {
     final Ray ray = new Ray();
     final Hit hit = new Hit();
     final int[] stack = new int[64];
+    // One reusable jitter source per tile: reseeded per block with the
+    // same seed the per-block Random used, so the sub-pixel rays are
+    // bit-identical with none of the allocation.
+    final JitterRandom jitter = new JitterRandom();
+    // Scratch shadow-query instances, reused across the tile's pixels:
+    // one tile is rendered by one worker thread, so these are thread-local
+    // by construction.
+    final Ray shadow_ray = new Ray();
+    final Hit shadow_hit = new Hit();
     final int x1 = x0 + width;
     final int y1 = y0 + height;
     // Screen-aligned blocks: the first block may start before the tile.
@@ -248,7 +265,7 @@ final class Raytracer {
           camera.makeRay(bx, by, ray);
           hit.reset();
           if (intersectScene(ray, hit, bvh, rings, stack)) {
-            rgb = shade(ray, hit, bvh, stack);
+            rgb = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
             struck = true;
           } else {
             rgb = backgroundAt(scenic, background_rgb, ray, bx, by);
@@ -261,8 +278,7 @@ final class Raytracer {
           boolean hit_any = false;
           // Seeded per block, like the per-pixel path, so a render is
           // deterministic run to run and independent of tile boundaries.
-          final Random jitter = new Random(
-              bx * 73856093L ^ by * 19349663L ^ 0x9E3779B9L);
+          jitter.setSeed(bx * 73856093L ^ by * 19349663L ^ 0x9E3779B9L);
           for (int sy = 0; sy < aa; sy++) {
             for (int sx = 0; sx < aa; sx++) {
               final double sub_x = bx + (sx + jitter.nextDouble()) * px / aa;
@@ -271,7 +287,7 @@ final class Raytracer {
               hit.reset();
               final int sample_rgb;
               if (intersectScene(ray, hit, bvh, rings, stack)) {
-                sample_rgb = shade(ray, hit, bvh, stack);
+                sample_rgb = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
                 hit_any = true;
               } else {
                 sample_rgb = backgroundAt(scenic, background_rgb, ray,
@@ -338,7 +354,8 @@ final class Raytracer {
    * default renderer's colour code; byte positions are preserved all the
    * way to new Color(packed), so they are preserved here too).
    */
-  private static int shade(Ray ray, Hit hit, BVH bvh, int[] stack) {
+  private static int shade(Ray ray, Hit hit, BVH bvh, int[] stack,
+      Ray shadow_ray, Hit shadow_hit) {
     if (hit.primitive.isUnlit()) {
       // Overlay indicators like the selection ring: flat colour at
       // full strength from any angle, fogged for depth like the
@@ -356,7 +373,7 @@ final class Raytracer {
     }
 
     final boolean shadowed = RendererDelegator.shadows
-        && inShadow(ray, hit, bvh, stack);
+        && inShadow(ray, hit, bvh, stack, shadow_ray, shadow_hit);
     if (shadowed) {
       // Ambient light only: the diffuse boost, the glossy sheen and
       // the specular highlight all need direct light.
@@ -382,8 +399,23 @@ final class Raytracer {
     ob = softAdd(ob, fill);
 
     if (!shadowed) {
-      final int sheen = glossySheen(ray, hit);
-      final int highlight = specularHighlight(ray, hit);
+      // The glossy sheen and the specular highlight share the same
+      // half-vector: one cosine (and one square root) serves both.
+      final int sheen;
+      final int highlight;
+      if (RendererDelegator.glossiness_enabled
+          || RendererDelegator.specular_enabled) {
+        final double lobe_cosine = lobeCosine(ray, hit);
+        sheen = RendererDelegator.glossiness_enabled
+            ? lobeValue(lobe_cosine, RendererDelegator.glossiness, 8.0)
+            : 0;
+        highlight = RendererDelegator.specular_enabled
+            ? lobeValue(lobe_cosine, RendererDelegator.specular, 32.0)
+            : 0;
+      } else {
+        sheen = 0;
+        highlight = 0;
+      }
       final int rim = fresnelRim(ray, hit);
       or = softAdd(softAdd(or, sheen), rim);
       og = softAdd(softAdd(og, sheen), rim);
@@ -445,47 +477,59 @@ final class Raytracer {
    * nudged off the surface towards the light so it does not shadow
    * itself.
    */
-  private static boolean inShadow(Ray ray, Hit hit, BVH bvh, int[] stack) {
+  private static boolean inShadow(Ray ray, Hit hit, BVH bvh,
+      int[] stack, Ray shadow_ray, Hit shadow_hit) {
     final double px = ray.ox + ray.dx * hit.t;
     final double py = ray.oy + ray.dy * hit.t;
     final double pz = ray.oz + ray.dz * hit.t;
     final double toward_light = hit.nx * LIGHT_X + hit.ny * LIGHT_Y
         + hit.nz * LIGHT_Z;
     final double side = toward_light > 0.0 ? 1.0 : -1.0;
-    final Ray shadow = new Ray();
-    shadow.ox = px + side * hit.nx;
-    shadow.oy = py + side * hit.ny;
-    shadow.oz = pz + side * hit.nz;
-    shadow.dx = LIGHT_X;
-    shadow.dy = LIGHT_Y;
-    shadow.dz = LIGHT_Z;
-    final Hit shadow_hit = new Hit();
-    return bvh.intersect(shadow, shadow_hit, stack);
+    // Scratch instances owned by the calling tile (one tile per worker
+    // thread), so the shadow query allocates nothing per pixel.
+    shadow_ray.ox = px + side * hit.nx;
+    shadow_ray.oy = py + side * hit.ny;
+    shadow_ray.oz = pz + side * hit.nz;
+    shadow_ray.dx = LIGHT_X;
+    shadow_ray.dy = LIGHT_Y;
+    shadow_ray.dz = LIGHT_Z;
+    shadow_hit.reset();
+    return bvh.intersect(shadow_ray, shadow_hit, stack);
   }
 
   /**
-   * Blinn-Phong highlight: how directly the surface reflects the light
-   * into the viewer. Returns the 0-255 white to add, or 0 when specular
-   * highlights are off or the geometry faces away.
+   * The cosine between the surface normal and the Blinn-Phong
+   * half-vector (halfway between the light direction and the view
+   * direction), shared by the glossy sheen and the specular highlight.
+   * Returns 0 when the surface faces away or the vector degenerates,
+   * exactly the cases the old per-effect code returned 0 for.
    */
-  private static int specularHighlight(Ray ray, Hit hit) {
-    if (!RendererDelegator.specular_enabled) {
-      return 0;
+  private static double lobeCosine(Ray ray, Hit hit) {
+    // Halfway between the light direction and the view direction.
+    final double hx = LIGHT_X - ray.dx;
+    final double hy = LIGHT_Y - ray.dy;
+    final double hz = LIGHT_Z - ray.dz;
+    final double length = Math.sqrt(hx * hx + hy * hy + hz * hz);
+    if (length < 1e-12) {
+      return 0.0;
     }
-    return lobeHighlight(ray, hit, RendererDelegator.specular, 32.0);
+    final double cosine = (hit.nx * hx + hit.ny * hy + hit.nz * hz)
+        / length;
+    return cosine > 0.0 ? cosine : 0.0;
   }
 
   /**
-   * The glossy sheen: a broad Blinn-Phong lobe around the perfect mirror
-   * direction, so surfaces look satiny rather than speckled. Returns the
-   * 0-255 white to add, or 0 when glossiness is off or the geometry
-   * faces away.
+   * Shared lobe math: the halfway-vector cosine raised to the given
+   * exponent and scaled by the 0-100 strength. A small exponent gives a
+   * broad satin sheen, a large one a tight sparkle. Pure shading -- no
+   * rays, so the result is always smooth.
    */
-  private static int glossySheen(Ray ray, Hit hit) {
-    if (!RendererDelegator.glossiness_enabled) {
+  private static int lobeValue(double cosine, int strength,
+      double exponent) {
+    if (cosine <= 0.0 || strength <= 0) {
       return 0;
     }
-    return lobeHighlight(ray, hit, RendererDelegator.glossiness, 8.0);
+    return (int) (255.0 * Math.pow(cosine, exponent) * strength / 100.0);
   }
 
   /**
@@ -516,33 +560,5 @@ final class Raytracer {
     final double facing = 1.0 - cosine;
     final double schlick = facing * facing * facing * facing * facing;
     return (int) (strength * 2.55 * schlick);
-  }
-
-  /**
-   * Shared lobe math: the halfway vector between the light direction
-   * and the view direction, raised to the given exponent and scaled by
-   * the 0-100 strength. A small exponent gives a broad satin sheen, a
-   * large one a tight sparkle. Pure shading -- no rays, so the result is
-   * always smooth.
-   */
-  private static int lobeHighlight(Ray ray, Hit hit, int strength,
-      double exponent) {
-    if (strength <= 0) {
-      return 0;
-    }
-    // Halfway between the light direction and the view direction.
-    final double hx = LIGHT_X - ray.dx;
-    final double hy = LIGHT_Y - ray.dy;
-    final double hz = LIGHT_Z - ray.dz;
-    final double length = Math.sqrt(hx * hx + hy * hy + hz * hz);
-    if (length < 1e-12) {
-      return 0;
-    }
-    final double cosine = (hit.nx * hx + hit.ny * hy + hit.nz * hz)
-        / length;
-    if (cosine <= 0.0) {
-      return 0;
-    }
-    return (int) (255.0 * Math.pow(cosine, exponent) * strength / 100.0);
   }
 }
