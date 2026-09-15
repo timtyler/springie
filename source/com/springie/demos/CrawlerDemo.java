@@ -57,7 +57,7 @@ public final class CrawlerDemo {
     link_manager.reset();
     node_manager.getFaceManager().reset();
 
-    final Clazz clazz = node_manager.clazz_factory.getNew(0);
+    final Clazz clazz = node_manager.clazz_factory.getNew(0xFFFFFFFF);
     final NodeType node_type = node_manager.node_type_factory.getNew();
     final int body_e = body_edge_px << Coords.shift;
     final LinkType body_type = link_manager.link_type_factory.getNew(body_e, 50);

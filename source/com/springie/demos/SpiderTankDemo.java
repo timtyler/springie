@@ -63,7 +63,7 @@ public final class SpiderTankDemo {
     link_manager.reset();
     node_manager.getFaceManager().reset();
 
-    final Clazz clazz = node_manager.clazz_factory.getNew(0);
+    final Clazz clazz = node_manager.clazz_factory.getNew(0xFFFFFFFF);
     final NodeType node_type = node_manager.node_type_factory.getNew();
     // Heavy body (harder to launch), light legs.
     final NodeType body_node_type = node_manager.node_type_factory.getNew();

@@ -44,7 +44,7 @@ public final class SnakeDemo {
     node_manager.initialSetUp();
     final LinkManager link_manager = node_manager.getLinkManager();
 
-    final Clazz clazz = node_manager.clazz_factory.getNew(0);
+    final Clazz clazz = node_manager.clazz_factory.getNew(0xFFFFFFFF);
     final NodeType node_type = node_manager.node_type_factory.getNew();
     final LinkType link_type = link_manager.link_type_factory.getNew(
         EDGE_PIXELS << Coords.shift, 50);
