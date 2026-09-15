@@ -30,6 +30,8 @@ public final class CrawlerJudge {
     // Build the crawler.
     final Node body = CrawlerDemo.buildAt(0);
     final int start_x = body.pos.x;
+    final int start_y = body.pos.y;
+    final int start_z = body.pos.z;
 
     // Let it settle for a moment, then run.
     FrEnd.paused = false;
@@ -37,8 +39,13 @@ public final class CrawlerJudge {
       node_manager.nodeAndLinkUpdate();
     }
 
-    final int end_x = body.pos.x;
-    final int displacement_px = (end_x - start_x) >> com.springie.render.Coords.shift;
+    // Score: straight-line distance from the starting spot (pixels).
+    // Direction-agnostic — no need to solve the orientation problem.
+    final long dx = (long) body.pos.x - start_x;
+    final long dy = (long) body.pos.y - start_y;
+    final long dz = (long) body.pos.z - start_z;
+    final int dist_internal = (int) Math.sqrt(dx * dx + dy * dy + dz * dz);
+    final int displacement_px = dist_internal >> com.springie.render.Coords.shift;
 
     // Also report height (did it fall over?) and tick count.
     final int height_px = body.pos.y >> com.springie.render.Coords.shift;

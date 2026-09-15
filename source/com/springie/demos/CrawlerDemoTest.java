@@ -35,6 +35,7 @@ class CrawlerDemoTest {
     old_muscles_enabled = Muscles.enabled;
     old_gravity_active = World.gravity_active;
     old_friction = World.ground_friction;
+    ContextManager.setNodeManager(new NodeManager());
   }
 
   @AfterEach
@@ -82,9 +83,9 @@ class CrawlerDemoTest {
 
     assertEquals(4, phases.size());
     // Diagonal pairs (FL+BR, FR+BL) share phases; the pairs differ.
-    // FL=0, FR=30, BL=30, BR=0 for the default 60-tick period.
+    // FL=0, FR=60, BL=60, BR=0 for the default 120-tick period.
     assertTrue(phases.contains(0));
-    assertTrue(phases.contains(30));
+    assertTrue(phases.contains(60));
   }
 
   @Test

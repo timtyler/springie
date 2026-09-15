@@ -31,20 +31,20 @@ public final class CrawlerDemo {
   }
 
   /** Edge length of body tetrahedra, in pixels. */
-  public static int body_edge_px = 40;
+  public static int body_edge_px = 60;
   /** Leg length (hip to foot), in pixels. */
-  public static int leg_length_px = 50;
+  public static int leg_length_px = 30;
   /** Leg splay (hip to knee sideways), in pixels. */
-  public static int leg_splay_px = 25;
+  public static int leg_splay_px = 35;
   /** Muscle amplitude, 0-100%. */
-  public static int muscle_amplitude_pct = 10;
+  public static int muscle_amplitude_pct = 5;
   /** Muscle period, in ticks. */
-  public static int muscle_period_ticks = 60;
+  public static int muscle_period_ticks = 120;
   /** Ground friction, 0-100. */
   public static int friction = 100;
 
   /** Phase offsets (ticks) for FL, FR, BL, BR legs. */
-  public static int[] leg_phases = {0, 30, 30, 0};
+  public static int[] leg_phases = {0, 60, 60, 0};
 
   /**
    * Builds the crawler centred at (x_px, 0) with feet on the ground.
@@ -71,6 +71,7 @@ public final class CrawlerDemo {
     Muscles.activeOscillator().setPeriodTicks(muscle_period_ticks);
     Muscles.activeOscillator().setPhase(0);
     World.gravity_active = true;
+    World.gravity_strength = 5; // Strong gravity to keep it grounded.
     World.ground_friction = friction;
 
     final int x0 = x_px << Coords.shift;
