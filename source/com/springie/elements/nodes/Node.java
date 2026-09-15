@@ -248,6 +248,13 @@ public class Node extends BaseElement {
       if (this.velocity.y > 0) {
         this.velocity.y = -(int) (this.velocity.y * 0.95);
       }
+      // Ground friction: damp horizontal motion while in contact.
+      // 0 = slides freely, 100 = sticks.
+      final int friction = World.ground_friction;
+      if (friction > 0) {
+        this.velocity.x = (int) ((long) this.velocity.x * (100 - friction) / 100);
+        this.velocity.z = (int) ((long) this.velocity.z * (100 - friction) / 100);
+      }
     }
 
     if (this.pos.y < radius) {

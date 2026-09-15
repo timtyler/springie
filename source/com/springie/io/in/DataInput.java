@@ -92,6 +92,7 @@ public class DataInput {
     World.gravity_strength = 2;
     World.gravity_active = false;
     World.global_temperature = 6;
+    World.ground_friction = 0;
     World.minimum_magnitude = 0;
     Node.max_speed = Integer.MAX_VALUE;
     Node.viscocity = 0;

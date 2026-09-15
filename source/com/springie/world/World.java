@@ -66,6 +66,13 @@ public class World extends BaseElementManager<Node> {
 
 	public static boolean gravity_active;
 
+	/**
+	 * Ground friction, 0-100. When a node touches the ground (y=0),
+	 * its horizontal velocity is scaled by (100 - ground_friction) / 100
+	 * each step: 0 slides freely, 100 sticks.
+	 */
+	public static int ground_friction = 0;
+
 	protected static Node temp_agent;
 
 	protected static Node temp2_agent;

@@ -155,6 +155,28 @@ public class PanelControlsUniverse {
 		this.label_gravity = new Label("" + World.gravity_strength, Label.LEFT);
 		panel_gravity.add("East", this.label_gravity);
 
+		// START FRICTION
+		final Panel panel_friction = new Panel();
+		panel_friction.setLayout(new BorderLayout(0, 8));
+		panel_friction.add("West", new Label("Friction:", Label.RIGHT));
+
+		this.scroll_bar_friction = new Scrollbar(Scrollbar.HORIZONTAL, 0, 10, 0, 110);
+		this.scroll_bar_friction.addAdjustmentListener(new AdjustmentListener() {
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				final int temp = e.getValue();
+				World.ground_friction = temp;
+				getLabelFriction().setText("" + temp);
+			}
+		});
+
+		panel_friction.add("Center", this.scroll_bar_friction);
+
+		this.label_friction = new Label("" + World.ground_friction, Label.LEFT);
+		panel_friction.add("East", this.label_friction);
+
+		this.panel.add(panel_friction);
+		// END FRICTION
+
 		// START TEMPERATURE
 		final Panel panel_temperature = new Panel();
 		panel_temperature.setLayout(new BorderLayout(0, 8));
@@ -332,24 +354,6 @@ public class PanelControlsUniverse {
 		this.label_impact = new Label("" + (World.minimum_magnitude >> 6), Label.LEFT);
 		panel_excite.add("East", this.label_impact);
 
-		final Panel panel_friction = new Panel();
-		panel_friction.setLayout(new BorderLayout(0, 8));
-		panel_friction.add("West", new Label("Friction:", Label.RIGHT));
-
-//    this.scroll_bar_friction = new Scrollbar(Scrollbar.HORIZONTAL, 0, 100, 0,
-//      356);
-//    this.scroll_bar_friction.addAdjustmentListener(new AdjustmentListener() {
-//      public void adjustmentValueChanged(AdjustmentEvent e) {
-//        Node.friction_strength = e.getValue();
-//        reflectFriction();
-//      }
-//    });
-//    panel_friction.add("Center", this.scroll_bar_friction);
-//
-//    this.label_friction = new Label("12", Label.LEFT);
-//    panel_friction.add("East", this.label_friction);
-//    reflectFriction();
-
 		// universe...
 		this.panel.add(panel3D);
 		this.panel.add(panel_viscocity);
@@ -402,6 +406,10 @@ public class PanelControlsUniverse {
 		World.gravity_strength = 2;
 		World.gravity_active = false;
 		reflectGravity();
+
+		// Friction.
+		World.ground_friction = 0;
+		reflectFriction();
 
 		// Temperature.
 		World.global_temperature = 6;
@@ -484,6 +492,12 @@ public class PanelControlsUniverse {
 		this.label_gravity.setText("" + World.gravity_strength);
 		this.checkbox_gravity_switch.setState(World.gravity_active);
 		this.scroll_bar_gravity.setEnabled(World.gravity_active);
+	}
+
+	public void reflectFriction() {
+		this.scroll_bar_friction.setValue(World.ground_friction);
+
+		this.label_friction.setText("" + World.ground_friction);
 	}
 
 	public void reflectTemperature() {

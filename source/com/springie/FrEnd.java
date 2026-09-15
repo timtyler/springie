@@ -896,6 +896,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		FrEnd.panel_universe.reflectImpact();
 		FrEnd.panel_universe.reflectViscocity();
 		FrEnd.panel_universe.reflectGravity();
+		FrEnd.panel_universe.reflectFriction();
 		FrEnd.panel_universe.reflectTemperature();
 		FrEnd.panel_universe.reflect3D();
 		FrEnd.panel_universe.reflectMuscles();
