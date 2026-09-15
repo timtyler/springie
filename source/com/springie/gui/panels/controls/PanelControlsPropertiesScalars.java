@@ -18,6 +18,7 @@ import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TextFieldWrapper;
 import com.springie.messages.NewMessageManager;
 import com.springie.messages.commands.AlterLengthMessage;
+import com.springie.messages.commands.AlterPhaseMessage;
 import com.springie.messages.commands.AlterRadiusMessage;
 import com.springie.messages.commands.AlterChargeMessage;
 import com.springie.messages.commands.AlterElasticityMessage;
@@ -35,6 +36,7 @@ import com.springie.messages.commands.StiffnessDownMessage;
 import com.springie.metrics.AverageChargeGetter;
 import com.springie.metrics.AverageElasticityGetter;
 import com.springie.metrics.AverageLengthGetter;
+import com.springie.metrics.AveragePhaseGetter;
 import com.springie.metrics.AverageRadiusGetter;
 import com.springie.metrics.AverageStiffnessGetter;
 import com.springie.render.Coords;
@@ -55,6 +57,8 @@ public class PanelControlsPropertiesScalars {
 
   public Scrollbar scroll_bar_damping;
 
+  public Scrollbar scroll_bar_phase;
+
   public Label label_elasticity;
 
   public Label label_length;
@@ -64,6 +68,8 @@ public class PanelControlsPropertiesScalars {
   public Label label_radius;
 
   public Label label_charge;
+
+  public Label label_phase;
 
   public Button button_setsize;
 
@@ -143,6 +149,8 @@ public class PanelControlsPropertiesScalars {
 
     final Panel panel_damping = setUpSliderDamping();
 
+    final Panel panel_phase = setUpPhaseSlider();
+
     final Panel panel_charge = setUpChargeSlider();
 
     this.panel.removeAll();
@@ -158,6 +166,7 @@ public class PanelControlsPropertiesScalars {
         this.panel.add(panel_length);
         this.panel.add(panel_elasticity);
         this.panel.add(panel_damping);
+        this.panel.add(panel_phase);
       }
       if (nodes) {
         this.panel.add(panel_charge);
@@ -211,6 +220,28 @@ public class PanelControlsPropertiesScalars {
     panel_east.add(this.button_scale_lengths_up);
 
     panel.add("East", panel_east);
+
+    return panel;
+  }
+
+  private Panel setUpPhaseSlider() {
+    final Panel panel = new Panel();
+    panel.setLayout(new BorderLayout(0, 8));
+    panel.add("West", new Label("Phase (ticks):", Label.RIGHT));
+
+    this.scroll_bar_phase = new Scrollbar(Scrollbar.HORIZONTAL, 0, 10, 0, 610);
+    this.scroll_bar_phase.addAdjustmentListener(new AdjustmentListener() {
+      public void adjustmentValueChanged(AdjustmentEvent e) {
+        final int phase = e.getValue();
+        getNewMessageManager().add(new AlterPhaseMessage(phase));
+        reflectPhase();
+      }
+    });
+
+    panel.add("Center", this.scroll_bar_phase);
+
+    this.label_phase = new Label("X", Label.LEFT);
+    panel.add("East", this.label_phase);
 
     return panel;
   }
@@ -398,6 +429,7 @@ public class PanelControlsPropertiesScalars {
     reflectStiffness();
     reflectLength();
     reflectCharge();
+    reflectPhase();
   }
 
   public void reflectElasticity() {
@@ -420,6 +452,13 @@ public class PanelControlsPropertiesScalars {
     this.scroll_bar_length.setValue(v);
     setLengthLabel(v);
     //this.label_length.setText("" + v);
+  }
+
+  public void reflectPhase() {
+    final int v = new AveragePhaseGetter(ContextManager.getNodeManager())
+        .getAverage();
+    this.scroll_bar_phase.setValue(v);
+    this.label_phase.setText("" + v);
   }
 
   public void reflectRadius() {

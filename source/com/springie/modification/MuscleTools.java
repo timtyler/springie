@@ -15,8 +15,8 @@ import com.springie.muscles.Muscles;
  * Attaches and detaches muscle controllers to links.
  *
  * <p>Every attached controller is linked to the active oscillator
- * ({@link Muscles#active_oscillator}); amplitude, period and phase live
- * in the oscillator, so links carry no oscillator state of their own.
+ * ({@link Muscles#active_oscillator}); amplitude and period live
+ * in the oscillator, phase lives in each link.
  */
 public final class MuscleTools {
   private MuscleTools() {

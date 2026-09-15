@@ -53,6 +53,7 @@ public class Instructions {
     "ME", // 45 // Muscles enabled
     "MA", // 46 // Muscles amplitude
     "MP", // 47 // Muscles period
+    "PH", // 48 // Link phase (ticks)
 //  "CS", // 29 // Charge strength
   };
 
@@ -104,4 +105,5 @@ public class Instructions {
   static final int ME  = 45;
   static final int MA  = 46;
   static final int MP  = 47;
+  static final int PH  = 48;
 }

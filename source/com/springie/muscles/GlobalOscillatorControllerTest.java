@@ -22,8 +22,8 @@ import com.springie.render.Coords;
 /**
  * Each controller is linked to one oscillator by index; every dynamics
  * step it rewrites the link's adjusted rest length from that oscillator's
- * sine wave. Amplitude, period and phase live in the oscillator -- links
- * carry none of it.
+ * sine wave. Amplitude and period live in the oscillator; phase lives in
+ * the link, shifting the wave per-link.
  */
 class GlobalOscillatorControllerTest {
 
@@ -114,14 +114,41 @@ class GlobalOscillatorControllerTest {
   }
 
   @Test
-  void phaseLivesInTheOscillator() {
+  void oscillatorPhaseStillApplies() {
     Muscles.activeOscillator().setPhase(25);
 
     final Link link = makeLink();
     new GlobalOscillatorController(Muscles.active_oscillator).update(link, 0);
 
     assertEquals(link.type.length + link.type.length / 4, link.adjusted_rest_length, 2,
-        "a 25-tick phase on the oscillator must shift the wave, with no phase stored in the link");
+        "a 25-tick phase on the oscillator must shift the wave");
+  }
+
+  @Test
+  void linkPhaseShiftsTheWave() {
+    final Link link = makeLink();
+    link.phase = 25;
+    new GlobalOscillatorController(Muscles.active_oscillator).update(link, 0);
+
+    assertEquals(link.type.length + link.type.length / 4, link.adjusted_rest_length, 2,
+        "a 25-tick phase on the link must shift the wave by a quarter period");
+  }
+
+  @Test
+  void linkPhaseAddsToOscillatorPhase() {
+    Muscles.activeOscillator().setPhase(25);
+
+    final Link link = makeLink();
+    link.phase = 25;
+    new GlobalOscillatorController(Muscles.active_oscillator).update(link, 0);
+
+    assertEquals(link.type.length, link.adjusted_rest_length, 2,
+        "oscillator phase 25 + link phase 25 = half period: back to rest");
+  }
+
+  @Test
+  void linkPhaseDefaultsToZero() {
+    assertEquals(0, makeLink().phase, "a fresh link must have zero phase");
   }
 
   @Test

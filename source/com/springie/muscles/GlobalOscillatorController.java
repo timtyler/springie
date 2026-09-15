@@ -9,11 +9,10 @@ import com.springie.render.Coords;
  * The first controller behaviour: the link follows one of the global
  * oscillators ({@link Muscles#oscillators}). Every dynamics step the
  * link's adjusted rest length is rewritten from the oscillator's sine
- * wave.
+ * wave, shifted by the link's own phase ({@link Link#phase}).
  *
- * <p>The controller holds only the oscillator's index -- amplitude, period
- * and phase all live in the oscillator, and links carry no oscillator
- * state of their own.
+ * <p>The controller holds only the oscillator's index -- amplitude and
+ * period live in the oscillator, phase lives in the link.
  */
 public class GlobalOscillatorController implements Controller {
   /** Index into {@link Muscles#oscillators}: the oscillator this link follows. */
@@ -32,7 +31,7 @@ public class GlobalOscillatorController implements Controller {
     if (oscillator == null) {
       return;
     }
-    final int scale = oscillator.getScale(tick);
+    final int scale = oscillator.getScale(tick, link.phase);
     link.adjusted_rest_length = (int) (((long) link.type.length * scale) >> Coords.shift);
   }
 }

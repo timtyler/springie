@@ -514,6 +514,12 @@ public final class ReaderTens {
 
                     break;
 
+                  case Instructions.PH:
+                    current_link.phase = temp;
+                    last_token_number = -99;
+
+                    break;
+
                   default:
                     break;
                 }

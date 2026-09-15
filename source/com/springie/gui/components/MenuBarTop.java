@@ -23,6 +23,7 @@ import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.context.ModelManager;
 import com.springie.context.ModelSlot;
+import com.springie.messages.commands.SnakeDemoMessage;
 import com.springie.gui.frames.FrameMain;
 import com.springie.io.out.writers.eig.WriterEIG;
 import com.springie.io.out.writers.fdl.WriterFDL;
@@ -128,6 +129,7 @@ public class MenuBarTop extends MenuBar {
       this.presets_menu = makePresetsMenu();
     }
     menu.add(this.presets_menu);
+    menu.add(makeDemosMenu());
     menu.addSeparator();
 
     final java.util.List<ModelSlot> slots = ModelManager.getSlots();
@@ -197,6 +199,22 @@ public class MenuBarTop extends MenuBar {
       logger.error("Could not build the Presets menu", e);
     }
     return presets;
+  }
+
+  /**
+   * Procedural demos, built in code rather than loaded from files.
+   */
+  private Menu makeDemosMenu() {
+    final Menu demos = new Menu("Demos");
+    final MenuItem snake = new MenuItem("Snake");
+    snake.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        Forget.about(e);
+        FrEnd.new_message_manager.add(new SnakeDemoMessage());
+      }
+    });
+    demos.add(snake);
+    return demos;
   }
 
   private Menu makeWindowMenu() {

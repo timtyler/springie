@@ -525,6 +525,16 @@ public class LinkManager extends BaseElementManager<Link> {
     }
   }
 
+  public final void setPhaseOfSelected(int phase) {
+    final int n_o_l = this.element.size();
+    for (int temp = n_o_l; --temp >= 0;) {
+      final Link l = (Link) this.element.get(temp);
+      if (l.type.selected) {
+        l.phase = phase;
+      }
+    }
+  }
+
   public final void setRadiusOfSelected(int radius) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {

@@ -405,6 +405,10 @@ public class WriterSpr {
 			tag_link.add(getName(link));
 		}
 
+		if (link.phase != 0) {
+			tag_link.add(new XMLWriterAttribute("phase", "" + link.phase));
+		}
+
 		return tag_link;
 	}
 

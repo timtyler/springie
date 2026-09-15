@@ -67,14 +67,14 @@ class UpdateEnabledComponentsTest {
       int children = 0;
       while (System.currentTimeMillis() < deadline) {
         children = scalarsChildCount();
-        if (children == 4) {
+        if (children == 5) {
           break;
         }
         Thread.sleep(500);
       }
 
-      // Radius, Length, Elasticity, Damping.
-      assertEquals(4, children,
+      // Radius, Length, Elasticity, Damping, Phase.
+      assertEquals(5, children,
           "scalars panel should repopulate after selecting links");
     } finally {
       for (final Frame frame : Frame.getFrames()) {

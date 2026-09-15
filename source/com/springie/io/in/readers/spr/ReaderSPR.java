@@ -252,6 +252,8 @@ public class ReaderSPR extends DefaultHandler {
             }
           } else if ("name".equals(nam)) {
             this.out.append("NA:" + val + " ");
+          } else if (is_link && "phase".equals(nam)) {
+            this.out.append("PH:" + val + " ");
           }
         } else if (is_type) {
           if ("radius".equals(nam)) {

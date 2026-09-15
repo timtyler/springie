@@ -39,6 +39,14 @@ public class Link extends BaseElement {
    */
   public int adjusted_rest_length;
 
+  /**
+   * Per-link phase offset into the muscle oscillator cycle, in ticks.
+   * Shifts the oscillator's sine wave for this link, so different links
+   * can pulse at different points in the cycle (e.g. traveling waves).
+   * Applied in {@link com.springie.muscles.GlobalOscillatorController}.
+   */
+  public int phase;
+
   public static int number_of_strut_render_divisions = 2;
 
   public static int number_of_cable_render_divisions = 1;
@@ -123,6 +131,7 @@ public class Link extends BaseElement {
     this.clazz = l.clazz;
     this.controller = l.controller;
     this.adjusted_rest_length = l.adjusted_rest_length;
+    this.phase = l.phase;
 
     this.nodes = new Node[2];
     this.nodes[0] = l.nodes[0];
