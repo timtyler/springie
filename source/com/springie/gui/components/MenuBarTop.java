@@ -26,6 +26,7 @@ import com.springie.context.ModelSlot;
 import com.springie.messages.commands.SnakeDemoMessage;
 import com.springie.messages.commands.CrawlerDemoMessage;
 import com.springie.messages.commands.SpiderTankDemoMessage;
+import com.springie.messages.commands.WheelDemoMessage;
 import com.springie.gui.frames.FrameMain;
 import com.springie.io.out.writers.eig.WriterEIG;
 import com.springie.io.out.writers.fdl.WriterFDL;
@@ -232,6 +233,14 @@ public class MenuBarTop extends MenuBar {
       }
     });
     demos.add(spider_tank);
+    final MenuItem wheel = new MenuItem("Wheel");
+    wheel.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        Forget.about(e);
+        FrEnd.new_message_manager.add(new WheelDemoMessage());
+      }
+    });
+    demos.add(wheel);
     return demos;
   }
 
