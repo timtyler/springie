@@ -46,8 +46,12 @@ public final class SnakeDemo {
 
     final Clazz clazz = node_manager.clazz_factory.getNew(0xFFFFFFFF);
     final NodeType node_type = node_manager.node_type_factory.getNew();
+    // Soft springs: 30px edges with the default elasticity (50) are too
+    // stiff for the 6-links-per-node tetrahedral packing -- the per-tick
+    // spring integration goes numerically unstable and the model explodes
+    // to the universe walls within a few ticks. 12 is verified stable.
     final LinkType link_type = link_manager.link_type_factory.getNew(
-        EDGE_PIXELS << Coords.shift, 50);
+        EDGE_PIXELS << Coords.shift, 12);
 
     // Tune the oscillator first: the phase step below assumes it.
     Muscles.enabled = true;

@@ -13,12 +13,15 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
+import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
+import com.springie.render.Coords;
 
 /**
  * The snake demo must build a chain of tetrahedra (4 nodes + 3 new nodes
@@ -103,5 +106,57 @@ class SnakeDemoTest {
     assertEquals(0, min_phase, "the head must start at phase 0");
     assertTrue(max_phase > period / 2,
         "phases must span most of one period for a visible traveling wave");
+  }
+
+  /**
+   * Regression test: the snake's short (30px) links in a 6-links-per-node
+   * tetrahedral packing used to exceed the spring integrator's stability
+   * limit (elasticity 50) and explode to the universe walls within a few
+   * ticks -- with or without muscles. The demo now uses softer springs;
+   * the model must stay in one piece and keep moving.
+   */
+  @Test
+  void dynamicsStayNumericallyStable() {
+    SnakeDemo.build();
+
+    final NodeManager node_manager = ContextManager.getNodeManager();
+    final int n = node_manager.element.size();
+    final Node mid = (Node) node_manager.element.get(11);
+    final int start_x = mid.pos.x;
+    final int start_y = mid.pos.y;
+
+    // Force dynamics on: other tests may leave FrEnd.paused set.
+    final boolean old_paused = FrEnd.paused;
+    FrEnd.paused = false;
+    try {
+      // The old setup blew up by tick 5-9; run well past that point.
+      for (int t = 0; t < 120; t++) {
+        node_manager.nodeAndLinkUpdate();
+      }
+    } finally {
+      FrEnd.paused = old_paused;
+    }
+
+    int min_x = Integer.MAX_VALUE;
+    int max_x = Integer.MIN_VALUE;
+    int min_y = Integer.MAX_VALUE;
+    int max_y = Integer.MIN_VALUE;
+    for (int i = 0; i < n; i++) {
+      final Node node = (Node) node_manager.element.get(i);
+      min_x = Math.min(min_x, node.pos.x);
+      max_x = Math.max(max_x, node.pos.x);
+      min_y = Math.min(min_y, node.pos.y);
+      max_y = Math.max(max_y, node.pos.y);
+    }
+    final int w = (max_x - min_x) >> Coords.shift;
+    final int h = (max_y - min_y) >> Coords.shift;
+    assertTrue(w < 400 && h < 400,
+        "snake must not explode to the universe walls, bbox was " + w + "x" + h);
+
+    // ...and the muscles must actually drive it, not leave it frozen.
+    final int moved = Math.max(Math.abs(mid.pos.x - start_x),
+        Math.abs(mid.pos.y - start_y)) >> Coords.shift;
+    assertTrue(moved > 5,
+        "snake should writhe, but the mid node moved only " + moved + "px");
   }
 }
