@@ -2,13 +2,14 @@
 
 package com.springie.demos;
 
-import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 
 /**
- * Headless judge for the spider tank. Scores by distance from start.
+ * Truly headless judge for the spider tank. Does NOT start FrEnd
+ * (no GUI, no animation thread). Single-threaded and deterministic.
+ * Scores by distance from start.
  */
 public final class SpiderTankJudge {
   private SpiderTankJudge() {
@@ -17,16 +18,14 @@ public final class SpiderTankJudge {
   public static void main(String[] args) throws Exception {
     final int ticks = args.length > 0 ? Integer.parseInt(args[0]) : 600;
 
-    FrEnd.main(new String[0]);
-    Thread.sleep(1500);
-
+    // Headless: just create a NodeManager, no FrEnd.
+    ContextManager.setNodeManager(new NodeManager());
     final NodeManager node_manager = ContextManager.getNodeManager();
     final Node body = SpiderTankDemo.buildAt(0);
     final int start_x = body.pos.x;
     final int start_y = body.pos.y;
     final int start_z = body.pos.z;
 
-    FrEnd.paused = false;
     for (int i = 0; i < ticks; i++) {
       node_manager.nodeAndLinkUpdate();
     }

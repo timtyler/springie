@@ -65,6 +65,9 @@ public final class SpiderTankDemo {
 
     final Clazz clazz = node_manager.clazz_factory.getNew(0);
     final NodeType node_type = node_manager.node_type_factory.getNew();
+    // Heavy body (harder to launch), light legs.
+    final NodeType body_node_type = node_manager.node_type_factory.getNew();
+    body_node_type.setMass(24);
     final int body_e = body_edge_px << Coords.shift;
     final LinkType body_type = link_manager.link_type_factory.getNew(body_e, 50);
     final LinkType leg_type = link_manager.link_type_factory.getNew(
@@ -94,14 +97,14 @@ public final class SpiderTankDemo {
     final Node[] left = new Node[3];
     final Node[] right = new Node[3];
     for (int s = 0; s < 3; s++) {
-      left[s] = addNode(node_manager, clazz, node_type, x0 + s * seg, body_y, 0);
-      right[s] = addNode(node_manager, clazz, node_type, x0 + s * seg, body_y, bw);
+      left[s] = addNode(node_manager, clazz, body_node_type, x0 + s * seg, body_y, 0);
+      right[s] = addNode(node_manager, clazz, body_node_type, x0 + s * seg, body_y, bw);
     }
     // Ridge nodes (top).
-    final Node t0 = addNode(node_manager, clazz, node_type, x0 + seg / 2, body_y - bh, 0);
-    final Node t1 = addNode(node_manager, clazz, node_type, x0 + seg / 2, body_y - bh, bw);
-    final Node t2 = addNode(node_manager, clazz, node_type, x0 + seg * 3 / 2, body_y - bh, 0);
-    final Node t3 = addNode(node_manager, clazz, node_type, x0 + seg * 3 / 2, body_y - bh, bw);
+    final Node t0 = addNode(node_manager, clazz, body_node_type, x0 + seg / 2, body_y - bh, 0);
+    final Node t1 = addNode(node_manager, clazz, body_node_type, x0 + seg / 2, body_y - bh, bw);
+    final Node t2 = addNode(node_manager, clazz, body_node_type, x0 + seg * 3 / 2, body_y - bh, 0);
+    final Node t3 = addNode(node_manager, clazz, body_node_type, x0 + seg * 3 / 2, body_y - bh, bw);
 
     // Hull frame.
     for (int s = 0; s < 3; s++) {
@@ -129,7 +132,7 @@ public final class SpiderTankDemo {
     link(link_manager, body_type, clazz, right[1], t3, -1);
     link(link_manager, body_type, clazz, right[2], t3, -1);
 
-    // Turret: small tetrahedron on top center.
+    // Turret: small tetrahedron on top center (light, decorative).
     final Node turret_top = addNode(node_manager, clazz, node_type,
         x0 + seg, body_y - bh - (20 << Coords.shift), bw / 2);
     link(link_manager, body_type, clazz, turret_top, t0, -1);

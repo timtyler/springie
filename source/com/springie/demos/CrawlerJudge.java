@@ -2,17 +2,17 @@
 
 package com.springie.demos;
 
-import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.geometry.Point3D;
 
 /**
- * Headless judge that scores a crawler design by distance walked.
+ * Truly headless judge that scores a crawler design by distance walked.
+ * Does NOT start FrEnd (no GUI, no animation thread) — single-threaded
+ * and deterministic. Needs DISPLAY set for AWT static init (Xvfb is fine).
  *
  * <p>Usage: java com.springie.demos.CrawlerJudge [ticks]
- * Prints: SCORE <pixels> (positive X displacement of the body).
+ * Prints: SCORE <pixels> (3D distance from start), HEIGHT, TICKS.
  */
 public final class CrawlerJudge {
   private CrawlerJudge() {
@@ -21,10 +21,8 @@ public final class CrawlerJudge {
   public static void main(String[] args) throws Exception {
     final int ticks = args.length > 0 ? Integer.parseInt(args[0]) : 600;
 
-    // Boot the app (headless under Xvfb is fine).
-    FrEnd.main(new String[0]);
-    Thread.sleep(1500);
-
+    // Headless: just create a NodeManager, no FrEnd.
+    ContextManager.setNodeManager(new NodeManager());
     final NodeManager node_manager = ContextManager.getNodeManager();
 
     // Build the crawler.
@@ -33,8 +31,6 @@ public final class CrawlerJudge {
     final int start_y = body.pos.y;
     final int start_z = body.pos.z;
 
-    // Let it settle for a moment, then run.
-    FrEnd.paused = false;
     for (int i = 0; i < ticks; i++) {
       node_manager.nodeAndLinkUpdate();
     }
