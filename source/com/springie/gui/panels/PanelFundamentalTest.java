@@ -284,6 +284,8 @@ public class PanelFundamentalTest {
         .newMessage() instanceof SpiderTankDemoMessage);
     assertTrue(
         DemoCatalog.forLabel("Demo: Wheel").newMessage() instanceof WheelDemoMessage);
+    assertTrue(DemoCatalog.forLabel("Demo: Grasshopper").newMessage()
+        instanceof com.springie.messages.commands.GrasshopperDemoMessage);
     assertNull(DemoCatalog.forLabel("Moscow"),
         "a model file must not dispatch to any demo");
   }
@@ -308,12 +310,13 @@ public class PanelFundamentalTest {
   @Test
   void launchButtonLaunchesEachSelectedDemo() throws Exception {
     final String[] labels = {
-        "Demo: Snake", "Demo: Crawler", "Demo: Spider Tank", "Demo: Wheel"};
+        "Demo: Snake", "Demo: Crawler", "Demo: Spider Tank", "Demo: Wheel",
+        "Demo: Grasshopper"};
     // Node counts the demo builders produce (their own tests pin these).
     final int[] nodes = {
-        SnakeDemo.SEGMENTS + 3, 14, 23, 25};
+        SnakeDemo.SEGMENTS + 3, 14, 23, 25, 14};
     final int[] links = {
-        3 * SnakeDemo.SEGMENTS + 3, -1, -1, 72};
+        3 * SnakeDemo.SEGMENTS + 3, -1, -1, 72, 31};
 
     try {
       for (int d = 0; d < labels.length; d++) {
