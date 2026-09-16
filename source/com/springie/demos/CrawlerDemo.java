@@ -36,7 +36,11 @@ public final class CrawlerDemo {
   /** Leg length (hip to foot), in pixels. */
   public static int leg_length_px = 30;
   /** Leg splay (hip to knee sideways), in pixels. */
-  public static int leg_splay_px = 35;
+  public static int leg_splay_px = 8;
+  /** Knee forward offset (+x), in pixels. */
+  public static int knee_forward_px = 12;
+  /** Foot forward offset (+x), in pixels. */
+  public static int foot_forward_px = 25;
   /** Muscle amplitude, 0-100%. */
   public static int muscle_amplitude_pct = 5;
   /** Muscle period, in ticks. */
@@ -63,7 +67,7 @@ public final class CrawlerDemo {
     final int body_e = body_edge_px << Coords.shift;
     final LinkType body_type = link_manager.link_type_factory.getNew(body_e, 50);
     final LinkType leg_type = link_manager.link_type_factory.getNew(
-        leg_length_px << Coords.shift, 50);
+        leg_length_px << Coords.shift, 30);
 
     // Muscles.
     Muscles.enabled = true;
@@ -77,7 +81,10 @@ public final class CrawlerDemo {
 
     final int x0 = x_px << Coords.shift;
     // Ground is the high-Y wall (positive gravity pulls toward +Y).
-    final int ground = (Coords.y_pixels << Coords.shift) - (10 << Coords.shift);
+    // Feet rest ~2px above the true wall; the whole build is shifted
+    // +40px in z so no node starts against the z = 0 wall.
+    final int ground = (Coords.y_pixels << Coords.shift) - (2 << Coords.shift);
+    final int zo = 40 << Coords.shift;
 
     // Body: two tetrahedra sharing a face, long axis along X.
     // Bottom face: rectangle of 4 nodes; top: 2 ridge nodes.
@@ -88,13 +95,13 @@ public final class CrawlerDemo {
     // Bottom face: rectangle of 4 nodes; top: 2 ridge nodes.
     // Y increases downward; ground is at high Y, so "up" is smaller Y.
     final int body_y = ground - (leg_length_px << Coords.shift) - (bh / 2);
-    final Node b0 = addNode(node_manager, clazz, node_type, x0, body_y, 0);
-    final Node b1 = addNode(node_manager, clazz, node_type, x0 + bl, body_y, 0);
-    final Node b2 = addNode(node_manager, clazz, node_type, x0 + bl, body_y, bw);
-    final Node b3 = addNode(node_manager, clazz, node_type, x0, body_y, bw);
+    final Node b0 = addNode(node_manager, clazz, node_type, x0, body_y, zo);
+    final Node b1 = addNode(node_manager, clazz, node_type, x0 + bl, body_y, zo);
+    final Node b2 = addNode(node_manager, clazz, node_type, x0 + bl, body_y, bw + zo);
+    final Node b3 = addNode(node_manager, clazz, node_type, x0, body_y, bw + zo);
     // Ridge (top).
-    final Node t0 = addNode(node_manager, clazz, node_type, x0 + bl / 2, body_y - bh, 0);
-    final Node t1 = addNode(node_manager, clazz, node_type, x0 + bl / 2, body_y - bh, bw);
+    final Node t0 = addNode(node_manager, clazz, node_type, x0 + bl / 2, body_y - bh, zo);
+    final Node t1 = addNode(node_manager, clazz, node_type, x0 + bl / 2, body_y - bh, bw + zo);
 
     // Body edges (rigid frame, no muscles).
     link(link_manager, body_type, clazz, b0, b1, -1);
@@ -122,18 +129,21 @@ public final class CrawlerDemo {
       final int side = sides[leg];
       final int phase = leg_phases[leg];
 
-      // Knee: out to the side and slightly down from the hip edge midpoint.
+      // Knee: forward (+x) and halfway down; foot further forward at the
+      // ground; small z splay clears the hull. The leg flexes in the
+      // fore-aft plane about the z-running hip edge. (Sideways-splayed
+      // knees form a shallow inverted-V that buckles under load.)
       final int mid_x = (hip1.pos.x + hip2.pos.x) / 2;
       final int mid_y = (hip1.pos.y + hip2.pos.y) / 2;
       final int mid_z = (hip1.pos.z + hip2.pos.z) / 2;
       final Node knee = addNode(node_manager, clazz, node_type,
-          mid_x, mid_y + (leg_length_px << Coords.shift) / 3,
+          mid_x + (knee_forward_px << Coords.shift),
+          mid_y + (leg_length_px << Coords.shift) / 2,
           mid_z + side * (leg_splay_px << Coords.shift));
-      // Foot: forward (+X), out to the side, just above the ground.
-      final int foot_forward_px = 40;
+      // Foot: forward (+X), just above the ground.
       final Node foot = addNode(node_manager, clazz, node_type,
           mid_x + (foot_forward_px << Coords.shift),
-          ground - (5 << Coords.shift),
+          ground,
           mid_z + side * (leg_splay_px << Coords.shift));
 
       // Tetrahedron (hip1, hip2, knee, foot): all 6 edges.
@@ -163,6 +173,7 @@ public final class CrawlerDemo {
     final int dz = a.pos.z - b.pos.z;
     final int dist = (int) Math.sqrt((long) dx * dx + (long) dy * dy + (long) dz * dz);
     final LinkType type = lm.link_type_factory.getNew(dist, template.elasticity);
+    type.damping = template.damping;
     final Link link = lm.setLink(a, b, type, clazz);
     link.adjusted_rest_length = dist;
     if (phase >= 0) {

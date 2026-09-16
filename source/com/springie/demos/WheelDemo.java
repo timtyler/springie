@@ -66,7 +66,7 @@ public final class WheelDemo {
   public static int muscle_amplitude_pct = 25;
 
   /** Oscillator period for the spoke wave, in ticks. */
-  public static int muscle_period_ticks = 180;
+  public static int muscle_period_ticks = 120;
 
   /**
    * Direction of the travelling wave: +1 or -1. The spoke phase is
@@ -81,7 +81,7 @@ public final class WheelDemo {
    * synchronous drive: it pulls in best when the wheel is already
    * turning. A small kick gets it turning; the wave then holds it.
    */
-  public static int start_kick = 0;
+  public static int start_kick = 500;
 
   /** Ground friction, 0-100. */
   public static int friction = 100;
@@ -136,11 +136,11 @@ public final class WheelDemo {
       final double c = Math.cos(a);
       final double s = Math.sin(a);
       rim0[i] = addNode(node_manager, clazz, rim_type,
-          cx + (int) (radius * c), cy + (int) (radius * s), -hw);
+          cx + (int) (radius * c), cy + (int) (radius * s), 0);
       rim1[i] = addNode(node_manager, clazz, rim_type,
-          cx + (int) (radius * c), cy + (int) (radius * s), hw);
+          cx + (int) (radius * c), cy + (int) (radius * s), 2 * hw);
     }
-    final Node hub = addNode(node_manager, clazz, hub_type, cx, cy, 0);
+    final Node hub = addNode(node_manager, clazz, hub_type, cx, cy, hw);
 
     // Rim: two 12-gon rings (24 links) + 12 cross links (36 total).
     // The hub spokes form triangles (hub, rim0[i], rim1[i]) sharing only
