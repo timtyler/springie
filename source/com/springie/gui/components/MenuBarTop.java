@@ -23,10 +23,7 @@ import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.context.ModelManager;
 import com.springie.context.ModelSlot;
-import com.springie.messages.commands.SnakeDemoMessage;
-import com.springie.messages.commands.CrawlerDemoMessage;
-import com.springie.messages.commands.SpiderTankDemoMessage;
-import com.springie.messages.commands.WheelDemoMessage;
+import com.springie.demos.DemoCatalog;
 import com.springie.gui.frames.FrameMain;
 import com.springie.io.out.writers.eig.WriterEIG;
 import com.springie.io.out.writers.fdl.WriterFDL;
@@ -205,42 +202,25 @@ public class MenuBarTop extends MenuBar {
   }
 
   /**
-   * Procedural demos, built in code rather than loaded from files.
+   * Procedural demos, built in code rather than loaded from files. The demos
+   * offered and the messages that launch them come from DemoCatalog, which
+   * the bottom button bar's file card also reads.
    */
   private Menu makeDemosMenu() {
     final Menu demos = new Menu("Demos");
-    final MenuItem snake = new MenuItem("Snake");
-    snake.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
-        FrEnd.new_message_manager.add(new SnakeDemoMessage());
-      }
-    });
-    demos.add(snake);
-    final MenuItem crawler = new MenuItem("Crawler");
-    crawler.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
-        FrEnd.new_message_manager.add(new CrawlerDemoMessage());
-      }
-    });
-    demos.add(crawler);
-    final MenuItem spider_tank = new MenuItem("Spider Tank");
-    spider_tank.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
-        FrEnd.new_message_manager.add(new SpiderTankDemoMessage());
-      }
-    });
-    demos.add(spider_tank);
-    final MenuItem wheel = new MenuItem("Wheel");
-    wheel.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
-        FrEnd.new_message_manager.add(new WheelDemoMessage());
-      }
-    });
-    demos.add(wheel);
+    for (final DemoCatalog.Demo demo : DemoCatalog.DEMOS) {
+      final MenuItem item = new MenuItem(demo.name);
+      item.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Forget.about(e);
+          // Keep the bottom-bar file card showing the same demo that was
+          // just chosen here.
+          FrEnd.panel_fundamental.selectDemo(demo.name);
+          FrEnd.new_message_manager.add(demo.newMessage());
+        }
+      });
+      demos.add(item);
+    }
     return demos;
   }
 

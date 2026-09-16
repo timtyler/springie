@@ -23,6 +23,7 @@ import org.xml.sax.SAXException;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
+import com.springie.demos.DemoCatalog;
 import com.springie.gui.components.ButtonBar;
 import com.springie.gui.components.ChoiceWithDescription;
 import com.springie.gui.components.ImageButton;
@@ -31,7 +32,6 @@ import com.springie.gui.components.WrapLayout;
 import com.springie.gui.panels.preferences.ButtonMouseActionStrings;
 import com.springie.io.out.writers.spr.WriterSpr;
 import com.springie.messages.commands.DeleteSelectedMessage;
-import com.springie.messages.commands.PresetChosenMessage;
 import com.springie.messages.commands.SelectClazzMessage;
 import com.springie.messages.NewMessage;
 import com.springie.messages.NewMessageManager;
@@ -431,7 +431,7 @@ public class PanelFundamental {
     FrEnd.button_restart.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
         Forget.about(arg0);
-        getNewMessageManager().add(FrEnd.system_messages.getRestartMessage());
+        launchSelected();
       }
     });
 
@@ -577,8 +577,12 @@ public class PanelFundamental {
 
         final String string = (String) (e.getItem());
 
-        FrEnd.next_file_path = (String) FrEnd.choose_initial.hashtable
-            .get(string);
+        // Demo entries have no file path; leave next_file_path pointing at
+        // the last real file so the file-based restart path stays intact.
+        final String path = (String) FrEnd.choose_initial.hashtable.get(string);
+        if (path != null) {
+          FrEnd.next_file_path = path;
+        }
       }
     });
 
@@ -594,7 +598,7 @@ public class PanelFundamental {
 
       public void keyPressed(KeyEvent arg0) {
         if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-          getNewMessageManager().add(new PresetChosenMessage());
+          launchSelected();
         }
       }
 
@@ -629,6 +633,13 @@ public class PanelFundamental {
     } catch (SAXException e1) {
       logger.error("Unexpected exception", e1);
     }
+    // The procedural demos sit at the end of the file list, grouped under
+    // a common "Demo: " prefix. They are AWT Choice items only -- they have
+    // no file path, so they go straight into the Choice rather than the
+    // description-to-path map; the launch dispatch recognises them by label.
+    for (final DemoCatalog.Demo demo : DemoCatalog.DEMOS) {
+      FrEnd.choose_initial.choice.addItem(demo.label());
+    }
     // Repopulating the leaf dropdown fires no item event, so next_file_path
     // would keep pointing at the previous index's model (and the restart
     // path, which loads next_file_path, would disagree with the preset
@@ -661,6 +672,45 @@ public class PanelFundamental {
       FrEnd.choose_initial.choice.select(leaf_description);
       FrEnd.next_file_path =
           (String) FrEnd.choose_initial.hashtable.get(leaf_description);
+    }
+  }
+
+  /**
+   * Shows the given demo in the bottom-bar leaf dropdown, as if the user had
+   * picked it there. Used by the Models menu's Demos submenu so the two
+   * stay in agreement; Choice.select fires no item event, so next_file_path
+   * is untouched (demos have no file path anyway).
+   */
+  public void selectDemo(String name) {
+    if (FrEnd.choose_initial == null) {
+      return;
+    }
+    for (final DemoCatalog.Demo demo : DemoCatalog.DEMOS) {
+      if (demo.name.equals(name)) {
+        final java.awt.Choice choice = FrEnd.choose_initial.choice;
+        for (int i = 0; i < choice.getItemCount(); i++) {
+          if (choice.getItem(i).equals(demo.label())) {
+            choice.select(i);
+            return;
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * The launch button (and Enter in the leaf dropdown): when a demo entry
+   * is selected, enqueues the demo's own launch message -- the exact one
+   * the Models > Demos menu uses. Otherwise restarts from the selected
+   * model file, as before.
+   */
+  void launchSelected() {
+    final String selected = FrEnd.choose_initial.choice.getSelectedItem();
+    final DemoCatalog.Demo demo = DemoCatalog.forLabel(selected);
+    if (demo != null) {
+      getNewMessageManager().add(demo.newMessage());
+    } else {
+      getNewMessageManager().add(FrEnd.system_messages.getRestartMessage());
     }
   }
 
