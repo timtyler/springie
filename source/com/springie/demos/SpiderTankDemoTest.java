@@ -61,8 +61,8 @@ public class SpiderTankDemoTest {
         muscles++;
       }
     }
-    // 6 legs × 1 hip-foot muscle each.
-    assertEquals(6, muscles);
+    // 6 legs × 2 hip-foot muscles each (hip1-foot, hip2-foot).
+    assertEquals(12, muscles);
   }
 
   @Test
@@ -77,7 +77,7 @@ public class SpiderTankDemoTest {
         phases.add(link.phase);
       }
     }
-    // 6 muscles, tripod: 3 at phase 0, 3 at half-period (60).
+    // 12 muscles (6 legs × 2), tripod: 6 at phase 0, 6 at half-period (60).
     assertEquals(2, phases.size());
     assertTrue(phases.contains(0));
     assertTrue(phases.contains(60));

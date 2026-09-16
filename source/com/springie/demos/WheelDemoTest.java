@@ -20,9 +20,9 @@ import com.springie.muscles.Muscles;
 import com.springie.world.World;
 
 /**
- * The wheel demo must build a twin-rim rolling wheel: 12 nodes per rim,
- * one hub, 24 rim-ring links, 12 inter-rim struts, 24 muscle spokes
- * (25 nodes, 60 links). The spokes carry angle-derived oscillator phases
+ * The wheel demo must build a tetrahedral rolling wheel: 12 nodes per rim,
+ * one hub, 48 rim links (alternating diagonal bracing), 24 muscle spokes
+ * (25 nodes, 72 links). The spokes carry angle-derived oscillator phases
  * forming a travelling contraction wave.
  */
 class WheelDemoTest {
@@ -75,7 +75,7 @@ class WheelDemoTest {
   }
 
   @Test
-  void buildsTwentyFiveNodesSixtyLinks() {
+  void buildsTwentyFiveNodesSeventyTwoLinks() {
     final Node hub = WheelDemo.buildAt(120);
     assertNotNull(hub);
 
@@ -84,8 +84,9 @@ class WheelDemoTest {
     assertEquals(25, nm.element.size());
 
     final LinkManager lm = nm.getLinkManager();
-    // 24 rim-ring + 12 struts + 24 spokes = 60 links.
-    assertEquals(60, lm.element.size());
+    // 12 segments × 4 (rim0, rim1, cross, diagonal) = 48 rim links
+    // + 24 hub spokes = 72 links.
+    assertEquals(72, lm.element.size());
   }
 
   @Test
@@ -101,7 +102,7 @@ class WheelDemoTest {
         muscle_count++;
       }
     }
-    // 24 hub-to-rim spokes.
+    // 24 hub-to-rim spokes (the only muscles).
     assertEquals(24, muscle_count);
   }
 
@@ -111,7 +112,7 @@ class WheelDemoTest {
     final LinkManager lm =
         ContextManager.getNodeManager().getLinkManager();
 
-    // Collect spoke phases (muscle links only).
+    // Collect spoke phases (muscle links only, 24 spokes).
     final java.util.List<Integer> phases = new java.util.ArrayList<>();
     for (int i = 0; i < lm.element.size(); i++) {
       final Link link = (Link) lm.element.get(i);
@@ -119,6 +120,7 @@ class WheelDemoTest {
         phases.add(link.phase);
       }
     }
+    // 24 spokes.
     assertEquals(24, phases.size());
 
     // Phases must span a full wave around the rim: with 12 rim angles

@@ -62,8 +62,8 @@ class CrawlerDemoTest {
         muscle_count++;
       }
     }
-    // 4 legs × 1 muscle each.
-    assertEquals(4, muscle_count);
+    // 4 legs × 2 muscles each (hip1-foot, hip2-foot).
+    assertEquals(8, muscle_count);
   }
 
   @Test
@@ -81,9 +81,10 @@ class CrawlerDemoTest {
       }
     }
 
-    assertEquals(4, phases.size());
+    assertEquals(8, phases.size());
     // Diagonal pairs (FL+BR, FR+BL) share phases; the pairs differ.
     // FL=0, FR=60, BL=60, BR=0 for the default 120-tick period.
+    // Each leg has 2 muscles (hip1-foot, hip2-foot) with the same phase.
     assertTrue(phases.contains(0));
     assertTrue(phases.contains(60));
   }

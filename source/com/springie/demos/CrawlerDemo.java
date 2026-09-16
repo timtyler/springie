@@ -17,12 +17,13 @@ import com.springie.render.Coords;
 import com.springie.world.World;
 
 /**
- * Parametric 4-legged crawler built mostly from tetrahedra.
+ * Parametric 4-legged crawler built from tetrahedra.
  *
  * <p>Body: two face-sharing tetrahedra forming a rigid torso.
- * Each leg: a tetrahedron hanging from the body (hip edge on the body,
- * knee out to the side, foot below). Leg edges are muscles; a trot gait
- * (diagonal legs in phase) lifts and swings the feet.
+ * Each leg: a tetrahedron attached to the body via an edge (two nodes),
+ * not a single corner. The leg has 4 nodes: hip1, hip2 (body edge),
+ * knee, foot. All 6 edges exist; only the hip-foot edges are muscles.
+ * A trot gait (diagonal legs in phase) lifts and swings the feet.
  *
  * <p>Parameters are public fields so the judge can sweep them.
  */
@@ -108,32 +109,41 @@ public final class CrawlerDemo {
     link(link_manager, body_type, clazz, b0, b2, -1); // diagonal brace
     link(link_manager, body_type, clazz, b1, b3, -1); // diagonal brace
 
-    // Legs: FL=(b0), FR=(b3), BL=(b1), BR=(b2).
-    // Each leg is a tetrahedron (hip, knee, foot) for structural stability,
-    // but only the hip-foot edge is a muscle. The other edges are passive.
-    final Node[] hips = {b0, b3, b1, b2};
+    // Legs: each attaches to the body via an EDGE (two nodes), forming
+    // a tetrahedron (hip1, hip2, knee, foot). This fixes the "triangles
+    // at one corner" problem: the old design had 3-node legs (hip, knee,
+    // foot) sharing only the hip node with the body, which flapped.
+    // FL: edge (b0,b3), FR: edge (b3,b2), BL: edge (b1,b0), BR: edge (b2,b1).
+    final Node[][] hip_edges = {{b0, b3}, {b3, b2}, {b1, b0}, {b2, b1}};
     final int[] sides = {-1, 1, -1, 1}; // splay direction (z)
     for (int leg = 0; leg < 4; leg++) {
-      final Node hip = hips[leg];
+      final Node hip1 = hip_edges[leg][0];
+      final Node hip2 = hip_edges[leg][1];
       final int side = sides[leg];
       final int phase = leg_phases[leg];
 
-      // Knee: out to the side and slightly down from hip (toward ground = +Y).
+      // Knee: out to the side and slightly down from the hip edge midpoint.
+      final int mid_x = (hip1.pos.x + hip2.pos.x) / 2;
+      final int mid_y = (hip1.pos.y + hip2.pos.y) / 2;
+      final int mid_z = (hip1.pos.z + hip2.pos.z) / 2;
       final Node knee = addNode(node_manager, clazz, node_type,
-          hip.pos.x, hip.pos.y + (leg_length_px << Coords.shift) / 3,
-          hip.pos.z + side * (leg_splay_px << Coords.shift));
+          mid_x, mid_y + (leg_length_px << Coords.shift) / 3,
+          mid_z + side * (leg_splay_px << Coords.shift));
       // Foot: forward (+X), out to the side, just above the ground.
       final int foot_forward_px = 40;
       final Node foot = addNode(node_manager, clazz, node_type,
-          hip.pos.x + (foot_forward_px << Coords.shift),
+          mid_x + (foot_forward_px << Coords.shift),
           ground - (5 << Coords.shift),
-          hip.pos.z + side * (leg_splay_px << Coords.shift));
+          mid_z + side * (leg_splay_px << Coords.shift));
 
-      // Tetrahedron edges: hip-knee and knee-foot are passive cables.
-      // Only hip-foot is a muscle.
-      link(link_manager, leg_type, clazz, hip, knee, -1);
+      // Tetrahedron (hip1, hip2, knee, foot): all 6 edges.
+      // hip1-hip2 is a body edge (already exists).
+      link(link_manager, leg_type, clazz, hip1, knee, -1);
+      link(link_manager, leg_type, clazz, hip2, knee, -1);
       link(link_manager, leg_type, clazz, knee, foot, -1);
-      muscle(link_manager, leg_type, clazz, hip, foot, phase);
+      // Hip-foot edges are muscles (drive the gait).
+      muscle(link_manager, leg_type, clazz, hip1, foot, phase);
+      muscle(link_manager, leg_type, clazz, hip2, foot, phase);
     }
 
     // Return a body node for tracking.

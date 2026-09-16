@@ -17,12 +17,14 @@ import com.springie.render.Coords;
 import com.springie.world.World;
 
 /**
- * 6-legged spider tank with a tripod gait, built mostly from tetrahedra.
+ * 6-legged spider tank with a tripod gait, built from tetrahedra.
  *
  * <p>Body: an armored hull (elongated box with ridge, like the 4-legged
  * crawler's body stretched for 3 leg pairs) plus a turret on top.
- * Each leg: a tetrahedron (hip, knee, foot); only the hip-foot edge is
- * a muscle. Feet splay spider-style out to the sides.
+ * Each leg: a tetrahedron attached to the body via an edge (two nodes),
+ * not a single corner. The leg has 4 nodes: hip1, hip2 (body edge),
+ * knee, foot. Only the hip-foot edges are muscles. Feet splay
+ * spider-style out to the sides.
  *
  * <p>Tripod gait: (LF, RM, LB) in phase; (RF, LM, RB) at half-period.
  * Three legs on the ground while three swing, alternating.
@@ -140,25 +142,39 @@ public final class SpiderTankDemo {
     link(link_manager, body_type, clazz, turret_top, t2, -1);
     link(link_manager, body_type, clazz, turret_top, t3, -1);
 
-    // Legs: LF=left[0], RF=right[0], LM=left[1], RM=right[1], LB=left[2], RB=right[2].
-    final Node[] hips = {left[0], right[0], left[1], right[1], left[2], right[2]};
+    // Legs: each attaches to the body via an EDGE (two nodes), forming
+    // a tetrahedron (hip1, hip2, knee, foot). LF/RF share the front cross
+    // edge (left[0],right[0]); LM/RM the middle; LB/RB the back.
+    // The old 3-node legs (hip,knee,foot) shared only the hip corner.
+    final Node[][] hip_edges = {
+        {left[0], right[0]}, {right[0], left[0]},
+        {left[1], right[1]}, {right[1], left[1]},
+        {left[2], right[2]}, {right[2], left[2]}};
     final int[] sides = {-1, 1, -1, 1, -1, 1};
     for (int leg = 0; leg < 6; leg++) {
-      final Node hip = hips[leg];
+      final Node hip1 = hip_edges[leg][0];
+      final Node hip2 = hip_edges[leg][1];
       final int side = sides[leg];
       final int phase = leg_phases[leg];
 
+      final int mid_x = (hip1.pos.x + hip2.pos.x) / 2;
+      final int mid_y = (hip1.pos.y + hip2.pos.y) / 2;
+      final int mid_z = (hip1.pos.z + hip2.pos.z) / 2;
       final Node knee = addNode(node_manager, clazz, node_type,
-          hip.pos.x, hip.pos.y + (leg_length_px << Coords.shift) / 3,
-          hip.pos.z + side * (leg_splay_px << Coords.shift));
+          mid_x, mid_y + (leg_length_px << Coords.shift) / 3,
+          mid_z + side * (leg_splay_px << Coords.shift));
       final Node foot = addNode(node_manager, clazz, node_type,
-          hip.pos.x + (foot_forward_px << Coords.shift),
+          mid_x + (foot_forward_px << Coords.shift),
           ground - (5 << Coords.shift),
-          hip.pos.z + side * (leg_splay_px << Coords.shift));
+          mid_z + side * (leg_splay_px << Coords.shift));
 
-      link(link_manager, leg_type, clazz, hip, knee, -1);
+      // Tetrahedron (hip1, hip2, knee, foot): all 6 edges.
+      // hip1-hip2 is a body edge (already exists).
+      link(link_manager, leg_type, clazz, hip1, knee, -1);
+      link(link_manager, leg_type, clazz, hip2, knee, -1);
       link(link_manager, leg_type, clazz, knee, foot, -1);
-      muscle(link_manager, leg_type, clazz, hip, foot, phase);
+      muscle(link_manager, leg_type, clazz, hip1, foot, phase);
+      muscle(link_manager, leg_type, clazz, hip2, foot, phase);
     }
 
     return left[1];
