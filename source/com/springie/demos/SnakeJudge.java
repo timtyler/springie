@@ -72,9 +72,24 @@ public final class SnakeJudge {
 
   /**
    * Scores the snake over the given number of ticks. Deterministic: two
-   * calls give identical results.
+   * calls give identical results, even in a JVM where a GUI test has left
+   * the animation thread running.
    */
   public static Result score(int ticks) {
+    // Hold the model lock for the whole run. A GUI test's animation thread
+    // never stops: it keeps repainting, and the AWT thread would otherwise
+    // step physics on this run's NodeManager concurrently with the loop
+    // below (extra ticks plus data races on node positions), so two
+    // back-to-back runs diverge. This is the same lock the AWT renderer
+    // and the message pump already use (see
+    // RendererDelegator.redrawChanged); the physics path never needs the
+    // AWT tree lock, so this cannot deadlock.
+    synchronized (ContextManager.class) {
+      return scoreWithLockHeld(ticks);
+    }
+  }
+
+  private static Result scoreWithLockHeld(int ticks) {
     resetWorldRandom();
     pinGlobals();
 
@@ -218,7 +233,15 @@ public final class SnakeJudge {
     com.springie.FrEnd.oscd = true;
     com.springie.FrEnd.dragged_element = null;
     com.springie.FrEnd.forces_disabled_during_gesture = false;
+    com.springie.FrEnd.paused = false;
+    com.springie.FrEnd.frame_frequency = 0;
     com.springie.muscles.Muscles.enabled = false;
+    com.springie.muscles.Muscles.active_oscillator = 0;
+    // Pin the universe size: a booted GUI resizes Coords to its canvas,
+    // moving the ground walls and changing the absolute score.
+    com.springie.render.Coords.x_pixels = 800;
+    com.springie.render.Coords.y_pixels = 600;
+    com.springie.render.Coords.z_pixels = 1024;
   }
 
   /**

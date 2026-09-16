@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
@@ -17,6 +18,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
+import com.springie.render.Coords;
 import com.springie.world.World;
 
 /**
@@ -34,6 +36,12 @@ class WheelDemoTest {
   private int old_amplitude;
   private int old_period;
   private int old_direction;
+  private boolean old_paused;
+  private int old_frame_frequency;
+  private int old_active_oscillator;
+  private int old_coords_x;
+  private int old_coords_y;
+  private int old_coords_z;
 
   @BeforeEach
   void setUp() {
@@ -44,6 +52,12 @@ class WheelDemoTest {
     old_amplitude = WheelDemo.muscle_amplitude_pct;
     old_period = WheelDemo.muscle_period_ticks;
     old_direction = WheelDemo.phase_direction;
+    old_paused = FrEnd.paused;
+    old_frame_frequency = FrEnd.frame_frequency;
+    old_active_oscillator = Muscles.active_oscillator;
+    old_coords_x = Coords.x_pixels;
+    old_coords_y = Coords.y_pixels;
+    old_coords_z = Coords.z_pixels;
     ContextManager.setNodeManager(new NodeManager());
   }
 
@@ -56,6 +70,12 @@ class WheelDemoTest {
     WheelDemo.muscle_amplitude_pct = old_amplitude;
     WheelDemo.muscle_period_ticks = old_period;
     WheelDemo.phase_direction = old_direction;
+    FrEnd.paused = old_paused;
+    FrEnd.frame_frequency = old_frame_frequency;
+    Muscles.active_oscillator = old_active_oscillator;
+    Coords.x_pixels = old_coords_x;
+    Coords.y_pixels = old_coords_y;
+    Coords.z_pixels = old_coords_z;
     // Leave the world's RNG in its initial state so later tests
     // (e.g. CubeTensegrityTest) see the same sequence as a fresh JVM.
     resetWorldRandom();

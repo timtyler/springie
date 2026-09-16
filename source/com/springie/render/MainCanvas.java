@@ -358,8 +358,14 @@ public class MainCanvas {
   public void setUpCoordsSize() {
     this.dim = this.panel.getSize();
 
-    Coords.x_pixels = this.dim.width;
-    Coords.y_pixels = this.dim.height;
+    // Mutually exclusive with the model lock: a deterministic judge (or a
+    // message-pump model build) pins Coords for the whole run, and a
+    // concurrent resize must not overwrite it mid-run (the physics reads
+    // these fields directly for the ground walls every tick).
+    synchronized (ContextManager.class) {
+      Coords.x_pixels = this.dim.width;
+      Coords.y_pixels = this.dim.height;
+    }
   }
 
   public final void paint(Graphics g) {

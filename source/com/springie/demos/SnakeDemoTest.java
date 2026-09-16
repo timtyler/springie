@@ -34,6 +34,11 @@ class SnakeDemoTest {
   private int old_amplitude;
   private int old_period;
   private int old_phase;
+  private boolean old_paused;
+  private int old_frame_frequency;
+  private int old_coords_x;
+  private int old_coords_y;
+  private int old_coords_z;
 
   @BeforeEach
   void setUp() {
@@ -46,6 +51,11 @@ class SnakeDemoTest {
     this.old_amplitude = active.getAmplitude();
     this.old_period = active.getPeriodTicks();
     this.old_phase = active.getPhase();
+    this.old_paused = FrEnd.paused;
+    this.old_frame_frequency = FrEnd.frame_frequency;
+    this.old_coords_x = Coords.x_pixels;
+    this.old_coords_y = Coords.y_pixels;
+    this.old_coords_z = Coords.z_pixels;
   }
 
   @AfterEach
@@ -56,6 +66,11 @@ class SnakeDemoTest {
     active.setAmplitude(this.old_amplitude);
     active.setPeriodTicks(this.old_period);
     active.setPhase(this.old_phase);
+    FrEnd.paused = this.old_paused;
+    FrEnd.frame_frequency = this.old_frame_frequency;
+    Coords.x_pixels = this.old_coords_x;
+    Coords.y_pixels = this.old_coords_y;
+    Coords.z_pixels = this.old_coords_z;
   }
 
   @Test
