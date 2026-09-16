@@ -308,9 +308,9 @@ public class MainCanvas {
   public final void update(Graphics g) {
     this.observer = this.panel;
 
-    if (!RendererDelegator.isOldDoubleBuffer()) {
-      processAllMessages();
-    }
+    // Messages are processed on the animation thread (see FrEnd.run),
+    // not here: model-building messages must not run concurrently
+    // with physics on a different thread.
 
     if (FrEnd.isAnimationInactive()) {
       if (!RendererDelegator.repaint_all_objects) {
@@ -353,10 +353,6 @@ public class MainCanvas {
     }
 
     this.info_button.drawInfoButton(g);
-  }
-
-  private void processAllMessages() {
-    MessagePump.processAll();
   }
 
   public void setUpCoordsSize() {

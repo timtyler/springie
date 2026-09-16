@@ -955,10 +955,12 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 			}
 
 			if (RendererDelegator.isOldDoubleBuffer()) {
-				MessagePump.processAll();
-
 				RendererDelegator.redrawChanged(main_canvas.graphics_handle);
 			}
+
+			// Process messages on the animation thread (not the AWT thread):
+			// model-building messages must not run concurrently with physics.
+			MessagePump.processAll();
 
 			main_canvas.panel.repaint();
 

@@ -14,6 +14,7 @@ import com.springie.geometry.Point3D;
 import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
 import com.springie.render.Coords;
+import com.springie.world.World;
 
 /**
  * Builds a snake from a chain of tetrahedra: each new node forms a
@@ -59,6 +60,12 @@ public final class SnakeDemo {
     Muscles.activeOscillator().setAmplitude((int) (0.25 * Muscles.UNITY));
     Muscles.activeOscillator().setPeriodTicks(60);
     Muscles.activeOscillator().setPhase(0);
+    // The snake needs gravity to stay grounded; without it, it floats
+    // and the muscle wave just squirms in place.
+    World.gravity_active = true;
+    World.gravity_strength = 5;
+    World.ground_friction = 100;
+    World.global_temperature = 6;
     final int period = Muscles.activeOscillator().getPeriodTicks();
 
     final int e = EDGE_PIXELS << Coords.shift;
