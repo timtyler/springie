@@ -24,7 +24,6 @@ import com.springie.elements.nodes.Node;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TTChoice;
 import com.springie.messages.NewMessageManager;
-import com.springie.messages.commands.DoubleBufferOldMessage;
 import com.springie.messages.commands.LinkLengthMessage;
 import com.springie.preferences.Preferences;
 import com.springie.render.RendererDelegator;
@@ -41,8 +40,6 @@ public class PanelPreferencesRendererOriginal {
   public Panel panel_renderer_tab = FrEnd.setUpPanelForFrame2();
 
   NewMessageManager new_message_manager;
-
-  public Checkbox checkbox_db;
 
   public Checkbox checkbox_longlinks;
 
@@ -179,18 +176,7 @@ public class PanelPreferencesRendererOriginal {
 //
 //    panel_new_double_buffering.add(this.checkbox_db_new);
 
-    final Panel panel_double_buffering = new Panel();
-    this.checkbox_db = new Checkbox(GUIStrings.DB, RendererDelegator
-        .isUnderlyingOldDoubleBuffer()); // TODO: default?
-
-    this.checkbox_db.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
-        getNewMessageManager().add(new DoubleBufferOldMessage());
-      }
-    });
-
-    panel_double_buffering.add(this.checkbox_db);
+    final Panel panel_xor = new Panel();
 
     final Checkbox checkbox_xor = new Checkbox(GUIStrings.XOR, FrEnd.xor);
     checkbox_xor.addItemListener(new ItemListener() {
@@ -201,7 +187,7 @@ public class PanelPreferencesRendererOriginal {
       }
     });
     if (FrEnd.development_version) {
-    panel_double_buffering.add(checkbox_xor);
+    panel_xor.add(checkbox_xor);
     }
 
     // Old preferences...
@@ -220,7 +206,7 @@ public class PanelPreferencesRendererOriginal {
     this.panel_renderer_tab.add(panel_face_render_type);
     //this.panel_renderer_tab.add(panel_face_render_number);
 
-    this.panel_renderer_tab.add(panel_double_buffering);
+    this.panel_renderer_tab.add(panel_xor);
 
     // The anaglyph stereo rows join the one layout at the bottom.
     // (Stereo 3D is only honoured by the original renderer.)
@@ -661,11 +647,6 @@ public class PanelPreferencesRendererOriginal {
     // Short links (the queued message carries SHORT explicitly).
     this.checkbox_shortlinks.setState(true);
     Link.link_display_length = Link.SHORT;
-
-    // Old-renderer double buffering (default off).
-    this.checkbox_db.setState(false);
-    FrEnd.preferences.map.put(Preferences.renderer_old_double_buffer,
-        Boolean.FALSE);
 
     // XOR rendering (development builds only).
     FrEnd.xor = false;

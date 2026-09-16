@@ -1,6 +1,7 @@
 //This program has been placed into the public domain by its author.
 package com.springie.messages;
 
+import com.springie.context.ContextManager;
 import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,12 @@ public class NewMessageManager {
 
     for (int n = 0; n < batch.length; n++) {
       try {
-        batch[n].execute();
+        // Mutually exclusive with rendering (see RendererDelegator):
+        // a model-building message must not run concurrently with
+        // the AWT-thread renderer accessing the model.
+        synchronized (ContextManager.class) {
+          batch[n].execute();
+        }
       } catch (RuntimeException e) {
         logger.debug("Error processing message (number " + n + "):");
         logger.error("Unexpected exception", e);

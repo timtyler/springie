@@ -209,7 +209,12 @@ public final class RendererDelegator {
 
     possibleInitialClear(graphics);
 
-    RendererDelegator.passOnToUpdateMethods(graphics);
+    // Mutually exclusive with message execution (see NewMessageManager):
+    // the AWT-thread renderer must not access the model while the
+    // animation thread is building it.
+    synchronized (ContextManager.class) {
+      RendererDelegator.passOnToUpdateMethods(graphics);
+    }
 
     renderDragBox(graphics);
 
