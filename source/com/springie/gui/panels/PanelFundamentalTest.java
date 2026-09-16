@@ -314,9 +314,9 @@ public class PanelFundamentalTest {
         "Demo: Grasshopper"};
     // Node counts the demo builders produce (their own tests pin these).
     final int[] nodes = {
-        SnakeDemo.SEGMENTS + 3, 14, 23, 25, 14};
+        SnakeDemo.SEGMENTS + 3, 14, 23, 17, 14};
     final int[] links = {
-        3 * SnakeDemo.SEGMENTS + 3, -1, -1, 72, 31};
+        3 * SnakeDemo.SEGMENTS + 3, -1, -1, 48, 31};
 
     try {
       for (int d = 0; d < labels.length; d++) {
@@ -376,10 +376,10 @@ public class PanelFundamentalTest {
       synchronized (ContextManager.class) {
         SetUpCode.clearAndThenAddInitialObjects();
       }
-      assertEquals(25,
+      assertEquals(17,
           ContextManager.getNodeManager().element.size(),
           "the initial load must build the selected demo");
-      assertEquals(72,
+      assertEquals(48,
           ContextManager.getNodeManager().getLinkManager().element.size(),
           "the initial load must build the selected demo's links");
     } finally {

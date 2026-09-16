@@ -17,11 +17,19 @@ import com.springie.render.Coords;
 import com.springie.world.World;
 
 /**
- * A tetrahedral rolling wheel: 12 nodes per rim (radius 90px) at z = +/-35,
- * one heavy centre hub node. The rim uses alternating diagonal bracing
- * (12 diagonals, one per segment) to resist shear without over-constraining,
- * and the hub connects via tetrahedra (H, A_i, B_i, A_{i+1}) rather than
- * triangles sharing only the hub corner.
+ * A short, fat tetrahedral rolling wheel: 8 nodes per rim (radius 60px)
+ * at z = 0 and z = 100, one heavy centre hub node. The rim uses
+ * alternating diagonal bracing (8 diagonals, one per segment) to resist
+ * shear without over-constraining, and the hub connects via tetrahedra
+ * (H, A_i, B_i, A_{i+1}) rather than triangles sharing only the hub
+ * corner.
+ *
+ * <p>Geometry follows Tim's "shorter and fatter" directive: the older
+ * design (12 nodes per rim, radius 90, z half-width 35) stood tall and
+ * narrow and toppled sideways. The radius is now 60px (lower centre of
+ * mass) and the z track is 100px wide (the critical tipping angle went
+ * from ~21 degrees to ~40 degrees), so the wheel stays on its end with
+ * the axle horizontal.
  *
  * <p>Unlike the previous design (two 12-gon rims with parallel struts and
  * 24 hub spokes forming triangles that share only the hub corner), the
@@ -29,17 +37,21 @@ import com.springie.world.World;
  * Tetrahedra are rigid in 3D; triangles sharing a single corner flap
  * aimlessly.
  *
- * <p>Drive: the 24 hub spokes are muscles on the shared {@link Muscles}
- * oscillator bank. Each spoke carries a per-link phase (in ticks)
- * proportional to its rim angle, so the bank's sine wave becomes a
- * travelling contraction wave in the body frame -- the spokes bunch up
- * just forward of straight-down and the wheel rolls. The wave runs
- * through {@link GlobalOscillatorController}; the phases are derived
- * from the rim geometry at build time.
+ * <p>Drive: the 16 hub spokes are muscles with a ground-contact
+ * push-off reflex ({@link WheelPushController}). When a spoke's rim
+ * node is on the ground behind the hub (in the rolling direction) the
+ * spoke extends, pushing the hub forward and up; when on the ground in
+ * front it contracts slightly, pulling the hub forward -- like legs
+ * pushing off. Unlike an open-loop travelling wave, the reflex is
+ * self-synchronizing: the ground contact sets the timing, so the drive
+ * cannot fall out of step with the rolling. The 20%/5% push/pull was
+ * tuned empirically: stronger pull veers the wheel sideways and tips
+ * it, weaker push stalls the roll.
  *
- * <p>Node order is fixed and documented: 12 rim-0 nodes (z = -35),
- * 12 rim-1 nodes (z = +35), then the hub. Node 0 (rim-0[0], body
- * angle 0) is the rotation marker. buildAt returns the hub.
+ * <p>Node order is fixed and documented: rim-0[i] and rim-1[i] are added
+ * interleaved per iteration (element indices 2*i and 2*i+1), then the
+ * hub. Node 0 (rim-0[0], body angle 0) is the rotation marker. buildAt
+ * returns the hub.
  *
  * <p>Parameters are public fields so the judge can sweep them.
  */
@@ -48,13 +60,21 @@ public final class WheelDemo {
   }
 
   /** Nodes per rim. */
-  public static final int RIM_COUNT = 12;
+  public static final int RIM_COUNT = 8;
 
   /** Rim radius, in pixels. */
-  public static int rim_radius_px = 90;
+  public static int rim_radius_px = 60;
 
-  /** Rims sit at z = +/- this value, in pixels. */
-  public static int rim_half_width_px = 35;
+  /** Rims sit at z = 0 and z = 2 * this value, in pixels. */
+  public static int rim_half_width_px = 50;
+
+  /**
+   * Z offset of the whole wheel: rim-0 sits at z = this, rim-1 at
+   * z = this + 2 * rim_half_width_px. Keeps the wheel off the z = 0
+   * wall -- riding the wall shoves the wheel sideways (+z drift) on
+   * every rim contact. Must stay >= 0 (never below the wall).
+   */
+  public static int z_offset_px = 20;
 
   /** Nominal mass for rim nodes (log scale used by the engine). */
   public static int rim_log_mass = 5;
@@ -80,11 +100,27 @@ public final class WheelDemo {
    * applied to rim nodes (tangential). The open-loop wave is a
    * synchronous drive: it pulls in best when the wheel is already
    * turning. A small kick gets it turning; the wave then holds it.
+   * Zero for the fat wheel: the spoke wave self-starts without it.
    */
-  public static int start_kick = 500;
+  public static int start_kick = 0;
 
   /** Ground friction, 0-100. */
   public static int friction = 100;
+
+  /**
+   * Drive mode: true for the ground-contact push-off reflex
+   * (self-synchronizing), false for the open-loop travelling wave.
+   */
+  public static boolean use_reflex_drive = true;
+
+  /** Reflex push percent (spoke extension in back stance). */
+  public static int reflex_push_pct = 20;
+
+  /** Reflex pull percent (spoke contraction in front stance). */
+  public static int reflex_pull_pct = 5;
+
+  /** Rolling direction for the reflex: +1 toward +X, -1 toward -X. */
+  public static int roll_direction = 1;
 
   /** Elasticity for the rim links (all tetrahedron edges). */
   public static int rim_elasticity = 30;
@@ -131,23 +167,24 @@ public final class WheelDemo {
     // Rings: node i at body angle 2*PI*i / RIM_COUNT (screen coords, y down).
     final Node[] rim0 = new Node[RIM_COUNT];
     final Node[] rim1 = new Node[RIM_COUNT];
+    final int z0 = z_offset_px << Coords.shift;
     for (int i = 0; i < RIM_COUNT; i++) {
       final double a = 2.0 * Math.PI * i / RIM_COUNT;
       final double c = Math.cos(a);
       final double s = Math.sin(a);
       rim0[i] = addNode(node_manager, clazz, rim_type,
-          cx + (int) (radius * c), cy + (int) (radius * s), 0);
+          cx + (int) (radius * c), cy + (int) (radius * s), z0);
       rim1[i] = addNode(node_manager, clazz, rim_type,
-          cx + (int) (radius * c), cy + (int) (radius * s), 2 * hw);
+          cx + (int) (radius * c), cy + (int) (radius * s), z0 + 2 * hw);
     }
-    final Node hub = addNode(node_manager, clazz, hub_type, cx, cy, hw);
+    final Node hub = addNode(node_manager, clazz, hub_type, cx, cy, z0 + hw);
 
-    // Rim: two 12-gon rings (24 links) + 12 cross links (36 total).
+    // Rim: two 8-gon rings (16 links) + 8 cross links + 8 diagonals (32 total).
     // The hub spokes form triangles (hub, rim0[i], rim1[i]) sharing only
-    // the hub corner -- these flap aimlessly. To fix, add 12 passive
+    // the hub corner -- these flap aimlessly. To fix, add 8 passive
     // diagonals (rim1[i] to rim0[i+1]) which complete the tetrahedra
     // (hub, rim0[i], rim1[i], rim0[i+1]). The diagonals are passive
-    // structural bracing; only the 24 spokes are muscles.
+    // structural bracing; only the 16 spokes are muscles.
     final GlobalOscillatorController controller =
         new GlobalOscillatorController(0);
     for (int i = 0; i < RIM_COUNT; i++) {
@@ -162,18 +199,26 @@ public final class WheelDemo {
       passive(link_manager, clazz, b0, a1, rim_elasticity); // diagonal
     }
 
-    // Hub spokes: 24 muscles forming face-joined tetrahedra with the rim.
+    // Hub spokes: 16 muscles forming face-joined tetrahedra with the rim.
     // For each i, (hub, rim0[i], rim1[i], rim0[i+1]) and
     // (hub, rim1[i], rim0[i+1], rim1[i+1]) are tetrahedra sharing the face
     // (hub, rim1[i], rim0[i+1]). The rim edges already exist; we add
-    // only the 24 hub-to-rim spokes.
+    // only the 16 hub-to-rim spokes.
+    //
+    // Drive: either the ground-contact push-off reflex (self-synchronizing)
+    // or the open-loop travelling wave (per-link phases).
     for (int i = 0; i < RIM_COUNT; i++) {
       final double a = 2.0 * Math.PI * i / RIM_COUNT;
       // Phase in ticks: one full wave around the rim.
       final int phase =
           (int) (phase_direction * a * muscle_period_ticks / (2.0 * Math.PI));
-      spoke(link_manager, clazz, controller, hub, rim0[i], phase);
-      spoke(link_manager, clazz, controller, hub, rim1[i], phase);
+      if (use_reflex_drive) {
+        reflexSpoke(link_manager, clazz, hub, rim0[i], ground);
+        reflexSpoke(link_manager, clazz, hub, rim1[i], ground);
+      } else {
+        spoke(link_manager, clazz, controller, hub, rim0[i], phase);
+        spoke(link_manager, clazz, controller, hub, rim1[i], phase);
+      }
     }
 
     // Optional self-start kick: tangential rim velocities.
@@ -219,6 +264,21 @@ public final class WheelDemo {
     link.adjusted_rest_length = type.length;
     link.phase = phase;
     link.controller = controller;
+  }
+
+  /**
+   * Hub-to-rim muscle spoke with a ground-contact push-off reflex.
+   * Extends when its rim node is on the ground behind the hub (push-off),
+   * contracts when on the ground in front (pull-forward).
+   */
+  private static void reflexSpoke(LinkManager lm, Clazz clazz,
+      Node hub, Node rim, int ground_y) {
+    final LinkType type =
+        lm.link_type_factory.getNew(distance(hub, rim), spoke_elasticity);
+    final Link link = lm.setLink(hub, rim, type, clazz);
+    link.adjusted_rest_length = type.length;
+    link.controller = new WheelPushController(hub, rim, type.length,
+        reflex_push_pct, reflex_pull_pct, ground_y, roll_direction);
   }
 
   private static int distance(Node a, Node b) {

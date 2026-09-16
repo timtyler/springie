@@ -16,16 +16,15 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
 import com.springie.render.Coords;
 import com.springie.world.World;
 
 /**
- * The wheel demo must build a tetrahedral rolling wheel: 12 nodes per rim,
- * one hub, 48 rim links (alternating diagonal bracing), 24 muscle spokes
- * (25 nodes, 72 links). The spokes carry angle-derived oscillator phases
- * forming a travelling contraction wave.
+ * The wheel demo must build a short, fat tetrahedral rolling wheel:
+ * 8 nodes per rim, one hub, 32 rim links (rim edges, cross links,
+ * diagonal bracing), 16 muscle spokes (17 nodes, 48 links). The spokes
+ * carry ground-contact push-off reflex controllers (self-synchronizing).
  */
 class WheelDemoTest {
 
@@ -33,8 +32,9 @@ class WheelDemoTest {
   private boolean old_gravity_active;
   private int old_friction;
   private int old_temperature;
-  private int old_amplitude;
-  private int old_period;
+  private boolean old_reflex;
+  private int old_push;
+  private int old_pull;
   private int old_direction;
   private boolean old_paused;
   private int old_frame_frequency;
@@ -49,15 +49,22 @@ class WheelDemoTest {
     old_gravity_active = World.gravity_active;
     old_friction = World.ground_friction;
     old_temperature = World.global_temperature;
-    old_amplitude = WheelDemo.muscle_amplitude_pct;
-    old_period = WheelDemo.muscle_period_ticks;
-    old_direction = WheelDemo.phase_direction;
+    old_reflex = WheelDemo.use_reflex_drive;
+    old_push = WheelDemo.reflex_push_pct;
+    old_pull = WheelDemo.reflex_pull_pct;
+    old_direction = WheelDemo.roll_direction;
     old_paused = FrEnd.paused;
     old_frame_frequency = FrEnd.frame_frequency;
     old_active_oscillator = Muscles.active_oscillator;
     old_coords_x = Coords.x_pixels;
     old_coords_y = Coords.y_pixels;
     old_coords_z = Coords.z_pixels;
+    // Pin the reflex to the tuned values so the tests are deterministic
+    // even if the statics were changed by an earlier test.
+    WheelDemo.use_reflex_drive = true;
+    WheelDemo.reflex_push_pct = 20;
+    WheelDemo.reflex_pull_pct = 5;
+    WheelDemo.roll_direction = 1;
     ContextManager.setNodeManager(new NodeManager());
   }
 
@@ -67,9 +74,10 @@ class WheelDemoTest {
     World.gravity_active = old_gravity_active;
     World.ground_friction = old_friction;
     World.global_temperature = old_temperature;
-    WheelDemo.muscle_amplitude_pct = old_amplitude;
-    WheelDemo.muscle_period_ticks = old_period;
-    WheelDemo.phase_direction = old_direction;
+    WheelDemo.use_reflex_drive = old_reflex;
+    WheelDemo.reflex_push_pct = old_push;
+    WheelDemo.reflex_pull_pct = old_pull;
+    WheelDemo.roll_direction = old_direction;
     FrEnd.paused = old_paused;
     FrEnd.frame_frequency = old_frame_frequency;
     Muscles.active_oscillator = old_active_oscillator;
@@ -95,22 +103,22 @@ class WheelDemoTest {
   }
 
   @Test
-  void buildsTwentyFiveNodesSeventyTwoLinks() {
+  void buildsSeventeenNodesFortyEightLinks() {
     final Node hub = WheelDemo.buildAt(120);
     assertNotNull(hub);
 
     final NodeManager nm = ContextManager.getNodeManager();
-    // 12 nodes per rim × 2 rims + 1 hub = 25 nodes.
-    assertEquals(25, nm.element.size());
+    // 8 nodes per rim x 2 rims + 1 hub = 17 nodes.
+    assertEquals(17, nm.element.size());
 
     final LinkManager lm = nm.getLinkManager();
-    // 12 segments × 4 (rim0, rim1, cross, diagonal) = 48 rim links
-    // + 24 hub spokes = 72 links.
-    assertEquals(72, lm.element.size());
+    // 8 segments x 4 (rim0, rim1, cross, diagonal) = 32 rim links
+    // + 16 hub spokes = 48 links.
+    assertEquals(48, lm.element.size());
   }
 
   @Test
-  void spokesAreMusclesWithControllers() {
+  void spokesAreMusclesWithReflexControllers() {
     WheelDemo.buildAt(120);
     final LinkManager lm =
         ContextManager.getNodeManager().getLinkManager();
@@ -118,50 +126,12 @@ class WheelDemoTest {
     int muscle_count = 0;
     for (int i = 0; i < lm.element.size(); i++) {
       final Link link = (Link) lm.element.get(i);
-      if (link.controller instanceof GlobalOscillatorController) {
+      if (link.controller instanceof WheelPushController) {
         muscle_count++;
       }
     }
-    // 24 hub-to-rim spokes (the only muscles).
-    assertEquals(24, muscle_count);
-  }
-
-  @Test
-  void spokePhasesCorrespondToRimAngles() {
-    WheelDemo.buildAt(120);
-    final LinkManager lm =
-        ContextManager.getNodeManager().getLinkManager();
-
-    // Collect spoke phases (muscle links only, 24 spokes).
-    final java.util.List<Integer> phases = new java.util.ArrayList<>();
-    for (int i = 0; i < lm.element.size(); i++) {
-      final Link link = (Link) lm.element.get(i);
-      if (link.controller instanceof GlobalOscillatorController) {
-        phases.add(link.phase);
-      }
-    }
-    // 24 spokes.
-    assertEquals(24, phases.size());
-
-    // Phases must span a full wave around the rim: with 12 rim angles
-    // and period P, we expect phases at multiples of P/12 (each angle
-    // appears twice, once per rim). Check the set covers the range.
-    final int period = WheelDemo.muscle_period_ticks;
-    final java.util.Set<Integer> unique =
-        new java.util.HashSet<>(phases);
-    // 12 distinct phases (one per rim angle).
-    assertEquals(12, unique.size());
-
-    // Verify the phase for rim angle 0 is 0, and phases increase
-    // monotonically with angle (direction -1 gives decreasing, but the
-    // absolute values must match angle * period / 2PI).
-    for (int i = 0; i < WheelDemo.RIM_COUNT; i++) {
-      final int expected = (int) (WheelDemo.phase_direction
-          * (2.0 * Math.PI * i / WheelDemo.RIM_COUNT)
-          * period / (2.0 * Math.PI));
-      assertTrue(unique.contains(expected),
-          "Missing phase " + expected + " for rim angle index " + i);
-    }
+    // 16 hub-to-rim spokes (the only muscles).
+    assertEquals(16, muscle_count);
   }
 
   @Test
@@ -205,6 +175,18 @@ class WheelDemoTest {
     // And it must travel a meaningful distance.
     assertTrue(result.distance_px > 100,
         "distance=" + result.distance_px + " (expected > 100px)");
+  }
+
+  @Test
+  void staysUprightWhileRolling() {
+    final RollingJudge.Result result = RollingJudge.score(600, false);
+    // Tim's requirement: keep it standing on its end (axis horizontal).
+    // The fat wheel must stay upright for the vast majority of the run.
+    assertTrue(result.upright_fraction > 0.8,
+        "uprightFraction=" + result.upright_fraction + " (expected > 0.8)");
+    // And it must roll straight, not veer sideways.
+    assertTrue(Math.abs(result.z_drift_px) < 50,
+        "zDrift=" + result.z_drift_px + " (expected < 50px)");
   }
 
   @Test

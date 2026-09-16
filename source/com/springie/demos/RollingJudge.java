@@ -47,6 +47,19 @@ public final class RollingJudge {
     public double score;
     /** Total ticks simulated (including settling). */
     public int ticks;
+    /**
+     * Fraction of measured ticks the wheel's rim-plane normal stayed
+     * within 30 degrees of the z axis (1.0 = upright the whole run;
+     * 1.0 vacuously for the crawler). An upright wheel has its axle
+     * horizontal; a toppled wheel's rim plane tips toward the ground.
+     */
+    public double upright_fraction;
+    /**
+     * Hub z displacement over the measured ticks, pixels. A wheel that
+     * stays in its rolling plane keeps this near zero; wall-riding or
+     * veering shows up here.
+     */
+    public int z_drift_px;
 
     @Override
     public String toString() {
@@ -54,6 +67,8 @@ public final class RollingJudge {
           + "\nTHETA_REV " + String.format("%.3f", this.theta_total / (2 * Math.PI))
           + "\nROLLING_MATCH " + String.format("%.3f", this.rolling_match)
           + "\nHEIGHT_STD " + String.format("%.2f", this.height_std_px)
+          + "\nUPRIGHT_FRAC " + String.format("%.3f", this.upright_fraction)
+          + "\nZ_DRIFT " + this.z_drift_px
           + "\nSCORE " + String.format("%.1f", this.score)
           + "\nTICKS " + this.ticks;
     }
@@ -149,6 +164,7 @@ public final class RollingJudge {
     double sum = 0.0;
     double sum2 = 0.0;
     int n = 0;
+    int upright_ticks = 0;
 
     final int measured = ticks - SETTLE_TICKS;
     for (int i = 0; i < measured; i++) {
@@ -169,6 +185,10 @@ public final class RollingJudge {
       sum += h;
       sum2 += h * h;
       n++;
+
+      if (!use_crawler && axleUpright(node_manager, hub)) {
+        upright_ticks++;
+      }
     }
 
     final long dx = (long) hub.pos.x - start_x;
@@ -189,9 +209,44 @@ public final class RollingJudge {
     result.theta_total = theta_total;
     result.rolling_match = rolling_match;
     result.height_std_px = height_std_px;
+    result.upright_fraction =
+        use_crawler ? 1.0 : (double) upright_ticks / measured;
+    result.z_drift_px =
+        (hub.pos.z - start_z) >> com.springie.render.Coords.shift;
     result.score = distance_px * rolling_match - 3.0 * height_std_px;
     result.ticks = ticks;
     return result;
+  }
+
+  /**
+   * True when the wheel's axle is within 30 degrees of horizontal
+   * (rim plane within 30 degrees of the x-y plane). Nodes are added
+   * interleaved (rim0[i], rim1[i] per iteration), so element indices
+   * 0, 2, 4 are rim0[0], rim0[1], rim0[2], all in rim-0's plane (see
+   * WheelDemo docs). The normal is (n1-n0) x (n2-n0); the hub is not
+   * used because it sits midway between the two rim planes.
+   */
+  private static boolean axleUpright(NodeManager node_manager, Node hub) {
+    final Node n0 = (Node) node_manager.element.get(0);
+    final Node n1 = (Node) node_manager.element.get(2);
+    final Node n2 = (Node) node_manager.element.get(4);
+    final long ax = (long) n1.pos.x - n0.pos.x;
+    final long ay = (long) n1.pos.y - n0.pos.y;
+    final long az = (long) n1.pos.z - n0.pos.z;
+    final long bx = (long) n2.pos.x - n0.pos.x;
+    final long by = (long) n2.pos.y - n0.pos.y;
+    final long bz = (long) n2.pos.z - n0.pos.z;
+    // Normal = a x b.
+    final double nx = (double) ay * bz - (double) az * by;
+    final double ny = (double) az * bx - (double) ax * bz;
+    final double nz = (double) ax * by - (double) ay * bx;
+    final double len =
+        Math.sqrt(nx * nx + ny * ny + nz * nz);
+    if (len == 0.0) {
+      return false;
+    }
+    // Upright = normal within 30 degrees of the z axis.
+    return Math.abs(nz) / len > 0.8660254;
   }
 
   /** Marker angle about the hub in the XY (rolling) plane, radians. */
