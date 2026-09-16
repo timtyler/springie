@@ -1,0 +1,249 @@
+// This code has been placed into the public domain by its author.
+
+package com.springie.demos;
+
+import com.springie.context.ContextManager;
+import com.springie.elements.links.Link;
+import com.springie.elements.links.LinkManager;
+import com.springie.elements.nodes.Node;
+import com.springie.elements.nodes.NodeManager;
+import com.springie.render.Coords;
+import com.springie.utilities.random.Hortensius32Fast;
+import com.springie.world.World;
+
+/**
+ * Truly headless judge that scores a snake design. Does NOT start FrEnd
+ * (no GUI, no animation thread) -- single-threaded and deterministic.
+ * Needs DISPLAY set for AWT static init (Xvfb is fine).
+ *
+ * <p>Metric: distance traveled by the mid-body node, weighted by how well
+ * the body holds its tubular shape:
+ * score = distance * length_keep * xs_keep,
+ * where length_keep is the head-to-tail length at the end of the run as a
+ * fraction of the build-time length, and xs_keep is the same for the
+ * mean cross-section radius about the body axis. A snake that collapses
+ * into a squirming ball scores near zero even if it travels.
+ *
+ * <p>Usage: java com.springie.demos.SnakeJudge [ticks]
+ * Prints: DISTANCE, LENGTH_KEEP, XS_KEEP, STRAIN_P10, STRAIN_P20,
+ * SCORE, TICKS.
+ */
+public final class SnakeJudge {
+  private SnakeJudge() {
+  }
+
+  /** Score breakdown for one judged run. */
+  public static final class Result {
+    /** 3D distance traveled by the mid-body node, pixels. */
+    public int distance_px;
+    /** End head-to-tail length / build head-to-tail length. */
+    public double length_keep;
+    /** End cross-section radius / build cross-section radius. */
+    public double xs_keep;
+    /** Fraction of links >10% off their (adjusted) rest length at the end. */
+    public double strain_p10;
+    /** Fraction of links >20% off their (adjusted) rest length at the end. */
+    public double strain_p20;
+    /** distance * length_keep * xs_keep. */
+    public double score;
+    /** Total ticks simulated (including settling). */
+    public int ticks;
+
+    @Override
+    public String toString() {
+      return "DISTANCE " + this.distance_px
+          + "\nLENGTH_KEEP " + String.format("%.3f", this.length_keep)
+          + "\nXS_KEEP " + String.format("%.3f", this.xs_keep)
+          + "\nSTRAIN_P10 " + String.format("%.3f", this.strain_p10)
+          + "\nSTRAIN_P20 " + String.format("%.3f", this.strain_p20)
+          + "\nSCORE " + String.format("%.1f", this.score)
+          + "\nTICKS " + this.ticks;
+    }
+  }
+
+  /** Ticks skipped at the start so the model can settle. */
+  public static final int SETTLE_TICKS = 60;
+
+  /** Shape snapshot: head/tail centroids and cross-section radius. */
+  private static final class Shape {
+    double length;
+    double xs;
+  }
+
+  /**
+   * Scores the snake over the given number of ticks. Deterministic: two
+   * calls give identical results.
+   */
+  public static Result score(int ticks) {
+    resetWorldRandom();
+    pinGlobals();
+
+    ContextManager.setNodeManager(new NodeManager());
+    final NodeManager node_manager = ContextManager.getNodeManager();
+
+    SnakeDemo.buildAt(400);
+    final int n = node_manager.element.size();
+    final Node[] nodes = new Node[n];
+    for (int i = 0; i < n; i++) {
+      nodes[i] = (Node) node_manager.element.get(i);
+    }
+
+    final Shape build_shape = measureShape(nodes);
+    final Node mid = nodes[n / 2];
+
+    for (int i = 0; i < SETTLE_TICKS; i++) {
+      node_manager.nodeAndLinkUpdate();
+    }
+    final int start_x = mid.pos.x;
+    final int start_y = mid.pos.y;
+    final int start_z = mid.pos.z;
+
+    final int measured = ticks - SETTLE_TICKS;
+    for (int i = 0; i < measured; i++) {
+      node_manager.nodeAndLinkUpdate();
+    }
+
+    final long dx = (long) mid.pos.x - start_x;
+    final long dy = (long) mid.pos.y - start_y;
+    final long dz = (long) mid.pos.z - start_z;
+    final int dist_internal =
+        (int) Math.sqrt((double) dx * dx + (double) dy * dy + (double) dz * dz);
+    final int distance_px = dist_internal >> Coords.shift;
+
+    final Shape end_shape = measureShape(nodes);
+    final double length_keep = end_shape.length / build_shape.length;
+    final double xs_keep = end_shape.xs / build_shape.xs;
+
+    final LinkManager link_manager = node_manager.getLinkManager();
+    final int n_links = link_manager.element.size();
+    int over10 = 0;
+    int over20 = 0;
+    for (int i = 0; i < n_links; i++) {
+      final Link link = (Link) link_manager.element.get(i);
+      final int rest = link.adjusted_rest_length;
+      if (rest == 0) {
+        continue;
+      }
+      final int actual = distance(link.nodes[0], link.nodes[1]);
+      final double strain = Math.abs(actual - rest) / (double) rest;
+      if (strain > 0.10) {
+        over10++;
+      }
+      if (strain > 0.20) {
+        over20++;
+      }
+    }
+
+    final Result result = new Result();
+    result.distance_px = distance_px;
+    result.length_keep = length_keep;
+    result.xs_keep = xs_keep;
+    result.strain_p10 = (double) over10 / n_links;
+    result.strain_p20 = (double) over20 / n_links;
+    result.score = distance_px * length_keep * xs_keep;
+    result.ticks = ticks;
+    return result;
+  }
+
+  /** Head-to-tail length and mean cross-section radius about the axis. */
+  private static Shape measureShape(Node[] nodes) {
+    final int n = nodes.length;
+    final double[] c1 = centroid(nodes, 0, 4);
+    final double[] c2 = centroid(nodes, n - 4, n);
+    double dx = c2[0] - c1[0];
+    double dy = c2[1] - c1[1];
+    double dz = c2[2] - c1[2];
+    final double len = Math.sqrt(dx * dx + dy * dy + dz * dz);
+    final Shape shape = new Shape();
+    shape.length = len / (1 << Coords.shift);
+    if (len < 1e-9) {
+      shape.xs = 0.0;
+      return shape;
+    }
+    dx /= len;
+    dy /= len;
+    dz /= len;
+    double sum = 0.0;
+    for (final Node node : nodes) {
+      final double ox = node.pos.x - c1[0];
+      final double oy = node.pos.y - c1[1];
+      final double oz = node.pos.z - c1[2];
+      final double along = ox * dx + oy * dy + oz * dz;
+      final double px = ox - along * dx;
+      final double py = oy - along * dy;
+      final double pz = oz - along * dz;
+      sum += Math.sqrt(px * px + py * py + pz * pz);
+    }
+    shape.xs = sum / n / (1 << Coords.shift);
+    return shape;
+  }
+
+  private static double[] centroid(Node[] nodes, int from, int to) {
+    double x = 0.0;
+    double y = 0.0;
+    double z = 0.0;
+    for (int i = from; i < to; i++) {
+      x += nodes[i].pos.x;
+      y += nodes[i].pos.y;
+      z += nodes[i].pos.z;
+    }
+    final int count = to - from;
+    return new double[] {x / count, y / count, z / count};
+  }
+
+  private static int distance(Node a, Node b) {
+    final int dx = a.pos.x - b.pos.x;
+    final int dy = a.pos.y - b.pos.y;
+    final int dz = a.pos.z - b.pos.z;
+    return (int) Math.sqrt((long) dx * dx + (long) dy * dy + (long) dz * dz);
+  }
+
+  /** Pin down all global physics state so scored runs are identical. */
+  private static void pinGlobals() {
+    World.gravity_active = true;
+    World.gravity_strength = 5;
+    World.global_temperature = 6;
+    World.ground_friction = 100;
+    World.minimum_magnitude = 0;
+    World.maximum_magnitude = Integer.MAX_VALUE;
+    com.springie.elements.nodes.Node.max_speed = Integer.MAX_VALUE;
+    com.springie.elements.nodes.Node.viscocity = 0;
+    com.springie.FrEnd.three_d = true;
+    com.springie.FrEnd.check_collisions = true;
+    com.springie.FrEnd.links_disabled = false;
+    com.springie.FrEnd.continuously_centre = false;
+    com.springie.FrEnd.node_growth = false;
+    com.springie.FrEnd.boundaries = true;
+    com.springie.FrEnd.explosions = true;
+    com.springie.FrEnd.oscd = true;
+    com.springie.FrEnd.dragged_element = null;
+    com.springie.FrEnd.forces_disabled_during_gesture = false;
+    com.springie.muscles.Muscles.enabled = false;
+  }
+
+  /**
+   * Resets the world's random number generator to its initial seed.
+   * The physics uses this for temperature jitter and node seeds; without
+   * a reset, consecutive scored runs diverge.
+   */
+  private static void resetWorldRandom() {
+    try {
+      final java.lang.reflect.Field field =
+          World.class.getDeclaredField("rnd");
+      field.setAccessible(true);
+      final Hortensius32Fast rnd =
+          (Hortensius32Fast) field.get(null);
+      // GOOD_SEED = 4357 (the default seed for a new generator).
+      rnd.setSeed(4357);
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to reset World.rnd", e);
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    final int ticks = args.length > 0 ? Integer.parseInt(args[0]) : 600;
+    final Result result = score(ticks);
+    System.out.println(result);
+    System.exit(0);
+  }
+}
