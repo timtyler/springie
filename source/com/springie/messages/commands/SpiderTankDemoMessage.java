@@ -4,6 +4,7 @@ package com.springie.messages.commands;
 import com.springie.FrEnd;
 import com.springie.demos.SpiderTankDemo;
 import com.springie.messages.NewMessage;
+import java.awt.EventQueue;
 
 public class SpiderTankDemoMessage extends NewMessage {
   public SpiderTankDemoMessage() {
@@ -14,7 +15,9 @@ public class SpiderTankDemoMessage extends NewMessage {
     // Build at x=100 (pixels) to leave room to walk to the right.
     SpiderTankDemo.buildAt(100);
     // Sync the Universe panel (gravity etc.) with the demo's settings.
-    FrEnd.reflectValuesInGUIAfterPropertyEditing();
+    // Must run on the AWT thread: this message executes on the animation
+    // thread, and AWT components are not thread-safe.
+    EventQueue.invokeLater(FrEnd::reflectValuesInGUIAfterPropertyEditing);
     return null;
   }
 }

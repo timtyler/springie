@@ -4,6 +4,7 @@ package com.springie.messages.commands;
 import com.springie.FrEnd;
 import com.springie.demos.WheelDemo;
 import com.springie.messages.NewMessage;
+import java.awt.EventQueue;
 
 public class WheelDemoMessage extends NewMessage {
   public WheelDemoMessage() {
@@ -14,7 +15,9 @@ public class WheelDemoMessage extends NewMessage {
     // Build at x=120 (pixels) to leave room to roll to the right.
     WheelDemo.buildAt(120);
     // Sync the Universe panel (gravity etc.) with the demo's settings.
-    FrEnd.reflectValuesInGUIAfterPropertyEditing();
+    // Must run on the AWT thread: this message executes on the animation
+    // thread, and AWT components are not thread-safe.
+    EventQueue.invokeLater(FrEnd::reflectValuesInGUIAfterPropertyEditing);
     return null;
   }
 }
