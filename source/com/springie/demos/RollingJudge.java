@@ -71,6 +71,30 @@ public final class RollingJudge {
     // initial conditions (temperature jitter and node seeds).
     resetWorldRandom();
 
+    // Pin down all global physics state. Earlier tests (especially GUI
+    // tests) leak values into these statics; the demos' buildAt methods
+    // set only a subset, so two consecutive score() calls could otherwise
+    // diverge in a polluted suite.
+    World.gravity_active = true;
+    World.gravity_strength = 5;
+    World.global_temperature = 6;
+    World.ground_friction = 100;
+    World.minimum_magnitude = 0;
+    World.maximum_magnitude = Integer.MAX_VALUE;
+    com.springie.elements.nodes.Node.max_speed = Integer.MAX_VALUE;
+    com.springie.elements.nodes.Node.viscocity = 0;
+    com.springie.FrEnd.three_d = true;
+    com.springie.FrEnd.check_collisions = true;
+    com.springie.FrEnd.links_disabled = false;
+    com.springie.FrEnd.continuously_centre = false;
+    com.springie.FrEnd.node_growth = false;
+    com.springie.FrEnd.boundaries = true;
+    com.springie.FrEnd.explosions = true;
+    com.springie.FrEnd.oscd = true;
+    com.springie.FrEnd.dragged_element = null;
+    com.springie.FrEnd.forces_disabled_during_gesture = false;
+    com.springie.muscles.Muscles.enabled = false;
+
     ContextManager.setNodeManager(new NodeManager());
     final NodeManager node_manager = ContextManager.getNodeManager();
 

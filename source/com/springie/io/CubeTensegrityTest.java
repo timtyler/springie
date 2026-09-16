@@ -18,8 +18,51 @@ import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.io.in.DataInput;
+import com.springie.utilities.random.Hortensius32Fast;
+import com.springie.world.World;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 class CubeTensegrityTest {
+
+  private boolean old_paused;
+  private boolean old_merge;
+
+  /**
+   * The 4000-tick stability run must see fresh-JVM universe state.
+   * DataInput.loadFile normalises the universe via resetUniverseState(),
+   * but only when FrEnd.merge is false; a leaked merge=true would skip
+   * the reset and leave stale gravity/collision/temperature values from
+   * earlier tests. Temperature jitter draws from World.rnd, so the RNG
+   * is also reset for determinism.
+   */
+  @BeforeEach
+  void setUp() {
+    old_paused = FrEnd.paused;
+    old_merge = FrEnd.merge;
+    FrEnd.merge = false;
+    resetWorldRandom();
+  }
+
+  @AfterEach
+  void tearDown() {
+    FrEnd.paused = old_paused;
+    FrEnd.merge = old_merge;
+    // Leave the RNG pristine so later tests see a fresh-JVM sequence.
+    resetWorldRandom();
+  }
+
+  private static void resetWorldRandom() {
+    try {
+      final java.lang.reflect.Field field =
+          World.class.getDeclaredField("rnd");
+      field.setAccessible(true);
+      final Hortensius32Fast rnd = (Hortensius32Fast) field.get(null);
+      rnd.setSeed(4357);
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to reset World.rnd", e);
+    }
+  }
 
   private static double linkLength(Link link) {
     final Node a = link.nodes[0];
@@ -35,7 +78,38 @@ class CubeTensegrityTest {
     assumeTrue(!GraphicsEnvironment.isHeadless(), "needs a display");
     final NodeManager manager = new NodeManager();
     ContextManager.setNodeManager(manager);
+    // Pin the canvas size: ReaderSPRExecutor scales the model to fit
+    // Coords.x/y/z_pixels, and earlier GUI tests (e.g. BottomBarWrapTest)
+    // leave those at whatever narrow width they last resized to, which
+    // changes the integer scale factor and hence the link elasticities.
+    com.springie.render.Coords.x_pixels = 800;
+    com.springie.render.Coords.y_pixels = 600;
+    com.springie.render.Coords.z_pixels = 1024;
     new DataInput(manager).loadFile("resource://models/cube.spr");
+
+    // Belt-and-braces: explicitly establish the universe state the
+    // 4000-tick run needs. DataInput.resetUniverseState() normally does
+    // this, but only when FrEnd.merge is false; earlier GUI tests leak
+    // global state, so pin everything here.
+    World.gravity_strength = 0; // as specified by cube.spr
+    World.gravity_active = false; // as specified by cube.spr
+    World.global_temperature = 6;
+    World.ground_friction = 0;
+    World.minimum_magnitude = 0;
+    Node.max_speed = Integer.MAX_VALUE;
+    Node.viscocity = 0;
+    FrEnd.three_d = true;
+    FrEnd.check_collisions = true;
+    FrEnd.links_disabled = false;
+    FrEnd.continuously_centre = false;
+    FrEnd.node_growth = false;
+    FrEnd.boundaries = true;
+    FrEnd.explosions = true;
+    FrEnd.oscd = true;
+    FrEnd.dragged_element = null;
+    FrEnd.forces_disabled_during_gesture = false;
+    com.springie.muscles.Muscles.enabled = false;
+    manager.electrostatic.charge_active = false; // as specified by cube.spr
 
     assertEquals(12, manager.element.size(), "cube: 12 nodes");
     final LinkManager links = manager.getLinkManager();
