@@ -311,12 +311,12 @@ public class PanelFundamentalTest {
   void launchButtonLaunchesEachSelectedDemo() throws Exception {
     final String[] labels = {
         "Demo: Snake", "Demo: Crawler", "Demo: Spider Tank", "Demo: Wheel",
-        "Demo: Grasshopper"};
+        "Demo: Grasshopper", "Demo: Caterpillar"};
     // Node counts the demo builders produce (their own tests pin these).
     final int[] nodes = {
-        SnakeDemo.SEGMENTS + 3, 14, 23, 17, 14};
+        SnakeDemo.SEGMENTS + 3, 14, 23, 17, 14, 39};
     final int[] links = {
-        3 * SnakeDemo.SEGMENTS + 3, -1, -1, 48, 31};
+        3 * SnakeDemo.SEGMENTS + 3, -1, -1, 48, 31, 111};
 
     try {
       for (int d = 0; d < labels.length; d++) {
