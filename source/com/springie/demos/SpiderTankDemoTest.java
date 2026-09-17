@@ -63,9 +63,9 @@ public class SpiderTankDemoTest {
     final NodeManager node_manager = ContextManager.getNodeManager();
     final LinkManager link_manager = node_manager.getLinkManager();
 
-    // 9 body nodes (triangular tube) + 2 turret nodes
-    // + 4 legs x 2 new nodes (knee, foot) = 19 nodes.
-    assertEquals(19, node_manager.element.size());
+    // 6 body nodes (plate + ridge) + 2 turret nodes
+    // + 4 legs x 2 new nodes (knee, foot) = 16 nodes.
+    assertEquals(16, node_manager.element.size());
 
     // Count muscle links (those with a controller).
     int muscles = 0;

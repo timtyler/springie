@@ -20,24 +20,24 @@ import com.springie.world.World;
 /**
  * 4-legged spider tank with a trot gait, built from tetrahedra.
  *
- * <p>Body: an armored hull built as a triangular tube of six
- * face-sharing tetrahedra -- two prisms, each split into three tets
- * (Tet(Ls,Rs,Cs,Ls+1), Tet(Rs,Cs,Ls+1,Rs+1), Tet(Cs,Ls+1,Rs+1,Cs+1))
- * -- over the bottom edges, with a two-node tetrahedral turret mast on
- * top. 11 nodes, 27 bars: a rigid 3D truss with every block volumetric
- * -- no flat panels that can fold out of plane. (The turret uses the
- * softer leg elasticity: short stiff bars there ring at a numerically
- * unstable frequency.)
+ * <p>Body: an armored hull built as a rigid plate (4 nodes, fully
+ * triangulated) with a ridge (2 nodes) forming two face-sharing
+ * tetrahedra -- Tet(b0,b1,b3,t0) and Tet(b1,b2,b3,t1) sharing the
+ * plate-diagonal edge (b1,b3), locked by the ridge tie (t0,t1) -- plus a
+ * small two-node tetrahedral turret mast on top. 8 nodes: a low, wide,
+ * rigid 3D truss with every block volumetric -- no flat panels that can
+ * fold out of plane. (The turret uses the softer leg elasticity: short
+ * stiff bars there ring at a numerically unstable frequency.)
  *
- * <p>Four legs (front and back pairs; the middle station carries no
- * legs -- six pendulum legs excite a collective resonance that blows
- * the model apart). Each leg is a rigid volumetric tetrahedron (hip1, hip2, knee, foot)
- * attached to the body via a shared edge (two nodes), never a single
- * corner. All six edges of the leg tetrahedron are passive struts, so
- * the leg is a rigid paddle that swings about its hip edge like a
- * pendulum -- it cannot fold up under the body. The leg's one muscle is
- * a CABLE (a tension member -- it pulls but never pushes) from the
- * crest node down to the foot: contracting it lifts the paddle, gravity
+ * <p>Four legs (front and back pairs on each side). Each leg is a rigid
+ * volumetric tetrahedron (hip1, hip2, knee, foot) attached to the body
+ * via a shared edge (two nodes), never a single corner. All six edges
+ * of the leg tetrahedron are passive struts, so the leg is a rigid
+ * paddle that swings about its hip edge like a pendulum -- it cannot
+ * fold up under the body. The legs splay OUT to the side (not under the
+ * body) for a stable stance. The leg's one muscle is a CABLE (a tension
+ * member -- it pulls but never pushes) from the low plate node on the
+ * leg's side down to the foot: contracting it lifts the paddle, gravity
  * drops it again. One muscle per leg.
  *
  * <p>Trot gait: (LF, RB) in phase; (RF, LB) at half-period.
@@ -117,113 +117,92 @@ public final class SpiderTankDemo {
     final int ground = (Coords.y_pixels << Coords.shift) - (2 << Coords.shift);
     final int zo = 20 << Coords.shift;
 
-    // Body: armored hull as a triangular tube of six face-sharing
-    // tetrahedra (two prisms x three tets), long axis along X, plus a
-    // two-node tetrahedral turret. Y increases downward; up is -Y.
-    // Cross-section: (L, R) bottom edge, C crest node at z-middle.
+    // Body: armored hull as a rigid plate with a ridge (crawler-style),
+    // long axis along X, plus a small tetrahedral turret. Y increases
+    // downward; up is -Y. The plate (not a tall tube) keeps the center
+    // of gravity low for stability.
     final int bw = body_e; // width (z)
-    final int seg = body_e; // segment length (x)
+    final int bl = body_e * 2; // length (x)
     final int bh = (int) (body_e * 0.8); // height (y)
     final int body_y = ground - (leg_length_px << Coords.shift) - (bh / 2);
 
-    // Bottom nodes: left side, right side, 3 segments.
-    final Node[] left = new Node[3];
-    final Node[] right = new Node[3];
-    final Node[] crest = new Node[3];
-    for (int s = 0; s < 3; s++) {
-      left[s] = addNode(node_manager, clazz, body_node_type, x0 + s * seg, body_y, zo);
-      right[s] = addNode(node_manager, clazz, body_node_type, x0 + s * seg, body_y, bw + zo);
-      crest[s] = addNode(node_manager, clazz, body_node_type,
-          x0 + s * seg, body_y - bh, bw / 2 + zo);
-    }
+    // Bottom plate: rectangle of 4 nodes, fully triangulated.
+    final Node b0 = addNode(node_manager, clazz, body_node_type, x0, body_y, zo);
+    final Node b1 = addNode(node_manager, clazz, body_node_type, x0 + bl, body_y, zo);
+    final Node b2 = addNode(node_manager, clazz, body_node_type, x0 + bl, body_y, bw + zo);
+    final Node b3 = addNode(node_manager, clazz, body_node_type, x0, body_y, bw + zo);
+    // Ridge (top).
+    final Node t0 = addNode(node_manager, clazz, body_node_type, x0 + bl / 2, body_y - bh, zo);
+    final Node t1 = addNode(node_manager, clazz, body_node_type, x0 + bl / 2, body_y - bh, bw + zo);
 
-    // Triangular tube: prism s splits into Tet(Ls,Rs,Cs,Ls+1),
-    // Tet(Rs,Cs,Ls+1,Rs+1), Tet(Cs,Ls+1,Rs+1,Cs+1), each sharing a face
-    // with the next. 21 bars for 9 nodes: minimally rigid, and every
-    // tetrahedron is volumetric (crest at z-middle, never coplanar).
-    for (int s = 0; s < 2; s++) {
-      final Node ls = left[s], rs = right[s], cs = crest[s];
-      final Node ln = left[s + 1], rn = right[s + 1], cn = crest[s + 1];
-      if (s == 0) {
-        // Station-0 triangle (shared by the next prism for s == 1).
-        strut(link_manager, body_type, clazz, ls, rs);
-        strut(link_manager, body_type, clazz, ls, cs);
-        strut(link_manager, body_type, clazz, rs, cs);
-      }
-      // Tet(Ls,Rs,Cs,Ls+1): new bars.
-      strut(link_manager, body_type, clazz, ls, ln);
-      strut(link_manager, body_type, clazz, rs, ln);
-      strut(link_manager, body_type, clazz, cs, ln);
-      // Tet(Rs,Cs,Ls+1,Rs+1): new bars (shares face Rs,Cs,Ls+1).
-      strut(link_manager, body_type, clazz, rs, rn);
-      strut(link_manager, body_type, clazz, cs, rn);
-      strut(link_manager, body_type, clazz, ln, rn);
-      // Tet(Cs,Ls+1,Rs+1,Cs+1): new bars (shares face Cs,Ls+1,Rs+1).
-      strut(link_manager, body_type, clazz, cs, cn);
-      strut(link_manager, body_type, clazz, ln, cn);
-      strut(link_manager, body_type, clazz, rn, cn);
+    // Bottom plate: 4 sides + 2 diagonals (rigid).
+    strut(link_manager, body_type, clazz, b0, b1);
+    strut(link_manager, body_type, clazz, b1, b2);
+    strut(link_manager, body_type, clazz, b2, b3);
+    strut(link_manager, body_type, clazz, b3, b0);
+    strut(link_manager, body_type, clazz, b0, b2);
+    strut(link_manager, body_type, clazz, b1, b3);
+    // Tet A = (b0, b1, b3, t0): the plate edges already exist.
+    strut(link_manager, body_type, clazz, b0, t0);
+    strut(link_manager, body_type, clazz, b1, t0);
+    strut(link_manager, body_type, clazz, b3, t0);
+    // Tet B = (b1, b2, b3, t1): the plate edges already exist.
+    strut(link_manager, body_type, clazz, b1, t1);
+    strut(link_manager, body_type, clazz, b2, t1);
+    strut(link_manager, body_type, clazz, b3, t1);
+    // Ridge tie: locks the two tetrahedra against hinging.
+    strut(link_manager, body_type, clazz, t0, t1);
 
-    }
-
-    // Turret: a vertical mast of two face-sharing tetrahedra on top.
-    // Tet(top_a, C1, L1, R1) with top_a offset forward in x (else it
-    // would be coplanar with the station-1 cross-section); Tet(top_b,
-    // top_a, L1, R1) sharing the face (top_a, L1, R1). Face-sharing
-    // (3 nodes), never edge-sharing -- an edge-attached tet is a hinge.
+    // Turret: a small vertical mast of two face-sharing tetrahedra on
+    // the ridge. Tet(top_a, t0, t1, b1) with top_a offset forward in x;
+    // Tet(top_b, top_a, t0, t1) sharing the face (top_a, t0, t1).
     final Node top_a = addNode(node_manager, clazz, node_type,
-        x0 + seg + (15 << Coords.shift), body_y - bh - (26 << Coords.shift),
+        x0 + bl / 2 + (15 << Coords.shift), body_y - bh - (26 << Coords.shift),
         bw / 2 + zo);
-    strut(link_manager, leg_type, clazz, top_a, crest[1]);
-    strut(link_manager, leg_type, clazz, top_a, left[1]);
-    strut(link_manager, leg_type, clazz, top_a, right[1]);
+    strut(link_manager, leg_type, clazz, top_a, t0);
+    strut(link_manager, leg_type, clazz, top_a, t1);
+    strut(link_manager, leg_type, clazz, top_a, b1);
     final Node top_b = addNode(node_manager, clazz, node_type,
-        x0 + seg + (15 << Coords.shift), body_y - bh - (52 << Coords.shift),
+        x0 + bl / 2 + (15 << Coords.shift), body_y - bh - (52 << Coords.shift),
         bw / 2 + zo);
     strut(link_manager, leg_type, clazz, top_b, top_a);
-    strut(link_manager, leg_type, clazz, top_b, left[1]);
-    strut(link_manager, leg_type, clazz, top_b, right[1]);
+    strut(link_manager, leg_type, clazz, top_b, t0);
+    strut(link_manager, leg_type, clazz, top_b, t1);
 
     // Legs: each attaches to the body via an EDGE (two nodes), forming
     // a rigid volumetric tetrahedron (hip1, hip2, knee, foot) -- 4 nodes,
-    // 6 edges, all passive struts. The leg is a stiff paddle hinged at
-    // its hip edge: it swings fore-aft like a pendulum but cannot fold.
-    // LF/RF share the front cross edge (left[0],right[0]); LM/RM the
-    // middle; LB/RB the back. The leg's one muscle is a CABLE from the
-    // segment's crest node down to the foot (a marionette string):
-    // contracting it lifts the paddle, gravity is the antagonist that
-    // drops it. Cables pull but never push, so the drive cannot shove
-    // the leg.
-    // Leg shape: the knee sits forward (+x) and halfway down, the foot
-    // further forward at the ground; only a small z splay keeps the feet
-    // clear of the hull. (A sideways-splayed knee makes a shallow
-    // inverted-V that buckles under load.)
-    final Node[][] hip_edges = {
-        {left[0], right[0]}, {right[0], left[0]},
-        {left[1], right[1]}, {right[1], left[1]},
-        {left[2], right[2]}, {right[2], left[2]}};
-    final int[] sides = {-1, 1, -1, 1, -1, 1};
-    final int[] segments = {0, 0, 1, 1, 2, 2};
+    // 6 edges, all passive struts. Two legs per side (front and back),
+    // splayed OUT to the side for a stable stance. The leg's one muscle
+    // is a CABLE from the low plate node on the leg's side down to the
+    // foot (a marionette string): contracting it lifts the paddle,
+    // gravity is the antagonist that drops it. Cables pull but never
+    // push, so the drive cannot shove the leg.
+    // LF: left edge, front; LB: left edge, back; RF/RB: right edge.
+    final Node[][] hip_edges = {{b0, b1}, {b0, b1}, {b3, b2}, {b3, b2}};
+    final int[] sides = {-1, -1, 1, 1}; // splay direction (z)
+    // Front/back position along the edge (fraction of body length).
+    final double[] along = {0.25, 0.75, 0.25, 0.75};
     final int knee_forward_px = 15;
-    for (int leg = 0; leg < 6; leg++) {
-      if (leg == 2 || leg == 3) { continue; } // 4-leg stable configuration
+    for (int leg = 0; leg < 4; leg++) {
       final Node hip1 = hip_edges[leg][0];
       final Node hip2 = hip_edges[leg][1];
       final int side = sides[leg];
       final int phase = leg_phases[leg];
-      // Crest node above the leg's segment, for the lift cable.
-      final Node lift = crest[segments[leg]];
 
-      final int mid_x = (hip1.pos.x + hip2.pos.x) / 2;
-      final int mid_y = (hip1.pos.y + hip2.pos.y) / 2;
-      final int mid_z = (hip1.pos.z + hip2.pos.z) / 2;
+      // Hip point: interpolated along the edge (front/back).
+      final int hip_x = (int) (hip1.pos.x * (1 - along[leg]) + hip2.pos.x * along[leg]);
+      final int hip_y = (hip1.pos.y + hip2.pos.y) / 2;
+      final int hip_z = (hip1.pos.z + hip2.pos.z) / 2;
+      // Knee: forward (+x), halfway down, splayed OUTSIDE the hull.
       final Node knee = addNode(node_manager, clazz, node_type,
-          mid_x + (knee_forward_px << Coords.shift),
-          mid_y + (leg_length_px << Coords.shift) / 2,
-          mid_z + side * (leg_splay_px << Coords.shift));
+          hip_x + (knee_forward_px << Coords.shift),
+          hip_y + (leg_length_px << Coords.shift) / 2,
+          hip_z + side * (leg_splay_px << Coords.shift));
+      // Foot: forward (+X), just above the ground, outside the hull.
       final Node foot = addNode(node_manager, clazz, node_type,
-          mid_x + (foot_forward_px << Coords.shift),
+          hip_x + (foot_forward_px << Coords.shift),
           ground,
-          mid_z + side * (leg_splay_px << Coords.shift));
+          hip_z + side * (leg_splay_px << Coords.shift));
 
       // Rigid tetrahedral paddle (hip1, hip2, knee, foot): all 6 edges
       // are passive struts. hip1-hip2 is a body edge (already exists).
@@ -232,11 +211,16 @@ public final class SpiderTankDemo {
       strut(link_manager, leg_type, clazz, hip1, foot);
       strut(link_manager, leg_type, clazz, hip2, foot);
       strut(link_manager, leg_type, clazz, knee, foot);
-      // The lift cable is the leg's one muscle.
+      // The lift cable is the leg's one muscle: a marionette string from
+      // the LOW plate node on the leg's side down to the foot.
+      // Contracting it lifts the paddle; gravity is the antagonist that
+      // drops it. Cables pull but never push, so the drive cannot shove
+      // the leg.
+      final Node lift = (side < 0) ? b0 : b3;
       cableMuscle(link_manager, leg_type, clazz, lift, foot, phase);
     }
 
-    return left[1];
+    return b0;
   }
 
   private static Node addNode(NodeManager nm, Clazz clazz, NodeType nt, int x, int y, int z) {

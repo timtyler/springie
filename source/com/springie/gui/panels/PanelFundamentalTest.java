@@ -314,7 +314,7 @@ public class PanelFundamentalTest {
         "Demo: Grasshopper", "Demo: Caterpillar", "Demo: Slinky"};
     // Node counts the demo builders produce (their own tests pin these).
     final int[] nodes = {
-        SnakeDemo.SEGMENTS + 3, 14, 19, 17, 14, 39, 27};
+        SnakeDemo.SEGMENTS + 3, 14, 16, 17, 14, 39, 27};
     final int[] links = {
         3 * SnakeDemo.SEGMENTS + 3, -1, -1, 48, 32, 111, 92};
 
