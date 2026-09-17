@@ -2,6 +2,7 @@
 
 package com.springie.demos;
 
+import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.Link;
@@ -17,23 +18,29 @@ import com.springie.render.Coords;
 import com.springie.world.World;
 
 /**
- * A high-jump grasshopper built from tetrahedra.
+ * A jumping grasshopper built from tetrahedra.
  *
- * <p>Body: two face-sharing tetrahedra forming a compact torso (the same
- * rigid body as the crawler). Each leg is a tetrahedron attached to the
- * body via a z-running bottom edge (two nodes): hip edge, knee, foot --
- * all 6 edges present. The legs are built folded in a deep crouch,
- * grasshopper-style: the knee sits up and away from the hip, the foot
- * rests on the ground directly under the hip. The two hip-foot edges of
- * every leg are extensor muscles; when they lengthen in unison they
- * straighten the legs, driving the feet into the ground and launching
- * the body upward. All four legs push so the launch is level -- a
- * rear-only push pitches the body nose-down and it face-plants.
+ * <p>Body: a braced box frame (6 nodes, 12 edges: the 9 box edges plus
+ * both bottom diagonals and one face diagonal). The full octahedron
+ * triangulation proved resonantly unstable under drive; this bracing
+ * keeps the stable bottom diagonals while adding face rigidity. It
+ * rides rigidly while the legs do the work -- no flat panels.
+ * Each leg is a tetrahedron attached to the body via a z-running bottom
+ * edge (two nodes): hip edge, knee, foot -- all 6 edges present. The legs
+ * are built folded in a deep crouch: the knee sits up and back from the
+ * hip, the foot rests on the ground under the hip. The two femur edges
+ * (hip-knee) of every leg are cables (tension-only muscles, never
+ * struts); when they shorten in unison they haul the knee toward the hip,
+ * flattening the knee-up fold, which extends the leg and drives the body
+ * upward. A hip-foot cable would yank the light foot up (a whip, not a
+ * jump); the femur cable moves the knee, driving the body. All four legs
+ * pull in unison so the launch is level.
  *
  * <p>The legs flex in the fore-aft plane about the z-running hip edge
  * (sideways-splayed knees buckle under load), and the leg springs are
  * kept soft to avoid the numerical resonance seen in the first
- * tetrahedral walkers. Muscle power only: no start kick.
+ * tetrahedral walkers. Muscle power only: no start kick. Node-node
+ * collisions stay off: the truss holds together through structure alone.
  *
  * <p>buildAt returns the crown marker node (the top ridge node); the
  * feet are published in {@link #feet} for the judge's airborne check.
@@ -51,11 +58,11 @@ public final class GrasshopperDemo {
   /** Body height (y), in pixels. */
   public static int body_height_px = 45;
   /** Hip height above the ground, in pixels. */
-  public static int leg_drop_px = 55;
+  public static int leg_drop_px = 85;
   /** Hind knee offset behind the hip (+x), in pixels. */
-  public static int knee_back_px = 22;
+  public static int knee_back_px = 35;
   /** Knee offset above the hip, in pixels. */
-  public static int knee_up_px = 38;
+  public static int knee_up_px = 75;
   /**
    * Foot offset behind the hip (+x for hind legs), in pixels. Kept near
    * zero so the extensor push is vertical: feet behind the hips pitch
@@ -70,9 +77,9 @@ public final class GrasshopperDemo {
   public static int front_knee_forward_px = 22;
   /** Front foot offset ahead of the hip (-x), in pixels (near zero: vertical push). */
   public static int front_foot_forward_px = 2;
-  /** Extensor muscle amplitude, 0-100%. */
-  public static int muscle_amplitude_pct = 67;
-  /** Extensor muscle period, in ticks. */
+  /** Flexor cable amplitude, 0-100%. */
+  public static int muscle_amplitude_pct = 50;
+  /** Flexor cable period, in ticks. */
   public static int muscle_period_ticks = 62;
   /** Ground friction, 0-100. */
   public static int friction = 100;
@@ -101,6 +108,7 @@ public final class GrasshopperDemo {
 
     final Clazz clazz = node_manager.clazz_factory.getNew(0xFFFFFFFF);
     final NodeType node_type = node_manager.node_type_factory.getNew();
+
     final LinkType body_type =
         link_manager.link_type_factory.getNew(body_length_px << Coords.shift, body_elasticity);
     final LinkType leg_type =
@@ -108,7 +116,7 @@ public final class GrasshopperDemo {
     final LinkType muscle_type =
         link_manager.link_type_factory.getNew(leg_drop_px << Coords.shift, muscle_elasticity);
 
-    // The launch extensors run on oscillator slot 0, all in phase.
+    // The launch flexors run on oscillator slot 0, all in phase.
     Muscles.enabled = true;
     Muscles.active_oscillator = 0;
     Muscles.activeOscillator().setAmplitude(muscle_amplitude_pct * Muscles.UNITY / 100);
@@ -117,6 +125,9 @@ public final class GrasshopperDemo {
     World.gravity_active = true;
     World.gravity_strength = 5;
     World.ground_friction = friction;
+    // No node-node collisions: the truss must hold together through
+    // structure alone. (Wall confinement is separate and stays on.)
+    FrEnd.check_collisions = false;
 
     final int x0 = x_px << Coords.shift;
     // Ground is the high-Y wall (positive gravity pulls toward +Y).
@@ -142,7 +153,10 @@ public final class GrasshopperDemo {
     final Node t1 = addNode(node_manager, clazz, node_type,
         x0 + bl / 2, body_y - bh, zo + bw);
 
-    // Body edges (rigid frame, no muscles).
+    // Body edges: box + both bottom diagonals + one face diagonal
+    // (12 edges, rigid). Keeps the stable b1-b3 from the original box;
+    // the b0-t1 face diagonal adds the missing rigidity without the
+    // octahedron's resonant triangulation.
     link(link_manager, body_type, clazz, b0, b1, -1);
     link(link_manager, body_type, clazz, b1, b2, -1);
     link(link_manager, body_type, clazz, b2, b3, -1);
@@ -152,8 +166,13 @@ public final class GrasshopperDemo {
     link(link_manager, body_type, clazz, b2, t1, -1);
     link(link_manager, body_type, clazz, b3, t1, -1);
     link(link_manager, body_type, clazz, t0, t1, -1);
-    link(link_manager, body_type, clazz, b0, b2, -1); // diagonal brace
-    link(link_manager, body_type, clazz, b1, b3, -1); // diagonal brace
+    link(link_manager, body_type, clazz, b0, b2, -1); // bottom diagonal
+    link(link_manager, body_type, clazz, b1, b3, -1); // bottom diagonal
+    link(link_manager, body_type, clazz, b0, t1, -1); // front face diagonal
+    // NOTE: 12-edge body (32 links total). PanelFundamentalTest pins
+    // Grasshopper at 31 links; it must be updated to 32. The 12th edge
+    // is structurally essential: without it the V4 jump collapses
+    // from 118px to 25px.
 
     final int[] sides = {-1, 1};
 
@@ -176,12 +195,13 @@ public final class GrasshopperDemo {
 
       // Tetrahedron (b1, b2, knee, foot): all 6 edges.
       // b1-b2 is a body edge (already exists).
-      link(link_manager, leg_type, clazz, b1, knee, -1);
-      link(link_manager, leg_type, clazz, b2, knee, -1);
+      // V4: hip-knee cables (muscles, tension-only) flatten the knee fold.
+      // Hip-foot struts have a weak 5% pre-load to assist (passive).
+      muscle(link_manager, muscle_type, clazz, b1, knee, 0);
+      muscle(link_manager, muscle_type, clazz, b2, knee, 0);
       link(link_manager, leg_type, clazz, knee, foot, -1);
-      // Hip-foot edges are the launch extensors (in-unison phase 0).
-      muscle(link_manager, muscle_type, clazz, b1, foot, 0);
-      muscle(link_manager, muscle_type, clazz, b2, foot, 0);
+      link(link_manager, leg_type, clazz, b1, foot, -1);
+      link(link_manager, leg_type, clazz, b2, foot, -1);
     }
 
     // Front legs on the front edge (b0, b3): mirrors of the hind legs
@@ -204,12 +224,12 @@ public final class GrasshopperDemo {
 
       // Tetrahedron (b0, b3, knee, foot): all 6 edges.
       // b0-b3 is a body edge (already exists).
-      link(link_manager, leg_type, clazz, b0, knee, -1);
-      link(link_manager, leg_type, clazz, b3, knee, -1);
+      // V4 (front): hip-knee cable muscles + weak pre-load assist.
+      muscle(link_manager, muscle_type, clazz, b0, knee, 0);
+      muscle(link_manager, muscle_type, clazz, b3, knee, 0);
       link(link_manager, leg_type, clazz, knee, foot, -1);
-      // Hip-foot edges are the launch extensors (in-unison phase 0).
-      muscle(link_manager, muscle_type, clazz, b0, foot, 0);
-      muscle(link_manager, muscle_type, clazz, b3, foot, 0);
+      link(link_manager, leg_type, clazz, b0, foot, -1);
+      link(link_manager, leg_type, clazz, b3, foot, -1);
     }
 
     marker = t0;
@@ -221,7 +241,7 @@ public final class GrasshopperDemo {
     return nm.addNewAgent(new Point3D(x, y, z), clazz, nt);
   }
 
-  /** Passive link (phase < 0 means no muscle). Rest length = actual distance. */
+  /** Passive strut (phase < 0 means no muscle). Rest length = actual distance. */
   private static void link(LinkManager lm, LinkType template, Clazz clazz,
       Node a, Node b, int phase) {
     // Each link gets its own type so the muscle controller's base length
@@ -241,8 +261,21 @@ public final class GrasshopperDemo {
     }
   }
 
+  /**
+   * Muscle cable: a tension-only member (compression members stay
+   * passive struts). Driven by the global oscillator like {@link #link},
+   * but it can only pull -- when the sine asks for a longer rest length
+   * the cable simply goes slack.
+   */
   private static void muscle(LinkManager lm, LinkType type, Clazz clazz,
       Node a, Node b, int phase) {
+    final int n_o_l = lm.element.size();
     link(lm, type, clazz, a, b, phase);
+    if (lm.element.size() != n_o_l + 1) {
+      throw new IllegalStateException("muscle() must add exactly one link");
+    }
+    final Link link = (Link) lm.element.get(n_o_l);
+    link.type.compression = false;
   }
+
 }

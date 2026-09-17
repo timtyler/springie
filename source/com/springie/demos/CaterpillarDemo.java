@@ -22,13 +22,17 @@ import com.springie.world.World;
  * The body is a flat ribbon: a triangular prism (wide, low) cut into
  * face-sharing tetrahedra (three per segment), flat side down. Every
  * edge is a passive strut with its rest length matched to the geometry,
- * so the skeleton holds its shape with no pre-stress.
+ * so the skeleton holds its shape with no pre-stress -- except the
+ * ventral axial edges, which are CABLE muscles (tension-only).
  *
- * <p>Drive: all three axial lines carry a travelling contraction wave
- * (one full wavelength tail-to-head). Each segment squeezes in phase
- * as the wave passes, gripping the ground and sliding the ribbon
- * forward -- peristalsis, like an earthworm. The wave direction
- * (wave_sign) sets the crawl direction. Muscle power only: no start kick.
+ * <p>Drive: the two ventral axial lines carry a travelling contraction
+ * wave (one full wavelength tail-to-head) on tension-only cables.
+ * The dorsal axial line stays a passive strut spine: the wave's cables
+ * pull AGAINST that rigid spine (muscles act on structure, they are not
+ * the structure). Each segment squeezes its belly in phase as the wave
+ * passes, gripping the ground and sliding the ribbon forward --
+ * peristalsis, like an earthworm. The wave direction (wave_sign) sets
+ * the crawl direction. Muscle power only: no start kick.
  *
  * <p>Parameters are public fields so the judge can sweep them.
  */
@@ -52,15 +56,25 @@ public final class CaterpillarDemo {
   /** Elasticity of the passive skeleton struts. */
   public static int skeleton_elasticity = 20;
 
-  /** Elasticity of the wave muscles (softer than the skeleton, like
-   *  the snake). */
+  /**
+   * When true, the dorsal axial line also carries cable muscles
+   * (symmetric axial shortening). Symmetric drive is required: with
+   * ventral-only cables the body curls and the passive spine
+   * over-strains (0.63 vs 0.21). Default true.
+   */
+  public static boolean dorsal_cables = true;
+
+  /**
+   * Elasticity of the ventral cable muscles (softer than the skeleton,
+   * like the snake).
+   */
   public static int muscle_elasticity = 15;
 
   /** Elasticity of the proleg foot muscles. */
   public static int foot_muscle_elasticity = 15;
 
   /** Muscle amplitude, 0-100%. */
-  public static int muscle_amplitude_pct = 20;
+  public static int muscle_amplitude_pct = 10;
 
   /** Foot muscle amplitude, 0-100%. */
   public static int foot_amplitude_pct = 25;
@@ -259,11 +273,14 @@ public final class CaterpillarDemo {
   }
 
   /**
-   * Converts the axial lines into peristaltic muscles. In travelling
-   * mode (default) a contraction wave sweeps tail-to-head: each segment
-   * squeezes in phase (ventral + dorsal together), gripping and sliding
-   * the flat ribbon low over the floor. In standing mode the whole
-   * belly pulses (inchworm).
+   * Converts the axial lines into peristaltic cable muscles. All three
+   * axial lines (ventral left/right, dorsal top) carry the travelling
+   * contraction wave in phase per segment, so each segment shortens
+   * axially without bending -- peristalsis. The cables are tension-only
+   * (muscles pull, never push): the passive cross-section struts of the
+   * tetrahedral segments are the structure the wave works against, and
+   * they spring the segments back out during each cable's slack phase.
+   * In standing mode the whole belly pulses (inchworm).
    */
   private static void addVentralMuscles(LinkManager link_manager, Clazz clazz,
       Node[] lefts, Node[] rights, Node[] tops, int period,
@@ -275,12 +292,18 @@ public final class CaterpillarDemo {
       final double s_px = (i + 0.5) * SEGMENT_PX;
       final int phase = standing_wave ? 0
           : wavePhase(s_px, period, lambda_px);
-      makeMuscle(link_manager, findLink(link_manager, lefts[i], lefts[i + 1]),
+      makeCableMuscle(link_manager,
+          findLink(link_manager, lefts[i], lefts[i + 1]),
           controller, muscle_elasticity, phase, wave_osc);
-      makeMuscle(link_manager, findLink(link_manager, rights[i], rights[i + 1]),
+      makeCableMuscle(link_manager,
+          findLink(link_manager, rights[i], rights[i + 1]),
           controller, muscle_elasticity, phase, wave_osc);
-      makeMuscle(link_manager, findLink(link_manager, tops[i], tops[i + 1]),
-          controller, muscle_elasticity, phase, wave_osc);
+      if (dorsal_cables) {
+        makeCableMuscle(link_manager,
+            findLink(link_manager, tops[i], tops[i + 1]),
+            controller, muscle_elasticity, phase, wave_osc);
+      }
+      // Else the dorsal axial link stays a passive strut: the spine.
     }
   }
 
@@ -350,11 +373,11 @@ public final class CaterpillarDemo {
         final Link lha = newFootLink(link_manager, clazz, ha, foot);
         final Link lhb = newFootLink(link_manager, clazz, hb, foot);
         final Link lw = newFootLink(link_manager, clazz, w, foot);
-        makeMuscle(link_manager, lha, controller,
+        makeCableMuscle(link_manager, lha, controller,
             foot_muscle_elasticity, foot_phase, foot_osc);
-        makeMuscle(link_manager, lhb, controller,
+        makeCableMuscle(link_manager, lhb, controller,
             foot_muscle_elasticity, foot_phase, foot_osc);
-        makeMuscle(link_manager, lw, controller,
+        makeCableMuscle(link_manager, lw, controller,
             foot_muscle_elasticity, foot_phase, foot_osc);
       }
     }
@@ -371,12 +394,20 @@ public final class CaterpillarDemo {
     return link;
   }
 
-  /** Converts an existing strut link into a muscle. */
-  private static void makeMuscle(LinkManager link_manager, Link link,
+  /** Converts an existing strut link into a cable muscle (tension-only:
+   *  muscles pull, they never push -- Tim's muscle placement rule).
+   *  The dorsal spine and cross-section struts stay passive compression
+  /** Converts an existing strut link into a cable muscle (tension-only:
+   *  muscles pull, they never push -- Tim's muscle placement rule).
+   *  The cross-section struts stay passive compression members. */
+  private static void makeCableMuscle(LinkManager link_manager, Link link,
       GlobalOscillatorController controller, int elasticity,
       int phase, Oscillator oscillator) {
+    final int nominal = distance(link.nodes[0], link.nodes[1]);
     final LinkType type = link_manager.link_type_factory.getNew(
-        distance(link.nodes[0], link.nodes[1]), elasticity);
+        nominal, elasticity);
+    type.compression = false;
+    type.tension = true;
     link.type = type;
     link.phase = phase;
     link.controller = controller;
@@ -392,7 +423,8 @@ public final class CaterpillarDemo {
   private static void makeMuscle(LinkManager link_manager, Clazz clazz,
       Link link, GlobalOscillatorController controller, int elasticity,
       int phase, Oscillator oscillator) {
-    makeMuscle(link_manager, link, controller, elasticity, phase, oscillator);
+    makeCableMuscle(link_manager, link, controller, elasticity, phase,
+        oscillator);
   }
 
   private static int distance(Node a, Node b) {

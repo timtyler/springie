@@ -70,17 +70,22 @@ class SlinkyDemoTest {
     assertEquals(27, node_manager.element.size(),
         "slinky must have 27 nodes");
 
-    // 24 rim edges + 16 axial links + 24 spokes.
-    assertEquals(64, link_manager.element.size(),
-        "slinky must have 64 links");
+    // 24 rim edges + 12 chord braces + 32 inter-turn links
+    // (16 axial + 16 diagonal) + 24 spokes.
+    assertEquals(92, link_manager.element.size(),
+        "slinky must have 92 links");
 
     int muscles = 0;
     for (int i = 0; i < link_manager.element.size(); i++) {
       final Link link = (Link) link_manager.element.get(i);
       if (link.controller != null) {
         muscles++;
-        assertTrue(link.controller instanceof WheelPushController,
-            "link " + i + " must use the wheel push-off reflex");
+        assertTrue(link.controller instanceof SlinkyDemo.SlinkyPullController,
+            "link " + i + " must use the cable pull reflex");
+        // Tim's muscle rule: muscles belong on cables (tension-only),
+        // never on struts.
+        assertTrue(!link.type.compression,
+            "spoke muscle " + i + " must be a cable (tension-only)");
       }
     }
 
@@ -115,17 +120,23 @@ class SlinkyDemoTest {
 
   /**
    * The slinky must step forward in a straight line (not veer, not hop
-   * in place) and hold together (no DQ).
+   * in place) and hold together (no DQ, low passive strain). Runs with
+   * node-node collisions OFF: the structure must hold on its own.
+   * Note: the cable pull-only drive is weaker than the old strut
+   * push+pull, so it steps fewer times and travels less far -- but the
+   * coil now holds its shape instead of squirming.
    */
   @Test
   void stepsForwardInAStraightLine() {
     final SlinkyJudge.Result r = SlinkyJudge.score(600);
     assertTrue(!r.disqualified, "slinky must not DQ (explode or over-strain)");
-    assertTrue(r.distance_px > 200,
+    assertTrue(r.distance_px > 50,
         "slinky must step forward, got " + r.distance_px + "px");
     assertTrue(r.straightness > 0.9,
         "slinky must track straight, got " + r.straightness);
-    assertTrue(r.steps >= 15,
-        "slinky must take at least 15 steps, got " + r.steps);
+    assertTrue(r.steps >= 5,
+        "slinky must take at least 5 steps, got " + r.steps);
+    assertTrue(r.max_passive_strain < 0.3,
+        "passive strain must stay under 0.3, got " + r.max_passive_strain);
   }
 }

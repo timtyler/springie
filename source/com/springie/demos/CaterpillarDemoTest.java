@@ -96,6 +96,10 @@ class CaterpillarDemoTest {
         muscles++;
         assertTrue(link.controller instanceof GlobalOscillatorController,
             "link " + i + " must follow the global oscillator");
+        // Tim's muscle rule: muscles belong on cables (tension-only),
+        // never on struts.
+        assertTrue(!link.type.compression,
+            "muscle link " + i + " must be a cable (tension-only)");
       } else {
         struts++;
       }
@@ -152,7 +156,8 @@ class CaterpillarDemoTest {
 
   /**
    * The caterpillar must crawl forward (not backward, not in place) and
-   * hold its shape (low passive strain, no DQ).
+   * hold its shape (low passive strain, no DQ). Runs with node-node
+   * collisions OFF: the structure must hold together on its own.
    */
   @Test
   void crawlsForwardWithStructuralIntegrity() {
@@ -160,7 +165,7 @@ class CaterpillarDemoTest {
     assertTrue(!r.disqualified, "caterpillar must not DQ (explode or over-strain)");
     assertTrue(r.forward_px > 50,
         "caterpillar must crawl forward, got " + r.forward_px + "px");
-    assertTrue(r.max_passive_strain < 0.5,
-        "passive strain must stay low, got " + r.max_passive_strain);
+    assertTrue(r.max_passive_strain < 0.3,
+        "passive strain must stay under 0.3, got " + r.max_passive_strain);
   }
 }

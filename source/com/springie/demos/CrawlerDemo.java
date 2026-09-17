@@ -2,6 +2,7 @@
 
 package com.springie.demos;
 
+import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.Link;
@@ -19,11 +20,24 @@ import com.springie.world.World;
 /**
  * Parametric 4-legged crawler built from tetrahedra.
  *
- * <p>Body: two face-sharing tetrahedra forming a rigid torso.
- * Each leg: a tetrahedron attached to the body via an edge (two nodes),
- * not a single corner. The leg has 4 nodes: hip1, hip2 (body edge),
- * knee, foot. All 6 edges exist; only the hip-foot edges are muscles.
- * A trot gait (diagonal legs in phase) lifts and swings the feet.
+ * <p>Body: a rigid hull built from two tetrahedral blocks sharing the
+ * bottom-diagonal edge (b1, b3) -- Tet(b0, b1, b3, t0) and
+ * Tet(b1, b2, b3, t1) -- plus the ridge tie (t0, t1) and a fully
+ * triangulated bottom plate. 13 bars for 6 nodes (12 needed), so the
+ * chassis is a rigid 3D truss: it holds its shape instead of folding.
+ *
+ * <p>Each leg is a rigid volumetric tetrahedron (hip1, hip2, knee, foot)
+ * attached to the body via a shared edge (two nodes), never a single
+ * corner. All six edges of the leg tetrahedron are passive struts, so
+ * the leg is a rigid paddle that swings about its hip edge like a
+ * pendulum -- it cannot fold up under the body. The leg's one muscle is
+ * a CABLE (a tension member -- it pulls but never pushes) from the
+ * ridge node down to the foot: contracting it lifts the paddle, gravity
+ * drops it again. One muscle per leg.
+ *
+ * <p>A trot gait (diagonal legs in phase) lifts and swings the feet.
+ * Node-node collisions are OFF: the model holds together through its
+ * structure alone.
  *
  * <p>Parameters are public fields so the judge can sweep them.
  */
@@ -41,8 +55,12 @@ public final class CrawlerDemo {
   public static int knee_forward_px = 12;
   /** Foot forward offset (+x), in pixels. */
   public static int foot_forward_px = 25;
+  /** Elasticity of the stiff body-skeleton struts. */
+  public static int body_elasticity = 70;
+  /** Elasticity of the leg springs (stays in the non-resonant band). */
+  public static int leg_elasticity = 30;
   /** Muscle amplitude, 0-100%. */
-  public static int muscle_amplitude_pct = 5;
+  public static int muscle_amplitude_pct = 12;
   /** Muscle period, in ticks. */
   public static int muscle_period_ticks = 120;
   /** Ground friction, 0-100. */
@@ -65,9 +83,9 @@ public final class CrawlerDemo {
     final Clazz clazz = node_manager.clazz_factory.getNew(0xFFFFFFFF);
     final NodeType node_type = node_manager.node_type_factory.getNew();
     final int body_e = body_edge_px << Coords.shift;
-    final LinkType body_type = link_manager.link_type_factory.getNew(body_e, 50);
+    final LinkType body_type = link_manager.link_type_factory.getNew(body_e, body_elasticity);
     final LinkType leg_type = link_manager.link_type_factory.getNew(
-        leg_length_px << Coords.shift, 30);
+        leg_length_px << Coords.shift, leg_elasticity);
 
     // Muscles.
     Muscles.enabled = true;
@@ -78,6 +96,8 @@ public final class CrawlerDemo {
     World.gravity_active = true;
     World.gravity_strength = 5; // Strong gravity to keep it grounded.
     World.ground_friction = friction;
+    // No node-node collisions: the structure holds itself together.
+    FrEnd.check_collisions = false;
 
     final int x0 = x_px << Coords.shift;
     // Ground is the high-Y wall (positive gravity pulls toward +Y).
@@ -86,13 +106,16 @@ public final class CrawlerDemo {
     final int ground = (Coords.y_pixels << Coords.shift) - (2 << Coords.shift);
     final int zo = 40 << Coords.shift;
 
-    // Body: two tetrahedra sharing a face, long axis along X.
-    // Bottom face: rectangle of 4 nodes; top: 2 ridge nodes.
+    // Body: rigid hull from two tetrahedral blocks.
+    // Bottom plate: rectangle of 4 nodes, fully triangulated.
+    // Ridge: t0 over the front half, t1 over the back half.
+    // Tet A = (b0, b1, b3, t0), Tet B = (b1, b2, b3, t1),
+    // sharing the plate-diagonal edge (b1, b3); the ridge tie (t0, t1)
+    // locks the two blocks against hinging about that edge.
     final int bw = body_e; // body width (z)
     final int bl = body_e * 2; // body length (x)
     final int bh = (int) (body_e * 0.8); // body height (y)
 
-    // Bottom face: rectangle of 4 nodes; top: 2 ridge nodes.
     // Y increases downward; ground is at high Y, so "up" is smaller Y.
     final int body_y = ground - (leg_length_px << Coords.shift) - (bh / 2);
     final Node b0 = addNode(node_manager, clazz, node_type, x0, body_y, zo);
@@ -103,36 +126,47 @@ public final class CrawlerDemo {
     final Node t0 = addNode(node_manager, clazz, node_type, x0 + bl / 2, body_y - bh, zo);
     final Node t1 = addNode(node_manager, clazz, node_type, x0 + bl / 2, body_y - bh, bw + zo);
 
-    // Body edges (rigid frame, no muscles).
-    link(link_manager, body_type, clazz, b0, b1, -1);
-    link(link_manager, body_type, clazz, b1, b2, -1);
-    link(link_manager, body_type, clazz, b2, b3, -1);
-    link(link_manager, body_type, clazz, b3, b0, -1);
-    link(link_manager, body_type, clazz, b0, t0, -1);
-    link(link_manager, body_type, clazz, b1, t0, -1);
-    link(link_manager, body_type, clazz, b2, t1, -1);
-    link(link_manager, body_type, clazz, b3, t1, -1);
-    link(link_manager, body_type, clazz, t0, t1, -1);
-    link(link_manager, body_type, clazz, b0, b2, -1); // diagonal brace
-    link(link_manager, body_type, clazz, b1, b3, -1); // diagonal brace
+    // Bottom plate: 4 sides + 2 diagonals (rigid).
+    strut(link_manager, body_type, clazz, b0, b1);
+    strut(link_manager, body_type, clazz, b1, b2);
+    strut(link_manager, body_type, clazz, b2, b3);
+    strut(link_manager, body_type, clazz, b3, b0);
+    strut(link_manager, body_type, clazz, b0, b2);
+    strut(link_manager, body_type, clazz, b1, b3);
+    // Tet A = (b0, b1, b3, t0): the plate edges already exist.
+    strut(link_manager, body_type, clazz, b0, t0);
+    strut(link_manager, body_type, clazz, b1, t0);
+    strut(link_manager, body_type, clazz, b3, t0);
+    // Tet B = (b1, b2, b3, t1): the plate edges already exist.
+    strut(link_manager, body_type, clazz, b1, t1);
+    strut(link_manager, body_type, clazz, b2, t1);
+    strut(link_manager, body_type, clazz, b3, t1);
+    // Ridge tie: locks the two tetrahedra against hinging.
+    strut(link_manager, body_type, clazz, t0, t1);
 
     // Legs: each attaches to the body via an EDGE (two nodes), forming
-    // a tetrahedron (hip1, hip2, knee, foot). This fixes the "triangles
-    // at one corner" problem: the old design had 3-node legs (hip, knee,
-    // foot) sharing only the hip node with the body, which flapped.
+    // a rigid volumetric tetrahedron (hip1, hip2, knee, foot) -- 4 nodes,
+    // 6 edges, all passive struts. The leg is a stiff paddle hinged at
+    // its hip edge: it swings fore-aft like a pendulum but cannot fold.
+    // The leg's one muscle is a CABLE from the ridge node down to the
+    // foot (a marionette string): contracting it lifts the paddle,
+    // gravity is the antagonist that drops it. Cables pull but never
+    // push, so the drive cannot shove the leg.
     // FL: edge (b0,b3), FR: edge (b3,b2), BL: edge (b1,b0), BR: edge (b2,b1).
     final Node[][] hip_edges = {{b0, b3}, {b3, b2}, {b1, b0}, {b2, b1}};
     final int[] sides = {-1, 1, -1, 1}; // splay direction (z)
+    final Node[] ridge_nodes = {t0, t1};
     for (int leg = 0; leg < 4; leg++) {
       final Node hip1 = hip_edges[leg][0];
       final Node hip2 = hip_edges[leg][1];
       final int side = sides[leg];
       final int phase = leg_phases[leg];
+      // Ridge node on the leg's side, for the lift cable.
+      final Node ridge = ridge_nodes[(side + 1) / 2];
 
       // Knee: forward (+x) and halfway down; foot further forward at the
-      // ground; small z splay clears the hull. The leg flexes in the
-      // fore-aft plane about the z-running hip edge. (Sideways-splayed
-      // knees form a shallow inverted-V that buckles under load.)
+      // ground; small z splay clears the hull. (Sideways-splayed knees
+      // form a shallow inverted-V that buckles under load.)
       final int mid_x = (hip1.pos.x + hip2.pos.x) / 2;
       final int mid_y = (hip1.pos.y + hip2.pos.y) / 2;
       final int mid_z = (hip1.pos.z + hip2.pos.z) / 2;
@@ -146,14 +180,15 @@ public final class CrawlerDemo {
           ground,
           mid_z + side * (leg_splay_px << Coords.shift));
 
-      // Tetrahedron (hip1, hip2, knee, foot): all 6 edges.
-      // hip1-hip2 is a body edge (already exists).
-      link(link_manager, leg_type, clazz, hip1, knee, -1);
-      link(link_manager, leg_type, clazz, hip2, knee, -1);
-      link(link_manager, leg_type, clazz, knee, foot, -1);
-      // Hip-foot edges are muscles (drive the gait).
-      muscle(link_manager, leg_type, clazz, hip1, foot, phase);
-      muscle(link_manager, leg_type, clazz, hip2, foot, phase);
+      // Rigid tetrahedral paddle (hip1, hip2, knee, foot): all 6 edges
+      // are passive struts. hip1-hip2 is a body edge (already exists).
+      strut(link_manager, leg_type, clazz, hip1, knee);
+      strut(link_manager, leg_type, clazz, hip2, knee);
+      strut(link_manager, leg_type, clazz, hip1, foot);
+      strut(link_manager, leg_type, clazz, hip2, foot);
+      strut(link_manager, leg_type, clazz, knee, foot);
+      // The lift cable is the leg's one muscle.
+      cableMuscle(link_manager, leg_type, clazz, ridge, foot, phase);
     }
 
     // Return a body node for tracking.
@@ -164,25 +199,42 @@ public final class CrawlerDemo {
     return nm.addNewAgent(new Point3D(x, y, z), clazz, nt);
   }
 
-  /** Passive link (phase < 0 means no muscle). Rest length = actual distance. */
-  private static void link(LinkManager lm, LinkType template, Clazz clazz, Node a, Node b, int phase) {
-    // Each link gets its own type so the muscle controller's base length
-    // (link.type.length) matches this link's actual geometry.
-    final int dx = a.pos.x - b.pos.x;
-    final int dy = a.pos.y - b.pos.y;
-    final int dz = a.pos.z - b.pos.z;
-    final int dist = (int) Math.sqrt((long) dx * dx + (long) dy * dy + (long) dz * dz);
+  /**
+   * Passive strut (compression member): resists both stretch and squash.
+   * Rest length = actual distance, so the frame starts unstressed.
+   */
+  private static void strut(LinkManager lm, LinkType template, Clazz clazz, Node a, Node b) {
+    // Each link gets its own type so the rest length matches this link's
+    // actual geometry exactly.
+    final int dist = distance(a, b);
     final LinkType type = lm.link_type_factory.getNew(dist, template.elasticity);
     type.damping = template.damping;
     final Link link = lm.setLink(a, b, type, clazz);
     link.adjusted_rest_length = dist;
-    if (phase >= 0) {
-      link.phase = phase;
-      link.controller = new GlobalOscillatorController(Muscles.active_oscillator);
-    }
   }
 
-  private static void muscle(LinkManager lm, LinkType type, Clazz clazz, Node a, Node b, int phase) {
-    link(lm, type, clazz, a, b, phase);
+  /**
+   * Muscle cable (tension member): pulls but never pushes. When the
+   * oscillator lengthens its rest length past the actual length it
+   * simply goes slack.
+   */
+  private static void cableMuscle(LinkManager lm, LinkType template, Clazz clazz,
+      Node a, Node b, int phase) {
+    final int dist = distance(a, b);
+    final LinkType type = lm.link_type_factory.getNew(dist, template.elasticity);
+    type.damping = template.damping;
+    type.compression = false; // cable: no push when shorter than rest
+    type.tension = true; // cable: pulls when longer than rest
+    final Link link = lm.setLink(a, b, type, clazz);
+    link.adjusted_rest_length = dist;
+    link.phase = phase;
+    link.controller = new GlobalOscillatorController(Muscles.active_oscillator);
+  }
+
+  private static int distance(Node a, Node b) {
+    final int dx = a.pos.x - b.pos.x;
+    final int dy = a.pos.y - b.pos.y;
+    final int dz = a.pos.z - b.pos.z;
+    return (int) Math.sqrt((long) dx * dx + (long) dy * dy + (long) dz * dz);
   }
 }

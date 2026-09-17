@@ -14,6 +14,7 @@ import com.springie.geometry.Point3D;
 import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
 import com.springie.render.Coords;
+import com.springie.FrEnd;
 import com.springie.world.World;
 
 /**
@@ -97,6 +98,7 @@ public final class HopperDemo {
    * ground. Returns the crown marker node.
    */
   public static Node buildAt(int x_px) {
+    FrEnd.check_collisions = false;
     final NodeManager node_manager = ContextManager.getNodeManager();
     node_manager.initial_reset();
     final LinkManager link_manager = node_manager.getLinkManager();
@@ -158,6 +160,7 @@ public final class HopperDemo {
     link(link_manager, body_type, clazz, t0, t1, -1);
     link(link_manager, body_type, clazz, b0, b2, -1); // diagonal brace
     link(link_manager, body_type, clazz, b1, b3, -1); // diagonal brace
+    link(link_manager, body_type, clazz, b0, t1, -1); // front face diagonal
 
     final int[] sides = {-1, 1};
 
@@ -247,6 +250,12 @@ public final class HopperDemo {
 
   private static void muscle(LinkManager lm, LinkType type, Clazz clazz,
       Node a, Node b, int phase) {
+    final int n_o_l = lm.element.size();
     link(lm, type, clazz, a, b, phase);
+    if (lm.element.size() != n_o_l + 1) {
+      throw new IllegalStateException("muscle() must add exactly one link");
+    }
+    // Muscle cable: tension-only (compression members stay passive).
+    ((Link) lm.element.get(n_o_l)).type.compression = false;
   }
 }

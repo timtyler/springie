@@ -213,7 +213,6 @@ public final class GrasshopperJudge {
     com.springie.elements.nodes.Node.max_speed = Integer.MAX_VALUE;
     com.springie.elements.nodes.Node.viscocity = 0;
     com.springie.FrEnd.three_d = true;
-    com.springie.FrEnd.check_collisions = true;
     com.springie.FrEnd.links_disabled = false;
     com.springie.FrEnd.continuously_centre = false;
     com.springie.FrEnd.node_growth = false;
@@ -224,6 +223,9 @@ public final class GrasshopperJudge {
     com.springie.FrEnd.forces_disabled_during_gesture = false;
     com.springie.FrEnd.paused = false;
     com.springie.FrEnd.frame_frequency = 0;
+    // The demo runs with node-node collisions off (the truss holds
+    // together through structure alone); the judge pins the same.
+    com.springie.FrEnd.check_collisions = false;
     com.springie.muscles.Muscles.enabled = false;
     com.springie.muscles.Muscles.active_oscillator = 0;
     // Pin the universe size: a booted GUI resizes Coords to its canvas,
