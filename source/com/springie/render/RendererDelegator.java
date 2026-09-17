@@ -305,7 +305,10 @@ public final class RendererDelegator {
 
     // While a drag box is active every frame is fully repainted, which
     // covers the previous rectangle. (The drag box itself is only ever
-    // drawn -- never erased -- so there is nothing to repair.)
+    // drawn -- never erased -- so there is nothing to repair.) The modern
+    // renderer forces the damaged bins dirty and the ray tracer re-blits
+    // the whole frame; the old polygon renderer gets a full
+    // clear-and-redraw (see below).
     final RendererDragBox drag_box_renderer = ContextManager.getNodeManager().renderer.renderer_drag_box;
     drag_box_renderer.draw(graphics, FrEnd.perform_actions.drag_box_manager);
 
@@ -320,7 +323,17 @@ public final class RendererDelegator {
           instanceof com.springie.render.modules.raytraced.ModularRendererRaytraced;
       if (!raytraced) {
         FrEnd.main_canvas.panel.repaint();
-        repaint_some_objects = true;
+        if (RendererDelegator.renderer
+            instanceof com.springie.render.modules.original.ModularRendererOld) {
+          // The old polygon renderer paints straight onto the screen with
+          // no damage repair, so a draw-only drag rectangle would never be
+          // erased: a click leaves a small red box behind, and a real drag
+          // trails. Every frame while the box is up must be a full
+          // clear-and-redraw instead.
+          repaint_all_objects = true;
+        } else {
+          repaint_some_objects = true;
+        }
       }
     }
   }
