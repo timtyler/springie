@@ -105,7 +105,7 @@ public final class SlinkyJudge {
    * left the animation thread running.
    */
   public static Result score(int ticks) {
-    // Hold the model lock for the whole run (see SnakeJudge for why).
+    // Hold the model lock for the whole run (see SidewinderJudge for why).
     synchronized (ContextManager.class) {
       return scoreWithLockHeld(ticks);
     }
@@ -137,6 +137,10 @@ public final class SlinkyJudge {
 
     long max_speed_sq = 0;
     double max_passive_strain = 0.0;
+    // No tip-over rule for the slinky: end-over-end flipping IS its gait
+    // (Tim: "behave like a slinky going downstairs -- lift the rear, raise
+    // it high, put it down in front"). It is judged on periodic stepping,
+    // straightness, and forward progress instead.
     double prev_angle = refAngle(ref, nodes);
     double forward_angle = 0.0;
     final int measured = ticks - SETTLE_TICKS;
@@ -190,8 +194,8 @@ public final class SlinkyJudge {
     final int steps = (int) (forward_angle / STEP_RADIANS);
     final int max_speed_px =
         (int) (Math.sqrt((double) max_speed_sq) / (1 << Coords.shift));
-    final boolean disqualified =
-        max_speed_px > SPEED_CAP_PX_PER_TICK || max_passive_strain > STRAIN_CAP;
+    final boolean disqualified = max_speed_px > SPEED_CAP_PX_PER_TICK
+        || max_passive_strain > STRAIN_CAP;
     final double score =
         (disqualified || steps < MIN_STEPS) ? 0.0 : distance_px * straightness;
 

@@ -66,7 +66,7 @@ public final class CaterpillarDemo {
 
   /**
    * Elasticity of the ventral cable muscles (softer than the skeleton,
-   * like the snake).
+   * like the sidewinder).
    */
   public static int muscle_elasticity = 15;
 
@@ -75,6 +75,18 @@ public final class CaterpillarDemo {
 
   /** Muscle amplitude, 0-100%. */
   public static int muscle_amplitude_pct = 10;
+  /**
+   * Tim's "not tipping over" rule for the flat ribbon: the body is only
+   * 12px tall, so a top-vs-bottom check false-positives on normal
+   * peristalsis. For this morphology "tipping over" means rolling onto
+   * its side, measured as the left-right height difference at mid-body.
+   * Element indices of the mid-body ventral nodes (lefts[6], rights[6]).
+   */
+  public static final int posture_left_index = SEGMENTS + 1 + SEGMENTS / 2;
+  public static final int posture_right_index =
+      2 * (SEGMENTS + 1) + SEGMENTS / 2;
+  /** Max left-right height difference (px) before the run is tipped. */
+  public static final int posture_max_roll_px = 60;
 
   /** Foot muscle amplitude, 0-100%. */
   public static int foot_amplitude_pct = 25;

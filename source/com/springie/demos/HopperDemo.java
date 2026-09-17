@@ -26,17 +26,27 @@ import com.springie.world.World;
  * tetrahedron attached to the body via a z-running bottom edge (two
  * nodes): hip edge, knee, foot -- all 6 edges present. The legs are
  * built folded in a crouch, pogo-style: the knee sits up and away from
- * the hip, the foot rests on the ground directly under the hip. The two
- * hip-foot edges of every leg are extensor muscles; when they lengthen
- * in unison they straighten the legs, driving the feet into the ground
- * and throwing the body upward, and the springy passive legs absorb each
- * landing so the next hop flows from it. All four legs push so the hop
- * is level -- a rear-only push pitches the body nose-down.
+ * the hip, the foot rests on the ground directly under the hip.
+ *
+ * <p>Drive: a smooth cable catapult. The two hip-foot edges of every
+ * leg are crouch muscles (tension-only cables); the hip-knee and
+ * knee-foot edges are passive spring struts. Cables only pull, so the
+ * hop is two-phase: during stance the cables follow a smooth
+ * raised-cosine yank, hauling the body down and loading the knee
+ * springs, then release so the springs fire, the legs extend, and the
+ * body launches -- the way a real grasshopper's flexors load its
+ * springy cuticle. In flight the cables hold their natural rest length
+ * (slack): pulling in flight cannot push against anything and just
+ * tumbles the body. The yank is a free-running rhythm, not
+ * touchdown-triggered, because a touchdown trigger fires asymmetrically
+ * (one end always lands first) and pumps the pitch mode; the hop
+ * entrains to the smooth rhythm instead. Muscle power only: no start
+ * kick.
  *
  * <p>The legs flex in the fore-aft plane about the z-running hip edge
  * (sideways-splayed knees buckle under load), and the leg springs are
  * kept soft to avoid the numerical resonance seen in the first
- * tetrahedral walkers. Muscle power only: no start kick.
+ * tetrahedral walkers.
  *
  * <p>buildAt returns the crown marker node (the top ridge node); the
  * feet are published in {@link #feet} for the judge's airborne check.
@@ -73,8 +83,19 @@ public final class HopperDemo {
   public static int front_knee_forward_px = 22;
   /** Front foot offset ahead of the hip (-x), in pixels (near zero: vertical push). */
   public static int front_foot_forward_px = 2;
-  /** Extensor muscle amplitude, 0-100%. Tuned for hopping rhythm. */
+  /** Crouch yank amplitude, 0-100%. Tuned for hopping rhythm. */
   public static int muscle_amplitude_pct = 25;
+  /** Yank-release rhythm in ticks. The hop entrains to this. */
+  public static int yank_period_ticks = 50;
+  /**
+   * Tim's "not tipping over" rule: element indices of the dorsal "top"
+   * node (ridge t0) and the "bottom" reference node (base b0). The top
+   * must stay above the bottom for the whole run.
+   */
+  public static final int posture_top_index = 4;
+  public static final int posture_bottom_index = 0;
+  /** Min top-above-bottom separation (px) for the tip-over rule. */
+  public static final int posture_min_separation_px = 15;
   /** Extensor muscle period, in ticks. Tuned for hopping rhythm. */
   public static int muscle_period_ticks = 30;
   /** Ground friction, 0-100. */
@@ -114,7 +135,9 @@ public final class HopperDemo {
     final LinkType muscle_type =
         link_manager.link_type_factory.getNew(leg_drop_px << Coords.shift, muscle_elasticity);
 
-    // The launch extensors run on oscillator slot 0, all in phase.
+    // The launch crouch runs on oscillator slot 0 (kept for the UI's
+    // muscle readout); the actual drive is the touchdown-triggered
+    // pulse in HopperStanceController, not the free-running sine.
     Muscles.enabled = true;
     Muscles.active_oscillator = 0;
     Muscles.activeOscillator().setAmplitude(muscle_amplitude_pct * Muscles.UNITY / 100);
@@ -123,6 +146,10 @@ public final class HopperDemo {
     World.gravity_active = true;
     World.gravity_strength = gravity;
     World.ground_friction = friction;
+    // Deterministic physics: thermal jitter makes identical builds
+    // diverge per RNG seed (the wheel's lesson). The judge and the UI
+    // both build through here, so both see the same motion.
+    World.global_temperature = 0;
 
     final int x0 = x_px << Coords.shift;
     // Ground is the high-Y wall (positive gravity pulls toward +Y).
@@ -161,12 +188,16 @@ public final class HopperDemo {
     link(link_manager, body_type, clazz, b0, b2, -1); // diagonal brace
     link(link_manager, body_type, clazz, b1, b3, -1); // diagonal brace
     link(link_manager, body_type, clazz, b0, t1, -1); // front face diagonal
+    link(link_manager, body_type, clazz, b1, t1, -1); // rear face diagonal
+    link(link_manager, body_type, clazz, b2, t0, -1); // cross brace
+    link(link_manager, body_type, clazz, b3, t0, -1); // cross brace
 
     final int[] sides = {-1, 1};
 
     // Hind legs on the rear edge (b1, b2): folded crouch, knee up and
     // behind the hip, foot on the ground directly under the hip. The leg
     // flexes in the fore-aft plane about the z-running hip edge.
+    final java.util.List<Leg> legs = new java.util.ArrayList<Leg>();
     for (int s = 0; s < 2; s++) {
       final int side = sides[s];
       final int hip_x = x0 + bl;
@@ -183,12 +214,16 @@ public final class HopperDemo {
 
       // Tetrahedron (b1, b2, knee, foot): all 6 edges.
       // b1-b2 is a body edge (already exists).
+      // Hip-knee and knee-foot are passive spring struts; hip-foot are
+      // the crouch muscles (cables, created below). On touchdown the
+      // cables yank the body down, loading these knee springs; on
+      // release the springs fire, the legs extend, and the body
+      // launches -- a cable catapult (cables only pull).
       link(link_manager, leg_type, clazz, b1, knee, -1);
       link(link_manager, leg_type, clazz, b2, knee, -1);
       link(link_manager, leg_type, clazz, knee, foot, -1);
-      // Hip-foot edges are the launch extensors (in-unison phase 0).
-      muscle(link_manager, muscle_type, clazz, b1, foot, 0);
-      muscle(link_manager, muscle_type, clazz, b2, foot, 0);
+      legs.add(crouchMuscles(link_manager, muscle_type, clazz, b1, b2,
+          foot));
     }
 
     // Front legs on the front edge (b0, b3): mirrors of the hind legs
@@ -211,12 +246,28 @@ public final class HopperDemo {
 
       // Tetrahedron (b0, b3, knee, foot): all 6 edges.
       // b0-b3 is a body edge (already exists).
+      // Hip-knee and knee-foot are passive spring struts; hip-foot are
+      // the crouch muscles (cables, created below). Their yank fires
+      // with the hind ones so the crouch is level: a rear-only yank
+      // pitches the body nose-down.
       link(link_manager, leg_type, clazz, b0, knee, -1);
       link(link_manager, leg_type, clazz, b3, knee, -1);
       link(link_manager, leg_type, clazz, knee, foot, -1);
-      // Hip-foot edges are the launch extensors (in-unison phase 0).
-      muscle(link_manager, muscle_type, clazz, b0, foot, 0);
-      muscle(link_manager, muscle_type, clazz, b3, foot, 0);
+      legs.add(crouchMuscles(link_manager, muscle_type, clazz, b0, b3,
+          foot));
+    }
+
+    // Shared stance-gated sine drive: a smooth raised-cosine yank on
+    // all eight crouch cables during stance (level crouch, level
+    // release), slack in flight. The hop entrains to the rhythm; there
+    // is no touchdown trigger, whose asymmetric firing pumps the pitch
+    // mode.
+    final HopperStanceController stance = new HopperStanceController(legs,
+        muscle_amplitude_pct, yank_period_ticks, ground);
+    for (final Leg leg : legs) {
+      for (final Link muscle : leg.muscles) {
+        muscle.controller = stance;
+      }
     }
 
     marker = t0;
@@ -257,5 +308,39 @@ public final class HopperDemo {
     }
     // Muscle cable: tension-only (compression members stay passive).
     ((Link) lm.element.get(n_o_l)).type.compression = false;
+  }
+
+  /**
+   * A leg's two hip-foot crouch muscles, with the hip edge nodes and
+   * foot for the stance controller's tilt reflex and touchdown gate.
+   */
+  static final class Leg {
+    final Node hip_a;
+    final Node hip_b;
+    final Node foot;
+    final Link[] muscles;
+
+    Leg(Node hip_a, Node hip_b, Node foot, Link[] muscles) {
+      this.hip_a = hip_a;
+      this.hip_b = hip_b;
+      this.foot = foot;
+      this.muscles = muscles;
+    }
+  }
+
+  /**
+   * A leg's two hip-foot crouch muscles. Both links are tension-only
+   * muscle cables. Returns the leg for the shared stance controller.
+   */
+  private static Leg crouchMuscles(LinkManager lm, LinkType type,
+      Clazz clazz, Node hip_a, Node hip_b, Node foot) {
+    final int n_o_l = lm.element.size();
+    muscle(lm, type, clazz, hip_a, foot, -1);
+    muscle(lm, type, clazz, hip_b, foot, -1);
+    if (lm.element.size() != n_o_l + 2) {
+      throw new IllegalStateException("crouchMuscles() must add two links");
+    }
+    return new Leg(hip_a, hip_b, foot, new Link[] {
+        (Link) lm.element.get(n_o_l), (Link) lm.element.get(n_o_l + 1)});
   }
 }

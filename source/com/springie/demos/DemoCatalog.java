@@ -10,7 +10,7 @@ import com.springie.messages.commands.CrawlerDemoMessage;
 import com.springie.messages.commands.GrasshopperDemoMessage;
 import com.springie.messages.commands.HopperDemoMessage;
 import com.springie.messages.commands.SlinkyDemoMessage;
-import com.springie.messages.commands.SnakeDemoMessage;
+import com.springie.messages.commands.SidewinderDemoMessage;
 import com.springie.messages.commands.SpiderTankDemoMessage;
 import com.springie.messages.commands.WheelDemoMessage;
 
@@ -48,7 +48,7 @@ public final class DemoCatalog {
   }
 
   public static final Demo[] DEMOS = {
-      new Demo("Snake", SnakeDemoMessage::new),
+      new Demo("Sidewinder", SidewinderDemoMessage::new),
       new Demo("Crawler", CrawlerDemoMessage::new),
       new Demo("Spider Tank", SpiderTankDemoMessage::new),
       new Demo("Wheel", WheelDemoMessage::new),

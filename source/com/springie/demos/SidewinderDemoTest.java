@@ -23,11 +23,11 @@ import com.springie.muscles.Muscles;
 import com.springie.render.Coords;
 
 /**
- * The snake demo must build a chain of face-sharing tetrahedra
+ * The sidewinder demo must build a chain of face-sharing tetrahedra
  * (4 nodes + 1 new node per additional segment) with a passive strut
  * skeleton plus antagonistic flank muscles driven in a traveling wave.
  */
-class SnakeDemoTest {
+class SidewinderDemoTest {
 
   private boolean old_enabled;
   private int old_active;
@@ -75,19 +75,19 @@ class SnakeDemoTest {
 
   @Test
   void buildsATetrahedralChainWithPassiveSkeletonAndFlankMuscles() {
-    SnakeDemo.build();
+    SidewinderDemo.build();
 
     final NodeManager node_manager = ContextManager.getNodeManager();
     final LinkManager link_manager = node_manager.getLinkManager();
 
     // 4 nodes for the first tetrahedron, 1 new node per additional segment.
-    assertEquals(SnakeDemo.SEGMENTS + 3, node_manager.element.size(),
-        "snake must have SEGMENTS + 3 nodes");
+    assertEquals(SidewinderDemo.SEGMENTS + 3, node_manager.element.size(),
+        "sidewinder must have SEGMENTS + 3 nodes");
 
     // 6 edges for the first tetrahedron, 3 new edges per additional segment
     // (the shared face's 3 edges already exist).
-    assertEquals(3 * SnakeDemo.SEGMENTS + 3, link_manager.element.size(),
-        "snake must have 3*SEGMENTS + 3 links");
+    assertEquals(3 * SidewinderDemo.SEGMENTS + 3, link_manager.element.size(),
+        "sidewinder must have 3*SEGMENTS + 3 links");
 
     int muscles = 0;
     int struts = 0;
@@ -103,7 +103,7 @@ class SnakeDemoTest {
     }
 
     // Most links are passive skeleton struts; a minority are flank muscles.
-    assertTrue(muscles > 0, "snake must have flank muscles");
+    assertTrue(muscles > 0, "sidewinder must have flank muscles");
     assertTrue(struts > muscles,
         "skeleton struts (" + struts + ") must outnumber muscles (" + muscles + ")");
     assertTrue(muscles >= 10 && muscles <= 30,
@@ -114,7 +114,7 @@ class SnakeDemoTest {
 
   @Test
   void musclePhaseTravelsAlongTheBody() {
-    SnakeDemo.build();
+    SidewinderDemo.build();
 
     final LinkManager link_manager =
         ContextManager.getNodeManager().getLinkManager();
@@ -146,8 +146,8 @@ class SnakeDemoTest {
    */
   @Test
   void judgeIsDeterministic() {
-    final SnakeJudge.Result r1 = SnakeJudge.score(600);
-    final SnakeJudge.Result r2 = SnakeJudge.score(600);
+    final SidewinderJudge.Result r1 = SidewinderJudge.score(600);
+    final SidewinderJudge.Result r2 = SidewinderJudge.score(600);
     assertEquals(r1.distance_px, r2.distance_px);
     assertEquals(r1.length_keep, r2.length_keep, 1e-9);
     assertEquals(r1.xs_keep, r2.xs_keep, 1e-9);
@@ -162,12 +162,12 @@ class SnakeDemoTest {
    */
   @Test
   void passiveSkeletonDoesNotRise() {
-    final int old_amplitude = SnakeDemo.muscle_amplitude_pct;
-    SnakeDemo.muscle_amplitude_pct = 0;
+    final int old_amplitude = SidewinderDemo.muscle_amplitude_pct;
+    SidewinderDemo.muscle_amplitude_pct = 0;
     try {
-      SnakeDemo.build();
+      SidewinderDemo.build();
     } finally {
-      SnakeDemo.muscle_amplitude_pct = old_amplitude;
+      SidewinderDemo.muscle_amplitude_pct = old_amplitude;
     }
 
     final NodeManager node_manager = ContextManager.getNodeManager();
@@ -200,12 +200,12 @@ class SnakeDemoTest {
   }
 
   /**
-   * The snake must hold its tubular shape and slither, not explode into a
+   * The sidewinder must hold its tubular shape and slither, not explode into a
    * squirming mess or freeze in place.
    */
   @Test
   void dynamicsStayNumericallyStable() {
-    SnakeDemo.build();
+    SidewinderDemo.build();
 
     final NodeManager node_manager = ContextManager.getNodeManager();
     final int n = node_manager.element.size();
@@ -238,12 +238,12 @@ class SnakeDemoTest {
     final int w = (max_x - min_x) >> Coords.shift;
     final int h = (max_y - min_y) >> Coords.shift;
     assertTrue(w < 400 && h < 400,
-        "snake must not explode to the universe walls, bbox was " + w + "x" + h);
+        "sidewinder must not explode to the universe walls, bbox was " + w + "x" + h);
 
     // ...and the muscles must actually drive it, not leave it frozen.
     final int moved = Math.max(Math.abs(mid.pos.x - start_x),
         Math.abs(mid.pos.y - start_y)) >> Coords.shift;
     assertTrue(moved > 5,
-        "snake should slither, but the mid node moved only " + moved + "px");
+        "sidewinder should slither, but the mid node moved only " + moved + "px");
   }
 }

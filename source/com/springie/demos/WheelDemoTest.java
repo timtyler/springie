@@ -59,10 +59,10 @@ class WheelDemoTest {
     old_coords_x = Coords.x_pixels;
     old_coords_y = Coords.y_pixels;
     old_coords_z = Coords.z_pixels;
-    // Pin the reflex to the tuned values so the tests are deterministic
+    // Pin the drive to the tuned values so the tests are deterministic
     // even if the statics were changed by an earlier test.
     WheelDemo.use_reflex_drive = true;
-    WheelDemo.reflex_push_pct = 20;
+    WheelDemo.reflex_push_pct = 30;
     WheelDemo.reflex_pull_pct = 5;
     WheelDemo.roll_direction = 1;
     ContextManager.setNodeManager(new NodeManager());
@@ -112,9 +112,9 @@ class WheelDemoTest {
     assertEquals(17, nm.element.size());
 
     final LinkManager lm = nm.getLinkManager();
-    // 8 segments x 4 (rim0, rim1, cross, diagonal) = 32 rim links
-    // + 16 hub spokes = 48 links.
-    assertEquals(48, lm.element.size());
+    // 8 segments x 5 (rim0, rim1, cross, 2 mirror diagonals) = 40 rim links
+    // + 16 hub spokes = 56 links.
+    assertEquals(56, lm.element.size());
   }
 
   @Test
@@ -126,11 +126,11 @@ class WheelDemoTest {
     int muscle_count = 0;
     for (int i = 0; i < lm.element.size(); i++) {
       final Link link = (Link) lm.element.get(i);
-      if (link.controller instanceof WheelPushController) {
+      if (link.controller instanceof PairedSpokeController) {
         muscle_count++;
       }
     }
-    // 16 hub-to-rim spokes (the only muscles).
+    // 16 hub-to-rim spokes (the only muscles), in 8 paired controllers.
     assertEquals(16, muscle_count);
   }
 

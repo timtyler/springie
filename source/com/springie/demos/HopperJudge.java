@@ -88,6 +88,8 @@ public final class HopperJudge {
     public double max_passive_strain;
     /** True when the run was disqualified (exploded). */
     public boolean disqualified;
+    /** True when Tim's "not tipping over" rule was violated. */
+    public boolean tipped_over;
     /** Lowest/highest marker x seen, pixels (drift check). */
     public int min_marker_x_px;
     public int max_marker_x_px;
@@ -107,6 +109,7 @@ public final class HopperJudge {
           + "\nMAX_PASSIVE_STRAIN "
           + String.format("%.3f", this.max_passive_strain)
           + "\nDISQUALIFIED " + this.disqualified
+          + "\nTIPPED_OVER " + this.tipped_over
           + "\nMARKER_X_MIN_PX " + this.min_marker_x_px
           + "\nMARKER_X_MAX_PX " + this.max_marker_x_px
           + "\nSCORE " + String.format("%.4f", this.score)
@@ -120,7 +123,7 @@ public final class HopperJudge {
    * left the animation thread running.
    */
   public static Result score(int ticks) {
-    // Hold the model lock for the whole run (see SnakeJudge for why:
+    // Hold the model lock for the whole run (see SidewinderJudge for why:
     // a GUI test's animation thread never stops and would otherwise step
     // physics on this run's NodeManager concurrently).
     synchronized (ContextManager.class) {
@@ -160,6 +163,11 @@ public final class HopperJudge {
     final int ground_wall = Coords.y_pixels << Coords.shift;
     final int slack = AIRBORNE_SLACK_PX << Coords.shift;
     final int feet_first_slack = FEET_FIRST_SLACK_PX << Coords.shift;
+    // Tim's "not tipping over" rule: the dorsal top node must stay above
+    // the belly reference node for the whole run.
+    final TipOverRule tip_over = new TipOverRule(HopperDemo.posture_top_index,
+        HopperDemo.posture_bottom_index, HopperDemo.posture_min_separation_px);
+    boolean tipped_over = false;
     final int start_y = marker.pos.y;
     int min_marker_y = start_y;
     int min_marker_x = marker.pos.x;
@@ -176,6 +184,10 @@ public final class HopperJudge {
 
     for (int t = 0; t < ticks; t++) {
       node_manager.nodeAndLinkUpdate();
+
+      if (!tipped_over && tip_over.violated(node_manager)) {
+        tipped_over = true;
+      }
 
       if (marker.pos.y < min_marker_y) {
         min_marker_y = marker.pos.y;
@@ -245,8 +257,8 @@ public final class HopperJudge {
     final int max_height_px = Math.max(0, (start_y - min_marker_y) >> Coords.shift);
     final int max_speed_px =
         (int) (Math.sqrt((double) max_speed_sq) / (1 << Coords.shift));
-    final boolean disqualified =
-        max_speed_px > SPEED_CAP_PX_PER_TICK || max_passive_strain > STRAIN_CAP;
+    final boolean disqualified = max_speed_px > SPEED_CAP_PX_PER_TICK
+        || max_passive_strain > STRAIN_CAP || tipped_over;
     final double score = disqualified ? 0.0
         : air_fraction * (1.0 + STREAK_BONUS_PER_HOP * Math.min(max_streak, STREAK_CAP));
 
@@ -259,6 +271,7 @@ public final class HopperJudge {
     result.max_speed_px = max_speed_px;
     result.max_passive_strain = max_passive_strain;
     result.disqualified = disqualified;
+    result.tipped_over = tipped_over;
     result.min_marker_x_px = min_marker_x >> Coords.shift;
     result.max_marker_x_px = max_marker_x >> Coords.shift;
     result.score = score;
@@ -297,7 +310,9 @@ public final class HopperJudge {
   private static void pinGlobals() {
     World.gravity_active = true;
     World.gravity_strength = 5;
-    World.global_temperature = 6;
+    // The demo pins temp=0 in buildAt (deterministic physics); the
+    // judge must not override it afterwards.
+    World.global_temperature = 0;
     World.ground_friction = 100;
     World.minimum_magnitude = 0;
     World.maximum_magnitude = Integer.MAX_VALUE;

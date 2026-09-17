@@ -90,7 +90,7 @@ public final class CaterpillarJudge {
    * left the animation thread running.
    */
   public static Result score(int ticks) {
-    // Hold the model lock for the whole run (see SnakeJudge for why).
+    // Hold the model lock for the whole run (see SidewinderJudge for why).
     synchronized (ContextManager.class) {
       return scoreWithLockHeld(ticks);
     }
@@ -132,9 +132,25 @@ public final class CaterpillarJudge {
 
     long max_speed_sq = 0;
     double max_passive_strain = 0.0;
+    // Tim's "not tipping over" rule for the flat ribbon: "tipping over"
+    // means rolling onto its side. The body is only 12px tall, so a
+    // top-vs-bottom check false-positives on normal peristalsis; instead
+    // the mid-body left-right height difference must stay small.
+    final int roll_cap = CaterpillarDemo.posture_max_roll_px << Coords.shift;
+    boolean tipped_over = false;
     final int measured = ticks - SETTLE_TICKS;
     for (int t = 0; t < measured; t++) {
       node_manager.nodeAndLinkUpdate();
+
+      if (!tipped_over) {
+        final Node left =
+            (Node) node_manager.element.get(CaterpillarDemo.posture_left_index);
+        final Node right =
+            (Node) node_manager.element.get(CaterpillarDemo.posture_right_index);
+        if (Math.abs(left.pos.y - right.pos.y) > roll_cap) {
+          tipped_over = true;
+        }
+      }
 
       for (final Node node : nodes) {
         final long vx = node.velocity.x;
@@ -170,8 +186,8 @@ public final class CaterpillarJudge {
         : 1.0 - Math.min(1.0, lateral_px / (double) Math.max(forward_px, 1));
     final int max_speed_px =
         (int) (Math.sqrt((double) max_speed_sq) / (1 << Coords.shift));
-    final boolean disqualified =
-        max_speed_px > SPEED_CAP_PX_PER_TICK || max_passive_strain > STRAIN_CAP;
+    final boolean disqualified = max_speed_px > SPEED_CAP_PX_PER_TICK
+        || max_passive_strain > STRAIN_CAP || tipped_over;
     final double score = disqualified ? 0.0 : forward_px * straightness;
 
     final Result result = new Result();

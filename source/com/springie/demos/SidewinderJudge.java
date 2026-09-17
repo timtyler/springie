@@ -12,7 +12,7 @@ import com.springie.utilities.random.Hortensius32Fast;
 import com.springie.world.World;
 
 /**
- * Truly headless judge that scores a snake design. Does NOT start FrEnd
+ * Truly headless judge that scores a sidewinder design. Does NOT start FrEnd
  * (no GUI, no animation thread) -- single-threaded and deterministic.
  * Needs DISPLAY set for AWT static init (Xvfb is fine).
  *
@@ -21,15 +21,21 @@ import com.springie.world.World;
  * score = distance * length_keep * xs_keep,
  * where length_keep is the head-to-tail length at the end of the run as a
  * fraction of the build-time length, and xs_keep is the same for the
- * mean cross-section radius about the body axis. A snake that collapses
+ * mean cross-section radius about the body axis. A sidewinder that collapses
  * into a squirming ball scores near zero even if it travels.
  *
- * <p>Usage: java com.springie.demos.SnakeJudge [ticks]
+ * <p>No tip-over rule for the sidewinder: its triangular cross-section
+ * rolls about the body axis as part of the gait (the top node cycles
+ * through the cross-section vertices), so a top-stays-on-top rule would
+ * false-positive on healthy locomotion. It is judged on distance and
+ * shape retention instead.
+ *
+ * <p>Usage: java com.springie.demos.SidewinderJudge [ticks]
  * Prints: DISTANCE, LENGTH_KEEP, XS_KEEP, STRAIN_P10, STRAIN_P20,
  * SCORE, TICKS.
  */
-public final class SnakeJudge {
-  private SnakeJudge() {
+public final class SidewinderJudge {
+  private SidewinderJudge() {
   }
 
   /** Score breakdown for one judged run. */
@@ -71,7 +77,7 @@ public final class SnakeJudge {
   }
 
   /**
-   * Scores the snake over the given number of ticks. Deterministic: two
+   * Scores the sidewinder over the given number of ticks. Deterministic: two
    * calls give identical results, even in a JVM where a GUI test has left
    * the animation thread running.
    */
@@ -96,7 +102,7 @@ public final class SnakeJudge {
     ContextManager.setNodeManager(new NodeManager());
     final NodeManager node_manager = ContextManager.getNodeManager();
 
-    SnakeDemo.buildAt(400);
+    SidewinderDemo.buildAt(400);
     final int n = node_manager.element.size();
     final Node[] nodes = new Node[n];
     for (int i = 0; i < n; i++) {

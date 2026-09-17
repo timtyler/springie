@@ -99,10 +99,15 @@ class GrasshopperDemoTest {
       assertTrue(link.controller instanceof GlobalOscillatorController,
           "link " + i + " must follow the global oscillator");
       assertEquals(0, link.phase,
-          "all extensors must fire in unison for a level launch");
+          "all crouch muscles must fire in unison for a level launch");
+      // Tim's muscle rule: muscles belong on cables (tension-only),
+      // never on struts.
+      assertTrue(!link.type.compression,
+          "muscle " + i + " must be a cable (tension-only)");
     }
-    // Two hip-foot extensors per leg, four legs.
-    assertEquals(8, muscles, "grasshopper must have 8 extensor muscles");
+    // Two hip-foot crouch muscles per leg, four legs, all firing in
+    // unison for a level launch.
+    assertEquals(8, muscles, "grasshopper must have 8 crouch muscles");
 
     assertTrue(Muscles.enabled, "the demo must enable muscles");
   }

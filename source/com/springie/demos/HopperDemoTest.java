@@ -3,6 +3,7 @@
 package com.springie.demos;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -85,21 +86,26 @@ class HopperDemoTest {
     // 6 body nodes + 2 nodes per leg x 4 legs.
     assertEquals(14, node_manager.element.size(),
         "hopper must have 14 nodes");
-    // 12 body edges + 5 edges per leg x 4 legs.
-    assertEquals(32, link_manager.element.size(),
-        "hopper must have 32 links");
+    // 12 body edges + 3 diagonal braces + 5 edges per leg x 4 legs.
+    assertEquals(35, link_manager.element.size(),
+        "hopper must have 35 links");
 
     int muscles = 0;
+    HopperStanceController shared = null;
     for (int i = 0; i < link_manager.element.size(); i++) {
       final Link link = (Link) link_manager.element.get(i);
       if (link.controller == null) {
         continue;
       }
       muscles++;
-      assertTrue(link.controller instanceof GlobalOscillatorController,
-          "link " + i + " must follow the global oscillator");
-      assertEquals(0, link.phase,
-          "all extensors must fire in unison for level hops");
+      assertTrue(link.controller instanceof HopperStanceController,
+          "link " + i + " must use the shared stance controller");
+      if (shared == null) {
+        shared = (HopperStanceController) link.controller;
+      } else {
+        assertSame(shared, link.controller,
+            "all extensors must share one stance controller for level hops");
+      }
     }
     // Two hip-foot extensors per leg, four legs.
     assertEquals(8, muscles, "hopper must have 8 extensor muscles");

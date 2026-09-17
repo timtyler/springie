@@ -17,7 +17,7 @@ import com.springie.render.Coords;
 import com.springie.world.World;
 
 /**
- * A snake from a chain of face-sharing tetrahedra: each new node forms a
+ * A sidewinder from a chain of face-sharing tetrahedra: each new node forms a
  * tetrahedron with the previous end face, so the body is a 3D tube with a
  * triangular cross-section. The repeating primitive is two tetrahedra
  * sharing a face (a triangular bipyramid).
@@ -42,8 +42,8 @@ import com.springie.world.World;
  *
  * <p>Parameters are public fields so the judge can sweep them.
  */
-public final class SnakeDemo {
-  private SnakeDemo() {
+public final class SidewinderDemo {
+  private SidewinderDemo() {
     // static-only
   }
 
@@ -84,7 +84,7 @@ public final class SnakeDemo {
   public static int settle_ticks = 90;
 
   /**
-   * Builds the snake, replacing whatever is there. The body is centred at
+   * Builds the sidewinder, replacing whatever is there. The body is centred at
    * x = x_px pixels and rests on the ground.
    */
   public static void buildAt(int x_px) {
@@ -158,7 +158,7 @@ public final class SnakeDemo {
     // cross-section orientation is still the deterministic one from the
     // build geometry -- letting it settle first lets the triangular tube
     // roll unpredictably, which biases the left/right selection and makes
-    // the snake turn instead of slithering straight.
+    // the sidewinder turn instead of slithering straight.
     addFlankMuscles(link_manager, clazz, nodes);
 
     // Let the skeleton settle onto the ground with the muscles attached.
@@ -167,7 +167,7 @@ public final class SnakeDemo {
     }
   }
 
-  /** Builds the snake at the default position. Kept for existing callers. */
+  /** Builds the sidewinder at the default position. Kept for existing callers. */
   public static void build() {
     buildAt(400);
   }

@@ -26,11 +26,11 @@ import org.junit.jupiter.api.Test;
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.demos.DemoCatalog;
-import com.springie.demos.SnakeDemo;
+import com.springie.demos.SidewinderDemo;
 import com.springie.gui.GuiTestSupport;
 import com.springie.gui.components.ImageButton;
 import com.springie.messages.commands.CrawlerDemoMessage;
-import com.springie.messages.commands.SnakeDemoMessage;
+import com.springie.messages.commands.SidewinderDemoMessage;
 import com.springie.messages.commands.SpiderTankDemoMessage;
 import com.springie.messages.commands.WheelDemoMessage;
 import com.springie.render.SetUpCode;
@@ -277,7 +277,7 @@ public class PanelFundamentalTest {
     // Models > Demos menu enqueues -- same class, same builder, same
     // universe setup.
     assertTrue(
-        DemoCatalog.forLabel("Demo: Snake").newMessage() instanceof SnakeDemoMessage);
+        DemoCatalog.forLabel("Demo: Sidewinder").newMessage() instanceof SidewinderDemoMessage);
     assertTrue(
         DemoCatalog.forLabel("Demo: Crawler").newMessage() instanceof CrawlerDemoMessage);
     assertTrue(DemoCatalog.forLabel("Demo: Spider Tank")
@@ -310,13 +310,13 @@ public class PanelFundamentalTest {
   @Test
   void launchButtonLaunchesEachSelectedDemo() throws Exception {
     final String[] labels = {
-        "Demo: Snake", "Demo: Crawler", "Demo: Spider Tank", "Demo: Wheel",
+        "Demo: Sidewinder", "Demo: Crawler", "Demo: Spider Tank", "Demo: Wheel",
         "Demo: Grasshopper", "Demo: Caterpillar", "Demo: Slinky"};
     // Node counts the demo builders produce (their own tests pin these).
     final int[] nodes = {
-        SnakeDemo.SEGMENTS + 3, 14, 16, 17, 14, 39, 27};
+        SidewinderDemo.SEGMENTS + 3, 14, 16, 17, 14, 39, 27};
     final int[] links = {
-        3 * SnakeDemo.SEGMENTS + 3, -1, -1, 48, 32, 111, 92};
+        3 * SidewinderDemo.SEGMENTS + 3, -1, -1, 56, 32, 111, 92};
 
     try {
       for (int d = 0; d < labels.length; d++) {
@@ -340,7 +340,12 @@ public class PanelFundamentalTest {
           got_nodes = ContextManager.getNodeManager().element.size();
           got_links =
               ContextManager.getNodeManager().getLinkManager().element.size();
-          if (got_nodes == nodes[d]) {
+          // Wait for the full build: nodes land before links, so checking
+          // nodes alone can catch the build mid-flight (links still being
+          // added). Only break when both counts match (when the demo has
+          // an expected link count).
+          if (got_nodes == nodes[d]
+              && (links[d] < 0 || got_links == links[d])) {
             break;
           }
           Thread.sleep(250);
@@ -379,7 +384,7 @@ public class PanelFundamentalTest {
       assertEquals(17,
           ContextManager.getNodeManager().element.size(),
           "the initial load must build the selected demo");
-      assertEquals(48,
+      assertEquals(56,
           ContextManager.getNodeManager().getLinkManager().element.size(),
           "the initial load must build the selected demo's links");
     } finally {

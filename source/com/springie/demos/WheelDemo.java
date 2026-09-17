@@ -63,10 +63,10 @@ public final class WheelDemo {
   public static final int RIM_COUNT = 8;
 
   /** Rim radius, in pixels. */
-  public static int rim_radius_px = 60;
+  public static int rim_radius_px = 50;
 
   /** Rims sit at z = 0 and z = 2 * this value, in pixels. */
-  public static int rim_half_width_px = 50;
+  public static int rim_half_width_px = 46;
 
   /**
    * Z offset of the whole wheel: rim-0 sits at z = this, rim-1 at
@@ -83,6 +83,7 @@ public final class WheelDemo {
   public static int hub_log_mass = 30;
 
   /** Muscle amplitude for the spoke wave, 0-100%. */
+  /** Spoke muscle amplitude, percent (travelling-wave mode only). */
   public static int muscle_amplitude_pct = 25;
 
   /** Oscillator period for the spoke wave, in ticks. */
@@ -110,23 +111,52 @@ public final class WheelDemo {
   /**
    * Drive mode: true for the ground-contact push-off reflex
    * (self-synchronizing), false for the open-loop travelling wave.
+   * The paired reflex fires both spokes of a rim-pair together, keeping
+   * lateral forces symmetric -- this is what stops the tip-over. Geometry
+   * (short/fat) helps but is not sufficient alone.
    */
   public static boolean use_reflex_drive = true;
 
   /** Reflex push percent (spoke extension in back stance). */
-  public static int reflex_push_pct = 20;
+  public static int reflex_push_pct = 30;
+  /**
+   * Tim's "not tipping over" rule for the wheel: the axle must stay level.
+   * Element indices of one node on each end of the axle (rim0[0], rim1[0]
+   * -- same angular station, so they ride together while rolling). Their
+   * heights must stay within the max difference for the whole run.
+   */
+  public static final int posture_axle_left_index = 0;
+  public static final int posture_axle_right_index = 1;
+  /** Max allowed axle-end height difference (px) for the tip-over rule. */
+  public static final int posture_axle_max_diff_px = 20;
 
   /** Reflex pull percent (spoke contraction in front stance). */
   public static int reflex_pull_pct = 5;
 
+  /**
+   * How far behind/in front of the hub (px) a spoke's rim pair must be to
+   * fire the push/pull. Firing only when the spoke is well angled (not
+   * near-vertical) directs the push forward instead of launching the wheel
+   * skyward.
+   */
+  public static int reflex_stance_threshold_px = 20;
+
   /** Rolling direction for the reflex: +1 toward +X, -1 toward -X. */
   public static int roll_direction = 1;
+
+  /**
+   * When true, the paired reflex ramps the push/pull smoothly with spoke
+   * angle (0 at the stance threshold, full at horizontal) instead of
+   * snapping on/off. Removes the impulsive kick that pumps the rocking
+   * mode; concentrates push where the spoke is most horizontal.
+   */
+  public static boolean proportional_drive = true;
 
   /** Elasticity for the rim links (all tetrahedron edges). */
   public static int rim_elasticity = 30;
 
   /** Elasticity for the hub-to-rim spoke muscles. */
-  public static int spoke_elasticity = 25;
+  public static int spoke_elasticity = 10;
 
   /**
    * Builds the wheel with its centre at (x_px, ground - radius).
@@ -155,7 +185,13 @@ public final class WheelDemo {
     World.gravity_active = true;
     World.gravity_strength = 5;
     World.ground_friction = friction;
-    World.global_temperature = 6;
+    // Zero thermal jitter: the reflex drive is a delicate self-synchronizing
+    // mechanism, and thermal kicks knock it off rhythm into chaotic
+    // tip/veer modes (with temperature=6 the same build gives wildly
+    // different results per RNG seed). CaterpillarDemo and SlinkyDemo
+    // already build with temperature 0 for the same reason; the judge and
+    // the UI both go through buildAt, so both see the deterministic build.
+    World.global_temperature = 0;
 
     // Ground is the high-Y wall (positive gravity pulls toward +Y).
     final int ground = (Coords.y_pixels << Coords.shift) - (10 << Coords.shift);
@@ -179,10 +215,10 @@ public final class WheelDemo {
     }
     final Node hub = addNode(node_manager, clazz, hub_type, cx, cy, z0 + hw);
 
-    // Rim: two 8-gon rings (16 links) + 8 cross links + 8 diagonals (32 total).
-    // The hub spokes form triangles (hub, rim0[i], rim1[i]) sharing only
-    // the hub corner -- these flap aimlessly. To fix, add 8 passive
-    // diagonals (rim1[i] to rim0[i+1]) which complete the tetrahedra
+    // Rim: two 8-gon rings (16 links) + 8 cross links + 16 mirror diagonals
+    // (40 total). The hub spokes form triangles (hub, rim0[i], rim1[i])
+    // sharing only the hub corner -- these flap aimlessly. To fix, add
+    // passive diagonals which complete the tetrahedra
     // (hub, rim0[i], rim1[i], rim0[i+1]). The diagonals are passive
     // structural bracing; only the 16 spokes are muscles.
     final GlobalOscillatorController controller =
@@ -193,10 +229,14 @@ public final class WheelDemo {
       final Node b0 = rim1[i];
       final Node a1 = rim0[j];
       // Passive: rim edges, cross links, and diagonals maintain shape.
+      // The diagonals come in mirror pairs (b0-a1 and a0-b1) so the bracing
+      // has no chirality: single-handed diagonals twist the wheel and make
+      // it veer in a circle instead of rolling straight.
       passive(link_manager, clazz, a0, a1, rim_elasticity); // rim0 edge
       passive(link_manager, clazz, b0, rim1[j], rim_elasticity); // rim1 edge
       passive(link_manager, clazz, a0, b0, rim_elasticity); // cross at i
-      passive(link_manager, clazz, b0, a1, rim_elasticity); // diagonal
+      passive(link_manager, clazz, b0, a1, rim_elasticity); // diagonal /
+      passive(link_manager, clazz, a0, rim1[j], rim_elasticity); // diagonal \
     }
 
     // Hub spokes: 16 muscles forming face-joined tetrahedra with the rim.
@@ -213,8 +253,7 @@ public final class WheelDemo {
       final int phase =
           (int) (phase_direction * a * muscle_period_ticks / (2.0 * Math.PI));
       if (use_reflex_drive) {
-        reflexSpoke(link_manager, clazz, hub, rim0[i], ground);
-        reflexSpoke(link_manager, clazz, hub, rim1[i], ground);
+        pairedReflexSpokes(link_manager, clazz, hub, rim0[i], rim1[i], ground);
       } else {
         spoke(link_manager, clazz, controller, hub, rim0[i], phase);
         spoke(link_manager, clazz, controller, hub, rim1[i], phase);
@@ -264,6 +303,30 @@ public final class WheelDemo {
     link.adjusted_rest_length = type.length;
     link.phase = phase;
     link.controller = controller;
+  }
+
+  /**
+   * One paired reflex controller driving both spokes of rim pair i.
+   * The pair fires together from its midpoint geometry, keeping the
+   * sideways spoke forces symmetric so a small tilt cannot grow into a
+   * capsize (see PairedSpokeController).
+   */
+  private static void pairedReflexSpokes(LinkManager link_manager, Clazz clazz,
+      Node hub, Node rim_a, Node rim_b, int ground_y) {
+    final LinkType type_a =
+        link_manager.link_type_factory.getNew(distance(hub, rim_a), spoke_elasticity);
+    final Link link_a = link_manager.setLink(hub, rim_a, type_a, clazz);
+    link_a.adjusted_rest_length = type_a.length;
+    final LinkType type_b =
+        link_manager.link_type_factory.getNew(distance(hub, rim_b), spoke_elasticity);
+    final Link link_b = link_manager.setLink(hub, rim_b, type_b, clazz);
+    link_b.adjusted_rest_length = type_b.length;
+    final PairedSpokeController controller = new PairedSpokeController(hub,
+        rim_a, rim_b, link_a, link_b, type_a.length, type_b.length,
+        reflex_push_pct, reflex_pull_pct, ground_y, roll_direction,
+        reflex_stance_threshold_px, proportional_drive, rim_radius_px);
+    link_a.controller = controller;
+    link_b.controller = controller;
   }
 
   /**

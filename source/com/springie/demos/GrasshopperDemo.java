@@ -21,20 +21,19 @@ import com.springie.world.World;
  * A jumping grasshopper built from tetrahedra.
  *
  * <p>Body: a braced box frame (6 nodes, 12 edges: the 9 box edges plus
- * both bottom diagonals and one face diagonal). The full octahedron
- * triangulation proved resonantly unstable under drive; this bracing
- * keeps the stable bottom diagonals while adding face rigidity. It
- * rides rigidly while the legs do the work -- no flat panels.
- * Each leg is a tetrahedron attached to the body via a z-running bottom
- * edge (two nodes): hip edge, knee, foot -- all 6 edges present. The legs
- * are built folded in a deep crouch: the knee sits up and back from the
- * hip, the foot rests on the ground under the hip. The two femur edges
- * (hip-knee) of every leg are cables (tension-only muscles, never
- * struts); when they shorten in unison they haul the knee toward the hip,
- * flattening the knee-up fold, which extends the leg and drives the body
- * upward. A hip-foot cable would yank the light foot up (a whip, not a
- * jump); the femur cable moves the knee, driving the body. All four legs
- * pull in unison so the launch is level.
+ * both bottom diagonals and one face diagonal). It rides rigidly while
+ * the legs do the work -- no flat panels. Each leg is a tetrahedron
+ * attached to the body via a z-running bottom edge (two nodes): hip
+ * edge, knee, foot -- all 6 edges present. The legs are built folded in
+ * a deep crouch: the knee sits up and away from the hip, the foot rests
+ * on the ground under the hip. The two hip-foot edges of every leg are
+ * crouch muscles (tension-only cables, never struts); the hip-knee and
+ * knee-foot edges are passive spring struts. The eight cables fire in
+ * unison on the global oscillator (phase 0): they yank the body down,
+ * loading the knee springs, then release -- the springs fire, the legs
+ * extend, and the body launches. All four legs drive so the launch is
+ * level (a rear-only yank pitches the body nose-down), and the knee
+ * geometry is mirrored front-back so the torques cancel.
  *
  * <p>The legs flex in the fore-aft plane about the z-running hip edge
  * (sideways-splayed knees buckle under load), and the leg springs are
@@ -58,27 +57,35 @@ public final class GrasshopperDemo {
   /** Body height (y), in pixels. */
   public static int body_height_px = 45;
   /** Hip height above the ground, in pixels. */
-  public static int leg_drop_px = 85;
+  public static int leg_drop_px = 55;
   /** Hind knee offset behind the hip (+x), in pixels. */
-  public static int knee_back_px = 35;
+  public static int knee_back_px = 22;
   /** Knee offset above the hip, in pixels. */
-  public static int knee_up_px = 75;
+  public static int knee_up_px = 38;
   /**
-   * Foot offset behind the hip (+x for hind legs), in pixels. Kept near
-   * zero so the extensor push is vertical: feet behind the hips pitch
-   * the body nose-down and it face-plants.
+   * Foot offset behind the hip (+x for hind legs), in pixels. Zero: the
+   * yank is purely vertical, so the launch has no pitch torque.
    */
-  public static int foot_back_px = 2;
+  public static int foot_back_px = 0;
   /** Foot z splay, in pixels. */
   public static int leg_splay_px = 10;
   /** Knee z splay, in pixels. */
   public static int knee_splay_px = 6;
   /** Front knee offset ahead of the hip (-x), in pixels. */
   public static int front_knee_forward_px = 22;
-  /** Front foot offset ahead of the hip (-x), in pixels (near zero: vertical push). */
-  public static int front_foot_forward_px = 2;
-  /** Flexor cable amplitude, 0-100%. */
-  public static int muscle_amplitude_pct = 50;
+  /** Front foot offset ahead of the hip (-x), in pixels. Zero: vertical yank. */
+  public static int front_foot_forward_px = 0;
+  /** Crouch yank amplitude, 0-100%. */
+  public static int muscle_amplitude_pct = 67;
+  /**
+   * Tim's "not tipping over" rule: element indices of the dorsal "top"
+   * node (ridge) and the "bottom" reference node (base). The top must
+   * stay above the bottom for the whole run.
+   */
+  public static final int posture_top_index = 4;
+  public static final int posture_bottom_index = 0;
+  /** Min top-above-bottom separation (px) for the tip-over rule. */
+  public static final int posture_min_separation_px = 15;
   /** Flexor cable period, in ticks. */
   public static int muscle_period_ticks = 62;
   /** Ground friction, 0-100. */
@@ -116,7 +123,9 @@ public final class GrasshopperDemo {
     final LinkType muscle_type =
         link_manager.link_type_factory.getNew(leg_drop_px << Coords.shift, muscle_elasticity);
 
-    // The launch flexors run on oscillator slot 0, all in phase.
+    // The eight crouch cables run on oscillator slot 0, all in phase 0
+    // for a level launch. Muscles.enabled is set for the UI's muscle
+    // readout.
     Muscles.enabled = true;
     Muscles.active_oscillator = 0;
     Muscles.activeOscillator().setAmplitude(muscle_amplitude_pct * Muscles.UNITY / 100);
@@ -125,6 +134,9 @@ public final class GrasshopperDemo {
     World.gravity_active = true;
     World.gravity_strength = 5;
     World.ground_friction = friction;
+    // Deterministic physics: the judge and the UI both build through
+    // here, so both see the same jump.
+    World.global_temperature = 0;
     // No node-node collisions: the truss must hold together through
     // structure alone. (Wall confinement is separate and stays on.)
     FrEnd.check_collisions = false;
@@ -195,19 +207,19 @@ public final class GrasshopperDemo {
 
       // Tetrahedron (b1, b2, knee, foot): all 6 edges.
       // b1-b2 is a body edge (already exists).
-      // V4: hip-knee cables (muscles, tension-only) flatten the knee fold.
-      // Hip-foot struts have a weak 5% pre-load to assist (passive).
-      muscle(link_manager, muscle_type, clazz, b1, knee, 0);
-      muscle(link_manager, muscle_type, clazz, b2, knee, 0);
+      // Hip-knee and knee-foot are passive spring struts; hip-foot are
+      // the crouch muscles (cables), firing in phase 0 with the front.
+      link(link_manager, leg_type, clazz, b1, knee, -1);
+      link(link_manager, leg_type, clazz, b2, knee, -1);
       link(link_manager, leg_type, clazz, knee, foot, -1);
-      link(link_manager, leg_type, clazz, b1, foot, -1);
-      link(link_manager, leg_type, clazz, b2, foot, -1);
+      muscle(link_manager, muscle_type, clazz, b1, foot, 0);
+      muscle(link_manager, muscle_type, clazz, b2, foot, 0);
     }
 
     // Front legs on the front edge (b0, b3): mirrors of the hind legs
-    // (knee forward-up, foot under the hip). Their extensors fire with
-    // the hind ones so the launch is level: a rear-only push pitches
-    // the body nose-down.
+    // (knee forward-up, foot under the hip). Their crouch muscles fire
+    // with the hind ones so the launch is level: a rear-only yank
+    // pitches the body nose-down.
     for (int s = 0; s < 2; s++) {
       final int side = sides[s];
       final int hip_x = x0;
@@ -224,12 +236,13 @@ public final class GrasshopperDemo {
 
       // Tetrahedron (b0, b3, knee, foot): all 6 edges.
       // b0-b3 is a body edge (already exists).
-      // V4 (front): hip-knee cable muscles + weak pre-load assist.
-      muscle(link_manager, muscle_type, clazz, b0, knee, 0);
-      muscle(link_manager, muscle_type, clazz, b3, knee, 0);
+      // Hip-knee and knee-foot are passive spring struts; hip-foot are
+      // the crouch muscles (cables), firing in phase 0 with the hind.
+      link(link_manager, leg_type, clazz, b0, knee, -1);
+      link(link_manager, leg_type, clazz, b3, knee, -1);
       link(link_manager, leg_type, clazz, knee, foot, -1);
-      link(link_manager, leg_type, clazz, b0, foot, -1);
-      link(link_manager, leg_type, clazz, b3, foot, -1);
+      muscle(link_manager, muscle_type, clazz, b0, foot, 0);
+      muscle(link_manager, muscle_type, clazz, b3, foot, 0);
     }
 
     marker = t0;
@@ -263,9 +276,9 @@ public final class GrasshopperDemo {
 
   /**
    * Muscle cable: a tension-only member (compression members stay
-   * passive struts). Driven by the global oscillator like {@link #link},
-   * but it can only pull -- when the sine asks for a longer rest length
-   * the cable simply goes slack.
+   * passive struts). Driven by the global oscillator; it can only pull --
+   * when the sine asks for a longer rest length the cable simply goes
+   * slack. All eight fire in phase 0 for a level launch.
    */
   private static void muscle(LinkManager lm, LinkType type, Clazz clazz,
       Node a, Node b, int phase) {

@@ -48,12 +48,15 @@ public final class RollingJudge {
     /** Total ticks simulated (including settling). */
     public int ticks;
     /**
-     * Fraction of measured ticks the wheel's rim-plane normal stayed
-     * within 30 degrees of the z axis (1.0 = upright the whole run;
-     * 1.0 vacuously for the crawler). An upright wheel has its axle
-     * horizontal; a toppled wheel's rim plane tips toward the ground.
+     * Fraction of measured ticks the posture rule held (1.0 = never tipped;
+     * wheel = axle level, crawler = dorsal top above belly). Tim's "not
+     * tipping over" disqualification: any tip-over disqualifies the run.
      */
     public double upright_fraction;
+    /** True when the posture rule was violated at least once. */
+    public boolean tipped_over;
+    /** True when disqualified (tipped over). Score is 0 when set. */
+    public boolean disqualified;
     /**
      * Hub z displacement over the measured ticks, pixels. A wheel that
      * stays in its rolling plane keeps this near zero; wall-riding or
@@ -68,6 +71,8 @@ public final class RollingJudge {
           + "\nROLLING_MATCH " + String.format("%.3f", this.rolling_match)
           + "\nHEIGHT_STD " + String.format("%.2f", this.height_std_px)
           + "\nUPRIGHT_FRAC " + String.format("%.3f", this.upright_fraction)
+          + "\nTIPPED_OVER " + this.tipped_over
+          + "\nDISQUALIFIED " + this.disqualified
           + "\nZ_DRIFT " + this.z_drift_px
           + "\nSCORE " + String.format("%.1f", this.score)
           + "\nTICKS " + this.ticks;
@@ -105,9 +110,12 @@ public final class RollingJudge {
     // tests) leak values into these statics; the demos' buildAt methods
     // set only a subset, so two consecutive score() calls could otherwise
     // diverge in a polluted suite.
+    // NOTE: temperature is NOT pinned here -- WheelDemo.buildAt sets
+    // World.global_temperature = 0 (deterministic build; CaterpillarDemo
+    // and SlinkyDemo do the same). Pinning 6 here would be dead code
+    // because buildAt overrides it.
     World.gravity_active = true;
     World.gravity_strength = 5;
-    World.global_temperature = 6;
     World.ground_friction = 100;
     World.minimum_magnitude = 0;
     World.maximum_magnitude = Integer.MAX_VALUE;
@@ -165,10 +173,33 @@ public final class RollingJudge {
     double sum2 = 0.0;
     int n = 0;
     int upright_ticks = 0;
+    // Tim's "not tipping over" rule: wheel = axle stays level (two axle-end
+    // nodes); crawler = dorsal top node stays above the belly reference.
+    final AxleLevelRule axle_rule = use_crawler ? null
+        : new AxleLevelRule(WheelDemo.posture_axle_left_index,
+            WheelDemo.posture_axle_right_index,
+            WheelDemo.posture_axle_max_diff_px);
+    final TipOverRule tip_rule = !use_crawler ? null
+        : new TipOverRule(CrawlerDemo.posture_top_index,
+            CrawlerDemo.posture_bottom_index,
+            CrawlerDemo.posture_min_separation_px);
+    boolean tipped_over = false;
 
     final int measured = ticks - SETTLE_TICKS;
     for (int i = 0; i < measured; i++) {
       node_manager.nodeAndLinkUpdate();
+
+      final boolean ok;
+      if (use_crawler) {
+        ok = !tip_rule.violated(node_manager);
+      } else {
+        ok = !axle_rule.violated(node_manager);
+      }
+      if (ok) {
+        upright_ticks++;
+      } else {
+        tipped_over = true;
+      }
 
       final double theta = angleOf(marker, hub);
       double delta = theta - theta_prev;
@@ -185,10 +216,6 @@ public final class RollingJudge {
       sum += h;
       sum2 += h * h;
       n++;
-
-      if (!use_crawler && axleUpright(node_manager, hub)) {
-        upright_ticks++;
-      }
     }
 
     final long dx = (long) hub.pos.x - start_x;
@@ -209,44 +236,15 @@ public final class RollingJudge {
     result.theta_total = theta_total;
     result.rolling_match = rolling_match;
     result.height_std_px = height_std_px;
-    result.upright_fraction =
-        use_crawler ? 1.0 : (double) upright_ticks / measured;
+    result.upright_fraction = (double) upright_ticks / measured;
+    result.tipped_over = tipped_over;
+    result.disqualified = tipped_over;
     result.z_drift_px =
         (hub.pos.z - start_z) >> com.springie.render.Coords.shift;
-    result.score = distance_px * rolling_match - 3.0 * height_std_px;
+    result.score = result.disqualified ? 0.0
+        : distance_px * rolling_match - 3.0 * height_std_px;
     result.ticks = ticks;
     return result;
-  }
-
-  /**
-   * True when the wheel's axle is within 30 degrees of horizontal
-   * (rim plane within 30 degrees of the x-y plane). Nodes are added
-   * interleaved (rim0[i], rim1[i] per iteration), so element indices
-   * 0, 2, 4 are rim0[0], rim0[1], rim0[2], all in rim-0's plane (see
-   * WheelDemo docs). The normal is (n1-n0) x (n2-n0); the hub is not
-   * used because it sits midway between the two rim planes.
-   */
-  private static boolean axleUpright(NodeManager node_manager, Node hub) {
-    final Node n0 = (Node) node_manager.element.get(0);
-    final Node n1 = (Node) node_manager.element.get(2);
-    final Node n2 = (Node) node_manager.element.get(4);
-    final long ax = (long) n1.pos.x - n0.pos.x;
-    final long ay = (long) n1.pos.y - n0.pos.y;
-    final long az = (long) n1.pos.z - n0.pos.z;
-    final long bx = (long) n2.pos.x - n0.pos.x;
-    final long by = (long) n2.pos.y - n0.pos.y;
-    final long bz = (long) n2.pos.z - n0.pos.z;
-    // Normal = a x b.
-    final double nx = (double) ay * bz - (double) az * by;
-    final double ny = (double) az * bx - (double) ax * bz;
-    final double nz = (double) ax * by - (double) ay * bx;
-    final double len =
-        Math.sqrt(nx * nx + ny * ny + nz * nz);
-    if (len == 0.0) {
-      return false;
-    }
-    // Upright = normal within 30 degrees of the z axis.
-    return Math.abs(nz) / len > 0.8660254;
   }
 
   /** Marker angle about the hub in the XY (rolling) plane, radians. */

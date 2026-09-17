@@ -65,6 +65,15 @@ public final class SpiderTankDemo {
   public static int leg_elasticity = 25;
   /** Muscle amplitude, 0-100%. */
   public static int muscle_amplitude_pct = 6; // 8% pumps a resonance; 6% is stable
+  /**
+   * Tim's "not tipping over" rule: element indices of the dorsal "top"
+   * node (ridge) and the "bottom" reference node (plate). The top must
+   * stay above the bottom for the whole run.
+   */
+  public static final int posture_top_index = 4;
+  public static final int posture_bottom_index = 0;
+  /** Min top-above-bottom separation (px) for the tip-over rule. */
+  public static final int posture_min_separation_px = 15;
   /** Muscle period, in ticks. */
   public static int muscle_period_ticks = 120;
   /** Ground friction, 0-100. */
