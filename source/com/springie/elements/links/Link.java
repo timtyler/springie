@@ -161,13 +161,29 @@ public class Link extends BaseElement {
     return this.adjusted_rest_length;
   }
 
+  /**
+   * Descales a fixed-point position difference to whole units with
+   * sign-symmetric rounding (truncation toward zero).
+   *
+   * <p>A signed {@code >> Coords.shift} floors toward negative infinity,
+   * so mirrored links (exact negations of each other) descaled to
+   * magnitudes differing by one, injecting a systematic negative bias
+   * into every spring force. Integer division truncates toward zero,
+   * keeping mirrored geometry exactly mirrored. Pure integer, so
+   * determinism is preserved; HotSpot strength-reduces division by this
+   * power of two back to shifts.
+   */
+  private static int descaleSymmetric(final int fixed) {
+    return fixed / Coords.shift_shifted;
+  }
+
   public int getActualLength() {
     final int total = this.nodes.length;
     int actual_length_squared = 0;
     for (int section = 0; section < total - 1; section++) {
-      final int delta_x = (this.nodes[section].pos.x - this.nodes[section + 1].pos.x) >> Coords.shift;
-      final int delta_y = (this.nodes[section].pos.y - this.nodes[section + 1].pos.y) >> Coords.shift;
-      final int delta_z = (this.nodes[section].pos.z - this.nodes[section + 1].pos.z) >> Coords.shift;
+      final int delta_x = descaleSymmetric(this.nodes[section].pos.x - this.nodes[section + 1].pos.x);
+      final int delta_y = descaleSymmetric(this.nodes[section].pos.y - this.nodes[section + 1].pos.y);
+      final int delta_z = descaleSymmetric(this.nodes[section].pos.z - this.nodes[section + 1].pos.z);
 
       actual_length_squared += (delta_x * delta_x) + (delta_y * delta_y)
           + (delta_z * delta_z);
@@ -210,9 +226,9 @@ public class Link extends BaseElement {
     for (int i = 0; i < number_of_nodes - 1; i++) {
       final Node n0 = this.nodes[i];
       final Node n1 = this.nodes[i + 1];
-      final int d_x = (n0.pos.x - n1.pos.x) >> Coords.shift;
-      final int d_y = (n0.pos.y - n1.pos.y) >> Coords.shift;
-      final int d_z = (n0.pos.z - n1.pos.z) >> Coords.shift;
+      final int d_x = descaleSymmetric(n0.pos.x - n1.pos.x);
+      final int d_y = descaleSymmetric(n0.pos.y - n1.pos.y);
+      final int d_z = descaleSymmetric(n0.pos.z - n1.pos.z);
       final int actual_length_squared = (d_x * d_x) + (d_y * d_y) + (d_z * d_z);
       final int actual_length = SquareRoot.fastSqrt(1 + actual_length_squared);
 
@@ -456,9 +472,9 @@ public class Link extends BaseElement {
     for (int i = 0; i < number_of_nodes - 1; i++) {
       final Node n0 = this.nodes[i];
       final Node n1 = this.nodes[i + 1];
-      final int d_x = (n0.pos.x - n1.pos.x) >> Coords.shift;
-      final int d_y = (n0.pos.y - n1.pos.y) >> Coords.shift;
-      final int d_z = (n0.pos.z - n1.pos.z) >> Coords.shift;
+      final int d_x = descaleSymmetric(n0.pos.x - n1.pos.x);
+      final int d_y = descaleSymmetric(n0.pos.y - n1.pos.y);
+      final int d_z = descaleSymmetric(n0.pos.z - n1.pos.z);
       final int actual_length_squared = (d_x * d_x) + (d_y * d_y) + (d_z * d_z);
       final int actual_length = SquareRoot.fastSqrt(1 + actual_length_squared);
 

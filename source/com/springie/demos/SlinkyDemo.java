@@ -45,7 +45,15 @@ public final class SlinkyDemo {
   public static int rim_elasticity = 30;
   public static int spoke_elasticity = 25;
   public static int reflex_pull_pct = 30;
-  public static int friction = 100;
+  /**
+   * Ground friction, 0-100.
+   *
+   * Retuned 2026-09-18 after the symmetric-descale physics fix: at 100 the
+   * coil's lateral contacts grab and yaw it sideways (straightness 0.30);
+   * at 50 each end-over-end flip lands cleanly and it tracks dead straight
+   * (dist 109px, straightness 0.99, 11 steps, strain 0.237).
+   */
+  public static int friction = 50;
   public static int settle_ticks = 60;
 
   public static Node[] coil_nodes = new Node[0];

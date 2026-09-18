@@ -73,8 +73,15 @@ public final class CaterpillarDemo {
   /** Elasticity of the proleg foot muscles. */
   public static int foot_muscle_elasticity = 15;
 
-  /** Muscle amplitude, 0-100%. */
-  public static int muscle_amplitude_pct = 10;
+  /**
+   * Muscle amplitude, 0-100%.
+   *
+   * Retuned 2026-09-18 after the symmetric-descale physics fix: the old
+   * value of 10 sat on the peristaltic resonance under the old rounding;
+   * under the fixed physics the resonance moved to 20 (fwd 72px, dead
+   * straight, strain 0.246; neighbouring amplitudes stall or veer).
+   */
+  public static int muscle_amplitude_pct = 20;
   /**
    * Tim's "not tipping over" rule for the flat ribbon: the body is only
    * 12px tall, so a top-vs-bottom check false-positives on normal
