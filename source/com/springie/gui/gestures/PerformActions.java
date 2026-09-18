@@ -208,7 +208,8 @@ public class PerformActions {
 		
 		for (int n = 0; n < nodeCount; n++) {
 			final NodeType type = ContextManager.getNodeManager().node_type_factory.getNew();
-			type.log_mass = 0;
+			// Reference mass: mass is functional now, so keep the historical behavior.
+			type.log_mass = NodeType.REFERENCE_LOG_MASS;
 			type.selected = false;
 			type.hidden = false;
 			type.disabled = false;

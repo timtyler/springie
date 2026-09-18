@@ -5,6 +5,7 @@ package com.springie.elements.electrostatics;
 import java.util.ArrayList;
 
 import com.springie.elements.nodes.Node;
+import com.springie.elements.nodes.NodeType;
 import com.springie.render.Coords;
 
 public class ElectrostaticRepulsion {
@@ -46,12 +47,12 @@ public class ElectrostaticRepulsion {
     int force_y = d_y * val;
     int force_z = d_z * val;
 
-    node1.velocity.x += force_x;
-    node1.velocity.y += force_y;
-    node1.velocity.z += force_z;
+    node1.velocity.x += NodeType.applyInverseMass(force_x, node1.type.log_mass);
+    node1.velocity.y += NodeType.applyInverseMass(force_y, node1.type.log_mass);
+    node1.velocity.z += NodeType.applyInverseMass(force_z, node1.type.log_mass);
 
-    node2.velocity.x -= force_x;
-    node2.velocity.y -= force_y;
-    node2.velocity.z -= force_z;
+    node2.velocity.x -= NodeType.applyInverseMass(force_x, node2.type.log_mass);
+    node2.velocity.y -= NodeType.applyInverseMass(force_y, node2.type.log_mass);
+    node2.velocity.z -= NodeType.applyInverseMass(force_z, node2.type.log_mass);
   }
 }

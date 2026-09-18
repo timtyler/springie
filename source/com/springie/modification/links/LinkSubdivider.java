@@ -93,7 +93,8 @@ public class LinkSubdivider {
   private Node makeNode(Point3D pos, int r, int c) {
     final NodeType type = this.node_manager.node_type_factory.getNew();
     type.radius = r;
-    type.log_mass = 4;
+    // Reference mass: mass is functional now, so keep the historical behavior.
+    type.log_mass = NodeType.REFERENCE_LOG_MASS;
 
     final Clazz clazz = this.node_manager.clazz_factory.getNew(c);
 

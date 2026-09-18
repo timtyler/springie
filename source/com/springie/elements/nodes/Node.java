@@ -73,7 +73,7 @@ public class Node extends BaseElement {
     this.velocity = new Vector3D(3, 4, 5);
 
     this.type.setSize(NodeManager.general_size);
-    this.type.log_mass = 16;
+    this.type.log_mass = NodeType.REFERENCE_LOG_MASS;
   }
 
   public Node(Node e, NodeTypeFactory node_type_factory, ClazzFactory clazz_factory) {

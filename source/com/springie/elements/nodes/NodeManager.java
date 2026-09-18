@@ -534,7 +534,8 @@ public class NodeManager extends World {
 		node.clazz = this.clazz_factory.getNew(virus_color);
 		node.type.radius = radius;
 		node.type.counter = 20;
-		node.type.log_mass = 8;
+		// Reference mass: mass is functional now, so keep the historical behavior.
+		node.type.log_mass = NodeType.REFERENCE_LOG_MASS;
 		int velocityExtra = 0xFFF;
 		node.velocity.x += rnd.nextInt(velocityExtra);
 		node.velocity.x -= rnd.nextInt(velocityExtra);

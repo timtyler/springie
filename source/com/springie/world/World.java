@@ -210,7 +210,15 @@ public class World extends BaseElementManager<Node> {
 		for (int i = number_of_nodes; --i >= 0;) {
 			final Node node = (Node) this.element.get(i);
 			final Vector3D delta = node.velocity_delta;
-			node.velocity.addTuple3D(delta);
+			if (node.type.log_mass == NodeType.REFERENCE_LOG_MASS) {
+				node.velocity.addTuple3D(delta);
+			} else {
+				// Functional mass: scale the accumulated force by inverse mass.
+				final int log_mass = node.type.log_mass;
+				node.velocity.x += NodeType.applyInverseMass(delta.x, log_mass);
+				node.velocity.y += NodeType.applyInverseMass(delta.y, log_mass);
+				node.velocity.z += NodeType.applyInverseMass(delta.z, log_mass);
+			}
 		}
 	}
 

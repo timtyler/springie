@@ -100,8 +100,10 @@ public final class SpiderTankDemo {
     final Clazz clazz = node_manager.clazz_factory.getNew(0xFFFFFFFF);
     final NodeType node_type = node_manager.node_type_factory.getNew();
     // Heavy body (harder to launch), light legs.
+    // Note: mass is functional now, so the historical 24 (256x reference)
+    // would freeze the body -- reference mass preserves the tuned behavior.
     final NodeType body_node_type = node_manager.node_type_factory.getNew();
-    body_node_type.setMass(24);
+    body_node_type.setMass(NodeType.REFERENCE_LOG_MASS);
     final int body_e = body_edge_px << Coords.shift;
     final LinkType body_type = link_manager.link_type_factory.getNew(body_e, body_elasticity);
     final LinkType leg_type = link_manager.link_type_factory.getNew(

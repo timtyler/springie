@@ -77,10 +77,12 @@ public final class WheelDemo {
   public static int z_offset_px = 20;
 
   /** Nominal mass for rim nodes (log scale used by the engine). */
-  public static int rim_log_mass = 5;
+  // Mass is functional now: reference mass preserves the tuned behavior
+  // (the old values were no-ops when mass was ignored).
+  public static int rim_log_mass = NodeType.REFERENCE_LOG_MASS;
 
   /** Nominal mass for the hub node (log scale used by the engine). */
-  public static int hub_log_mass = 30;
+  public static int hub_log_mass = NodeType.REFERENCE_LOG_MASS;
 
   /** Muscle amplitude for the spoke wave, 0-100%. */
   /** Spoke muscle amplitude, percent (travelling-wave mode only). */
