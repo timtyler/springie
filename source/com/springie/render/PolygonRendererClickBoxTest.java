@@ -21,24 +21,29 @@ import org.junit.jupiter.api.Test;
 import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
 import com.springie.render.modules.ModularRendererBase;
+import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.original.ModularRendererOld;
 
 /**
- * A single click with the polygon (original) renderer must not leave a
- * drag-box rectangle behind on the screen.
+ * A single click must not leave a drag-box rectangle behind on the
+ * screen -- with either polygon renderer.
  *
  * <p>A click on empty space starts a zero-area drag box on press; on
  * release the box is dropped without ever being erased (it is draw-only
- * since 5cea965). The modern tiled renderer repairs the damage via its
- * dirty bins and the ray tracer re-blits the whole frame, but the old
- * renderer paints straight onto the screen with no damage repair -- and
- * the release only asked for a partial repaint, which never clears. The
- * click's tiny red square stayed on the screen until something else
- * happened to repaint over it.
+ * since 5cea965).
  *
- * <p>The fix makes every frame painted while the box is up a full
- * clear-and-redraw for the old renderer (see
- * RendererDelegator.renderDragBox).
+ * <p>With the original renderer the release only asked for a partial
+ * repaint, which never clears: the old renderer paints straight onto
+ * the screen with no damage repair, so the click's tiny red square
+ * stayed until something else repainted over it. The fix makes every
+ * frame painted while the box is up a full clear-and-redraw for the
+ * old renderer (see RendererDelegator.renderDragBox).
+ *
+ * <p>With the modern tiled renderer the erasing repaint skipped the
+ * empty bin under the click: getDragBoxDamage() mistook the zero-area
+ * box for "never cached" and fell back to the gesture's live points,
+ * but the release clears the start point first, so the damage came
+ * back null. The damage is now computed from the box's own cache.
  *
  * <p>The click is delivered as genuine AWT mouse events, exercising the
  * real press/release path (MainCanvas listeners, message pump,
@@ -183,6 +188,68 @@ public class PolygonRendererClickBoxTest {
           "no drag-box rectangle may remain on screen after a click");
     } finally {
       restoreRenderer();
+    }
+  }
+
+  /**
+   * The same click with the modern (tiled polygon) renderer must not
+   * leave the click's red dot behind either.
+   *
+   * <p>The tiled renderer erases the draw-only drag rectangle by
+   * repainting the bins under {@code getDragBoxDamage()}. That method
+   * used to mistake a zero-area box (min == max) for "never cached"
+   * and fell back to the gesture's live points -- but the release
+   * clears the start point before the erasing paint runs, so the
+   * fallback failed, the damage came back null, and the empty bin
+   * under the click was never scrubbed. The red dot stayed on screen
+   * permanently. The damage is now computed from the box's own cache,
+   * which survives the release.
+   */
+  @Test
+  void clickOnEmptySpaceLeavesNoBoxBehindModernRenderer() throws Exception {
+    if (!(RendererDelegator.renderer instanceof ModularRendererNew)) {
+      SwingUtilities.invokeAndWait(() -> {
+        saved_renderer = RendererDelegator.renderer;
+        RendererDelegator.renderer = new ModularRendererNew();
+        FrEnd.main_canvas.forceResize();
+        RendererDelegator.repaintAll();
+      });
+      Thread.sleep(800);
+    }
+    try {
+      // Top-left corner, away from the boot model: the click hits
+      // nothing, so the press starts a zero-area drag box.
+      final int x = 30;
+      final int y = 30;
+      press(x, y);
+
+      waitFor(
+          () -> FrEnd.perform_actions.drag_box_manager.drag_box_start != null,
+          "press to start a drag box");
+      waitFor(
+          () -> countBoxPixels(captureScreen(x, y)) > 0,
+          "the click's drag box to be drawn while the button is down");
+
+      release(x, y);
+
+      waitFor(
+          () -> FrEnd.perform_actions.drag_box_manager.drag_box_end == null,
+          "release to drop the drag box");
+      Thread.sleep(800);
+
+      assertEquals(0, countBoxPixels(captureScreen(x, y)),
+          "no drag-box dot may remain on screen after a click");
+    } finally {
+      if (saved_renderer != null) {
+        restoreRenderer();
+      } else {
+        SwingUtilities.invokeAndWait(() -> {
+          FrEnd.perform_actions.drag_box_manager.drag_box_start = null;
+          FrEnd.perform_actions.drag_box_manager.drag_box_end = null;
+          RendererDelegator.repaintAll();
+        });
+        Thread.sleep(500);
+      }
     }
   }
 }

@@ -20,6 +20,15 @@ public class RendererDragBox {
 
   public Point last_max = new Point(0, 0);
 
+  /**
+   * Whether min/max/last_min/last_max hold a drawn rectangle. The
+   * coordinates are only cached on draw, so on the very first frame --
+   * and for a zero-area box, which the "max &lt;= min" test cannot tell
+   * apart from "never cached" -- callers must fall back to the
+   * gesture's live points instead.
+   */
+  public boolean cache_valid = false;
+
   public void draw(Graphics g, DragBoxManager drag_box_manager) {
     drawDragBox(g, drag_box_manager);
   }
@@ -46,22 +55,36 @@ public class RendererDragBox {
 
   private void resetMaxAndMin() {
     this.min = new Point(0, 0);
-    this.max = new Point(0, 0);    
+    this.max = new Point(0, 0);
+    this.cache_valid = false;
   }
 
   private void cacheDragBoxCoordinates(DragBoxManager drag_box_manager) {
     final Point one = drag_box_manager.drag_box_start;
     final Point two = drag_box_manager.drag_box_end;
 
-    this.last_min.x = this.min.x;
-    this.last_min.y = this.min.y;
-    this.last_max.x = this.max.x;
-    this.last_max.y = this.max.y;
+    if (this.cache_valid) {
+      this.last_min.x = this.min.x;
+      this.last_min.y = this.min.y;
+      this.last_max.x = this.max.x;
+      this.last_max.y = this.max.y;
+    }
 
     this.min.x = Math.min(one.x, two.x);
     this.max.x = Math.max(one.x, two.x);
     this.min.y = Math.min(one.y, two.y);
     this.max.y = Math.max(one.y, two.y);
+
+    if (!this.cache_valid) {
+      // First draw: there is no previous rectangle, so the "last"
+      // coordinates are the current ones (not the (0, 0) initial
+      // values, which would needlessly widen the damage region).
+      this.last_min.x = this.min.x;
+      this.last_min.y = this.min.y;
+      this.last_max.x = this.max.x;
+      this.last_max.y = this.max.y;
+      this.cache_valid = true;
+    }
   }
 
   private void drawTheCurrentDragBox(Graphics g) {

@@ -817,13 +817,23 @@ public class RendererBinManager {
     }
     final com.springie.render.RendererDragBox box = ContextManager
         .getNodeManager().renderer.renderer_drag_box;
-    // The box caches its coordinates on draw; on the very first frame
-    // they may not be set yet, so fall back to the manager's points.
-    int min_x = Math.min(box.min.x, box.last_min.x);
-    int min_y = Math.min(box.min.y, box.last_min.y);
-    int max_x = Math.max(box.max.x, box.last_max.x);
-    int max_y = Math.max(box.max.y, box.last_max.y);
-    if (max_x <= min_x || max_y <= min_y) {
+    final int min_x;
+    final int min_y;
+    final int max_x;
+    final int max_y;
+    if (box.cache_valid) {
+      // The box caches its coordinates on draw, so the last drawn
+      // rectangle is known even after release -- when the gesture's
+      // start point is already gone. (A zero-area box from a click
+      // has min == max; that is a valid cached rectangle, not a
+      // missing one.)
+      min_x = Math.min(box.min.x, box.last_min.x);
+      min_y = Math.min(box.min.y, box.last_min.y);
+      max_x = Math.max(box.max.x, box.last_max.x);
+      max_y = Math.max(box.max.y, box.last_max.y);
+    } else {
+      // Not drawn yet (the very first frame): fall back to the
+      // gesture's live points.
       final java.awt.Point one =
           FrEnd.perform_actions.drag_box_manager.drag_box_start;
       final java.awt.Point two =
