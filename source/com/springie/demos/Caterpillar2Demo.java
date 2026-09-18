@@ -3,6 +3,7 @@
 package com.springie.demos;
 
 import com.springie.context.ContextManager;
+import com.springie.FrEnd;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
@@ -11,9 +12,6 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
 import com.springie.geometry.Point3D;
-import com.springie.muscles.GlobalOscillatorController;
-import com.springie.muscles.Muscles;
-import com.springie.muscles.Oscillator;
 import com.springie.render.Coords;
 import com.springie.world.World;
 
@@ -22,14 +20,13 @@ import com.springie.world.World;
  * each sharing a base edge with its neighbours. Each pyramid is a rigid
  * unit: 4 base edges as struts, 2 crossed base diagonals as passive
  * cables (tension-only), and 4 slant edges to the apex as struts. The 6
- * apexes are chained by two parallel cables per gap (5 gaps); those 10
- * cables are the ONLY muscles in the model, driven by a travelling
- * contraction wave with one full wavelength across the 5 gaps (both
- * cables in a gap share the phase).
+ * apexes are chained by two parallel solid struts per gap (5 gaps).
  *
- * <p>The wave pulls successive apex pairs together in sequence, rocking
- * each pyramid fore and aft against its rigid base; ground friction turns
- * the rocking into a forward crawl. Muscle power only: no start kick.
+ * <p>Fully passive: no muscles anywhere. Tim 2026-09-18 experiment:
+ * charge off, node-node collision detection on (overriding the usual
+ * no-collisions rule), apex cables replaced by solid struts. The tuning
+ * goal is structural soundness -- stable settling, no tip-over, low
+ * strain -- as a platform for later actuation.
  *
  * <p>Parameters are public fields so the judge can sweep them.
  */
@@ -42,10 +39,10 @@ public final class Caterpillar2Demo {
   public static final int PYRAMIDS = 6;
 
   /** Base side length, in pixels. */
-  public static final int BASE_SIDE_PX = 80;
+  public static int BASE_SIDE_PX = 80;
 
   /** Apex height above the base plane, in pixels. */
-  public static final int APEX_HEIGHT_PX = 35;
+  public static int APEX_HEIGHT_PX = 35;
 
   /** Elasticity of the passive skeleton struts. */
   public static int skeleton_elasticity = 20;
@@ -53,21 +50,8 @@ public final class Caterpillar2Demo {
   /** Elasticity of the passive base-diagonal cables. */
   public static int diagonal_elasticity = 20;
 
-  /** Elasticity of the apex cable muscles. */
-  public static int muscle_elasticity = 15;
-
-  /** Muscle amplitude, 0-100%. */
-  public static int muscle_amplitude_pct = 4;
-
-  /** Oscillator period for the travelling wave, in ticks. */
-  public static int muscle_period_ticks = 120;
-
-  /**
-   * Sign of the travelling wave phase slope along the row. 1 sends the
-   * contraction-wave peak from the last gap to the first (-x); -1
-   * reverses it.
-   */
-  public static int wave_sign = 1;
+  /** Gravity strength. */
+  public static int gravity_strength = 5;
 
   /** Ground friction, 0-100. */
   public static int friction = 50;
@@ -98,18 +82,14 @@ public final class Caterpillar2Demo {
     final Clazz clazz = node_manager.clazz_factory.getNew(0xFFFFFFFF);
     final NodeType node_type = node_manager.node_type_factory.getNew();
 
-    // Tune the oscillator first: muscle construction below assumes it.
-    Muscles.enabled = true;
-    Muscles.active_oscillator = 0;
-    Muscles.activeOscillator().setAmplitude(
-        muscle_amplitude_pct * Muscles.UNITY / 100);
-    Muscles.activeOscillator().setPeriodTicks(muscle_period_ticks);
-    Muscles.activeOscillator().setPhase(0);
+    // Fully passive: no muscles. Tim 2026-09-18 experiment settings.
+    node_manager.electrostatic.charge_active = false; // charge off
+    FrEnd.check_collisions = true; // node-node collision detection on
     World.gravity_active = true;
-    World.gravity_strength = 5;
+    World.gravity_strength = gravity_strength;
     World.ground_friction = friction;
     World.global_temperature = 0;
-    // Damping stabilizes the stiff skeleton + muscle combination.
+    // Damping stabilizes the stiff skeleton.
     com.springie.elements.nodes.Node.viscocity = 2;
 
     // Base grid: 7 columns x 2 rows = 14 nodes; adjacent pyramids share
@@ -162,22 +142,15 @@ public final class Caterpillar2Demo {
       strut(link_manager, clazz, d, apex);
     }
 
-    // Apex chain: two parallel cables per gap, each a muscle. One full
-    // wavelength across the 5 gaps; both cables in a gap share the phase.
-    final GlobalOscillatorController controller =
-        new GlobalOscillatorController(Muscles.active_oscillator);
-    final Oscillator oscillator = Muscles.activeOscillator();
-    final int period = oscillator.getPeriodTicks();
+    // Apex chain: two parallel solid struts per gap (fully passive --
+    // the former muscle cables are now plain struts). No dedup here:
+    // both parallel struts are wanted.
     for (int i = 0; i < PYRAMIDS - 1; i++) {
-      int phase = wave_sign * i * period / (PYRAMIDS - 1);
-      phase = ((phase % period) + period) % period;
-      apexMuscle(link_manager, clazz, apexes[i], apexes[i + 1],
-          controller, phase, oscillator);
-      apexMuscle(link_manager, clazz, apexes[i], apexes[i + 1],
-          controller, phase, oscillator);
+      apexStrut(link_manager, clazz, apexes[i], apexes[i + 1]);
+      apexStrut(link_manager, clazz, apexes[i], apexes[i + 1]);
     }
 
-    // Let the build find its stance with the muscles attached.
+    // Let the build find its stance.
     for (int t = 0; t < settle_ticks; t++) {
       node_manager.nodeAndLinkUpdate();
     }
@@ -199,6 +172,20 @@ public final class Caterpillar2Demo {
     if (isLinked(link_manager, n1, n2)) {
       return;
     }
+    makeStrut(link_manager, clazz, n1, n2);
+  }
+
+  /**
+   * Solid apex-to-apex strut. Parallel pairs are allowed, so unlike
+   * strut() this does no dedup.
+   */
+  private static void apexStrut(LinkManager link_manager, Clazz clazz,
+      Node n1, Node n2) {
+    makeStrut(link_manager, clazz, n1, n2);
+  }
+
+  private static void makeStrut(LinkManager link_manager, Clazz clazz,
+      Node n1, Node n2) {
     final LinkType type = link_manager.link_type_factory.getNew(
         distance(n1, n2), skeleton_elasticity);
     final Link link = link_manager.setLink(n1, n2, type, clazz);
@@ -222,28 +209,6 @@ public final class Caterpillar2Demo {
     final Link link = link_manager.setLink(n1, n2, type, clazz);
     snapRestLength(link);
     link.adjusted_rest_length = type.length;
-  }
-
-  /**
-   * Apex-to-apex cable muscle (tension-only, per Tim's muscle rule).
-   * Starts at its tick-0 wave value, not at the nominal rest length:
-   * otherwise every muscle snaps to its driven length on the first tick
-   * and the row kicks violently.
-   */
-  private static void apexMuscle(LinkManager link_manager, Clazz clazz,
-      Node n1, Node n2, GlobalOscillatorController controller, int phase,
-      Oscillator oscillator) {
-    final LinkType type = link_manager.link_type_factory.getNew(
-        distance(n1, n2), muscle_elasticity);
-    type.compression = false;
-    type.tension = true;
-    final Link link = link_manager.setLink(n1, n2, type, clazz);
-    snapRestLength(link);
-    link.phase = phase;
-    link.controller = controller;
-    final int scale = oscillator.getScale(0, phase);
-    link.adjusted_rest_length =
-        (int) (((long) type.length * scale) >> Coords.shift);
   }
 
   /**

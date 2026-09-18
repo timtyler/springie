@@ -18,8 +18,8 @@ import com.springie.world.World;
  *
  * <p>Rules:
  * <ol>
- * <li>Muscle power only: the demo applies no start kick; every pixel of
- * travel comes from the travelling apex contraction wave.</li>
+ * <li>Fully passive: no muscles, no start kick. The model must settle
+ * under gravity and hold its shape; forward travel is not expected.</li>
  * <li>Score = forward distance (px) of the body centroid along +x, times
  * a straightness factor: {@code score = forward * (1 - min(1, lateral /
  * max(forward, 1)))}. Non-positive forward travel scores as-is.</li>
@@ -223,16 +223,18 @@ public final class Caterpillar2Judge {
   /** Pin down all global physics state so scored runs are identical. */
   private static void pinGlobals() {
     World.gravity_active = true;
-    World.gravity_strength = 5;
-    // Damping stabilizes the stiff skeleton + muscle combination.
+    World.gravity_strength = Caterpillar2Demo.gravity_strength;
+    // Damping stabilizes the stiff skeleton.
     World.global_temperature = 0;
     com.springie.elements.nodes.Node.viscocity = 2;
-    World.ground_friction = 50;
+    World.ground_friction = Caterpillar2Demo.friction;
     World.minimum_magnitude = 0;
     World.maximum_magnitude = Integer.MAX_VALUE;
     com.springie.elements.nodes.Node.max_speed = Integer.MAX_VALUE;
     com.springie.FrEnd.three_d = true;
-    com.springie.FrEnd.check_collisions = false; // Tim 2026-09-16: no node-node collisions as a crutch -- structure alone.
+    // Tim 2026-09-18: collision detection ON for this experiment
+    // (overrides the usual no-collisions rule).
+    com.springie.FrEnd.check_collisions = true;
     com.springie.FrEnd.links_disabled = false;
     com.springie.FrEnd.continuously_centre = false;
     com.springie.FrEnd.node_growth = false;
