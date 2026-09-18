@@ -20,11 +20,13 @@ import com.springie.world.World;
 
 /**
  * "Caterpillar 3": cloned from Caterpillar 2, then reworked. The skeleton
- * is all struts now -- base edges, crossed base diagonals, slant edges
- * and the doubled apex chain are all plain compression-and-tension
- * struts. The ONLY muscles are on the two side rails (the longitudinal
- * base edges): 6 tension-only cable muscles per side, driven by a
- * travelling contraction wave, the two sides 90 degrees out of phase.
+ * is struts -- base edges, slant edges and the apex chain are all plain
+ * compression-and-tension struts -- except the crossed base diagonals,
+ * which stay tension-only cables so the base squares can shear (a strut
+ * X-brace would lock them rigid and the side-rail muscles couldn't bend
+ * the body). The ONLY muscles are on the two side rails (the longitudinal
+ * base edges): 6 muscle-driven struts per side, pushing and pulling in
+ * a travelling wave, the two sides 90 degrees out of phase.
  *
  * <p>The quarter-period side offset makes the bending moment rotate as
  * the wave travels head-to-tail, so the body undulates laterally like a
@@ -58,7 +60,7 @@ public final class Caterpillar3Demo {
   public static int muscle_elasticity = 15;
 
   /** Muscle amplitude, 0-100%. */
-  public static int muscle_amplitude_pct = 4;
+  public static int muscle_amplitude_pct = 6;
 
   /** Oscillator period for the travelling wave, in ticks. */
   public static int muscle_period_ticks = 120;
@@ -67,7 +69,7 @@ public final class Caterpillar3Demo {
    * Sign of the travelling wave phase slope along the row. 1 sends the
    * wave peak from head to tail (-x); -1 reverses it.
    */
-  public static int wave_sign = 1;
+  public static int wave_sign = -1;
 
   /** Gravity strength. */
   public static int gravity_strength = 5;
@@ -179,8 +181,8 @@ public final class Caterpillar3Demo {
       strut(link_manager, clazz, b, c);
       strut(link_manager, clazz, c, d);
       strut(link_manager, clazz, d, a);
-      strut(link_manager, clazz, a, c);
-      strut(link_manager, clazz, b, d);
+      diagonalCable(link_manager, clazz, a, c);
+      diagonalCable(link_manager, clazz, b, d);
       final Node apex = apexes[i];
       strut(link_manager, clazz, a, apex);
       strut(link_manager, clazz, b, apex);
@@ -188,10 +190,9 @@ public final class Caterpillar3Demo {
       strut(link_manager, clazz, d, apex);
     }
 
-    // Apex chain: two parallel solid struts per gap. No dedup here:
-    // both parallel struts are wanted.
+    // Apex chain: single solid strut per gap. (Two parallel struts fight
+    // each other through quantization; one is cleaner.)
     for (int i = 0; i < PYRAMIDS - 1; i++) {
-      makeStrut(link_manager, clazz, apexes[i], apexes[i + 1]);
       makeStrut(link_manager, clazz, apexes[i], apexes[i + 1]);
     }
 
@@ -220,6 +221,28 @@ public final class Caterpillar3Demo {
     makeStrut(link_manager, clazz, n1, n2);
   }
 
+  /**
+   * Base diagonal cable (tension-only). These have to be cables, not
+   * struts: a strut X-brace locks each base square into a rigid truss,
+   * and the side-rail muscles can't bend a rigid square -- they just
+   * fight it and the 90-degree wave never shows. Tension-only diagonals
+   * brace the square against collapse but let it shear, so the travelling
+   * bending wave comes through cleanly.
+   */
+  private static void diagonalCable(LinkManager link_manager, Clazz clazz,
+      Node n1, Node n2) {
+    if (isLinked(link_manager, n1, n2)) {
+      return;
+    }
+    final LinkType type = link_manager.link_type_factory.getNew(
+        distance(n1, n2), skeleton_elasticity);
+    type.compression = false;
+    type.tension = true;
+    final Link link = link_manager.setLink(n1, n2, type, clazz);
+    snapRestLength(link);
+    link.adjusted_rest_length = type.length;
+  }
+
   private static void makeStrut(LinkManager link_manager, Clazz clazz,
       Node n1, Node n2) {
     final LinkType type = link_manager.link_type_factory.getNew(
@@ -230,18 +253,20 @@ public final class Caterpillar3Demo {
   }
 
   /**
-   * Side-rail muscle (tension-only, per Tim's muscle rule). Starts at its
-   * tick-0 wave value, not at the nominal rest length: otherwise every
-   * muscle snaps to its driven length on the first tick and the row kicks
-   * violently.
+   * Side-rail muscle: a full strut (push-pull) with a muscle controller.
+   * These stay struts per the "everything struts" build -- the muscle
+   * drives the rest length both ways, which is what makes the 90-degree
+   * side offset a clean sinusoidal bending wave instead of a rectified
+   * tug-of-war. Starts at its tick-0 wave value, not at the nominal rest
+   * length: otherwise every muscle snaps to its driven length on the
+   * first tick and the row kicks violently.
    */
   private static void sideRailMuscle(LinkManager link_manager, Clazz clazz,
       Node n1, Node n2, GlobalOscillatorController controller, int phase,
       Oscillator oscillator) {
     final LinkType type = link_manager.link_type_factory.getNew(
         distance(n1, n2), muscle_elasticity);
-    type.compression = false;
-    type.tension = true;
+    // Full strut: compression and tension both true (the defaults).
     final Link link = link_manager.setLink(n1, n2, type, clazz);
     snapRestLength(link);
     link.phase = phase;
