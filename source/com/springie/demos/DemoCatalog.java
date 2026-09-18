@@ -5,6 +5,7 @@ package com.springie.demos;
 import java.util.function.Supplier;
 
 import com.springie.messages.NewMessage;
+import com.springie.messages.commands.Caterpillar2DemoMessage;
 import com.springie.messages.commands.CaterpillarDemoMessage;
 import com.springie.messages.commands.CrawlerDemoMessage;
 import com.springie.messages.commands.GrasshopperDemoMessage;
@@ -55,6 +56,7 @@ public final class DemoCatalog {
       new Demo("Grasshopper", GrasshopperDemoMessage::new),
       new Demo("Hopper", HopperDemoMessage::new),
       new Demo("Caterpillar", CaterpillarDemoMessage::new),
+      new Demo("Caterpillar 2", Caterpillar2DemoMessage::new),
       new Demo("Slinky", SlinkyDemoMessage::new),
   };
 
