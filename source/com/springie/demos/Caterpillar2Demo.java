@@ -57,10 +57,10 @@ public final class Caterpillar2Demo {
   public static int muscle_elasticity = 15;
 
   /** Muscle amplitude, 0-100%. */
-  public static int muscle_amplitude_pct = 18;
+  public static int muscle_amplitude_pct = 4;
 
   /** Oscillator period for the travelling wave, in ticks. */
-  public static int muscle_period_ticks = 60;
+  public static int muscle_period_ticks = 120;
 
   /**
    * Sign of the travelling wave phase slope along the row. 1 sends the
