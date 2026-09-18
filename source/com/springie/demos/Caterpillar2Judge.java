@@ -18,8 +18,9 @@ import com.springie.world.World;
  *
  * <p>Rules:
  * <ol>
- * <li>Fully passive: no muscles, no start kick. The model must settle
- * under gravity and hold its shape; forward travel is not expected.</li>
+ * <li>Apex-chain cable muscles drive a travelling contraction wave; the
+ * rocking pyramids crawl forward on ground friction. Muscle power only:
+ * no start kick.</li>
  * <li>Score = forward distance (px) of the body centroid along +x, times
  * a straightness factor: {@code score = forward * (1 - min(1, lateral /
  * max(forward, 1)))}. Non-positive forward travel scores as-is.</li>
@@ -232,9 +233,9 @@ public final class Caterpillar2Judge {
     World.maximum_magnitude = Integer.MAX_VALUE;
     com.springie.elements.nodes.Node.max_speed = Integer.MAX_VALUE;
     com.springie.FrEnd.three_d = true;
-    // Tim 2026-09-18: collision detection ON for this experiment
-    // (overrides the usual no-collisions rule).
-    com.springie.FrEnd.check_collisions = true;
+    // Tim 2026-09-18: collision detection OFF for this experiment
+    // (the usual no-collisions rule is back).
+    com.springie.FrEnd.check_collisions = false;
     com.springie.FrEnd.links_disabled = false;
     com.springie.FrEnd.continuously_centre = false;
     com.springie.FrEnd.node_growth = false;
