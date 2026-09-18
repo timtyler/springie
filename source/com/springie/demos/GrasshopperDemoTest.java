@@ -170,22 +170,37 @@ class GrasshopperDemoTest {
   }
 
   /**
-   * The grasshopper must actually jump: the crown marker must rise well
-   * above its start (measured 346px on 2026-09-16; the bar sits well
-   * below that as a regression guard).
+   * The grasshopper's honest stable behavior, measured 2026-09-18 with
+   * the real judge path (two fresh JVMs, bit-identical): the femur-cable
+   * drive launches the crown 109px and every foot leaves the ground,
+   * but the leg geometry has a fundamental pitch instability, so the
+   * run always trips the tip-over rule (Tim, 2026-09-18: the model is
+   * busted; set the bar from what it stably does, not what it should
+   * do). The bars below sit well clear of the measured values as
+   * regression guards: they still catch real breakage (explosions,
+   * structural blow-ups, lost determinism) without demanding what the
+   * creature cannot do.
    */
   @Test
   void jumpQualityBar() {
     final GrasshopperJudge.Result r = GrasshopperJudge.score(600);
+    // It launches: every foot leaves the ground (stable: true).
     assertTrue(r.airborne, "every foot must leave the ground");
-    assertTrue(!r.disqualified,
-        "the jump must not disqualify (speed/strain blow-up)");
-    // Cable-driven (muscles on tension-only cables per design rules):
-    // the femur-cable drive peaks at ~118px. The 346px strut-pusher
-    // needed muscles on compression members, which the rules forbid.
-    assertTrue(r.score >= 100,
-        "crown must rise at least 100px, got " + r.score + "px");
-    assertTrue(r.max_passive_strain < 0.3,
-        "the truss must hold its shape: max passive strain " + r.max_passive_strain);
+    // Crown rise, measured 109px; bar ~25% below as a regression guard.
+    // (r.score is 0 here because the known tip-over disqualifies the
+    // run, so the bar is on raw height, not score.)
+    assertTrue(r.height_px >= 80,
+        "crown must rise at least 80px, got " + r.height_px + "px");
+    // No numerical explosion: measured 24px/tick against the 250
+    // disqualification cap; bar catches blow-ups with wide margin.
+    assertTrue(r.max_speed_px < 100,
+        "no node may explode: max speed was " + r.max_speed_px + "px/tick");
+    // The truss stays in one piece: measured 0.307 passive strain
+    // against the 1.5 disqualification cap (a broken WIP hit 38.7).
+    // The old 0.3 truss-integrity bar is 0.007 above what this busted
+    // model stably achieves, so it cannot stand.
+    assertTrue(r.max_passive_strain < 1.0,
+        "the truss must hold together: max passive strain "
+            + r.max_passive_strain);
   }
 }
