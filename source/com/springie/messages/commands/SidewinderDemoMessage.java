@@ -13,6 +13,7 @@ public class SidewinderDemoMessage extends NewMessage {
 
   public Object execute() {
     SidewinderDemo.build();
+    com.springie.world.UniverseDefaults.snapshot();
     // Sync the Universe panel (gravity etc.) with the demo's settings.
     // Must run on the AWT thread: this message executes on the animation
     // thread, and AWT components are not thread-safe.

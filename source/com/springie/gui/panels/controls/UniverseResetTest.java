@@ -12,8 +12,11 @@ import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
+import com.springie.demos.Caterpillar3Demo;
 import com.springie.elements.nodes.Node;
 import com.springie.gui.GuiTestSupport;
+import com.springie.muscles.Muscles;
+import com.springie.world.UniverseDefaults;
 import com.springie.world.World;
 
 /**
@@ -26,6 +29,9 @@ class UniverseResetTest {
   void resetUniverseRestoresDefaults() throws Exception {
     GuiTestSupport.bootApp();
     try {
+      // The snapshot is global: a test that loaded a model earlier in
+      // this JVM would otherwise pollute it.
+      UniverseDefaults.resetToFactoryDefaults();
 
       SwingUtilities.invokeAndWait(() -> {
         final PanelControlsUniverse panel = FrEnd.panel_universe;
@@ -79,6 +85,63 @@ class UniverseResetTest {
         assertFalse(panel.checkbox_node_growth.getState(), "node growth");
       });
     } finally {
+      GuiTestSupport.disposeFrames();
+    }
+  }
+
+  /**
+   * After loading a demo model, "Reset universe" must restore the model's
+   * settings, not the factory defaults.
+   */
+  @Test
+  void resetUniverseRestoresModelSettings() throws Exception {
+    GuiTestSupport.bootApp();
+    try {
+      SwingUtilities.invokeAndWait(() -> {
+        final PanelControlsUniverse panel = FrEnd.panel_universe;
+
+        // Load Caterpillar 3, which sets gravity 5/on, friction 50,
+        // charge off, collisions off, muscles on at 6%/120 ticks.
+        Caterpillar3Demo.buildAt(100);
+        UniverseDefaults.snapshot();
+
+        // Scramble everything the reset covers.
+        World.gravity_strength = 99;
+        World.gravity_active = false;
+        World.ground_friction = 0;
+        World.global_temperature = 500;
+        Node.viscocity = 42;
+        FrEnd.check_collisions = true;
+        ContextManager.getNodeManager().electrostatic.charge_active = true;
+        Muscles.enabled = false;
+
+        panel.resetUniverse();
+
+        // Back to the model's settings...
+        assertEquals(5, World.gravity_strength);
+        assertTrue(World.gravity_active);
+        assertEquals(50, World.ground_friction);
+        assertEquals(0, World.global_temperature);
+        assertEquals(2, Node.viscocity);
+        assertFalse(FrEnd.check_collisions);
+        assertFalse(
+            ContextManager.getNodeManager().electrostatic.charge_active);
+        assertTrue(Muscles.enabled);
+        assertEquals(6 * Muscles.UNITY / 100,
+            Muscles.activeOscillator().getAmplitude());
+        assertEquals(120, Muscles.activeOscillator().getPeriodTicks());
+
+        // ...and the controls match.
+        assertEquals(5, panel.scroll_bar_gravity.getValue());
+        assertTrue(panel.checkbox_gravity_switch.getState(),
+            "gravity switch");
+        assertFalse(panel.checkbox_charge_switch.getState(),
+            "charge switch");
+        assertFalse(panel.checkbox_collision_check.getState(),
+            "collision check");
+      });
+    } finally {
+      UniverseDefaults.resetToFactoryDefaults();
       GuiTestSupport.disposeFrames();
     }
   }

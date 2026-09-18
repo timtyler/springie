@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
+import com.springie.world.UniverseDefaults;
 
 /**
  * The message-queue discipline behind the Universe tab's reset. Several
@@ -31,6 +32,9 @@ class UniverseResetMessageTest {
   @BeforeAll
   static void boot() throws Exception {
     GuiTestSupport.bootApp();
+    // The snapshot is global: a test that loaded a model earlier in this
+    // JVM would otherwise pollute the reset assertions below.
+    UniverseDefaults.resetToFactoryDefaults();
   }
 
   @AfterEach

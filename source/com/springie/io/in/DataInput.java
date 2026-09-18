@@ -58,6 +58,8 @@ public class DataInput {
 
     try {
       addFile(filename);
+      // Capture the file's universe settings as the reset defaults.
+      com.springie.world.UniverseDefaults.snapshot();
     } catch (IOException e) {
       logger.error("Could not load file: <" + filename + ">", e);
     }

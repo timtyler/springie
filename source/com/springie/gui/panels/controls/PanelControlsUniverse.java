@@ -394,60 +394,26 @@ public class PanelControlsUniverse {
 	}
 
 	/**
-	 * Restores every Universe setting to its default value and updates the
-	 * controls to match. Defaults are the static field initialisers.
+	 * Restores the universe settings belonging to the current model and
+	 * updates the controls to match. The model's settings were captured by
+	 * {@link com.springie.world.UniverseDefaults#snapshot()} when the model
+	 * loaded; before any model loads, the factory defaults apply.
 	 */
 	public void resetUniverse() {
-		// 3D view.
-		this.checkbox_3D.setState(true);
-		FrEnd.three_d = true;
+		com.springie.world.UniverseDefaults.restore();
 
-		// Gravity.
-		World.gravity_strength = 2;
-		World.gravity_active = false;
+		// Reflect the restored statics in the controls.
+		this.checkbox_3D.setState(FrEnd.three_d);
 		reflectGravity();
-
-		// Friction.
-		World.ground_friction = 0;
 		reflectFriction();
-
-		// Temperature.
-		World.global_temperature = 6;
 		reflectTemperature();
-
-		// Viscosity.
-		Node.viscocity = 0;
 		reflectViscocity();
-
-		// Collision checks.
-		FrEnd.check_collisions = true;
-
-		// Link forces (checked means enabled).
-		FrEnd.links_disabled = false;
-
-		// Charge.
-		ContextManager.getNodeManager().electrostatic.charge_active = true;
-
-		// Muscles.
-		Muscles.enabled = false;
-		Muscles.activeOscillator().setAmplitude(85 * Muscles.UNITY / 100);
-		Muscles.activeOscillator().setPeriodTicks(12);
-		setCheckboxSilently(this.checkbox_muscles, false);
+		reflectUniverseToggles();
+		setCheckboxSilently(this.checkbox_muscles, Muscles.enabled);
 		reflectMuscles();
 
-		// Continuously centre and node growth.
-		FrEnd.continuously_centre = false;
-		FrEnd.node_growth = false;
-
-		reflectUniverseToggles();
-
 		if (FrEnd.development_version) {
-			// Speed limit.
-			Node.max_speed = Integer.MAX_VALUE;
 			reflectMaxSpeed();
-
-			// Minimum excitation magnitude.
-			World.minimum_magnitude = 0;
 			reflectImpact();
 
 			// Bias (display only).
