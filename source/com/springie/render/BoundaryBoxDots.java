@@ -19,10 +19,9 @@ import com.springie.FrEnd;
  * per-frame cost (one projection plus one fillRect). Dots are plotted with
  * no depth test: the model's dynamics may overdraw them, which is fine.
  *
- * <p>When the viewport is centred, the front face sits on the window
- * border, so its edges are skipped (the window implies them): the two
- * front verticals when the X and Z viewport offsets are both 0, the two
- * front horizontals when the Y and Z offsets are both 0.
+ * <p>The front face's edges are only drawn when they would show on
+ * screen: with a centred viewport the front face projects off-screen,
+ * so the window border implies it and its edges are skipped.
  *
  * <p>The draw order is a fixed pseudo-random shuffle (fixed seed), so the
  * outline appears to sparkle on all over rather than tracing the edges in
@@ -83,6 +82,27 @@ public final class BoundaryBoxDots {
   }
 
   /**
+   * Whether a box edge would show on screen: any part of its projected
+   * segment falls inside the window. The front-face edges project to
+   * screen-axis-aligned segments, so the endpoint bounding-box test is
+   * exact for them. A zero projection divisor (the face sitting on the
+   * eye plane) means there is nothing to plot.
+   */
+  private static boolean edgeVisibleOnScreen(int ax, int ay, int az,
+      int bx, int by, int bz) {
+    if (Coords.shift_constant_z + (az >> Coords.shift_z) == 0
+        || Coords.shift_constant_z + (bz >> Coords.shift_z) == 0) {
+      return false;
+    }
+    final int sx0 = Coords.getXCoords(ax, az);
+    final int sy0 = Coords.getYCoords(ay, az);
+    final int sx1 = Coords.getXCoords(bx, bz);
+    final int sy1 = Coords.getYCoords(by, bz);
+    return Math.max(sx0, sx1) >= 0 && Math.min(sx0, sx1) < Coords.x_pixels
+        && Math.max(sy0, sy1) >= 0 && Math.min(sy0, sy1) < Coords.y_pixels;
+  }
+
+  /**
    * Recomputes the dot positions (in internal coordinates) when the box
    * dimensions or the viewport offsets change. A viewport change moves the
    * old dots to stale positions, so the screen is cleared and the outline
@@ -116,8 +136,8 @@ public final class BoundaryBoxDots {
     final int[] cz = {z0, z0, z0, z0, z1, z1, z1, z1};
 
     // All 12 box edges: the 4 back-face edges, the 4 depth edges, and the
-    // 4 front-face edges. The front face sits on the window border when
-    // the viewport is centred, so its edges are skipped then.
+    // 4 front-face edges. A front-face edge is drawn only when it would
+    // show on screen.
     final int[][] edges = new int[12][];
     edges[0] = new int[] {4, 5};
     edges[1] = new int[] {5, 6};
@@ -128,13 +148,14 @@ public final class BoundaryBoxDots {
     edges[6] = new int[] {2, 6};
     edges[7] = new int[] {3, 7};
     int edge_count = 8;
-    if (Coords.shift_constant_x != 0 || Coords.shift_constant_z != 0) {
-      edges[edge_count++] = new int[] {0, 3};
-      edges[edge_count++] = new int[] {1, 2};
-    }
-    if (Coords.shift_constant_y != 0 || Coords.shift_constant_z != 0) {
-      edges[edge_count++] = new int[] {0, 1};
-      edges[edge_count++] = new int[] {2, 3};
+    final int[][] front_edges = {
+        {0, 3}, {1, 2}, {0, 1}, {2, 3},
+    };
+    for (final int[] edge : front_edges) {
+      if (edgeVisibleOnScreen(cx[edge[0]], cy[edge[0]], cz[edge[0]],
+          cx[edge[1]], cy[edge[1]], cz[edge[1]])) {
+        edges[edge_count++] = edge;
+      }
     }
 
     // Share the dots across the drawn edges as evenly as possible.
