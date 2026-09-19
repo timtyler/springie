@@ -14,28 +14,25 @@ import com.springie.FrEnd;
  * <p>The models run inside the box described by Coords.x_pixels,
  * Coords.y_pixels and Coords.z_pixels. Plotting the whole outline every
  * frame would cost a fillRect per dot; instead a single dot is plotted per
- * frame, cycling through precomputed points spaced along the 8 edges, so
- * the outline builds up over a few hundred frames at negligible per-frame
- * cost (one projection plus one fillRect). Dots are plotted with no depth
- * test: the model's dynamics may overdraw them, which is fine.
+ * frame, cycling through precomputed points spaced along the box's 12
+ * edges, so the outline builds up over a few hundred frames at negligible
+ * per-frame cost (one projection plus one fillRect). Dots are plotted with
+ * no depth test: the model's dynamics may overdraw them, which is fine.
+ *
+ * <p>When the viewport is centred, the front face sits on the window
+ * border, so its edges are skipped (the window implies them): the two
+ * front verticals when the X and Z viewport offsets are both 0, the two
+ * front horizontals when the Y and Z offsets are both 0.
  *
  * <p>The draw order is a fixed pseudo-random shuffle (fixed seed), so the
  * outline appears to sparkle on all over rather than tracing the edges in
  * turn, and it is the same every run.
  *
- * <p>For renderers that blit a whole persistent frame every paint (the
- * ray-traced one), dots must be plotted into that frame rather than the
- * transient screen graphics: {@link #redrawDots} re-applies every dot
- * plotted so far after the frame is recomposited, so the outline
- * survives frame updates instead of being wiped by each blit.
- *
  * <p>Off by default; see FrEnd.show_boundary_box.
  */
 public final class BoundaryBoxDots {
-  /** Dots per box edge: 8 edges, so this many frames per full outline. */
-  private static final int DOTS_PER_EDGE = 16;
-
-  private static final int DOT_COUNT = DOTS_PER_EDGE * 8;
+  /** Total dots in the outline, shared across however many edges draw. */
+  private static final int DOT_COUNT = 128;
 
   /** Fixed seed: the draw order shuffles the same way every run. */
   private static final long SHUFFLE_SEED = 0xB0B0L;
@@ -52,84 +49,60 @@ public final class BoundaryBoxDots {
 
   private static int cached_z_pixels = -1;
 
-  private static int next_dot;
+  private static int cached_view_x = -1;
 
-  /**
-   * How many dots have been plotted since the last reset, saturating at
-   * DOT_COUNT: the plotted set is then the whole outline. Used by
-   * {@link #redrawDots} to re-apply the outline after a frame wipe.
-   */
-  private static int dots_drawn;
+  private static int cached_view_y = -1;
+
+  private static int cached_view_z = -1;
+
+  private static int next_dot;
 
   private BoundaryBoxDots() {
   }
 
   /**
-   * Plots a single white dot of the boundary-box outline. Call once per
+   * Plots a single gray dot of the boundary-box outline. Call once per
    * frame; a no-op unless FrEnd.show_boundary_box is on.
    */
   public static void drawOneDot(Graphics g) {
     if (!FrEnd.show_boundary_box) {
       return;
     }
-    rebuildIfResized();
+    rebuildIfViewChanged();
     final int i = next_dot;
     next_dot = (next_dot + 1) % DOT_COUNT;
-    if (dots_drawn < DOT_COUNT) {
-      dots_drawn++;
-    }
-    plotDot(g, i);
-  }
-
-  /**
-   * Re-plots every dot plotted so far (since the last reset), for a
-   * frame that was recomposited from bare tiles and lost its baked-in
-   * dots. A no-op unless FrEnd.show_boundary_box is on.
-   */
-  public static void redrawDots(Graphics g) {
-    if (!FrEnd.show_boundary_box) {
+    // At Z-viewport 0 the front-face dots sit exactly on the eye plane:
+    // the projection divides by zero, so there is nothing to plot.
+    if (Coords.shift_constant_z + (zs[i] >> Coords.shift_z) == 0) {
       return;
     }
-    rebuildIfResized();
-    for (int i = 0; i < dots_drawn; i++) {
-      plotDot(g, i);
-    }
-  }
-
-  /**
-   * Forgets every plotted dot: the next plots start a fresh outline.
-   */
-  public static void resetDots() {
-    next_dot = 0;
-    dots_drawn = 0;
-  }
-
-  private static void plotDot(Graphics g, int i) {
     final int sx = Coords.getXCoords(xs[i], zs[i]);
     final int sy = Coords.getYCoords(ys[i], zs[i]);
-    g.setColor(Color.white);
+    g.setColor(Color.gray);
     g.fillRect(sx, sy, 2, 2);
   }
 
   /**
    * Recomputes the dot positions (in internal coordinates) when the box
-   * dimensions change. Each edge contributes
-   * DOTS_PER_EDGE points, excluding its far corner (the next edge starts
-   * there).
+   * dimensions or the viewport offsets change. A viewport change moves the
+   * old dots to stale positions, so the screen is cleared and the outline
+   * restarts from the first dot.
    */
-  private static void rebuildIfResized() {
+  private static void rebuildIfViewChanged() {
     if (Coords.x_pixels == cached_x_pixels
         && Coords.y_pixels == cached_y_pixels
-        && Coords.z_pixels == cached_z_pixels) {
+        && Coords.z_pixels == cached_z_pixels
+        && Coords.shift_constant_x == cached_view_x
+        && Coords.shift_constant_y == cached_view_y
+        && Coords.shift_constant_z == cached_view_z) {
       return;
     }
     cached_x_pixels = Coords.x_pixels;
     cached_y_pixels = Coords.y_pixels;
     cached_z_pixels = Coords.z_pixels;
-
-    // The box moved: previously plotted dots are stale.
-    next_dot = 0;
-    dots_drawn = 0;
+    cached_view_x = Coords.shift_constant_x;
+    cached_view_y = Coords.shift_constant_y;
+    cached_view_z = Coords.shift_constant_z;
 
     final int x0 = 0;
     final int y0 = 0;
@@ -141,24 +114,48 @@ public final class BoundaryBoxDots {
     final int[] cx = {x0, x1, x1, x0, x0, x1, x1, x0};
     final int[] cy = {y0, y0, y1, y1, y0, y0, y1, y1};
     final int[] cz = {z0, z0, z0, z0, z1, z1, z1, z1};
-    // 8 edges: the 4 back-face edges and the 4 depth edges. The 4
-    // front-face edges are implied by the window border itself.
-    final int[][] edges = {
-        {4, 5}, {5, 6}, {6, 7}, {7, 4},
-        {0, 4}, {1, 5}, {2, 6}, {3, 7}};
 
+    // All 12 box edges: the 4 back-face edges, the 4 depth edges, and the
+    // 4 front-face edges. The front face sits on the window border when
+    // the viewport is centred, so its edges are skipped then.
+    final int[][] edges = new int[12][];
+    edges[0] = new int[] {4, 5};
+    edges[1] = new int[] {5, 6};
+    edges[2] = new int[] {6, 7};
+    edges[3] = new int[] {7, 4};
+    edges[4] = new int[] {0, 4};
+    edges[5] = new int[] {1, 5};
+    edges[6] = new int[] {2, 6};
+    edges[7] = new int[] {3, 7};
+    int edge_count = 8;
+    if (Coords.shift_constant_x != 0 || Coords.shift_constant_z != 0) {
+      edges[edge_count++] = new int[] {0, 3};
+      edges[edge_count++] = new int[] {1, 2};
+    }
+    if (Coords.shift_constant_y != 0 || Coords.shift_constant_z != 0) {
+      edges[edge_count++] = new int[] {0, 1};
+      edges[edge_count++] = new int[] {2, 3};
+    }
+
+    // Share the dots across the drawn edges as evenly as possible.
+    final int per_edge = DOT_COUNT / edge_count;
+    int extra = DOT_COUNT % edge_count;
     int n = 0;
-    for (final int[] edge : edges) {
-      final int ax = cx[edge[0]];
-      final int ay = cy[edge[0]];
-      final int az = cz[edge[0]];
-      final int bx = cx[edge[1]];
-      final int by = cy[edge[1]];
-      final int bz = cz[edge[1]];
-      for (int k = 0; k < DOTS_PER_EDGE; k++) {
-        xs[n] = ax + (bx - ax) * k / DOTS_PER_EDGE;
-        ys[n] = ay + (by - ay) * k / DOTS_PER_EDGE;
-        zs[n] = az + (bz - az) * k / DOTS_PER_EDGE;
+    for (int e = 0; e < edge_count; e++) {
+      final int dots_this_edge = per_edge + (extra > 0 ? 1 : 0);
+      if (extra > 0) {
+        extra--;
+      }
+      final int ax = cx[edges[e][0]];
+      final int ay = cy[edges[e][0]];
+      final int az = cz[edges[e][0]];
+      final int bx = cx[edges[e][1]];
+      final int by = cy[edges[e][1]];
+      final int bz = cz[edges[e][1]];
+      for (int k = 0; k < dots_this_edge; k++) {
+        xs[n] = ax + (bx - ax) * k / dots_this_edge;
+        ys[n] = ay + (by - ay) * k / dots_this_edge;
+        zs[n] = az + (bz - az) * k / dots_this_edge;
         n++;
       }
     }
@@ -178,5 +175,9 @@ public final class BoundaryBoxDots {
       zs[i] = zs[j];
       zs[j] = tz;
     }
+
+    next_dot = 0;
+    // Wipe the stale dots with the next repaint; the outline restarts.
+    RendererDelegator.repaint_all_objects = true;
   }
 }

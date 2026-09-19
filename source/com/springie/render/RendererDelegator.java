@@ -247,11 +247,7 @@ public final class RendererDelegator {
       final double fps = frame_count / (duration / 1000.0D);
       time_last_ms = now;
       frame_count = 0;
-      String fps_str = "" + fps;
-      if (fps_str.length() > 5) {
-        fps_str = fps_str.substring(0, 5);
-      }
-      fps_string = fps_str;
+      fps_string = "" + Math.round(fps);
       fps_dirty = true;
     }
   }

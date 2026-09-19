@@ -17,7 +17,6 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.render.BoundaryBoxDots;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.render.ScenicBackground;
@@ -40,12 +39,12 @@ import com.springie.render.modules.modern.RendererBinManager;
  *
  * <p>A frame renders a snapshot of the model: while a frame is in progress
  * repaints keep displaying the last complete frame, and a new frame
- * starts once the previous one completes and the scene (or view) changed.
- * Only the tiles whose content changed re-render -- each tile's change
- * signature mixes the global visual state with just the elements whose
- * projected bounds touch that tile -- so the whole canvas is re-traced
- * only when something global (the view, the background, the shadows
- * flag) changed.
+ * starts once the previous one completes. A tile that was empty (held
+ * no geometry) and is still empty is not re-traced -- its pixels are
+ * background, which cannot have changed -- so a small model on a big
+ * canvas re-traces only the tiles it touches. With shadows or the
+ * scenic background on, or when the background colour changed, every
+ * tile re-renders.
  */
 public class ModularRendererRaytraced implements ModularRendererBase {
   private static final ExecutorService POOL = Executors.newFixedThreadPool(
@@ -116,13 +115,15 @@ public class ModularRendererRaytraced implements ModularRendererBase {
 
   private volatile long frame_id;
 
-  // One signature per tile, from the last frame that was started: the
-  // global visual state mixed with the screen-space hashes of just the
-  // elements whose projected bounds touch that tile. A tile re-renders
-  // only when its signature changed, so an animating model re-traces
-  // the tiles holding moving geometry instead of the whole canvas.
-  // Null until the first frame is started.
-  private long[] tile_signatures;
+  // Per-tile emptiness from the last started frame: true = the tile held
+  // no geometry. A tile that was empty and is still empty is not
+  // re-traced. Null until the first frame is started.
+  private boolean[] tile_empty;
+
+  // Background colour the last frame was rendered with: recolouring the
+  // background changes even empty tiles' pixels, so it forces every tile
+  // to re-trace.
+  private int last_background_rgb;
 
   // Effective tile columns per row (degenerate zero-area bins dropped),
   // for mapping a screen rectangle to tile indexes.
@@ -140,10 +141,6 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   // Set by the worker that publishes a frame; the next repaint
   // re-composites frame_image and clears it.
   private volatile boolean frame_staged;
-
-  // Tracks FrEnd.show_boundary_box: toggling the box off must drop the
-  // dots baked into the persistent frame with a fresh composite.
-  private boolean last_show_boundary_box;
 
   public void resize(int x, int y) {
     this.tiles = null;
@@ -177,9 +174,34 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     }
 
     if (this.frame_done) {
-      final boolean[] dirty = findDirtyTiles(manager);
-      if (dirty != null) {
-        startFrame(manager, dirty);
+      // Which tiles hold no geometry this frame. A tile that was empty
+      // and is still empty keeps its published snapshot: its pixels are
+      // background, which cannot have changed. Shadows can fall into
+      // tiles no element touches, the scenic background pans with the
+      // view, and a recolour changes every background pixel, so any of
+      // those re-traces the whole canvas.
+      final boolean[] now_empty = computeEmptyTiles(manager);
+      final int background_rgb =
+          0xFF000000 | RendererDelegator.color_background_number;
+      final boolean background_changed =
+          background_rgb != this.last_background_rgb;
+      this.last_background_rgb = background_rgb;
+      final boolean[] last_empty = this.tile_empty;
+      final boolean render_all = now_empty == null || last_empty == null
+          || RendererDelegator.shadows
+          || RendererDelegator.scenic_background || background_changed;
+      final boolean[] skip;
+      if (render_all) {
+        skip = null;
+      } else {
+        skip = new boolean[now_empty.length];
+        for (int i = 0; i < skip.length; i++) {
+          skip[i] = last_empty[i] && now_empty[i];
+        }
+      }
+      startFrame(manager, skip);
+      if (now_empty != null) {
+        this.tile_empty = now_empty;
       }
     }
 
@@ -191,38 +213,9 @@ public class ModularRendererRaytraced implements ModularRendererBase {
           new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
       this.frame_staged = true;
     }
-    if (FrEnd.show_boundary_box != this.last_show_boundary_box) {
-      this.last_show_boundary_box = FrEnd.show_boundary_box;
-      if (!FrEnd.show_boundary_box) {
-        // Toggled off: the dots baked into the frame must go, and the
-        // dot count restarts for the next toggle-on.
-        BoundaryBoxDots.resetDots();
-        this.frame_staged = true;
-      }
-    }
     if (this.frame_staged) {
       this.frame_image = compositeFrame(this.tiles, width, height);
       this.frame_staged = false;
-      // The fresh composite starts dot-free: re-apply every dot plotted
-      // so far, so the outline survives frame updates instead of being
-      // wiped by each whole-canvas blit. A no-op when the box is off.
-      final Graphics frame_g = this.frame_image.getGraphics();
-      try {
-        BoundaryBoxDots.redrawDots(frame_g);
-      } finally {
-        frame_g.dispose();
-      }
-    }
-    if (FrEnd.show_boundary_box) {
-      // The dots live in the persistent frame, not on the screen
-      // graphics: a whole-canvas blit every frame would wipe the
-      // outline faster than one-dot-per-frame can build it.
-      final Graphics frame_g = this.frame_image.getGraphics();
-      try {
-        BoundaryBoxDots.drawOneDot(frame_g);
-      } finally {
-        frame_g.dispose();
-      }
     }
     graphics.drawImage(this.frame_image, 0, 0, null);
 
@@ -325,7 +318,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     this.canvas_height = height;
     this.last_show_bins = show_bins;
     this.frame_done = true;
-    this.tile_signatures = null;
+    this.tile_empty = null;
     final int divisor = RendererBinManager.divisor;
     this.tile_nx = (width + divisor - 1) / divisor;
     this.frame_image = null;
@@ -333,13 +326,15 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   }
 
   /**
-   * Starts a frame, re-rendering only the dirty tiles. Clean tiles keep
-   * the snapshot they published last frame: their pixels cannot have
-   * changed, so re-tracing them would be pure waste. The last dirty
-   * tile to finish publishes the frame, mixing fresh and retained
-   * snapshots, exactly like a full frame.
+   * Starts a frame, re-tracing every tile except the ones marked skip.
+   * A skipped tile was empty and is still empty: it keeps the snapshot
+   * it published last frame (and its done flag, still true from the
+   * frame that rendered it), so the "every tile done" check below only
+   * waits on re-traced tiles. The last tile to finish publishes the
+   * frame, mixing fresh and retained snapshots, exactly like a full
+   * frame.
    */
-  private void startFrame(NodeManager manager, boolean[] dirty) {
+  private void startFrame(NodeManager manager, boolean[] skip) {
     final long id = ++this.frame_id;
     this.frame_done = false;
 
@@ -351,10 +346,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
 
     final Tile[] tiles = this.tiles;
     for (int i = 0; i < tiles.length; i++) {
-      if (!dirty[i]) {
-        // Unchanged tile: keeps its published snapshot (and its done
-        // flag, still true from the frame that rendered it), so the
-        // "every tile done" check below only waits on dirty tiles.
+      if (skip != null && skip[i]) {
         continue;
       }
       final Tile tile = tiles[i];
@@ -441,65 +433,21 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   }
 
   /**
-   * Which tiles must re-render this frame, or null when nothing changed.
-   * Each tile's signature mixes the global visual state with the hashes
-   * of just the elements whose projected bounds touch that tile, so a
-   * moving node dirties only its own tiles instead of the whole canvas.
-   *
-   * <p>With shadows on, any element change dirties every tile: a moved
-   * element can throw its shadow into a tile it never touches. A fully
-   * static scene still renders nothing -- no change, no dirty tiles.
+   * Which tiles hold no geometry this frame. The element walk mirrors
+   * RayScene.build's filters exactly, so every pixel the frame can paint
+   * belongs to some element's bounds, and a tile left marked empty is
+   * truly background-only. Returns null when an element's projection is
+   * degenerate (behind the camera); the caller then re-traces everything.
    */
-  boolean[] findDirtyTiles(NodeManager manager) {
-    final Tile[] tiles = this.tiles;
-    final long[] sigs = computeTileSignatures(manager);
-    final long[] last = this.tile_signatures;
-    final boolean[] dirty = new boolean[tiles.length];
-    boolean any = false;
-    if (sigs == null || last == null || last.length != sigs.length) {
-      // Degenerate projection, or no previous frame: be conservative.
-      for (int i = 0; i < dirty.length; i++) {
-        dirty[i] = true;
-      }
-      any = dirty.length > 0;
-    } else {
-      for (int i = 0; i < dirty.length; i++) {
-        dirty[i] = sigs[i] != last[i];
-        any |= dirty[i];
-      }
-      if (any && RendererDelegator.shadows) {
-        for (int i = 0; i < dirty.length; i++) {
-          dirty[i] = true;
-        }
-      }
-    }
-    if (!any) {
-      return null;
-    }
-    if (sigs != null) {
-      this.tile_signatures = sigs;
-    }
-    return dirty;
-  }
-
-  /**
-   * One signature per tile: the global visual state, mixed per tile with
-   * a hash of every rendered element whose screen-space bounds touch the
-   * tile. The element walk mirrors RayScene.build's filters exactly, so
-   * every pixel the frame can paint belongs to some hashed element's
-   * bounds. Returns null when an element's projection is degenerate
-   * (behind the camera); the caller then re-renders everything.
-   */
-  long[] computeTileSignatures(NodeManager manager) {
+  boolean[] computeEmptyTiles(NodeManager manager) {
     final Tile[] tiles = this.tiles;
     final int divisor = RendererBinManager.divisor;
     final int width = this.canvas_width;
     final int height = this.canvas_height;
     final int nx = this.tile_nx;
-    final long[] sigs = new long[tiles.length];
-    final long base = frameVisualSignature();
-    for (int i = 0; i < sigs.length; i++) {
-      sigs[i] = base;
+    final boolean[] empty = new boolean[tiles.length];
+    for (int i = 0; i < empty.length; i++) {
+      empty[i] = true;
     }
 
     if (FrEnd.render_nodes) {
@@ -529,14 +477,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
             r = ring;
           }
         }
-        long h = 17L;
-        h = h * 31 + node.pos.x;
-        h = h * 31 + node.pos.y;
-        h = h * 31 + node.pos.z;
-        h = h * 31 + (node.type.selected ? 1 : 0);
-        h = h * 31 + node.clazz.colour;
-        mixIntoTiles(sigs, nx, divisor, width, height,
-            sx - r, sy - r, sx + r, sy + r, h);
+        markTilesNotEmpty(empty, nx, divisor, width, height,
+            sx - r, sy - r, sx + r, sy + r);
       }
     }
 
@@ -557,18 +499,12 @@ public class ModularRendererRaytraced implements ModularRendererBase {
         if (ends.length == 0) {
           continue;
         }
-        long h = 17L;
-        h = h * 31 + (link.type.selected ? 1 : 0);
-        h = h * 31 + link.clazz.colour;
         long x0 = Long.MAX_VALUE;
         long y0 = Long.MAX_VALUE;
         long x1 = Long.MIN_VALUE;
         long y1 = Long.MIN_VALUE;
         for (int s = 0; s < ends.length; s++) {
           final Node node = ends[s];
-          h = h * 31 + node.pos.x;
-          h = h * 31 + node.pos.y;
-          h = h * 31 + node.pos.z;
           final int z = node.pos.z;
           final int world_per_pixel =
               Coords.shift_constant_z + (z >> Coords.shift_z);
@@ -593,7 +529,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
             y1 = sy + r;
           }
         }
-        mixIntoTiles(sigs, nx, divisor, width, height, x0, y0, x1, y1, h);
+        markTilesNotEmpty(empty, nx, divisor, width, height,
+            x0, y0, x1, y1);
       }
     }
 
@@ -608,18 +545,12 @@ public class ModularRendererRaytraced implements ModularRendererBase {
         if (points < 3) {
           continue;
         }
-        long h = 17L;
-        h = h * 31 + (face.type.selected ? 1 : 0);
-        h = h * 31 + face.clazz.colour;
         long x0 = Long.MAX_VALUE;
         long y0 = Long.MAX_VALUE;
         long x1 = Long.MIN_VALUE;
         long y1 = Long.MIN_VALUE;
         for (int s = 0; s < points; s++) {
           final Node node = nodes.get(s);
-          h = h * 31 + node.pos.x;
-          h = h * 31 + node.pos.y;
-          h = h * 31 + node.pos.z;
           final int z = node.pos.z;
           final int world_per_pixel =
               Coords.shift_constant_z + (z >> Coords.shift_z);
@@ -641,19 +572,20 @@ public class ModularRendererRaytraced implements ModularRendererBase {
             y1 = sy + 2;
           }
         }
-        mixIntoTiles(sigs, nx, divisor, width, height, x0, y0, x1, y1, h);
+        markTilesNotEmpty(empty, nx, divisor, width, height,
+            x0, y0, x1, y1);
       }
     }
 
-    return sigs;
+    return empty;
   }
 
   /**
-   * Mixes one element's hash into every tile its screen rectangle
-   * touches. Fully off-screen elements touch no tile and dirty nothing.
+   * Marks every tile an element's screen rectangle touches as
+   * non-empty. Fully off-screen elements touch no tile.
    */
-  static void mixIntoTiles(long[] sigs, int nx, int divisor,
-      int width, int height, long x0, long y0, long x1, long y1, long h) {
+  static void markTilesNotEmpty(boolean[] empty, int nx, int divisor,
+      int width, int height, long x0, long y0, long x1, long y1) {
     if (x1 < 0 || y1 < 0 || x0 >= width || y0 >= height) {
       return;
     }
@@ -679,51 +611,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     for (int ty = ty0; ty <= ty1; ty++) {
       final int row = ty * nx;
       for (int tx = tx0; tx <= tx1; tx++) {
-        final int idx = row + tx;
-        sigs[idx] = sigs[idx] * 31 + h;
+        empty[row + tx] = false;
       }
     }
-  }
-
-  /**
-   * The global visual state: view parameters, render flags and effect
-   * settings. Anything here changing dirties every tile at once, through
-   * the per-tile signatures this seeds. Deliberately excludes the
-   * animation generation counter: the ray-traced image is a pure
-   * function of the element state above, so a settled-but-unpaused
-   * model renders nothing instead of the whole canvas every frame.
-   */
-  private static long frameVisualSignature() {
-    long sig = 17L;
-    sig = sig * 31 + Coords.x_pixels;
-    sig = sig * 31 + Coords.y_pixels;
-    sig = sig * 31 + Coords.shift_constant_x;
-    sig = sig * 31 + Coords.shift_constant_y;
-    sig = sig * 31 + Coords.shift_constant_z;
-    sig = sig * 31 + RendererBinManager.divisor;
-    // The tile geometry (and the background gutters) follow show_bins;
-    // show_active_bins needs no new frame, its outlines are drawn over
-    // the finished frame on the screen graphics.
-    sig = sig * 31 + (RendererBinManager.show_bins ? 1 : 0);
-    sig = sig * 31 + (FrEnd.render_nodes ? 1 : 0);
-    sig = sig * 31 + (FrEnd.render_links ? 1 : 0);
-    sig = sig * 31 + (FrEnd.render_faces ? 1 : 0);
-    sig = sig * 31 + RendererDelegator.glossiness;
-    sig = sig * 31 + (RendererDelegator.glossiness_enabled ? 1 : 0);
-    sig = sig * 31 + (RendererDelegator.shadows ? 1 : 0);
-    sig = sig * 31 + RendererDelegator.specular;
-    sig = sig * 31 + (RendererDelegator.specular_enabled ? 1 : 0);
-    sig = sig * 31 + RendererDelegator.fresnel;
-    sig = sig * 31 + (RendererDelegator.fresnel_enabled ? 1 : 0);
-    sig = sig * 31 + RendererDelegator.fill_light;
-    sig = sig * 31 + (RendererDelegator.fill_light_enabled ? 1 : 0);
-    sig = sig * 31 + RendererDelegator.antialiasing;
-    sig = sig * 31 + RendererDelegator.pixellation;
-    // Read live per tile by the renderer: recolouring the background
-    // must dirty the tiles even though no element moved.
-    sig = sig * 31 + RendererDelegator.color_background_number;
-    sig = sig * 31 + (RendererDelegator.scenic_background ? 1 : 0);
-
-    return sig;
   }
 }

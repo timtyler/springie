@@ -20,11 +20,11 @@ class BoundaryBoxDotsTest {
     FrEnd.show_boundary_box = false;
   }
 
-  private static int whitePixels(BufferedImage img) {
+  private static int dotPixels(BufferedImage img) {
     int n = 0;
     for (int y = 0; y < img.getHeight(); y++) {
       for (int x = 0; x < img.getWidth(); x++) {
-        if (img.getRGB(x, y) == Color.white.getRGB()) {
+        if (img.getRGB(x, y) == Color.gray.getRGB()) {
           n++;
         }
       }
@@ -40,7 +40,7 @@ class BoundaryBoxDotsTest {
     FrEnd.show_boundary_box = false;
     BoundaryBoxDots.drawOneDot(g);
     g.dispose();
-    assertEquals(0, whitePixels(img), "flag off must draw nothing");
+    assertEquals(0, dotPixels(img), "flag off must draw nothing");
   }
 
   @Test
@@ -51,7 +51,7 @@ class BoundaryBoxDotsTest {
     FrEnd.show_boundary_box = true;
     BoundaryBoxDots.drawOneDot(g);
     g.dispose();
-    final int afterOne = whitePixels(img);
+    final int afterOne = dotPixels(img);
     assertTrue(afterOne > 0 && afterOne <= 4,
         "one call plots a single 2x2 dot, got " + afterOne);
 
@@ -61,7 +61,7 @@ class BoundaryBoxDotsTest {
       BoundaryBoxDots.drawOneDot(g2);
     }
     g2.dispose();
-    assertTrue(whitePixels(img) > afterOne,
+    assertTrue(dotPixels(img) > afterOne,
         "more frames must accumulate more dots");
   }
 }

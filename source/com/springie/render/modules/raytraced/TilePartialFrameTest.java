@@ -27,10 +27,9 @@ import com.springie.render.modules.modern.RendererBinManager;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced.Tile;
 
 /**
- * Re-rendering only the dirty tiles must be pixel-identical to
- * re-rendering the whole canvas: a tile's pixels depend only on the
- * primitives projecting into it (shadows off), so untouched tiles can
- * keep their previous snapshot.
+ * Re-tracing only the non-skipped tiles must be pixel-identical to
+ * re-tracing the whole canvas: a tile that was empty and is still empty
+ * shows only background, so keeping its snapshot changes nothing.
  */
 public class TilePartialFrameTest {
   private static final int SIZE = 400;
@@ -161,16 +160,16 @@ public class TilePartialFrameTest {
 
   /**
    * Renders tiles straight through the raytracer, the way the
-   * renderer's worker does; a null dirty set renders every tile.
+   * renderer's worker does; a null skip set renders every tile.
    */
-  private void renderTiles(boolean[] dirty) {
+  private void renderTiles(boolean[] skip) {
     final RayCamera camera = new RayCamera();
     final Primitive[] primitives = RayScene.build(this.manager);
     final BVH bvh = new BVH(primitives);
     final RTRing[] rings = RayScene.selectionRings(this.manager,
         camera.getEyeX(), camera.getEyeY(), camera.getEyeZ());
     for (int i = 0; i < this.tiles.length; i++) {
-      if (dirty != null && !dirty[i]) {
+      if (skip != null && skip[i]) {
         continue;
       }
       final Tile tile = this.tiles[i];
@@ -190,35 +189,39 @@ public class TilePartialFrameTest {
 
   @Test
   public void partialFrameMatchesFullFrame() {
-    // Frame 1: everything is dirty.
-    final boolean[] first = this.renderer.findDirtyTiles(this.manager);
-    assertNotNull(first);
+    // Frame 1: everything renders.
     renderTiles(null);
+    boolean[] last_empty =
+        this.renderer.computeEmptyTiles(this.manager);
+    assertNotNull(last_empty);
     final BufferedImage before =
         ModularRendererRaytraced.compositeFrame(this.tiles, SIZE, SIZE);
 
-    // Move one node a little; only its tiles may be dirty.
+    // Move one node a little; most tiles stay empty and are skipped.
     final Node moved = (Node) this.manager.element.get(0);
     moved.pos.x += 5 * 192;
     moved.pos.y += 3 * 192;
-    final boolean[] dirty = this.renderer.findDirtyTiles(this.manager);
-    assertNotNull(dirty);
-    int dirty_count = 0;
-    for (int i = 0; i < dirty.length; i++) {
-      if (dirty[i]) {
-        dirty_count++;
+    final boolean[] now_empty =
+        this.renderer.computeEmptyTiles(this.manager);
+    assertNotNull(now_empty);
+    final boolean[] skip = new boolean[now_empty.length];
+    int skipped = 0;
+    for (int i = 0; i < skip.length; i++) {
+      skip[i] = last_empty[i] && now_empty[i];
+      if (skip[i]) {
+        skipped++;
       }
     }
-    assertTrue(dirty_count > 0 && dirty_count < this.tiles.length,
-        "a small move must dirty some tiles but not all: " + dirty_count
+    assertTrue(skipped > 0 && skipped < this.tiles.length,
+        "a small move must skip some tiles but not all: " + skipped
             + " of " + this.tiles.length);
 
-    // Frame 2, partial: re-render only dirty tiles over frame 1.
-    renderTiles(dirty);
+    // Frame 2, partial: re-trace only non-skipped tiles over frame 1.
+    renderTiles(skip);
     final BufferedImage partial =
         ModularRendererRaytraced.compositeFrame(this.tiles, SIZE, SIZE);
 
-    // Frame 2, full: re-render every tile from scratch.
+    // Frame 2, full: re-trace every tile from scratch.
     renderTiles(null);
     final BufferedImage full =
         ModularRendererRaytraced.compositeFrame(this.tiles, SIZE, SIZE);
