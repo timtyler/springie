@@ -246,9 +246,7 @@ public class NodeManager extends World {
 			if (!FrEnd.paused) {
 				final int n_o_l = this.getLinkManager().element.size();
 				if (n_o_l > 0) {
-					if (!FrEnd.links_disabled) {
-						wrappedLinkExerciser(link_manager);
-					}
+					wrappedLinkExerciser(link_manager);
 				}
 				ContextManager.getNodeManager().electrostatic.repel();
 				ContextManager.getNodeManager().applyViscousDrag();

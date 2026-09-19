@@ -39,7 +39,6 @@ class UniverseSettingsRoundTripTest {
   private int saved_max_speed;
   private boolean saved_three_d;
   private boolean saved_check_collisions;
-  private boolean saved_links_disabled;
   private boolean saved_continuously_centre;
   private boolean saved_node_growth;
   private boolean saved_charge_active;
@@ -61,7 +60,6 @@ class UniverseSettingsRoundTripTest {
     this.saved_max_speed = Node.max_speed;
     this.saved_three_d = FrEnd.three_d;
     this.saved_check_collisions = FrEnd.check_collisions;
-    this.saved_links_disabled = FrEnd.links_disabled;
     this.saved_continuously_centre = FrEnd.continuously_centre;
     this.saved_node_growth = FrEnd.node_growth;
     this.saved_charge_active = this.manager.electrostatic.charge_active;
@@ -81,7 +79,6 @@ class UniverseSettingsRoundTripTest {
     Node.max_speed = this.saved_max_speed;
     FrEnd.three_d = this.saved_three_d;
     FrEnd.check_collisions = this.saved_check_collisions;
-    FrEnd.links_disabled = this.saved_links_disabled;
     FrEnd.continuously_centre = this.saved_continuously_centre;
     FrEnd.node_growth = this.saved_node_growth;
     ContextManager.getNodeManager().electrostatic.charge_active =
@@ -95,9 +92,8 @@ class UniverseSettingsRoundTripTest {
   private static void setUniverse(int gravity_strength,
       boolean gravity_active, int temperature, int minimum_magnitude,
       int viscocity, int max_speed, boolean three_d,
-      boolean check_collisions, boolean links_disabled,
-      boolean continuously_centre, boolean node_growth,
-      boolean charge_active) {
+      boolean check_collisions, boolean continuously_centre,
+      boolean node_growth, boolean charge_active) {
     World.gravity_strength = gravity_strength;
     World.gravity_active = gravity_active;
     World.global_temperature = temperature;
@@ -106,7 +102,6 @@ class UniverseSettingsRoundTripTest {
     Node.max_speed = max_speed;
     FrEnd.three_d = three_d;
     FrEnd.check_collisions = check_collisions;
-    FrEnd.links_disabled = links_disabled;
     FrEnd.continuously_centre = continuously_centre;
     FrEnd.node_growth = node_growth;
     ContextManager.getNodeManager().electrostatic.charge_active =
@@ -116,9 +111,8 @@ class UniverseSettingsRoundTripTest {
   private static void assertUniverse(int gravity_strength,
       boolean gravity_active, int temperature, int minimum_magnitude,
       int viscocity, int max_speed, boolean three_d,
-      boolean check_collisions, boolean links_disabled,
-      boolean continuously_centre, boolean node_growth,
-      boolean charge_active) {
+      boolean check_collisions, boolean continuously_centre,
+      boolean node_growth, boolean charge_active) {
     assertEquals(gravity_strength, World.gravity_strength, "gravity_strength");
     assertEquals(gravity_active, World.gravity_active, "gravity_active");
     assertEquals(temperature, World.global_temperature, "temperature");
@@ -128,7 +122,6 @@ class UniverseSettingsRoundTripTest {
     assertEquals(three_d, FrEnd.three_d, "3D");
     assertEquals(check_collisions, FrEnd.check_collisions,
         "collision check");
-    assertEquals(links_disabled, FrEnd.links_disabled, "links disabled");
     assertEquals(continuously_centre, FrEnd.continuously_centre,
         "continuously centre");
     assertEquals(node_growth, FrEnd.node_growth, "node growth");
@@ -159,13 +152,13 @@ class UniverseSettingsRoundTripTest {
         .loadFile("resource://models/moscow.spr");
 
     // Non-default universe state, saved with the model.
-    setUniverse(42, true, 777, 123456, 66, 987654, false, false, true,
+    setUniverse(42, true, 777, 123456, 66, 987654, false, false,
         true, true, false);
     setMuscles(true, 100, 33);
     final String spr = new Serialiser(this.manager).toString();
 
     // Scramble to unrelated values, proving the load overwrites them.
-    setUniverse(7, false, 8, 9, 10, 11, true, true, false, false, false,
+    setUniverse(7, false, 8, 9, 10, 11, true, true, false, false,
         true);
     setMuscles(false, 200, 44);
 
@@ -183,7 +176,7 @@ class UniverseSettingsRoundTripTest {
       temp.delete();
     }
 
-    assertUniverse(42, true, 777, 123456, 66, 987654, false, false, true,
+    assertUniverse(42, true, 777, 123456, 66, 987654, false, false,
         true, true, false);
     assertMuscles(true, 100, 33);
   }
@@ -194,7 +187,7 @@ class UniverseSettingsRoundTripTest {
     // still predates the muscle attributes (and has no dimensions tag):
     // attributes absent from the file must not inherit stale values from
     // the previously loaded model.
-    setUniverse(42, true, 777, 123456, 66, 987654, false, false, true,
+    setUniverse(42, true, 777, 123456, 66, 987654, false, false,
         true, true, false);
     setMuscles(true, 100, 33);
 
@@ -212,7 +205,6 @@ class UniverseSettingsRoundTripTest {
     assertEquals(0, Node.viscocity, "viscosity");
     assertEquals(Integer.MAX_VALUE, Node.max_speed, "speed limit");
     assertFalse(FrEnd.check_collisions, "collision check");
-    assertFalse(FrEnd.links_disabled, "links disabled");
     assertFalse(FrEnd.continuously_centre, "continuously centre");
     assertFalse(FrEnd.node_growth, "node growth");
     // ...absent attributes back at the defaults.

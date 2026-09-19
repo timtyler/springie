@@ -60,14 +60,12 @@ class UniverseResetMessageTest {
       clickCheckbox(panel.checkbox_continuously_centre, ItemEvent.SELECTED);
       clickCheckbox(panel.checkbox_node_growth, ItemEvent.SELECTED);
       clickCheckbox(panel.checkbox_collision_check, ItemEvent.DESELECTED);
-      clickCheckbox(panel.checkbox_links_disabled, ItemEvent.DESELECTED);
 
       // Let the queued toggles take effect, then drain.
       FrEnd.new_message_manager.process();
       assertTrue(FrEnd.continuously_centre);
       assertTrue(FrEnd.node_growth);
       assertFalse(FrEnd.check_collisions);
-      assertTrue(FrEnd.links_disabled);
       drainMessageQueue();
 
       // The reset must restore the statics without queueing anything that
@@ -80,7 +78,6 @@ class UniverseResetMessageTest {
       assertFalse(FrEnd.continuously_centre);
       assertFalse(FrEnd.node_growth);
       assertTrue(FrEnd.check_collisions);
-      assertFalse(FrEnd.links_disabled);
     });
   }
 

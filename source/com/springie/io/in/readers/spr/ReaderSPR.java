@@ -332,9 +332,7 @@ public class ReaderSPR extends DefaultHandler {
             this.out.append("VS:" + (int) sp + " ");
           } else if ("collision_check".equals(nam)) {
             this.out.append("CC:" + ("true".equals(val) ? "1" : "0") + " ");
-          } else if ("links_disabled".equals(nam)) {
-            this.out.append("LD:" + ("true".equals(val) ? "1" : "0") + " ");
-          } else if ("continuously_centre".equals(nam)) {
+                    } else if ("continuously_centre".equals(nam)) {
             this.out.append("CE:" + ("true".equals(val) ? "1" : "0") + " ");
           } else if ("node_growth".equals(nam)) {
             this.out.append("NW:" + ("true".equals(val) ? "1" : "0") + " ");

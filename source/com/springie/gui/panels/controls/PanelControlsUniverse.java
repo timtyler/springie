@@ -45,7 +45,6 @@ public class PanelControlsUniverse {
 
 	public Checkbox checkbox_collision_check;
 
-	public Checkbox checkbox_links_disabled;
 
 	public Checkbox checkbox_muscles;
 
@@ -290,16 +289,6 @@ public class PanelControlsUniverse {
 		});
 		panel_collision_check.add(this.checkbox_collision_check);
 
-		final Panel panel_links_disabled = new Panel();
-		this.checkbox_links_disabled = new Checkbox(GUIStrings.ENABLE_LINK_FORCES);
-		this.checkbox_links_disabled.setState(true);
-		this.checkbox_links_disabled.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				Forget.about(e);
-				FrEnd.links_disabled = !FrEnd.links_disabled;
-			}
-		});
-		panel_links_disabled.add(this.checkbox_links_disabled);
 
 		final Panel panel_bias = new Panel();
 		panel_bias.setLayout(new BorderLayout(0, 8));
@@ -364,7 +353,6 @@ public class PanelControlsUniverse {
 		this.panel.add(panel_node_growth);
 
 		this.panel.add(panel_collision_check);
-		this.panel.add(panel_links_disabled);
 		this.panel.add(panel_charge_switch);
 		this.panel.add(panel_muscles_switch);
 		this.panel.add(panel_muscles_amplitude);
@@ -486,8 +474,6 @@ public class PanelControlsUniverse {
 	 */
 	public void reflectUniverseToggles() {
 		setCheckboxSilently(this.checkbox_collision_check, FrEnd.check_collisions);
-		// The box reads "enable link forces": checked means not disabled.
-		setCheckboxSilently(this.checkbox_links_disabled, !FrEnd.links_disabled);
 		setCheckboxSilently(this.checkbox_continuously_centre, FrEnd.continuously_centre);
 		setCheckboxSilently(this.checkbox_node_growth, FrEnd.node_growth);
 		final NodeManager manager = ContextManager.getNodeManager();

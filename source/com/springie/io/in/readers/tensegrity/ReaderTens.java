@@ -325,10 +325,6 @@ public final class ReaderTens {
                     FrEnd.check_collisions = temp == 1;
                     break;
 
-                  case Instructions.LD:
-                    FrEnd.links_disabled = temp == 1;
-                    break;
-
                   case Instructions.CE:
                     FrEnd.continuously_centre = temp == 1;
                     break;

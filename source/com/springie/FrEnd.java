@@ -255,7 +255,6 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 	public static ChoiceWithDescription choose_preset_index;
 
-	public static boolean links_disabled;
 
 	public static boolean thread_terminated;
 

@@ -236,7 +236,6 @@ public final class Caterpillar2Judge {
     // Tim 2026-09-18: collision detection OFF for this experiment
     // (the usual no-collisions rule is back).
     com.springie.FrEnd.check_collisions = false;
-    com.springie.FrEnd.links_disabled = false;
     com.springie.FrEnd.continuously_centre = false;
     com.springie.FrEnd.node_growth = false;
     com.springie.FrEnd.boundaries = true;

@@ -222,7 +222,6 @@ public final class GrasshopperJudge {
     com.springie.elements.nodes.Node.max_speed = Integer.MAX_VALUE;
     com.springie.elements.nodes.Node.viscocity = 0;
     com.springie.FrEnd.three_d = true;
-    com.springie.FrEnd.links_disabled = false;
     com.springie.FrEnd.continuously_centre = false;
     com.springie.FrEnd.node_growth = false;
     com.springie.FrEnd.boundaries = true;

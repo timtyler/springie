@@ -133,7 +133,6 @@ class CrawlerDemoTest {
       Node.viscocity = 0;
       FrEnd.three_d = true;
       FrEnd.check_collisions = false;
-      FrEnd.links_disabled = false;
       FrEnd.continuously_centre = false;
       FrEnd.node_growth = false;
       FrEnd.boundaries = true;

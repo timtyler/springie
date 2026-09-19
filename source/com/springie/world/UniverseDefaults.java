@@ -45,7 +45,6 @@ public final class UniverseDefaults {
   private static boolean check_collisions = true;
 
   // Link forces (false means enabled).
-  private static boolean links_disabled = false;
 
   // Charge.
   private static boolean charge_active = true;
@@ -78,7 +77,6 @@ public final class UniverseDefaults {
     global_temperature = 6;
     viscocity = 0;
     check_collisions = true;
-    links_disabled = false;
     charge_active = true;
     muscles_enabled = false;
     active_oscillator = 0;
@@ -103,7 +101,6 @@ public final class UniverseDefaults {
     global_temperature = World.global_temperature;
     viscocity = Node.viscocity;
     check_collisions = FrEnd.check_collisions;
-    links_disabled = FrEnd.links_disabled;
     charge_active = ContextManager.getNodeManager().electrostatic.charge_active;
     muscles_enabled = Muscles.enabled;
     active_oscillator = Muscles.active_oscillator;
@@ -130,7 +127,6 @@ public final class UniverseDefaults {
     World.global_temperature = global_temperature;
     Node.viscocity = viscocity;
     FrEnd.check_collisions = check_collisions;
-    FrEnd.links_disabled = links_disabled;
     ContextManager.getNodeManager().electrostatic.charge_active = charge_active;
     Muscles.enabled = muscles_enabled;
     Muscles.active_oscillator = active_oscillator;

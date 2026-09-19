@@ -43,7 +43,6 @@ class UniverseResetTest {
         Node.viscocity = 42;
         FrEnd.three_d = false;
         FrEnd.check_collisions = false;
-        FrEnd.links_disabled = true;
         FrEnd.continuously_centre = true;
         FrEnd.node_growth = true;
         ContextManager.getNodeManager().electrostatic.charge_active = false;
@@ -57,7 +56,6 @@ class UniverseResetTest {
         assertEquals(0, Node.viscocity);
         assertTrue(FrEnd.three_d);
         assertTrue(FrEnd.check_collisions);
-        assertFalse(FrEnd.links_disabled);
         assertFalse(FrEnd.continuously_centre);
         assertFalse(FrEnd.node_growth);
         assertTrue(
@@ -77,9 +75,6 @@ class UniverseResetTest {
         assertTrue(panel.checkbox_charge_switch.getState(), "charge switch");
         assertTrue(panel.checkbox_collision_check.getState(),
             "collision check");
-        // The links-disabled checkbox is inverted: checked means enabled.
-        assertTrue(panel.checkbox_links_disabled.getState(),
-            "links disabled checkbox");
         assertFalse(panel.checkbox_continuously_centre.getState(),
             "continuously centre");
         assertFalse(panel.checkbox_node_growth.getState(), "node growth");
@@ -162,7 +157,6 @@ class UniverseResetTest {
 
         // What loading Moscow does: the file disagrees with the UI.
         FrEnd.check_collisions = false;
-        FrEnd.links_disabled = true;
         FrEnd.continuously_centre = true;
         FrEnd.node_growth = true;
         ContextManager.getNodeManager().electrostatic.charge_active = false;
@@ -171,9 +165,6 @@ class UniverseResetTest {
 
         assertFalse(panel.checkbox_collision_check.getState(),
             "collision check");
-        // Inverted: checked means link forces enabled.
-        assertFalse(panel.checkbox_links_disabled.getState(),
-            "links disabled checkbox");
         assertTrue(panel.checkbox_continuously_centre.getState(),
             "continuously centre");
         assertTrue(panel.checkbox_node_growth.getState(), "node growth");
@@ -182,14 +173,12 @@ class UniverseResetTest {
 
         // The statics themselves are untouched: reflecting never toggles.
         assertFalse(FrEnd.check_collisions);
-        assertTrue(FrEnd.links_disabled);
         assertTrue(FrEnd.continuously_centre);
         assertTrue(FrEnd.node_growth);
         assertFalse(ContextManager.getNodeManager().electrostatic.charge_active);
       });
     } finally {
       FrEnd.check_collisions = true;
-      FrEnd.links_disabled = false;
       FrEnd.continuously_centre = false;
       FrEnd.node_growth = false;
       ContextManager.getNodeManager().electrostatic.charge_active = true;
