@@ -111,7 +111,7 @@ public final class RollingJudge {
     // set only a subset, so two consecutive score() calls could otherwise
     // diverge in a polluted suite.
     // NOTE: temperature is NOT pinned here -- WheelDemo.buildAt sets
-    // World.global_temperature = 0 (deterministic build; CaterpillarDemo
+    // World.global_temperature = 0 (deterministic build; Caterpillar2Demo
     // and SlinkyDemo do the same). Pinning 6 here would be dead code
     // because buildAt overrides it.
     World.gravity_active = true;

@@ -190,7 +190,7 @@ public final class WheelDemo {
     // Zero thermal jitter: the reflex drive is a delicate self-synchronizing
     // mechanism, and thermal kicks knock it off rhythm into chaotic
     // tip/veer modes (with temperature=6 the same build gives wildly
-    // different results per RNG seed). CaterpillarDemo and SlinkyDemo
+    // different results per RNG seed). Caterpillar2Demo and SlinkyDemo
     // already build with temperature 0 for the same reason; the judge and
     // the UI both go through buildAt, so both see the deterministic build.
     World.global_temperature = 0;

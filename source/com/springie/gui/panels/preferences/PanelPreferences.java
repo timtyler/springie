@@ -44,13 +44,16 @@ public class PanelPreferences {
     final TabbedPanel tab = new TabbedPanel();
     tab.add("Display", FrEnd.panel_preferences_display.panel);
     tab.add("Viewpoint", FrEnd.panel_preferences_viewpoint.panel);
-    // Three top-level tabs only; everything else lives under Misc.
+    // I/O options get their own top-level tab after Viewpoint.
+    final TabbedPanel tab_io = new TabbedPanel();
+    tab_io.add("Import", FrEnd.panel_preferences_import.panel);
+    tab_io.add("POV-Ray export",
+        FrEnd.panel_preferences_pov_export.panel);
+    tab.add("I/O", tab_io);
+    // Everything else lives under Misc.
     final TabbedPanel tab_misc = new TabbedPanel();
     tab_misc.add("Editing", FrEnd.panel_preferences_edit.panel);
     tab_misc.add("Animation", FrEnd.panel_preferences_update.panel);
-    tab_misc.add("Import", FrEnd.panel_preferences_import.panel);
-    tab_misc.add("POV-Ray export",
-        FrEnd.panel_preferences_pov_export.panel);
     tab.add("Misc", tab_misc);
 
     this.panel.setLayout(new BorderLayout());

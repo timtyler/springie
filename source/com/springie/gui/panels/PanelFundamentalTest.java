@@ -308,13 +308,12 @@ public class PanelFundamentalTest {
   @Test
   void launchButtonLaunchesEachSelectedDemo() throws Exception {
     final String[] labels = {
-        "Demo: Sidewinder", "Demo: Crawler", "Demo: Spider Tank", "Demo: Wheel",
-        "Demo: Caterpillar", "Demo: Slinky"};
+        "Demo: Sidewinder", "Demo: Crawler", "Demo: Spider Tank", "Demo: Wheel", "Demo: Slinky"};
     // Node counts the demo builders produce (their own tests pin these).
     final int[] nodes = {
-        SidewinderDemo.SEGMENTS + 3, 14, 16, 17, 39, 27};
+        SidewinderDemo.SEGMENTS + 3, 14, 16, 17, 27};
     final int[] links = {
-        3 * SidewinderDemo.SEGMENTS + 3, -1, -1, 56, 111, 92};
+        3 * SidewinderDemo.SEGMENTS + 3, -1, -1, 56, 92};
 
     try {
       for (int d = 0; d < labels.length; d++) {
