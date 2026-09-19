@@ -21,7 +21,6 @@ public interface GUIStrings {
 
   String PAUSE = "Paused";
 
-  String NODE_GROWTH = "Node growth";
 
   String CONTINUOUSLY_CENTRE = "Continuously centre";
 

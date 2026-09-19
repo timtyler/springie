@@ -239,7 +239,6 @@ public final class Caterpillar3Judge {
     // (the usual no-collisions rule is back).
     com.springie.FrEnd.check_collisions = false;
     com.springie.FrEnd.continuously_centre = false;
-    com.springie.FrEnd.node_growth = false;
     com.springie.FrEnd.boundaries = true;
     com.springie.FrEnd.explosions = true;
     com.springie.FrEnd.oscd = true;

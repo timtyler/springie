@@ -91,7 +91,6 @@ public class WriterSpr {
 		uni.add(new XMLWriterAttribute("viscosity", "" + Node.viscocity));
 		uni.add(new XMLWriterAttribute("collision_check", "" + FrEnd.check_collisions));
 		uni.add(new XMLWriterAttribute("continuously_centre", "" + FrEnd.continuously_centre));
-		uni.add(new XMLWriterAttribute("node_growth", "" + FrEnd.node_growth));
 		uni.add(new XMLWriterAttribute("speed_limit", "" + Node.max_speed));
 		uni.add(new XMLWriterAttribute("excite", "" + World.minimum_magnitude));
 

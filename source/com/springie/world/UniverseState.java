@@ -25,7 +25,6 @@ public final class UniverseState {
   public boolean three_d;
   public boolean check_collisions;
   public boolean continuously_centre;
-  public boolean node_growth;
 
   public boolean charge_active;
 
@@ -52,7 +51,6 @@ public final class UniverseState {
     state.three_d = FrEnd.three_d;
     state.check_collisions = FrEnd.check_collisions;
     state.continuously_centre = FrEnd.continuously_centre;
-    state.node_growth = FrEnd.node_growth;
 
     final ElectrostaticRepulsion electrostatic = manager != null
         ? manager.electrostatic : null;
@@ -78,7 +76,6 @@ public final class UniverseState {
     FrEnd.three_d = this.three_d;
     FrEnd.check_collisions = this.check_collisions;
     FrEnd.continuously_centre = this.continuously_centre;
-    FrEnd.node_growth = this.node_growth;
 
     if (manager != null) {
       manager.electrostatic.charge_active = this.charge_active;

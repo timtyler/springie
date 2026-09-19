@@ -21,7 +21,6 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.GUIStrings;
 import com.springie.messages.NewMessageManager;
-import com.springie.messages.commands.NodeGrowthMessage;
 import com.springie.messages.commands.ContinuouslyCentreMessage;
 import com.springie.muscles.Muscles;
 import com.springie.render.RendererDelegator;
@@ -38,8 +37,6 @@ public class PanelControlsUniverse {
 	public Checkbox checkbox_gravity_switch;
 
 	public Checkbox checkbox_charge_switch;
-
-	public Checkbox checkbox_node_growth;
 
 	public Checkbox checkbox_continuously_centre;
 
@@ -114,16 +111,6 @@ public class PanelControlsUniverse {
 		});
 
 		panel3D.add(this.checkbox_3D);
-
-		final Panel panel_node_growth = new Panel();
-		this.checkbox_node_growth = new Checkbox(GUIStrings.NODE_GROWTH);
-		this.checkbox_node_growth.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				Forget.about(e);
-				getNewMessageManager().add(new NodeGrowthMessage());
-			}
-		});
-		panel_node_growth.add(this.checkbox_node_growth);
 
 		// START GRAVITY
 		final Panel panel_gravity = new Panel();
@@ -350,8 +337,6 @@ public class PanelControlsUniverse {
 		this.panel.add(panel_gravity);
 
 		this.panel.add(panel_continuously_centre);
-		this.panel.add(panel_node_growth);
-
 		this.panel.add(panel_collision_check);
 		this.panel.add(panel_charge_switch);
 		this.panel.add(panel_muscles_switch);
@@ -475,7 +460,6 @@ public class PanelControlsUniverse {
 	public void reflectUniverseToggles() {
 		setCheckboxSilently(this.checkbox_collision_check, FrEnd.check_collisions);
 		setCheckboxSilently(this.checkbox_continuously_centre, FrEnd.continuously_centre);
-		setCheckboxSilently(this.checkbox_node_growth, FrEnd.node_growth);
 		final NodeManager manager = ContextManager.getNodeManager();
 		setCheckboxSilently(this.checkbox_charge_switch,
 				manager != null && manager.electrostatic.charge_active);
@@ -555,9 +539,5 @@ public class PanelControlsUniverse {
 
 	public Checkbox getCheckboxGravitySwitch() {
 		return this.checkbox_gravity_switch;
-	}
-
-	public Checkbox getCheckboxNodeGrowth() {
-		return this.checkbox_node_growth;
 	}
 }

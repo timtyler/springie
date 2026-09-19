@@ -58,13 +58,11 @@ class UniverseResetMessageTest {
       // Scramble the toggle checkboxes with real clicks.
       final PanelControlsUniverse panel = FrEnd.panel_universe;
       clickCheckbox(panel.checkbox_continuously_centre, ItemEvent.SELECTED);
-      clickCheckbox(panel.checkbox_node_growth, ItemEvent.SELECTED);
       clickCheckbox(panel.checkbox_collision_check, ItemEvent.DESELECTED);
 
       // Let the queued toggles take effect, then drain.
       FrEnd.new_message_manager.process();
       assertTrue(FrEnd.continuously_centre);
-      assertTrue(FrEnd.node_growth);
       assertFalse(FrEnd.check_collisions);
       drainMessageQueue();
 
@@ -76,7 +74,6 @@ class UniverseResetMessageTest {
 
       FrEnd.new_message_manager.process();
       assertFalse(FrEnd.continuously_centre);
-      assertFalse(FrEnd.node_growth);
       assertTrue(FrEnd.check_collisions);
     });
   }

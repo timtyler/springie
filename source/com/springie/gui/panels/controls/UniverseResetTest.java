@@ -44,7 +44,6 @@ class UniverseResetTest {
         FrEnd.three_d = false;
         FrEnd.check_collisions = false;
         FrEnd.continuously_centre = true;
-        FrEnd.node_growth = true;
         ContextManager.getNodeManager().electrostatic.charge_active = false;
 
         panel.resetUniverse();
@@ -57,7 +56,6 @@ class UniverseResetTest {
         assertTrue(FrEnd.three_d);
         assertTrue(FrEnd.check_collisions);
         assertFalse(FrEnd.continuously_centre);
-        assertFalse(FrEnd.node_growth);
         assertTrue(
             ContextManager.getNodeManager().electrostatic.charge_active);
 
@@ -77,7 +75,6 @@ class UniverseResetTest {
             "collision check");
         assertFalse(panel.checkbox_continuously_centre.getState(),
             "continuously centre");
-        assertFalse(panel.checkbox_node_growth.getState(), "node growth");
       });
     } finally {
       GuiTestSupport.disposeFrames();
@@ -158,7 +155,6 @@ class UniverseResetTest {
         // What loading Moscow does: the file disagrees with the UI.
         FrEnd.check_collisions = false;
         FrEnd.continuously_centre = true;
-        FrEnd.node_growth = true;
         ContextManager.getNodeManager().electrostatic.charge_active = false;
 
         panel.reflectUniverseToggles();
@@ -167,20 +163,17 @@ class UniverseResetTest {
             "collision check");
         assertTrue(panel.checkbox_continuously_centre.getState(),
             "continuously centre");
-        assertTrue(panel.checkbox_node_growth.getState(), "node growth");
         assertFalse(panel.checkbox_charge_switch.getState(),
             "charge switch");
 
         // The statics themselves are untouched: reflecting never toggles.
         assertFalse(FrEnd.check_collisions);
         assertTrue(FrEnd.continuously_centre);
-        assertTrue(FrEnd.node_growth);
         assertFalse(ContextManager.getNodeManager().electrostatic.charge_active);
       });
     } finally {
       FrEnd.check_collisions = true;
       FrEnd.continuously_centre = false;
-      FrEnd.node_growth = false;
       ContextManager.getNodeManager().electrostatic.charge_active = true;
       GuiTestSupport.disposeFrames();
     }

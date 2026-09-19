@@ -134,7 +134,6 @@ class CrawlerDemoTest {
       FrEnd.three_d = true;
       FrEnd.check_collisions = false;
       FrEnd.continuously_centre = false;
-      FrEnd.node_growth = false;
       FrEnd.boundaries = true;
       FrEnd.explosions = false;
       FrEnd.oscd = true;

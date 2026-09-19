@@ -329,10 +329,6 @@ public final class ReaderTens {
                     FrEnd.continuously_centre = temp == 1;
                     break;
 
-                  case Instructions.NW:
-                    FrEnd.node_growth = temp == 1;
-                    break;
-
                   case Instructions.SL:
                     Node.max_speed = temp;
                     break;

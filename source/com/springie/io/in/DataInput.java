@@ -101,7 +101,6 @@ public class DataInput {
     FrEnd.three_d = true;
     FrEnd.check_collisions = true;
     FrEnd.continuously_centre = false;
-    FrEnd.node_growth = false;
     Muscles.enabled = false;
     Muscles.activeOscillator().setAmplitude(85 * Muscles.UNITY / 100);
     Muscles.activeOscillator().setPeriodTicks(12);

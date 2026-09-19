@@ -146,7 +146,6 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 	public static String model_index = "resource://" + index_subdirectory + "/index.xml";
 
-	public static boolean node_growth;
 
 	public static boolean continuously_centre;
 

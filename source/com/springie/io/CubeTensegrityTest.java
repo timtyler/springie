@@ -101,7 +101,6 @@ class CubeTensegrityTest {
     FrEnd.three_d = true;
     FrEnd.check_collisions = true;
     FrEnd.continuously_centre = false;
-    FrEnd.node_growth = false;
     FrEnd.boundaries = true;
     FrEnd.explosions = true;
     FrEnd.oscd = true;

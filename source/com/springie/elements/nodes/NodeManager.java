@@ -389,16 +389,6 @@ public class NodeManager extends World {
 	}
 
 	final void agentExpansion() {
-		final int number = this.node_type_factory.array.size();
-		if (FrEnd.node_growth) {
-			for (int temp = 0; temp < number; temp++) {
-				final NodeType type = (NodeType) this.node_type_factory.array.get(temp);
-				if (type.radius < NodeManager.max_poss_dyn_size) {
-					type.setSize(type.radius + 6);
-				}
-			}
-		}
-
 		if (FrEnd.continuously_centre) {
 			CentreOnScreen.moveTowardsCentre(this);
 			DampOverallVelocities.damp(this);
@@ -708,7 +698,6 @@ public class NodeManager extends World {
 									temp2_agent.velocity.y -= tady >> 9;
 									temp2_agent.velocity.z -= tadz >> 9;
 								}
-								shrinkNodesOnCollision();
 								spreadInfectionOnCollisions();
 							}
 						}
@@ -746,17 +735,6 @@ public class NodeManager extends World {
 		if (counter1 > PerformSelection.IMMUNITY_START) {
 			if (counter2 == 0) {
 				uninfectedNode.type.counter = PerformSelection.INFECTION_START;
-			}
-		}
-	}
-
-	private void shrinkNodesOnCollision() {
-		if (FrEnd.node_growth) {
-			if (temp_agent.type.radius > NodeManager.min_poss_dyn_size) {
-				temp_agent.type.setSize(temp_agent.type.radius - 10);
-			}
-			if (temp2_agent.type.radius > NodeManager.min_poss_dyn_size) {
-				temp2_agent.type.setSize(temp2_agent.type.radius - 10);
 			}
 		}
 	}

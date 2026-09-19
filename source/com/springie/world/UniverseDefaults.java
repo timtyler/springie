@@ -58,7 +58,6 @@ public final class UniverseDefaults {
 
   // Continuously centre and node growth.
   private static boolean continuously_centre = false;
-  private static boolean node_growth = false;
 
   // Development-only: speed limit and minimum excitation magnitude.
   private static int max_speed = Integer.MAX_VALUE;
@@ -84,7 +83,6 @@ public final class UniverseDefaults {
     muscle_period_ticks = 12;
     muscle_phase = 0;
     continuously_centre = false;
-    node_growth = false;
     max_speed = Integer.MAX_VALUE;
     minimum_magnitude = 0;
   }
@@ -108,7 +106,6 @@ public final class UniverseDefaults {
     muscle_period_ticks = Muscles.activeOscillator().getPeriodTicks();
     muscle_phase = Muscles.activeOscillator().getPhase();
     continuously_centre = FrEnd.continuously_centre;
-    node_growth = FrEnd.node_growth;
     if (FrEnd.development_version) {
       max_speed = Node.max_speed;
       minimum_magnitude = World.minimum_magnitude;
@@ -134,7 +131,6 @@ public final class UniverseDefaults {
     Muscles.activeOscillator().setPeriodTicks(muscle_period_ticks);
     Muscles.activeOscillator().setPhase(muscle_phase);
     FrEnd.continuously_centre = continuously_centre;
-    FrEnd.node_growth = node_growth;
     if (FrEnd.development_version) {
       Node.max_speed = max_speed;
       World.minimum_magnitude = minimum_magnitude;

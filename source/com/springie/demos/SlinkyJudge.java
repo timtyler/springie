@@ -267,7 +267,6 @@ public final class SlinkyJudge {
     com.springie.FrEnd.three_d = true;
     com.springie.FrEnd.check_collisions = false; // Tim 2026-09-16: no node-node collisions as a crutch -- structure alone.
     com.springie.FrEnd.continuously_centre = false;
-    com.springie.FrEnd.node_growth = false;
     com.springie.FrEnd.boundaries = true;
     com.springie.FrEnd.explosions = true;
     com.springie.FrEnd.oscd = true;
