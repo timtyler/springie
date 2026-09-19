@@ -160,8 +160,7 @@ public class PanelControlsUniverse {
 		this.label_friction = new Label("" + World.ground_friction, Label.LEFT);
 		panel_friction.add("East", this.label_friction);
 
-		this.panel.add(panel_friction);
-		// END FRICTION
+		// END FRICTION (added below, under gravity)
 
 		// START TEMPERATURE
 		final Panel panel_temperature = new Panel();
@@ -335,13 +334,15 @@ public class PanelControlsUniverse {
 		this.panel.add(panel_viscocity);
 		this.panel.add(panel_temperature);
 		this.panel.add(panel_gravity);
+		this.panel.add(panel_friction);
+
+		this.panel.add(panel_muscles_switch);
+		this.panel.add(panel_muscles_amplitude);
+		this.panel.add(panel_muscles_period);
 
 		this.panel.add(panel_continuously_centre);
 		this.panel.add(panel_collision_check);
 		this.panel.add(panel_charge_switch);
-		this.panel.add(panel_muscles_switch);
-		this.panel.add(panel_muscles_amplitude);
-		this.panel.add(panel_muscles_period);
 
 		if (FrEnd.development_version) {
 			this.panel.add(panel_bias); // bias...
