@@ -39,11 +39,12 @@ public class RendererDragBox {
       if (drag_box_manager.drag_box_start != null) {
         cacheDragBoxCoordinates(drag_box_manager);
 
-        // No erase step: every frame painted during a drag is a full
-        // repaint (the bins are forced dirty, the ray-traced frame is
-        // re-blitted whole), which already covers the previous
-        // rectangle. Erasing with the background colour here just
-        // blinked the rectangle off and on again every paint.
+        // No erase step: every frame painted during a drag repaints the
+        // damaged region (the bins are forced dirty, the ray-traced
+        // frame includes the box's old and new rectangles in its dirty
+        // rectangles), which already covers the previous rectangle.
+        // Erasing with the background colour here just blinked the
+        // rectangle off and on again every paint.
         g.setColor(RendererDelegator.colour_selected);
         drawTheCurrentDragBox(g);
       } else {

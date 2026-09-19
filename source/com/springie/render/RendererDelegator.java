@@ -127,8 +127,8 @@ public final class RendererDelegator {
   public static int fill_light = 50;
 
   /**
-   * Anti-aliasing supersampling factor (1 to 4): 1x1 is off, 2x2, 3x3
-   * and 4x4 render that many sub-samples per pixel and average them
+   * Anti-aliasing supersampling factor (1 to 5): 1x1 is off, 2x2, 3x3,
+   * 4x4 and 5x5 render that many sub-samples per pixel and average them
    * with a box filter. Affects the modern tiled renderer (tiles are
    * rendered at n-times resolution and downsampled on blit) and the
    * ray-traced renderer (n-by-n sub-pixel rays per pixel). 1 is the
@@ -137,8 +137,8 @@ public final class RendererDelegator {
   public static int antialiasing = 1;
 
   /**
-   * Pixellation factor (1 to 4): 1x1 is off, 2x2, 3x3 and 4x4 render one
-   * colour per n-by-n screen block and replicate it across the block,
+   * Pixellation factor (1 to 5): 1x1 is off, 2x2, 3x3, 4x4 and 5x5 render
+   * one colour per n-by-n screen block and replicate it across the block,
    * producing a blocky, pixellated display -- the opposite of
    * anti-aliasing. Affects the modern tiled renderer (tiles are rendered
    * at 1/n resolution and nearest-neighbour upsampled on blit) and the
@@ -302,9 +302,9 @@ public final class RendererDelegator {
     // While a drag box is active every frame is fully repainted, which
     // covers the previous rectangle. (The drag box itself is only ever
     // drawn -- never erased -- so there is nothing to repair.) The modern
-    // renderer forces the damaged bins dirty and the ray tracer re-blits
-    // the whole frame; the old polygon renderer gets a full
-    // clear-and-redraw (see below).
+    // renderer forces the damaged bins dirty and the ray tracer includes
+    // the damaged region in its dirty rectangles; the old polygon
+    // renderer gets a full clear-and-redraw (see below).
     final RendererDragBox drag_box_renderer = ContextManager.getNodeManager().renderer.renderer_drag_box;
     drag_box_renderer.draw(graphics, FrEnd.perform_actions.drag_box_manager);
 

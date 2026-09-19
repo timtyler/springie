@@ -174,6 +174,7 @@ public class PanelPreferencesDisplay {
     this.choose_antialiasing.add("2x2", 2);
     this.choose_antialiasing.add("3x3", 3);
     this.choose_antialiasing.add("4x4", 4);
+    this.choose_antialiasing.add("5x5", 5);
     this.choose_antialiasing.choice
         .select(this.choose_antialiasing.num_to_str(1));
     panel.add(this.choose_antialiasing.choice);
@@ -200,6 +201,7 @@ public class PanelPreferencesDisplay {
     this.choose_pixellation.add("2x2", 2);
     this.choose_pixellation.add("3x3", 3);
     this.choose_pixellation.add("4x4", 4);
+    this.choose_pixellation.add("5x5", 5);
     this.choose_pixellation.choice
         .select(this.choose_pixellation.num_to_str(1));
     panel.add(this.choose_pixellation.choice);

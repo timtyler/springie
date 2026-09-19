@@ -23,7 +23,7 @@ import com.springie.gui.GuiTestSupport;
 import com.springie.render.RendererDelegator;
 
 /**
- * The Pixellated dropdown (1x1 to 4x4 blocky display) sits in the shared
+ * The Pixellated dropdown (1x1 to 5x5 blocky display) sits in the shared
  * Renderer tab next to Anti-aliasing. Selections are driven by
  * dispatching a synthetic ItemEvent to the AWT Choice's listeners, which
  * exercises the real listener path (Choice.select() alone fires no
@@ -97,13 +97,14 @@ class PixellationDropdownTest {
   }
 
   @Test
-  void offersOneToFour() throws Exception {
+  void offersOneToFive() throws Exception {
     final Choice choice = pixellationChoice();
-    assertEquals(4, choice.getItemCount());
+    assertEquals(5, choice.getItemCount());
     assertEquals("1x1", choice.getItem(0));
     assertEquals("2x2", choice.getItem(1));
     assertEquals("3x3", choice.getItem(2));
     assertEquals("4x4", choice.getItem(3));
+    assertEquals("5x5", choice.getItem(4));
   }
 
   @Test
