@@ -23,6 +23,12 @@ import com.springie.FrEnd;
  * outline appears to sparkle on all over rather than tracing the edges in
  * turn, and it is the same every run.
  *
+ * <p>For renderers that blit a whole persistent frame every paint (the
+ * ray-traced one), dots must be plotted into that frame rather than the
+ * transient screen graphics: {@link #redrawDots} re-applies every dot
+ * plotted so far after the frame is recomposited, so the outline
+ * survives frame updates instead of being wiped by each blit.
+ *
  * <p>Off by default; see FrEnd.show_boundary_box.
  */
 public final class BoundaryBoxDots {
@@ -48,6 +54,13 @@ public final class BoundaryBoxDots {
 
   private static int next_dot;
 
+  /**
+   * How many dots have been plotted since the last reset, saturating at
+   * DOT_COUNT: the plotted set is then the whole outline. Used by
+   * {@link #redrawDots} to re-apply the outline after a frame wipe.
+   */
+  private static int dots_drawn;
+
   private BoundaryBoxDots() {
   }
 
@@ -62,6 +75,36 @@ public final class BoundaryBoxDots {
     rebuildIfResized();
     final int i = next_dot;
     next_dot = (next_dot + 1) % DOT_COUNT;
+    if (dots_drawn < DOT_COUNT) {
+      dots_drawn++;
+    }
+    plotDot(g, i);
+  }
+
+  /**
+   * Re-plots every dot plotted so far (since the last reset), for a
+   * frame that was recomposited from bare tiles and lost its baked-in
+   * dots. A no-op unless FrEnd.show_boundary_box is on.
+   */
+  public static void redrawDots(Graphics g) {
+    if (!FrEnd.show_boundary_box) {
+      return;
+    }
+    rebuildIfResized();
+    for (int i = 0; i < dots_drawn; i++) {
+      plotDot(g, i);
+    }
+  }
+
+  /**
+   * Forgets every plotted dot: the next plots start a fresh outline.
+   */
+  public static void resetDots() {
+    next_dot = 0;
+    dots_drawn = 0;
+  }
+
+  private static void plotDot(Graphics g, int i) {
     final int sx = Coords.getXCoords(xs[i], zs[i]);
     final int sy = Coords.getYCoords(ys[i], zs[i]);
     g.setColor(Color.white);
@@ -83,6 +126,10 @@ public final class BoundaryBoxDots {
     cached_x_pixels = Coords.x_pixels;
     cached_y_pixels = Coords.y_pixels;
     cached_z_pixels = Coords.z_pixels;
+
+    // The box moved: previously plotted dots are stale.
+    next_dot = 0;
+    dots_drawn = 0;
 
     final int x0 = 0;
     final int y0 = 0;

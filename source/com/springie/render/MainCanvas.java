@@ -352,7 +352,15 @@ public class MainCanvas {
       }
     }
 
-    BoundaryBoxDots.drawOneDot(g);
+    // The ray-traced renderer plots the dots into its persistent frame
+    // (see ModularRendererRaytraced): plotting them on the screen too
+    // would double-draw, and each whole-canvas blit would wipe them.
+    final boolean raytraced = RendererDelegator.renderer
+        instanceof com.springie.render.modules.raytraced
+            .ModularRendererRaytraced;
+    if (!raytraced) {
+      BoundaryBoxDots.drawOneDot(g);
+    }
 
     this.info_button.drawInfoButton(g);
   }

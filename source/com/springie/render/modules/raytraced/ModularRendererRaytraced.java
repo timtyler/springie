@@ -12,10 +12,12 @@ import java.util.concurrent.ThreadFactory;
 
 import com.springie.FrEnd;
 import com.springie.elements.faces.Face;
+import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
+import com.springie.render.BoundaryBoxDots;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.render.ScenicBackground;
@@ -39,6 +41,11 @@ import com.springie.render.modules.modern.RendererBinManager;
  * <p>A frame renders a snapshot of the model: while a frame is in progress
  * repaints keep displaying the last complete frame, and a new frame
  * starts once the previous one completes and the scene (or view) changed.
+ * Only the tiles whose content changed re-render -- each tile's change
+ * signature mixes the global visual state with just the elements whose
+ * projected bounds touch that tile -- so the whole canvas is re-traced
+ * only when something global (the view, the background, the shadows
+ * flag) changed.
  */
 public class ModularRendererRaytraced implements ModularRendererBase {
   private static final ExecutorService POOL = Executors.newFixedThreadPool(
@@ -109,7 +116,17 @@ public class ModularRendererRaytraced implements ModularRendererBase {
 
   private volatile long frame_id;
 
-  private volatile long frame_signature = -1L;
+  // One signature per tile, from the last frame that was started: the
+  // global visual state mixed with the screen-space hashes of just the
+  // elements whose projected bounds touch that tile. A tile re-renders
+  // only when its signature changed, so an animating model re-traces
+  // the tiles holding moving geometry instead of the whole canvas.
+  // Null until the first frame is started.
+  private long[] tile_signatures;
+
+  // Effective tile columns per row (degenerate zero-area bins dropped),
+  // for mapping a screen rectangle to tile indexes.
+  private int tile_nx;
 
   private volatile boolean frame_done = true;
 
@@ -123,6 +140,10 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   // Set by the worker that publishes a frame; the next repaint
   // re-composites frame_image and clears it.
   private volatile boolean frame_staged;
+
+  // Tracks FrEnd.show_boundary_box: toggling the box off must drop the
+  // dots baked into the persistent frame with a fresh composite.
+  private boolean last_show_boundary_box;
 
   public void resize(int x, int y) {
     this.tiles = null;
@@ -155,9 +176,11 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       buildTiles(width, height, show_bins);
     }
 
-    final long signature = signature(manager);
-    if (this.frame_done && signature != this.frame_signature) {
-      startFrame(manager, signature);
+    if (this.frame_done) {
+      final boolean[] dirty = findDirtyTiles(manager);
+      if (dirty != null) {
+        startFrame(manager, dirty);
+      }
     }
 
     // Blit the composed frame in a single drawImage: the screen never
@@ -168,9 +191,38 @@ public class ModularRendererRaytraced implements ModularRendererBase {
           new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
       this.frame_staged = true;
     }
+    if (FrEnd.show_boundary_box != this.last_show_boundary_box) {
+      this.last_show_boundary_box = FrEnd.show_boundary_box;
+      if (!FrEnd.show_boundary_box) {
+        // Toggled off: the dots baked into the frame must go, and the
+        // dot count restarts for the next toggle-on.
+        BoundaryBoxDots.resetDots();
+        this.frame_staged = true;
+      }
+    }
     if (this.frame_staged) {
       this.frame_image = compositeFrame(this.tiles, width, height);
       this.frame_staged = false;
+      // The fresh composite starts dot-free: re-apply every dot plotted
+      // so far, so the outline survives frame updates instead of being
+      // wiped by each whole-canvas blit. A no-op when the box is off.
+      final Graphics frame_g = this.frame_image.getGraphics();
+      try {
+        BoundaryBoxDots.redrawDots(frame_g);
+      } finally {
+        frame_g.dispose();
+      }
+    }
+    if (FrEnd.show_boundary_box) {
+      // The dots live in the persistent frame, not on the screen
+      // graphics: a whole-canvas blit every frame would wipe the
+      // outline faster than one-dot-per-frame can build it.
+      final Graphics frame_g = this.frame_image.getGraphics();
+      try {
+        BoundaryBoxDots.drawOneDot(frame_g);
+      } finally {
+        frame_g.dispose();
+      }
     }
     graphics.drawImage(this.frame_image, 0, 0, null);
 
@@ -267,21 +319,29 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     return result;
   }
 
-  private void buildTiles(int width, int height, boolean show_bins) {
+  void buildTiles(int width, int height, boolean show_bins) {
     this.tiles = buildTileGrid(width, height);
     this.canvas_width = width;
     this.canvas_height = height;
     this.last_show_bins = show_bins;
     this.frame_done = true;
-    this.frame_signature = -1L;
+    this.tile_signatures = null;
+    final int divisor = RendererBinManager.divisor;
+    this.tile_nx = (width + divisor - 1) / divisor;
     this.frame_image = null;
     this.frame_staged = false;
   }
 
-  private void startFrame(NodeManager manager, long signature) {
+  /**
+   * Starts a frame, re-rendering only the dirty tiles. Clean tiles keep
+   * the snapshot they published last frame: their pixels cannot have
+   * changed, so re-tracing them would be pure waste. The last dirty
+   * tile to finish publishes the frame, mixing fresh and retained
+   * snapshots, exactly like a full frame.
+   */
+  private void startFrame(NodeManager manager, boolean[] dirty) {
     final long id = ++this.frame_id;
     this.frame_done = false;
-    this.frame_signature = signature;
 
     final RayCamera camera = new RayCamera();
     final Primitive[] primitives = RayScene.build(manager);
@@ -291,6 +351,12 @@ public class ModularRendererRaytraced implements ModularRendererBase {
 
     final Tile[] tiles = this.tiles;
     for (int i = 0; i < tiles.length; i++) {
+      if (!dirty[i]) {
+        // Unchanged tile: keeps its published snapshot (and its done
+        // flag, still true from the frame that rendered it), so the
+        // "every tile done" check below only waits on dirty tiles.
+        continue;
+      }
       final Tile tile = tiles[i];
       tile.done = false;
       POOL.execute(new Runnable() {
@@ -375,10 +441,259 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   }
 
   /**
-   * Cheap change detector: view parameters, render flags and a hash over
-   * the elements. Decides when a new frame must start.
+   * Which tiles must re-render this frame, or null when nothing changed.
+   * Each tile's signature mixes the global visual state with the hashes
+   * of just the elements whose projected bounds touch that tile, so a
+   * moving node dirties only its own tiles instead of the whole canvas.
+   *
+   * <p>With shadows on, any element change dirties every tile: a moved
+   * element can throw its shadow into a tile it never touches. A fully
+   * static scene still renders nothing -- no change, no dirty tiles.
    */
-  private static long signature(NodeManager manager) {
+  boolean[] findDirtyTiles(NodeManager manager) {
+    final Tile[] tiles = this.tiles;
+    final long[] sigs = computeTileSignatures(manager);
+    final long[] last = this.tile_signatures;
+    final boolean[] dirty = new boolean[tiles.length];
+    boolean any = false;
+    if (sigs == null || last == null || last.length != sigs.length) {
+      // Degenerate projection, or no previous frame: be conservative.
+      for (int i = 0; i < dirty.length; i++) {
+        dirty[i] = true;
+      }
+      any = dirty.length > 0;
+    } else {
+      for (int i = 0; i < dirty.length; i++) {
+        dirty[i] = sigs[i] != last[i];
+        any |= dirty[i];
+      }
+      if (any && RendererDelegator.shadows) {
+        for (int i = 0; i < dirty.length; i++) {
+          dirty[i] = true;
+        }
+      }
+    }
+    if (!any) {
+      return null;
+    }
+    if (sigs != null) {
+      this.tile_signatures = sigs;
+    }
+    return dirty;
+  }
+
+  /**
+   * One signature per tile: the global visual state, mixed per tile with
+   * a hash of every rendered element whose screen-space bounds touch the
+   * tile. The element walk mirrors RayScene.build's filters exactly, so
+   * every pixel the frame can paint belongs to some hashed element's
+   * bounds. Returns null when an element's projection is degenerate
+   * (behind the camera); the caller then re-renders everything.
+   */
+  long[] computeTileSignatures(NodeManager manager) {
+    final Tile[] tiles = this.tiles;
+    final int divisor = RendererBinManager.divisor;
+    final int width = this.canvas_width;
+    final int height = this.canvas_height;
+    final int nx = this.tile_nx;
+    final long[] sigs = new long[tiles.length];
+    final long base = frameVisualSignature();
+    for (int i = 0; i < sigs.length; i++) {
+      sigs[i] = base;
+    }
+
+    if (FrEnd.render_nodes) {
+      final List<?> nodes = manager.element;
+      final int count = nodes.size();
+      for (int i = 0; i < count; i++) {
+        final Node node = (Node) nodes.get(i);
+        final double radius = node.type.radius;
+        if (radius <= 0.0) {
+          continue;
+        }
+        final int z = node.pos.z;
+        final int world_per_pixel =
+            Coords.shift_constant_z + (z >> Coords.shift_z);
+        if (world_per_pixel <= 0) {
+          return null;
+        }
+        final long sx = Coords.getXCoords(node.pos.x, z);
+        final long sy = Coords.getYCoords(node.pos.y, z);
+        long r = (long) Math.ceil(radius / world_per_pixel) + 2;
+        if (node.type.selected) {
+          // The billboard selection ring reaches 4/3 the node radius
+          // plus 8 pixels, exactly like RayScene.selectionRings.
+          final long ring =
+              (long) Math.ceil(radius * 4.0 / 3.0 / world_per_pixel) + 8 + 2;
+          if (ring > r) {
+            r = ring;
+          }
+        }
+        long h = 17L;
+        h = h * 31 + node.pos.x;
+        h = h * 31 + node.pos.y;
+        h = h * 31 + node.pos.z;
+        h = h * 31 + (node.type.selected ? 1 : 0);
+        h = h * 31 + node.clazz.colour;
+        mixIntoTiles(sigs, nx, divisor, width, height,
+            sx - r, sy - r, sx + r, sy + r, h);
+      }
+    }
+
+    if (FrEnd.render_links) {
+      final LinkManager link_manager = manager.getLinkManager();
+      final List<?> links = link_manager.element;
+      final int count = links.size();
+      for (int i = 0; i < count; i++) {
+        final Link link = (Link) links.get(i);
+        if (link.type.hidden) {
+          continue;
+        }
+        final double radius = link.type.radius;
+        if (radius <= 0.0) {
+          continue;
+        }
+        final Node[] ends = link.nodes;
+        if (ends.length == 0) {
+          continue;
+        }
+        long h = 17L;
+        h = h * 31 + (link.type.selected ? 1 : 0);
+        h = h * 31 + link.clazz.colour;
+        long x0 = Long.MAX_VALUE;
+        long y0 = Long.MAX_VALUE;
+        long x1 = Long.MIN_VALUE;
+        long y1 = Long.MIN_VALUE;
+        for (int s = 0; s < ends.length; s++) {
+          final Node node = ends[s];
+          h = h * 31 + node.pos.x;
+          h = h * 31 + node.pos.y;
+          h = h * 31 + node.pos.z;
+          final int z = node.pos.z;
+          final int world_per_pixel =
+              Coords.shift_constant_z + (z >> Coords.shift_z);
+          if (world_per_pixel <= 0) {
+            return null;
+          }
+          final long sx = Coords.getXCoords(node.pos.x, z);
+          final long sy = Coords.getYCoords(node.pos.y, z);
+          // Covers the cable cylinder and the strut's mid-span bulge,
+          // both of which stay within the link radius of the span.
+          final long r = (long) Math.ceil(radius / world_per_pixel) + 2;
+          if (sx - r < x0) {
+            x0 = sx - r;
+          }
+          if (sy - r < y0) {
+            y0 = sy - r;
+          }
+          if (sx + r > x1) {
+            x1 = sx + r;
+          }
+          if (sy + r > y1) {
+            y1 = sy + r;
+          }
+        }
+        mixIntoTiles(sigs, nx, divisor, width, height, x0, y0, x1, y1, h);
+      }
+    }
+
+    if (FrEnd.render_faces) {
+      final FaceManager face_manager = manager.getFaceManager();
+      final List<?> faces = face_manager.element;
+      final int count = faces.size();
+      for (int i = 0; i < count; i++) {
+        final Face face = (Face) faces.get(i);
+        final java.util.ArrayList<Node> nodes = face.nodes;
+        final int points = nodes.size();
+        if (points < 3) {
+          continue;
+        }
+        long h = 17L;
+        h = h * 31 + (face.type.selected ? 1 : 0);
+        h = h * 31 + face.clazz.colour;
+        long x0 = Long.MAX_VALUE;
+        long y0 = Long.MAX_VALUE;
+        long x1 = Long.MIN_VALUE;
+        long y1 = Long.MIN_VALUE;
+        for (int s = 0; s < points; s++) {
+          final Node node = nodes.get(s);
+          h = h * 31 + node.pos.x;
+          h = h * 31 + node.pos.y;
+          h = h * 31 + node.pos.z;
+          final int z = node.pos.z;
+          final int world_per_pixel =
+              Coords.shift_constant_z + (z >> Coords.shift_z);
+          if (world_per_pixel <= 0) {
+            return null;
+          }
+          final long sx = Coords.getXCoords(node.pos.x, z);
+          final long sy = Coords.getYCoords(node.pos.y, z);
+          if (sx - 2 < x0) {
+            x0 = sx - 2;
+          }
+          if (sy - 2 < y0) {
+            y0 = sy - 2;
+          }
+          if (sx + 2 > x1) {
+            x1 = sx + 2;
+          }
+          if (sy + 2 > y1) {
+            y1 = sy + 2;
+          }
+        }
+        mixIntoTiles(sigs, nx, divisor, width, height, x0, y0, x1, y1, h);
+      }
+    }
+
+    return sigs;
+  }
+
+  /**
+   * Mixes one element's hash into every tile its screen rectangle
+   * touches. Fully off-screen elements touch no tile and dirty nothing.
+   */
+  static void mixIntoTiles(long[] sigs, int nx, int divisor,
+      int width, int height, long x0, long y0, long x1, long y1, long h) {
+    if (x1 < 0 || y1 < 0 || x0 >= width || y0 >= height) {
+      return;
+    }
+    if (x0 < 0) {
+      x0 = 0;
+    }
+    if (y0 < 0) {
+      y0 = 0;
+    }
+    if (x1 >= width) {
+      x1 = width - 1;
+    }
+    if (y1 >= height) {
+      y1 = height - 1;
+    }
+    // Clamped to the canvas, every (tx, ty) in range names a real tile:
+    // only the trailing column/row past the canvas edge was dropped from
+    // the grid, and index = ty * tile_nx + tx packs rows tightly.
+    final int tx0 = (int) (x0 / divisor);
+    final int tx1 = (int) (x1 / divisor);
+    final int ty0 = (int) (y0 / divisor);
+    final int ty1 = (int) (y1 / divisor);
+    for (int ty = ty0; ty <= ty1; ty++) {
+      final int row = ty * nx;
+      for (int tx = tx0; tx <= tx1; tx++) {
+        final int idx = row + tx;
+        sigs[idx] = sigs[idx] * 31 + h;
+      }
+    }
+  }
+
+  /**
+   * The global visual state: view parameters, render flags and effect
+   * settings. Anything here changing dirties every tile at once, through
+   * the per-tile signatures this seeds. Deliberately excludes the
+   * animation generation counter: the ray-traced image is a pure
+   * function of the element state above, so a settled-but-unpaused
+   * model renders nothing instead of the whole canvas every frame.
+   */
+  private static long frameVisualSignature() {
     long sig = 17L;
     sig = sig * 31 + Coords.x_pixels;
     sig = sig * 31 + Coords.y_pixels;
@@ -404,38 +719,10 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     sig = sig * 31 + (RendererDelegator.fill_light_enabled ? 1 : 0);
     sig = sig * 31 + RendererDelegator.antialiasing;
     sig = sig * 31 + RendererDelegator.pixellation;
-    sig = sig * 31 + RendererDelegator.generation;
-
-    final List<?> nodes = manager.element;
-    final int node_count = nodes.size();
-    sig = sig * 31 + node_count;
-    for (int i = 0; i < node_count; i++) {
-      final Node node = (Node) nodes.get(i);
-      sig = sig * 31 + node.pos.x;
-      sig = sig * 31 + node.pos.y;
-      sig = sig * 31 + node.pos.z;
-      sig = sig * 31 + (node.type.selected ? 1 : 0);
-      sig = sig * 31 + node.clazz.colour;
-    }
-
-    final LinkManager link_manager = manager.getLinkManager();
-    final List<?> links = link_manager.element;
-    final int link_count = links.size();
-    sig = sig * 31 + link_count;
-    for (int i = 0; i < link_count; i++) {
-      final Link link = (Link) links.get(i);
-      sig = sig * 31 + (link.type.selected ? 1 : 0);
-      sig = sig * 31 + link.clazz.colour;
-    }
-
-    final List<?> faces = manager.getFaceManager().element;
-    final int face_count = faces.size();
-    sig = sig * 31 + face_count;
-    for (int i = 0; i < face_count; i++) {
-      final Face face = (Face) faces.get(i);
-      sig = sig * 31 + (face.type.selected ? 1 : 0);
-      sig = sig * 31 + face.clazz.colour;
-    }
+    // Read live per tile by the renderer: recolouring the background
+    // must dirty the tiles even though no element moved.
+    sig = sig * 31 + RendererDelegator.color_background_number;
+    sig = sig * 31 + (RendererDelegator.scenic_background ? 1 : 0);
 
     return sig;
   }
