@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
-import com.springie.demos.Caterpillar3Demo;
+import com.springie.demos.CaterpillarDemo;
 import com.springie.elements.nodes.Node;
 import com.springie.gui.GuiTestSupport;
 import com.springie.muscles.Muscles;
@@ -92,9 +92,9 @@ class UniverseResetTest {
       SwingUtilities.invokeAndWait(() -> {
         final PanelControlsUniverse panel = FrEnd.panel_universe;
 
-        // Load Caterpillar 3, which sets gravity 5/on, friction 50,
+        // Load Caterpillar, which sets gravity 5/on, friction 50,
         // charge off, collisions off, muscles on at 6%/120 ticks.
-        Caterpillar3Demo.buildAt(100);
+        CaterpillarDemo.buildAt(100);
         UniverseDefaults.snapshot();
 
         // Scramble everything the reset covers.

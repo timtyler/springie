@@ -34,10 +34,10 @@ import com.springie.world.World;
  * square (apex y above the base-centre y) for the whole run.</li>
  * </ol>
  *
- * <p>Usage: java com.springie.demos.Caterpillar3Judge [ticks]
+ * <p>Usage: java com.springie.demos.CaterpillarJudge [ticks]
  */
-public final class Caterpillar3Judge {
-  private Caterpillar3Judge() {
+public final class CaterpillarJudge {
+  private CaterpillarJudge() {
   }
 
   /**
@@ -108,9 +108,9 @@ public final class Caterpillar3Judge {
     ContextManager.setNodeManager(new NodeManager());
     final NodeManager node_manager = ContextManager.getNodeManager();
 
-    Caterpillar3Demo.buildAt(100);
-    final Node[] apexes = Caterpillar3Demo.apexes;
-    final Node[] bases = Caterpillar3Demo.bases;
+    CaterpillarDemo.buildAt(100);
+    final Node[] apexes = CaterpillarDemo.apexes;
+    final Node[] bases = CaterpillarDemo.bases;
     final int n = node_manager.element.size();
     final Node[] nodes = new Node[n];
     for (int i = 0; i < n; i++) {
@@ -137,7 +137,7 @@ public final class Caterpillar3Judge {
 
       if (!tipped_over) {
         // Apex i sits over base square i: columns i and i+1.
-        for (int i = 0; i < Caterpillar3Demo.PYRAMIDS; i++) {
+        for (int i = 0; i < CaterpillarDemo.PYRAMIDS; i++) {
           final long base_y = (long) bases[i * 2].pos.y
               + bases[i * 2 + 1].pos.y
               + bases[i * 2 + 2].pos.y
@@ -226,11 +226,11 @@ public final class Caterpillar3Judge {
   /** Pin down all global physics state so scored runs are identical. */
   private static void pinGlobals() {
     World.gravity_active = true;
-    World.gravity_strength = Caterpillar3Demo.gravity_strength;
+    World.gravity_strength = CaterpillarDemo.gravity_strength;
     // Damping stabilizes the stiff skeleton.
     World.global_temperature = 0;
     com.springie.elements.nodes.Node.viscocity = 2;
-    World.ground_friction = Caterpillar3Demo.friction;
+    World.ground_friction = CaterpillarDemo.friction;
     World.minimum_magnitude = 0;
     World.maximum_magnitude = Integer.MAX_VALUE;
     com.springie.elements.nodes.Node.max_speed = Integer.MAX_VALUE;

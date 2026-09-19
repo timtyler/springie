@@ -2,18 +2,18 @@
 package com.springie.messages.commands;
 
 import com.springie.FrEnd;
-import com.springie.demos.Caterpillar3Demo;
+import com.springie.demos.CaterpillarDemo;
 import com.springie.messages.NewMessage;
 import java.awt.EventQueue;
 
-public class Caterpillar3DemoMessage extends NewMessage {
-  public Caterpillar3DemoMessage() {
+public class CaterpillarDemoMessage extends NewMessage {
+  public CaterpillarDemoMessage() {
     super(null);
   }
 
   public Object execute() {
     // Build at x=100 (pixels), near the top-left, facing +x.
-    Caterpillar3Demo.buildAt(100);
+    CaterpillarDemo.buildAt(100);
     com.springie.world.UniverseDefaults.snapshot();
     // Sync the Universe panel (gravity etc.) with the demo's settings.
     // Must run on the AWT thread: this message executes on the animation

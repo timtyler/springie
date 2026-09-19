@@ -19,7 +19,8 @@ import com.springie.render.Coords;
 import com.springie.world.World;
 
 /**
- * "Caterpillar 3": cloned from Caterpillar 2, then reworked. The skeleton
+ * "Caterpillar" (formerly "Caterpillar 3"): cloned from Caterpillar 2,
+ * then reworked. The skeleton
  * is struts -- base edges, slant edges and the apex chain are all plain
  * compression-and-tension struts -- except the crossed base diagonals,
  * which stay tension-only cables so the base squares can shear (a strut
@@ -39,8 +40,8 @@ import com.springie.world.World;
  *
  * <p>Parameters are public fields so the judge can sweep them.
  */
-public final class Caterpillar3Demo {
-  private Caterpillar3Demo() {
+public final class CaterpillarDemo {
+  private CaterpillarDemo() {
     // static-only
   }
 
