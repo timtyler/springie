@@ -24,6 +24,8 @@ public interface GUIStrings {
 
   String CONTINUOUSLY_CENTRE = "Continuously centre";
 
+  String SHOW_BOUNDARY_BOX = "Show boundary box";
+
   String CANCEL = "Cancel";
 
   String PERIOD_FIND = "Find period";

@@ -352,6 +352,8 @@ public class MainCanvas {
       }
     }
 
+    BoundaryBoxDots.drawOneDot(g);
+
     this.info_button.drawInfoButton(g);
   }
 
