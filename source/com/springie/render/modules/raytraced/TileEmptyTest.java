@@ -9,12 +9,14 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.GraphicsEnvironment;
+import java.awt.Point;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
+import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkTypeFactory;
@@ -22,8 +24,10 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeTypeFactory;
 import com.springie.geometry.Point3D;
+import com.springie.gui.gestures.PerformActions;
 import com.springie.render.Coords;
 import com.springie.render.RectangleInt;
+import com.springie.render.RendererDragBox;
 import com.springie.render.modules.modern.RendererBinManager;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced.Tile;
 
@@ -285,5 +289,43 @@ public class TileEmptyTest {
     // (10 is the true minimum here: the diagonal runs exactly through
     // three tile corners, and the link's few-pixel capsule genuinely
     // touches the two extra tiles meeting at each corner.)
+  }
+
+  @Test
+  public void dragBoxDamageMarksItsTiles() {
+    // An empty scene with an active drag-box selection: the box draws
+    // directly on the screen after the blit, so its rectangle must join
+    // the dirty region -- otherwise the old rectangle's pixels are never
+    // repainted and the red box leaves a trail.
+    final NodeManager old_manager = ContextManager.getNodeManager();
+    final PerformActions old_actions = FrEnd.perform_actions;
+    try {
+      ContextManager.setNodeManager(this.manager);
+      final PerformActions actions = new PerformActions();
+      FrEnd.perform_actions = actions;
+      actions.drag_box_manager.drag_box_end = new Point(0, 0);
+      // A drawn box: cached coordinates, in internal units (shift 8).
+      final RendererDragBox box =
+          this.manager.renderer.renderer_drag_box;
+      box.min = new Point(50 << 8, 50 << 8);
+      box.max = new Point(150 << 8, 150 << 8);
+      box.last_min = new Point(50 << 8, 50 << 8);
+      box.last_max = new Point(150 << 8, 150 << 8);
+      box.cache_valid = true;
+      final RectangleInt[] rects =
+          this.renderer.computeDirtyRects(this.manager);
+      assertNotNull(rects);
+      final Tile[] grid = ModularRendererRaytraced.buildTileGrid(SIZE, SIZE);
+      final int hit = tileContaining(grid, 100, 100);
+      assertTrue(hit >= 0);
+      assertFalse(rects[hit].isEmpty(),
+          "the drag box's tile must be dirty");
+      final int far = tileContaining(grid, 350, 350);
+      assertTrue(far >= 0);
+      assertTrue(rects[far].isEmpty(), "a far tile must stay empty");
+    } finally {
+      ContextManager.setNodeManager(old_manager);
+      FrEnd.perform_actions = old_actions;
+    }
   }
 }

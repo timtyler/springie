@@ -11,15 +11,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 import com.springie.FrEnd;
+import com.springie.context.ContextManager;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
+import com.springie.gui.gestures.DragBoxManager;
 import com.springie.render.Coords;
 import com.springie.render.RectangleInt;
 import com.springie.render.RendererDelegator;
+import com.springie.render.RendererDragBox;
 import com.springie.render.ScenicBackground;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.modules.modern.RendererBinManager;
@@ -743,7 +746,73 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       }
     }
 
+    // The drag-box selection draws directly on the screen, after the
+    // blit -- it is not model geometry, so the walks above never cover
+    // it. Its old and new rectangles join the dirty region here, or the
+    // old rectangle's pixels would never be repainted and the red box
+    // would leave a trail (the same damage the polygon renderer forces
+    // dirty; see RendererBinManager.getDragBoxDamage).
+    final RectangleInt drag_damage = getDragBoxDamage();
+    if (drag_damage != null) {
+      markTilesDirty(rects, tiles, nx, divisor, width, height,
+          drag_damage.min_x, drag_damage.min_y, drag_damage.max_x,
+          drag_damage.max_y);
+    }
+
     return rects;
+  }
+
+  /**
+   * The screen region damaged by a drag-box selection: the union of the
+   * previous and current rectangles, expanded by the box's line
+   * thickness. Null when no drag is active. Mirrors
+   * RendererBinManager.getDragBoxDamage: the box caches its coordinates
+   * on draw, so the last drawn rectangle is known even after release,
+   * when the gesture's start point is already gone -- and the release
+   * frame is the one that erases the box for good.
+   */
+  private static RectangleInt getDragBoxDamage() {
+    if (FrEnd.perform_actions == null
+        || FrEnd.perform_actions.drag_box_manager == null
+        || FrEnd.perform_actions.drag_box_manager.drag_box_end == null) {
+      return null;
+    }
+    final NodeManager node_manager = ContextManager.getNodeManager();
+    if (node_manager == null) {
+      return null;
+    }
+    final RendererDragBox box = node_manager.renderer.renderer_drag_box;
+    final int min_x;
+    final int min_y;
+    final int max_x;
+    final int max_y;
+    if (box.cache_valid) {
+      min_x = Math.min(box.min.x, box.last_min.x);
+      min_y = Math.min(box.min.y, box.last_min.y);
+      max_x = Math.max(box.max.x, box.last_max.x);
+      max_y = Math.max(box.max.y, box.last_max.y);
+    } else {
+      // Not drawn yet (the very first frame): fall back to the
+      // gesture's live points.
+      final DragBoxManager drag_box_manager =
+          FrEnd.perform_actions.drag_box_manager;
+      final java.awt.Point one = drag_box_manager.drag_box_start;
+      final java.awt.Point two = drag_box_manager.drag_box_end;
+      if (one == null || two == null) {
+        return null;
+      }
+      min_x = Math.min(one.x, two.x);
+      max_x = Math.max(one.x, two.x);
+      min_y = Math.min(one.y, two.y);
+      max_y = Math.max(one.y, two.y);
+    }
+    final int pad = 4; // the drag-box lines are drawn 3px thick
+    final RectangleInt damage = new RectangleInt(0, 0, 0, 0);
+    damage.min_x = Coords.getPixelFromInternalCoords(min_x) - pad;
+    damage.min_y = Coords.getPixelFromInternalCoords(min_y) - pad;
+    damage.max_x = Coords.getPixelFromInternalCoords(max_x) + pad;
+    damage.max_y = Coords.getPixelFromInternalCoords(max_y) + pad;
+    return damage;
   }
 
   /**
