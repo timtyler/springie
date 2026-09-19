@@ -18,6 +18,7 @@ import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.render.Coords;
+import com.springie.render.RectangleInt;
 import com.springie.render.RendererDelegator;
 import com.springie.render.ScenicBackground;
 import com.springie.render.modules.ModularRendererBase;
@@ -39,12 +40,26 @@ import com.springie.render.modules.modern.RendererBinManager;
  *
  * <p>A frame renders a snapshot of the model: while a frame is in progress
  * repaints keep displaying the last complete frame, and a new frame
- * starts once the previous one completes. A tile that was empty (held
- * no geometry) and is still empty is not re-traced -- its pixels are
- * background, which cannot have changed -- so a small model on a big
- * canvas re-traces only the tiles it touches. With shadows or the
- * scenic background on, or when the background colour changed, every
- * tile re-renders.
+ * starts once the previous one completes. Each tile is re-traced only
+ * where it needs to be: before a frame starts the renderer walks the
+ * model's nodes, links, and faces, projecting each element's screen
+ * rectangle and unioning it into every tile it touches, producing one
+ * dirty rectangle per tile (empty when the tile holds no geometry).
+ * This is the same RectangleInt algebra the polygon renderer uses for
+ * its bins (see RendererBin): the worker re-traces only the dirty
+ * rectangle -- a sub-rectangle of the tile -- unioned with the tile's
+ * dirty rectangle from the previous frame (the whole tile for one
+ * frame after a global effect like shadows or a background recolour),
+ * so pixels where geometry used to be are repainted too. A tile that
+ * was empty last frame and is still empty is not re-traced at all: its
+ * pixels are background, which cannot have changed, so a small model
+ * on a big canvas fires no rays into the blank tiles, and no rays
+ * into the blank areas of the tiles it does touch. Within a traced
+ * rectangle every pixel still gets at least one ray -- there is no way
+ * to know a pixel is blank without tracing it -- but a miss only
+ * costs a handful of bounding-box tests against the BVH, never a
+ * shading calculation. With shadows or the scenic background on, or
+ * when the background colour changed, every tile re-renders in full.
  */
 public class ModularRendererRaytraced implements ModularRendererBase {
   private static final ExecutorService POOL = Executors.newFixedThreadPool(
@@ -64,6 +79,29 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     // when its tile finishes.
     volatile BufferedImage image;
 
+    // The staged image's rectangle (screen coordinates, inclusive): the
+    // worker re-traces the tile's dirty rectangle unioned with the
+    // tile's dirty rectangle from the previous frame (see last_dirty),
+    // so the image covers (rx0, ry0)..(rx1, ry1), a sub-rectangle of
+    // the tile -- the whole tile on a render-all frame. Empty
+    // (rx0 > rx1) until the tile's first frame is started. Written by
+    // the thread starting the frame before any task is submitted --
+    // hence visible to the workers -- and read by publishFrame after
+    // observing done, like image and stats.
+    int rx0, ry0, rx1, ry1;
+
+    // The true dirty rectangle of the last frame this tile was staged
+    // for -- or the whole tile when that frame was forced whole by a
+    // global effect (shadows, scenic background, background recolour)
+    // or a degenerate walk, which make every pixel suspect. The next
+    // frame re-traces the union of its dirty rectangle and this one, so
+    // pixels where geometry used to be are repainted too -- the same
+    // idea as the polygon renderer's bin.union. Empty until the tile's
+    // first staged frame; untouched while the tile is skipped.
+    final RectangleInt last_dirty =
+        new RectangleInt(Integer.MAX_VALUE, Integer.MAX_VALUE,
+            Integer.MIN_VALUE, Integer.MIN_VALUE);
+
     volatile boolean done;
 
     // Hit statistics for the staged image, written by the worker before
@@ -79,6 +117,10 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       this.y0 = y0;
       this.width = width;
       this.height = height;
+      this.rx0 = Integer.MAX_VALUE;
+      this.ry0 = Integer.MAX_VALUE;
+      this.rx1 = Integer.MIN_VALUE;
+      this.ry1 = Integer.MIN_VALUE;
     }
   }
 
@@ -90,13 +132,19 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   static final class ShownTile {
     final BufferedImage image;
 
+    // Screen coordinates of the image's top-left corner: the dirty
+    // rectangle the worker re-traced, a sub-rectangle of the tile.
+    final int rx0, ry0;
+
     final boolean active;
 
     final int min_x, min_y, max_x, max_y;
 
-    ShownTile(BufferedImage image, boolean active, int min_x, int min_y,
-        int max_x, int max_y) {
+    ShownTile(BufferedImage image, int rx0, int ry0, boolean active,
+        int min_x, int min_y, int max_x, int max_y) {
       this.image = image;
+      this.rx0 = rx0;
+      this.ry0 = ry0;
       this.active = active;
       this.min_x = min_x;
       this.min_y = min_y;
@@ -206,12 +254,13 @@ public class ModularRendererRaytraced implements ModularRendererBase {
             if (!this.staged_skip[i]) {
               final ShownTile shown = ctiles[i].shown;
               if (shown != null) {
-                g2.drawImage(shown.image, ctiles[i].x0, ctiles[i].y0, null);
-                graphics.drawImage(this.frame_image, ctiles[i].x0,
-                    ctiles[i].y0, ctiles[i].x0 + ctiles[i].width,
-                    ctiles[i].y0 + ctiles[i].height, ctiles[i].x0,
-                    ctiles[i].y0, ctiles[i].x0 + ctiles[i].width,
-                    ctiles[i].y0 + ctiles[i].height, null);
+                // Paint and blit only the rectangle the tile re-traced:
+                // a sub-rectangle of the tile.
+                g2.drawImage(shown.image, shown.rx0, shown.ry0, null);
+                final int rx1 = shown.rx0 + shown.image.getWidth();
+                final int ry1 = shown.ry0 + shown.image.getHeight();
+                graphics.drawImage(this.frame_image, shown.rx0, shown.ry0,
+                    rx1, ry1, shown.rx0, shown.ry0, rx1, ry1, null);
               }
             }
           }
@@ -223,27 +272,45 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     }
 
     if (this.frame_done) {
-      // Which tiles hold no geometry this frame. A tile that was empty
-      // and is still empty keeps its published snapshot: its pixels are
-      // background, which cannot have changed. Shadows can fall into
-      // tiles no element touches, the scenic background pans with the
-      // view, and a recolour changes every background pixel, so any of
-      // those re-traces the whole canvas.
-      final boolean[] now_empty = computeEmptyTiles(manager);
+      // Each tile's dirty rectangle: the union of every element's
+      // screen box clipped to the tile, the same RectangleInt algebra
+      // the polygon renderer uses for its bins. A tile that was empty
+      // last frame and is still empty keeps its published snapshot: its
+      // pixels are background, which cannot have changed. Shadows can
+      // fall into tiles no element touches, the scenic background pans
+      // with the view, and a recolour changes every background pixel,
+      // so any of those re-traces the whole canvas. Emptiness is
+      // derived from the true dirty rectangles, before any expansion.
+      final RectangleInt[] dirty = computeDirtyRects(manager);
       final int background_rgb =
           0xFF000000 | RendererDelegator.color_background_number;
       final boolean background_changed =
           background_rgb != this.last_background_rgb;
       this.last_background_rgb = background_rgb;
       final boolean[] last_empty = this.tile_empty;
-      final boolean render_all = now_empty == null || last_empty == null
-          || RendererDelegator.shadows
+      // A global effect makes every pixel suspect, so the frame covers
+      // whole tiles; the per-tile memory of what was dirty then holds
+      // the whole tile for exactly one frame, and tracing converges
+      // back to the tight rectangles on the frame after.
+      final boolean global = RendererDelegator.shadows
           || RendererDelegator.scenic_background || background_changed;
+      final boolean render_all =
+          dirty == null || last_empty == null || global;
+      final Tile[] tiles = this.tiles;
       final boolean[] skip;
+      final boolean[] now_empty;
+      if (dirty == null) {
+        now_empty = null;
+      } else {
+        now_empty = new boolean[dirty.length];
+        for (int i = 0; i < dirty.length; i++) {
+          now_empty[i] = dirty[i].isEmpty();
+        }
+      }
       if (render_all) {
         skip = null;
       } else {
-        skip = new boolean[now_empty.length];
+        skip = new boolean[dirty.length];
         for (int i = 0; i < skip.length; i++) {
           skip[i] = last_empty[i] && now_empty[i];
         }
@@ -251,7 +318,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       // Remember which tiles this frame re-traces so the composite
       // paints only those snapshots over the persistent frame image.
       this.staged_skip = skip;
-      startFrame(manager, skip);
+      startFrame(manager, skip, dirty, global);
       if (now_empty != null) {
         this.tile_empty = now_empty;
       }
@@ -313,7 +380,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
         if (shown == null) {
           continue;
         }
-        g.drawImage(shown.image, tiles[i].x0, tiles[i].y0, null);
+        g.drawImage(shown.image, shown.rx0, shown.ry0, null);
       }
     } finally {
       g.dispose();
@@ -373,11 +440,17 @@ public class ModularRendererRaytraced implements ModularRendererBase {
    * A skipped tile was empty and is still empty: it keeps the snapshot
    * it published last frame (and its done flag, still true from the
    * frame that rendered it), so the "every tile done" check below only
-   * waits on re-traced tiles. The last tile to finish publishes the
-   * frame, mixing fresh and retained snapshots, exactly like a full
-   * frame.
+   * waits on re-traced tiles. Each re-traced tile traces only its dirty
+   * rectangle, unioned with the rectangle it showed last frame -- like
+   * the polygon renderer's bin.union, this repaints pixels where
+   * geometry used to be as well as where it is now. On a render-all
+   * frame (global true, a degenerate walk with dirty null, or the
+   * first frame) every tile traces its whole area instead. The last
+   * tile to finish publishes the frame, mixing fresh and retained
+   * snapshots, exactly like a full frame.
    */
-  private void startFrame(NodeManager manager, boolean[] skip) {
+  private void startFrame(NodeManager manager, boolean[] skip,
+      RectangleInt[] dirty, boolean global) {
     final long id = ++this.frame_id;
     this.frame_done = false;
 
@@ -393,10 +466,48 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     // this loop has not reached yet, or it would publish the frame
     // prematurely and let the next repaint start a new frame while this
     // one's tasks are still queued (their id check would then drop them).
+    // The staged rectangle is written here too, before the tasks that
+    // read it are submitted.
+    //
+    // Whole tiles are traced when every pixel is suspect -- a global
+    // effect, a degenerate walk -- and on the first frame, where an
+    // empty dirty rectangle would otherwise stage a zero-area image.
+    // (tile_empty is still the previous frame's here: it is updated
+    // after startFrame returns.)
+    final boolean force_whole =
+        dirty == null || global || this.tile_empty == null;
     int submitted = 0;
     for (int i = 0; i < tiles.length; i++) {
       if (skip == null || !skip[i]) {
-        tiles[i].done = false;
+        final Tile tile = tiles[i];
+        final RectangleInt last = tile.last_dirty;
+        if (force_whole) {
+          tile.rx0 = tile.x0;
+          tile.ry0 = tile.y0;
+          tile.rx1 = tile.x0 + tile.width - 1;
+          tile.ry1 = tile.y0 + tile.height - 1;
+        } else {
+          final RectangleInt rect = dirty[i];
+          tile.rx0 = Math.min(rect.min_x, last.min_x);
+          tile.ry0 = Math.min(rect.min_y, last.min_y);
+          tile.rx1 = Math.max(rect.max_x, last.max_x);
+          tile.ry1 = Math.max(rect.max_y, last.max_y);
+        }
+        // Remember what this frame's snapshot is authoritative for, so
+        // the next frame's union repaints anything that was dirty here:
+        // the whole tile when a global effect (or a degenerate walk)
+        // made every pixel suspect, else the true dirty rectangle. A
+        // first frame forced whole by nothing global converges back to
+        // the tight rectangles on the very next frame.
+        if (global || dirty == null) {
+          last.min_x = tile.x0;
+          last.min_y = tile.y0;
+          last.max_x = tile.x0 + tile.width - 1;
+          last.max_y = tile.y0 + tile.height - 1;
+        } else {
+          last.setTo(dirty[i]);
+        }
+        tile.done = false;
       }
     }
     for (int i = 0; i < tiles.length; i++) {
@@ -429,17 +540,26 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       // tile renders as it does today.
       return;
     }
-    final int[] pixels = new int[tile.width * tile.height];
+    // The tile's staged rectangle: a sub-rectangle of the tile. Tracing
+    // it renders exactly the pixels the corresponding region of a
+    // whole-tile trace would: the anti-aliasing jitter is seeded from
+    // absolute screen coordinates and pixellation blocks are
+    // screen-aligned, so neither depends on the trace origin.
+    final int rx0 = tile.rx0;
+    final int ry0 = tile.ry0;
+    final int rw = tile.rx1 - tile.rx0 + 1;
+    final int rh = tile.ry1 - tile.ry0 + 1;
+    final int[] pixels = new int[rw * rh];
     final Raytracer.HitStats stats = new Raytracer.HitStats();
-    Raytracer.renderTile(tile.x0, tile.y0, tile.width, tile.height, camera,
-        bvh, rings, pixels, stats);
+    Raytracer.renderTile(rx0, ry0, rw, rh, camera, bvh, rings, pixels,
+        stats);
     if (id != this.frame_id) {
       // Superseded by a newer frame; drop the work.
       return;
     }
-    final BufferedImage image = new BufferedImage(tile.width, tile.height,
+    final BufferedImage image = new BufferedImage(rw, rh,
         BufferedImage.TYPE_INT_RGB);
-    image.setRGB(0, 0, tile.width, tile.height, pixels, 0, tile.width);
+    image.setRGB(0, 0, rw, rh, pixels, 0, rw);
     tile.image = image;
     tile.stats = stats;
     tile.done = true;
@@ -485,30 +605,37 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       final Tile t = tiles[i];
       final Raytracer.HitStats s = t.stats;
       final boolean active = s != null && s.hits > 0;
-      t.shown = new ShownTile(t.image, active,
-          active ? t.x0 + s.min_x : 0, active ? t.y0 + s.min_y : 0,
-          active ? t.x0 + s.max_x : 0, active ? t.y0 + s.max_y : 0);
+      // The hit statistics are relative to the staged rectangle's
+      // origin; the content rectangle is translated to screen
+      // coordinates here.
+      t.shown = new ShownTile(t.image, t.rx0, t.ry0, active,
+          active ? t.rx0 + s.min_x : 0, active ? t.ry0 + s.min_y : 0,
+          active ? t.rx0 + s.max_x : 0, active ? t.ry0 + s.max_y : 0);
     }
     // One completed frame, however many AWT paints it takes to display.
     RendererDelegator.countRenderedFrame();
   }
 
   /**
-   * Which tiles hold no geometry this frame. The element walk mirrors
-   * RayScene.build's filters exactly, so every pixel the frame can paint
-   * belongs to some element's bounds, and a tile left marked empty is
-   * truly background-only. Returns null when an element's projection is
-   * degenerate (behind the camera); the caller then re-traces everything.
+   * Each tile's dirty rectangle for the coming frame: the union of every
+   * element's screen box clipped to the tile, empty when the tile holds
+   * no geometry. The element walk mirrors RayScene.build's filters
+   * exactly, so every pixel the frame can paint belongs to some
+   * element's bounds, and a tile left marked empty is truly
+   * background-only. Returns null when an element's projection is
+   * degenerate (behind the camera); the caller then re-traces
+   * everything.
    */
-  boolean[] computeEmptyTiles(NodeManager manager) {
+  RectangleInt[] computeDirtyRects(NodeManager manager) {
     final Tile[] tiles = this.tiles;
     final int divisor = RendererBinManager.divisor;
     final int width = this.canvas_width;
     final int height = this.canvas_height;
     final int nx = this.tile_nx;
-    final boolean[] empty = new boolean[tiles.length];
-    for (int i = 0; i < empty.length; i++) {
-      empty[i] = true;
+    final RectangleInt[] rects = new RectangleInt[tiles.length];
+    for (int i = 0; i < rects.length; i++) {
+      rects[i] = new RectangleInt(Integer.MAX_VALUE, Integer.MAX_VALUE,
+          Integer.MIN_VALUE, Integer.MIN_VALUE);
     }
 
     if (FrEnd.render_nodes) {
@@ -538,7 +665,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
             r = ring;
           }
         }
-        markTilesNotEmpty(empty, nx, divisor, width, height,
+        markTilesDirty(rects, tiles, nx, divisor, width, height,
             sx - r, sy - r, sx + r, sy + r);
       }
     }
@@ -560,38 +687,16 @@ public class ModularRendererRaytraced implements ModularRendererBase {
         if (ends.length == 0) {
           continue;
         }
-        long x0 = Long.MAX_VALUE;
-        long y0 = Long.MAX_VALUE;
-        long x1 = Long.MIN_VALUE;
-        long y1 = Long.MIN_VALUE;
-        for (int s = 0; s < ends.length; s++) {
-          final Node node = ends[s];
-          final int z = node.pos.z;
-          final int world_per_pixel =
-              Coords.shift_constant_z + (z >> Coords.shift_z);
-          if (world_per_pixel <= 0) {
+        // Mark the link span by span, the way the polygon renderer bins
+        // each segment by its own tight box: a single AABB over the whole
+        // span marks length-squared tiles for a diagonal link instead of
+        // length. (A one-node link renders nothing, so it marks nothing.)
+        for (int s = 0; s + 1 < ends.length; s++) {
+          if (markLinkSpanDirty(rects, tiles, nx, divisor, width, height,
+              ends[s], ends[s + 1], radius)) {
             return null;
           }
-          final long sx = Coords.getXCoords(node.pos.x, z);
-          final long sy = Coords.getYCoords(node.pos.y, z);
-          // Covers the cable cylinder and the strut's mid-span bulge,
-          // both of which stay within the link radius of the span.
-          final long r = (long) Math.ceil(radius / world_per_pixel) + 2;
-          if (sx - r < x0) {
-            x0 = sx - r;
-          }
-          if (sy - r < y0) {
-            y0 = sy - r;
-          }
-          if (sx + r > x1) {
-            x1 = sx + r;
-          }
-          if (sy + r > y1) {
-            y1 = sy + r;
-          }
         }
-        markTilesNotEmpty(empty, nx, divisor, width, height,
-            x0, y0, x1, y1);
       }
     }
 
@@ -633,20 +738,98 @@ public class ModularRendererRaytraced implements ModularRendererBase {
             y1 = sy + 2;
           }
         }
-        markTilesNotEmpty(empty, nx, divisor, width, height,
+        markTilesDirty(rects, tiles, nx, divisor, width, height,
             x0, y0, x1, y1);
       }
     }
 
-    return empty;
+    return rects;
   }
 
   /**
-   * Marks every tile an element's screen rectangle touches as
-   * non-empty. Fully off-screen elements touch no tile.
+   * Unions a link span's screen box into every tile's dirty rectangle.
+   * The span is split into pieces of at most one tile, and each piece is
+   * marked by its own tight box: the perspective projection of a straight
+   * 3D span is a straight 2D segment, so linearly interpolating the
+   * projected endpoints is exact for the centreline, and the pixel radius
+   * only shrinks or grows smoothly with depth. Returns true when the span
+   * sits on or behind the eye plane (a degenerate view: the caller
+   * re-traces everything).
    */
-  static void markTilesNotEmpty(boolean[] empty, int nx, int divisor,
-      int width, int height, long x0, long y0, long x1, long y1) {
+  private static boolean markLinkSpanDirty(RectangleInt[] rects, Tile[] tiles,
+      int nx, int divisor, int width, int height, Node a, Node b,
+      double radius) {
+    final int ax = a.pos.x;
+    final int ay = a.pos.y;
+    final int az = a.pos.z;
+    final int bx = b.pos.x;
+    final int by = b.pos.y;
+    final int bz = b.pos.z;
+    final long sax = Coords.getXCoords(ax, az);
+    final long say = Coords.getYCoords(ay, az);
+    final long sbx = Coords.getXCoords(bx, bz);
+    final long sby = Coords.getYCoords(by, bz);
+    final double dx = sbx - sax;
+    final double dy = sby - say;
+    int pieces = (int) Math.ceil(Math.sqrt(dx * dx + dy * dy) / divisor);
+    if (pieces < 1) {
+      pieces = 1;
+    }
+    for (int p = 0; p < pieces; p++) {
+      final double t0 = (double) p / pieces;
+      final double t1 = (double) (p + 1) / pieces;
+      // Covers the cable cylinder and the strut's mid-span bulge,
+      // both of which stay within the link radius of the span.
+      final long[] c0 = projectLinkPoint(ax, ay, az, bx, by, bz, t0,
+          radius);
+      if (c0 == null) {
+        return true;
+      }
+      final long[] c1 = projectLinkPoint(ax, ay, az, bx, by, bz, t1,
+          radius);
+      if (c1 == null) {
+        return true;
+      }
+      final long r = Math.max(c0[2], c1[2]);
+      markTilesDirty(rects, tiles, nx, divisor, width, height,
+          Math.min(c0[0], c1[0]) - r, Math.min(c0[1], c1[1]) - r,
+          Math.max(c0[0], c1[0]) + r, Math.max(c0[1], c1[1]) + r);
+    }
+    return false;
+  }
+
+  /**
+   * Projects the point a fraction t along the 3D span a-b to the screen,
+   * with the link's pixel radius there. Returns {sx, sy, r}, or null
+   * when the point sits on or behind the eye plane.
+   */
+  private static long[] projectLinkPoint(int ax, int ay, int az, int bx,
+      int by, int bz, double t, double radius) {
+    final int x = (int) (ax + (bx - ax) * t);
+    final int y = (int) (ay + (by - ay) * t);
+    final int z = (int) (az + (bz - az) * t);
+    final int world_per_pixel =
+        Coords.shift_constant_z + (z >> Coords.shift_z);
+    if (world_per_pixel <= 0) {
+      return null;
+    }
+    // The int rounding moves the point under a world unit: far below the
+    // +2 pixel padding folded into r.
+    return new long[] {Coords.getXCoords(x, z), Coords.getYCoords(y, z),
+        (long) Math.ceil(radius / world_per_pixel) + 2};
+  }
+
+  /**
+   * Unions an element's screen rectangle into every tile's dirty
+   * rectangle it touches, clipped to each tile's own bounds. Fully
+   * off-screen elements touch no tile. With "show bins" the tiles are
+   * shrunk by a margin, so a box can cross a tile's bin without touching
+   * the tile itself: the per-tile clip leaves such tiles' rectangles
+   * empty.
+   */
+  static void markTilesDirty(RectangleInt[] rects, Tile[] tiles, int nx,
+      int divisor, int width, int height,
+      long x0, long y0, long x1, long y1) {
     if (x1 < 0 || y1 < 0 || x0 >= width || y0 >= height) {
       return;
     }
@@ -672,7 +855,17 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     for (int ty = ty0; ty <= ty1; ty++) {
       final int row = ty * nx;
       for (int tx = tx0; tx <= tx1; tx++) {
-        empty[row + tx] = false;
+        final Tile tile = tiles[row + tx];
+        final long cx0 = Math.max(x0, tile.x0);
+        final long cy0 = Math.max(y0, tile.y0);
+        final long cx1 =
+            Math.min(x1, (long) tile.x0 + tile.width - 1);
+        final long cy1 =
+            Math.min(y1, (long) tile.y0 + tile.height - 1);
+        if (cx0 > cx1 || cy0 > cy1) {
+          continue;
+        }
+        rects[row + tx].unionBox(cx0, cy0, cx1, cy1);
       }
     }
   }

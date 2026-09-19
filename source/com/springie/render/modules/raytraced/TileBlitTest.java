@@ -4,6 +4,7 @@ package com.springie.render.modules.raytraced;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.GraphicsEnvironment;
@@ -23,6 +24,7 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeTypeFactory;
 import com.springie.geometry.Point3D;
 import com.springie.render.Coords;
+import com.springie.render.RectangleInt;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.modules.modern.RendererBinManager;
@@ -233,14 +235,16 @@ public class TileBlitTest {
     repaintAndWait(dest);
     repaintAndWait(dest);
 
-    final boolean[] empty = this.renderer.computeEmptyTiles(this.manager);
+    final RectangleInt[] rects =
+        this.renderer.computeDirtyRects(this.manager);
+    assertNotNull(rects);
     int content_tile = -1;
     int empty_tile = -1;
-    for (int i = 0; i < empty.length; i++) {
-      if (!empty[i] && content_tile < 0) {
+    for (int i = 0; i < rects.length; i++) {
+      if (!rects[i].isEmpty() && content_tile < 0) {
         content_tile = i;
       }
-      if (empty[i] && empty_tile < 0) {
+      if (rects[i].isEmpty() && empty_tile < 0) {
         empty_tile = i;
       }
     }
@@ -250,11 +254,15 @@ public class TileBlitTest {
     fill(dest, SENTINEL);
     this.renderer.repaint(dest.getGraphics(), this.manager);
 
-    final int nx = SIZE / DIVISOR;
-    final int ccx = (content_tile % nx) * DIVISOR + DIVISOR / 2;
-    final int ccy = (content_tile / nx) * DIVISOR + DIVISOR / 2;
+    // Only the content tile's dirty rectangle is blitted: every pixel
+    // in it was ray-traced (geometry or background), so none can still
+    // be the sentinel. The empty tile's screen region is left alone.
+    final RectangleInt dirty = rects[content_tile];
+    final int ccx = (dirty.min_x + dirty.max_x) / 2;
+    final int ccy = (dirty.min_y + dirty.max_y) / 2;
     assertNotEquals(SENTINEL, dest.getRGB(ccx, ccy),
-        "content tile was not blitted");
+        "content tile's dirty rectangle was not blitted");
+    final int nx = SIZE / DIVISOR;
     final int ecx = (empty_tile % nx) * DIVISOR + DIVISOR / 2;
     final int ecy = (empty_tile / nx) * DIVISOR + DIVISOR / 2;
     assertEquals(SENTINEL, dest.getRGB(ecx, ecy),

@@ -1,5 +1,9 @@
 package com.springie.render.modules.modern;
 
+import com.springie.render.RectangleInt;
+
+import com.springie.render.RectangleInt;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

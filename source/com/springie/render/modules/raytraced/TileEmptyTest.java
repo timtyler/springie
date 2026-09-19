@@ -23,14 +23,16 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeTypeFactory;
 import com.springie.geometry.Point3D;
 import com.springie.render.Coords;
-import com.springie.render.RendererDelegator;
+import com.springie.render.RectangleInt;
 import com.springie.render.modules.modern.RendererBinManager;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced.Tile;
 
 /**
- * The ray-traced renderer skips re-tracing tiles that were empty and are
- * still empty. These tests pin down computeEmptyTiles: which tiles a
- * scene's geometry touches.
+ * The ray-traced renderer re-traces only each tile's dirty rectangle --
+ * the union of the geometry's screen boxes clipped to the tile -- and
+ * skips tiles that were empty and are still empty. These tests pin down
+ * computeDirtyRects: which tiles a scene's geometry touches, and how
+ * tight each tile's rectangle is.
  */
 public class TileEmptyTest {
   private static final int SIZE = 400;
@@ -137,26 +139,46 @@ public class TileEmptyTest {
 
   @Test
   public void emptySceneMarksEveryTileEmpty() {
-    final boolean[] empty = this.renderer.computeEmptyTiles(this.manager);
-    assertNotNull(empty);
-    assertEquals(16, empty.length);
-    for (int i = 0; i < empty.length; i++) {
-      assertTrue(empty[i], "tile " + i + " should be empty");
+    final RectangleInt[] rects = this.renderer.computeDirtyRects(this.manager);
+    assertNotNull(rects);
+    assertEquals(16, rects.length);
+    for (int i = 0; i < rects.length; i++) {
+      assertTrue(rects[i].isEmpty(), "tile " + i + " should be empty");
     }
   }
 
   @Test
   public void nodeMarksOnlyItsTiles() {
     this.manager.element.add(nodeAt(100, 100));
-    final boolean[] empty = this.renderer.computeEmptyTiles(this.manager);
-    assertNotNull(empty);
+    final RectangleInt[] rects = this.renderer.computeDirtyRects(this.manager);
+    assertNotNull(rects);
     final Tile[] grid = ModularRendererRaytraced.buildTileGrid(SIZE, SIZE);
     final int hit = tileContaining(grid, 100, 100);
     assertTrue(hit >= 0);
-    assertFalse(empty[hit], "the node's own tile must be non-empty");
+    assertFalse(rects[hit].isEmpty(),
+        "the node's own tile must be non-empty");
     final int far = tileContaining(grid, 350, 350);
     assertTrue(far >= 0);
-    assertTrue(empty[far], "a far tile must stay empty");
+    assertTrue(rects[far].isEmpty(), "a far tile must stay empty");
+  }
+
+  @Test
+  public void nodeDirtyRectIsTight() {
+    // Radius 512 at 192 world units per pixel: ceil(512/192) + 2 = 5
+    // pixels each way, so the node's box is (95, 95)..(105, 105), and
+    // the tile at (100, 100)..(199, 199) must see only its clipped
+    // share -- not the whole tile.
+    this.manager.element.add(nodeAt(100, 100));
+    final RectangleInt[] rects = this.renderer.computeDirtyRects(this.manager);
+    assertNotNull(rects);
+    final Tile[] grid = ModularRendererRaytraced.buildTileGrid(SIZE, SIZE);
+    final int hit = tileContaining(grid, 100, 100);
+    assertTrue(hit >= 0);
+    final RectangleInt rect = rects[hit];
+    assertEquals(100, rect.min_x);
+    assertEquals(100, rect.min_y);
+    assertEquals(105, rect.max_x);
+    assertEquals(105, rect.max_y);
   }
 
   @Test
@@ -168,12 +190,12 @@ public class TileEmptyTest {
 
     node.pos.x = internal(300);
     node.pos.y = internal(300);
-    final boolean[] empty = this.renderer.computeEmptyTiles(this.manager);
-    assertNotNull(empty);
-    assertTrue(empty[old_tile],
+    final RectangleInt[] rects = this.renderer.computeDirtyRects(this.manager);
+    assertNotNull(rects);
+    assertTrue(rects[old_tile].isEmpty(),
         "the node's old tile must be empty again so it can be skipped");
     final int new_tile = tileContaining(grid, 300, 300);
-    assertFalse(empty[new_tile],
+    assertFalse(rects[new_tile].isEmpty(),
         "the node's new tile must be non-empty");
   }
 
@@ -189,10 +211,10 @@ public class TileEmptyTest {
         new Clazz(0x654321));
     link.type.hidden = true;
     this.manager.getLinkManager().element.add(link);
-    final boolean[] empty = this.renderer.computeEmptyTiles(this.manager);
-    assertNotNull(empty);
-    for (int i = 0; i < empty.length; i++) {
-      assertTrue(empty[i], "tile " + i + " should be empty");
+    final RectangleInt[] rects = this.renderer.computeDirtyRects(this.manager);
+    assertNotNull(rects);
+    for (int i = 0; i < rects.length; i++) {
+      assertTrue(rects[i].isEmpty(), "tile " + i + " should be empty");
     }
   }
 
@@ -203,20 +225,65 @@ public class TileEmptyTest {
     final Node node = nodeAt(100, 100);
     node.pos.z = -200000;
     this.manager.element.add(node);
-    assertNull(this.renderer.computeEmptyTiles(this.manager));
+    assertNull(this.renderer.computeDirtyRects(this.manager));
   }
 
   @Test
-  public void markTilesNotEmptyPacksRowsTightly() {
+  public void markTilesDirtyPacksRowsTightly() {
     // A canvas exactly two divisors wide still has only two tiles per
     // row: the degenerate zero-area column is dropped from the grid.
-    final boolean[] empty = new boolean[4];
-    for (int i = 0; i < empty.length; i++) {
-      empty[i] = true;
+    final Tile[] grid = ModularRendererRaytraced.buildTileGrid(200, 200);
+    final RectangleInt[] rects = new RectangleInt[grid.length];
+    for (int i = 0; i < rects.length; i++) {
+      rects[i] = new RectangleInt(Integer.MAX_VALUE, Integer.MAX_VALUE,
+          Integer.MIN_VALUE, Integer.MIN_VALUE);
     }
-    ModularRendererRaytraced.markTilesNotEmpty(empty, 2, 100, 200, 200,
+    ModularRendererRaytraced.markTilesDirty(rects, grid, 2, 100, 200, 200,
         150, 150, 160, 160);
-    assertFalse(empty[3]);
-    assertTrue(empty[0] && empty[1] && empty[2]);
+    assertEquals(150, rects[3].min_x);
+    assertEquals(150, rects[3].min_y);
+    assertEquals(160, rects[3].max_x);
+    assertEquals(160, rects[3].max_y);
+    assertTrue(rects[0].isEmpty() && rects[1].isEmpty()
+        && rects[2].isEmpty());
+  }
+
+  @Test
+  public void diagonalLinkMarksOnlyItsDiagonal() {
+    final Node a = nodeAt(50, 50);
+    final Node b = nodeAt(350, 350);
+    this.manager.element.add(a);
+    this.manager.element.add(b);
+    FrEnd.render_nodes = false;
+    final Link link = new Link(a, b,
+        new LinkTypeFactory().getNew(100 << Coords.shift, 50),
+        new Clazz(0x654321));
+    link.type.radius = 192;
+    this.manager.getLinkManager().element.add(link);
+    final RectangleInt[] rects = this.renderer.computeDirtyRects(this.manager);
+    assertNotNull(rects);
+    final Tile[] grid = ModularRendererRaytraced.buildTileGrid(SIZE, SIZE);
+    final int on_diagonal = tileContaining(grid, 200, 200);
+    assertFalse(rects[on_diagonal].isEmpty(),
+        "a tile on the link's diagonal must be non-empty");
+    // The old whole-span AABB marked the full 300x300 square: every
+    // tile. The tight per-piece marking must leave the off-diagonal
+    // corners of that square alone.
+    final int off_diagonal = tileContaining(grid, 350, 50);
+    assertTrue(rects[off_diagonal].isEmpty(),
+        "a tile inside the span's bounding square but off the link must"
+            + " stay empty");
+    int marked = 0;
+    for (int i = 0; i < rects.length; i++) {
+      if (!rects[i].isEmpty()) {
+        marked++;
+      }
+    }
+    assertTrue(marked <= 10,
+        "a thin diagonal should touch far fewer than all 16 tiles, got "
+            + marked);
+    // (10 is the true minimum here: the diagonal runs exactly through
+    // three tile corners, and the link's few-pixel capsule genuinely
+    // touches the two extra tiles meeting at each corner.)
   }
 }

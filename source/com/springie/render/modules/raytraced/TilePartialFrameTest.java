@@ -22,6 +22,7 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeTypeFactory;
 import com.springie.geometry.Point3D;
 import com.springie.render.Coords;
+import com.springie.render.RectangleInt;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.RendererBinManager;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced.Tile;
@@ -160,7 +161,9 @@ public class TilePartialFrameTest {
 
   /**
    * Renders tiles straight through the raytracer, the way the
-   * renderer's worker does; a null skip set renders every tile.
+   * renderer's worker does; a null skip set renders every tile. Each
+   * tile traces its whole area here (staged rectangle = whole tile),
+   * like a render-all frame.
    */
   private void renderTiles(boolean[] skip) {
     final RayCamera camera = new RayCamera();
@@ -173,6 +176,10 @@ public class TilePartialFrameTest {
         continue;
       }
       final Tile tile = this.tiles[i];
+      tile.rx0 = tile.x0;
+      tile.ry0 = tile.y0;
+      tile.rx1 = tile.x0 + tile.width - 1;
+      tile.ry1 = tile.y0 + tile.height - 1;
       final int[] pixels = new int[tile.width * tile.height];
       final Raytracer.HitStats stats = new Raytracer.HitStats();
       Raytracer.renderTile(tile.x0, tile.y0, tile.width, tile.height,
@@ -187,13 +194,31 @@ public class TilePartialFrameTest {
     ModularRendererRaytraced.publishFrame(this.tiles);
   }
 
+  private static boolean[] skipFromRects(RectangleInt[] rects,
+      boolean[] last_empty) {
+    final boolean[] skip = new boolean[rects.length];
+    for (int i = 0; i < skip.length; i++) {
+      skip[i] = last_empty[i] && rects[i].isEmpty();
+    }
+    return skip;
+  }
+
+  private static boolean[] emptiness(RectangleInt[] rects) {
+    final boolean[] empty = new boolean[rects.length];
+    for (int i = 0; i < empty.length; i++) {
+      empty[i] = rects[i].isEmpty();
+    }
+    return empty;
+  }
+
   @Test
   public void partialFrameMatchesFullFrame() {
     // Frame 1: everything renders.
     renderTiles(null);
-    boolean[] last_empty =
-        this.renderer.computeEmptyTiles(this.manager);
-    assertNotNull(last_empty);
+    final RectangleInt[] first =
+        this.renderer.computeDirtyRects(this.manager);
+    assertNotNull(first);
+    final boolean[] last_empty = emptiness(first);
     final BufferedImage before =
         ModularRendererRaytraced.compositeFrame(this.tiles, SIZE, SIZE);
 
@@ -201,13 +226,12 @@ public class TilePartialFrameTest {
     final Node moved = (Node) this.manager.element.get(0);
     moved.pos.x += 5 * 192;
     moved.pos.y += 3 * 192;
-    final boolean[] now_empty =
-        this.renderer.computeEmptyTiles(this.manager);
-    assertNotNull(now_empty);
-    final boolean[] skip = new boolean[now_empty.length];
+    final RectangleInt[] rects =
+        this.renderer.computeDirtyRects(this.manager);
+    assertNotNull(rects);
+    final boolean[] skip = skipFromRects(rects, last_empty);
     int skipped = 0;
     for (int i = 0; i < skip.length; i++) {
-      skip[i] = last_empty[i] && now_empty[i];
       if (skip[i]) {
         skipped++;
       }

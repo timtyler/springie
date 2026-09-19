@@ -26,6 +26,11 @@ public class FramePublishTest {
 
   private Tile tileWithHits(int x0, int y0) {
     final Tile tile = new Tile(x0, y0, 64, 64);
+    // The worker staged a whole-tile rectangle.
+    tile.rx0 = x0;
+    tile.ry0 = y0;
+    tile.rx1 = x0 + 63;
+    tile.ry1 = y0 + 63;
     tile.image = new BufferedImage(64, 64, BufferedImage.TYPE_INT_RGB);
     final Raytracer.HitStats stats = new Raytracer.HitStats();
     stats.add(10, 20);
@@ -69,6 +74,10 @@ public class FramePublishTest {
   @Test
   public void tileWithoutHitsIsInactive() {
     final Tile tile = new Tile(0, 0, 64, 64);
+    tile.rx0 = 0;
+    tile.ry0 = 0;
+    tile.rx1 = 63;
+    tile.ry1 = 63;
     tile.image = new BufferedImage(64, 64, BufferedImage.TYPE_INT_RGB);
     tile.stats = new Raytracer.HitStats();
     tile.done = true;
@@ -78,6 +87,10 @@ public class FramePublishTest {
 
   private Tile solidTile(int x0, int y0, int rgb) {
     final Tile tile = new Tile(x0, y0, 64, 64);
+    tile.rx0 = x0;
+    tile.ry0 = y0;
+    tile.rx1 = x0 + 63;
+    tile.ry1 = y0 + 63;
     final BufferedImage image =
         new BufferedImage(64, 64, BufferedImage.TYPE_INT_RGB);
     for (int y = 0; y < 64; y++) {

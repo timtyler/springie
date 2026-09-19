@@ -2,6 +2,8 @@
 
 package com.springie.render.modules.modern;
 
+import com.springie.render.RectangleInt;
+
 import java.awt.Color;
 import java.awt.Graphics;
 
