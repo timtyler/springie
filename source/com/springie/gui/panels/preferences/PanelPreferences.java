@@ -44,16 +44,14 @@ public class PanelPreferences {
     final TabbedPanel tab = new TabbedPanel();
     tab.add("Display", FrEnd.panel_preferences_display.panel);
     tab.add("Viewpoint", FrEnd.panel_preferences_viewpoint.panel);
-    //tab.add("Stereo3D", FrEnd.panel_preferences_stereo3d.panel);
-    tab.add("Editing", FrEnd.panel_preferences_edit.panel);
-    tab.add("Animation", FrEnd.panel_preferences_update.panel);
-    // One top-level tab for both, each keeping its own panel: six tabs
-    // directly under Preferences was too many.
-    final TabbedPanel tab_import_export = new TabbedPanel();
-    tab_import_export.add("Import", FrEnd.panel_preferences_import.panel);
-    tab_import_export.add("POV-Ray export",
+    // Three top-level tabs only; everything else lives under Misc.
+    final TabbedPanel tab_misc = new TabbedPanel();
+    tab_misc.add("Editing", FrEnd.panel_preferences_edit.panel);
+    tab_misc.add("Animation", FrEnd.panel_preferences_update.panel);
+    tab_misc.add("Import", FrEnd.panel_preferences_import.panel);
+    tab_misc.add("POV-Ray export",
         FrEnd.panel_preferences_pov_export.panel);
-    tab.add("Import/Export", tab_import_export);
+    tab.add("Misc", tab_misc);
 
     this.panel.setLayout(new BorderLayout());
     this.panel.add(tab, BorderLayout.CENTER);
