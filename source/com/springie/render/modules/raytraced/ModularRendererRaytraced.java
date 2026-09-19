@@ -142,6 +142,12 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   // re-composites frame_image and clears it.
   private volatile boolean frame_staged;
 
+  // The skip set of the frame currently being composited: null when that
+  // frame re-traced every tile, otherwise true = the tile was skipped.
+  // Written when a frame is started, read when it is composited, so the
+  // composite paints only the tiles the frame actually re-traced.
+  private volatile boolean[] staged_skip;
+
   public void resize(int x, int y) {
     this.tiles = null;
   }
@@ -173,6 +179,40 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       buildTiles(width, height, show_bins);
     }
 
+    // Blit the composed frame in a single drawImage: the screen never
+    // sees the background clear or a partially drawn tile set, so there
+    // is no flicker. The composite runs before the next frame starts, so
+    // the staged skip set still describes the frame being composited: a
+    // frame that re-traced every tile gets a fresh full-canvas composite,
+    // while a partial frame paints only its re-traced tiles' snapshots
+    // over the persistent frame image instead of rebuilding the canvas.
+    if (this.frame_image == null) {
+      this.frame_image =
+          new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+      this.frame_staged = true;
+    }
+    if (this.frame_staged) {
+      if (this.staged_skip == null) {
+        this.frame_image = compositeFrame(this.tiles, width, height);
+      } else {
+        final Graphics g2 = this.frame_image.getGraphics();
+        try {
+          final Tile[] ctiles = this.tiles;
+          for (int i = 0; i < ctiles.length; i++) {
+            if (!this.staged_skip[i]) {
+              final ShownTile shown = ctiles[i].shown;
+              if (shown != null) {
+                g2.drawImage(shown.image, ctiles[i].x0, ctiles[i].y0, null);
+              }
+            }
+          }
+        } finally {
+          g2.dispose();
+        }
+      }
+      this.frame_staged = false;
+    }
+
     if (this.frame_done) {
       // Which tiles hold no geometry this frame. A tile that was empty
       // and is still empty keeps its published snapshot: its pixels are
@@ -199,24 +239,16 @@ public class ModularRendererRaytraced implements ModularRendererBase {
           skip[i] = last_empty[i] && now_empty[i];
         }
       }
+      // Remember which tiles this frame re-traces so the composite
+      // paints only those snapshots over the persistent frame image.
+      this.staged_skip = skip;
       startFrame(manager, skip);
       if (now_empty != null) {
         this.tile_empty = now_empty;
       }
     }
 
-    // Blit the composed frame in a single drawImage: the screen never
-    // sees the background clear or a partially drawn tile set, so there
-    // is no flicker. New frames are painted over the old one offscreen.
-    if (this.frame_image == null) {
-      this.frame_image =
-          new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-      this.frame_staged = true;
-    }
-    if (this.frame_staged) {
-      this.frame_image = compositeFrame(this.tiles, width, height);
-      this.frame_staged = false;
-    }
+    // Blit the composed frame in a single drawImage.
     graphics.drawImage(this.frame_image, 0, 0, null);
 
     final boolean show_active = RendererBinManager.show_active_bins;
@@ -319,6 +351,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     this.last_show_bins = show_bins;
     this.frame_done = true;
     this.tile_empty = null;
+    this.staged_skip = null;
     final int divisor = RendererBinManager.divisor;
     this.tile_nx = (width + divisor - 1) / divisor;
     this.frame_image = null;
@@ -345,12 +378,21 @@ public class ModularRendererRaytraced implements ModularRendererBase {
         camera.getEyeY(), camera.getEyeZ());
 
     final Tile[] tiles = this.tiles;
+    // Clear every tile's done flag before submitting any task: a fast
+    // task's "all done" scan must never observe a stale true for a tile
+    // this loop has not reached yet, or it would publish the frame
+    // prematurely and let the next repaint start a new frame while this
+    // one's tasks are still queued (their id check would then drop them).
+    for (int i = 0; i < tiles.length; i++) {
+      if (skip == null || !skip[i]) {
+        tiles[i].done = false;
+      }
+    }
     for (int i = 0; i < tiles.length; i++) {
       if (skip != null && skip[i]) {
         continue;
       }
       final Tile tile = tiles[i];
-      tile.done = false;
       POOL.execute(new Runnable() {
         public void run() {
           renderTile(id, tiles, tile, camera, bvh, rings);
