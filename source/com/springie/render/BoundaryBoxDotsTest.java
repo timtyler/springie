@@ -10,14 +10,61 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
 
 class BoundaryBoxDotsTest {
+  private int saved_x_pixels;
+
+  private int saved_y_pixels;
+
+  private int saved_x_pixelso2;
+
+  private int saved_y_pixelso2;
+
+  private int saved_shift_constant_x;
+
+  private int saved_shift_constant_y;
+
+  private int saved_shift_constant_z;
+
+  private boolean saved_show_boundary_box;
+
+  @BeforeEach
+  void setUp() {
+    // Pin the box to the test image: with a centred viewport every
+    // drawable dot projects inside it, whatever the ambient Coords or
+    // the shared dot counter (advanced by the app's animation thread in
+    // other tests' JVMs) happen to be.
+    this.saved_x_pixels = Coords.x_pixels;
+    this.saved_y_pixels = Coords.y_pixels;
+    this.saved_x_pixelso2 = Coords.x_pixelso2;
+    this.saved_y_pixelso2 = Coords.y_pixelso2;
+    this.saved_shift_constant_x = Coords.shift_constant_x;
+    this.saved_shift_constant_y = Coords.shift_constant_y;
+    this.saved_shift_constant_z = Coords.shift_constant_z;
+    Coords.x_pixels = 800;
+    Coords.y_pixels = 600;
+    Coords.x_pixelso2 = 400;
+    Coords.y_pixelso2 = 300;
+    Coords.shift_constant_x = 0;
+    Coords.shift_constant_y = 0;
+    Coords.shift_constant_z = 192;
+    this.saved_show_boundary_box = FrEnd.show_boundary_box;
+  }
+
   @AfterEach
   void resetFlag() {
-    FrEnd.show_boundary_box = false;
+    FrEnd.show_boundary_box = this.saved_show_boundary_box;
+    Coords.x_pixels = this.saved_x_pixels;
+    Coords.y_pixels = this.saved_y_pixels;
+    Coords.x_pixelso2 = this.saved_x_pixelso2;
+    Coords.y_pixelso2 = this.saved_y_pixelso2;
+    Coords.shift_constant_x = this.saved_shift_constant_x;
+    Coords.shift_constant_y = this.saved_shift_constant_y;
+    Coords.shift_constant_z = this.saved_shift_constant_z;
   }
 
   private static int dotPixels(BufferedImage img) {
@@ -49,11 +96,18 @@ class BoundaryBoxDotsTest {
         BufferedImage.TYPE_INT_RGB);
     final Graphics2D g = img.createGraphics();
     FrEnd.show_boundary_box = true;
-    BoundaryBoxDots.drawOneDot(g);
+    // Draw until a dot lands visibly: depth-edge dots near the front
+    // face can project off-screen, and the shared dot counter may start
+    // anywhere, so the first plotted dot is not necessarily visible.
+    final int before = dotPixels(img);
+    int afterOne = before;
+    for (int i = 0; i < 1000 && afterOne == before; i++) {
+      BoundaryBoxDots.drawOneDot(g);
+      afterOne = dotPixels(img);
+    }
     g.dispose();
-    final int afterOne = dotPixels(img);
-    assertTrue(afterOne > 0 && afterOne <= 4,
-        "one call plots a single 2x2 dot, got " + afterOne);
+    assertTrue(afterOne - before > 0 && afterOne - before <= 4,
+        "one call plots a single 2x2 dot, got " + (afterOne - before));
 
     // Cycling well past the full outline must not throw or misbehave.
     final Graphics2D g2 = img.createGraphics();

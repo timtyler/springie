@@ -172,9 +172,9 @@ public class PanelPreferencesViewpoint {
    * Restores the default viewpoint: no translation shift.
    */
   public void resetToDefaults() {
-    // The boundary-box dots are off by default.
-    FrEnd.show_boundary_box = false;
-    this.checkbox_show_boundary_box.setState(false);
+    // The boundary-box dots are on by default.
+    FrEnd.show_boundary_box = true;
+    this.checkbox_show_boundary_box.setState(true);
     Coords.shift_constant_x = 0;
     Coords.shift_constant_y = 0;
     Coords.shift_constant_z = Coords.shift_shifted - (Coords.shift_shifted >> 2);

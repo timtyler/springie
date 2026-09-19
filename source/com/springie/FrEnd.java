@@ -165,7 +165,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 	public static boolean render_hidden_faces;
 
-	public static boolean show_boundary_box;
+	public static boolean show_boundary_box = true;
 
 	public static boolean output_linefeeds = true;
 

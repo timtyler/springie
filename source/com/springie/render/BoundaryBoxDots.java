@@ -27,7 +27,7 @@ import com.springie.FrEnd;
  * outline appears to sparkle on all over rather than tracing the edges in
  * turn, and it is the same every run.
  *
- * <p>Off by default; see FrEnd.show_boundary_box.
+ * <p>On by default; see FrEnd.show_boundary_box.
  */
 public final class BoundaryBoxDots {
   /** Total dots in the outline, shared across however many edges draw. */
