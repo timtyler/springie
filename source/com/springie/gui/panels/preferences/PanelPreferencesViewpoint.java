@@ -3,18 +3,29 @@
 package com.springie.gui.panels.preferences;
 
 import java.awt.BorderLayout;
+import java.awt.Checkbox;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.Scrollbar;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import com.springie.FrEnd;
+import com.springie.gui.GUIStrings;
 import com.springie.render.RendererDelegator;
 import com.springie.render.Coords;
 
 public class PanelPreferencesViewpoint {
   public Panel panel = FrEnd.setUpPanelForFrame2();
+
+  /**
+   * Viewport overlay: draws the boundary box as a sequence of white dots,
+   * one dot per frame. Not part of the universe -- it is a view aid, so it
+   * lives here rather than on the Universe tab.
+   */
+  public Checkbox checkbox_show_boundary_box;
 
   private Scrollbar scroll_bar_translate_x;
 
@@ -33,6 +44,8 @@ public class PanelPreferencesViewpoint {
   }
 
   void makePanel() {
+    this.panel.add(getBoundaryBoxPanel());
+
     final Panel panel_translate_view_x = getTranslateViewXPanel();
 
     final Panel panel_translate_view_y = getTranslateViewYPanel();
@@ -42,6 +55,26 @@ public class PanelPreferencesViewpoint {
     this.panel.add(panel_translate_view_x);
     this.panel.add(panel_translate_view_y);
     this.panel.add(panel_translate_view_z);
+  }
+
+  private Panel getBoundaryBoxPanel() {
+    final Panel panel = new Panel();
+    this.checkbox_show_boundary_box =
+        new Checkbox(GUIStrings.SHOW_BOUNDARY_BOX);
+    this.checkbox_show_boundary_box.setState(FrEnd.show_boundary_box);
+    this.checkbox_show_boundary_box.addItemListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        FrEnd.show_boundary_box =
+            getCheckboxShowBoundaryBox().getState();
+        RendererDelegator.repaintAll();
+      }
+    });
+    panel.add(this.checkbox_show_boundary_box);
+    return panel;
+  }
+
+  public Checkbox getCheckboxShowBoundaryBox() {
+    return this.checkbox_show_boundary_box;
   }
 
   private Panel getTranslateViewXPanel() {
@@ -139,6 +172,9 @@ public class PanelPreferencesViewpoint {
    * Restores the default viewpoint: no translation shift.
    */
   public void resetToDefaults() {
+    // The boundary-box dots are off by default.
+    FrEnd.show_boundary_box = false;
+    this.checkbox_show_boundary_box.setState(false);
     Coords.shift_constant_x = 0;
     Coords.shift_constant_y = 0;
     Coords.shift_constant_z = Coords.shift_shifted - (Coords.shift_shifted >> 2);

@@ -34,8 +34,6 @@ public class PanelControlsUniverse {
 
 	public Checkbox checkbox_3D;
 
-	public Checkbox checkbox_show_boundary_box;
-
 	public Checkbox checkbox_gravity_switch;
 
 	public Checkbox checkbox_charge_switch;
@@ -113,20 +111,6 @@ public class PanelControlsUniverse {
 		});
 
 		panel3D.add(this.checkbox_3D);
-
-		this.checkbox_show_boundary_box =
-			new Checkbox(GUIStrings.SHOW_BOUNDARY_BOX);
-		this.checkbox_show_boundary_box.setState(FrEnd.show_boundary_box);
-		this.checkbox_show_boundary_box.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				Forget.about(e);
-				FrEnd.show_boundary_box =
-					getCheckboxShowBoundaryBox().getState();
-
-				RendererDelegator.repaintAll();
-			}
-		});
-		panel3D.add(this.checkbox_show_boundary_box);
 
 		// START GRAVITY
 		final Panel panel_gravity = new Panel();
@@ -544,10 +528,6 @@ public class PanelControlsUniverse {
 
 	public Checkbox getCheckbox3D() {
 		return this.checkbox_3D;
-	}
-
-	public Checkbox getCheckboxShowBoundaryBox() {
-		return this.checkbox_show_boundary_box;
 	}
 
 	public Checkbox getCheckboxCollisionCheck() {

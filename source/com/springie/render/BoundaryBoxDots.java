@@ -4,6 +4,7 @@ package com.springie.render;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.Random;
 
 import com.springie.FrEnd;
 
@@ -18,13 +19,20 @@ import com.springie.FrEnd;
  * cost (one projection plus one fillRect). Dots are plotted with no depth
  * test: the model's dynamics may overdraw them, which is fine.
  *
+ * <p>The draw order is a fixed pseudo-random shuffle (fixed seed), so the
+ * outline appears to sparkle on all over rather than tracing the edges in
+ * turn, and it is the same every run.
+ *
  * <p>Off by default; see FrEnd.show_boundary_box.
  */
 public final class BoundaryBoxDots {
-  /** Dots per box edge: 12 edges, so this many frames per full outline. */
-  private static final int DOTS_PER_EDGE = 32;
+  /** Dots per box edge: 8 edges, so this many frames per full outline. */
+  private static final int DOTS_PER_EDGE = 16;
 
   private static final int DOT_COUNT = DOTS_PER_EDGE * 8;
+
+  /** Fixed seed: the draw order shuffles the same way every run. */
+  private static final long SHUFFLE_SEED = 0xB0B0L;
 
   private static final int[] xs = new int[DOT_COUNT];
 
@@ -106,6 +114,22 @@ public final class BoundaryBoxDots {
         zs[n] = az + (bz - az) * k / DOTS_PER_EDGE;
         n++;
       }
+    }
+
+    // Shuffle the draw order with a fixed seed: the dots appear in a
+    // pseudo-random sequence that is identical on every run.
+    final Random random = new Random(SHUFFLE_SEED);
+    for (int i = DOT_COUNT - 1; i > 0; i--) {
+      final int j = random.nextInt(i + 1);
+      final int tx = xs[i];
+      xs[i] = xs[j];
+      xs[j] = tx;
+      final int ty = ys[i];
+      ys[i] = ys[j];
+      ys[j] = ty;
+      final int tz = zs[i];
+      zs[i] = zs[j];
+      zs[j] = tz;
     }
   }
 }
