@@ -22,7 +22,7 @@ import com.springie.world.World;
  * for rhythm rather than max height.
  *
  * <p>Body: two face-sharing tetrahedra forming a compact torso (the same
- * rigid body as the crawler and the grasshopper). Each leg is a wedge
+ * rigid body as the crawler). Each leg is a wedge
  * pogo: a tetrahedron hung from a z-running hip edge (two body nodes)
  * down to two splayed feet -- hip edge + two feet = 4 nodes, all 6
  * edges present. There are NO knees: the folded-knee design could
