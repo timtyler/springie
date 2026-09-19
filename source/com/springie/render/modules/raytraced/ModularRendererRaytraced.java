@@ -179,13 +179,16 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       buildTiles(width, height, show_bins);
     }
 
-    // Blit the composed frame in a single drawImage: the screen never
-    // sees the background clear or a partially drawn tile set, so there
-    // is no flicker. The composite runs before the next frame starts, so
-    // the staged skip set still describes the frame being composited: a
-    // frame that re-traced every tile gets a fresh full-canvas composite,
-    // while a partial frame paints only its re-traced tiles' snapshots
-    // over the persistent frame image instead of rebuilding the canvas.
+    // Compose the staged frame over the persistent frame image, then
+    // blit only what changed to the screen. A frame that re-traced
+    // every tile gets a fresh full-canvas composite and a full blit; a
+    // partial frame paints its re-traced tiles' snapshots and blits just
+    // those rectangles; when nothing was re-traced nothing is blitted at
+    // all -- the screen already shows this frame, so screen-space
+    // overlays (like the boundary-box dots) survive there, exactly like
+    // the polygon renderer's dirty bins. The composite runs before the
+    // next frame starts, so the staged skip set still describes the
+    // frame being composited.
     if (this.frame_image == null) {
       this.frame_image =
           new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -194,6 +197,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     if (this.frame_staged) {
       if (this.staged_skip == null) {
         this.frame_image = compositeFrame(this.tiles, width, height);
+        graphics.drawImage(this.frame_image, 0, 0, null);
       } else {
         final Graphics g2 = this.frame_image.getGraphics();
         try {
@@ -203,6 +207,11 @@ public class ModularRendererRaytraced implements ModularRendererBase {
               final ShownTile shown = ctiles[i].shown;
               if (shown != null) {
                 g2.drawImage(shown.image, ctiles[i].x0, ctiles[i].y0, null);
+                graphics.drawImage(this.frame_image, ctiles[i].x0,
+                    ctiles[i].y0, ctiles[i].x0 + ctiles[i].width,
+                    ctiles[i].y0 + ctiles[i].height, ctiles[i].x0,
+                    ctiles[i].y0, ctiles[i].x0 + ctiles[i].width,
+                    ctiles[i].y0 + ctiles[i].height, null);
               }
             }
           }
@@ -248,8 +257,9 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       }
     }
 
-    // Blit the composed frame in a single drawImage.
-    graphics.drawImage(this.frame_image, 0, 0, null);
+    // The staged frame was blitted (wholly or by tile rectangle) in the
+    // composite block above; when nothing was staged the screen already
+    // shows this frame, so nothing is painted here.
 
     final boolean show_active = RendererBinManager.show_active_bins;
     final Tile[] tiles = this.tiles;
@@ -383,6 +393,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     // this loop has not reached yet, or it would publish the frame
     // prematurely and let the next repaint start a new frame while this
     // one's tasks are still queued (their id check would then drop them).
+    int submitted = 0;
     for (int i = 0; i < tiles.length; i++) {
       if (skip == null || !skip[i]) {
         tiles[i].done = false;
@@ -393,11 +404,19 @@ public class ModularRendererRaytraced implements ModularRendererBase {
         continue;
       }
       final Tile tile = tiles[i];
+      submitted++;
       POOL.execute(new Runnable() {
         public void run() {
           renderTile(id, tiles, tile, camera, bvh, rings);
         }
       });
+    }
+    if (submitted == 0) {
+      // Every tile was skipped: there is no task to complete the frame,
+      // so it is complete immediately. Without this, frame_done would
+      // stay false forever and no further frame would ever start.
+      // Nothing was re-traced, so there is nothing to stage or blit.
+      this.frame_done = true;
     }
   }
 
@@ -442,8 +461,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     // repaints never show a half-rendered frame.
     publishFrame(tiles);
     this.frame_done = true;
-    // The next repaint re-composites the offscreen frame and blits it
-    // whole; the screen never shows the frame being assembled.
+    // The next repaint re-composites the offscreen frame and blits what
+    // changed; the screen never shows the frame being assembled.
     this.frame_staged = true;
 
     // Ask the main loop for another pass so the finished frame displays,
