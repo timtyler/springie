@@ -70,7 +70,6 @@ public final class ImageLoader {
         image = null;
 
         try {
-          // base = getCodeBase();
           // java.io.InputStream inputstream = (new URL(base, pngPar)).openStream();
           final PNGReader rdr = new PNGReader(in);
           final int w = rdr.getWidth();

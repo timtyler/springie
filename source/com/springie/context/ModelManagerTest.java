@@ -55,7 +55,7 @@ class ModelManagerTest {
 
   @Test
   void slotCreationDefersUntilTheNodeManagerExists() {
-    // The Models menu is built before applet.init() installs the node
+    // The Models menu is built before FrEnd.init() installs the node
     // manager; getSlots() must not capture a null manager then (that NPE'd
     // every later File > Load in DataInput.resetWorkspaces).
     ContextManager.setNodeManager(null);

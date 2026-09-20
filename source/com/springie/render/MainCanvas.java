@@ -349,7 +349,7 @@ public class MainCanvas {
   public final void paint(Graphics g) {
     RendererDelegator.repaintAll();
 
-    RendererDelegator.virgin_applet = 1; // not known why this hack is necessary :-(
+    RendererDelegator.virgin_paint = 1; // not known why this hack is necessary :-(
 
     update(g);
   }

@@ -2,7 +2,6 @@
 
 package com.springie.gui.components;
 
-import java.applet.Applet;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -88,8 +87,6 @@ public class TabbedPanel extends Panel implements MouseListener,
   int[][] tabRight = new int[2][this.tabN];
 
   Image offscreen;
-
-  Applet applet;
 
   /** Creates an empty TabPanel. */
   public TabbedPanel() {
@@ -233,9 +230,8 @@ public class TabbedPanel extends Panel implements MouseListener,
   }
 
   /**
-   * Return a mouse documentation string for selecting this card. (ie. the
-   * applet status line (if there is an applet), for when the mouse is over the
-   * tab). This may be overridden by a subclass, if desired. The default is to
+   * Return a mouse documentation string for selecting this card (for when the
+   * mouse is over the tab). This may be overridden by a subclass, if desired. The default is to
    * use the "Select tab card " + name.
    */
   public String documentCard(String name) {
@@ -473,10 +469,6 @@ public class TabbedPanel extends Panel implements MouseListener,
 
   public void mouseExited(MouseEvent e) {
     Forget.about(e);
-
-    if (this.applet != null) {
-      this.applet.showStatus("");
-    }
   }
 
   public void mouseDragged(MouseEvent e) {
@@ -484,20 +476,6 @@ public class TabbedPanel extends Panel implements MouseListener,
   }
 
   public void mouseMoved(MouseEvent e) {
-    if (this.applet == null) {
-      Component c = getParent();
-      while (c != null) {
-        if (c instanceof Applet) {
-          this.applet = (Applet) c;
-        }
-        c = c.getParent();
-      }
-    }
-    if (this.applet != null) {
-      final int i = cardAt(e.getX(), e.getY());
-      if (i != -1) {
-        this.applet.showStatus(documentCard((String) this.names.get(i)));
-      }
-    }
+    Forget.about(e);
   }
 }

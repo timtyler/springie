@@ -4,7 +4,6 @@
 
 package com.springie;
 
-import java.applet.Applet;
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -112,7 +111,7 @@ import com.springie.utilities.FilePath;
 import com.springie.utilities.random.Hortensius32Fast;
 import com.tifsoft.Forget;
 
-public class FrEnd extends java.applet.Applet implements Runnable {
+public class FrEnd extends Panel implements Runnable {
 	static final long serialVersionUID = 1250;
 
 	/**
@@ -477,7 +476,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 	public static int resolutiony;
 
-	public static Applet applet;
+	public static FrEnd instance;
 
 	public static DataInput data_input = new DataInput(null);
 
@@ -497,7 +496,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 
 	public void start() {
 		// Log.log("start() called");
-		applet = this;
+		instance = this;
 		resolutionx = 800;
 		resolutiony = 600;
 
@@ -589,12 +588,6 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		initial_type = initial_initial_type;
 
 		SetUpCode.clearAndThenAddInitialObjects();
-
-		if (!application) {
-			FrEnd.archive = getParameter("url");
-			final boolean focus = "true".equals(getParameter("focus"));
-			preferences.map.put(Preferences.key_update_animation_when_pointer_over, Boolean.valueOf(focus));
-		}
 	}
 
 	private void setUpGestureManagers() {
@@ -668,7 +661,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 			try {
 				frame_controls.setAlwaysOnTop(false);
 			} catch (SecurityException e) {
-				// Applets may not be allowed to change this.
+				// Sandboxed environments may not allow changing this.
 				Forget.about(e);
 			}
 		}
@@ -734,7 +727,7 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 					controls_stay_on_top_listener, AWTEvent.MOUSE_EVENT_MASK
 							| AWTEvent.WINDOW_EVENT_MASK);
 		} catch (SecurityException e) {
-			// Applets may not be allowed to listen to toolkit events.
+			// Sandboxed environments may not allow listening to toolkit events.
 			Forget.about(e);
 			controls_stay_on_top_listener = null;
 			return;
@@ -1190,10 +1183,6 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		ModelManager.loadNewModel(path);
 	}
 
-	public String getAppletInfo() {
-		return application_name + " - tensegrity simulator.";
-	}
-
 	public static boolean isAnimationInactive() {
 		if (FrEnd.paused) {
 			return true;
@@ -1221,11 +1210,11 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 	public static void main(String[] args) {
 		Forget.about(args);
 
-		final FrEnd applet = new FrEnd();
+		final FrEnd frontend = new FrEnd();
 
 		FrEnd.application = true;
 
-		frame_main = new FrameMain(window_title_prefix, applet);
+		frame_main = new FrameMain(window_title_prefix, frontend);
 
 		frame_main.setVisible(true);
 

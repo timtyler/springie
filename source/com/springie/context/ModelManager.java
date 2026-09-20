@@ -37,7 +37,7 @@ public final class ModelManager {
 
   /**
    * Creates the first slot from the boot model, once a node manager exists.
-   * The Models menu is built before applet.init() installs the node manager,
+   * The Models menu is built before FrEnd.init() installs the node manager,
    * so this must tolerate being called too early: leaving the slot list empty
    * and retrying on the next call. (Capturing the slot early pinned a null
    * manager, which made every later File > Load throw NPE in

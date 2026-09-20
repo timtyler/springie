@@ -316,7 +316,7 @@ public class MenuBarTop extends MenuBar {
   }
 
   private void chooseLoad() {
-    final FileDialog fd = new FileDialog(this.frame.getAppletFrame(),
+    final FileDialog fd = new FileDialog(this.frame,
       "Load objects", FileDialog.LOAD);
     fd.setVisible(true);
     final String returnedstring = fd.getFile();
@@ -329,7 +329,7 @@ public class MenuBarTop extends MenuBar {
   }
 
   private void chooseSaveAsWrl() {
-    final FileDialog fd = new FileDialog(this.frame.getAppletFrame(),
+    final FileDialog fd = new FileDialog(this.frame,
       "Save .WRL file as:", FileDialog.SAVE);
 
     final String no_ext = getLeaf(FrEnd.last_file_path);
@@ -350,7 +350,7 @@ public class MenuBarTop extends MenuBar {
   }
 
   private void chooseSaveAsSpr() {
-    final FileDialog fd = new FileDialog(this.frame.getAppletFrame(),
+    final FileDialog fd = new FileDialog(this.frame,
       "Save .SPR file as:", FileDialog.SAVE);
 
     final String leaf = getLeaf(FrEnd.last_file_path);
@@ -374,7 +374,7 @@ public class MenuBarTop extends MenuBar {
   }
 
   private void chooseSaveAsFDL() {
-    final FileDialog fd = new FileDialog(this.frame.getAppletFrame(),
+    final FileDialog fd = new FileDialog(this.frame,
       "Save .FDL file as:", FileDialog.SAVE);
 
     final String leaf = getLeaf(FrEnd.last_file_path);
@@ -398,7 +398,7 @@ public class MenuBarTop extends MenuBar {
   }
   
   private void chooseSaveAsOff() {
-    final FileDialog fd = new FileDialog(this.frame.getAppletFrame(),
+    final FileDialog fd = new FileDialog(this.frame,
       "Save .OFF file as:", FileDialog.SAVE);
 
     final String leaf = getLeaf(FrEnd.last_file_path);
@@ -422,7 +422,7 @@ public class MenuBarTop extends MenuBar {
   }
 
   private void chooseSaveAsEig() {
-    final FileDialog fd = new FileDialog(this.frame.getAppletFrame(),
+    final FileDialog fd = new FileDialog(this.frame,
       "Save .EIG file as:", FileDialog.SAVE);
 
     final String leaf = getLeaf(FrEnd.last_file_path);
@@ -446,7 +446,7 @@ public class MenuBarTop extends MenuBar {
   }
 
   private void chooseSaveAsPov() {
-    final FileDialog fd = new FileDialog(this.frame.getAppletFrame(),
+    final FileDialog fd = new FileDialog(this.frame,
       "Save .POV file as:", FileDialog.SAVE);
 
     final String leaf = getLeaf(FrEnd.last_file_path);
@@ -490,7 +490,7 @@ public class MenuBarTop extends MenuBar {
   }
 
   private void chooseQuit() {
-    this.frame.getApplet().stop();
+    this.frame.getFrontend().stop();
     System.exit(0);
   }
 

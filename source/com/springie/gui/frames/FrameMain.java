@@ -2,7 +2,6 @@
 
 package com.springie.gui.frames;
 
-import java.applet.Applet;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -16,7 +15,7 @@ import com.tifsoft.Forget;
 
 public class FrameMain extends Frame {
   static final long serialVersionUID = 1250; 
-  Applet applet;
+  FrEnd frontend;
 
   //static final String QUIT = "Quit";
 
@@ -42,12 +41,12 @@ public class FrameMain extends Frame {
 //, int width, int height
   public FrameMain(String title, FrEnd app) {
     super(title);
-    this.applet = app;
+    this.frontend = app;
 
     final MenuBarTop menubar = new MenuBarTop(this);
     setMenuBar(menubar);
 
-    add("Center", this.applet);
+    add("Center", this.frontend);
 
     FrameMaker.centreOnScreen(this, 60, 75);
 
@@ -55,11 +54,9 @@ public class FrameMain extends Frame {
 
     setVisible(true);
 
-    this.applet.init();
-    
     //Log.log("here B");
 
-    this.applet.start();
+    this.frontend.start();
 
     //Log.log("not here B");
 
@@ -89,7 +86,7 @@ public class FrameMain extends Frame {
   //        if (SAVEDATAAS.equals(arg)) {
   //          FrEnd.output_linefeeds = true;
   //          // System.out.println("DONE DataDump!");
-  //          final FileDialog fd = new FileDialog(getAppletFrame(),
+  //          final FileDialog fd = new FileDialog(this,
   //            "Save objects as", FileDialog.SAVE);
   //          // fd.setFile("tempfile.dat");
   //          fd.setFilenameFilter(new FilenameFilter() {
@@ -109,7 +106,7 @@ public class FrameMain extends Frame {
 
   //        if (SAVECONDENSED.equals(arg)) {
   //          FrEnd.output_linefeeds = false;
-  //          final FileDialog fd = new FileDialog(getAppletFrame(),
+  //          final FileDialog fd = new FileDialog(this,
   //            "Save objects as", FileDialog.SAVE);
   //          fd.setFilenameFilter(new FilenameFilter() {
   //            public boolean accept(File dir, String name) {
@@ -127,7 +124,7 @@ public class FrameMain extends Frame {
   //        }
 
   //        if (ADDDATA.equals(arg)) {
-  //          final FileDialog fd = new FileDialog(getAppletFrame(),
+  //          final FileDialog fd = new FileDialog(this,
   //            "Load objects", FileDialog.LOAD);
   //          fd.setFilenameFilter(new FilenameFilter() {
   //            public boolean accept(File dir, String name) {
@@ -144,7 +141,7 @@ public class FrameMain extends Frame {
   //        }
 
   //  private void chooseLoad() {
-  //    final FileDialog fd = new FileDialog(getAppletFrame(), "Load objects",
+  //    final FileDialog fd = new FileDialog(this, "Load objects",
   //      FileDialog.LOAD);
   //    // fd.setFile("tempfile.dat");
   //    fd.setFilenameFilter(new FilenameFilter() {
@@ -166,7 +163,7 @@ public class FrameMain extends Frame {
   //  }
   //
   //  private void chooseSaveAsWrl() {
-  //    final FileDialog fd = new FileDialog(getAppletFrame(),
+  //    final FileDialog fd = new FileDialog(this,
   //      "Save .WRL file as:", FileDialog.SAVE);
   //
   //    String no_ext = getLeaf(FrEnd.last_file_path);
@@ -191,7 +188,7 @@ public class FrameMain extends Frame {
   //  }
   //
   //  private void chooseSaveAsSpr() {
-  //    final FileDialog fd = new FileDialog(getAppletFrame(),
+  //    final FileDialog fd = new FileDialog(this,
   //      "Save .SPR file as:", FileDialog.SAVE);
   //
   //    final String leaf = getLeaf(FrEnd.last_file_path);
@@ -215,7 +212,7 @@ public class FrameMain extends Frame {
   //  }
   //
   //  private void chooseSaveAsOff() {
-  //    final FileDialog fd = new FileDialog(getAppletFrame(),
+  //    final FileDialog fd = new FileDialog(this,
   //      "Save .OFF file as:", FileDialog.SAVE);
   //
   //    final String leaf = getLeaf(FrEnd.last_file_path);
@@ -250,7 +247,7 @@ public class FrameMain extends Frame {
   //  }
   //
   //  private void chooseQuit() {
-  //    getApplet().stop();
+  //    getFrontend().stop();
   //    System.exit(0);
   //  }
   //
@@ -259,11 +256,7 @@ public class FrameMain extends Frame {
   //    return path.substring(i);
   //  }
 
-  public Applet getApplet() {
-    return this.applet;
-  }
-
-  public FrameMain getAppletFrame() {
-    return this;
+  public FrEnd getFrontend() {
+    return this.frontend;
   }
 }

@@ -32,7 +32,7 @@ public final class RendererDelegator {
 
   public static ModularRendererBase renderer = new ModularRendererNew();
 
-  public static int virgin_applet;
+  public static int virgin_paint;
 
   static int direction = 1;
 
@@ -248,8 +248,8 @@ public final class RendererDelegator {
     }
 
     if (RendererDelegator.repaint_all_objects) {
-      if (RendererDelegator.virgin_applet > 0) {
-        RendererDelegator.virgin_applet--;
+      if (RendererDelegator.virgin_paint > 0) {
+        RendererDelegator.virgin_paint--;
       } else {
         // first ensure there is no clip rectangle!
         graphics.setClip(0, 0, 19999, 19999);

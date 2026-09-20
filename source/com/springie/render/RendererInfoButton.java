@@ -62,13 +62,13 @@ public class RendererInfoButton {
   public void show() {
     FrEnd.panel_with_controls_at_bottom.add(FrEnd.panel_fundamental.panel);
 
-    FrEnd.applet.validate();
+    FrEnd.instance.validate();
     this.gui_is_iconised = false;
   }
 
   public void hide() {
     FrEnd.panel_with_controls_at_bottom.removeAll();
-    FrEnd.applet.validate();
+    FrEnd.instance.validate();
 
     this.gui_is_iconised = true;
   }
