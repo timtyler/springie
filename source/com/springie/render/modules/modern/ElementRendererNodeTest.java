@@ -14,7 +14,7 @@ import com.springie.geometry.Point3D;
 
 /**
  * The "Node polyhedron" dropdown offers Dodecahedron, Octahedron, Cube,
- * Icosahedron, Square and Hexagon. Square and Hexagon are flat shapes in
+ * Icosahedron, Square, Hexagon and C60. Square and Hexagon are flat shapes in
  * the z = 0 plane, so they only render if their winding survives the
  * backface test in ElementRendererNode.isVisible. These tests pin that
  * every offered polyhedron actually produces polygons.
@@ -63,6 +63,34 @@ class ElementRendererNodeTest {
   }
 
   @Test
+  void c60SurvivesTheBackfaceTest() {
+    assertRenders("C60", new SimpleC60());
+  }
+
+  @Test
+  void c60HasFootballTopology() {
+    final SimpleC60 c60 = new SimpleC60();
+    // Truncated icosahedron: 60 vertices, 12 pentagons + 20 hexagons.
+    assertTrue(c60.points.length == 60,
+        "C60 must have 60 vertices, had " + c60.points.length);
+    assertTrue(c60.faces.length == 32,
+        "C60 must have 32 faces, had " + c60.faces.length);
+    int pentagons = 0;
+    int hexagons = 0;
+    for (final int[] face : c60.faces) {
+      if (face.length == 5) {
+        pentagons++;
+      } else if (face.length == 6) {
+        hexagons++;
+      }
+    }
+    assertTrue(pentagons == 12,
+        "C60 must have 12 pentagonal faces, had " + pentagons);
+    assertTrue(hexagons == 20,
+        "C60 must have 20 hexagonal faces, had " + hexagons);
+  }
+
+  @Test
   void everyDropdownPolyhedronRenders() {
     assertRenders("Dodecahedron", new SimpleDodecahedron());
     assertRenders("Octahedron", new SimpleOctahedron());
@@ -70,5 +98,6 @@ class ElementRendererNodeTest {
     assertRenders("Icosahedron", new SimpleIcosahedron());
     assertRenders("Square", new SimpleSquare());
     assertRenders("Hexagon", new SimpleHexagon());
+    assertRenders("C60", new SimpleC60());
   }
 }

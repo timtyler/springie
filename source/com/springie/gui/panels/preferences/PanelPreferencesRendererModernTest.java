@@ -22,6 +22,7 @@ import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
 import com.springie.gui.components.TabbedPanel;
 import com.springie.render.modules.modern.ModularRendererNew;
+import com.springie.render.modules.modern.SimpleC60;
 import com.springie.render.modules.modern.SimpleCube;
 import com.springie.render.modules.modern.SimpleDodecahedron;
 import com.springie.render.modules.modern.SimpleHexagon;
@@ -86,12 +87,12 @@ public class PanelPreferencesRendererModernTest {
   }
 
   @Test
-  void polyhedronDropdownOffersAllSixShapes() {
+  void polyhedronDropdownOffersAllSevenShapes() {
     final Choice choice = polyhedronDropdown();
     final String[] expected = {"Dodecahedron", "Octahedron", "Cube",
-        "Icosahedron", "Square", "Hexagon"};
+        "Icosahedron", "Square", "Hexagon", "C60"};
     assertEquals(expected.length, choice.getItemCount(),
-        "the Node polyhedron dropdown must offer six shapes");
+        "the Node polyhedron dropdown must offer seven shapes");
     for (int i = 0; i < expected.length; i++) {
       assertEquals(expected[i], choice.getItem(i),
           "dropdown entry " + i + " must be " + expected[i]);
@@ -101,10 +102,10 @@ public class PanelPreferencesRendererModernTest {
   @Test
   void eachPolyhedronOptionInstallsItsRendererShape() {    final Choice choice = polyhedronDropdown();
     final String[] items = {"Dodecahedron", "Octahedron", "Cube",
-        "Icosahedron", "Square", "Hexagon"};
+        "Icosahedron", "Square", "Hexagon", "C60"};
     final Class<?>[] shapes = {SimpleDodecahedron.class, SimpleOctahedron.class,
         SimpleCube.class, SimpleIcosahedron.class, SimpleSquare.class,
-        SimpleHexagon.class};
+        SimpleHexagon.class, SimpleC60.class};
     for (int i = 0; i < items.length; i++) {
       pickPolyhedron(choice, items[i]);
       assertTrue(shapes[i].isInstance(ModularRendererNew.sphere_object),

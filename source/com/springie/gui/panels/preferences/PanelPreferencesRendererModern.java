@@ -22,6 +22,7 @@ import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ElementRendererLink;
 import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.modern.RendererTileManager;
+import com.springie.render.modules.modern.SimpleC60;
 import com.springie.render.modules.modern.SimpleCube;
 import com.springie.render.modules.modern.SimpleDodecahedron;
 import com.springie.render.modules.modern.SimpleHexagon;
@@ -356,6 +357,8 @@ public class PanelPreferencesRendererModern {
 					ModularRendererNew.sphere_object = new SimpleSquare();
 				} else if (val == 6) {
 					ModularRendererNew.sphere_object = new SimpleHexagon();
+				} else if (val == 7) {
+					ModularRendererNew.sphere_object = new SimpleC60();
 				}
 				RendererDelegator.repaintAll();
 			}
@@ -367,6 +370,7 @@ public class PanelPreferencesRendererModern {
 		this.choose_polyhedron.add("Icosahedron", 4);
 		this.choose_polyhedron.add("Square", 5);
 		this.choose_polyhedron.add("Hexagon", 6);
+		this.choose_polyhedron.add("C60", 7);
 		this.choose_polyhedron.choice.select(this.choose_polyhedron.num_to_str(1));
 		panel.add(this.choose_polyhedron.choice);
 
