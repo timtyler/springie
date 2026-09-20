@@ -30,12 +30,14 @@ import com.springie.render.RendererDelegator;
  * Pins the link tessellation contract of the modern renderer: a link
  * generates an open tube with link_sides sides (one quad per side per
  * length division), but only the front-facing quads are emitted. The
- * far side is culled with the same winding test the node polyhedra use:
- * each composite carries a single depth, so the painter's algorithm
- * cannot sort quads within it, and unculled far-side quads would paint
- * over the near side, making struts look transparent. link_sides = 2 is
- * the billboard special case: the two coplanar quads have opposite
- * windings, so the culling keeps the one facing the viewer and every
+ * far side is culled by the 3D facing of each side: each composite
+ * carries a single depth, so the painter's algorithm cannot sort quads
+ * within it, and unculled far-side quads would paint over the near
+ * side, making struts look transparent. (The projected 2D winding test
+ * the node polyhedra use flips almost at random once a side projects
+ * to a sub-pixel sliver, so it is not used for tubes.) link_sides = 2
+ * is the billboard special case: the two coplanar quads have opposite
+ * facings, so the culling keeps the one facing the viewer and every
  * strut renders as a quad that always points at the user.
  */
 class ElementRendererLinkTest {
@@ -147,16 +149,21 @@ class ElementRendererLinkTest {
 
       // One segment, no text label (the link is not selected).
       assertEquals(1, composites.size());
-      final int quads = quadCount(composites);
-      assertTrue(quads >= 1 && quads <= sides,
-          "culling must keep the front of the tube: some quads, not all, not none");
-      for (final PolygonComposite composite : composites) {
-        for (final PolygonObject2D quad : liveQuads(composite)) {
-          assertTrue(ElementRendererNode.isVisible(quad.x, quad.y),
-              "every emitted quad must face the camera; an unculled "
-                  + "far-side quad paints over the near side");
+      // The axis-aligned link's frame puts cross_2 at -z, so side s
+      // faces the viewer iff its outward normal's z (=-sin(mid-angle))
+      // is negative. (For sides = 3 the middle side is edge-on up to
+      // floating point -- sin(pi) is a positive 1.2e-16 -- so it is
+      // kept: no hole in the tube wall.)
+      int expected = 0;
+      for (int s = 0; s < sides; s++) {
+        if (Math.sin(2.0 * Math.PI * (s + 0.5) / sides) > 0.0) {
+          expected++;
         }
       }
+      assertEquals(expected, quadCount(composites),
+          "culling must keep exactly the viewer-facing half of the tube: "
+              + "leaked far-side quads paint over the near side, dropped "
+              + "near-side quads leave holes");
     }
   }
 
@@ -368,6 +375,117 @@ class ElementRendererLinkTest {
             "side " + s + " of " + sides + " for direction (" + d[0] + ","
                 + d[1] + "," + d[2] + "): winding test must agree with the "
                 + "geometric facing (inside-out quads render the far wall)");
+      }
+    }
+  }
+
+  @Test
+  void thinTubeCullingKeepsExactlyTheViewerFacingSides() {
+    // Regression test: 8-sided struts rendered inside-out (back faces
+    // leaking through, front faces dropping out, leaving see-through
+    // gaps). The old projected-winding cull flipped almost at random on
+    // thin tubes -- every side projects to a sub-pixel sliver, so integer
+    // rounding in the projection dominated the winding sign: a Monte
+    // Carlo over random links leaked a back face 41% of the time and
+    // dropped a front face 99% of the time. The 3D-facing cull must keep
+    // exactly the sides whose outward normal points at the viewer: no
+    // leaks, no drops, at every supported side count. Seeded for
+    // determinism.
+    final java.util.Random random = new java.util.Random(20260919);
+    final int[] sideset = {2, 3, 4, 6, 8};
+    // A thin strut, as rendered: 2 px.
+    final double thickness = 2 << Coords.shift;
+    for (int trial = 0; trial < 150; trial++) {
+      // Random link, 100..500 px long, midpoint near the screen centre,
+      // depth kept well in front of the camera (never behind it).
+      final double theta = random.nextDouble() * 2 * Math.PI;
+      final double phi = Math.acos(2 * random.nextDouble() - 1);
+      final double len = 100 + random.nextDouble() * 400;
+      final double ux = Math.sin(phi) * Math.cos(theta);
+      final double uy = Math.sin(phi) * Math.sin(theta);
+      final double uz = Math.cos(phi) * 0.6;
+      final int mx = (int) (400 + (random.nextDouble() - 0.5) * 300);
+      final int my = (int) (300 + (random.nextDouble() - 0.5) * 200);
+      final int mz = (int) ((random.nextDouble() - 0.5) * 200);
+      final Point3D p0 = new Point3D(
+          (int) (mx - ux * len / 2) << Coords.shift,
+          (int) (my - uy * len / 2) << Coords.shift,
+          (int) (mz - uz * len / 2) << Coords.shift);
+      final Point3D p1 = new Point3D(
+          (int) (mx + ux * len / 2) << Coords.shift,
+          (int) (my + uy * len / 2) << Coords.shift,
+          (int) (mz + uz * len / 2) << Coords.shift);
+
+      // Frame vectors, exactly as getPolygon builds them.
+      final double dx = p0.x - p1.x;
+      final double dy = p0.y - p1.y;
+      final double dz = p0.z - p1.z;
+      double c1x = -dy;
+      double c1y = dx;
+      final double c1z = 0.0;
+      double c2x;
+      double c2y;
+      double c2z;
+      if (c1x == 0.0 && c1y == 0.0) {
+        c1x = 1.0;
+        c1y = 0.0;
+        c2x = 0.0;
+        c2y = 0.0;
+        c2z = 1.0;
+      } else {
+        final double l1 = Math.sqrt(c1x * c1x + c1y * c1y);
+        c1x /= l1;
+        c1y /= l1;
+        c2x = c1y * dz - c1z * dy;
+        c2y = c1z * dx - c1x * dz;
+        c2z = c1x * dy - c1y * dx;
+        final double l2 = Math.sqrt(c2x * c2x + c2y * c2y + c2z * c2z);
+        if (l2 == 0.0) {
+          continue;
+        }
+        c2x /= l2;
+        c2y /= l2;
+        c2z /= l2;
+      }
+      final Double3D cross_1 = new Double3D(c1x, c1y, c1z);
+      final Double3D cross_2 = new Double3D(c2x, c2y, c2z);
+      final com.springie.geometry.Vector3D cross_1_int =
+          new com.springie.geometry.Vector3D((int) (c1x * thickness),
+              (int) (c1y * thickness), (int) (c1z * thickness));
+      final com.springie.geometry.Vector3D cross_2_int =
+          new com.springie.geometry.Vector3D((int) (c2x * thickness),
+              (int) (c2y * thickness), (int) (c2z * thickness));
+
+      for (final int sides : sideset) {
+        final PolygonObject2D[] quads = new PolygonObject2D[sides];
+        final PolygonObject2D[] original = new PolygonObject2D[sides];
+        for (int s = 0; s < sides; s++) {
+          final double a0 = 2.0 * Math.PI * s / sides;
+          final double a1 = 2.0 * Math.PI * (s + 1) / sides;
+          quads[s] = ElementRendererLink.tubeQuad(p0, p1, cross_1_int,
+              cross_2_int, Math.cos(a0), Math.sin(a0), Math.cos(a1),
+              Math.sin(a1), 1.0, 1.0, 0xFF0000FF);
+          original[s] = quads[s];
+        }
+        final int kept = ElementRendererLink.cullTubeBackFaces(quads,
+            cross_1, cross_2, sides);
+        // Oracle: the geometric facing, as sideNormalZ computes it --
+        // independent of the culling under test.
+        int expected = 0;
+        for (int s = 0; s < sides; s++) {
+          final double mid = 2.0 * Math.PI * (s + 0.5) / sides;
+          if (Math.cos(mid) * c1z + Math.sin(mid) * c2z < 0.0) {
+            assertTrue(quads[expected] == original[s],
+                "trial " + trial + ": culling must keep sides in order; "
+                    + "side " + s + " of " + sides + " faces the viewer");
+            expected++;
+          }
+        }
+        assertEquals(expected, kept,
+            "trial " + trial + ": culling must keep exactly the "
+                + expected + " viewer-facing sides of " + sides
+                + " (a leaked far-side quad paints over the near side; "
+                + "a dropped near-side quad leaves a hole)");
       }
     }
   }

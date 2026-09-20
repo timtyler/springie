@@ -278,20 +278,16 @@ public final class ElementRendererLink {
       }
       // Backface culling: a closed tube only shows its near side. The
       // far-side quads would otherwise paint over the near side -- each
-      // Backface culling: a closed tube only shows its near side. The
-      // far-side quads would otherwise paint over the near side -- each
       // composite carries a single depth, so the painter's algorithm
       // cannot sort quads within it -- making the strut look transparent.
-      // Same winding test as the node polyhedra; culled in place.
-      // tubeQuad winds its corners so that, exactly like the node
-      // polyhedra, a quad facing the viewer passes the winding test.
-      int front_count = 0;
-      for (int side = 0; side < sides; side++) {
-        final PolygonObject2D quad = quads[side];
-        if (ElementRendererNode.isVisible(quad.x, quad.y)) {
-          quads[front_count++] = quad;
-        }
-      }
+      // Culled by the 3D facing of each side, not by the projected 2D
+      // winding: on a thin tube every side projects to a sub-pixel sliver,
+      // and integer rounding in the projection flips the winding test
+      // almost at random -- back faces leak through and front faces drop
+      // out, which is why 8-sided struts looked inside-out. The mid-angle
+      // normal is exact in double precision.
+      final int front_count = cullTubeBackFaces(quads, cross_1, cross_2,
+          sides);
       final PolygonComposite composite = pair_cache.composites[segment];
       composite.z = z;
       // The culling already compacted the survivors to the front of the
@@ -312,6 +308,42 @@ public final class ElementRendererLink {
     }
 
     return return_vector;
+  }
+
+  /**
+   * Whether a tube side faces the viewer, from the 3D frame vectors. The
+   * side's outward normal at its mid-angle is cos(mid) * cross_1 +
+   * sin(mid) * cross_2; it faces the viewer when its z-component is
+   * negative -- the node-polyhedra convention pinned by
+   * tubeWindingMatchesNodeConvention. Exact in double precision, unlike
+   * the projected 2D winding, which integer rounding flips almost at
+   * random once a side projects to a sub-pixel sliver.
+   *
+   * Package-visible for the culling test.
+   */
+  static boolean tubeSideFacesViewer(Double3D cross_1, Double3D cross_2,
+      int side, int sides) {
+    final double mid = 2.0 * Math.PI * (side + 0.5) / sides;
+    return Math.cos(mid) * cross_1.z + Math.sin(mid) * cross_2.z < 0.0;
+  }
+
+  /**
+   * Compacts the viewer-facing tube quads to the front of the array, in
+   * place, and returns how many are live. The survivors keep their
+   * original order; entries past the returned count are stale and must
+   * not be drawn.
+   *
+   * Package-visible for the culling test.
+   */
+  static int cullTubeBackFaces(PolygonObject2D[] quads, Double3D cross_1,
+      Double3D cross_2, int sides) {
+    int front_count = 0;
+    for (int side = 0; side < sides; side++) {
+      if (tubeSideFacesViewer(cross_1, cross_2, side, sides)) {
+        quads[front_count++] = quads[side];
+      }
+    }
+    return front_count;
   }
 
   /**
@@ -348,8 +380,9 @@ public final class ElementRendererLink {
    *
    * The corners are wound so the quad's facing matches the node
    * polyhedra convention: a quad whose outward normal points at the
-   * viewer passes ElementRendererNode.isVisible, and is kept by the
-   * backface culling above.
+   * viewer passes ElementRendererNode.isVisible. (The link culling
+   * itself now tests the 3D facing directly; the winding convention is
+   * still pinned by tubeWindingMatchesNodeConvention.)
    *
    * Package-visible for the winding-direction test.
    */
