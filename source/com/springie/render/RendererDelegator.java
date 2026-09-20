@@ -70,7 +70,7 @@ public final class RendererDelegator {
    * ends are left open: capping them costs polygons without helping
    * the picture.
    */
-  public static int link_sides = 2;
+  public static int link_sides = 4;
 
   /**
    * Ray-traced glossiness as a percentage (10-100): each lit surface

@@ -32,9 +32,10 @@ import com.springie.render.modules.modern.SimpleSquare;
 
 /**
  * The "Node polyhedron" dropdown on the modern renderer tab must offer
- * all six shapes, and picking one must install the matching renderer shape.
- * The synthetic ItemEvent stands in for the one the native peer delivers;
- * the listener only flips a repaint flag besides swapping the shape.
+ * all seven shapes with C60 first and selected by default, and picking
+ * one must install the matching renderer shape. The synthetic ItemEvent
+ * stands in for the one the native peer delivers; the listener only
+ * flips a repaint flag besides swapping the shape.
  */
 public class PanelPreferencesRendererModernTest {
 
@@ -89,8 +90,8 @@ public class PanelPreferencesRendererModernTest {
   @Test
   void polyhedronDropdownOffersAllSevenShapes() {
     final Choice choice = polyhedronDropdown();
-    final String[] expected = {"Dodecahedron", "Octahedron", "Cube",
-        "Icosahedron", "Square", "Hexagon", "C60"};
+    final String[] expected = {"C60", "Dodecahedron", "Octahedron", "Cube",
+        "Icosahedron", "Square", "Hexagon"};
     assertEquals(expected.length, choice.getItemCount(),
         "the Node polyhedron dropdown must offer seven shapes");
     for (int i = 0; i < expected.length; i++) {
@@ -100,19 +101,27 @@ public class PanelPreferencesRendererModernTest {
   }
 
   @Test
+  void c60IsTheDefaultPolyhedron() {
+    // The dropdown selection is the user-facing default; assert it rather
+    // than the mutable sphere_object field, which other test classes swap.
+    assertEquals("C60", polyhedronDropdown().getSelectedItem(),
+        "the dropdown must select C60 by default");
+  }
+
+  @Test
   void eachPolyhedronOptionInstallsItsRendererShape() {    final Choice choice = polyhedronDropdown();
-    final String[] items = {"Dodecahedron", "Octahedron", "Cube",
-        "Icosahedron", "Square", "Hexagon", "C60"};
-    final Class<?>[] shapes = {SimpleDodecahedron.class, SimpleOctahedron.class,
-        SimpleCube.class, SimpleIcosahedron.class, SimpleSquare.class,
-        SimpleHexagon.class, SimpleC60.class};
+    final String[] items = {"C60", "Dodecahedron", "Octahedron", "Cube",
+        "Icosahedron", "Square", "Hexagon"};
+    final Class<?>[] shapes = {SimpleC60.class, SimpleDodecahedron.class,
+        SimpleOctahedron.class, SimpleCube.class, SimpleIcosahedron.class,
+        SimpleSquare.class, SimpleHexagon.class};
     for (int i = 0; i < items.length; i++) {
       pickPolyhedron(choice, items[i]);
       assertTrue(shapes[i].isInstance(ModularRendererNew.sphere_object),
           "picking " + items[i] + " must install " + shapes[i].getSimpleName());
     }
     // Leave the default shape installed.
-    pickPolyhedron(choice, "Dodecahedron");
+    pickPolyhedron(choice, "C60");
   }
 
   /**

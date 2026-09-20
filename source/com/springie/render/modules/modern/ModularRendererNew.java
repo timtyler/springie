@@ -23,7 +23,7 @@ public class ModularRendererNew implements ModularRendererBase {
 
   RendererTileManager tiles_last = new RendererTileManager();
 
-  public static ObjectBase sphere_object = new SimpleDodecahedron();
+  public static ObjectBase sphere_object = new SimpleC60();
 
   /**
    * The frame's composites in creation order, reused across frames.

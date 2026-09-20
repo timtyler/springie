@@ -331,7 +331,7 @@ public class PanelPreferencesRendererModern {
 		this.choose_link_sides.add("4", 4);
 		this.choose_link_sides.add("6", 6);
 		this.choose_link_sides.add("8", 8);
-		this.choose_link_sides.choice.select(this.choose_link_sides.num_to_str(2));
+		this.choose_link_sides.choice.select(this.choose_link_sides.num_to_str(4));
 		panel.add(this.choose_link_sides.choice);
 
 		return panel;
@@ -346,31 +346,31 @@ public class PanelPreferencesRendererModern {
 				final String scs = (String) e.getItem();
 				final int val = PanelPreferencesRendererModern.this.choose_polyhedron.str_to_num(scs);
 				if (val == 1) {
-					ModularRendererNew.sphere_object = new SimpleDodecahedron();
-				} else if (val == 2) {
-					ModularRendererNew.sphere_object = new SimpleOctahedron();
-				} else if (val == 3) {
-					ModularRendererNew.sphere_object = new SimpleCube();
-				} else if (val == 4) {
-					ModularRendererNew.sphere_object = new SimpleIcosahedron();
-				} else if (val == 5) {
-					ModularRendererNew.sphere_object = new SimpleSquare();
-				} else if (val == 6) {
-					ModularRendererNew.sphere_object = new SimpleHexagon();
-				} else if (val == 7) {
 					ModularRendererNew.sphere_object = new SimpleC60();
+				} else if (val == 2) {
+					ModularRendererNew.sphere_object = new SimpleDodecahedron();
+				} else if (val == 3) {
+					ModularRendererNew.sphere_object = new SimpleOctahedron();
+				} else if (val == 4) {
+					ModularRendererNew.sphere_object = new SimpleCube();
+				} else if (val == 5) {
+					ModularRendererNew.sphere_object = new SimpleIcosahedron();
+				} else if (val == 6) {
+					ModularRendererNew.sphere_object = new SimpleSquare();
+				} else if (val == 7) {
+					ModularRendererNew.sphere_object = new SimpleHexagon();
 				}
 				RendererDelegator.repaintAll();
 			}
 		});
 
-		this.choose_polyhedron.add("Dodecahedron", 1);
-		this.choose_polyhedron.add("Octahedron", 2);
-		this.choose_polyhedron.add("Cube", 3);
-		this.choose_polyhedron.add("Icosahedron", 4);
-		this.choose_polyhedron.add("Square", 5);
-		this.choose_polyhedron.add("Hexagon", 6);
-		this.choose_polyhedron.add("C60", 7);
+		this.choose_polyhedron.add("C60", 1);
+		this.choose_polyhedron.add("Dodecahedron", 2);
+		this.choose_polyhedron.add("Octahedron", 3);
+		this.choose_polyhedron.add("Cube", 4);
+		this.choose_polyhedron.add("Icosahedron", 5);
+		this.choose_polyhedron.add("Square", 6);
+		this.choose_polyhedron.add("Hexagon", 7);
 		this.choose_polyhedron.choice.select(this.choose_polyhedron.num_to_str(1));
 		panel.add(this.choose_polyhedron.choice);
 
@@ -494,7 +494,7 @@ public class PanelPreferencesRendererModern {
 		reflectTileSizeNumber();
 
 		// Strut and cable divisions.
-		ElementRendererLink.strut_divisions = 3;
+		ElementRendererLink.strut_divisions = 5;
 		this.scroll_bar_strut_divisions
 				.setValue(ElementRendererLink.strut_divisions);
 		reflectLabelStrutDivisions();
@@ -505,7 +505,7 @@ public class PanelPreferencesRendererModern {
 		reflectLabelCableDivisions();
 
 		// Strut/cable sides (2).
-		RendererDelegator.link_sides = 2;
+		RendererDelegator.link_sides = 4;
 		this.choose_link_sides.choice.select(this.choose_link_sides
 				.num_to_str(2));
 

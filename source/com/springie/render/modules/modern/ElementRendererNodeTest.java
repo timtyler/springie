@@ -13,8 +13,8 @@ import com.springie.elements.nodes.NodeTypeFactory;
 import com.springie.geometry.Point3D;
 
 /**
- * The "Node polyhedron" dropdown offers Dodecahedron, Octahedron, Cube,
- * Icosahedron, Square, Hexagon and C60. Square and Hexagon are flat shapes in
+ * The "Node polyhedron" dropdown offers C60, Dodecahedron, Octahedron,
+ * Cube, Icosahedron, Square and Hexagon. Square and Hexagon are flat shapes in
  * the z = 0 plane, so they only render if their winding survives the
  * backface test in ElementRendererNode.isVisible. These tests pin that
  * every offered polyhedron actually produces polygons.

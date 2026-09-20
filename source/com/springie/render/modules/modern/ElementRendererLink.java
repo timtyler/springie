@@ -125,7 +125,7 @@ public final class ElementRendererLink {
     }
   }
 
-  public static int strut_divisions = 3;
+  public static int strut_divisions = 5;
 
   public static int cable_divisions = 1;
 

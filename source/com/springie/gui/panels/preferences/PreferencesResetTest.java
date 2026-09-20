@@ -68,7 +68,7 @@ class PreferencesResetTest {
         RendererTileManager.show_tiles = true;
         RendererTileManager.colour_modifier_filled = ColourModifier.darker;
         RendererTileManager.colour_modifier_wireframe = ColourModifier.natural;
-        ElementRendererLink.strut_divisions = 5;
+        ElementRendererLink.strut_divisions = 7;
         ElementRendererLink.cable_divisions = 6;
         RendererDelegator.link_sides = 6;
         RendererDelegator.glossiness = 90;
@@ -155,9 +155,9 @@ class PreferencesResetTest {
           RendererTileManager.colour_modifier_filled);
       assertEquals(ColourModifier.darker,
           RendererTileManager.colour_modifier_wireframe);
-      assertEquals(3, ElementRendererLink.strut_divisions);
+      assertEquals(5, ElementRendererLink.strut_divisions);
       assertEquals(1, ElementRendererLink.cable_divisions);
-      assertEquals(2, RendererDelegator.link_sides);
+      assertEquals(4, RendererDelegator.link_sides);
       assertEquals(50, RendererDelegator.glossiness);
       assertEquals(false, RendererDelegator.glossiness_enabled);
       assertEquals(false, RendererDelegator.shadows);
