@@ -221,6 +221,17 @@ public class ModularRendererRaytraced implements ModularRendererBase {
         && RendererDelegator.renderer == this;
   }
 
+  /**
+   * A finished frame sets frame_staged (and frame_done, which releases
+   * the hold) before asking for a repaint, so a staged frame is never
+   * skipped: while a frame is still being traced there is simply
+   * nothing new to show.
+   */
+  @Override
+  public boolean hasStagedFrame() {
+    return this.frame_staged;
+  }
+
   public void repaint(Graphics graphics, NodeManager manager) {
     final int width = Coords.x_pixels;
     final int height = Coords.y_pixels;

@@ -23,4 +23,15 @@ public interface ModularRendererBase {
   default boolean holdModelForFrame() {
     return false;
   }
+
+  /**
+   * True when calling repaint() would put something new on the screen.
+   * The ray-traced renderer finishes frames asynchronously: while it is
+   * still tracing, repaint() has nothing new to show, so the delegator
+   * skips the call instead of spinning empty repaints at the animation
+   * tick rate. Renderers that paint synchronously return true.
+   */
+  default boolean hasStagedFrame() {
+    return true;
+  }
 }

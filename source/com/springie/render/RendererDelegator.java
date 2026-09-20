@@ -331,7 +331,14 @@ public final class RendererDelegator {
       ContextManager.getNodeManager().nodeAndLinkUpdate();
     }
 
-    renderer.repaint(graphics, ContextManager.getNodeManager());
+    // While the renderer holds the model for an in-flight frame, its
+    // repaint() has nothing new to show until the frame stages -- so skip
+    // the call instead of redrawing at the animation tick rate. A staged
+    // frame always releases the hold first (the worker sets frame_done
+    // before frame_staged), so the finished frame is never skipped here.
+    if (!hold || renderer.hasStagedFrame()) {
+      renderer.repaint(graphics, ContextManager.getNodeManager());
+    }
 
     if (!hold) {
       WorldManager.privateWorldUnbufferedUpdate();
