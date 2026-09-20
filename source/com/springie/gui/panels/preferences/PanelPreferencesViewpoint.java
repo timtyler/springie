@@ -66,7 +66,11 @@ public class PanelPreferencesViewpoint {
       public void itemStateChanged(ItemEvent e) {
         FrEnd.show_boundary_box =
             getCheckboxShowBoundaryBox().getState();
-        RendererDelegator.repaintAll();
+        // A full redraw: the dots are painted in screen space, so turning
+        // the box off must clear them from the whole canvas, and the flag
+        // alone does not schedule a paint when the animation is paused.
+        RendererDelegator.repaint_all_objects = true;
+        FrEnd.main_canvas.panel.repaint();
       }
     });
     panel.add(this.checkbox_show_boundary_box);

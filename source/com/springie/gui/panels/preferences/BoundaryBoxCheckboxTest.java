@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import com.springie.FrEnd;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.GuiTestSupport;
+import com.springie.render.RendererDelegator;
 
 /**
  * The dotted boundary-box overlay is a viewport aid, not part of the
@@ -104,6 +105,19 @@ class BoundaryBoxCheckboxTest {
       assertTrue(FrEnd.show_boundary_box, "checking must turn the dots on");
       clickCheckbox(checkbox, ItemEvent.DESELECTED);
       assertFalse(FrEnd.show_boundary_box, "unchecking must turn the dots off");
+    });
+  }
+
+  @Test
+  void togglingRequestsAFullCanvasRedraw() throws Exception {
+    SwingUtilities.invokeAndWait(() -> {
+      final Checkbox checkbox =
+          FrEnd.panel_preferences_viewpoint.checkbox_show_boundary_box;
+      assertNotNull(checkbox, "expected the checkbox field to exist");
+      RendererDelegator.repaint_all_objects = false;
+      clickCheckbox(checkbox, ItemEvent.DESELECTED);
+      assertTrue(RendererDelegator.repaint_all_objects,
+          "toggling the boundary-box option must request a full canvas redraw");
     });
   }
 }
