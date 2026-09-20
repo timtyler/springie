@@ -19,64 +19,64 @@ import com.springie.render.modules.ModularRendererBase;
 import com.tifsoft.Forget;
 
 public class ModularRendererNew implements ModularRendererBase {
-  RendererBinManager bins_current = new RendererBinManager();
+  RendererTileManager tiles_current = new RendererTileManager();
 
-  RendererBinManager bins_last = new RendererBinManager();
+  RendererTileManager tiles_last = new RendererTileManager();
 
   public static ObjectBase sphere_object = new SimpleDodecahedron();
 
   /**
    * The frame's composites in creation order, reused across frames.
-   * distribute() sorts them globally before binning, so the bins arrive
-   * at render() pre-sorted and no per-bin sort is needed.
+   * distribute() sorts them globally before tiling, so the tiles arrive
+   * at render() pre-sorted and no per-tile sort is needed.
    */
   private final ArrayList<PolygonComposite> frame_composites =
       new ArrayList<>();
 
   public void resize(int x, int y) {
-    this.bins_current.resize(x, y);
-    this.bins_last.resize(x, y);
+    this.tiles_current.resize(x, y);
+    this.tiles_last.resize(x, y);
   }
 
   public void reset() {
-    this.bins_current.reset();
-    this.bins_last.reset();
+    this.tiles_current.reset();
+    this.tiles_last.reset();
   }
 
   public void repaint(Graphics graphics, NodeManager manager) {
-    // clear bins...
+    // clear tiles...
 
-    this.bins_current.clear();
+    this.tiles_current.clear();
 
     final ArrayList<PolygonComposite> all = this.frame_composites;
     all.clear();
 
     final int mask = 0xFFFFFFFF;
 
-    addNodesToBins(manager, mask, all);
+    addNodesToTiles(manager, mask, all);
 
-    addLinksToBins(manager, mask, all);
+    addLinksToTiles(manager, mask, all);
 
-    addFacesToBins(manager, mask, all);
+    addFacesToTiles(manager, mask, all);
 
-    // One global depth sort, then distribute to the bins in sorted
-    // order: every bin's vector arrives at render() pre-sorted, so the
-    // per-bin sorts are gone.
-    this.bins_current.distribute(all, FrEnd.redraw_deepest_first);
+    // One global depth sort, then distribute to the tiles in sorted
+    // order: every tile's vector arrives at render() pre-sorted, so the
+    // per-tile sorts are gone.
+    this.tiles_current.distribute(all, FrEnd.redraw_deepest_first);
 
     // do the drawing operations, offscreen if needed...
 
-    this.bins_current.render(this.bins_last, graphics);
+    this.tiles_current.render(this.tiles_last, graphics);
 
-    // Rotate per-bin frame state: bins_last takes this frame's vectors and
+    // Rotate per-tile frame state: tiles_last takes this frame's vectors and
     // rectangles for next frame's damage repair (moved content is scrubbed
     // over the union of last frame's and this frame's content rects).
-    this.bins_current.rotateFrameState(this.bins_last);
+    this.tiles_current.rotateFrameState(this.tiles_last);
 
     RendererDelegator.countRenderedFrame();
   }
 
-  private void addFacesToBins(NodeManager manager, int mask,
+  private void addFacesToTiles(NodeManager manager, int mask,
       ArrayList<PolygonComposite> all) {
     Forget.about(mask);
     if (FrEnd.render_faces) {
@@ -95,7 +95,7 @@ public class ModularRendererNew implements ModularRendererBase {
     }
   }
 
-  private void addLinksToBins(NodeManager manager, int mask,
+  private void addLinksToTiles(NodeManager manager, int mask,
       ArrayList<PolygonComposite> all) {
     if (FrEnd.render_links) {
       final LinkManager link_manager = manager.getLinkManager();
@@ -126,7 +126,7 @@ public class ModularRendererNew implements ModularRendererBase {
     }
   }
 
-  private void addNodesToBins(NodeManager manager, int mask,
+  private void addNodesToTiles(NodeManager manager, int mask,
       ArrayList<PolygonComposite> all) {
     Forget.about(mask);
 
@@ -134,7 +134,7 @@ public class ModularRendererNew implements ModularRendererBase {
 
     if (FrEnd.render_nodes) {
 
-      // fill bins...
+      // fill tiles...
       // ObjectBase sphere_object = new SimpleTetrahedron();
       // ObjectBase sphere_object = new SimpleOctahedron();
       // ObjectBase sphere_object = new SimpleIcosahedron();

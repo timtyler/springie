@@ -115,13 +115,13 @@ public class PanelPreferencesRendererModernTest {
   }
 
   /**
-   * The Renderer tab holds "Main", "Bins" and "Fog" sub-tabs: the Bins
-   * rows move to Bins, the fog rows to Fog, everything else to Main.
+   * The Renderer tab holds "Main", "Tiles" and "Fog" sub-tabs: the Tiles
+   * rows move to Tiles, the fog rows to Fog, everything else to Main.
    * "Render deepest objects first" and "Show labels on:" keep their
    * slots at the top of Main, after Pixellation.
    */
   @Test
-  void rendererTabHasMainBinsAndFogSubTabs() {
+  void rendererTabHasMainTilesAndFogSubTabs() {
     final Panel shared_misc_panel = FrEnd.panel_preferences_shared_misc.panel;
     assertEquals(0, shared_misc_panel.getComponentCount(),
         "the old Misc tab panel must be empty after its rows move");
@@ -145,14 +145,14 @@ public class PanelPreferencesRendererModernTest {
         "the Filters card must hold the filters panel");
 
     final Panel main_tab = FrEnd.panel_preferences_shared_show.panel_main;
-    final Panel bins_tab = FrEnd.panel_preferences_shared_show.panel_bins;
+    final Panel tiles_tab = FrEnd.panel_preferences_shared_show.panel_tiles;
     final Panel fog_tab = FrEnd.panel_preferences_shared_show.panel_fog;
     // A modern row...
     assertNotNull(polyhedronDropdown(),
         "the Node polyhedron dropdown must move to the Main sub-tab");
-    // ...the Bins rows...
-    assertNotNull(findCheckbox(bins_tab, "Show rendering bins"),
-        "the Show-bins checkbox must move to the Bins sub-tab");
+    // ...the Tiles rows...
+    assertNotNull(findCheckbox(tiles_tab, "Show rendering tiles"),
+        "the Show-tiles checkbox must move to the Tiles sub-tab");
     // ...and the fog rows.
     assertNotNull(findCheckbox(fog_tab, "Fog depth is relative"),
         "the shared fog checkbox must move to the Fog sub-tab");
@@ -201,7 +201,7 @@ public class PanelPreferencesRendererModernTest {
   }
 
   /**
-   * Each Renderer sub-tab (Main, Bins, Fog) is one layout: a single
+   * Each Renderer sub-tab (Main, Tiles, Fog) is one layout: a single
    * GridLayout whose rows are direct children, so every row gets the
    * same height. The ray-traced rows are added and removed at the
    * bottom of Main on renderer switch.
@@ -209,9 +209,9 @@ public class PanelPreferencesRendererModernTest {
   @Test
   void rendererSubTabsAreOneLayoutEach() throws Exception {
     final Panel main_tab = FrEnd.panel_preferences_shared_show.panel_main;
-    final Panel bins_tab = FrEnd.panel_preferences_shared_show.panel_bins;
+    final Panel tiles_tab = FrEnd.panel_preferences_shared_show.panel_tiles;
     final Panel fog_tab = FrEnd.panel_preferences_shared_show.panel_fog;
-    for (final Panel tab : new Panel[] { main_tab, bins_tab, fog_tab }) {
+    for (final Panel tab : new Panel[] { main_tab, tiles_tab, fog_tab }) {
       assertTrue(tab.getLayout() instanceof java.awt.GridLayout,
           "each Renderer sub-tab must be a single GridLayout");
       // No nested panels holding rows: every row is a direct child.

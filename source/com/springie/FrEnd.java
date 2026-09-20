@@ -945,17 +945,12 @@ public class FrEnd extends java.applet.Applet implements Runnable {
 		thread_terminated = false;
 
 		while (!thread_terminated) {
-			RendererDelegator.callUpdateMethods();
 			if (!paused) {
 				if (stepping > 0) {
 					if (--stepping == 0) {
 						endStepping();
 					}
 				}
-			}
-
-			if (RendererDelegator.isOldDoubleBuffer()) {
-				RendererDelegator.redrawChanged(main_canvas.graphics_handle);
 			}
 
 			// Process messages on the animation thread (not the AWT thread):

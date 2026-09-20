@@ -10,36 +10,36 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.springie.render.modules.raytraced.ModularRendererRaytraced.Tile;
-import com.springie.render.modules.modern.RendererBinManager;
+import com.springie.render.modules.modern.RendererTileManager;
 
 /**
- * The ray-traced renderer must tile the canvas with the same bins as the
+ * The ray-traced renderer must tile the canvas with the same tiles as the
  * default renderer: divisor-sized blocks covering every pixel exactly once.
  */
 public class TileGridTest {
   private int saved_divisor;
 
-  private boolean saved_show_bins;
+  private boolean saved_show_tiles;
 
   @BeforeEach
   public void saveDivisor() {
-    this.saved_divisor = RendererBinManager.divisor;
-    this.saved_show_bins = RendererBinManager.show_bins;
-    RendererBinManager.show_bins = false;
+    this.saved_divisor = RendererTileManager.divisor;
+    this.saved_show_tiles = RendererTileManager.show_tiles;
+    RendererTileManager.show_tiles = false;
   }
 
   @AfterEach
   public void restoreDivisor() {
-    RendererBinManager.divisor = this.saved_divisor;
-    RendererBinManager.show_bins = this.saved_show_bins;
+    RendererTileManager.divisor = this.saved_divisor;
+    RendererTileManager.show_tiles = this.saved_show_tiles;
   }
 
   private void checkGrid(int width, int height, int divisor) {
-    RendererBinManager.divisor = divisor;
+    RendererTileManager.divisor = divisor;
     final Tile[] tiles = ModularRendererRaytraced
         .buildTileGrid(width, height);
 
-    // Degenerate zero-area bins (exact multiples of the divisor) are
+    // Degenerate zero-area tiles (exact multiples of the divisor) are
     // dropped: they cover no pixels.
     final int expected_nx = (width + divisor - 1) / divisor;
     final int expected_ny = (height + divisor - 1) / divisor;
@@ -91,15 +91,15 @@ public class TileGridTest {
   }
 
   /**
-   * With "show bins" each tile is shrunk by the same 4px margin the
+   * With "show tiles" each tile is shrunk by the same 4px margin the
    * default renderer leaves, so the background shows through as black
    * grid lines. Origins stay on the divisor grid; tiles never overlap.
    */
   @Test
-  public void showBinsShrinksTilesByMargin() {
-    RendererBinManager.show_bins = true;
+  public void showTilesShrinksTilesByMargin() {
+    RendererTileManager.show_tiles = true;
     final int divisor = 340;
-    RendererBinManager.divisor = divisor;
+    RendererTileManager.divisor = divisor;
     final int width = 800;
     final int height = 600;
     final Tile[] tiles = ModularRendererRaytraced

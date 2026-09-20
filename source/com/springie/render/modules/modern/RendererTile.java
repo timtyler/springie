@@ -8,7 +8,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-public class RendererBin {
+public class RendererTile {
   ArrayList<PolygonComposite> vector = new ArrayList<>();
 
   Image image;

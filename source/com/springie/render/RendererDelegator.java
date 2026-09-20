@@ -14,7 +14,7 @@ import com.springie.preferences.Preferences;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;
-import com.springie.render.modules.modern.RendererBinManager;
+import com.springie.render.modules.modern.RendererTileManager;
 import com.springie.utilities.random.JUR;
 import com.springie.world.WorldManager;
 
@@ -165,28 +165,6 @@ public final class RendererDelegator {
   }
 
 
-  public static boolean isOldDoubleBuffer() {
-    if (renderer instanceof ModularRendererNew
-        || renderer instanceof ModularRendererRaytraced) {
-      return false;
-    }
-    return isUnderlyingOldDoubleBuffer();
-  }
-
-  public static boolean isUnderlyingOldDoubleBuffer() {
-    final Object o = FrEnd.preferences.map
-        .get(Preferences.renderer_old_double_buffer);
-
-    return o.equals(Boolean.TRUE);
-  }
-
-  public static boolean isNewDoubleBuffer() {
-    final Object o = FrEnd.preferences.map
-        .get(Preferences.renderer_new_double_buffer);
-
-    return o.equals(Boolean.TRUE);
-  }
-
   //static void resetGrid() {
     //RendererDelegator.repaint_all_objects = true;
   //}
@@ -302,7 +280,7 @@ public final class RendererDelegator {
     // While a drag box is active every frame is fully repainted, which
     // covers the previous rectangle. (The drag box itself is only ever
     // drawn -- never erased -- so there is nothing to repair.) The modern
-    // renderer forces the damaged bins dirty and the ray tracer includes
+    // renderer forces the damaged tiles dirty and the ray tracer includes
     // the damaged region in its dirty rectangles; the old polygon
     // renderer gets a full clear-and-redraw (see below).
     final RendererDragBox drag_box_renderer = ContextManager.getNodeManager().renderer.renderer_drag_box;
@@ -357,19 +335,6 @@ public final class RendererDelegator {
 
     if (!hold) {
       WorldManager.privateWorldUnbufferedUpdate();
-    }
-  }
-
-  public static void callUpdateMethods() {
-    if (RendererDelegator.isOldDoubleBuffer()
-        && !renderer.holdModelForFrame()) {
-      RendererDelegator.graphics_handle = FrEnd.main_canvas.graphics_handle;
-
-      ParticleManager.update();
-      LineFragmentManager.update();
-      Reproduction.handleReproduction(ContextManager.getNodeManager().creature_manager);
-
-      RendererDelegator.incrementGenerationCount();
     }
   }
 

@@ -83,7 +83,7 @@ public class PanelPreferencesRendererSharedMisc {
 //
 //    FrEnd.choose_display_struts = choose_display_struts;
 
-//    final Panel panel_bin_size = getBinSizePanel();
+//    final Panel panel_tile_size = getTileSizePanel();
     final Panel panel_fog = getFogPanel();
     this.panel_fog_row = panel_fog;
 

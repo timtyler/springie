@@ -114,7 +114,7 @@ public class PanelPreferencesRendererOriginal {
     final Panel panel_strut_render_number = getStrutRenderNumber();
     final Panel panel_cable_render_number = getCableRenderNumber();
     final Panel panel_node_render_number = getNodeRenderNumber();
-    //final Panel panel_bin_size = getBinSizePanel();
+    //final Panel panel_tile_size = getTileSizePanel();
     //final Panel panel_fog = getFogPanel();
 
     final CheckboxGroup checkbox_linklength = new CheckboxGroup();
@@ -162,19 +162,6 @@ public class PanelPreferencesRendererOriginal {
 //    });
 //    this.checkbox_redraw_deepest_first.setState(FrEnd.redraw_deepest_first);
 //    panel_redraw_deepest_first.add(this.checkbox_redraw_deepest_first);
-
-//    final Panel panel_new_double_buffering = new Panel();
-//    this.checkbox_db_new = new Checkbox(GUIStrings.DB_NEW, RendererDelegator
-//        .isNewDoubleBuffer());
-//
-//    this.checkbox_db_new.addItemListener(new ItemListener() {
-//      public void itemStateChanged(ItemEvent e) {
-//        Forget.about(e);
-//        getMessageManager().newmessage(Message.MSG_DB_NEW, 0, 0);
-//      }
-//    });
-//
-//    panel_new_double_buffering.add(this.checkbox_db_new);
 
     final Panel panel_xor = new Panel();
 
@@ -288,7 +275,7 @@ public class PanelPreferencesRendererOriginal {
 //      public void itemStateChanged(ItemEvent e) {
 //        final String scs = (String) e.getItem();
 //        final int val = PanelPreferencesRendererOriginal.this.choose_colour_modifier_wireframe.str_to_num(scs);
-//        RendererBinManager.colour_modifier_wireframe = val;
+//        RendererTileManager.colour_modifier_wireframe = val;
 //        RendererDelegator.repaint_all_objects = true;
 //      }
 //    });
@@ -296,7 +283,7 @@ public class PanelPreferencesRendererOriginal {
 //    addColourOptions(this.choose_colour_modifier_wireframe);
 //
 //    this.choose_colour_modifier_wireframe.choice.select(this.choose_colour_modifier_filled
-//        .num_to_str(RendererBinManager.colour_modifier_wireframe));
+//        .num_to_str(RendererTileManager.colour_modifier_wireframe));
 //    panel.add(this.choose_colour_modifier_wireframe.choice);
 //
 //    return panel;
@@ -310,7 +297,7 @@ public class PanelPreferencesRendererOriginal {
 //      public void itemStateChanged(ItemEvent e) {
 //        final String scs = (String) e.getItem();
 //        final int val = PanelPreferencesRendererOriginal.this.choose_colour_modifier_filled.str_to_num(scs);
-//        RendererBinManager.colour_modifier_filled = val;
+//        RendererTileManager.colour_modifier_filled = val;
 //        RendererDelegator.repaint_all_objects = true;
 //      }
 //    });
@@ -318,7 +305,7 @@ public class PanelPreferencesRendererOriginal {
 //    addColourOptions(this.choose_colour_modifier_filled);
 //
 //    this.choose_colour_modifier_filled.choice.select(this.choose_colour_modifier_filled
-//        .num_to_str(RendererBinManager.colour_modifier_filled));
+//        .num_to_str(RendererTileManager.colour_modifier_filled));
 //    panel.add(this.choose_colour_modifier_filled.choice);
 //
 //    return panel;
@@ -396,27 +383,27 @@ public class PanelPreferencesRendererOriginal {
 //    return panel;
 //  }
 //
-//  private Panel getBinSizePanel() {
+//  private Panel getTileSizePanel() {
 //    final Panel panel = new Panel();
 //    panel.setLayout(new BorderLayout(0, 8));
-//    panel.add("West", new Label("Bin size:", Label.RIGHT));
+//    panel.add("West", new Label("Tile size:", Label.RIGHT));
 //
 //    final Scrollbar scroll_bar = new Scrollbar(Scrollbar.HORIZONTAL,
-//        RendererBinManager.divisor, 100, 50, 500);
+//        RendererTileManager.divisor, 100, 50, 500);
 //    scroll_bar.addAdjustmentListener(new AdjustmentListener() {
 //      public void adjustmentValueChanged(AdjustmentEvent e) {
 //        final int temp = e.getValue();
-//        RendererBinManager.divisor = temp;
-//        reflectBinSizeNumber();
+//        RendererTileManager.divisor = temp;
+//        reflectTileSizeNumber();
 //        FrEnd.main_canvas.forceResize();
 //      }
 //    });
 //
 //    panel.add("Center", scroll_bar);
 //
-//    this.label_bin_size_number = new Label("", Label.LEFT);
-//    panel.add("East", this.label_bin_size_number);
-//    reflectBinSizeNumber();
+//    this.label_tile_size_number = new Label("", Label.LEFT);
+//    panel.add("East", this.label_tile_size_number);
+//    reflectTileSizeNumber();
 //
 //    return panel;
 //  }
@@ -527,8 +514,8 @@ public class PanelPreferencesRendererOriginal {
 //    getLabelFaceRenderNumber().setText("" + Face.number_of_render_divisions);
 //  }
 
-  //private void reflectBinSizeNumber() {
-    //getLabelBinSizeNumber().setText("" + RendererBinManager.divisor);
+  //private void reflectTileSizeNumber() {
+    //getLabelTileSizeNumber().setText("" + RendererTileManager.divisor);
   //}
 
   //private void reflectLabelFog() {
@@ -557,8 +544,8 @@ public class PanelPreferencesRendererOriginal {
 //    return this.label_face_render_number;
 //  }
 //
-  //public Label getLabelBinSizeNumber() {
-    //return this.label_bin_size_number;
+  //public Label getLabelTileSizeNumber() {
+    //return this.label_tile_size_number;
   //}
 
   public Label getLabelCableRenderNumber() {

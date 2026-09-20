@@ -18,12 +18,10 @@ import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TTChoice;
 import com.springie.gui.components.TabbedPanel;
 import com.springie.messages.NewMessageManager;
-import com.springie.messages.commands.DoubleBufferNewMessage;
-import com.springie.preferences.Preferences;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ElementRendererLink;
 import com.springie.render.modules.modern.ModularRendererNew;
-import com.springie.render.modules.modern.RendererBinManager;
+import com.springie.render.modules.modern.RendererTileManager;
 import com.springie.render.modules.modern.SimpleCube;
 import com.springie.render.modules.modern.SimpleDodecahedron;
 import com.springie.render.modules.modern.SimpleHexagon;
@@ -35,7 +33,7 @@ import com.tifsoft.Forget;
 public class PanelPreferencesRendererModern {
 	public Panel panel = FrEnd.setUpPanelForFrame2();
 
-	public Panel panel_bins = FrEnd.setUpPanelForFrame2();
+	public Panel panel_tiles = FrEnd.setUpPanelForFrame2();
 
 	/**
 	 * The "Show labels on:" row. It lives on the shared Renderer tab
@@ -63,17 +61,15 @@ public class PanelPreferencesRendererModern {
 
 	NewMessageManager new_message_manager;
 
-	public Checkbox checkbox_db_new;
+	private Checkbox checkbox_show_tiles;
 
-	private Checkbox checkbox_show_bins;
-
-	private Checkbox checkbox_show_active_bins;
+	private Checkbox checkbox_show_active_tiles;
 
 	private TTChoice choose_polyhedron;
 
-	private Label label_bin_size_number;
+	private Label label_tile_size_number;
 
-	private Scrollbar scroll_bar_bin_size;
+	private Scrollbar scroll_bar_tile_size;
 
 	private Label label_strut_divisions;
 
@@ -98,7 +94,7 @@ public class PanelPreferencesRendererModern {
 		final TabbedPanel tab = new TabbedPanel();
 		// The shared renderer options live here now, combined with the
 		// renderer-specific tabs to save the space of a second tab bar.
-		// The Renderer tab holds "Main", "Bins" and "Fog" sub-tabs (each
+		// The Renderer tab holds "Main", "Tiles" and "Fog" sub-tabs (each
 		// one GridLayout on the shared panel): the ray-traced-only options
 		// (Glossiness, Shadows, Specular, Fresnel, Fill light) are added
 		// and removed at the bottom of Main when the renderer is
@@ -114,7 +110,7 @@ public class PanelPreferencesRendererModern {
 
 		final Panel panel_node_polyhedron = panelNodePolyhedron();
 
-		getPanelBins();
+		getPanelTiles();
 
 		final Panel panel_cable_divisions = getPanelCableDivisions();
 		final Panel panel_strut_divisions = getPanelStrutDivisions();
@@ -133,8 +129,8 @@ public class PanelPreferencesRendererModern {
 
 		this.panel_labels_row = getPanelLabelsWhen();
 
-		// The Renderer tab is split into sub-tabs: the Bins rows move to
-		// "Bins", the modern Misc rows (node/tube tessellation) to "Main",
+		// The Renderer tab is split into sub-tabs: the Tiles rows move to
+		// "Tiles", the modern Misc rows (node/tube tessellation) to "Main",
 		// and the shared Misc rows join them there -- except the fog rows,
 		// which get the "Fog" sub-tab. ("Render deepest objects first"
 		// lives on the Renderer tab instead.) PanelPreferencesDisplay
@@ -142,7 +138,7 @@ public class PanelPreferencesRendererModern {
 		// order is stable.
 		final PanelPreferencesRendererSharedShow shared_show =
 				FrEnd.panel_preferences_shared_show;
-		moveRowsInto(shared_show.panel_bins, this.panel_bins);
+		moveRowsInto(shared_show.panel_tiles, this.panel_tiles);
 		moveRowsInto(shared_show.panel_main, this.panel_misc);
 		FrEnd.panel_preferences_shared_misc.moveRowsInto(
 				shared_show.panel_main, shared_show.panel_fog);
@@ -259,50 +255,37 @@ public class PanelPreferencesRendererModern {
 		tab.validate();
 	}
 
-	private void getPanelBins() {
-		final Panel panel_bin_size = getBinSizePanel();
+	private void getPanelTiles() {
+		final Panel panel_tile_size = getTileSizePanel();
 
-		final Panel panel_new_double_buffering = new Panel();
-		this.checkbox_db_new = new Checkbox(GUIStrings.DB_NEW, RendererDelegator.isNewDoubleBuffer());
-		panel_new_double_buffering.add(this.checkbox_db_new);
-
-		this.checkbox_db_new.addItemListener(new ItemListener() {
+		final Panel panel_show_tiles = new Panel();
+		this.checkbox_show_tiles = new Checkbox(GUIStrings.SHOW_TILES, RendererTileManager.show_tiles);
+		this.checkbox_show_tiles.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				Forget.about(e);
-				getNewMessageManager().add(new DoubleBufferNewMessage());
-			}
-		});
-
-		final Panel panel_show_bins = new Panel();
-		this.checkbox_show_bins = new Checkbox(GUIStrings.SHOW_BINS, RendererBinManager.show_bins);
-		this.checkbox_show_bins.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				Forget.about(e);
-				RendererBinManager.show_bins = ((Checkbox) e.getSource()).getState();
+				RendererTileManager.show_tiles = ((Checkbox) e.getSource()).getState();
 				FrEnd.main_canvas.forceResize();
 			}
 		});
-		panel_show_bins.add(this.checkbox_show_bins);
+		panel_show_tiles.add(this.checkbox_show_tiles);
 
-		final Panel panel_show_active_bins = new Panel();
-		this.checkbox_show_active_bins = new Checkbox(GUIStrings.SHOW_ACTIVE_BINS,
-				RendererBinManager.show_active_bins);
-		this.checkbox_show_active_bins.addItemListener(new ItemListener() {
+		final Panel panel_show_active_tiles = new Panel();
+		this.checkbox_show_active_tiles = new Checkbox(GUIStrings.SHOW_ACTIVE_TILES,
+				RendererTileManager.show_active_tiles);
+		this.checkbox_show_active_tiles.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				Forget.about(e);
-				RendererBinManager.show_active_bins = ((Checkbox) e.getSource()).getState();
+				RendererTileManager.show_active_tiles = ((Checkbox) e.getSource()).getState();
 				FrEnd.main_canvas.forceResize();
 			}
 		});
-		panel_show_active_bins.add(this.checkbox_show_active_bins);
+		panel_show_active_tiles.add(this.checkbox_show_active_tiles);
 
-		this.panel_bins.add(panel_new_double_buffering);
+		this.panel_tiles.add(panel_show_tiles);
 
-		this.panel_bins.add(panel_show_bins);
+		this.panel_tiles.add(panel_show_active_tiles);
 
-		this.panel_bins.add(panel_show_active_bins);
-
-		this.panel_bins.add(panel_bin_size);
+		this.panel_tiles.add(panel_tile_size);
 	}
 
 	private Panel getPanelLabelsWhen() {
@@ -390,27 +373,27 @@ public class PanelPreferencesRendererModern {
 		return panel;
 	}
 
-	private Panel getBinSizePanel() {
+	private Panel getTileSizePanel() {
 		final Panel panel = new Panel();
 		panel.setLayout(new BorderLayout(0, 8));
-		panel.add("West", new Label("Bin size:", Label.RIGHT));
+		panel.add("West", new Label("Tile size:", Label.RIGHT));
 
-		final Scrollbar scroll_bar = new Scrollbar(Scrollbar.HORIZONTAL, RendererBinManager.divisor, 50, 50, 550);
-		this.scroll_bar_bin_size = scroll_bar;
+		final Scrollbar scroll_bar = new Scrollbar(Scrollbar.HORIZONTAL, RendererTileManager.divisor, 50, 50, 550);
+		this.scroll_bar_tile_size = scroll_bar;
 		scroll_bar.addAdjustmentListener(new AdjustmentListener() {
 			public void adjustmentValueChanged(AdjustmentEvent e) {
 				final int temp = e.getValue();
-				RendererBinManager.divisor = temp;
-				reflectBinSizeNumber();
+				RendererTileManager.divisor = temp;
+				reflectTileSizeNumber();
 				FrEnd.main_canvas.forceResize();
 			}
 		});
 
 		panel.add("Center", scroll_bar);
 
-		this.label_bin_size_number = new Label("", Label.LEFT);
-		panel.add("East", this.label_bin_size_number);
-		reflectBinSizeNumber();
+		this.label_tile_size_number = new Label("", Label.LEFT);
+		panel.add("East", this.label_tile_size_number);
+		reflectTileSizeNumber();
 
 		return panel;
 	}
@@ -481,35 +464,30 @@ public class PanelPreferencesRendererModern {
 		return this.label_cable_divisions;
 	}
 
-	private void reflectBinSizeNumber() {
-		getLabelBinSizeNumber().setText("" + RendererBinManager.divisor);
+	private void reflectTileSizeNumber() {
+		getLabelTileSizeNumber().setText("" + RendererTileManager.divisor);
 	}
 
-	public Label getLabelBinSizeNumber() {
-		return this.label_bin_size_number;
+	public Label getLabelTileSizeNumber() {
+		return this.label_tile_size_number;
 	}
 
 	/**
-	 * Restores the default modern-renderer preferences. The double-buffer
-	 * default comes from the (freshly reset) Preferences map.
+	 * Restores the default modern-renderer preferences.
 	 */
 	public void resetToDefaults() {
-		// Double buffering (the message handler reads the checkbox state).
-		this.checkbox_db_new.setState(((Boolean) FrEnd.preferences.map
-				.get(Preferences.renderer_new_double_buffer)).booleanValue());
+		// Show tiles.
+		RendererTileManager.show_tiles = false;
+		this.checkbox_show_tiles.setState(false);
 
-		// Show bins.
-		RendererBinManager.show_bins = false;
-		this.checkbox_show_bins.setState(false);
+		// Show active tiles.
+		RendererTileManager.show_active_tiles = false;
+		this.checkbox_show_active_tiles.setState(false);
 
-		// Show active bins.
-		RendererBinManager.show_active_bins = false;
-		this.checkbox_show_active_bins.setState(false);
-
-		// Bin size.
-		RendererBinManager.divisor = 340;
-		this.scroll_bar_bin_size.setValue(RendererBinManager.divisor);
-		reflectBinSizeNumber();
+		// Tile size.
+		RendererTileManager.divisor = 340;
+		this.scroll_bar_tile_size.setValue(RendererTileManager.divisor);
+		reflectTileSizeNumber();
 
 		// Strut and cable divisions.
 		ElementRendererLink.strut_divisions = 3;

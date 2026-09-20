@@ -398,9 +398,6 @@ public class PanelFundamental {
             try {
               FrEnd.stepping = Integer.parseInt(FrEnd.textfield_step_size
                   .getText());
-              // if (!RendererDelegator.isOldDoubleBuffer()) {
-              // FrEnd.stepping++;
-              // }
             } catch (RuntimeException e) {
               FrEnd.stepping = 1;
             }

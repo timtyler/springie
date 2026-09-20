@@ -28,10 +28,10 @@ import com.springie.preferences.Preferences;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.modules.modern.ModularRendererNew;
-import com.springie.render.modules.modern.RendererBinManager;
+import com.springie.render.modules.modern.RendererTileManager;
 
 /**
- * "Show active bins" must draw red outlines around the bins that hold
+ * "Show active tiles" must draw red outlines around the tiles that hold
  * content, in both the tiled (double-buffered) and direct render paths,
  * and disappear entirely when switched off. The selected-element colour
  * is also red, so the test compares against a baseline capture rather
@@ -41,7 +41,7 @@ import com.springie.render.modules.modern.RendererBinManager;
  * hoping a repaint happened, each check paints the canvas synchronously
  * and polls until the expected pixels appear (or a deadline passes).
  */
-class ShowActiveBinsTest {
+class ShowActiveTilesTest {
 
   /** How much redder than baseline the outlines must make the capture. */
   private static final int OUTLINE_RED_MARGIN = 100;
@@ -91,50 +91,33 @@ class ShowActiveBinsTest {
   }
 
   @Test
-  void activeBinsDrawRedOutlines() throws Exception {
+  void activeTilesDrawRedOutlines() throws Exception {
     final int baseline_red = countRedPixelsAfterPaint();
 
-    setShowActiveBins(true);
+    setShowActiveTiles(true);
 
-    // Tiled (double-buffered) path is the default.
-    assertTrue(RendererDelegator.isNewDoubleBuffer());
+    // Tiled path is the only rendering path.
     waitForRedPixels(baseline_red,
-        "red outlines on non-empty bins in the tiled path");
+        "red outlines on non-empty tiles in the tiled path");
 
-    // Direct path: double-buffering off.
-    setDoubleBuffer(false);
-    assertFalse(RendererDelegator.isNewDoubleBuffer());
-    waitForRedPixels(baseline_red,
-        "red outlines on non-empty bins in the direct path");
-
-    // Back to the default path, outlines switched off.
-    setDoubleBuffer(true);
-    setShowActiveBins(false);
-    waitForPixelCount(baseline_red, "no bin outlines once disabled");
+    // Outlines switched off.
+    setShowActiveTiles(false);
+    waitForPixelCount(baseline_red, "no tile outlines once disabled");
 
     // Reset preferences restores the default (off).
     SwingUtilities.invokeAndWait(() -> {
-      RendererBinManager.show_active_bins = true;
+      RendererTileManager.show_active_tiles = true;
       FrEnd.panel_preferences.resetPreferences();
     });
-    assertFalse(RendererBinManager.show_active_bins);
+    assertFalse(RendererTileManager.show_active_tiles);
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.preferences.map.put(Preferences.renderer_new_double_buffer,
-          Boolean.TRUE);
-      RendererBinManager.show_active_bins = false;
+      RendererTileManager.show_active_tiles = false;
     });
   }
 
-  private void setShowActiveBins(boolean state) throws Exception {
+  private void setShowActiveTiles(boolean state) throws Exception {
     SwingUtilities.invokeAndWait(() -> {
-      RendererBinManager.show_active_bins = state;
-    });
-  }
-
-  private void setDoubleBuffer(boolean state) throws Exception {
-    SwingUtilities.invokeAndWait(() -> {
-      FrEnd.preferences.map.put(Preferences.renderer_new_double_buffer,
-          state ? Boolean.TRUE : Boolean.FALSE);
+      RendererTileManager.show_active_tiles = state;
     });
   }
 
@@ -185,7 +168,7 @@ class ShowActiveBinsTest {
   private String saveFailureShot() {
     try {
       final File file = new File(System.getProperty("java.io.tmpdir"),
-          "show-active-bins-failure.png");
+          "show-active-tiles-failure.png");
       ImageIO.write(this.last_capture, "png", file);
       return file.getAbsolutePath();
     } catch (Exception e) {
@@ -239,14 +222,14 @@ class ShowActiveBinsTest {
   }
 
   /**
-   * Regression test for "active bins show as active if they have ever been
-   * active": the red outline sits at the bin's block border, outside the
+   * Regression test for "active tiles show as active if they have ever been
+   * active": the red outline sits at the tile's block border, outside the
    * content union that scrubs and blits cover, so nothing ever erased it.
    * Disabling the option used to leave every outline behind (the old test
    * only passed because it forced a resize, which rebuilds the offscreen
    * image and repaints everything). Here the option is toggled with no
    * resize, in both render paths: the toggle-off frame must widen each
-   * bin's painted region to its full block so the outlines are scrubbed
+   * tile's painted region to its full block so the outlines are scrubbed
    * away and the red count returns to baseline.
    */
   @Test
@@ -254,37 +237,21 @@ class ShowActiveBinsTest {
     paintNow();
     final int baseline = countRedPixels();
 
-    // Tiled (double-buffered) path.
-    setShowActiveBinsNoResize(true);
+    // Tiled path (the only rendering path).
+    setShowActiveTilesNoResize(true);
     waitForRedPixels(baseline, "tiled outlines did not appear");
-    setShowActiveBinsNoResize(false);
+    setShowActiveTilesNoResize(false);
     waitForPixelCountNoResize(baseline, "tiled outlines did not disappear");
 
-    // Direct path.
-    setDoubleBufferedNoResize(false);
-    setShowActiveBinsNoResize(true);
-    waitForRedPixels(baseline, "direct outlines did not appear");
-    setShowActiveBinsNoResize(false);
-    waitForPixelCountNoResize(baseline, "direct outlines did not disappear");
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.preferences.map.put(Preferences.renderer_new_double_buffer,
-          Boolean.TRUE);
-      RendererBinManager.show_active_bins = false;
+      RendererTileManager.show_active_tiles = false;
     });
   }
 
   /** Toggles the option without forcing a resize (no full-repaint rescue). */
-  private void setShowActiveBinsNoResize(boolean on) throws Exception {
+  private void setShowActiveTilesNoResize(boolean on) throws Exception {
     SwingUtilities.invokeAndWait(() -> {
-      RendererBinManager.show_active_bins = on;
-      RendererDelegator.repaint_some_objects = true;
-    });
-  }
-
-  private void setDoubleBufferedNoResize(boolean on) throws Exception {
-    SwingUtilities.invokeAndWait(() -> {
-      FrEnd.preferences.map.put(Preferences.renderer_new_double_buffer,
-          Boolean.valueOf(on));
+      RendererTileManager.show_active_tiles = on;
       RendererDelegator.repaint_some_objects = true;
     });
   }

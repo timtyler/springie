@@ -27,11 +27,11 @@ import com.springie.render.Coords;
 import com.springie.render.RectangleInt;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.ModularRendererBase;
-import com.springie.render.modules.modern.RendererBinManager;
+import com.springie.render.modules.modern.RendererTileManager;
 
 /**
  * The ray-traced renderer must not repaint the whole window on every
- * frame: like the polygon renderer's dirty bins, only re-traced tiles'
+ * frame: like the polygon renderer's dirty tiles, only re-traced tiles'
  * rectangles are blitted to the screen, and when no tile was re-traced
  * nothing is blitted at all -- the screen already shows the frame, so
  * screen-space overlays (the boundary-box dots) survive everywhere the
@@ -60,9 +60,9 @@ public class TileBlitTest {
 
   private int saved_divisor;
 
-  private boolean saved_show_bins;
+  private boolean saved_show_tiles;
 
-  private boolean saved_show_active_bins;
+  private boolean saved_show_active_tiles;
 
   private boolean saved_render_nodes;
 
@@ -113,12 +113,12 @@ public class TileBlitTest {
     Coords.shift_constant_y = 0;
     Coords.shift_constant_z = 192;
 
-    this.saved_divisor = RendererBinManager.divisor;
-    this.saved_show_bins = RendererBinManager.show_bins;
-    this.saved_show_active_bins = RendererBinManager.show_active_bins;
-    RendererBinManager.divisor = DIVISOR;
-    RendererBinManager.show_bins = false;
-    RendererBinManager.show_active_bins = false;
+    this.saved_divisor = RendererTileManager.divisor;
+    this.saved_show_tiles = RendererTileManager.show_tiles;
+    this.saved_show_active_tiles = RendererTileManager.show_active_tiles;
+    RendererTileManager.divisor = DIVISOR;
+    RendererTileManager.show_tiles = false;
+    RendererTileManager.show_active_tiles = false;
 
     this.saved_render_nodes = FrEnd.render_nodes;
     this.saved_render_links = FrEnd.render_links;
@@ -150,9 +150,9 @@ public class TileBlitTest {
     Coords.shift_constant_x = this.saved_shift_constant_x;
     Coords.shift_constant_y = this.saved_shift_constant_y;
     Coords.shift_constant_z = this.saved_shift_constant_z;
-    RendererBinManager.divisor = this.saved_divisor;
-    RendererBinManager.show_bins = this.saved_show_bins;
-    RendererBinManager.show_active_bins = this.saved_show_active_bins;
+    RendererTileManager.divisor = this.saved_divisor;
+    RendererTileManager.show_tiles = this.saved_show_tiles;
+    RendererTileManager.show_active_tiles = this.saved_show_active_tiles;
     FrEnd.render_nodes = this.saved_render_nodes;
     FrEnd.render_links = this.saved_render_links;
     RendererDelegator.shadows = this.saved_shadows;

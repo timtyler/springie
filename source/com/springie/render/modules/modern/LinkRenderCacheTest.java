@@ -35,15 +35,15 @@ import com.springie.render.RendererDelegator;
  * list, a PolygonObject2D per tube side per length division, a
  * PolygonComposite per division, a trimmed copy after backface culling,
  * four Point3Ds per quad, plus three Double3Ds and a Vector3D per quad
- * for the lighting normal -- and a java.awt.Color per polygon per bin
+ * for the lighting normal -- and a java.awt.Color per polygon per tile
  * per pass at draw time. The link's polygon structures are now built
  * once per tessellation signature and rewritten in place each frame,
  * and colours go through a cache.
  *
- * The subtle contract under test: the bin manager keeps last frame's
- * composites in bins_last for damage repair while the next frame's
+ * The subtle contract under test: the tile manager keeps last frame's
+ * composites in tiles_last for damage repair while the next frame's
  * build rewrites the very same objects in place. That is safe only
- * because damage repair reads nothing but the bin's composite count
+ * because damage repair reads nothing but the tile's composite count
  * and its value-copied damage rectangle -- never the rewritten
  * geometry. These tests pin that contract.
  */
@@ -222,10 +222,10 @@ class LinkRenderCacheTest {
   }
 
   /**
-   * The two-frame lifetime contract: the bin manager keeps last frame's
-   * composites in bins_last for damage repair while the next frame's
+   * The two-frame lifetime contract: the tile manager keeps last frame's
+   * composites in tiles_last for damage repair while the next frame's
    * build rewrites the same objects in place. Damage repair reads only
-   * the bin's value-copied damage rectangle (RendererBin.setUpActual
+   * the tile's value-copied damage rectangle (RendererTile.setUpActual
    * copies the ints out of the composite's bounding box), so mutating
    * the cached objects for frame 2 must leave frame 1's recorded
    * rectangle untouched.
@@ -236,36 +236,36 @@ class LinkRenderCacheTest {
     final Node b = nodeAt(200 << Coords.shift, 0, 400 << Coords.shift);
     final Link link = linkBetween(a, b, true);
 
-    // Frame 1: the bin snapshots its damage rectangle, exactly as
+    // Frame 1: the tile snapshots its damage rectangle, exactly as
     // renderTiled/renderDirect do via setUpActual.
-    final RendererBin last_bin = new RendererBin();
+    final RendererTile last_tile = new RendererTile();
     for (final PolygonComposite composite : render(link, a, b)) {
-      last_bin.vector.add(composite);
+      last_tile.vector.add(composite);
     }
-    assertTrue(last_bin.vector.size() > 0, "the test link must be rendered");
-    last_bin.setUpActual(new RectangleInt(-100000, -100000, 100000, 100000));
-    final int min_x = last_bin.actual.min_x;
-    final int min_y = last_bin.actual.min_y;
-    final int max_x = last_bin.actual.max_x;
-    final int max_y = last_bin.actual.max_y;
-    final int size = last_bin.vector.size();
+    assertTrue(last_tile.vector.size() > 0, "the test link must be rendered");
+    last_tile.setUpActual(new RectangleInt(-100000, -100000, 100000, 100000));
+    final int min_x = last_tile.actual.min_x;
+    final int min_y = last_tile.actual.min_y;
+    final int max_x = last_tile.actual.max_x;
+    final int max_y = last_tile.actual.max_y;
+    final int size = last_tile.vector.size();
 
     // Frame 2: move the link and rebuild -- this mutates the very same
-    // cached objects that last_bin still references.
+    // cached objects that last_tile still references.
     a.pos.x += 300 << Coords.shift;
     b.pos.x += 300 << Coords.shift;
     render(link, a, b);
 
-    assertEquals(min_x, last_bin.actual.min_x, "damage min_x");
-    assertEquals(min_y, last_bin.actual.min_y, "damage min_y");
-    assertEquals(max_x, last_bin.actual.max_x, "damage max_x");
-    assertEquals(max_y, last_bin.actual.max_y, "damage max_y");
-    assertEquals(size, last_bin.vector.size(), "damage composite count");
+    assertEquals(min_x, last_tile.actual.min_x, "damage min_x");
+    assertEquals(min_y, last_tile.actual.min_y, "damage min_y");
+    assertEquals(max_x, last_tile.actual.max_x, "damage max_x");
+    assertEquals(max_y, last_tile.actual.max_y, "damage max_y");
+    assertEquals(size, last_tile.vector.size(), "damage composite count");
   }
 
   /**
    * The Color cache must return the same instance for the same ARGB --
-   * fill/draw allocate no Color per polygon per bin per pass.
+   * fill/draw allocate no Color per polygon per tile per pass.
    */
   @Test
   void colorForCachesByArgb() {

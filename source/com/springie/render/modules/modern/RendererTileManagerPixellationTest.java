@@ -15,12 +15,12 @@ import org.junit.jupiter.api.Test;
 
 /**
  * The pixellated blit path scales the coarse (1/px resolution) tile up to
- * the full bin with a nearest-neighbour blit: each coarse pixel becomes
+ * the full tile with a nearest-neighbour blit: each coarse pixel becomes
  * one flat px-by-px block. The tile scrub is snapped out to whole coarse
  * blocks, because the 1/px tile transform would otherwise leave the edge
  * coarse pixels unscrubbed -- stale content streaking right and down.
  */
-public class RendererBinManagerPixellationTest {
+public class RendererTileManagerPixellationTest {
 
   private static BufferedImage image(int w, int h, int[] pixels) {
     final BufferedImage img =
@@ -36,7 +36,7 @@ public class RendererBinManagerPixellationTest {
         0xFF0000FF, 0xFFFFFFFF });
     final BufferedImage dst =
         new BufferedImage(4, 4, BufferedImage.TYPE_INT_RGB);
-    RendererBinManager.paintPixellated(dst.getGraphics(), coarse, 0, 0, 4,
+    RendererTileManager.paintPixellated(dst.getGraphics(), coarse, 0, 0, 4,
         4);
     final int[] expected = {
         0xFFFF0000, 0xFFFF0000, 0xFF00FF00, 0xFF00FF00,
@@ -59,24 +59,24 @@ public class RendererBinManagerPixellationTest {
     final Graphics2D g = (Graphics2D) dst.getGraphics();
     g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
         RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-    RendererBinManager.paintPixellated(g, coarse, 0, 0, 2, 2);
+    RendererTileManager.paintPixellated(g, coarse, 0, 0, 2, 2);
     assertEquals(RenderingHints.VALUE_INTERPOLATION_BILINEAR,
         g.getRenderingHint(RenderingHints.KEY_INTERPOLATION));
     g.dispose();
   }
 
   private static RectangleInt snap(int min_x, int min_y, int max_x,
-      int max_y, int bin_min_x, int bin_min_y, int px) {
+      int max_y, int tile_min_x, int tile_min_y, int px) {
     final RectangleInt out = new RectangleInt(0, 0, 0, 0);
-    RendererBinManager.snapScrubToCoarseBlocks(
-        new RectangleInt(min_x, min_y, max_x, max_y), bin_min_x, bin_min_y,
+    RendererTileManager.snapScrubToCoarseBlocks(
+        new RectangleInt(min_x, min_y, max_x, max_y), tile_min_x, tile_min_y,
         px, out);
     return out;
   }
 
   @Test
   public void scrubSnapRoundsMaxUpAndMinDown() {
-    // px = 2, bin at screen origin: max_x = 7 is not on a block
+    // px = 2, tile at screen origin: max_x = 7 is not on a block
     // boundary, so it snaps up to 8; min_x = 1 snaps down to 0.
     final RectangleInt snapped = snap(1, 1, 7, 7, 0, 0, 2);
     assertEquals(0, snapped.min_x);
@@ -95,9 +95,9 @@ public class RendererBinManagerPixellationTest {
   }
 
   @Test
-  public void scrubSnapAlignsToTheBinOrigin() {
-    // Bins start at multiples of the divisor (340), which is not a
-    // multiple of 3: the blocks must align to the bin origin, not the
+  public void scrubSnapAlignsToTheTileOrigin() {
+    // Tiles start at multiples of the divisor (340), which is not a
+    // multiple of 3: the blocks must align to the tile origin, not the
     // screen origin. Screen x 347 sits in block [346, 349).
     final RectangleInt snapped = snap(341, 0, 347, 8, 340, 0, 3);
     assertEquals(340, snapped.min_x);
@@ -135,7 +135,7 @@ public class RendererBinManagerPixellationTest {
     // so the damage rect must grow by px on every side to cover the
     // bleed, or it survives as trails.
     final RectangleInt rect = new RectangleInt(100, 100, 110, 110);
-    RendererBinManager.expandByBleed(rect, 2);
+    RendererTileManager.expandByBleed(rect, 2);
     assertEquals(98, rect.min_x);
     assertEquals(98, rect.min_y);
     assertEquals(112, rect.max_x);
@@ -144,10 +144,10 @@ public class RendererBinManagerPixellationTest {
 
   @Test
   public void bleedExpansionLeavesEmptyRectsAlone() {
-    // The empty-bin sentinel (min > max) must not be expanded.
+    // The empty-tile sentinel (min > max) must not be expanded.
     final RectangleInt rect = new RectangleInt(Integer.MAX_VALUE,
         Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
-    RendererBinManager.expandByBleed(rect, 2);
+    RendererTileManager.expandByBleed(rect, 2);
     assertEquals(Integer.MAX_VALUE, rect.min_x);
     assertEquals(Integer.MIN_VALUE, rect.max_x);
   }

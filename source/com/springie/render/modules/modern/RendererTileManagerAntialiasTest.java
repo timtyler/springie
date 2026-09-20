@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
  * The anti-aliased blit path box-filters each aa-by-aa block of the
  * supersampled tile into one pixel. Exact integer averaging.
  */
-public class RendererBinManagerAntialiasTest {
+public class RendererTileManagerAntialiasTest {
 
   private static BufferedImage image(int size, int[] pixels) {
     final BufferedImage img =
@@ -28,7 +28,7 @@ public class RendererBinManagerAntialiasTest {
         0xFF0000FF, 0xFFFFFFFF });
     final BufferedImage dst =
         new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
-    RendererBinManager.downsampleTile(src, dst, 2);
+    RendererTileManager.downsampleTile(src, dst, 2);
     // (255+0+0+255)/4 = 127 per channel.
     assertEquals(0xFF7F7F7F, dst.getRGB(0, 0));
   }
@@ -43,7 +43,7 @@ public class RendererBinManagerAntialiasTest {
     final BufferedImage src = image(3, pixels);
     final BufferedImage dst =
         new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
-    RendererBinManager.downsampleTile(src, dst, 3);
+    RendererTileManager.downsampleTile(src, dst, 3);
     // 8*255/9 = 226 (integer division truncates 226.67).
     assertEquals(0xFFE2E2E2, dst.getRGB(0, 0));
   }
@@ -57,7 +57,7 @@ public class RendererBinManagerAntialiasTest {
     final BufferedImage src = image(4, pixels);
     final BufferedImage dst =
         new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB);
-    RendererBinManager.downsampleTile(src, dst, 2);
+    RendererTileManager.downsampleTile(src, dst, 2);
     for (int y = 0; y < 2; y++) {
       for (int x = 0; x < 2; x++) {
         assertEquals(0xFF123456, dst.getRGB(x, y),
@@ -73,7 +73,7 @@ public class RendererBinManagerAntialiasTest {
         0xFF0000FF, 0xFFFFFFFF });
     final BufferedImage dst =
         new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
-    RendererBinManager.downsampleTile(src, dst, 2);
+    RendererTileManager.downsampleTile(src, dst, 2);
     assertEquals(0xFF, (dst.getRGB(0, 0) >> 24) & 0xFF);
   }
 }

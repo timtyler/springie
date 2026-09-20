@@ -30,10 +30,6 @@ public interface GUIStrings {
 
   String PERIOD_FIND = "Find period";
 
-  String DB = "Double buffering";
-
-  String DB_NEW = "Double buffering";
-
   String EX = "Show exhaust";
 
   String collision_check = "Detect collisions";
@@ -143,9 +139,9 @@ public interface GUIStrings {
 
   String FILLED = "Render facets";
 
-  String SHOW_BINS = "Show rendering bins";
+  String SHOW_TILES = "Show rendering tiles";
 
-  String SHOW_ACTIVE_BINS = "Show active bins";
+  String SHOW_ACTIVE_TILES = "Show active tiles";
 
   String FACE_REVERSE = "Face mirror";
 

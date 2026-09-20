@@ -20,14 +20,14 @@ import com.springie.render.DepthSort;
 import com.springie.render.RendererDelegator;
 import com.springie.render.ScenicBackground;
 
-public class RendererBinManager {
+public class RendererTileManager {
   public static int divisor = 340;
 
-  int number_of_bins_x;
+  int number_of_tiles_x;
 
-  int number_of_bins_y;
+  int number_of_tiles_y;
 
-  private RendererBin[][] array;
+  private RendererTile[][] array;
 
   // The frame's global depth sort: an ascending-z permutation of the
   // frame's composite list, filled by distribute(). Reused across frames.
@@ -40,9 +40,9 @@ public class RendererBinManager {
 
   static Random rnd = new Random();
 
-  public static boolean show_bins;
+  public static boolean show_tiles;
 
-  public static boolean show_active_bins;
+  public static boolean show_active_tiles;
 
   public static int colour_modifier_filled = ColourModifier.natural;
 
@@ -51,16 +51,15 @@ public class RendererBinManager {
   /**
    * Monotonic frame counter, bumped once per render() call. Polygons
    * cache their modifier-adjusted colours against it, so the adjustment
-   * is computed once per polygon per frame however many bins the
+   * is computed once per polygon per frame however many tiles the
    * polygon lands in.
    */
   static int render_frame;
 
-  // Tiled rendering: each bin paints into an offscreen tile that is then
-  // blitted to the screen (the double-buffered path). Every bin holding
-  // content is re-rendered every frame; tiles are never reused across
-  // frames on the assumption their content is unchanged.
-  private boolean last_double_buffered;
+  // Tiled rendering: each tile paints into an offscreen tile that is then
+  // blitted to the screen. Every tile holding content is re-rendered every
+  // frame; tiles are never reused across frames on the assumption their
+  // content is unchanged.
 
   // Anti-aliasing factor in force when the tiles were rendered. A
   // change means the tiles are the wrong resolution and must be dropped.
@@ -70,7 +69,7 @@ public class RendererBinManager {
   // means the tiles are the wrong resolution and must be dropped.
   private int last_pixellation;
 
-  // The tile size in force when the tiles were created. show_bins changes
+  // The tile size in force when the tiles were created. show_tiles changes
   // the tile size, so the tiles must be dropped when it changes.
   private int last_block_size = -1;
 
@@ -84,16 +83,16 @@ public class RendererBinManager {
 
   void clear() {
     // Log.log("BinManager.clear");
-    for (int i = 0; i < this.number_of_bins_x; i++) {
-      for (int j = 0; j < this.number_of_bins_y; j++) {
+    for (int i = 0; i < this.number_of_tiles_x; i++) {
+      for (int j = 0; j < this.number_of_tiles_y; j++) {
         this.array[i][j].vector.clear();
       }
     }
   }
 
   void resize(int number_of_pixels_x, int number_of_pixels_y) {
-    int x = calcBinX(number_of_pixels_x) + 1;
-    int y = calcBinY(number_of_pixels_y) + 1;
+    int x = calcTileX(number_of_pixels_x) + 1;
+    int y = calcTileY(number_of_pixels_y) + 1;
 
     // Log.log("BinManager.resize");
     // Log.log("number_of_pixels_x:" + number_of_pixels_x);
@@ -101,21 +100,21 @@ public class RendererBinManager {
     // Log.log("X:" + x);
     // Log.log("Y:" + y);
 
-    this.number_of_bins_x = x;
-    this.number_of_bins_y = y;
+    this.number_of_tiles_x = x;
+    this.number_of_tiles_y = y;
 
     reset();
   }
 
   public void reset() {
-    final int x = this.number_of_bins_x;
-    final int y = this.number_of_bins_y;
+    final int x = this.number_of_tiles_x;
+    final int y = this.number_of_tiles_y;
 
-    this.array = new RendererBin[x][y];
+    this.array = new RendererTile[x][y];
 
     for (int i = 0; i < x; i++) {
       for (int j = 0; j < y; j++) {
-        this.array[i][j] = new RendererBin();
+        this.array[i][j] = new RendererTile();
       }
     }
 
@@ -135,14 +134,14 @@ public class RendererBinManager {
     // final int min_y = getMinimum(triangle.y);
     // final int max_y = getMaximum(triangle.y) + 1;
 
-    final int min_bin_x = getBinX(bb.min_x);
-    final int max_bin_x = getBinX(bb.max_x + 1);
+    final int min_tile_x = getTileX(bb.min_x);
+    final int max_tile_x = getTileX(bb.max_x + 1);
 
-    final int min_bin_y = getBinY(bb.min_y);
-    final int max_bin_y = getBinY(bb.max_y + 1);
+    final int min_tile_y = getTileY(bb.min_y);
+    final int max_tile_y = getTileY(bb.max_y + 1);
 
-    for (int i = min_bin_x; i <= max_bin_x; i++) {
-      for (int j = min_bin_y; j <= max_bin_y; j++) {
+    for (int i = min_tile_x; i <= max_tile_x; i++) {
+      for (int j = min_tile_y; j <= max_tile_y; j++) {
         add(i, j, composite);
       }
     }
@@ -150,13 +149,13 @@ public class RendererBinManager {
 
   /**
    * Sorts the frame's composites once, globally -- ascending by z,
-   * stable -- and distributes them to the bins in that order. Every
-   * bin's vector is therefore pre-sorted, so render() needs no per-bin
-   * sort: with deepest-first on, each bin holds ascending-z order; with
+   * stable -- and distributes them to the tiles in that order. Every
+   * tile's vector is therefore pre-sorted, so render() needs no per-tile
+   * sort: with deepest-first on, each tile holds ascending-z order; with
    * it off, the creation order, at zero sort cost (the old identity
-   * index did the same). Either way the render loops walk each bin's
+   * index did the same). Either way the render loops walk each tile's
    * vector from the end backwards, exactly the draw order the old
-   * per-bin sorts produced: a stable sort of a subsequence equals the
+   * per-tile sorts produced: a stable sort of a subsequence equals the
    * subsequence of the stable sort.
    *
    * The sort buffers are reused across frames; the only per-frame work
@@ -190,177 +189,36 @@ public class RendererBinManager {
     }
   }
 
-  public void render(RendererBinManager bins_last, Graphics graphics) {
+  public void render(RendererTileManager tiles_last, Graphics graphics) {
     ContextManager.getNodeManager().depth_range = null;
 
     render_frame++;
 
     final int block_size = divisor - getMargin();
 
-    // The user's double-buffer preference is honoured: the tiled path
-    // renders each bin into an offscreen tile and blits it; with
-    // double-buffering off, bins paint directly every frame.
-    final boolean double_buffered = RendererDelegator.isNewDoubleBuffer();
-
-    if (double_buffered != this.last_double_buffered) {
-      // The tiling mode changed: drop all tiles. The tiled path rebuilds
-      // them below; the direct path repaints everything every frame anyway.
-      for (int j = 0; j < this.number_of_bins_y; j++) {
-        for (int i = 0; i < this.number_of_bins_x; i++) {
-          this.array[i][j].image = null;
-        }
-      }
-    }
-
-    if (double_buffered) {
-      renderTiled(bins_last, graphics, block_size);
-    } else {
-      renderDirect(bins_last, graphics, block_size);
-    }
-
-    this.last_double_buffered = double_buffered;
+    renderTiled(tiles_last, graphics, block_size);
   }
 
   /**
-   * Direct painting path for when the double-buffer preference is off:
-   * no tiles. Bins paint straight onto the screen every frame.
-   */
-  private void renderDirect(RendererBinManager bins_last, Graphics graphics,
-      int block_size) {
-    final int px = RendererDelegator.pixellation;
-    final RectangleInt potential = new RectangleInt(0, 0, 0, 0);
-    final RectangleInt drag_damage = getDragBoxDamage();
-
-    for (int j = 0; j < this.number_of_bins_y; j++) {
-      for (int i = 0; i < this.number_of_bins_x; i++) {
-        final RendererBin bin = this.array[i][j];
-        final ArrayList<PolygonComposite> v_this = bin.vector;
-        final int size = v_this.size();
-
-        final RendererBin last_bin = bins_last.array[i][j];
-        final int size_last = last_bin.vector.size();
-
-        if (size_last > 0 || size > 0) {
-          potential.min_x = getPixelsFromBinX(i);
-          potential.min_y = getPixelsFromBinY(j);
-          potential.max_x = potential.min_x + block_size;
-          potential.max_y = potential.min_y + block_size;
-
-          bin.setUpActual(potential);
-          bin.union.setToUnion(bin.actual, last_bin.actual);
-          if (drag_damage != null) {
-            // A drag-box selection draws on the screen: include its
-            // damage in the scrubbed union.
-            bin.union.setToUnion(bin.union, drag_damage);
-          }
-          if (px > 1) {
-            // Cover the pixellation bleed (see expandByBleed).
-            expandByBleed(bin.union, px);
-          }
-
-          if (px > 1 && size > 0) {
-            // Pixellated direct painting: render the bin at 1/px
-            // resolution into a scratch tile, then scale it up to the
-            // full bin with a nearest-neighbour blit -- one flat colour
-            // per px-by-px block, done natively instead of by a Java
-            // pixel loop. The scratch tile is reused across frames while
-            // the factor is unchanged.
-            final int coarse = (block_size + px - 1) / px;
-            BufferedImage coarse_tile = (BufferedImage) bin.image;
-            if (coarse_tile == null || coarse_tile.getWidth() != coarse) {
-              coarse_tile = new BufferedImage(coarse, coarse,
-                  BufferedImage.TYPE_INT_RGB);
-              bin.image = coarse_tile;
-            }
-            final Graphics2D tile_graphics =
-                (Graphics2D) coarse_tile.getGraphics();
-            final double scale = 1.0 / px;
-            tile_graphics.translate(-potential.min_x * scale,
-                -potential.min_y * scale);
-            tile_graphics.scale(scale, scale);
-            // The scratch tile starts undefined: always scrub it.
-            doScrubbing(tile_graphics, potential, bin);
-
-            // The bin's vector is already in draw order (see
-            // distribute): ascending by z with deepest-first on, drawn
-            // from the end backwards -- deepest first -- and creation
-            // order with it off. No per-bin sort.
-            tile_graphics.setClip(potential.min_x, potential.min_y,
-                block_size, block_size);
-
-            for (int c = size; --c >= 0;) {
-              renderThePolygon(tile_graphics, v_this.get(c));
-            }
-            tile_graphics.dispose();
-
-            // Clip the upscaled blit to the content union, not the full
-            // bin: the scratch tile is only scrubbed over the union, so
-            // pixels outside it are stale and would smear as trails.
-            final RectangleInt union = bin.union;
-            graphics.setClip(union.min_x, union.min_y,
-                union.max_x - union.min_x, union.max_y - union.min_y);
-            paintPixellated(graphics, coarse_tile, potential.min_x,
-                potential.min_y, block_size, block_size);
-            continue;
-          }
-
-          // No tiles in the direct path (any stale ones were dropped in
-          // render() when the mode changed).
-          bin.image = null;
-
-          if (size > 0) {
-            if (size_last > 0) {
-              doScrubbing(graphics, potential, bin);
-            }
-
-            // The bin's vector is already in draw order (see
-            // distribute): ascending by z with deepest-first on, drawn
-            // from the end backwards -- deepest first -- and creation
-            // order with it off. No per-bin sort.
-            graphics.setClip(potential.min_x, potential.min_y, block_size,
-                block_size);
-
-            for (int c = size; --c >= 0;) {
-              renderThePolygon(graphics, v_this.get(c));
-            }
-          }
-        } else if (drag_damage != null) {
-          // Empty bin under a drag-box selection: scrub the damaged
-          // area so the old rectangle leaves no trail.
-          potential.min_x = getPixelsFromBinX(i);
-          potential.min_y = getPixelsFromBinY(j);
-          potential.max_x = potential.min_x + block_size;
-          potential.max_y = potential.min_y + block_size;
-          if (rectsIntersect(potential, drag_damage)) {
-            scrubDragDamage(graphics, potential, drag_damage);
-          }
-        }
-      }
-    }
-
-    drawActiveBinOutlines(graphics);
-  }
-
-  /**
-   * "Show active bins": red outline around the content rectangle of every
-   * bin holding content this frame -- the same min/max rect the scrubs and
-   * blits use, so the outline hugs what the bin really touched. Drawn on
-   * the screen graphics after the bin pixels (not baked into the cached
+   * "Show active tiles": red outline around the content rectangle of every
+   * tile holding content this frame -- the same min/max rect the scrubs and
+   * blits use, so the outline hugs what the tile really touched. Drawn on
+   * the screen graphics after the tile pixels (not baked into the cached
    * tiles), so toggling the option needs no tile invalidation; and because
-   * the outline lies inside the bin's paint union, the normal scrub/blit
+   * the outline lies inside the tile's paint union, the normal scrub/blit
    * erases it when content moves or the option is turned off.
    */
-  private void drawActiveBinOutlines(Graphics graphics) {
-    if (!show_active_bins) {
+  private void drawActiveTileOutlines(Graphics graphics) {
+    if (!show_active_tiles) {
       return;
     }
     graphics.setClip(0, 0, 9999, 9999);
     graphics.setColor(Color.RED);
-    for (int j = 0; j < this.number_of_bins_y; j++) {
-      for (int i = 0; i < this.number_of_bins_x; i++) {
-        final RendererBin bin = this.array[i][j];
-        if (bin.vector.size() > 0) {
-          final RectangleInt actual = bin.actual;
+    for (int j = 0; j < this.number_of_tiles_y; j++) {
+      for (int i = 0; i < this.number_of_tiles_x; i++) {
+        final RendererTile tile = this.array[i][j];
+        if (tile.vector.size() > 0) {
+          final RectangleInt actual = tile.actual;
           // The bbox max is exclusive, but drawRect's far corner is
           // inclusive: shrink by one so the outline stays inside the
           // scrub/blit clip and is erased with everything else.
@@ -371,19 +229,19 @@ public class RendererBinManager {
     }
   }
 
-  private void renderTiled(RendererBinManager bins_last, Graphics graphics,
+  private void renderTiled(RendererTileManager tiles_last, Graphics graphics,
       int block_size) {
 
     final int aa = RendererDelegator.antialiasing;
     final int px = RendererDelegator.pixellation;
 
-    // The tile size changed (show_bins toggled), or the anti-aliasing or
+    // The tile size changed (show_tiles toggled), or the anti-aliasing or
     // pixellation factor changed: the tiles are the wrong size, so drop
     // them. They are rebuilt below.
     if (block_size != this.last_block_size || aa != this.last_antialiasing
         || px != this.last_pixellation) {
-      for (int j = 0; j < this.number_of_bins_y; j++) {
-        for (int i = 0; i < this.number_of_bins_x; i++) {
+      for (int j = 0; j < this.number_of_tiles_y; j++) {
+        for (int i = 0; i < this.number_of_tiles_x; i++) {
           this.array[i][j].image = null;
           this.array[i][j].image_aa = null;
         }
@@ -394,8 +252,8 @@ public class RendererBinManager {
     }
 
     // Pixellated tiles are rendered at 1/px resolution: the coarse tile
-    // covers the bin with ceil(block_size / px) pixels per side, then
-    // gets nearest-neighbour upsampled to the full bin size on blit.
+    // covers the tile with ceil(block_size / px) pixels per side, then
+    // gets nearest-neighbour upsampled to the full tile size on blit.
     final int coarse_w = (block_size + px - 1) / px;
     final int coarse_h = (block_size + px - 1) / px;
     // The render tile: anti-aliasing supersamples the coarse tile.
@@ -405,32 +263,32 @@ public class RendererBinManager {
     final RectangleInt potential = new RectangleInt(0, 0, 0, 0);
 
     // A drag-box selection is draw-only (never erased): the tiled
-    // renderer skips empty bins, so without this the old rectangle
-    // would leave a trail. Bins under the old or new rectangle are
+    // renderer skips empty tiles, so without this the old rectangle
+    // would leave a trail. Tiles under the old or new rectangle are
     // repainted even when empty.
     final RectangleInt drag_damage = getDragBoxDamage();
 
-    // Every bin holding content is re-rendered into its tile; every tile
-    // (and every vacated bin's repaired screen area) is blitted below, so
+    // Every tile holding content is re-rendered into its tile; every tile
+    // (and every vacated tile's repaired screen area) is blitted below, so
     // exposure damage self-heals on the next frame without any explicit
     // invalidation.
-    for (int j = 0; j < this.number_of_bins_y; j++) {
-      for (int i = 0; i < this.number_of_bins_x; i++) {
-        final RendererBin bin = this.array[i][j];
-        final ArrayList<PolygonComposite> v_this = bin.vector;
+    for (int j = 0; j < this.number_of_tiles_y; j++) {
+      for (int i = 0; i < this.number_of_tiles_x; i++) {
+        final RendererTile tile = this.array[i][j];
+        final ArrayList<PolygonComposite> v_this = tile.vector;
         final int size = v_this.size();
 
-        final RendererBin last_bin = bins_last.array[i][j];
-        final int size_last = last_bin.vector.size();
+        final RendererTile last_tile = tiles_last.array[i][j];
+        final int size_last = last_tile.vector.size();
 
         if (size == 0 && size_last == 0) {
-          // Empty bin: normally skipped. But a drag-box selection
-          // draws directly on the screen, so bins under its old or new
+          // Empty tile: normally skipped. But a drag-box selection
+          // draws directly on the screen, so tiles under its old or new
           // rectangle must be scrubbed even when empty -- otherwise the
           // old rectangle leaves a trail.
           if (drag_damage != null) {
-            potential.min_x = getPixelsFromBinX(i);
-            potential.min_y = getPixelsFromBinY(j);
+            potential.min_x = getPixelsFromTileX(i);
+            potential.min_y = getPixelsFromTileY(j);
             potential.max_x = potential.min_x + block_size;
             potential.max_y = potential.min_y + block_size;
             if (rectsIntersect(potential, drag_damage)) {
@@ -440,25 +298,25 @@ public class RendererBinManager {
           continue;
         }
 
-        potential.min_x = getPixelsFromBinX(i);
-        potential.min_y = getPixelsFromBinY(j);
+        potential.min_x = getPixelsFromTileX(i);
+        potential.min_y = getPixelsFromTileY(j);
         potential.max_x = potential.min_x + block_size;
         potential.max_y = potential.min_y + block_size;
 
-        bin.setUpActual(potential);
-        bin.union.setToUnion(bin.actual, last_bin.actual);
+        tile.setUpActual(potential);
+        tile.union.setToUnion(tile.actual, last_tile.actual);
         if (drag_damage != null) {
           // A drag-box selection draws on the screen: include its
           // damage in the scrubbed union.
-          bin.union.setToUnion(bin.union, drag_damage);
+          tile.union.setToUnion(tile.union, drag_damage);
         }
         if (px > 1) {
           // Cover the pixellation bleed (see expandByBleed).
-          expandByBleed(bin.union, px);
+          expandByBleed(tile.union, px);
         }
 
         if (size > 0) {
-            if (bin.image == null) {
+            if (tile.image == null) {
               FrEnd.main_canvas.panel
                   .setBackground(RendererDelegator.color_background);
               if (aa > 1 || px > 1) {
@@ -466,14 +324,14 @@ public class RendererBinManager {
                 // (anti-aliasing) and/or nearest-neighbour upsampled
                 // (pixellation) on blit. A BufferedImage guarantees
                 // readable pixels for the resampling.
-                bin.image = new BufferedImage(render_w, render_h,
+                tile.image = new BufferedImage(render_w, render_h,
                     BufferedImage.TYPE_INT_RGB);
               } else {
-                bin.image = FrEnd.main_canvas.createImage(block_size,
+                tile.image = FrEnd.main_canvas.createImage(block_size,
                     block_size);
               }
             }
-            final Graphics graphics_paint = bin.image.getGraphics();
+            final Graphics graphics_paint = tile.image.getGraphics();
             if (aa > 1 || px > 1) {
               // Render in screen coordinates scaled by aa / px: translate
               // first, then scale, so a screen point p lands on tile pixel
@@ -490,12 +348,12 @@ public class RendererBinManager {
             // Scrub the union of last frame's and this frame's content, so
             // moved content leaves no trail. Always scrub, even for newly
             // created tiles (createImage content is undefined).
-            doScrubbing(graphics_paint, potential, bin);
+            doScrubbing(graphics_paint, potential, tile);
 
-            // The bin's vector is already in draw order (see
+            // The tile's vector is already in draw order (see
             // distribute): ascending by z with deepest-first on, drawn
             // from the end backwards -- deepest first -- and creation
-            // order with it off. No per-bin sort.
+            // order with it off. No per-tile sort.
             graphics_paint.setClip(potential.min_x, potential.min_y,
                 block_size, block_size);
 
@@ -505,55 +363,55 @@ public class RendererBinManager {
 
             if (aa > 1) {
               // Box-filter the supersampled tile into the coarse tile
-              // (the full bin size while pixellation is off).
-              if (bin.image_aa == null) {
-                bin.image_aa = new BufferedImage(coarse_w, coarse_h,
+              // (the full tile size while pixellation is off).
+              if (tile.image_aa == null) {
+                tile.image_aa = new BufferedImage(coarse_w, coarse_h,
                     BufferedImage.TYPE_INT_RGB);
               }
-              downsampleTile((BufferedImage) bin.image, bin.image_aa, aa);
+              downsampleTile((BufferedImage) tile.image, tile.image_aa, aa);
             }
             graphics_paint.dispose();
-          } else if (bin.image != null) {
-            // Vacated bin: repair the screen directly and drop the tile.
-            doScrubbing(graphics, potential, bin);
-            bin.image = null;
-            bin.image_aa = null;
+          } else if (tile.image != null) {
+            // Vacated tile: repair the screen directly and drop the tile.
+            doScrubbing(graphics, potential, tile);
+            tile.image = null;
+            tile.image_aa = null;
           }
       }
     }
 
     // graphics.setClip(0, 0, 9999, 9999);
-    for (int j = 0; j < this.number_of_bins_y; j++) {
-      for (int i = 0; i < this.number_of_bins_x; i++) {
-        final RendererBin bin = this.array[i][j];
-        if (bin.image != null) {
-          final int bin_min_x = getPixelsFromBinX(i);
-          final int bin_min_y = getPixelsFromBinY(j);
-          final RectangleInt union = bin.union;
+    for (int j = 0; j < this.number_of_tiles_y; j++) {
+      for (int i = 0; i < this.number_of_tiles_x; i++) {
+        final RendererTile tile = this.array[i][j];
+        if (tile.image != null) {
+          final int tile_min_x = getPixelsFromTileX(i);
+          final int tile_min_y = getPixelsFromTileY(j);
+          final RectangleInt union = tile.union;
           graphics.setClip(union.min_x, union.min_y, union.max_x - union.min_x,
               union.max_y - union.min_y);
           if (px > 1) {
-            // Pixellated bins scale the coarse tile up to the full bin
+            // Pixellated tiles scale the coarse tile up to the full tile
             // with a nearest-neighbour blit: one flat colour per
             // px-by-px block, done natively.
-            final BufferedImage coarse = aa > 1 ? bin.image_aa
-                : (BufferedImage) bin.image;
+            final BufferedImage coarse = aa > 1 ? tile.image_aa
+                : (BufferedImage) tile.image;
             if (coarse != null) {
-              paintPixellated(graphics, coarse, bin_min_x, bin_min_y,
+              paintPixellated(graphics, coarse, tile_min_x, tile_min_y,
                   block_size, block_size);
             }
           } else {
-            // Anti-aliased bins blit the box-filtered tile; the 1x path
+            // Anti-aliased tiles blit the box-filtered tile; the 1x path
             // blits the rendered tile directly, exactly as before.
             final Image blit =
-                aa > 1 && bin.image_aa != null ? bin.image_aa : bin.image;
-            graphics.drawImage(blit, bin_min_x, bin_min_y, null);
+                aa > 1 && tile.image_aa != null ? tile.image_aa : tile.image;
+            graphics.drawImage(blit, tile_min_x, tile_min_y, null);
           }
         }
       }
     }
 
-    drawActiveBinOutlines(graphics);
+    drawActiveTileOutlines(graphics);
   }
 
   /**
@@ -594,7 +452,7 @@ public class RendererBinManager {
    * Pixellated blit: scales the coarse (1/px resolution) tile up to the
    * given screen rect with nearest-neighbour interpolation, so each
    * coarse pixel becomes one flat px-by-px block. Done natively by the
-   * blitter: a Java pixel loop over the full tile costs ~2.4ms per bin
+   * blitter: a Java pixel loop over the full tile costs ~2.4ms per tile
    * per frame here, the scaled blit ~0.1ms. Package-visible for the
    * tests.
    */
@@ -616,28 +474,28 @@ public class RendererBinManager {
   }
 
   /**
-   * Rotates per-bin frame state after rendering: bins_last takes this
+   * Rotates per-tile frame state after rendering: tiles_last takes this
    * frame's vectors and rectangles for next frame's damage repair (the
    * union of last frame's and this frame's content is scrubbed before
    * repainting), while the tiles stay on this manager.
    */
-  void rotateFrameState(RendererBinManager bins_last) {
-    for (int j = 0; j < this.number_of_bins_y; j++) {
-      for (int i = 0; i < this.number_of_bins_x; i++) {
-        final RendererBin bin = this.array[i][j];
-        final RendererBin last_bin = bins_last.array[i][j];
+  void rotateFrameState(RendererTileManager tiles_last) {
+    for (int j = 0; j < this.number_of_tiles_y; j++) {
+      for (int i = 0; i < this.number_of_tiles_x; i++) {
+        final RendererTile tile = this.array[i][j];
+        final RendererTile last_tile = tiles_last.array[i][j];
 
-        final ArrayList<PolygonComposite> vector = bin.vector;
-        bin.vector = last_bin.vector;
-        last_bin.vector = vector;
+        final ArrayList<PolygonComposite> vector = tile.vector;
+        tile.vector = last_tile.vector;
+        last_tile.vector = vector;
 
-        final RectangleInt actual = bin.actual;
-        bin.actual = last_bin.actual;
-        last_bin.actual = actual;
+        final RectangleInt actual = tile.actual;
+        tile.actual = last_tile.actual;
+        last_tile.actual = actual;
 
-        final RectangleInt union = bin.union;
-        bin.union = last_bin.union;
-        last_bin.union = union;
+        final RectangleInt union = tile.union;
+        tile.union = last_tile.union;
+        last_tile.union = union;
       }
     }
   }
@@ -725,15 +583,15 @@ public class RendererBinManager {
   }
 
   private void doScrubbing(Graphics graphics, RectangleInt potential,
-      RendererBin bin) {
-    final RectangleInt union = bin.union;
+      RendererTile tile) {
+    final RectangleInt union = tile.union;
     final int px = RendererDelegator.pixellation;
     if (px > 1) {
       // The scrub runs through the 1/px tile transform: a union edge that
       // is not on a coarse-block boundary truncates in tile space, so the
       // edge coarse pixels are never scrubbed -- stale content that the
       // upsampler then streaks to the right and bottom. Snap the clip out
-      // to whole coarse blocks (aligned to the bin origin, matching the
+      // to whole coarse blocks (aligned to the tile origin, matching the
       // upsampler); the min edges already over-cover, which is harmless.
       snapScrubToCoarseBlocks(union, potential.min_x, potential.min_y, px,
           scrub_rect);
@@ -744,10 +602,10 @@ public class RendererBinManager {
       graphics.setClip(union.min_x, union.min_y, union.max_x - union.min_x,
           union.max_y - union.min_y);
     }
-    scrubBin(graphics, potential.min_x, potential.min_y);
+    scrubTile(graphics, potential.min_x, potential.min_y);
   }
 
-  // Scratch rect for the snapped scrub clip, reused across bins and
+  // Scratch rect for the snapped scrub clip, reused across tiles and
   // frames to stay out of the render loop's allocations.
   private final RectangleInt scrub_rect = new RectangleInt(0, 0, 0, 0);
 
@@ -770,40 +628,40 @@ public class RendererBinManager {
 
   /**
    * Snaps a screen-space scrub rect out to whole coarse pixellation
-   * blocks, aligned to the bin origin (the upsampler aligns its blocks
-   * to the tile origin, i.e. the bin's screen origin). Min edges round
+   * blocks, aligned to the tile origin (the upsampler aligns its blocks
+   * to the tile origin, i.e. the tile's screen origin). Min edges round
    * down, max edges round up, so every coarse pixel the content could
    * have touched is covered once the rect is run through the 1/px tile
    * transform. Package-visible for the tests.
    */
-  static void snapScrubToCoarseBlocks(RectangleInt rect, int bin_min_x,
-      int bin_min_y, int px, RectangleInt out) {
-    out.min_x = bin_min_x + px * ((rect.min_x - bin_min_x) / px);
-    out.min_y = bin_min_y + px * ((rect.min_y - bin_min_y) / px);
-    out.max_x = bin_min_x + px * ((rect.max_x - bin_min_x + px - 1) / px);
-    out.max_y = bin_min_y + px * ((rect.max_y - bin_min_y + px - 1) / px);
+  static void snapScrubToCoarseBlocks(RectangleInt rect, int tile_min_x,
+      int tile_min_y, int px, RectangleInt out) {
+    out.min_x = tile_min_x + px * ((rect.min_x - tile_min_x) / px);
+    out.min_y = tile_min_y + px * ((rect.min_y - tile_min_y) / px);
+    out.max_x = tile_min_x + px * ((rect.max_x - tile_min_x + px - 1) / px);
+    out.max_y = tile_min_y + px * ((rect.max_y - tile_min_y + px - 1) / px);
   }
 
-  void scrubBin(Graphics graphics, int bin_min_x, int bin_min_y) {
+  void scrubTile(Graphics graphics, int tile_min_x, int tile_min_y) {
     final int block_size = divisor - getMargin();
 
     // graphics.setColor(new Color(rnd.nextInt() & 0x7F7F7F));
     if (RendererDelegator.scenic_background && Coords.x_pixels > 0
         && Coords.y_pixels > 0) {
-      // Repaint the scenic background under the scrubbed bin.
+      // Repaint the scenic background under the scrubbed tile.
       final BufferedImage scenic = ScenicBackground.imageFor(
           Coords.x_pixels, Coords.y_pixels);
-      graphics.drawImage(scenic, bin_min_x, bin_min_y,
-          bin_min_x + block_size, bin_min_y + block_size, bin_min_x,
-          bin_min_y, bin_min_x + block_size, bin_min_y + block_size, null);
+      graphics.drawImage(scenic, tile_min_x, tile_min_y,
+          tile_min_x + block_size, tile_min_y + block_size, tile_min_x,
+          tile_min_y, tile_min_x + block_size, tile_min_y + block_size, null);
     } else {
       graphics.setColor(RendererDelegator.color_background);
-      graphics.fillRect(bin_min_x, bin_min_y, block_size, block_size);
+      graphics.fillRect(tile_min_x, tile_min_y, block_size, block_size);
     }
   }
 
   private int getMargin() {
-    return RendererBinManager.show_bins ? 4 : 0;
+    return RendererTileManager.show_tiles ? 4 : 0;
   }
 
   /**
@@ -863,8 +721,8 @@ public class RendererBinManager {
   }
 
   /**
-   * Scrubs the drag-damaged part of an empty bin straight onto the
-   * screen, erasing the old drag-box rectangle. (Bins with content go
+   * Scrubs the drag-damaged part of an empty tile straight onto the
+   * screen, erasing the old drag-box rectangle. (Tiles with content go
    * through the normal tile path, whose union scrub covers the damage.)
    */
   private void scrubDragDamage(Graphics graphics, RectangleInt potential,
@@ -905,35 +763,35 @@ public class RendererBinManager {
     return (x1 > x2) ? x1 : x2;
   }
 
-  private int getBinX(int pixels) {
+  private int getTileX(int pixels) {
     if (pixels < 0) {
       return 0;
     }
     final int proposed = pixels / divisor;
 
-    if (proposed >= this.number_of_bins_x) {
+    if (proposed >= this.number_of_tiles_x) {
       if (proposed > 0) {
-        return this.number_of_bins_x - 1;
+        return this.number_of_tiles_x - 1;
       }
     }
     return proposed;
   }
 
-  private int getBinY(int pixels) {
+  private int getTileY(int pixels) {
     if (pixels < 0) {
       return 0;
     }
 
     final int proposed = pixels / divisor;
-    if (proposed >= this.number_of_bins_y) {
+    if (proposed >= this.number_of_tiles_y) {
       if (proposed > 0) {
-        return this.number_of_bins_y - 1;
+        return this.number_of_tiles_y - 1;
       }
     }
     return proposed;
   }
 
-  private int calcBinX(int pixels) {
+  private int calcTileX(int pixels) {
     if (pixels < 0) {
       return 0;
     }
@@ -941,7 +799,7 @@ public class RendererBinManager {
     return proposed;
   }
 
-  private int calcBinY(int pixels) {
+  private int calcTileY(int pixels) {
     if (pixels < 0) {
       return 0;
     }
@@ -950,11 +808,11 @@ public class RendererBinManager {
     return proposed;
   }
 
-  private int getPixelsFromBinX(int pixels) {
+  private int getPixelsFromTileX(int pixels) {
     return pixels * divisor;
   }
 
-  private int getPixelsFromBinY(int pixels) {
+  private int getPixelsFromTileY(int pixels) {
     return pixels * divisor;
   }
 

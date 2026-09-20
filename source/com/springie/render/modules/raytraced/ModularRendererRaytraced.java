@@ -25,13 +25,13 @@ import com.springie.render.RendererDelegator;
 import com.springie.render.RendererDragBox;
 import com.springie.render.ScenicBackground;
 import com.springie.render.modules.ModularRendererBase;
-import com.springie.render.modules.modern.RendererBinManager;
+import com.springie.render.modules.modern.RendererTileManager;
 
 /**
  * A ray-traced renderer that lives alongside the default renderer.
  *
- * <p>It renders into the same bin tiles as the default renderer
- * (RendererBinManager.divisor blocks), one tile per worker thread.
+ * <p>It renders into the same tile tiles as the default renderer
+ * (RendererTileManager.divisor blocks), one tile per worker thread.
  * Finished tiles are stored, not displayed: only when every tile of a
  * frame is done is the whole frame blitted to the screen at once, so
  * the user never sees a half-rendered frame.
@@ -49,7 +49,7 @@ import com.springie.render.modules.modern.RendererBinManager;
  * rectangle and unioning it into every tile it touches, producing one
  * dirty rectangle per tile (empty when the tile holds no geometry).
  * This is the same RectangleInt algebra the polygon renderer uses for
- * its bins (see RendererBin): the worker re-traces only the dirty
+ * its tiles (see RendererTile): the worker re-traces only the dirty
  * rectangle -- a sub-rectangle of the tile -- unioned with the tile's
  * dirty rectangle from the previous frame (the whole tile for one
  * frame after a global effect like shadows or a background recolour),
@@ -99,7 +99,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     // or a degenerate walk, which make every pixel suspect. The next
     // frame re-traces the union of its dirty rectangle and this one, so
     // pixels where geometry used to be are repainted too -- the same
-    // idea as the polygon renderer's bin.union. Empty until the tile's
+    // idea as the polygon renderer's tile.union. Empty until the tile's
     // first staged frame; untouched while the tile is skipped.
     final RectangleInt last_dirty =
         new RectangleInt(Integer.MAX_VALUE, Integer.MAX_VALUE,
@@ -129,7 +129,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
 
   /**
    * One tile of a complete frame: its image plus, for the "show active
-   * bins" overlay, whether any ray hit geometry and the content rectangle
+   * tiles" overlay, whether any ray hit geometry and the content rectangle
    * (screen coordinates, inclusive) those hits covered.
    */
   static final class ShownTile {
@@ -162,7 +162,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
 
   private int canvas_height = -1;
 
-  private boolean last_show_bins;
+  private boolean last_show_tiles;
 
   private volatile long frame_id;
 
@@ -176,7 +176,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   // to re-trace.
   private int last_background_rgb;
 
-  // Effective tile columns per row (degenerate zero-area bins dropped),
+  // Effective tile columns per row (degenerate zero-area tiles dropped),
   // for mapping a screen rectangle to tile indexes.
   private int tile_nx;
 
@@ -224,10 +224,10 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   public void repaint(Graphics graphics, NodeManager manager) {
     final int width = Coords.x_pixels;
     final int height = Coords.y_pixels;
-    final boolean show_bins = RendererBinManager.show_bins;
+    final boolean show_tiles = RendererTileManager.show_tiles;
     if (this.tiles == null || width != this.canvas_width
-        || height != this.canvas_height || show_bins != this.last_show_bins) {
-      buildTiles(width, height, show_bins);
+        || height != this.canvas_height || show_tiles != this.last_show_tiles) {
+      buildTiles(width, height, show_tiles);
     }
 
     // Compose the staged frame over the persistent frame image, then
@@ -237,7 +237,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     // those rectangles; when nothing was re-traced nothing is blitted at
     // all -- the screen already shows this frame, so screen-space
     // overlays (like the boundary-box dots) survive there, exactly like
-    // the polygon renderer's dirty bins. The composite runs before the
+    // the polygon renderer's dirty tiles. The composite runs before the
     // next frame starts, so the staged skip set still describes the
     // frame being composited.
     if (this.frame_image == null) {
@@ -277,7 +277,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     if (this.frame_done) {
       // Each tile's dirty rectangle: the union of every element's
       // screen box clipped to the tile, the same RectangleInt algebra
-      // the polygon renderer uses for its bins. A tile that was empty
+      // the polygon renderer uses for its tiles. A tile that was empty
       // last frame and is still empty keeps its published snapshot: its
       // pixels are background, which cannot have changed. Shadows can
       // fall into tiles no element touches, the scenic background pans
@@ -331,11 +331,11 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     // composite block above; when nothing was staged the screen already
     // shows this frame, so nothing is painted here.
 
-    final boolean show_active = RendererBinManager.show_active_bins;
+    final boolean show_active = RendererTileManager.show_active_tiles;
     final Tile[] tiles = this.tiles;
     for (int i = 0; i < tiles.length; i++) {
       final ShownTile shown = tiles[i].shown;
-      // "Show active bins": red outline around the content rectangle of
+      // "Show active tiles": red outline around the content rectangle of
       // every tile holding geometry, drawn on the screen graphics after
       // the tile pixels (not baked into the tiles), so toggling the
       // option needs no re-render.
@@ -349,7 +349,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
 
   /**
    * Composes one whole frame offscreen: the background first (with "show
-   * bins" the tiles are shrunk by a margin, so the gutters between them
+   * tiles" the tiles are shrunk by a margin, so the gutters between them
    * show the background as black grid lines, exactly like the default
    * renderer), then every published tile painted over it. Tiles with no
    * published snapshot yet contribute nothing, so a frame in progress
@@ -393,14 +393,14 @@ public class ModularRendererRaytraced implements ModularRendererBase {
 
   /**
    * Builds the tile grid: divisor-sized blocks covering the canvas, the
-   * same bins the default renderer uses. With "show bins" each tile is
+   * same tiles the default renderer uses. With "show tiles" each tile is
    * shrunk by the same margin the default renderer leaves, so the
    * background shows through as black grid lines between the tiles.
    */
   static Tile[] buildTileGrid(int width, int height) {
-    final int divisor = RendererBinManager.divisor;
+    final int divisor = RendererTileManager.divisor;
     // Same margin as the default renderer's getMargin().
-    final int margin = RendererBinManager.show_bins ? 4 : 0;
+    final int margin = RendererTileManager.show_tiles ? 4 : 0;
     final int block = divisor - margin;
     final int nx = width / divisor + 1;
     final int ny = height / divisor + 1;
@@ -417,22 +417,22 @@ public class ModularRendererRaytraced implements ModularRendererBase {
         }
       }
     }
-    // An exact multiple of the divisor leaves a degenerate zero-area bin;
+    // An exact multiple of the divisor leaves a degenerate zero-area tile;
     // it covers no pixels, so it is dropped.
     final Tile[] result = new Tile[i];
     System.arraycopy(tiles, 0, result, 0, i);
     return result;
   }
 
-  void buildTiles(int width, int height, boolean show_bins) {
+  void buildTiles(int width, int height, boolean show_tiles) {
     this.tiles = buildTileGrid(width, height);
     this.canvas_width = width;
     this.canvas_height = height;
-    this.last_show_bins = show_bins;
+    this.last_show_tiles = show_tiles;
     this.frame_done = true;
     this.tile_empty = null;
     this.staged_skip = null;
-    final int divisor = RendererBinManager.divisor;
+    final int divisor = RendererTileManager.divisor;
     this.tile_nx = (width + divisor - 1) / divisor;
     this.frame_image = null;
     this.frame_staged = false;
@@ -445,7 +445,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
    * frame that rendered it), so the "every tile done" check below only
    * waits on re-traced tiles. Each re-traced tile traces only its dirty
    * rectangle, unioned with the rectangle it showed last frame -- like
-   * the polygon renderer's bin.union, this repaints pixels where
+   * the polygon renderer's tile.union, this repaints pixels where
    * geometry used to be as well as where it is now. On a render-all
    * frame (global true, a degenerate walk with dirty null, or the
    * first frame) every tile traces its whole area instead. The last
@@ -631,7 +631,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
    */
   RectangleInt[] computeDirtyRects(NodeManager manager) {
     final Tile[] tiles = this.tiles;
-    final int divisor = RendererBinManager.divisor;
+    final int divisor = RendererTileManager.divisor;
     final int width = this.canvas_width;
     final int height = this.canvas_height;
     final int nx = this.tile_nx;
@@ -690,7 +690,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
         if (ends.length == 0) {
           continue;
         }
-        // Mark the link span by span, the way the polygon renderer bins
+        // Mark the link span by span, the way the polygon renderer tiles
         // each segment by its own tight box: a single AABB over the whole
         // span marks length-squared tiles for a diagonal link instead of
         // length. (A one-node link renders nothing, so it marks nothing.)
@@ -751,7 +751,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     // it. Its old and new rectangles join the dirty region here, or the
     // old rectangle's pixels would never be repainted and the red box
     // would leave a trail (the same damage the polygon renderer forces
-    // dirty; see RendererBinManager.getDragBoxDamage).
+    // dirty; see RendererTileManager.getDragBoxDamage).
     final RectangleInt drag_damage = getDragBoxDamage();
     if (drag_damage != null) {
       markTilesDirty(rects, tiles, nx, divisor, width, height,
@@ -766,7 +766,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
    * The screen region damaged by a drag-box selection: the union of the
    * previous and current rectangles, expanded by the box's line
    * thickness. Null when no drag is active. Mirrors
-   * RendererBinManager.getDragBoxDamage: the box caches its coordinates
+   * RendererTileManager.getDragBoxDamage: the box caches its coordinates
    * on draw, so the last drawn rectangle is known even after release,
    * when the gesture's start point is already gone -- and the release
    * frame is the one that erases the box for good.
@@ -891,8 +891,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   /**
    * Unions an element's screen rectangle into every tile's dirty
    * rectangle it touches, clipped to each tile's own bounds. Fully
-   * off-screen elements touch no tile. With "show bins" the tiles are
-   * shrunk by a margin, so a box can cross a tile's bin without touching
+   * off-screen elements touch no tile. With "show tiles" the tiles are
+   * shrunk by a margin, so a box can cross a tile's tile without touching
    * the tile itself: the per-tile clip leaves such tiles' rectangles
    * empty.
    */

@@ -26,7 +26,7 @@ import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ColourModifier;
 import com.springie.render.modules.modern.ElementRendererLink;
 import com.springie.render.modules.modern.ModularRendererNew;
-import com.springie.render.modules.modern.RendererBinManager;
+import com.springie.render.modules.modern.RendererTileManager;
 
 /**
  * The Preferences panel's Reset button must restore every preference to its
@@ -64,10 +64,10 @@ class PreferencesResetTest {
         FrEnd.preferences.map.put(Preferences.key_output_pov_compression,
             "point");
 
-        RendererBinManager.divisor = 300;
-        RendererBinManager.show_bins = true;
-        RendererBinManager.colour_modifier_filled = ColourModifier.darker;
-        RendererBinManager.colour_modifier_wireframe = ColourModifier.natural;
+        RendererTileManager.divisor = 300;
+        RendererTileManager.show_tiles = true;
+        RendererTileManager.colour_modifier_filled = ColourModifier.darker;
+        RendererTileManager.colour_modifier_wireframe = ColourModifier.natural;
         ElementRendererLink.strut_divisions = 5;
         ElementRendererLink.cable_divisions = 6;
         RendererDelegator.link_sides = 6;
@@ -149,12 +149,12 @@ class PreferencesResetTest {
       assertEquals(Boolean.FALSE, FrEnd.preferences.map.get(
           Preferences.key_update_animation_when_pointer_over));
 
-      assertEquals(340, RendererBinManager.divisor);
-      assertFalse(RendererBinManager.show_bins);
+      assertEquals(340, RendererTileManager.divisor);
+      assertFalse(RendererTileManager.show_tiles);
       assertEquals(ColourModifier.natural,
-          RendererBinManager.colour_modifier_filled);
+          RendererTileManager.colour_modifier_filled);
       assertEquals(ColourModifier.darker,
-          RendererBinManager.colour_modifier_wireframe);
+          RendererTileManager.colour_modifier_wireframe);
       assertEquals(3, ElementRendererLink.strut_divisions);
       assertEquals(1, ElementRendererLink.cable_divisions);
       assertEquals(2, RendererDelegator.link_sides);
@@ -186,12 +186,6 @@ class PreferencesResetTest {
 
       assertEquals(640, DeepObjectColourCalculator.factor);
       assertTrue(DeepObjectColourCalculator.depth_is_relative);
-
-      // ...and the double-buffer preferences are back too.
-      assertEquals(Boolean.TRUE, FrEnd.preferences.map
-          .get(Preferences.renderer_new_double_buffer));
-      assertEquals(Boolean.FALSE, FrEnd.preferences.map
-          .get(Preferences.renderer_old_double_buffer));
 
       // Reset restores the docked default: the controls panel lives in
       // the main window, the separate controls frame is hidden, and the

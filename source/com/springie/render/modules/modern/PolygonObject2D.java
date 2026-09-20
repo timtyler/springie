@@ -21,11 +21,11 @@ public class PolygonObject2D {
   RectangleInt bounding_box;
 
   /**
-   * Frame number (RendererBinManager.render_frame) for which
+   * Frame number (RendererTileManager.render_frame) for which
    * colour_cache_filled / colour_cache_wireframe were computed. The
    * colour modifiers are frame-constant, and the polygon's own colour is
    * rewritten before each frame's render, so one computation per frame
-   * is enough however many bins the polygon lands in.
+   * is enough however many tiles the polygon lands in.
    */
   int colour_cache_frame = -1;
 
@@ -35,9 +35,9 @@ public class PolygonObject2D {
 
   /**
    * Direct-mapped cache of java.awt.Color by ARGB int. fill/draw used to
-   * allocate a Color per polygon per bin per pass -- tens of thousands
+   * allocate a Color per polygon per tile per pass -- tens of thousands
    * per frame for a Moscow-sized model. Colours repeat heavily across
-   * polygons, bins and frames, so a small direct-mapped cache hits
+   * polygons, tiles and frames, so a small direct-mapped cache hits
    * almost always while staying bounded. Rendering is single-threaded.
    */
   private static final int COLOR_CACHE_MASK = 1023;

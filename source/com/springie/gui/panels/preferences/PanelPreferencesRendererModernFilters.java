@@ -15,7 +15,7 @@ import com.springie.gui.components.TabbedPanel;
 import com.springie.gui.components.TTChoice;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ColourModifier;
-import com.springie.render.modules.modern.RendererBinManager;
+import com.springie.render.modules.modern.RendererTileManager;
 
 public class PanelPreferencesRendererModernFilters {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -87,7 +87,7 @@ public class PanelPreferencesRendererModernFilters {
         final String scs = (String) e.getItem();
         final int val = PanelPreferencesRendererModernFilters.this.choose_colour_modifier_wireframe
             .str_to_num(scs);
-        RendererBinManager.colour_modifier_wireframe = val;
+        RendererTileManager.colour_modifier_wireframe = val;
         RendererDelegator.repaintAll();
       }
     });
@@ -96,7 +96,7 @@ public class PanelPreferencesRendererModernFilters {
 
     this.choose_colour_modifier_wireframe.choice
         .select(this.choose_colour_modifier_filled
-            .num_to_str(RendererBinManager.colour_modifier_wireframe));
+            .num_to_str(RendererTileManager.colour_modifier_wireframe));
     panel.add(this.choose_colour_modifier_wireframe.choice);
 
     return panel;
@@ -111,7 +111,7 @@ public class PanelPreferencesRendererModernFilters {
         final String scs = (String) e.getItem();
         final int val = PanelPreferencesRendererModernFilters.this.choose_colour_modifier_filled
             .str_to_num(scs);
-        RendererBinManager.colour_modifier_filled = val;
+        RendererTileManager.colour_modifier_filled = val;
         RendererDelegator.repaintAll();
       }
     });
@@ -120,7 +120,7 @@ public class PanelPreferencesRendererModernFilters {
 
     this.choose_colour_modifier_filled.choice
         .select(this.choose_colour_modifier_filled
-            .num_to_str(RendererBinManager.colour_modifier_filled));
+            .num_to_str(RendererTileManager.colour_modifier_filled));
     panel.add(this.choose_colour_modifier_filled.choice);
 
     return panel;
@@ -148,12 +148,12 @@ public class PanelPreferencesRendererModernFilters {
     this.panel_colour_filter_b.color_picker_controller
         .setColour(ColourModifier.colour_b_number);
 
-    RendererBinManager.colour_modifier_filled = ColourModifier.natural;
+    RendererTileManager.colour_modifier_filled = ColourModifier.natural;
     this.choose_colour_modifier_filled.choice.select(
         this.choose_colour_modifier_filled
             .num_to_str(ColourModifier.natural));
 
-    RendererBinManager.colour_modifier_wireframe = ColourModifier.darker;
+    RendererTileManager.colour_modifier_wireframe = ColourModifier.darker;
     this.choose_colour_modifier_wireframe.choice.select(
         this.choose_colour_modifier_wireframe
             .num_to_str(ColourModifier.darker));

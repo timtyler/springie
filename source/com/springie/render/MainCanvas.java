@@ -31,9 +31,6 @@ public class MainCanvas {
 
   RendererInfoButton info_button = new RendererInfoButton();
 
-  // for crude double-buffering
-  Image image_offscreen;
-
   public Graphics graphics_handle;
 
   ImageObserver observer;
@@ -278,10 +275,6 @@ public class MainCanvas {
     this.img_x = Coords.x_pixels;
     this.img_y = Coords.y_pixels;
 
-    this.image_offscreen = createImage(this.img_x, this.img_y);
-
-    setUpGraphicsHandle();
-
     ContextManager.getNodeManager().resetNodeGrid(); // due to resize...
 
     //StarManager.reset(); // stars need resizing...
@@ -291,12 +284,6 @@ public class MainCanvas {
 
   public Image createImage(int x, int y) {
     return this.panel.createImage(x, y);
-  }
-
-  public final void setUpGraphicsHandle() {
-    if (this.image_offscreen != null) {
-      this.graphics_handle = this.image_offscreen.getGraphics();
-    }
   }
 
   public final void forceResize() {
@@ -338,19 +325,8 @@ public class MainCanvas {
       RendererDelegator.resize(Coords.x_pixels, Coords.y_pixels);
     }
 
-    if (!RendererDelegator.isOldDoubleBuffer()) {
-      this.graphics_handle = g;
-      RendererDelegator.redrawChanged(g);
-    }
-
-    if (RendererDelegator.isOldDoubleBuffer()) {
-      if ((((RendererDelegator.generation) & FrEnd.frame_frequency) == 0)
-        || FrEnd.isAnimationInactive()) {
-        if (this.image_offscreen != null) {
-          g.drawImage(this.image_offscreen, this.xoff, this.yoff, this.panel);
-        }
-      }
-    }
+    this.graphics_handle = g;
+    RendererDelegator.redrawChanged(g);
 
     BoundaryBoxDots.drawOneDot(g);
 
@@ -373,9 +349,7 @@ public class MainCanvas {
   public final void paint(Graphics g) {
     RendererDelegator.repaintAll();
 
-    if (!RendererDelegator.isOldDoubleBuffer()) {
-      RendererDelegator.virgin_applet = 1; // not known why this hack is necessary :-(
-    }
+    RendererDelegator.virgin_applet = 1; // not known why this hack is necessary :-(
 
     update(g);
   }
