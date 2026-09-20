@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import javax.swing.SwingUtilities;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
@@ -21,9 +22,13 @@ import com.springie.gui.GuiTestSupport;
  */
 class MessagePumpTest {
 
+  @BeforeAll
+  static void boot() throws Exception {
+    GuiTestSupport.bootApp();
+  }
+
   @Test
   void holdingTheMouseDownSynthesizesNoClick() throws Exception {
-    GuiTestSupport.bootApp();
     SwingUtilities.invokeAndWait(() -> {
       FrEnd.new_message_manager.messages.clear();
       FrEnd.mouse_pressed = true;
@@ -43,7 +48,6 @@ class MessagePumpTest {
 
   @Test
   void queuedWorkStillDrainsWhileTheMouseIsDown() throws Exception {
-    GuiTestSupport.bootApp();
     SwingUtilities.invokeAndWait(() -> {
       FrEnd.new_message_manager.messages.clear();
       FrEnd.mouse_pressed = true;

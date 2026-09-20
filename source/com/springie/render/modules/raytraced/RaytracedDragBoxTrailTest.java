@@ -120,7 +120,9 @@ class RaytracedDragBoxTrailTest {
       if (countSelected(capture(), x0, y0, x1, y1) > 0) {
         return;
       }
-      Thread.sleep(250);
+      // Poll tightly: the box flickers with the paint cycle, so a coarse
+      // poll just adds dead time between a visible frame and its capture.
+      Thread.sleep(25);
     }
     assertTrue(false, what);
   }

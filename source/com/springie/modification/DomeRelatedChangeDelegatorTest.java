@@ -40,7 +40,7 @@ class DomeRelatedChangeDelegatorTest {
       if (System.currentTimeMillis() > loaded_by) {
         throw new IllegalStateException("startup model did not load");
       }
-      Thread.sleep(500);
+      Thread.sleep(50);
     }
   }
 

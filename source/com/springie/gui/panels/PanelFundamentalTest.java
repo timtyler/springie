@@ -345,7 +345,7 @@ public class PanelFundamentalTest {
               && (links[d] < 0 || got_links == links[d])) {
             break;
           }
-          Thread.sleep(250);
+          Thread.sleep(25);
         }
         assertEquals(nodes[d], got_nodes,
             label + " must build its demo's node count via the launch button");

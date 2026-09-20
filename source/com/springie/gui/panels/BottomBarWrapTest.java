@@ -118,7 +118,8 @@ class BottomBarWrapTest {
         stable = 0;
         last = height;
       }
-      Thread.sleep(100);
+      // The convergence is a single async revalidate: poll tightly.
+      Thread.sleep(15);
     }
     return height;
   }

@@ -63,10 +63,14 @@ public final class GuiTestSupport {
   /**
    * The boot-time model load applies its universe settings asynchronously,
    * after FrEnd.main returns. Wait until the world has gone quiet. The
-   * model and its universe settings appear atomically (measured: the
-   * node count and gravity change in the same poll), so a short quiet
-   * period after first seeing the model is sufficient -- the old 2s wait
-   * was almost entirely dead time (28 GUI test classes boot the app).
+   * boot enqueues a single restart message on the animation thread's
+   * message pump and that message loads the model and its universe
+   * settings synchronously (ModelManager.replaceCurrentModel does no
+   * follow-up enqueueing), so once the queue has drained, the model is
+   * up and nothing has changed for a short quiet spell, the boot has
+   * settled. Polling the drain beats the old fixed 500ms quiet period,
+   * which was almost entirely dead time (28 GUI test classes boot the
+   * app).
    */
   public static void waitForBootModelLoadToSettle() throws Exception {
     int last_gravity = Integer.MIN_VALUE;
@@ -74,20 +78,22 @@ public final class GuiTestSupport {
     long last_change = System.currentTimeMillis();
     final long deadline = last_change + 60000;
     while (System.currentTimeMillis() < deadline) {
-      final int[] state = new int[2];
+      final int[] state = new int[3];
       SwingUtilities.invokeAndWait(() -> {
         state[0] = World.gravity_strength;
         state[1] = ContextManager.getNodeManager().element.size();
+        state[2] = FrEnd.new_message_manager.size();
       });
       if (state[0] != last_gravity || state[1] != last_nodes) {
         last_gravity = state[0];
         last_nodes = state[1];
         last_change = System.currentTimeMillis();
       }
-      if (state[1] > 0 && System.currentTimeMillis() - last_change > 500) {
+      if (state[1] > 0 && state[2] == 0
+          && System.currentTimeMillis() - last_change > 150) {
         return;
       }
-      Thread.sleep(100);
+      Thread.sleep(25);
     }
   }
 }

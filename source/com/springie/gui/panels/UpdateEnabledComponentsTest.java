@@ -47,14 +47,16 @@ class UpdateEnabledComponentsTest {
         if (System.currentTimeMillis() > loaded_by) {
           throw new IllegalStateException("startup model did not load");
         }
-        Thread.sleep(500);
+        Thread.sleep(50);
       }
 
       // Simulate the user toggling one of the Nodes/Links/Faces checkboxes
       // in the select panel.
       SwingUtilities.invokeAndWait(
           UpdateEnabledComponents::greySelectButtonsDependingOnSelection);
-      Thread.sleep(2000);
+      // Brief settle after the toggle; the poll loop below waits for the
+      // async GUI update itself, so this is just insurance.
+      Thread.sleep(200);
 
       // Select all links, as the UI's "select links" button does.
       SwingUtilities.invokeAndWait(() -> {
@@ -70,7 +72,7 @@ class UpdateEnabledComponentsTest {
         if (children == 5) {
           break;
         }
-        Thread.sleep(500);
+        Thread.sleep(50);
       }
 
       // Radius, Length, Elasticity, Damping, Phase.
