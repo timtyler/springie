@@ -42,6 +42,14 @@ public final class RendererDelegator {
 
   public static boolean repaint_some_objects = true;
 
+  /**
+   * Set when possibleInitialClear actually cleared the whole screen.
+   * Consumed by redrawChanged, which paints the outside-the-viewpoint
+   * shading once, after the fresh frame is up -- never per animation
+   * frame.
+   */
+  private static boolean full_clear_done = false;
+
   public static Graphics graphics_handle;
 
   static JUR rnd = new JUR();
@@ -194,6 +202,14 @@ public final class RendererDelegator {
       RendererDelegator.passOnToUpdateMethods(graphics);
     }
 
+    if (RendererDelegator.full_clear_done) {
+      RendererDelegator.full_clear_done = false;
+      // The whole screen was just redrawn: shade the area outside the
+      // viewpoint once, here, on the fresh frame -- never per animation
+      // frame, so animating the model costs nothing extra.
+      ViewportShade.shadeOutsideBox(graphics);
+    }
+
     renderDragBox(graphics);
 
     refreshFpsLabel();
@@ -264,6 +280,7 @@ public final class RendererDelegator {
         }
         renderer.reset();
         RendererDelegator.repaint_all_objects = false;
+        RendererDelegator.full_clear_done = true;
       }
     }
 
