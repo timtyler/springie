@@ -45,8 +45,9 @@ public class DragBoxTrailTest {
           new Point(x1 << Coords.shift, y1 << Coords.shift);
       RendererDelegator.repaintAll();
     });
-    // Let the repaint complete.
-    Thread.sleep(800);
+    // The polygon renderer paints synchronously on the EDT: schedule the
+    // repaint and wait for it to land, instead of a blind sleep.
+    GuiTestSupport.repaintAndWait();
   }
 
   private static BufferedImage capture() throws Exception {

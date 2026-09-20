@@ -8,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.swing.SwingUtilities;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
@@ -25,9 +27,20 @@ import com.springie.world.World;
  */
 class UniverseResetTest {
 
+  @BeforeAll
+  static void boot() throws Exception {
+    // One boot for the class: each test sets up (and restores) its own
+    // universe state explicitly, so per-test fresh boots were pure cost.
+    GuiTestSupport.bootApp();
+  }
+
+  @AfterAll
+  static void dispose() throws Exception {
+    GuiTestSupport.disposeFrames();
+  }
+
   @Test
   void resetUniverseRestoresDefaults() throws Exception {
-    GuiTestSupport.bootApp();
     try {
       // The snapshot is global: a test that loaded a model earlier in
       // this JVM would otherwise pollute it.
@@ -77,7 +90,7 @@ class UniverseResetTest {
             "continuously centre");
       });
     } finally {
-      GuiTestSupport.disposeFrames();
+      UniverseDefaults.resetToFactoryDefaults();
     }
   }
 
@@ -87,7 +100,6 @@ class UniverseResetTest {
    */
   @Test
   void resetUniverseRestoresModelSettings() throws Exception {
-    GuiTestSupport.bootApp();
     try {
       SwingUtilities.invokeAndWait(() -> {
         final PanelControlsUniverse panel = FrEnd.panel_universe;
@@ -134,7 +146,6 @@ class UniverseResetTest {
       });
     } finally {
       UniverseDefaults.resetToFactoryDefaults();
-      GuiTestSupport.disposeFrames();
     }
   }
 
@@ -147,7 +158,6 @@ class UniverseResetTest {
    */
   @Test
   void reflectUniverseTogglesMirrorsTheSimulationStatics() throws Exception {
-    GuiTestSupport.bootApp();
     try {
       SwingUtilities.invokeAndWait(() -> {
         final PanelControlsUniverse panel = FrEnd.panel_universe;
@@ -175,7 +185,6 @@ class UniverseResetTest {
       FrEnd.check_collisions = true;
       FrEnd.continuously_centre = false;
       ContextManager.getNodeManager().electrostatic.charge_active = true;
-      GuiTestSupport.disposeFrames();
     }
   }
 }

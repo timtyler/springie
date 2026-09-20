@@ -65,7 +65,22 @@ class RaytracedDragBoxTrailTest {
     SwingUtilities.invokeAndWait(() -> {
       FrEnd.main_canvas.panel.repaint();
     });
-    Thread.sleep(1500);
+    // Ensure the EDT has processed the repaint, so the ray-traced frame
+    // has started (holdModelForFrame goes true while a frame is in
+    // flight). Polling for completion beats the old fixed 1.5s sleep:
+    // a small drag-box re-render typically finishes in a few hundred ms.
+    SwingUtilities.invokeAndWait(() -> {
+    });
+    final ModularRendererRaytraced rt =
+        (ModularRendererRaytraced) RendererDelegator.renderer;
+    final long deadline = System.currentTimeMillis() + 1500;
+    while (rt.holdModelForFrame()
+        && System.currentTimeMillis() < deadline) {
+      Thread.sleep(25);
+    }
+    // Let the EDT blit the finished frame to the screen.
+    SwingUtilities.invokeAndWait(() -> {
+    });
   }
 
   private static BufferedImage capture() throws Exception {

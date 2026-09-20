@@ -75,7 +75,7 @@ public class PolygonRendererClickBoxTest {
       RendererDelegator.repaintAll();
     });
     // Let a full clear-and-redraw settle.
-    Thread.sleep(800);
+    GuiTestSupport.repaintAndWait();
   }
 
   private static void restoreRenderer() throws Exception {
@@ -87,7 +87,7 @@ public class PolygonRendererClickBoxTest {
       FrEnd.main_canvas.forceResize();
       RendererDelegator.repaintAll();
     });
-    Thread.sleep(500);
+    GuiTestSupport.repaintAndWait();
   }
 
   private static void dispatch(MouseEvent e) throws Exception {
@@ -182,7 +182,7 @@ public class PolygonRendererClickBoxTest {
       waitFor(
           () -> FrEnd.perform_actions.drag_box_manager.drag_box_end == null,
           "release to drop the drag box");
-      Thread.sleep(800);
+      GuiTestSupport.repaintAndWait();
 
       assertEquals(0, countBoxPixels(captureScreen(x, y)),
           "no drag-box rectangle may remain on screen after a click");
@@ -214,7 +214,7 @@ public class PolygonRendererClickBoxTest {
         FrEnd.main_canvas.forceResize();
         RendererDelegator.repaintAll();
       });
-      Thread.sleep(800);
+      GuiTestSupport.repaintAndWait();
     }
     try {
       // Top-left corner, away from the boot model: the click hits
@@ -235,7 +235,7 @@ public class PolygonRendererClickBoxTest {
       waitFor(
           () -> FrEnd.perform_actions.drag_box_manager.drag_box_end == null,
           "release to drop the drag box");
-      Thread.sleep(800);
+      GuiTestSupport.repaintAndWait();
 
       assertEquals(0, countBoxPixels(captureScreen(x, y)),
           "no drag-box dot may remain on screen after a click");
@@ -248,7 +248,7 @@ public class PolygonRendererClickBoxTest {
           FrEnd.perform_actions.drag_box_manager.drag_box_end = null;
           RendererDelegator.repaintAll();
         });
-        Thread.sleep(500);
+        GuiTestSupport.repaintAndWait();
       }
     }
   }

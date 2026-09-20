@@ -37,6 +37,19 @@ public final class GuiTestSupport {
   }
 
   /**
+   * Schedules a repaint of the main canvas and waits until the EDT has
+   * processed it. Replaces blind Thread.sleep() waits for paints to land:
+   * the second invokeAndWait queues behind the paint event, so when it
+   * returns the paint is done.
+   */
+  public static void repaintAndWait() throws Exception {
+    SwingUtilities.invokeAndWait(
+        () -> FrEnd.main_canvas.panel.repaint());
+    SwingUtilities.invokeAndWait(() -> {
+    });
+  }
+
+  /**
    * Disposes every AWT frame the application created.
    */
   public static void disposeFrames() throws Exception {
@@ -49,7 +62,11 @@ public final class GuiTestSupport {
 
   /**
    * The boot-time model load applies its universe settings asynchronously,
-   * seconds after FrEnd.main returns. Wait until the world has gone quiet.
+   * after FrEnd.main returns. Wait until the world has gone quiet. The
+   * model and its universe settings appear atomically (measured: the
+   * node count and gravity change in the same poll), so a short quiet
+   * period after first seeing the model is sufficient -- the old 2s wait
+   * was almost entirely dead time (28 GUI test classes boot the app).
    */
   public static void waitForBootModelLoadToSettle() throws Exception {
     int last_gravity = Integer.MIN_VALUE;
@@ -67,10 +84,10 @@ public final class GuiTestSupport {
         last_nodes = state[1];
         last_change = System.currentTimeMillis();
       }
-      if (state[1] > 0 && System.currentTimeMillis() - last_change > 2000) {
+      if (state[1] > 0 && System.currentTimeMillis() - last_change > 500) {
         return;
       }
-      Thread.sleep(250);
+      Thread.sleep(100);
     }
   }
 }
