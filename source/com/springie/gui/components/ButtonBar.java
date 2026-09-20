@@ -3,6 +3,7 @@
 package com.springie.gui.components;
 
 import java.awt.ItemSelectable;
+import java.awt.Insets;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,6 +34,14 @@ public class ButtonBar extends Panel implements ItemSelectable {
     // Wrap instead of clipping if the bar ever gets narrower than the
     // buttons; the height is recomputed for the wrapped rows.
     setLayout(new WrapLayout());
+  }
+
+  @Override
+  public Insets getInsets() {
+    // Two pixels of breathing room at the top, separating the buttons
+    // from the window above. WrapLayout honours insets in both layout
+    // and preferred size.
+    return new Insets(2, 0, 0, 0);
   }
 
   public void add(String name, String description) {
