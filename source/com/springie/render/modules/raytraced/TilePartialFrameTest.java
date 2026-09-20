@@ -267,4 +267,124 @@ public class TilePartialFrameTest {
     }
     assertTrue(changed, "the moved node must change some pixel");
   }
+
+  /**
+   * Traces only the staged rectangle of each non-skipped tile -- the
+   * union of this frame's and last frame's dirty rectangles, exactly
+   * like startFrame -- instead of the whole tile.
+   */
+  private void renderStagedRects(boolean[] skip, RectangleInt[] rects,
+      RectangleInt[] last_dirty) {
+    final RayCamera camera = new RayCamera();
+    final Primitive[] primitives = RayScene.build(this.manager);
+    final BVH bvh = new BVH(primitives);
+    final RTRing[] rings = RayScene.selectionRings(this.manager,
+        camera.getEyeX(), camera.getEyeY(), camera.getEyeZ());
+    for (int i = 0; i < this.tiles.length; i++) {
+      if (skip[i]) {
+        continue;
+      }
+      final Tile tile = this.tiles[i];
+      final RectangleInt rect = rects[i];
+      final RectangleInt last = last_dirty[i];
+      tile.rx0 = Math.min(rect.min_x, last.min_x);
+      tile.ry0 = Math.min(rect.min_y, last.min_y);
+      tile.rx1 = Math.max(rect.max_x, last.max_x);
+      tile.ry1 = Math.max(rect.max_y, last.max_y);
+      final int rw = tile.rx1 - tile.rx0 + 1;
+      final int rh = tile.ry1 - tile.ry0 + 1;
+      final int[] pixels = new int[rw * rh];
+      final Raytracer.HitStats stats = new Raytracer.HitStats();
+      Raytracer.renderTile(tile.rx0, tile.ry0, rw, rh,
+          camera, bvh, rings, pixels, stats);
+      final BufferedImage image = new BufferedImage(rw, rh,
+          BufferedImage.TYPE_INT_RGB);
+      image.setRGB(0, 0, rw, rh, pixels, 0, rw);
+      tile.image = image;
+      tile.stats = stats;
+      tile.done = true;
+    }
+    ModularRendererRaytraced.publishFrame(this.tiles);
+  }
+
+  private static RectangleInt[] copyRects(RectangleInt[] rects) {
+    final RectangleInt[] copy = new RectangleInt[rects.length];
+    for (int i = 0; i < rects.length; i++) {
+      final RectangleInt r = rects[i];
+      copy[i] = new RectangleInt(r.min_x, r.min_y, r.max_x, r.max_y);
+    }
+    return copy;
+  }
+
+  /**
+   * At 4x4 and 5x5 pixellation one ray shades a whole px-by-px screen
+   * block, so painted pixels land up to px - 1 past the integer content
+   * edge -- past the 2px padding the geometry walks fold in. A partial
+   * frame that re-traces only the staged rectangles must still be
+   * pixel-identical to a full re-trace: without the bleed margin the
+   * block fragments outside the staged rectangle survive as trails.
+   * (At 2x2/3x3 the 2px padding already covers the bleed, so those
+   * need no test.) The big node's radius is 1536 world units = 8
+   * screen pixels, an integer, which is what makes a block overhang
+   * the padded rectangle; the positions were verified to leave
+   * trails without the margin.
+   */
+  @Test
+  public void pixellatedPartialFrameMatchesFullFrame4x4() {
+    pixellatedPartialFrameMatchesFullFrame(4, 320, -4);
+  }
+
+  @Test
+  public void pixellatedPartialFrameMatchesFullFrame5x5() {
+    pixellatedPartialFrameMatchesFullFrame(5, 323, -1);
+  }
+
+  private void pixellatedPartialFrameMatchesFullFrame(int px, int sx,
+      int dxScreen) {
+    RendererDelegator.pixellation = px;
+    final Node big = node(sx, 320);
+    big.type.radius = 1536;
+    this.manager.element.add(big);
+    // Frame 1: everything renders.
+    renderTiles(null);
+    final RectangleInt[] first =
+        this.renderer.computeDirtyRects(this.manager);
+    assertNotNull(first);
+    final boolean[] last_empty = emptiness(first);
+    final RectangleInt[] last_dirty = copyRects(first);
+
+    // Move the big node; most tiles stay empty and are skipped.
+    big.pos.x += dxScreen * 192;
+    final RectangleInt[] rects =
+        this.renderer.computeDirtyRects(this.manager);
+    assertNotNull(rects);
+    final boolean[] skip = skipFromRects(rects, last_empty);
+    int skipped = 0;
+    for (int i = 0; i < skip.length; i++) {
+      if (skip[i]) {
+        skipped++;
+      }
+    }
+    assertTrue(skipped > 0 && skipped < this.tiles.length,
+        "a small move must skip some tiles but not all: " + skipped
+            + " of " + this.tiles.length);
+
+    // Frame 2, partial: re-trace only the staged rectangles.
+    renderStagedRects(skip, rects, last_dirty);
+    final BufferedImage partial =
+        ModularRendererRaytraced.compositeFrame(this.tiles, SIZE, SIZE);
+
+    // Frame 2, full: re-trace every tile from scratch.
+    renderTiles(null);
+    final BufferedImage full =
+        ModularRendererRaytraced.compositeFrame(this.tiles, SIZE, SIZE);
+
+    for (int y = 0; y < SIZE; y++) {
+      for (int x = 0; x < SIZE; x++) {
+        assertEquals(full.getRGB(x, y), partial.getRGB(x, y),
+            "pixel (" + x + ", " + y + ") differs at " + px + "x" + px
+                + " pixellation");
+      }
+    }
+  }
 }

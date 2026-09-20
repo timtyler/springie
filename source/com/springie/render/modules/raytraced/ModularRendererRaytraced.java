@@ -293,8 +293,9 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       // pixels are background, which cannot have changed. Shadows can
       // fall into tiles no element touches, the scenic background pans
       // with the view, and a recolour changes every background pixel,
-      // so any of those re-traces the whole canvas. Emptiness is
-      // derived from the true dirty rectangles, before any expansion.
+      // so any of those re-traces the whole canvas. The rectangles
+      // already include the pixellation bleed margin (see
+      // markTilesDirty), so an empty tile is truly background-only.
       final RectangleInt[] dirty = computeDirtyRects(manager);
       final int background_rgb =
           0xFF000000 | RendererDelegator.color_background_number;
@@ -906,10 +907,29 @@ public class ModularRendererRaytraced implements ModularRendererBase {
    * shrunk by a margin, so a box can cross a tile's tile without touching
    * the tile itself: the per-tile clip leaves such tiles' rectangles
    * empty.
+   *
+   * At px > 1 the rectangle grows by px on every side first. One ray
+   * shades a whole px-by-px screen block, so painted pixels land up to
+   * px - 1 past the integer content edge -- on +x/+y only with
+   * anti-aliasing off (the representative ray goes through the block's
+   * top-left), on all four sides with it on (its sub-pixel rays spread
+   * over the whole block). The geometry walks pad by 2px, which covers
+   * px <= 3; without this growth the 4x4/5x5 block fragments outside
+   * the staged rectangle survive as trails (the same growth the
+   * polygon renderer got in 91444c2). The drag-box damage comes
+   * through here too: it is screen-space and already padded, so the
+   * extra margin just re-traces a few more pixels while dragging.
    */
   static void markTilesDirty(RectangleInt[] rects, Tile[] tiles, int nx,
       int divisor, int width, int height,
       long x0, long y0, long x1, long y1) {
+    final int px = RendererDelegator.pixellation;
+    if (px > 1) {
+      x0 -= px;
+      y0 -= px;
+      x1 += px;
+      y1 += px;
+    }
     if (x1 < 0 || y1 < 0 || x0 >= width || y0 >= height) {
       return;
     }
