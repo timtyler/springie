@@ -6,10 +6,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
@@ -21,13 +27,17 @@ import com.springie.muscles.Sensors;
 import com.springie.render.Coords;
 import com.springie.utilities.random.Hortensius32Fast;
 import com.springie.world.World;
-import com.springie.FrEnd;
 
 /**
- * The crawler demo must build a 4-legged walker: a rigid tetrahedral body
- * with four rigid paddle legs, each leg driven by a single cable muscle
- * (ridge-to-foot lift cable), with a trot gait (diagonal legs in phase).
- * The model must hold its shape under gravity (max passive strain &lt; 0.3).
+ * The redesigned crawler: a rigid tetrahedral body (two blocks sharing a
+ * plate-diagonal edge) with four rigid paddle legs (volumetric tetrahedra
+ * hinged on transverse hip edges). Each leg carries an antagonistic cable
+ * pair -- protraction (swing) and retraction (stance power stroke) -- driven
+ * in a trot gait (diagonal legs in phase). A heading stabilizer applies
+ * balanced N/S directional bias (net zero) to the leg nodes.
+ *
+ * <p>Muscles belong on cables (tension members), never on struts; the leg
+ * struts stay passive so the paddles cannot be shoved.
  */
 class CrawlerDemoTest {
 
@@ -36,6 +46,7 @@ class CrawlerDemoTest {
   private int old_friction;
   private boolean old_collisions;
   private int old_amplitude;
+  private int old_bias;
 
   @BeforeEach
   void setUp() {
@@ -44,6 +55,7 @@ class CrawlerDemoTest {
     old_friction = World.ground_friction;
     old_collisions = FrEnd.check_collisions;
     old_amplitude = CrawlerDemo.muscle_amplitude_pct;
+    old_bias = CrawlerDemo.heading_stabilizer_bias;
     ContextManager.setNodeManager(new NodeManager());
   }
 
@@ -54,10 +66,11 @@ class CrawlerDemoTest {
     World.ground_friction = old_friction;
     FrEnd.check_collisions = old_collisions;
     CrawlerDemo.muscle_amplitude_pct = old_amplitude;
+    CrawlerDemo.heading_stabilizer_bias = old_bias;
   }
 
   @Test
-  void buildsFourLegsWithMuscles() {
+  void buildsFourLegsWithAntagonisticMusclePairs() {
     final Node body = CrawlerDemo.buildAt(0);
     assertNotNull(body);
 
@@ -78,9 +91,9 @@ class CrawlerDemoTest {
         }
       }
     }
-    // 4 legs x 1 lift-cable muscle each.
-    assertEquals(4, muscle_count);
-    assertEquals(4, cable_muscle_count);
+    // 4 legs x 2 cables (protraction + retraction) each.
+    assertEquals(8, muscle_count);
+    assertEquals(8, cable_muscle_count);
   }
 
   @Test
@@ -90,7 +103,7 @@ class CrawlerDemoTest {
     final LinkManager lm = nm.getLinkManager();
 
     // Collect muscle phases.
-    final java.util.List<Integer> phases = new java.util.ArrayList<>();
+    final List<Integer> phases = new ArrayList<>();
     for (int i = 0; i < lm.element.size(); i++) {
       final Link link = (Link) lm.element.get(i);
       if (link.controller instanceof GlobalOscillatorController) {
@@ -98,11 +111,59 @@ class CrawlerDemoTest {
       }
     }
 
-    assertEquals(4, phases.size());
-    // Diagonal pairs (FL+BR, FR+BL) share phases; the pairs differ.
-    // FL=0, FR=60, BL=60, BR=0 for the default 120-tick period.
-    assertTrue(phases.contains(0));
-    assertTrue(phases.contains(60));
+    assertEquals(8, phases.size());
+    // Trot: FL+BR in phase, FR+BL half a period later. Each leg has a
+    // protraction cable at leg_phase and a retraction cable at
+    // leg_phase + half_period, so the multiset is {0,0,0,0,60,60,60,60}
+    // for the default 120-tick period.
+    final Map<Integer, Integer> counts = new HashMap<>();
+    for (int phase : phases) {
+      counts.put(phase, counts.getOrDefault(phase, 0) + 1);
+    }
+    assertEquals(2, counts.size());
+    assertEquals(4, counts.get(0));
+    assertEquals(4, counts.get(60));
+  }
+
+  @Test
+  void biasLayoutIsBalanced() {
+    CrawlerDemo.buildAt(0);
+    final Map<String, CompassPoint> layout = CrawlerDemo.last_bias_layout;
+    assertNotNull(layout);
+    int north = 0;
+    int south = 0;
+    for (CompassPoint point : layout.values()) {
+      if (point == CompassPoint.N) {
+        north++;
+      } else if (point == CompassPoint.S) {
+        south++;
+      }
+    }
+    // Zero net bias: equal numbers of N and S.
+    assertTrue(north > 0, "expected some N-biased nodes");
+    assertEquals(north, south, "N/S bias must balance");
+  }
+
+  @Test
+  void stabilizerAttachedExactlyOnce() {
+    CrawlerDemo.buildAt(0);
+    final NodeManager nm = ContextManager.getNodeManager();
+    final LinkManager lm = nm.getLinkManager();
+    int stabilizer_count = 0;
+    for (int i = 0; i < lm.element.size(); i++) {
+      final Link link = (Link) lm.element.get(i);
+      if (link.controller instanceof CrawlerDemo.HeadingStabilizerController) {
+        stabilizer_count++;
+      }
+    }
+    assertEquals(1, stabilizer_count,
+        "heading stabilizer must apply exactly once per step");
+  }
+
+  @Test
+  void compassHeadingIsEast() {
+    CrawlerDemo.buildAt(0);
+    assertEquals(CompassPoint.E, CrawlerDemo.compassHeading());
   }
 
   @Test
@@ -170,5 +231,22 @@ class CrawlerDemoTest {
       assertTrue(max_strain < 0.3,
           "max passive strain " + max_strain + " >= 0.3");
     }
+  }
+
+  @Test
+  void judgeScoresCleanRunAboveBaseline() {
+    // Regression: the judged 600-tick run must be clean (no tip-over,
+    // CoG well off the floor, no net bias, no initial velocity) and
+    // score well above the old baseline (81px). Pin the tuning
+    // parameters: earlier tests may have changed them.
+    CrawlerDemo.muscle_amplitude_pct = 6;
+    CrawlerDemo.heading_stabilizer_bias = 2;
+    final CrawlerJudge.Result result = CrawlerJudge.score(600);
+    assertTrue(!result.disqualified, "judge disqualified: " + result);
+    assertTrue(!result.tipped_over, "tipped over");
+    assertTrue(result.cog_min_clearance_px >= CrawlerDemo.cog_min_clearance_px,
+        "CoG clearance " + result.cog_min_clearance_px + " below bar");
+    assertTrue(result.score > 81,
+        "score " + result.score + " not above baseline 81");
   }
 }
