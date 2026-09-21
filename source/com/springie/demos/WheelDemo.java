@@ -18,41 +18,31 @@ import com.springie.world.Grounding;
 import com.springie.world.World;
 
 /**
- * A short, fat tetrahedral rolling wheel: 8 nodes per rim (radius 60px)
- * at z = 0 and z = 100, one heavy centre hub node. The rim uses
- * alternating diagonal bracing (8 diagonals, one per segment) to resist
- * shear without over-constraining, and the hub connects via tetrahedra
- * (H, A_i, B_i, A_{i+1}) rather than triangles sharing only the hub
+ * A big, clean rolling wheel: 6 nodes per rim (radius 160px), two
+ * parallel rims, each with its own single central hub node -- two hubs
+ * total, joined by a stiff passive axle. Fewer, thinner spokes than the
+ * old design: 12 cable spokes (6 per hub), not 16.
+ *
+ * <p>Geometry follows Tim's directive (2026-09-21): bigger nodes, longer
+ * struts, fewer thinner spokes, one central node per rim. Each hub sits
+ * in its rim's plane and spokes radially to its 6 rim nodes, like a
+ * bicycle wheel; the axle ties the two hubs into a single rigid shaft.
+ * The rim uses alternating diagonal bracing to resist shear, and each
+ * hub connects via tetrahedra -- never triangles sharing only the hub
  * corner.
  *
- * <p>Geometry follows Tim's "shorter and fatter" directive: the older
- * design (12 nodes per rim, radius 90, z half-width 35) stood tall and
- * narrow and toppled sideways. The radius is now 60px (lower centre of
- * mass) and the z track is 100px wide (the critical tipping angle went
- * from ~21 degrees to ~40 degrees), so the wheel stays on its end with
- * the axle horizontal.
+ * <p>Drive: the 12 hub spokes are cable muscles (tension-only, per Tim's
+ * "muscles on cables" rule) with a ground-contact pull reflex. When a
+ * spoke pair's rim nodes are on the ground ahead of the hub (in the
+ * rolling direction) the spokes contract, pulling the hub forward and
+ * down toward the rim -- like pulling yourself forward. The reflex is
+ * self-synchronizing: ground contact sets the timing. Spokes are
+ * pre-tensioned (spoke_rest_scale_pct) so each hub hangs from its upper
+ * spokes instead of sagging.
  *
- * <p>Unlike the previous design (two 12-gon rims with parallel struts and
- * 24 hub spokes forming triangles that share only the hub corner), the
- * hub connection here forms tetrahedra, and the rim has diagonal bracing.
- * Tetrahedra are rigid in 3D; triangles sharing a single corner flap
- * aimlessly.
- *
- * <p>Drive: the 16 hub spokes are muscles with a ground-contact
- * push-off reflex ({@link WheelPushController}). When a spoke's rim
- * node is on the ground behind the hub (in the rolling direction) the
- * spoke extends, pushing the hub forward and up; when on the ground in
- * front it contracts slightly, pulling the hub forward -- like legs
- * pushing off. Unlike an open-loop travelling wave, the reflex is
- * self-synchronizing: the ground contact sets the timing, so the drive
- * cannot fall out of step with the rolling. The 20%/5% push/pull was
- * tuned empirically: stronger pull veers the wheel sideways and tips
- * it, weaker push stalls the roll.
- *
- * <p>Node order is fixed and documented: rim-0[i] and rim-1[i] are added
- * interleaved per iteration (element indices 2*i and 2*i+1), then the
- * hub. Node 0 (rim-0[0], body angle 0) is the rotation marker. buildAt
- * returns the hub.
+ * <p>Node order: rim-0[i] and rim-1[i] interleaved per iteration (element
+ * indices 2*i and 2*i+1), then hub0, then hub1. Node 0 (rim-0[0], body
+ * angle 0) is the rotation marker. buildAt returns hub0.
  *
  * <p>Parameters are public fields so the judge can sweep them.
  */
@@ -61,24 +51,21 @@ public final class WheelDemo {
   }
 
   /** Nodes per rim. */
-  public static final int RIM_COUNT = 8;
+  public static final int RIM_COUNT = 6;
 
   /** Rim radius, in pixels. */
-  public static int rim_radius_px = 90;
+  public static int rim_radius_px = 160;
 
-  /** Rims sit at z = 0 and z = 2 * this value, in pixels. */
-  public static int rim_half_width_px = 90;
+  /** Rims sit at z = z_offset and z = z_offset + 2 * this, in pixels. */
+  public static int rim_half_width_px = 130;
 
   /**
    * Z offset of the whole wheel: rim-0 sits at z = this, rim-1 at
    * z = this + 2 * rim_half_width_px. Keeps the wheel clear of the z = 0
    * wall -- riding the wall shoves the wheel sideways (+z drift) on
-   * every rim contact. Must stay >= 0 (never below the wall). Set to 60
-   * (not 20): the axle stabilizer agitates the rims in z by ~30px, and
-   * at z = 20 the north rim dips into the wall's reach, whose one-sided
-   * shove veers the wheel steadily southward.
+   * every rim contact. Must stay >= 0 (never below the wall).
    */
-  public static int z_offset_px = 90;
+  public static int z_offset_px = 100;
 
   /** Nominal mass for rim nodes (log scale used by the engine). */
   // Mass is functional now: reference mass preserves the tuned behavior
@@ -89,7 +76,7 @@ public final class WheelDemo {
   public static int hub_log_mass = NodeType.REFERENCE_LOG_MASS;
 
   /** Drawn node size for the wheel's nodes, in pixels. */
-  public static int node_size_px = 40;
+  public static int node_size_px = 60;
 
   /** Muscle amplitude for the spoke wave, 0-100%. */
   /** Spoke muscle amplitude, percent (travelling-wave mode only). */
@@ -119,10 +106,10 @@ public final class WheelDemo {
    * (256 units = 1 px/frame). Tim's directive: N and S bias on opposite
    * ends of the wheel axle -- this does not turn the wheel around, it
    * stabilizes the initial rolling direction (see
-   * {@link AxleStabilizerController}). Tuned empirically to 2 (the
-   * smallest bias that contains z-drift); 0 disables.
+   * {@link AxleStabilizerController}). Tuned to 13 for the two-hub wheel;
+   * 0 disables.
    */
-  public static int axle_stabilizer_bias = 2;
+  public static int axle_stabilizer_bias = 13;
 
   /** Ground friction, 0-100. */
   public static int friction = 100;
@@ -136,8 +123,12 @@ public final class WheelDemo {
    */
   public static boolean use_reflex_drive = true;
 
-  /** Reflex push percent (spoke extension in back stance). */
-  public static int reflex_push_pct = 18;
+  /**
+   * Reflex push percent (spoke extension in back stance). Zero: the
+   * spokes are cables (tension-only), so extension fires nothing -- the
+   * drive is pull-only on the ahead stance (see reflex_pull_pct).
+   */
+  public static int reflex_push_pct = 0;
   /**
    * Tim's "not tipping over" rule for the wheel: the axle must stay level.
    * Element indices of one node on each end of the axle (rim0[0], rim1[0]
@@ -149,8 +140,15 @@ public final class WheelDemo {
   /** Max allowed axle-end height difference (px) for the tip-over rule. */
   public static final int posture_axle_max_diff_px = 20;
 
-  /** Reflex pull percent (spoke contraction in front stance). */
-  public static int reflex_pull_pct = 0;
+  /**
+   * Reflex pull percent (spoke contraction in front stance). The drive:
+   * with cable-only spokes the push phase cannot fire (cables don't
+   * push), so the reflex pulls on the ahead stance instead -- contracting
+   * spokes yank the hub forward toward the grounded front rim. Tuned to 8
+   * for the two-hub wheel: the in-plane spokes are shorter and more
+   * direct, so less pull is needed; stronger pull tips it over.
+   */
+  public static int reflex_pull_pct = 8;
 
   /**
    * How far behind/in front of the hub (px) a spoke's rim pair must be to
@@ -158,7 +156,7 @@ public final class WheelDemo {
    * near-vertical) directs the push forward instead of launching the wheel
    * skyward.
    */
-  public static int reflex_stance_threshold_px = 47;
+  public static int reflex_stance_threshold_px = 60;
 
   /** Rolling direction for the reflex: +1 toward +X, -1 toward -X. */
   public static int roll_direction = 1;
@@ -187,24 +185,23 @@ public final class WheelDemo {
 
   /**
    * Roll correction gain for the paired reflex, in rest-length units per
-   * unit of inter-rim y-difference (256 = 1.0x). When the two rims of a
-   * spoke pair ride at different heights (the wheel starting to roll),
-   * the high side's spoke extends proportionally, pushing the high rim
-   * back down toward level. This actively damps the roll-rocking mode
-   * that the push-off drive would otherwise pump until the wheel tips
-   * over. 0 disables.
+   * unit of inter-rim y-difference (256 = 1.0x). Zero: with cable-only
+   * spokes the correction is counterproductive -- extending a cable does
+   * nothing, and the asymmetric contraction pumps the very rocking mode
+   * it was meant to damp. The paired reflex fires symmetrically from
+   * midpoint geometry, which is sufficient; the axle stays level without
+   * active correction.
    */
-  public static int roll_correct_gain = 300;
+  public static int roll_correct_gain = 0;
 
   /**
    * Spoke rest-length scale, percent. 100 = rest length equals the built
-   * geometry (zero pre-tension). Below 100 pre-tensions the spokes: they
-   * constantly pull the hub toward the rim centre, so the hub rides at
-   * full axle height instead of sagging toward the floor under gravity.
-   * Tim's rule: the axle must keep a comfortable clearance above the
-   * floor -- a low-riding hub is a failure even if it never touches.
+   * geometry (zero pre-tension). Below 100 pre-tensions the spokes: with
+   * cable-only spokes this is structural, not optional -- un-tensioned
+   * cables go slack under the hub and it sags until the wheel tips.
+   * 95 holds the hub at axle height like a bicycle wheel.
    */
-  public static int spoke_rest_scale_pct = 100;
+  public static int spoke_rest_scale_pct = 95;
 
   /**
    * Builds the wheel with its centre at (x_px, ground - radius).
@@ -267,17 +264,24 @@ public final class WheelDemo {
       rim1[i] = addNode(node_manager, clazz, rim_type,
           cx + (int) (radius * c), cy + (int) (radius * s), z0 + 2 * hw);
     }
-    final Node hub = addNode(node_manager, clazz, hub_type, cx, cy, z0 + hw);
+    final Node hub0 = addNode(node_manager, clazz, hub_type, cx, cy, z0);
+    final Node hub1 =
+        addNode(node_manager, clazz, hub_type, cx, cy, z0 + 2 * hw);
 
-    // Rim: two 8-gon rings (16 links) + 8 cross links + 16 mirror diagonals
-    // (40 total). The hub spokes form triangles (hub, rim0[i], rim1[i])
-    // sharing only the hub corner -- these flap aimlessly. To fix, add
-    // passive diagonals which complete the tetrahedra
-    // (hub, rim0[i], rim1[i], rim0[i+1]). The diagonals are passive
-    // structural bracing; only the 16 spokes are muscles.
+    // Axle: a stiff passive link joining the two hubs into a single
+    // rigid shaft. Also carries the yaw stabilizer (one instance, so the
+    // bias applies exactly once per dynamics step).
+    final Link axle_link =
+        passive(link_manager, clazz, hub0, hub1, bracing_elasticity);
+    axle_link.controller =
+        new AxleStabilizerController(rim0, rim1, axle_stabilizer_bias);
+
+    // Rim: two 6-gon rings (12 links) + 6 cross links + 12 mirror diagonals
+    // (30 total). The diagonals come in mirror pairs so the bracing has
+    // no chirality: single-handed diagonals twist the wheel and make it
+    // veer in a circle instead of rolling straight.
     final GlobalOscillatorController controller =
         new GlobalOscillatorController(0);
-    Link axle_link = null;
     for (int i = 0; i < RIM_COUNT; i++) {
       final int j = (i + 1) % RIM_COUNT;
       final Node a0 = rim0[i];
@@ -289,28 +293,18 @@ public final class WheelDemo {
       // it veer in a circle instead of rolling straight.
       passive(link_manager, clazz, a0, a1, rim_elasticity); // rim0 edge
       passive(link_manager, clazz, b0, rim1[j], rim_elasticity); // rim1 edge
-      final Link cross = passive(link_manager, clazz, a0, b0,
+      passive(link_manager, clazz, a0, b0,
           bracing_elasticity); // cross at i
-      if (i == 0) {
-        axle_link = cross;
-      }
       passive(link_manager, clazz, b0, a1, bracing_elasticity); // diagonal /
       passive(link_manager, clazz, a0, rim1[j], bracing_elasticity); // diag \
     }
 
-    // Yaw stabilizer: N bias on the north rim end, S bias on the south
-    // rim end. One instance on one passive link, so the bias applies
-    // exactly once per dynamics step.
-    axle_link.controller =
-        new AxleStabilizerController(rim0, rim1, axle_stabilizer_bias);
-
-    // Hub spokes: 16 muscles forming face-joined tetrahedra with the rim.
-    // For each i, (hub, rim0[i], rim1[i], rim0[i+1]) and
-    // (hub, rim1[i], rim0[i+1], rim1[i+1]) are tetrahedra sharing the face
-    // (hub, rim1[i], rim0[i+1]). The rim edges already exist; we add
-    // only the 16 hub-to-rim spokes.
+    // Hub spokes: 12 cable muscles, 6 per hub, each hub spoking radially
+    // to its own rim (in-plane, like a bicycle wheel). For each i, the
+    // pair (hub0-rim0[i], hub1-rim1[i]) fires together from midpoint
+    // geometry, keeping lateral forces symmetric.
     //
-    // Drive: either the ground-contact push-off reflex (self-synchronizing)
+    // Drive: either the ground-contact pull reflex (self-synchronizing)
     // or the open-loop travelling wave (per-link phases).
     for (int i = 0; i < RIM_COUNT; i++) {
       final double a = 2.0 * Math.PI * i / RIM_COUNT;
@@ -318,10 +312,11 @@ public final class WheelDemo {
       final int phase =
           (int) (phase_direction * a * muscle_period_ticks / (2.0 * Math.PI));
       if (use_reflex_drive) {
-        pairedReflexSpokes(link_manager, clazz, hub, rim0[i], rim1[i], ground);
+        pairedReflexSpokes(link_manager, clazz, hub0, hub1, rim0[i], rim1[i],
+            ground);
       } else {
-        spoke(link_manager, clazz, controller, hub, rim0[i], phase);
-        spoke(link_manager, clazz, controller, hub, rim1[i], phase);
+        spoke(link_manager, clazz, controller, hub0, rim0[i], phase);
+        spoke(link_manager, clazz, controller, hub1, rim1[i], phase);
       }
     }
 
@@ -342,7 +337,7 @@ public final class WheelDemo {
     // No mid-air starts: rest the whole model on the ground plane.
     Grounding.restOnGround(node_manager);
 
-    return hub;
+    return hub0;
   }
 
   private static Node addNode(NodeManager nm, Clazz clazz, NodeType nt,
@@ -363,11 +358,12 @@ public final class WheelDemo {
     return link;
   }
 
-  /** Hub-to-rim muscle spoke with an angle-derived oscillator phase. */
+  /** Hub-to-rim cable muscle spoke with an angle-derived oscillator phase. */
   private static void spoke(LinkManager lm, Clazz clazz,
       GlobalOscillatorController controller, Node hub, Node rim, int phase) {
     final LinkType type = lm.link_type_factory.getNew(
         scaledSpokeLength(distance(hub, rim)), spoke_elasticity);
+    type.compression = false;
     final Link link = lm.setLink(hub, rim, type, clazz);
     link.adjusted_rest_length = type.length;
     link.phase = phase;
@@ -384,22 +380,31 @@ public final class WheelDemo {
   }
 
   /**
-   * One paired reflex controller driving both spokes of rim pair i.
-   * The pair fires together from its midpoint geometry, keeping the
-   * sideways spoke forces symmetric so a small tilt cannot grow into a
-   * capsize (see PairedSpokeController).
+   * One paired reflex controller driving both spokes of angular station
+   * i: hub0 to rim0[i] and hub1 to rim1[i]. The pair fires together from
+   * its midpoint geometry, keeping the sideways spoke forces symmetric so
+   * a small tilt cannot grow into a capsize (see PairedSpokeController).
+   * Both hubs sit on the axle (same x, y), so hub0 serves as the
+   * controller's position reference.
+   *
+   * <p>The spokes are cables (tension-only, compression=false) per Tim's
+   * "muscles on cables" rule. They are pre-tensioned via
+   * spoke_rest_scale_pct so each hub hangs from its upper spokes like a
+   * bicycle wheel, instead of sagging.
    */
   private static void pairedReflexSpokes(LinkManager link_manager, Clazz clazz,
-      Node hub, Node rim_a, Node rim_b, int ground_y) {
+      Node hub0, Node hub1, Node rim_a, Node rim_b, int ground_y) {
     final LinkType type_a = link_manager.link_type_factory.getNew(
-        scaledSpokeLength(distance(hub, rim_a)), spoke_elasticity);
-    final Link link_a = link_manager.setLink(hub, rim_a, type_a, clazz);
+        scaledSpokeLength(distance(hub0, rim_a)), spoke_elasticity);
+    type_a.compression = false;
+    final Link link_a = link_manager.setLink(hub0, rim_a, type_a, clazz);
     link_a.adjusted_rest_length = type_a.length;
     final LinkType type_b = link_manager.link_type_factory.getNew(
-        scaledSpokeLength(distance(hub, rim_b)), spoke_elasticity);
-    final Link link_b = link_manager.setLink(hub, rim_b, type_b, clazz);
+        scaledSpokeLength(distance(hub1, rim_b)), spoke_elasticity);
+    type_b.compression = false;
+    final Link link_b = link_manager.setLink(hub1, rim_b, type_b, clazz);
     link_b.adjusted_rest_length = type_b.length;
-    final PairedSpokeController controller = new PairedSpokeController(hub,
+    final PairedSpokeController controller = new PairedSpokeController(hub0,
         rim_a, rim_b, link_a, link_b, type_a.length, type_b.length,
         reflex_push_pct, reflex_pull_pct, ground_y, roll_direction,
         reflex_stance_threshold_px, proportional_drive, rim_radius_px,

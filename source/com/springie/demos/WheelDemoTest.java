@@ -21,10 +21,12 @@ import com.springie.render.Coords;
 import com.springie.world.World;
 
 /**
- * The wheel demo must build a short, fat tetrahedral rolling wheel:
- * 8 nodes per rim, one hub, 32 rim links (rim edges, cross links,
- * diagonal bracing), 16 muscle spokes (17 nodes, 48 links). The spokes
- * carry ground-contact push-off reflex controllers (self-synchronizing).
+ * The wheel demo must build a big, clean rolling wheel: 6 nodes per rim,
+ * two rims each with its own central hub node (two hubs joined by an
+ * axle), 30 rim links (rim edges, cross links, diagonal bracing), 1 axle
+ * link, 12 cable muscle spokes (14 nodes, 43 links). The spokes are
+ * tension-only cables (Tim's "muscles on cables" rule) carrying
+ * ground-contact pull reflex controllers (self-synchronizing).
  */
 class WheelDemoTest {
 
@@ -45,6 +47,7 @@ class WheelDemoTest {
   private int old_stance;
   private int old_bracing;
   private int old_roll_gain;
+  private int old_spoke_scale;
   private boolean old_paused;
   private int old_frame_frequency;
   private int old_active_oscillator;
@@ -71,6 +74,7 @@ class WheelDemoTest {
     old_stance = WheelDemo.reflex_stance_threshold_px;
     old_bracing = WheelDemo.bracing_elasticity;
     old_roll_gain = WheelDemo.roll_correct_gain;
+    old_spoke_scale = WheelDemo.spoke_rest_scale_pct;
     old_paused = FrEnd.paused;
     old_frame_frequency = FrEnd.frame_frequency;
     old_active_oscillator = Muscles.active_oscillator;
@@ -80,18 +84,19 @@ class WheelDemoTest {
     // Pin the drive to the tuned values so the tests are deterministic
     // even if the statics were changed by an earlier test.
     WheelDemo.use_reflex_drive = true;
-    WheelDemo.reflex_push_pct = 18;
-    WheelDemo.reflex_pull_pct = 0;
+    WheelDemo.reflex_push_pct = 0;
+    WheelDemo.reflex_pull_pct = 8;
     WheelDemo.roll_direction = 1;
-    WheelDemo.axle_stabilizer_bias = 2;
-    WheelDemo.z_offset_px = 90;
-    WheelDemo.rim_radius_px = 90;
-    WheelDemo.rim_half_width_px = 90;
+    WheelDemo.axle_stabilizer_bias = 13;
+    WheelDemo.z_offset_px = 100;
+    WheelDemo.rim_radius_px = 160;
+    WheelDemo.rim_half_width_px = 130;
     WheelDemo.rim_log_mass = 17;
-    WheelDemo.node_size_px = 40;
-    WheelDemo.reflex_stance_threshold_px = 47;
+    WheelDemo.node_size_px = 60;
+    WheelDemo.reflex_stance_threshold_px = 60;
     WheelDemo.bracing_elasticity = 30;
-    WheelDemo.roll_correct_gain = 300;
+    WheelDemo.roll_correct_gain = 0;
+    WheelDemo.spoke_rest_scale_pct = 95;
     ContextManager.setNodeManager(new NodeManager());
   }
 
@@ -114,6 +119,7 @@ class WheelDemoTest {
     WheelDemo.reflex_stance_threshold_px = old_stance;
     WheelDemo.bracing_elasticity = old_bracing;
     WheelDemo.roll_correct_gain = old_roll_gain;
+    WheelDemo.spoke_rest_scale_pct = old_spoke_scale;
     FrEnd.paused = old_paused;
     FrEnd.frame_frequency = old_frame_frequency;
     Muscles.active_oscillator = old_active_oscillator;
@@ -139,33 +145,33 @@ class WheelDemoTest {
   }
 
   @Test
-  void wheelNodesAreSizeSixteen() {
+  void wheelNodesAreSizeSixty() {
     WheelDemo.buildAt(120);
 
     final NodeManager nm = ContextManager.getNodeManager();
     for (int i = 0; i < nm.element.size(); i++) {
       final Node node = (Node) nm.element.get(i);
-      assertEquals(40, node.type.radius, "wheel node size");
+      assertEquals(60, node.type.radius, "wheel node size");
     }
   }
 
   @Test
-  void buildsSeventeenNodesFortyEightLinks() {
-    final Node hub = WheelDemo.buildAt(120);
-    assertNotNull(hub);
+  void buildsFourteenNodesFortyThreeLinks() {
+    final Node hub0 = WheelDemo.buildAt(120);
+    assertNotNull(hub0);
 
     final NodeManager nm = ContextManager.getNodeManager();
-    // 8 nodes per rim x 2 rims + 1 hub = 17 nodes.
-    assertEquals(17, nm.element.size());
+    // 6 nodes per rim x 2 rims + 2 hubs (one per rim) = 14 nodes.
+    assertEquals(14, nm.element.size());
 
     final LinkManager lm = nm.getLinkManager();
-    // 8 segments x 5 (rim0, rim1, cross, 2 mirror diagonals) = 40 rim links
-    // + 16 hub spokes = 56 links.
-    assertEquals(56, lm.element.size());
+    // 6 segments x 5 (rim0, rim1, cross, 2 mirror diagonals) = 30 rim links
+    // + 1 axle (hub0-hub1) + 12 hub spokes = 43 links.
+    assertEquals(43, lm.element.size());
   }
 
   @Test
-  void spokesAreMusclesWithReflexControllers() {
+  void spokesAreCableMusclesWithReflexControllers() {
     WheelDemo.buildAt(120);
     final LinkManager lm =
         ContextManager.getNodeManager().getLinkManager();
@@ -175,10 +181,13 @@ class WheelDemoTest {
       final Link link = (Link) lm.element.get(i);
       if (link.controller instanceof PairedSpokeController) {
         muscle_count++;
+        // Tim's rule: muscles on cables, not struts.
+        assertTrue(!link.type.compression,
+            "spoke must be tension-only (cable)");
       }
     }
-    // 16 hub-to-rim spokes (the only muscles), in 8 paired controllers.
-    assertEquals(16, muscle_count);
+    // 12 hub-to-rim cable spokes (the only muscles), in 6 paired controllers.
+    assertEquals(12, muscle_count);
   }
 
   @Test
@@ -219,9 +228,10 @@ class WheelDemoTest {
     // The wheel must actually roll, not slide or hop.
     assertTrue(result.rolling_match > 0.8,
         "rollingMatch=" + result.rolling_match + " (expected > 0.8)");
-    // And it must travel a meaningful distance.
-    assertTrue(result.distance_px > 100,
-        "distance=" + result.distance_px + " (expected > 100px)");
+    // And it must travel a meaningful distance: the two-hub wheel covers
+    // ~460px per 600 ticks.
+    assertTrue(result.distance_px > 400,
+        "distance=" + result.distance_px + " (expected > 400px)");
   }
 
   @Test

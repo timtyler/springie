@@ -378,10 +378,10 @@ public class PanelFundamentalTest {
       synchronized (ContextManager.class) {
         SetUpCode.clearAndThenAddInitialObjects();
       }
-      assertEquals(17,
+      assertEquals(14,
           ContextManager.getNodeManager().element.size(),
           "the initial load must build the selected demo");
-      assertEquals(56,
+      assertEquals(43,
           ContextManager.getNodeManager().getLinkManager().element.size(),
           "the initial load must build the selected demo's links");
     } finally {
