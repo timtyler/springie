@@ -134,8 +134,7 @@ class PreferencesResetTest {
 
       assertEquals(0, Coords.shift_constant_x);
       assertEquals(0, Coords.shift_constant_y);
-      assertEquals(Coords.shift_shifted - (Coords.shift_shifted >> 2),
-          Coords.shift_constant_z);
+      assertEquals(Coords.shift_shifted, Coords.shift_constant_z);
 
       assertEquals(94, PanelPreferencesImport.import_scale);
       assertEquals(50, PanelPreferencesPOVExport.pov_view_height);

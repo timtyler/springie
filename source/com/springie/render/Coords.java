@@ -46,8 +46,7 @@ public final class Coords {
 
   public static int shift_constant_y;
 
-  public static int shift_constant_z = Coords.shift_shifted
-      - (Coords.shift_shifted >> 2);
+  public static int shift_constant_z = Coords.shift_shifted;
 
   public static final int shift_z = 10;
 

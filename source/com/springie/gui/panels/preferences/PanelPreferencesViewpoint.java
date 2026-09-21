@@ -130,7 +130,7 @@ public class PanelPreferencesViewpoint {
     final Panel panel = new Panel();
     panel.setLayout(new BorderLayout(0, 8));
     panel.add("West", new Label("Translate Z:", Label.RIGHT));
-    this.scroll_bar_translate_z = new Scrollbar(Scrollbar.HORIZONTAL, 10, 10,
+    this.scroll_bar_translate_z = new Scrollbar(Scrollbar.HORIZONTAL, 32, 10,
       0, 110);
     this.scroll_bar_translate_z.addAdjustmentListener(new AdjustmentListener() {
       public void adjustmentValueChanged(AdjustmentEvent e) {
@@ -181,7 +181,7 @@ public class PanelPreferencesViewpoint {
     this.checkbox_show_boundary_box.setState(true);
     Coords.shift_constant_x = 0;
     Coords.shift_constant_y = 0;
-    Coords.shift_constant_z = Coords.shift_shifted - (Coords.shift_shifted >> 2);
+    Coords.shift_constant_z = Coords.shift_shifted;
     reflectTranslateX();
     reflectTranslateY();
     reflectTranslateZ();
