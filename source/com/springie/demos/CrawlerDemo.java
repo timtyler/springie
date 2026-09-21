@@ -23,38 +23,42 @@ import com.springie.world.Grounding;
 import com.springie.world.World;
 
 /**
- * Parametric 4-legged crawler built from tetrahedra (second generation).
+ * Parametric 4-legged crawler built from tetrahedra (third generation --
+ * table architecture).
  *
- * <p>Body: a rigid hull built from two tetrahedral blocks sharing the
- * bottom-diagonal edge (b1, b3) -- Tet(b0, b1, b3, t0) and
- * Tet(b1, b2, b3, t1) -- plus the ridge tie (t0, t1) and a fully
- * triangulated bottom plate. 13 bars for 6 nodes (12 needed), so the
- * chassis is a rigid 3D truss: it holds its shape instead of folding.
+ * <p>Body: two volumetric tetrahedral blocks sharing a face --
+ * Tet(b0, b1, b3, T) and Tet(b1, b2, b3, T), sharing the face
+ * (b1, b3, T). A face-shared pair of tetrahedra is a rigid truss, so
+ * the chassis holds its shape instead of folding. Node layout (x grows
+ * toward the direction of travel, y grows downward, z grows south):
+ * b0 rear-north, b1 front-north, b2 front-south, b3 rear-south, T ridge.
  *
- * <p>Each leg is a rigid volumetric tetrahedron (hip1, hip2, knee, foot)
- * hinged on a TRANSVERSE body edge (two nodes) -- front legs on the
- * front edge (b0, b3), rear legs on the rear edge (b1, b2) -- so every
- * leg swings fore-aft like a pendulum. Never a single corner, never a
- * longitudinal edge (which would swing the leg sideways). All five
- * leg struts are passive; the leg cannot fold up under the body.
+ * <p>Legs: four rigid tetrahedra that POINT DOWN. Each leg shares a
+ * transverse hip edge with the body (front legs on (b1, b2), rear legs
+ * on (b0, b3)) and adds an outrigger node and a foot node:
+ * Tet(hip1, hip2, outrigger, foot). The foot is the downward apex, so
+ * exactly 4 nodes -- the four feet -- contact the floor, like a table.
+ * The shared edge is a hinge: the leg is a stiff paddle that swings
+ * fore-aft about its hip edge but cannot fold or twist (all six leg
+ * edges are passive struts).
  *
  * <p>Drive: two antagonistic CABLE muscles per leg (tension members --
  * they pull but never push). The protraction cable runs from a body
  * anchor ahead of the foot to the foot (swings the unloaded foot
- * forward and up); the retraction cable runs from a body anchor behind
- * the foot to the foot -- during stance, with the foot planted, it
- * hauls the body forward over the foot: the power stroke. Feet stand
- * well inboard of the hip edges, so every leg has a good anchor on
- * both sides. A trot gait (diagonal legs in phase) walks the machine
- * toward +x (East).
+ * forward and up, the pendulum arc clearing the ground); the
+ * retraction cable runs from a body anchor behind the foot to the
+ * foot -- during stance, with the foot planted, it hauls the body
+ * forward over the foot: the power stroke. The cable pair also
+ * brackets each leg at rest, holding the table legs from swinging. A
+ * trot gait (diagonal legs in phase) walks the machine toward +x
+ * (East).
  *
  * <p>Directional stability comes from a balanced compass bias, not from
- * the gait: the north-side leg nodes (knee, foot of FL and BL) get an N
- * nudge each step and the south-side leg nodes an equal S nudge
+ * the gait: the north-side leg nodes get an N nudge each step and the
+ * south-side leg nodes an equal S nudge
  * ({@link HeadingStabilizerController}). Equal numbers N and S -- zero
  * E, zero W -- so the net bias is exactly zero: it is a stabilizer,
- * not a motor. Yawed by an angle, the pull-apart pair produces a
- * yaw-restoring torque, damping heading wander.
+ * not a motor.
  *
  * <p>Node-node collisions are OFF: the model holds together through its
  * structure alone.
@@ -65,34 +69,41 @@ public final class CrawlerDemo {
   private CrawlerDemo() {
   }
 
-  /** Body edge length, in pixels. */
-  public static int body_edge_px = 90;
-  /** Ridge height above the plate, in pixels. */
-  public static int ridge_height_px = 72;
+  /** Body length (x, fore-aft), in pixels. */
+  public static int body_length_px = 100;
+  /** Body width (z, lateral), in pixels. */
+  public static int body_width_px = 60;
+  /** Ridge height above the body plate, in pixels. */
+  public static int ridge_height_px = 55;
   /** Hip height above the ground, in pixels. */
   public static int hip_height_px = 55;
-  /** Leg splay (hip to knee sideways), in pixels. */
-  public static int leg_splay_px = 14;
-  /** Knee forward offset (+x), in pixels. */
-  public static int knee_forward_px = 10;
+  /** Outrigger rise above the body plate, in pixels. */
+  public static int outrigger_rise_px = 30;
+  /** Outrigger lateral splay beyond the body half-width, in pixels. */
+  public static int outrigger_splay_px = 25;
+  /** Foot inset from its hip edge toward the body's middle, in pixels. */
+  public static int foot_inset_px = 25;
   /**
-   * Foot inboard offset, in pixels: front feet sit this far behind the
-   * front hip edge, rear feet this far ahead of the rear hip edge, so
-   * every foot stands well inside the body's footprint with a body
-   * anchor ahead of it (protraction) and one behind it (the stance
-   * power stroke). Symmetric fore/aft, so the passive model stands
-   * still instead of vaulting forward.
+   * Outrigger fore-aft offset from its hip edge, in pixels: the
+   * outrigger sits this far on the OPPOSITE side of the hip edge from
+   * the foot (front legs: outrigger ahead, foot behind; rear legs the
+   * reverse). Equal and opposite, so each leg's centre of mass sits
+   * directly under its hinge -- a balanced pendulum with no static
+   * gravity torque trying to swing it.
    */
-  public static int foot_inboard_px = 40;
+  public static int outrigger_offset_px = 25;
+  /** Foot lateral splay beyond the body half-width, in pixels.
+   * Wide stance for a stable support polygon. */
+  public static int foot_splay_px = 20;
   /** Elasticity of the stiff body-skeleton struts. */
   public static int body_elasticity = 70;
   /** Elasticity of the leg springs (stays in the non-resonant band). */
-  public static int leg_elasticity = 30;
+  public static int leg_elasticity = 35;
   /** Muscle amplitude, 0-100%. */
   public static int muscle_amplitude_pct = 6;
   /**
    * Tim's "not tipping over" rule: element indices of the dorsal "top"
-   * node (ridge t0) and the "bottom" reference node (base b0). The top
+   * node (ridge T) and the "bottom" reference node (base b0). The top
    * must stay above the bottom for the whole run.
    */
   public static final int posture_top_index = 4;
@@ -101,7 +112,6 @@ public final class CrawlerDemo {
   public static int posture_min_separation_px = 15;
   /** Muscle period, in ticks. */
   public static int muscle_period_ticks = 120;
-  /**
   /** Ground friction, 0-100. */
   public static int friction = 100;
   /**
@@ -119,9 +129,25 @@ public final class CrawlerDemo {
   public static int cog_min_clearance_px = 50;
 
   /**
+   * When false, skip the cable muscles (struts and brace only).
+   * Used to isolate the passive strut structure.
+   */
+  public static boolean build_cables = true;
+
+  /**
+   * When true, add a strut from each leg's outrigger to the ridge T.
+   * This triangulates the leg's hinge (the outrigger can no longer
+   * swing about the hip edge), making the leg a rigid extension of
+   * the body. Without it the hinge is a free pendulum and the table
+   * folds.
+   */
+  public static boolean brace_hinge = true;
+
+  /**
    * The model's intended direction of travel on the floor plane.
    * The crawler walks toward +x: East.
    */
+  public static CompassPoint compass_heading = CompassPoint.E;
   public static CompassPoint compassHeading() {
     return CompassPoint.E;
   }
@@ -139,8 +165,8 @@ public final class CrawlerDemo {
       new LinkedHashMap<String, CompassPoint>();
 
   /**
-   * Builds the crawler with its front feet at x_px and its feet on the
-   * ground. Returns the body centre node for tracking.
+   * Builds the crawler with its rear at x_px and its feet on the
+   * ground. Returns the ridge node for tracking.
    */
   public static Node buildAt(int x_px) {
     final NodeManager node_manager = ContextManager.getNodeManager();
@@ -151,10 +177,10 @@ public final class CrawlerDemo {
 
     final Clazz clazz = node_manager.clazz_factory.getNew(0xFFFFFFFF);
     final NodeType node_type = node_manager.node_type_factory.getNew();
-    final int body_e = body_edge_px << Coords.shift;
-    final LinkType body_type = link_manager.link_type_factory.getNew(body_e, body_elasticity);
-    final LinkType leg_type = link_manager.link_type_factory.getNew(
-        hip_height_px << Coords.shift, leg_elasticity);
+    final LinkType body_type =
+        link_manager.link_type_factory.getNew(1, body_elasticity);
+    final LinkType leg_type =
+        link_manager.link_type_factory.getNew(1, leg_elasticity);
 
     // Muscles.
     Muscles.enabled = true;
@@ -168,159 +194,162 @@ public final class CrawlerDemo {
     // No node-node collisions: the structure holds itself together.
     FrEnd.check_collisions = false;
 
-    final int x0 = (x_px + foot_inboard_px) << Coords.shift;
-    // Ground is the high-Y wall (positive gravity pulls toward +Y).
-    // Feet rest ~2px above the true wall; the whole build is shifted
-    // +40px in z so no node starts against the z = 0 wall.
+    // Layout: x grows toward the direction of travel (+x = East),
+    // y grows downward, z grows southward (N = -z, S = +z).
+    // The whole build is offset clear of the x = 0 and z = 0 walls so
+    // Node.boundaryCheck() never clamps a built node (radius 18). The
+    // rear outriggers sit outrigger_offset_px behind x0, so x0 starts
+    // well clear.
+    final int x0 = (x_px + 70) << Coords.shift;
+    final int zo = 85 << Coords.shift;
+    // Feet rest ~2px above the true wall; Grounding.restOnGround()
+    // settles the whole model onto the floor at the end of the build.
     final int ground = (Coords.y_pixels << Coords.shift) - (2 << Coords.shift);
-    final int zo = 40 << Coords.shift;
 
-    // Body: rigid hull from two tetrahedral blocks.
-    // Bottom plate: rectangle of 4 nodes, fully triangulated.
-    // Ridge: t0 over the front half, t1 over the back half.
-    // Tet A = (b0, b1, b3, t0), Tet B = (b1, b2, b3, t1),
-    // sharing the plate-diagonal edge (b1, b3); the ridge tie (t0, t1)
-    // locks the two blocks against hinging about that edge.
-    final int bw = body_e; // body width (z)
-    final int bl = body_e * 2; // body length (x)
-    final int bh = ridge_height_px << Coords.shift; // body height (y)
-
-    // Y increases downward; ground is at high Y, so "up" is smaller Y.
-    // The hip edges (front (b0,b3), rear (b1,b2)) sit hip_height above
-    // the ground; the ridge rides above the plate.
+    final int L = body_length_px << Coords.shift;
+    final int W = body_width_px << Coords.shift;
+    final int H = ridge_height_px << Coords.shift;
     final int plate_y = ground - (hip_height_px << Coords.shift);
-    final Node b0 = addNode(node_manager, clazz, node_type, x0, plate_y, zo);
-    final Node b1 = addNode(node_manager, clazz, node_type, x0 + bl, plate_y, zo);
-    final Node b2 = addNode(node_manager, clazz, node_type, x0 + bl, plate_y, bw + zo);
-    final Node b3 = addNode(node_manager, clazz, node_type, x0, plate_y, bw + zo);
-    // Ridge (top).
-    final Node t0 = addNode(node_manager, clazz, node_type, x0 + bl / 2, plate_y - bh, zo);
-    final Node t1 = addNode(node_manager, clazz, node_type, x0 + bl / 2, plate_y - bh, bw + zo);
 
-    // Bottom plate: 4 sides + 2 diagonals (rigid).
+    // Body: two tetrahedral blocks sharing the face (b1, b3, T).
+    // Tet A = (b0, b1, b3, T), Tet B = (b1, b2, b3, T).
+    // b0 rear-north, b1 front-north, b2 front-south, b3 rear-south.
+    final Node b0 = addNode(node_manager, clazz, node_type, x0, plate_y, zo - W / 2);
+    final Node b1 = addNode(node_manager, clazz, node_type, x0 + L, plate_y, zo - W / 2);
+    final Node b2 = addNode(node_manager, clazz, node_type, x0 + L, plate_y, zo + W / 2);
+    final Node b3 = addNode(node_manager, clazz, node_type, x0, plate_y, zo + W / 2);
+    final Node T = addNode(node_manager, clazz, node_type,
+        x0 + L / 2, plate_y - H, zo);
+
+    // Tet A edges: b0-b1, b0-b3, b0-T, b1-b3, b1-T, b3-T.
     strut(link_manager, body_type, clazz, b0, b1);
+    strut(link_manager, body_type, clazz, b0, b3);
+    strut(link_manager, body_type, clazz, b0, T);
+    strut(link_manager, body_type, clazz, b1, b3);
+    strut(link_manager, body_type, clazz, b1, T);
+    strut(link_manager, body_type, clazz, b3, T);
+    // Tet B edges: b1-b2, b1-b3, b1-T, b2-b3, b2-T, b3-T
+    // (b1-b3, b1-T, b3-T already exist -- the shared face).
     strut(link_manager, body_type, clazz, b1, b2);
     strut(link_manager, body_type, clazz, b2, b3);
-    strut(link_manager, body_type, clazz, b3, b0);
-    strut(link_manager, body_type, clazz, b0, b2);
-    strut(link_manager, body_type, clazz, b1, b3);
-    // Tet A = (b0, b1, b3, t0): the plate edges already exist.
-    strut(link_manager, body_type, clazz, b0, t0);
-    strut(link_manager, body_type, clazz, b1, t0);
-    strut(link_manager, body_type, clazz, b3, t0);
-    // Tet B = (b1, b2, b3, t1): the plate edges already exist.
-    strut(link_manager, body_type, clazz, b1, t1);
-    strut(link_manager, body_type, clazz, b2, t1);
-    strut(link_manager, body_type, clazz, b3, t1);
-    // Ridge tie: locks the two tetrahedra against hinging.
     final Link first_body_link =
-        strut(link_manager, body_type, clazz, t0, t1);
+        strut(link_manager, body_type, clazz, b2, T);
 
-    // Legs: each hinges on a TRANSVERSE body edge -- front legs on the
-    // front edge (b0, b3), rear legs on the rear edge (b1, b2) -- so
-    // every leg swings fore-aft. Each leg is a rigid volumetric
-    // tetrahedron (hip1, hip2, knee, foot): 4 nodes, 6 edges, all
-    // passive struts (hip1-hip2 is the body edge). The leg is a stiff
-    // paddle pendulum: it swings about its hip edge but cannot fold.
+    // Legs: four downward-pointing tetrahedra. Each shares a transverse
+    // hip edge with the body -- front legs on (b1, b2), rear legs on
+    // (b0, b3) -- and adds an outrigger node (up and out, spreading the
+    // top triangle for a stable stance) and a foot node (the downward
+    // apex). All six leg edges are passive struts; the shared edge is
+    // a hinge the stiff paddle swings about.
     //
     // Drive: two antagonistic CABLE muscles per leg. The protraction
     // cable (body anchor ahead of the foot -> foot) swings the unloaded
-    // foot forward and up; the retraction cable (body anchor behind the
-    // foot -> foot) is the stance power stroke -- with the foot planted,
-    // shortening it hauls the body forward over the foot. Cables pull
-    // but never push, so the pair never fights itself: while one pulls,
-    // the other goes slack. Feet stand inboard of the hip edges, giving
-    // every leg a good anchor on both sides: for a front leg the hip
-    // node is the protraction anchor and the ridge node the retraction
-    // anchor; for a rear leg it is the other way round.
-    final Node[][] hip_edges = {{b0, b3}, {b0, b3}, {b1, b2}, {b1, b2}};
-    final Node[] hip_nodes = {b0, b3, b1, b2}; // anchor on the leg's side
-    final Node[] ridge_nodes = {t0, t1, t0, t1}; // anchor on the leg's side
-    final int[] sides = {-1, 1, -1, 1}; // splay direction (z): N, S, N, S
+    // foot forward and up along its pendulum arc; the retraction cable
+    // (body anchor behind the foot -> foot) is the stance power stroke
+    // -- with the foot planted, shortening it hauls the body forward
+    // over the foot. At rest the pair brackets the leg, holding the
+    // table legs from swinging.
+    final Node[][] hip_edges = {{b1, b2}, {b1, b2}, {b0, b3}, {b0, b3}};
+    // Protraction anchor: ahead (+x) of the foot. Retraction anchor:
+    // behind (-x) of the foot.
+    final Node[] protract_anchors = {b1, b2, T, T};
+    final Node[] retract_anchors = {T, T, b0, b3};
+    final int[] sides = {-1, 1, -1, 1}; // outrigger/foot splay (z): N, S, N, S
     final String[] names = {"FL", "FR", "BL", "BR"};
     final Node[] north_leg_nodes = new Node[4];
     final Node[] south_leg_nodes = new Node[4];
     int north_count = 0;
     int south_count = 0;
     last_bias_layout = new LinkedHashMap<String, CompassPoint>();
-    // Compass-bias layout: north-side leg nodes get N, south-side
-    // get S. Recorded for the judge; the net bias is zero.
     final int period = muscle_period_ticks;
+    final int rise = outrigger_rise_px << Coords.shift;
+    final int osplay = outrigger_splay_px << Coords.shift;
+    final int inset = foot_inset_px << Coords.shift;
+    final int ooffset = outrigger_offset_px << Coords.shift;
+    final int fsplay = foot_splay_px << Coords.shift;
     for (int leg = 0; leg < 4; leg++) {
       final Node hip1 = hip_edges[leg][0];
       final Node hip2 = hip_edges[leg][1];
       final int side = sides[leg];
       final boolean front = leg < 2;
       final int leg_phase = ((leg_phases[leg] % period) + period) % period;
-      // Protraction peaks mid-swing, retraction mid-stance: the cable
-      // pulls hardest when its rest length is shortest, i.e. at
-      // tick + phase = 3/4 period.
+      // Protraction peaks mid-swing, retraction mid-stance.
       final int protract_phase = leg_phase;
       final int retract_phase = (leg_phase + period / 2) % period;
-      // Front leg: hip node ahead of the foot (protraction), ridge
-      // node behind it (power stroke). Rear leg: the other way round.
-      final Node protract_anchor = front ? hip_nodes[leg] : ridge_nodes[leg];
-      final Node retract_anchor = front ? ridge_nodes[leg] : hip_nodes[leg];
 
-      final int mid_x = (hip1.pos.x + hip2.pos.x) / 2;
-      final int mid_y = (hip1.pos.y + hip2.pos.y) / 2;
-      final int mid_z = (hip1.pos.z + hip2.pos.z) / 2;
-      // Knee: slightly forward, halfway down. (Sideways-splayed knees
-      // form a shallow inverted-V that buckles under load.)
-      final Node knee = addNode(node_manager, clazz, node_type,
-          mid_x + (knee_forward_px << Coords.shift),
-          mid_y + ((hip_height_px << Coords.shift)) / 2,
-          mid_z + side * (leg_splay_px << Coords.shift));
-      // Foot: inboard of the hip edge (toward the body's middle), just
-      // above the ground, splayed clear of the hull.
-      final int foot_x = front ? mid_x - (foot_inboard_px << Coords.shift)
-          : mid_x + (foot_inboard_px << Coords.shift);
+      final int edge_x = (hip1.pos.x + hip2.pos.x) / 2;
+      // Outrigger: above the plate, splayed outward, and offset
+      // fore-aft OPPOSITE the foot -- the leg's mass balances about
+      // the hinge (no static gravity torque).
+      final int out_x = front ? edge_x + ooffset : edge_x - ooffset;
+      final Node outrigger = addNode(node_manager, clazz, node_type,
+          out_x,
+          plate_y - rise,
+          zo + side * (W / 2 + osplay));
+      // Foot: the downward apex -- inset toward the body's middle so a
+      // body anchor sits ahead of it (protraction) and one behind it
+      // (retraction), splayed just outside the body for stance width.
+      final int foot_x = front ? edge_x - inset : edge_x + inset;
       final Node foot = addNode(node_manager, clazz, node_type,
           foot_x,
           ground,
-          mid_z + side * (leg_splay_px << Coords.shift));
+          zo + side * (W / 2 + fsplay));
 
-      // Rigid tetrahedral paddle (hip1, hip2, knee, foot): all 6 edges
-      // are passive struts. hip1-hip2 is a body edge (already exists).
-      strut(link_manager, leg_type, clazz, hip1, knee);
-      strut(link_manager, leg_type, clazz, hip2, knee);
+      // Rigid downward tetrahedron (hip1, hip2, outrigger, foot):
+      // hip1-hip2 is the body edge (already exists); the other five
+      // are passive struts.
+      strut(link_manager, leg_type, clazz, hip1, outrigger);
+      strut(link_manager, leg_type, clazz, hip2, outrigger);
       strut(link_manager, leg_type, clazz, hip1, foot);
       strut(link_manager, leg_type, clazz, hip2, foot);
-      strut(link_manager, leg_type, clazz, knee, foot);
-      // Antagonistic cable pair: protraction swings the foot forward,
-      // retraction drives the stance power stroke.
-      cableMuscle(link_manager, leg_type, clazz, protract_anchor, foot,
-          protract_phase);
-      cableMuscle(link_manager, leg_type, clazz, retract_anchor, foot,
-          retract_phase);
+      strut(link_manager, leg_type, clazz, outrigger, foot);
+      // Antagonistic cable pair (skipped when build_cables is false --
+      // passive strut-structure proof).
+      if (build_cables) {
+        cableMuscle(link_manager, leg_type, clazz,
+            protract_anchors[leg], foot, protract_phase);
+        cableMuscle(link_manager, leg_type, clazz,
+            retract_anchors[leg], foot, retract_phase);
+      }
+
+      // Hinge brace: strut from the outrigger to the ridge T. This
+      // locks the leg's hinge (the leg becomes a rigid extension of
+      // the body). The leg still attaches via the shared hip edge;
+      // the brace just prevents the free-pendulum fold.
+      if (brace_hinge) {
+        strut(link_manager, leg_type, clazz, outrigger, T);
+      }
 
       // Compass-bias layout: north-side leg nodes get N, south-side
       // get S. Recorded for the judge; the net bias is zero.
       if (side < 0) {
-        north_leg_nodes[north_count++] = knee;
+        north_leg_nodes[north_count++] = outrigger;
         north_leg_nodes[north_count++] = foot;
-        last_bias_layout.put(names[leg] + "-knee", CompassPoint.N);
+        last_bias_layout.put(names[leg] + "-outrigger", CompassPoint.N);
         last_bias_layout.put(names[leg] + "-foot", CompassPoint.N);
       } else {
-        south_leg_nodes[south_count++] = knee;
+        south_leg_nodes[south_count++] = outrigger;
         south_leg_nodes[south_count++] = foot;
-        last_bias_layout.put(names[leg] + "-knee", CompassPoint.S);
+        last_bias_layout.put(names[leg] + "-outrigger", CompassPoint.S);
         last_bias_layout.put(names[leg] + "-foot", CompassPoint.S);
       }
     }
 
     // Heading stabilizer: N bias on the north leg nodes, S bias on
     // the south leg nodes. One instance on one passive link, so the
-    // bias applies exactly once per dynamics step.
-    first_body_link.controller = new HeadingStabilizerController(
-        trim(north_leg_nodes, north_count), trim(south_leg_nodes, south_count),
-        heading_stabilizer_bias);
+    // bias applies exactly once per dynamics step. Skipped for the
+    // pure strut-structure proof.
+    if (build_cables) {
+      first_body_link.controller = new HeadingStabilizerController(
+          trim(north_leg_nodes, north_count), trim(south_leg_nodes, south_count),
+          heading_stabilizer_bias);
+    }
 
     // No mid-air starts: rest the whole model on the ground plane.
     Grounding.restOnGround(node_manager);
 
-    // Return a body node for tracking.
-    return b0;
+    // Return the ridge node for tracking.
+    return T;
   }
 
   private static Node[] trim(Node[] nodes, int count) {
@@ -351,17 +380,23 @@ public final class CrawlerDemo {
   /**
    * Muscle cable (tension member): pulls but never pushes. When the
    * oscillator lengthens its rest length past the actual length it
-   * simply goes slack.
+   * simply goes slack. Built with a slight pre-tension (rest length a
+   * few percent short of the actual distance) so the antagonistic
+   * pair brackets the foot with positive stiffness -- this is what
+   * locks the leg's hinge in the passive structure. The pair pulls
+   * equally fore and aft, so the net force on the foot is zero.
    */
+  public static int cable_pretension_pct = 100;
   private static void cableMuscle(LinkManager lm, LinkType template, Clazz clazz,
       Node a, Node b, int phase) {
     final int dist = distance(a, b);
-    final LinkType type = lm.link_type_factory.getNew(dist, template.elasticity);
+    final int rest = (dist * cable_pretension_pct) / 100;
+    final LinkType type = lm.link_type_factory.getNew(rest, template.elasticity);
     type.damping = template.damping;
     type.compression = false; // cable: no push when shorter than rest
     type.tension = true; // cable: pulls when longer than rest
     final Link link = lm.setLink(a, b, type, clazz);
-    link.adjusted_rest_length = dist;
+    link.adjusted_rest_length = rest;
     link.phase = phase;
     link.controller = new GlobalOscillatorController(Muscles.active_oscillator);
   }
@@ -389,12 +424,7 @@ public final class CrawlerDemo {
    *
    * <p>Yawed by an angle theta, the pull-apart pair is no longer
    * symmetric about the heading: the torque about the vertical works
-   * out to -2 * bias * width * sin(theta), i.e. yaw-restoring. (The
-   * swapped assignment, sides pulled together, flips the sign and is
-   * yaw-amplifying -- the same finding as the wheel's axle
-   * stabilizer.) The stabilizer cannot turn the crawler around: the
-   * 180-degree yawed orientation is an unstable equilibrium, so it only
-   * damps wander around the initial heading.
+   * out to -2 * bias * width * sin(theta), i.e. yaw-restoring.
    *
    * <p>Why a {@link Controller} that writes node velocities instead of
    * {@code adjusted_rest_length}: the Controller interface is the only

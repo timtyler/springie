@@ -158,7 +158,7 @@ public final class RollingJudge {
       hub = CrawlerDemo.buildAt(100);
       // Second body node: the body doesn't rotate, so theta stays ~0.
       marker = (Node) node_manager.element.get(1);
-      radius_px = CrawlerDemo.body_edge_px;
+      radius_px = CrawlerDemo.body_length_px;
     } else {
       hub = WheelDemo.buildAt(120);
       // Node 0 is rim0[0] at body angle 0 (see WheelDemo docs).
