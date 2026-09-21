@@ -13,13 +13,13 @@ import com.springie.render.Coords;
  * A stance-gated hop controller. While airborne the cables hold their
  * build length (the legs stay rigid trusses, never flailing); while a
  * foot is in contact each cable shortens in proportion to its own leg's
- * compression, gently loading the leg springs through the stance. The
- * springs' rebound launches the next hop. Because the pull is
- * proportional to compression, an unloaded leg gets no pull -- the
- * cable can never foot-lift a leg that isn't planted, which is what
- * made every timed yank design explode into fold-and-catapult monster
- * hops. The pull only replaces the energy the lossy bounce dissipates,
- * so the rhythm is the leg's natural pogo frequency.
+ * compression VELOCITY -- a stretch reflex. A slow quasi-static settle
+ * (like the dead-start pre-stress loading the springs) gets almost no
+ * pump, while a genuine touchdown impact gets a strong one; the pump
+ * cuts out during extension, so it can't fight the launch or run away
+ * into monster hops. The springs' rebound launches the next hop, and
+ * the pull only replaces the energy the lossy bounce dissipates, so
+ * the rhythm is the leg's natural pogo frequency.
  *
  * <p>On top of the stance pull a proportional attitude trim levels the
  * body: the cables pull the hips DOWN toward the feet, so to level the
@@ -46,7 +46,7 @@ public class HopperGaitController implements Controller {
    */
   public static double stance_pull_per_px = 0.01;
   /** Cap on the compression-proportional stance pull. */
-  public static double max_stance_pull = 0.05;
+  public static double max_stance_pull = 0.025;
   /**
    * Flight crouch: fraction the cable shortens while airborne. (Currently
    * 0 -- a flight crouch made the chaining worse.)
@@ -58,6 +58,17 @@ public class HopperGaitController implements Controller {
    * touchdown stiffens the leg for the impact.
    */
   public static double stance_pretension = 0.0;
+  /**
+   * Velocity pump gain: fraction of cable rest length shortened per
+   * px/tick of leg compression velocity. When > 0, the stance pull is
+   * proportional to how FAST the leg is compressing (a stretch reflex),
+   * not how far -- so a slow quasi-static settle (like the dead-start
+   * pre-stress loading) gets almost no pump, while a genuine touchdown
+   * impact gets a strong one. The pump naturally cuts out during
+   * extension, so it can't fight the launch or run away. 0 disables it
+   * (magnitude-proportional pull is used).
+   */
+  public static double velocity_pump_gain = 0.01;
 
   private final Node[] feet;
   private final int ground_y;
@@ -120,7 +131,9 @@ public class HopperGaitController implements Controller {
     final int trim = (int) (trim_fp >> Coords.shift);
     final int base = link.type.length;
     if (!in_stance) {
-      // Flight: crouch (pre-tension) plus the trim.
+      // Flight: crouch (pre-tension) plus the trim. Clear the
+      // velocity pump's previous-length so touchdown starts fresh.
+      link.ctrl_prev_length = 0;
       final int scale = Muscles.UNITY - (int) (flight_crouch * Muscles.UNITY);
       link.adjusted_rest_length =
           (int) (((long) base * scale) >> Coords.shift) + trim;
@@ -143,7 +156,21 @@ public class HopperGaitController implements Controller {
     if (comp_px < 0) {
       comp_px = 0;
     }
-    double pull = stance_pull_per_px * comp_px;
+    double pull;
+    if (velocity_pump_gain > 0.0) {
+      // Stretch reflex: pump proportional to compression velocity.
+      // (prev - actual) > 0 means the leg is shortening this tick.
+      final int prev = link.ctrl_prev_length;
+      if (prev != 0) {
+        final int comp_vel_px = (prev - actual) >> Coords.shift;
+        pull = velocity_pump_gain * Math.max(0, comp_vel_px);
+      } else {
+        pull = 0.0;
+      }
+    } else {
+      pull = stance_pull_per_px * comp_px;
+    }
+    link.ctrl_prev_length = actual;
     if (pull > max_stance_pull) {
       pull = max_stance_pull;
     }

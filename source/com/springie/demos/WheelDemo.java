@@ -67,7 +67,7 @@ public final class WheelDemo {
   public static int rim_radius_px = 50;
 
   /** Rims sit at z = 0 and z = 2 * this value, in pixels. */
-  public static int rim_half_width_px = 46;
+  public static int rim_half_width_px = 55;
 
   /**
    * Z offset of the whole wheel: rim-0 sits at z = this, rim-1 at

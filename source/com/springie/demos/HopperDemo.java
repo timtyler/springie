@@ -81,8 +81,13 @@ public final class HopperDemo {
    * the fore-aft components cancel and the hop is vertical.
    */
   public static int foot_back_px = 30;
+  /** Foot x spread outside the hip edge, in pixels. Small: the legs
+   * stand near-vertical so touchdown impacts drive the feet down, not
+   * out (on the frictionless ground any outward kick splays the feet
+   * and drops the body onto the landing). */
+  public static int foot_x_spread_px = 10;
   /** Foot z splay, in pixels. Wide for roll stability. */
-  public static int leg_splay_px = 18;
+  public static int foot_z_splay_px = 26;
   /** Knee z splay, in pixels. Follows the feet out for a wider leg. */
   public static int knee_splay_px = 14;
   /** Front knee offset ahead of the hip (-x), in pixels (deep crouch). */
@@ -112,8 +117,9 @@ public final class HopperDemo {
   public static int gravity = 5;
   /** Elasticity of the body frame. */
   public static int body_elasticity = 30;
-  /** Elasticity of the passive leg links. */
-  public static int leg_elasticity = 20;
+  /** Elasticity of the passive leg links. Soft (18): the legs absorb
+   * touchdown impact instead of transmitting the shock to the ridge. */
+  public static int leg_elasticity = 18;
   /** Damping of the passive leg links (0-255). Higher damps the bounce. */
   public static int leg_damping = 91;
   /** Damping of the body frame (0-255). Damps the ridge flop that caused body-slam landings. */
@@ -229,8 +235,8 @@ public final class HopperDemo {
     // spring, but it cannot fold, lock, or collapse. The feet are
     // splayed outside the hips in z and fore-aft in x, giving a wide,
     // stable base like a table.
-    final int foot_x_spread = 10;
-    final int foot_z_splay = 26;
+    final int foot_x_spread = foot_x_spread_px;
+    final int foot_z_splay = foot_z_splay_px;
 
     // Front wedge on the front hip edge (b0, b3). Both feet sit 10px
     // BEHIND the hip edge (same x offset): if one foot is forward and

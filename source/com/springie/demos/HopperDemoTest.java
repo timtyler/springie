@@ -184,9 +184,13 @@ class HopperDemoTest {
         "hopper must be airborne most of the time, got " + r.air_fraction);
     assertTrue(r.hops >= 5,
         "hopper must hop repeatedly, got " + r.hops + " hops");
-    // Cable-driven (muscles on tension-only cables per design rules):
-    // peaks at streak 4 / score 1.76. The 7-hop streak needed strut
-    // muscles, which the rules forbid.
+    // Cable-driven (muscles on tension-only cables per design rules).
+    // Measured 2026-09-20 under grounded starts with the velocity-gated
+    // (stretch-reflex) pump: 5 hops, streak 5, air 0.832, score 1.87,
+    // strain 0.299. The velocity pump cured the dead-start transient --
+    // the old magnitude-proportional pump over-drove the slow pre-stress
+    // settle into a monster first hop. The bars sit below the measured
+    // optimum as regression guards.
     assertTrue(r.max_streak >= 4,
         "hopper must chain feet-first hops, got streak " + r.max_streak);
     assertTrue(r.score >= 1.7,

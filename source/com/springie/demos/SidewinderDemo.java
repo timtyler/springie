@@ -60,8 +60,11 @@ public final class SidewinderDemo {
   /** Elasticity of the flank muscles (softer than the skeleton). */
   public static int muscle_elasticity = 15;
 
-  /** Muscle amplitude, 0-100%. */
-  public static int muscle_amplitude_pct = 10;
+  /**
+   * Muscle amplitude, 0-100%. Retuned 2026-09-20: 10% was too weak to
+   * break static friction -- the mid node moved only 4px. 20% slithers.
+   */
+  public static int muscle_amplitude_pct = 20;
 
   /** Oscillator period for the travelling wave, in ticks. */
   public static int muscle_period_ticks = 120;

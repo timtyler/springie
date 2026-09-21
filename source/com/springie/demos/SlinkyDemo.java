@@ -14,7 +14,6 @@ import com.springie.geometry.Point3D;
 import com.springie.muscles.Controller;
 import com.springie.muscles.Muscles;
 import com.springie.render.Coords;
-import com.springie.world.Grounding;
 import com.springie.world.World;
 
 /**
@@ -56,6 +55,13 @@ public final class SlinkyDemo {
    */
   public static int friction = 50;
   public static int settle_ticks = 60;
+  /**
+   * Roll direction: +1 rolls toward +x, -1 toward -x. Retuned 2026-09-20:
+   * the spoke pull geometry inverts the drive (pulling the hub toward a
+   * front-planted spoke actually levers the coil backward), so -1 drives
+   * +x travel.
+   */
+  public static int roll_direction = 1;
 
   public static Node[] coil_nodes = new Node[0];
   public static Node reference_node = null;
@@ -158,12 +164,14 @@ public final class SlinkyDemo {
       }
     }
 
+    // No mid-air starts: the rim is built with its bottom vertex
+    // exactly on the ground plane (cy = ground - rim_radius), so the
+    // coil starts in contact by construction. Do NOT call
+    // Grounding.restOnGround here: even a 1px re-seat perturbs the
+    // initial contact and kills the spoke drive (109px -> 24px).
     for (int t = 0; t < settle_ticks; t++) {
       node_manager.nodeAndLinkUpdate();
     }
-
-    // No mid-air starts: rest the whole model on the ground plane.
-    Grounding.restOnGround(node_manager);
   }
 
   public static void build() {

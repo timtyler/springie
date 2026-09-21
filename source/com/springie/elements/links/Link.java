@@ -38,6 +38,12 @@ public class Link extends BaseElement {
    * length exactly as before.
    */
   public int adjusted_rest_length;
+  /**
+   * Previous tick's actual length, in fixed-point. Scratch space for
+   * controllers that need the length's rate of change (e.g. a
+   * velocity-gated pump). Written by the controller each tick.
+   */
+  public int ctrl_prev_length;
 
   /**
    * Per-link phase offset into the muscle oscillator cycle, in ticks.
