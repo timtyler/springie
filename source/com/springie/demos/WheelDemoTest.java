@@ -41,6 +41,7 @@ class WheelDemoTest {
   private int old_radius;
   private int old_half_width;
   private int old_rim_log_mass;
+  private int old_node_size;
   private int old_stance;
   private int old_bracing;
   private int old_roll_gain;
@@ -66,6 +67,7 @@ class WheelDemoTest {
     old_radius = WheelDemo.rim_radius_px;
     old_half_width = WheelDemo.rim_half_width_px;
     old_rim_log_mass = WheelDemo.rim_log_mass;
+    old_node_size = WheelDemo.node_size_px;
     old_stance = WheelDemo.reflex_stance_threshold_px;
     old_bracing = WheelDemo.bracing_elasticity;
     old_roll_gain = WheelDemo.roll_correct_gain;
@@ -86,6 +88,7 @@ class WheelDemoTest {
     WheelDemo.rim_radius_px = 90;
     WheelDemo.rim_half_width_px = 90;
     WheelDemo.rim_log_mass = 17;
+    WheelDemo.node_size_px = 16;
     WheelDemo.reflex_stance_threshold_px = 47;
     WheelDemo.bracing_elasticity = 30;
     WheelDemo.roll_correct_gain = 192;
@@ -107,6 +110,7 @@ class WheelDemoTest {
     WheelDemo.rim_radius_px = old_radius;
     WheelDemo.rim_half_width_px = old_half_width;
     WheelDemo.rim_log_mass = old_rim_log_mass;
+    WheelDemo.node_size_px = old_node_size;
     WheelDemo.reflex_stance_threshold_px = old_stance;
     WheelDemo.bracing_elasticity = old_bracing;
     WheelDemo.roll_correct_gain = old_roll_gain;
@@ -131,6 +135,17 @@ class WheelDemoTest {
       rnd.setSeed(4357);
     } catch (Exception e) {
       throw new RuntimeException("Failed to reset World.rnd", e);
+    }
+  }
+
+  @Test
+  void wheelNodesAreSizeSixteen() {
+    WheelDemo.buildAt(120);
+
+    final NodeManager nm = ContextManager.getNodeManager();
+    for (int i = 0; i < nm.element.size(); i++) {
+      final Node node = (Node) nm.element.get(i);
+      assertEquals(16, node.type.radius, "wheel node size");
     }
   }
 

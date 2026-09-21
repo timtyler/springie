@@ -88,6 +88,9 @@ public final class WheelDemo {
   /** Nominal mass for the hub node (log scale used by the engine). */
   public static int hub_log_mass = NodeType.REFERENCE_LOG_MASS;
 
+  /** Drawn node size for the wheel's nodes, in pixels. */
+  public static int node_size_px = 16;
+
   /** Muscle amplitude for the spoke wave, 0-100%. */
   /** Spoke muscle amplitude, percent (travelling-wave mode only). */
   public static int muscle_amplitude_pct = 25;
@@ -219,6 +222,8 @@ public final class WheelDemo {
     final NodeType hub_type = node_manager.node_type_factory.getNew();
     rim_type.log_mass = rim_log_mass;
     hub_type.log_mass = hub_log_mass;
+    rim_type.setSize(node_size_px);
+    hub_type.setSize(node_size_px);
 
     // The spoke wave runs on oscillator slot 0.
     Muscles.enabled = true;
