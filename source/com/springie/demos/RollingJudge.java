@@ -63,6 +63,13 @@ public final class RollingJudge {
      * veering shows up here.
      */
     public int z_drift_px;
+    /**
+     * Mean node velocity toward +X at build time, px/frame. The wheel is
+     * driven toward +X, so this is the target direction: it must be ~0
+     * (a starting shove disqualifies the run). A pure spin kick nets to
+     * zero and passes.
+     */
+    public double initial_velocity_px_per_frame;
 
     @Override
     public String toString() {
@@ -73,6 +80,8 @@ public final class RollingJudge {
           + "\nUPRIGHT_FRAC " + String.format("%.3f", this.upright_fraction)
           + "\nTIPPED_OVER " + this.tipped_over
           + "\nDISQUALIFIED " + this.disqualified
+          + "\nINITIAL_VELOCITY "
+          + String.format("%.4f", this.initial_velocity_px_per_frame)
           + "\nZ_DRIFT " + this.z_drift_px
           + "\nSCORE " + String.format("%.1f", this.score)
           + "\nTICKS " + this.ticks;
@@ -157,6 +166,14 @@ public final class RollingJudge {
       radius_px = WheelDemo.rim_radius_px;
     }
 
+    // No free shove: the model must start at rest in the target
+    // direction (+X for both the wheel and the crawler sanity check).
+    // Checked before the first tick; a violation disqualifies the run.
+    final double initial_velocity = InitialVelocityCheck.meanAlong(
+        node_manager, CompassPoint.E);
+    final boolean shoved = !InitialVelocityCheck.atRestAlong(node_manager,
+        CompassPoint.E);
+
     for (int i = 0; i < SETTLE_TICKS; i++) {
       node_manager.nodeAndLinkUpdate();
     }
@@ -235,7 +252,8 @@ public final class RollingJudge {
     result.height_std_px = height_std_px;
     result.upright_fraction = (double) upright_ticks / measured;
     result.tipped_over = tipped_over;
-    result.disqualified = tipped_over;
+    result.disqualified = tipped_over || shoved;
+    result.initial_velocity_px_per_frame = initial_velocity;
     result.z_drift_px =
         (hub.pos.z - start_z) >> com.springie.render.Coords.shift;
     result.score = result.disqualified ? 0.0

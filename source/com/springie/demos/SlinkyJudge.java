@@ -79,6 +79,12 @@ public final class SlinkyJudge {
     public double max_passive_strain;
     /** True when the run was disqualified (exploded). */
     public boolean disqualified;
+    /**
+     * Mean node velocity toward +X at build time, px/frame. The slinky
+     * rolls toward +X, so this is the target direction: it must be ~0
+     * (a starting shove disqualifies the run).
+     */
+    public double initial_velocity_px_per_frame;
     /** distance * straightness, or 0 if disqualified / too few steps. */
     public double score;
     /** Total ticks simulated (including settling). */
@@ -94,6 +100,8 @@ public final class SlinkyJudge {
           + "\nMAX_PASSIVE_STRAIN "
           + String.format("%.3f", this.max_passive_strain)
           + "\nDISQUALIFIED " + this.disqualified
+          + "\nINITIAL_VELOCITY "
+          + String.format("%.4f", this.initial_velocity_px_per_frame)
           + "\nSCORE " + String.format("%.1f", this.score)
           + "\nTICKS " + this.ticks;
     }
@@ -121,6 +129,13 @@ public final class SlinkyJudge {
     SlinkyDemo.buildAt(400);
     final Node[] nodes = SlinkyDemo.coil_nodes;
     final Node ref = SlinkyDemo.reference_node;
+    // No free shove: the slinky rolls toward +X, so it must start at
+    // rest along +X. Checked before the first tick; a violation
+    // disqualifies the run.
+    final double initial_velocity = InitialVelocityCheck.meanAlong(
+        node_manager, CompassPoint.E);
+    final boolean shoved = !InitialVelocityCheck.atRestAlong(node_manager,
+        CompassPoint.E);
     final int n = nodes.length;
     final LinkManager link_manager = node_manager.getLinkManager();
     final int n_links = link_manager.element.size();
@@ -195,7 +210,7 @@ public final class SlinkyJudge {
     final int max_speed_px =
         (int) (Math.sqrt((double) max_speed_sq) / (1 << Coords.shift));
     final boolean disqualified = max_speed_px > SPEED_CAP_PX_PER_TICK
-        || max_passive_strain > STRAIN_CAP;
+        || max_passive_strain > STRAIN_CAP || shoved;
     final double score =
         (disqualified || steps < MIN_STEPS) ? 0.0 : distance_px * straightness;
 
@@ -207,6 +222,7 @@ public final class SlinkyJudge {
     result.max_speed_px = max_speed_px;
     result.max_passive_strain = max_passive_strain;
     result.disqualified = disqualified;
+    result.initial_velocity_px_per_frame = initial_velocity;
     result.score = score;
     result.ticks = ticks;
     return result;

@@ -90,6 +90,13 @@ public final class HopperJudge {
     public boolean disqualified;
     /** True when Tim's "not tipping over" rule was violated. */
     public boolean tipped_over;
+    /**
+     * Mean node velocity on the vertical axis at build time, px/frame
+     * (positive is downward). The hopper's target direction is up, so
+     * this must be ~0: a starting shove disqualifies the run (rule 1:
+     * muscle power only, no start kick).
+     */
+    public double initial_velocity_px_per_frame;
     /** Lowest/highest marker x seen, pixels (drift check). */
     public int min_marker_x_px;
     public int max_marker_x_px;
@@ -110,6 +117,8 @@ public final class HopperJudge {
           + String.format("%.3f", this.max_passive_strain)
           + "\nDISQUALIFIED " + this.disqualified
           + "\nTIPPED_OVER " + this.tipped_over
+          + "\nINITIAL_VELOCITY "
+          + String.format("%.4f", this.initial_velocity_px_per_frame)
           + "\nMARKER_X_MIN_PX " + this.min_marker_x_px
           + "\nMARKER_X_MAX_PX " + this.max_marker_x_px
           + "\nSCORE " + String.format("%.4f", this.score)
@@ -140,6 +149,14 @@ public final class HopperJudge {
 
     final Node marker = HopperDemo.buildAt(400);
     final Node[] feet = HopperDemo.feet;
+    // No free shove: the hopper's target direction is up, so it must
+    // start at rest on the vertical axis. Checked before the first
+    // tick; a violation disqualifies the run (rule 1: muscle power
+    // only, no start kick).
+    final double initial_velocity =
+        InitialVelocityCheck.meanVertical(node_manager);
+    final boolean shoved =
+        !InitialVelocityCheck.atRestVertically(node_manager);
     final int n = node_manager.element.size();
     final Node[] nodes = new Node[n];
     for (int i = 0; i < n; i++) {
@@ -258,7 +275,7 @@ public final class HopperJudge {
     final int max_speed_px =
         (int) (Math.sqrt((double) max_speed_sq) / (1 << Coords.shift));
     final boolean disqualified = max_speed_px > SPEED_CAP_PX_PER_TICK
-        || max_passive_strain > STRAIN_CAP || tipped_over;
+        || max_passive_strain > STRAIN_CAP || tipped_over || shoved;
     final double score = disqualified ? 0.0
         : air_fraction * (1.0 + STREAK_BONUS_PER_HOP * Math.min(max_streak, STREAK_CAP));
 
@@ -272,6 +289,7 @@ public final class HopperJudge {
     result.max_passive_strain = max_passive_strain;
     result.disqualified = disqualified;
     result.tipped_over = tipped_over;
+    result.initial_velocity_px_per_frame = initial_velocity;
     result.min_marker_x_px = min_marker_x >> Coords.shift;
     result.max_marker_x_px = max_marker_x >> Coords.shift;
     result.score = score;

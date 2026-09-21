@@ -50,7 +50,15 @@ public final class SidewinderJudge {
     public double strain_p10;
     /** Fraction of links >20% off their (adjusted) rest length at the end. */
     public double strain_p20;
-    /** distance * length_keep * xs_keep. */
+    /**
+     * Mean node speed in the floor plane at build time, px/frame. The
+     * sidewinder scores unsigned 2D travel, so a shove in any floor
+     * direction cheats: this must be ~0, else the run is disqualified.
+     */
+    public double initial_velocity_px_per_frame;
+    /** True when the run was disqualified (starting shove). */
+    public boolean disqualified;
+    /** distance * length_keep * xs_keep, or 0 if disqualified. */
     public double score;
     /** Total ticks simulated (including settling). */
     public int ticks;
@@ -62,6 +70,9 @@ public final class SidewinderJudge {
           + "\nXS_KEEP " + String.format("%.3f", this.xs_keep)
           + "\nSTRAIN_P10 " + String.format("%.3f", this.strain_p10)
           + "\nSTRAIN_P20 " + String.format("%.3f", this.strain_p20)
+          + "\nDISQUALIFIED " + this.disqualified
+          + "\nINITIAL_VELOCITY "
+          + String.format("%.4f", this.initial_velocity_px_per_frame)
           + "\nSCORE " + String.format("%.1f", this.score)
           + "\nTICKS " + this.ticks;
     }
@@ -108,6 +119,13 @@ public final class SidewinderJudge {
     for (int i = 0; i < n; i++) {
       nodes[i] = (Node) node_manager.element.get(i);
     }
+    // No free shove: the sidewinder scores unsigned 2D travel, so it
+    // must start at rest in the floor plane. Checked before the first
+    // tick; a violation disqualifies the run.
+    final double initial_velocity =
+        InitialVelocityCheck.meanFloorSpeed(node_manager);
+    final boolean shoved =
+        !InitialVelocityCheck.atRestOnFloor(node_manager);
 
     final Shape build_shape = measureShape(nodes);
     final Node mid = nodes[n / 2];
@@ -160,7 +178,9 @@ public final class SidewinderJudge {
     result.xs_keep = xs_keep;
     result.strain_p10 = (double) over10 / n_links;
     result.strain_p20 = (double) over20 / n_links;
-    result.score = distance_px * length_keep * xs_keep;
+    result.initial_velocity_px_per_frame = initial_velocity;
+    result.disqualified = shoved;
+    result.score = shoved ? 0.0 : distance_px * length_keep * xs_keep;
     result.ticks = ticks;
     return result;
   }
