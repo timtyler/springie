@@ -87,12 +87,11 @@ public class PanelPreferencesDisplay {
   }
 
   void makePanel() {
-    // The Renderer: dropdown, the frames-per-second readout, the
-    // anti-aliasing and pixellation choices, the "deepest first"
-    // checkbox and the "Show labels on" choice live at the top of the
-    // shared Renderer tab's Main sub-tab (modern and ray-traced
-    // renderers), so the rendering settings sit together; one Renderer:
-    // copy also goes
+    // The Renderer: dropdown, the anti-aliasing and pixellation choices,
+    // the "deepest first" checkbox and the "Show labels on" choice live
+    // at the top of the shared Renderer tab's Main sub-tab (modern and
+    // ray-traced renderers), so the rendering settings sit together; one
+    // Renderer: copy also goes
     // in the original renderer's own Renderer tab, so the renderer can
     // always be switched back whichever is showing. Anti-aliasing and
     // pixellation only apply to the modern and ray-traced renderers;
@@ -100,18 +99,18 @@ public class PanelPreferencesDisplay {
     // hidden otherwise (see applyRendererType).
     // All three panels exist already: they are built before this one.
     // The Renderer tab's "Main" sub-tab holds the top rows: the display
-    // type, the frames-per-second readout, the anti-aliasing and
-    // pixellation choices, the "deepest first" checkbox and the "Show
-    // labels on" choice.
+    // type, the anti-aliasing and pixellation choices, the "deepest
+    // first" checkbox and the "Show labels on" choice. (The
+    // frames-per-second readout used to live here too; it now sits above
+    // the Preferences tabs so it stays visible from any tab.)
     final Panel renderer_main = FrEnd.panel_preferences_shared_show.panel_main;
     renderer_main.add(makeDisplayTypePanel(), 0);
-    renderer_main.add(getFpsPanel(), 1);
-    renderer_main.add(getAntiAliasingPanel(), 2);
-    renderer_main.add(getPixellationPanel(), 3);
+    renderer_main.add(getAntiAliasingPanel(), 1);
+    renderer_main.add(getPixellationPanel(), 2);
     renderer_main.add(
-        FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first, 4);
+        FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first, 3);
     renderer_main.add(
-        FrEnd.panel_preferences_renderer_modern.panel_labels_row, 5);
+        FrEnd.panel_preferences_renderer_modern.panel_labels_row, 4);
     FrEnd.panel_preferences_renderer_original.panel_renderer_tab
         .add(makeDisplayTypePanel(), 0);
 
@@ -209,9 +208,12 @@ public class PanelPreferencesDisplay {
     return panel;
   }
 
-  private Panel getFpsPanel() {
-    // Frames-per-second readout, kept next to the renderer options so it
-    // is visible while tuning the rendering settings.
+  /**
+   * Frames-per-second readout. It lives above the Preferences tabs
+   * (added by PanelPreferences), not inside the Renderer tab, so it
+   * stays visible while tuning settings on any tab.
+   */
+  public Panel getFpsPanel() {
     final Panel panel_fps = new Panel();
     panel_fps.add(new Label("Frames per second:", Label.RIGHT));
     this.label_fps_value = new Label("X.XXXX", Label.LEFT);

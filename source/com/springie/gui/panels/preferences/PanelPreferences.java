@@ -57,6 +57,11 @@ public class PanelPreferences {
     tab.add("Misc", tab_misc);
 
     this.panel.setLayout(new BorderLayout());
+    // The frames-per-second readout sits above the tabs, so it stays
+    // visible while tuning the rendering settings on any tab --
+    // Display, Viewpoint, or otherwise.
+    this.panel.add(FrEnd.panel_preferences_display.getFpsPanel(),
+        BorderLayout.NORTH);
     this.panel.add(tab, BorderLayout.CENTER);
 
     // Compact strip: one control per row. (A single FlowLayout row wraps

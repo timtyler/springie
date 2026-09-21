@@ -23,7 +23,8 @@ import com.springie.world.World;
  * two sides 90 degrees out of phase, so the body undulates laterally
  * like a swimming eel and crawls forward on ground friction. Muscle
  * power only: no start kick.</li>
- * <li>Score = forward distance (px) of the body centroid along +x, times
+ * <li>Score = forward distance (px) of the body centroid along the
+ * declared compass heading, times
  * a straightness factor: {@code score = forward * (1 - min(1, lateral /
  * max(forward, 1)))}. Non-positive forward travel scores as-is.</li>
  * <li>The crawler must stay in one piece: any node exceeding
@@ -69,6 +70,12 @@ public final class CaterpillarJudge {
     public boolean tipped_over;
     /** True when the run was disqualified (exploded or tipped). */
     public boolean disqualified;
+    /**
+     * Mean node velocity along the heading at build time, px/frame.
+     * Positive means toward the heading. Must be ~0: a starting shove
+     * disqualifies the run.
+     */
+    public double initial_velocity_px_per_frame;
     /** forward * straightness, or 0 if disqualified. */
     public double score;
     /** Total ticks simulated (including settling). */
@@ -84,6 +91,8 @@ public final class CaterpillarJudge {
           + String.format("%.3f", this.max_passive_strain)
           + "\nTIPPED_OVER " + this.tipped_over
           + "\nDISQUALIFIED " + this.disqualified
+          + "\nINITIAL_VELOCITY "
+          + String.format("%.4f", this.initial_velocity_px_per_frame)
           + "\nSCORE " + String.format("%.1f", this.score)
           + "\nTICKS " + this.ticks;
     }
@@ -111,6 +120,12 @@ public final class CaterpillarJudge {
     CaterpillarDemo.buildAt(100);
     final Node[] apexes = CaterpillarDemo.apexes;
     final Node[] bases = CaterpillarDemo.bases;
+    // No free shove: the model must start at rest along its heading.
+    // Checked before the first tick; a violation disqualifies the run.
+    final double initial_velocity = InitialVelocityCheck.meanAlong(
+        node_manager, CaterpillarDemo.compassHeading());
+    final boolean shoved = !InitialVelocityCheck.atRestAlong(node_manager,
+        CaterpillarDemo.compassHeading());
     final int n = node_manager.element.size();
     final Node[] nodes = new Node[n];
     for (int i = 0; i < n; i++) {
@@ -177,16 +192,20 @@ public final class CaterpillarJudge {
     }
 
     final double[] end = centroid(nodes);
-    final int forward_px =
-        (int) ((end[0] - start[0]) / (1 << Coords.shift));
-    final int lateral_px =
-        (int) (Math.abs(end[2] - start[2]) / (1 << Coords.shift));
+    // Signed progress along the model's declared compass heading, plus
+    // lateral drift for the straightness penalty. Sideways crabbing
+    // scores nothing.
+    final CompassPoint heading = CaterpillarDemo.compassHeading();
+    final long cdx = (long) (end[0] - start[0]);
+    final long cdz = (long) (end[2] - start[2]);
+    final int forward_px = (int) (heading.progress(cdx, cdz) / (1 << Coords.shift));
+    final int lateral_px = (int) (heading.lateral(cdx, cdz) / (1 << Coords.shift));
     final double straightness = forward_px <= 0 ? 1.0
         : 1.0 - Math.min(1.0, lateral_px / (double) Math.max(forward_px, 1));
     final int max_speed_px =
         (int) (Math.sqrt((double) max_speed_sq) / (1 << Coords.shift));
     final boolean disqualified = max_speed_px > SPEED_CAP_PX_PER_TICK
-        || max_passive_strain > STRAIN_CAP || tipped_over;
+        || max_passive_strain > STRAIN_CAP || tipped_over || shoved;
     final double score = disqualified ? 0.0 : forward_px * straightness;
 
     final Result result = new Result();
@@ -197,6 +216,7 @@ public final class CaterpillarJudge {
     result.max_passive_strain = max_passive_strain;
     result.tipped_over = tipped_over;
     result.disqualified = disqualified;
+    result.initial_velocity_px_per_frame = initial_velocity;
     result.score = score;
     result.ticks = ticks;
     return result;
