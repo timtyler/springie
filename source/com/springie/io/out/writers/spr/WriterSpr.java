@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
+import com.springie.demos.CompassPoint;
 import com.springie.elements.base.BaseElement;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.electrostatics.ElectrostaticRepulsion;
@@ -105,6 +106,8 @@ public class WriterSpr {
 		uni.add(new XMLWriterAttribute("muscles_enabled", "" + Muscles.enabled));
 		uni.add(new XMLWriterAttribute("muscles_amplitude", "" + Muscles.activeOscillator().getAmplitude()));
 		uni.add(new XMLWriterAttribute("muscles_period", "" + Muscles.activeOscillator().getPeriodTicks()));
+
+		uni.add(new XMLWriterAttribute("compass_bias", "" + CompassPoint.bias_size));
 
 		recursivelyOutputAllNodes(uni);
 		recursivelyOutputAllLinks(uni);

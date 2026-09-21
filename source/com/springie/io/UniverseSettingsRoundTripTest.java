@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
+import com.springie.demos.CompassPoint;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.io.in.DataInput;
@@ -44,6 +45,7 @@ class UniverseSettingsRoundTripTest {
   private boolean saved_muscles_enabled;
   private int saved_muscles_amplitude;
   private int saved_muscles_period_ticks;
+  private int saved_compass_bias_size;
 
   @BeforeEach
   void setUp() {
@@ -65,6 +67,7 @@ class UniverseSettingsRoundTripTest {
     this.saved_muscles_amplitude = Muscles.activeOscillator().getAmplitude();
     this.saved_muscles_period_ticks =
         Muscles.activeOscillator().getPeriodTicks();
+    this.saved_compass_bias_size = CompassPoint.bias_size;
   }
 
   @AfterEach
@@ -84,13 +87,14 @@ class UniverseSettingsRoundTripTest {
     Muscles.activeOscillator().setAmplitude(this.saved_muscles_amplitude);
     Muscles.activeOscillator()
         .setPeriodTicks(this.saved_muscles_period_ticks);
+    CompassPoint.bias_size = this.saved_compass_bias_size;
   }
 
   private static void setUniverse(int gravity_strength,
       boolean gravity_active, int temperature, int minimum_magnitude,
       int viscocity, int max_speed, boolean three_d,
       boolean check_collisions, boolean continuously_centre,
-      boolean charge_active) {
+      boolean charge_active, int compass_bias_size) {
     World.gravity_strength = gravity_strength;
     World.gravity_active = gravity_active;
     World.global_temperature = temperature;
@@ -102,13 +106,14 @@ class UniverseSettingsRoundTripTest {
     FrEnd.continuously_centre = continuously_centre;
     ContextManager.getNodeManager().electrostatic.charge_active =
         charge_active;
+    CompassPoint.bias_size = compass_bias_size;
   }
 
   private static void assertUniverse(int gravity_strength,
       boolean gravity_active, int temperature, int minimum_magnitude,
       int viscocity, int max_speed, boolean three_d,
       boolean check_collisions, boolean continuously_centre,
-      boolean charge_active) {
+      boolean charge_active, int compass_bias_size) {
     assertEquals(gravity_strength, World.gravity_strength, "gravity_strength");
     assertEquals(gravity_active, World.gravity_active, "gravity_active");
     assertEquals(temperature, World.global_temperature, "temperature");
@@ -123,6 +128,7 @@ class UniverseSettingsRoundTripTest {
     assertEquals(charge_active,
         ContextManager.getNodeManager().electrostatic.charge_active,
         "charge active");
+    assertEquals(compass_bias_size, CompassPoint.bias_size, "compass bias");
   }
 
   private static void setMuscles(boolean enabled, int amplitude,
@@ -148,13 +154,13 @@ class UniverseSettingsRoundTripTest {
 
     // Non-default universe state, saved with the model.
     setUniverse(42, true, 777, 123456, 66, 987654, false, false,
-        true, false);
+        true, false, 17);
     setMuscles(true, 100, 33);
     final String spr = new Serialiser(this.manager).toString();
 
     // Scramble to unrelated values, proving the load overwrites them.
     setUniverse(7, false, 8, 9, 10, 11, true, true, false,
-        true);
+        true, 23);
     setMuscles(false, 200, 44);
 
     // Round-trip through a real file: XML -> SAX -> tokens -> parse,
@@ -172,7 +178,7 @@ class UniverseSettingsRoundTripTest {
     }
 
     assertUniverse(42, true, 777, 123456, 66, 987654, false, false,
-        true, false);
+        true, false, 17);
     assertMuscles(true, 100, 33);
   }
 
@@ -183,7 +189,7 @@ class UniverseSettingsRoundTripTest {
     // attributes absent from the file must not inherit stale values from
     // the previously loaded model.
     setUniverse(42, true, 777, 123456, 66, 987654, false, false,
-        true, false);
+        true, false, 17);
     setMuscles(true, 100, 33);
 
     new DataInput(this.manager)
@@ -204,5 +210,6 @@ class UniverseSettingsRoundTripTest {
     // ...absent attributes back at the defaults.
     assertTrue(FrEnd.three_d, "3D");
     assertMuscles(false, 85 * Muscles.UNITY / 100, 12);
+    assertEquals(0, CompassPoint.bias_size, "compass bias");
   }
 }

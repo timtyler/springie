@@ -8,6 +8,7 @@
 package com.springie.world;
 
 import com.springie.FrEnd;
+import com.springie.demos.CompassPoint;
 import com.springie.elements.electrostatics.ElectrostaticRepulsion;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
@@ -31,6 +32,8 @@ public final class UniverseState {
   public boolean muscles_enabled;
   public int muscles_amplitude;
   public int muscles_period_ticks;
+
+  public int compass_bias_size;
 
   private UniverseState() {
     // use capture()
@@ -60,6 +63,8 @@ public final class UniverseState {
     state.muscles_amplitude = Muscles.activeOscillator().getAmplitude();
     state.muscles_period_ticks = Muscles.activeOscillator().getPeriodTicks();
 
+    state.compass_bias_size = CompassPoint.bias_size;
+
     return state;
   }
 
@@ -84,5 +89,7 @@ public final class UniverseState {
     Muscles.enabled = this.muscles_enabled;
     Muscles.activeOscillator().setAmplitude(this.muscles_amplitude);
     Muscles.activeOscillator().setPeriodTicks(this.muscles_period_ticks);
+
+    CompassPoint.bias_size = this.compass_bias_size;
   }
 }

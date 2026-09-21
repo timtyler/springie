@@ -348,6 +348,9 @@ public class ReaderSPR extends DefaultHandler {
           } else if ("muscles_period".equals(nam)) {
             final double sp = Double.valueOf(val).doubleValue();
             this.out.append("MP:" + (int) sp + " ");
+          } else if ("compass_bias".equals(nam)) {
+            final double sp = Double.valueOf(val).doubleValue();
+            this.out.append("CB:" + (int) sp + " ");
           }
         }
       }

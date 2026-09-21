@@ -4,6 +4,7 @@ package com.springie.world;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
+import com.springie.demos.CompassPoint;
 import com.springie.elements.nodes.Node;
 import com.springie.muscles.Muscles;
 
@@ -63,6 +64,9 @@ public final class UniverseDefaults {
   private static int max_speed = Integer.MAX_VALUE;
   private static int minimum_magnitude = 0;
 
+  // Compass bias size (velocity units added per frame along the heading).
+  private static int compass_bias_size = 0;
+
   /**
    * Resets the snapshot to the factory defaults. For tests: the snapshot
    * is global state, and a test that loads a model would otherwise pollute
@@ -85,6 +89,7 @@ public final class UniverseDefaults {
     continuously_centre = false;
     max_speed = Integer.MAX_VALUE;
     minimum_magnitude = 0;
+    compass_bias_size = 0;
   }
 
   /**
@@ -106,6 +111,7 @@ public final class UniverseDefaults {
     muscle_period_ticks = Muscles.activeOscillator().getPeriodTicks();
     muscle_phase = Muscles.activeOscillator().getPhase();
     continuously_centre = FrEnd.continuously_centre;
+    compass_bias_size = CompassPoint.bias_size;
     if (FrEnd.development_version) {
       max_speed = Node.max_speed;
       minimum_magnitude = World.minimum_magnitude;
@@ -131,6 +137,7 @@ public final class UniverseDefaults {
     Muscles.activeOscillator().setPeriodTicks(muscle_period_ticks);
     Muscles.activeOscillator().setPhase(muscle_phase);
     FrEnd.continuously_centre = continuously_centre;
+    CompassPoint.bias_size = compass_bias_size;
     if (FrEnd.development_version) {
       Node.max_speed = max_speed;
       World.minimum_magnitude = minimum_magnitude;

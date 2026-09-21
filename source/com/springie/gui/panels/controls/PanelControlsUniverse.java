@@ -17,6 +17,7 @@ import java.awt.event.ItemListener;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
+import com.springie.demos.CompassPoint;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.GUIStrings;
@@ -62,6 +63,8 @@ public class PanelControlsUniverse {
 
 	Label label_friction;
 
+	Label label_compass_bias;
+
 	Label label_muscles_amplitude;
 
 	Label label_muscles_period;
@@ -90,6 +93,8 @@ public class PanelControlsUniverse {
 	Scrollbar scroll_bar_impact;
 
 	Scrollbar scroll_bar_friction;
+
+	Scrollbar scroll_bar_compass_bias;
 
 	public PanelControlsUniverse(NewMessageManager new_message_manager) {
 		this.new_message_manager = new_message_manager;
@@ -161,6 +166,26 @@ public class PanelControlsUniverse {
 		panel_friction.add("East", this.label_friction);
 
 		// END FRICTION (added below, under gravity)
+
+		// START COMPASS BIAS
+		final Panel panel_compass_bias = new Panel();
+		panel_compass_bias.setLayout(new BorderLayout(0, 8));
+		panel_compass_bias.add("West", new Label("Compass bias:", Label.RIGHT));
+
+		this.scroll_bar_compass_bias = new Scrollbar(Scrollbar.HORIZONTAL, 0, 10, 0, 110);
+		this.scroll_bar_compass_bias.addAdjustmentListener(new AdjustmentListener() {
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				CompassPoint.bias_size = e.getValue();
+				reflectCompassBias();
+			}
+		});
+
+		panel_compass_bias.add("Center", this.scroll_bar_compass_bias);
+
+		this.label_compass_bias = new Label("" + CompassPoint.bias_size, Label.LEFT);
+		panel_compass_bias.add("East", this.label_compass_bias);
+
+		// END COMPASS BIAS (added below, under friction)
 
 		// START TEMPERATURE
 		final Panel panel_temperature = new Panel();
@@ -335,6 +360,7 @@ public class PanelControlsUniverse {
 		this.panel.add(panel_temperature);
 		this.panel.add(panel_gravity);
 		this.panel.add(panel_friction);
+		this.panel.add(panel_compass_bias);
 
 		this.panel.add(panel_muscles_switch);
 		this.panel.add(panel_muscles_amplitude);
@@ -380,6 +406,7 @@ public class PanelControlsUniverse {
 		this.checkbox_3D.setState(FrEnd.three_d);
 		reflectGravity();
 		reflectFriction();
+		reflectCompassBias();
 		reflectTemperature();
 		reflectViscocity();
 		reflectUniverseToggles();
@@ -440,6 +467,12 @@ public class PanelControlsUniverse {
 		this.label_friction.setText("" + World.ground_friction);
 	}
 
+	public void reflectCompassBias() {
+		this.scroll_bar_compass_bias.setValue(CompassPoint.bias_size);
+
+		this.label_compass_bias.setText("" + CompassPoint.bias_size);
+	}
+
 	public void reflectTemperature() {
 		this.scroll_bar_temperature.setValue(World.global_temperature);
 
@@ -492,6 +525,10 @@ public class PanelControlsUniverse {
 
 	public Label getLabelFriction() {
 		return this.label_friction;
+	}
+
+	public Label getLabelCompassBias() {
+		return this.label_compass_bias;
 	}
 
 	public Label getLabelGravity() {

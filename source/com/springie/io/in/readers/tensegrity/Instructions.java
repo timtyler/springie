@@ -54,6 +54,7 @@ public class Instructions {
     "MA", // 46 // Muscles amplitude
     "MP", // 47 // Muscles period
     "PH", // 48 // Link phase (ticks)
+    "CB", // 49 // Compass bias size
 //  "CS", // 29 // Charge strength
   };
 
@@ -106,4 +107,5 @@ public class Instructions {
   static final int MA  = 46;
   static final int MP  = 47;
   static final int PH  = 48;
+  static final int CB  = 49;
 }

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import com.springie.FrEnd;
 import com.springie.composite.Composite;
 import com.springie.context.ContextManager;
+import com.springie.demos.CompassPoint;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceType;
@@ -347,6 +348,10 @@ public final class ReaderTens {
 
                   case Instructions.MP:
                     Muscles.activeOscillator().setPeriodTicks(temp);
+                    break;
+
+                  case Instructions.CB:
+                    CompassPoint.bias_size = temp;
                     break;
 
                   // case Instructions.CS:

@@ -9,6 +9,7 @@ import org.xml.sax.SAXException;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
+import com.springie.demos.CompassPoint;
 import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
@@ -104,6 +105,7 @@ public class DataInput {
     Muscles.enabled = false;
     Muscles.activeOscillator().setAmplitude(85 * Muscles.UNITY / 100);
     Muscles.activeOscillator().setPeriodTicks(12);
+    CompassPoint.bias_size = 0;
     final NodeManager manager = ContextManager.getNodeManager();
     if (manager != null) {
       manager.electrostatic.charge_active = true;
