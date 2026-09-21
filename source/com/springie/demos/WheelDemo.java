@@ -89,7 +89,7 @@ public final class WheelDemo {
   public static int hub_log_mass = NodeType.REFERENCE_LOG_MASS;
 
   /** Drawn node size for the wheel's nodes, in pixels. */
-  public static int node_size_px = 16;
+  public static int node_size_px = 40;
 
   /** Muscle amplitude for the spoke wave, 0-100%. */
   /** Spoke muscle amplitude, percent (travelling-wave mode only). */
@@ -137,7 +137,7 @@ public final class WheelDemo {
   public static boolean use_reflex_drive = true;
 
   /** Reflex push percent (spoke extension in back stance). */
-  public static int reflex_push_pct = 30;
+  public static int reflex_push_pct = 18;
   /**
    * Tim's "not tipping over" rule for the wheel: the axle must stay level.
    * Element indices of one node on each end of the axle (rim0[0], rim1[0]
@@ -194,7 +194,7 @@ public final class WheelDemo {
    * that the push-off drive would otherwise pump until the wheel tips
    * over. 0 disables.
    */
-  public static int roll_correct_gain = 192;
+  public static int roll_correct_gain = 300;
 
   /**
    * Spoke rest-length scale, percent. 100 = rest length equals the built
@@ -244,7 +244,11 @@ public final class WheelDemo {
     World.global_temperature = 0;
 
     // Ground is the high-Y wall (positive gravity pulls toward +Y).
-    final int ground = (Coords.y_pixels << Coords.shift) - (10 << Coords.shift);
+    // The ground line sits one node radius above the canvas floor, so
+    // rim-node centres start exactly at their rest height -- no tick-1
+    // launch from the boundary clamp (which uses the node radius).
+    final int ground =
+        (Coords.y_pixels << Coords.shift) - (node_size_px << Coords.shift);
     final int cx = x_px << Coords.shift;
     final int cy = ground - (rim_radius_px << Coords.shift);
     final int radius = rim_radius_px << Coords.shift;

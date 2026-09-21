@@ -80,7 +80,7 @@ class WheelDemoTest {
     // Pin the drive to the tuned values so the tests are deterministic
     // even if the statics were changed by an earlier test.
     WheelDemo.use_reflex_drive = true;
-    WheelDemo.reflex_push_pct = 30;
+    WheelDemo.reflex_push_pct = 18;
     WheelDemo.reflex_pull_pct = 0;
     WheelDemo.roll_direction = 1;
     WheelDemo.axle_stabilizer_bias = 2;
@@ -88,10 +88,10 @@ class WheelDemoTest {
     WheelDemo.rim_radius_px = 90;
     WheelDemo.rim_half_width_px = 90;
     WheelDemo.rim_log_mass = 17;
-    WheelDemo.node_size_px = 16;
+    WheelDemo.node_size_px = 40;
     WheelDemo.reflex_stance_threshold_px = 47;
     WheelDemo.bracing_elasticity = 30;
-    WheelDemo.roll_correct_gain = 192;
+    WheelDemo.roll_correct_gain = 300;
     ContextManager.setNodeManager(new NodeManager());
   }
 
@@ -145,7 +145,7 @@ class WheelDemoTest {
     final NodeManager nm = ContextManager.getNodeManager();
     for (int i = 0; i < nm.element.size(); i++) {
       final Node node = (Node) nm.element.get(i);
-      assertEquals(16, node.type.radius, "wheel node size");
+      assertEquals(40, node.type.radius, "wheel node size");
     }
   }
 
