@@ -509,8 +509,8 @@ public class PanelPreferencesRendererModern {
 		this.choose_link_sides.choice.select(this.choose_link_sides
 				.num_to_str(2));
 
-		// Node polyhedron (Dodecahedron).
-		ModularRendererNew.sphere_object = new SimpleDodecahedron();
+		// Node polyhedron (C60).
+		ModularRendererNew.sphere_object = new SimpleC60();
 		this.choose_polyhedron.choice.select(this.choose_polyhedron
 				.num_to_str(1));
 

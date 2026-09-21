@@ -27,6 +27,8 @@ import com.springie.render.modules.modern.ColourModifier;
 import com.springie.render.modules.modern.ElementRendererLink;
 import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.modern.RendererTileManager;
+import com.springie.render.modules.modern.SimpleC60;
+import com.springie.render.modules.modern.SimpleDodecahedron;
 
 /**
  * The Preferences panel's Reset button must restore every preference to its
@@ -85,6 +87,7 @@ class PreferencesResetTest {
         RendererDelegator.color_background_number = 0xFFFF0000;
         RendererDelegator.scenic_background = true;
         PanelPreferencesRendererModern.render_label_when = 1;
+        ModularRendererNew.sphere_object = new SimpleDodecahedron();
 
         Link.number_of_strut_render_divisions = 9;
         Link.number_of_cable_render_divisions = 8;
@@ -171,6 +174,8 @@ class PreferencesResetTest {
       assertEquals(0xFF000000, RendererDelegator.color_background_number);
       assertEquals(false, RendererDelegator.scenic_background);
       assertEquals(2, PanelPreferencesRendererModern.render_label_when);
+      assertTrue(ModularRendererNew.sphere_object instanceof SimpleC60,
+          "reset must restore the C60 node polyhedron, not Dodecahedron");
       assertTrue(RendererDelegator.renderer instanceof ModularRendererNew,
           "reset must restore the Polygon renderer");
 
