@@ -12,6 +12,7 @@ import java.util.List;
 import com.springie.FrEnd;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.io.in.DataInput;
+import com.springie.world.Grounding;
 import com.springie.world.UniverseState;
 
 public final class ModelManager {
@@ -105,6 +106,8 @@ public final class ModelManager {
 
     final NodeManager fresh = new NodeManager();
     new DataInput(fresh).loadFile(path);
+    // No mid-air starts: rest the loaded model on the ground plane.
+    Grounding.restOnGround(fresh);
     final UniverseState universe = UniverseState.capture(fresh);
 
     final ModelSlot slot = new ModelSlot(leafName(path), fresh, universe, path);
@@ -128,6 +131,8 @@ public final class ModelManager {
 
     final ModelSlot current = slots.get(active_index);
     new DataInput(current.manager).loadFile(path);
+    // No mid-air starts: rest the loaded model on the ground plane.
+    Grounding.restOnGround(current.manager);
     current.universe = UniverseState.capture(current.manager);
     current.name = leafName(path);
     current.file_path = path;

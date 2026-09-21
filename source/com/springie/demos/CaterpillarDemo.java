@@ -16,6 +16,7 @@ import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
 import com.springie.muscles.Oscillator;
 import com.springie.render.Coords;
+import com.springie.world.Grounding;
 import com.springie.world.World;
 
 /**
@@ -201,6 +202,9 @@ public final class CaterpillarDemo {
     for (int t = 0; t < settle_ticks; t++) {
       node_manager.nodeAndLinkUpdate();
     }
+
+    // No mid-air starts: rest the whole model on the ground plane.
+    Grounding.restOnGround(node_manager);
   }
 
   /** Builds the caterpillar at the default position (top-left). */

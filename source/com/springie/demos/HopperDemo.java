@@ -15,6 +15,7 @@ import com.springie.muscles.Controller;
 import com.springie.muscles.Muscles;
 import com.springie.render.Coords;
 import com.springie.FrEnd;
+import com.springie.world.Grounding;
 import com.springie.world.World;
 
 /**
@@ -272,6 +273,9 @@ public final class HopperDemo {
     link(link_manager, leg_type, clazz, b2, hf2, -1);
     muscle(link_manager, muscle_type, clazz, b1, hf1, gait);
     muscle(link_manager, muscle_type, clazz, b2, hf2, gait);
+
+    // No mid-air starts: rest the whole model on the ground plane.
+    Grounding.restOnGround(node_manager);
 
     marker = t0;
     return t0;

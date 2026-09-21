@@ -14,6 +14,7 @@ import com.springie.geometry.Point3D;
 import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
 import com.springie.render.Coords;
+import com.springie.world.Grounding;
 import com.springie.world.World;
 
 /**
@@ -275,6 +276,9 @@ public final class WheelDemo {
         rim1[i].velocity.y += ty;
       }
     }
+
+    // No mid-air starts: rest the whole model on the ground plane.
+    Grounding.restOnGround(node_manager);
 
     return hub;
   }

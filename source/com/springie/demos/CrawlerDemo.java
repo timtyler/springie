@@ -15,6 +15,7 @@ import com.springie.geometry.Point3D;
 import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
 import com.springie.render.Coords;
+import com.springie.world.Grounding;
 import com.springie.world.World;
 
 /**
@@ -199,6 +200,9 @@ public final class CrawlerDemo {
       // The lift cable is the leg's one muscle.
       cableMuscle(link_manager, leg_type, clazz, ridge, foot, phase);
     }
+
+    // No mid-air starts: rest the whole model on the ground plane.
+    Grounding.restOnGround(node_manager);
 
     // Return a body node for tracking.
     return b0;

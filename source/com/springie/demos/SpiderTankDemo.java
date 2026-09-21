@@ -15,6 +15,7 @@ import com.springie.geometry.Point3D;
 import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
 import com.springie.render.Coords;
+import com.springie.world.Grounding;
 import com.springie.world.World;
 
 /**
@@ -230,6 +231,9 @@ public final class SpiderTankDemo {
       final Node lift = (side < 0) ? b0 : b3;
       cableMuscle(link_manager, leg_type, clazz, lift, foot, phase);
     }
+
+    // No mid-air starts: rest the whole model on the ground plane.
+    Grounding.restOnGround(node_manager);
 
     return b0;
   }
