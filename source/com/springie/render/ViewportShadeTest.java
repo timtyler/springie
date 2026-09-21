@@ -15,8 +15,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * The area outside the viewpoint (the projected boundary box) is shaded
- * grey, once, when the whole screen is redrawn -- and not at all when the
- * box covers the canvas.
+ * grey on every paint -- and not at all when the box covers the canvas.
  */
 class ViewportShadeTest {
   private int saved_x_pixels;

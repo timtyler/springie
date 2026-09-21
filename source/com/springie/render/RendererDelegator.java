@@ -42,14 +42,6 @@ public final class RendererDelegator {
 
   public static boolean repaint_some_objects = true;
 
-  /**
-   * Set when possibleInitialClear actually cleared the whole screen.
-   * Consumed by redrawChanged, which paints the outside-the-viewpoint
-   * shading once, after the fresh frame is up -- never per animation
-   * frame.
-   */
-  private static boolean full_clear_done = false;
-
   public static Graphics graphics_handle;
 
   static JUR rnd = new JUR();
@@ -202,13 +194,15 @@ public final class RendererDelegator {
       RendererDelegator.passOnToUpdateMethods(graphics);
     }
 
-    if (RendererDelegator.full_clear_done) {
-      RendererDelegator.full_clear_done = false;
-      // The whole screen was just redrawn: shade the area outside the
-      // viewpoint once, here, on the fresh frame -- never per animation
-      // frame, so animating the model costs nothing extra.
-      ViewportShade.shadeOutsideBox(graphics);
-    }
+    // Screen-space overlay, after the renderers' blits: shade the canvas
+    // area outside the viewpoint box. This must run on every paint, not
+    // just after a full clear -- the ray-traced renderer blits its whole
+    // composite frame on each completed frame, which would erase a shade
+    // painted only on clears. It is a no-op when the box covers the
+    // canvas, and only a few fillRects otherwise, so animating the model
+    // costs nothing extra. (Same reason BoundaryBoxDots repaints every
+    // paint.)
+    ViewportShade.shadeOutsideBox(graphics);
 
     renderDragBox(graphics);
 
@@ -280,7 +274,6 @@ public final class RendererDelegator {
         }
         renderer.reset();
         RendererDelegator.repaint_all_objects = false;
-        RendererDelegator.full_clear_done = true;
       }
     }
 

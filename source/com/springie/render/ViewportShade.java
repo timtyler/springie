@@ -16,9 +16,13 @@ import java.awt.Graphics;
  * whole canvas, so nothing is shaded.
  *
  * <p>The box's screen rectangle is recomputed only when the viewpoint
- * changes, and the grey is painted once, when the whole screen is
- * redrawn -- never per animation frame -- so animating the model costs
- * nothing extra.
+ * changes, and the grey is painted on every paint, after the renderers'
+ * blits -- a screen-space overlay, like the boundary-box dots. Painting
+ * it only on full clears does not survive the ray-traced renderer's
+ * whole-frame blits, which repaint the entire canvas on each completed
+ * frame. When the box covers the canvas the call is a no-op, and
+ * otherwise it is a few fillRects, so animating the model costs nothing
+ * extra.
  */
 public final class ViewportShade {
   // The viewpoint the cached box rectangle was computed for.
