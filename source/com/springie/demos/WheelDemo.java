@@ -71,11 +71,14 @@ public final class WheelDemo {
 
   /**
    * Z offset of the whole wheel: rim-0 sits at z = this, rim-1 at
-   * z = this + 2 * rim_half_width_px. Keeps the wheel off the z = 0
+   * z = this + 2 * rim_half_width_px. Keeps the wheel clear of the z = 0
    * wall -- riding the wall shoves the wheel sideways (+z drift) on
-   * every rim contact. Must stay >= 0 (never below the wall).
+   * every rim contact. Must stay >= 0 (never below the wall). Set to 60
+   * (not 20): the axle stabilizer agitates the rims in z by ~30px, and
+   * at z = 20 the north rim dips into the wall's reach, whose one-sided
+   * shove veers the wheel steadily southward.
    */
-  public static int z_offset_px = 20;
+  public static int z_offset_px = 60;
 
   /** Nominal mass for rim nodes (log scale used by the engine). */
   // Mass is functional now: reference mass preserves the tuned behavior
@@ -107,6 +110,16 @@ public final class WheelDemo {
    * Zero for the fat wheel: the spoke wave self-starts without it.
    */
   public static int start_kick = 0;
+
+  /**
+   * Yaw stabilizer bias, in internal velocity units per frame
+   * (256 units = 1 px/frame). Tim's directive: N and S bias on opposite
+   * ends of the wheel axle -- this does not turn the wheel around, it
+   * stabilizes the initial rolling direction (see
+   * {@link AxleStabilizerController}). Tuned empirically to 2 (the
+   * smallest bias that contains z-drift); 0 disables.
+   */
+  public static int axle_stabilizer_bias = 2;
 
   /** Ground friction, 0-100. */
   public static int friction = 100;
@@ -226,6 +239,7 @@ public final class WheelDemo {
     // structural bracing; only the 16 spokes are muscles.
     final GlobalOscillatorController controller =
         new GlobalOscillatorController(0);
+    Link axle_link = null;
     for (int i = 0; i < RIM_COUNT; i++) {
       final int j = (i + 1) % RIM_COUNT;
       final Node a0 = rim0[i];
@@ -237,10 +251,20 @@ public final class WheelDemo {
       // it veer in a circle instead of rolling straight.
       passive(link_manager, clazz, a0, a1, rim_elasticity); // rim0 edge
       passive(link_manager, clazz, b0, rim1[j], rim_elasticity); // rim1 edge
-      passive(link_manager, clazz, a0, b0, rim_elasticity); // cross at i
+      final Link cross =
+          passive(link_manager, clazz, a0, b0, rim_elasticity); // cross at i
+      if (i == 0) {
+        axle_link = cross;
+      }
       passive(link_manager, clazz, b0, a1, rim_elasticity); // diagonal /
       passive(link_manager, clazz, a0, rim1[j], rim_elasticity); // diagonal \
     }
+
+    // Yaw stabilizer: N bias on the north rim end, S bias on the south
+    // rim end. One instance on one passive link, so the bias applies
+    // exactly once per dynamics step.
+    axle_link.controller =
+        new AxleStabilizerController(rim0, rim1, axle_stabilizer_bias);
 
     // Hub spokes: 16 muscles forming face-joined tetrahedra with the rim.
     // For each i, (hub, rim0[i], rim1[i], rim0[i+1]) and
@@ -290,14 +314,15 @@ public final class WheelDemo {
 
   /**
    * Passive link with its own type so the rest length matches its actual
-   * geometry exactly.
+   * geometry exactly. Returns the link so callers can attach a controller.
    */
-  private static void passive(LinkManager lm, Clazz clazz, Node a, Node b,
+  private static Link passive(LinkManager lm, Clazz clazz, Node a, Node b,
       int elasticity) {
     final LinkType type =
         lm.link_type_factory.getNew(distance(a, b), elasticity);
     final Link link = lm.setLink(a, b, type, clazz);
     link.adjusted_rest_length = type.length;
+    return link;
   }
 
   /** Hub-to-rim muscle spoke with an angle-derived oscillator phase. */
