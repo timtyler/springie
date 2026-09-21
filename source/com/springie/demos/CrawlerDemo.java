@@ -76,6 +76,14 @@ public final class CrawlerDemo {
   /** Ground friction, 0-100. */
   public static int friction = 100;
 
+  /**
+   * The model's intended direction of travel on the floor plane.
+   * The crawler walks toward +x: East.
+   */
+  public static CompassPoint compassHeading() {
+    return CompassPoint.E;
+  }
+
   /** Phase offsets (ticks) for FL, FR, BL, BR legs. */
   public static int[] leg_phases = {0, 60, 60, 0};
 

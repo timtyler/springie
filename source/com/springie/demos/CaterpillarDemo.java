@@ -85,6 +85,14 @@ public final class CaterpillarDemo {
   /** Ticks the build settles before the judge starts measuring. */
   public static int settle_ticks = 60;
 
+  /**
+   * The model's intended direction of travel on the floor plane.
+   * The caterpillar crawls toward +x: East.
+   */
+  public static CompassPoint compassHeading() {
+    return CompassPoint.E;
+  }
+
   /** The apex nodes, set by buildAt (index = pyramid). */
   public static Node[] apexes = new Node[0];
 

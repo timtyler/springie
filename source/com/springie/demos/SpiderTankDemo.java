@@ -81,6 +81,14 @@ public final class SpiderTankDemo {
   public static int friction = 100;
 
   /**
+   * The model's intended direction of travel on the floor plane.
+   * The spider tank walks toward +x: East.
+   */
+  public static CompassPoint compassHeading() {
+    return CompassPoint.E;
+  }
+
+  /**
    * Phase offsets for LF, RF, (skipped), (skipped), LB, RB.
    * Trot: (LF, RB) at 0; (RF, LB) at half-period. Four legs proved
    * stable; six pendulums excite a collective resonance.
