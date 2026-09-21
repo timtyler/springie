@@ -452,7 +452,9 @@ public class PanelFundamental {
         if (Coords.shift_constant_z < 1) {
           Coords.shift_constant_z = 1;
         }
-        RendererDelegator.repaintAll();
+        // Zooming changes the projection of everything on screen, so the
+        // incremental tile repaint is not enough: repaint the whole screen.
+        RendererDelegator.repaint_all_objects = true;
         FrEnd.panel_preferences_viewpoint.reflectTranslateZ();
       }
     });
