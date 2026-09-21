@@ -36,6 +36,8 @@ class WheelDemoTest {
   private int old_push;
   private int old_pull;
   private int old_direction;
+  private int old_stabilizer_bias;
+  private int old_z_offset;
   private boolean old_paused;
   private int old_frame_frequency;
   private int old_active_oscillator;
@@ -53,6 +55,8 @@ class WheelDemoTest {
     old_push = WheelDemo.reflex_push_pct;
     old_pull = WheelDemo.reflex_pull_pct;
     old_direction = WheelDemo.roll_direction;
+    old_stabilizer_bias = WheelDemo.axle_stabilizer_bias;
+    old_z_offset = WheelDemo.z_offset_px;
     old_paused = FrEnd.paused;
     old_frame_frequency = FrEnd.frame_frequency;
     old_active_oscillator = Muscles.active_oscillator;
@@ -65,6 +69,8 @@ class WheelDemoTest {
     WheelDemo.reflex_push_pct = 30;
     WheelDemo.reflex_pull_pct = 5;
     WheelDemo.roll_direction = 1;
+    WheelDemo.axle_stabilizer_bias = 2;
+    WheelDemo.z_offset_px = 60;
     ContextManager.setNodeManager(new NodeManager());
   }
 
@@ -78,6 +84,8 @@ class WheelDemoTest {
     WheelDemo.reflex_push_pct = old_push;
     WheelDemo.reflex_pull_pct = old_pull;
     WheelDemo.roll_direction = old_direction;
+    WheelDemo.axle_stabilizer_bias = old_stabilizer_bias;
+    WheelDemo.z_offset_px = old_z_offset;
     FrEnd.paused = old_paused;
     FrEnd.frame_frequency = old_frame_frequency;
     Muscles.active_oscillator = old_active_oscillator;
