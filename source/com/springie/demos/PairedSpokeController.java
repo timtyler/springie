@@ -42,7 +42,7 @@ public final class PairedSpokeController implements Controller {
       int push_pct, int pull_pct, int ground_y, int direction,
       int stance_threshold_px) {
     this(hub, rim_a, rim_b, link_a, link_b, base_a, base_b, push_pct,
-        pull_pct, ground_y, direction, stance_threshold_px, false, 60);
+        pull_pct, ground_y, direction, stance_threshold_px, false, 60, 0);
   }
 
   /**
@@ -53,11 +53,17 @@ public final class PairedSpokeController implements Controller {
    *   strongest push where the spoke is most horizontal (best forward
    *   leverage, least skyward launch).
    * @param radius_px spoke length, used to normalize the ramp
+   * @param roll_gain active roll-damping gain, in rest-length units per
+   *   unit of inter-rim y-difference (256 = 1.0x). When the pair's two
+   *   rims ride at different heights, the high side's spoke extends
+   *   proportionally, pushing the high rim back down toward level.
+   *   0 disables.
    */
   public PairedSpokeController(Node hub, Node rim_a, Node rim_b,
       Link link_a, Link link_b, int base_a, int base_b,
       int push_pct, int pull_pct, int ground_y, int direction,
-      int stance_threshold_px, boolean proportional, int radius_px) {
+      int stance_threshold_px, boolean proportional, int radius_px,
+      int roll_gain) {
     this.hub = hub;
     this.rim_a = rim_a;
     this.rim_b = rim_b;
@@ -74,11 +80,13 @@ public final class PairedSpokeController implements Controller {
     this.stance_threshold = stance_threshold_px << Coords.shift;
     this.proportional = proportional;
     this.radius = radius_px << Coords.shift;
+    this.roll_gain = roll_gain;
   }
 
   private final int stance_threshold;
   private final boolean proportional;
   private final int radius;
+  private final int roll_gain;
 
   @Override
   public void update(Link link, long tick) {
@@ -129,5 +137,17 @@ public final class PairedSpokeController implements Controller {
     }
     link_a.adjusted_rest_length = rest_a;
     link_b.adjusted_rest_length = rest_b;
+    // Active roll damping, applied while the pair is below the hub
+    // (near the ground, where the drive fires): if the pair's two rims
+    // ride at different heights, extend the high side's spoke. Below the
+    // hub the spoke points downward, so extending it pushes the high rim
+    // back down toward level. (Screen coords: smaller y is higher.)
+    if (this.roll_gain != 0 && mid_y >= this.hub.pos.y) {
+      final int dy = this.rim_b.pos.y - this.rim_a.pos.y;
+      // dy > 0: rim_a is higher; extend spoke_a.
+      final int correction = (int) ((long) dy * this.roll_gain / 256);
+      link_a.adjusted_rest_length = rest_a + correction;
+      link_b.adjusted_rest_length = rest_b - correction;
+    }
   }
 }

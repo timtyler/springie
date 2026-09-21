@@ -31,7 +31,7 @@ class WheelStabilizerTest {
     // Pin the tuned values so the tests are deterministic even if the
     // statics were changed by an earlier test.
     WheelDemo.axle_stabilizer_bias = 2;
-    WheelDemo.z_offset_px = 60;
+    WheelDemo.z_offset_px = 90;
     ContextManager.setNodeManager(new NodeManager());
   }
 

@@ -64,10 +64,10 @@ public final class WheelDemo {
   public static final int RIM_COUNT = 8;
 
   /** Rim radius, in pixels. */
-  public static int rim_radius_px = 50;
+  public static int rim_radius_px = 90;
 
   /** Rims sit at z = 0 and z = 2 * this value, in pixels. */
-  public static int rim_half_width_px = 55;
+  public static int rim_half_width_px = 90;
 
   /**
    * Z offset of the whole wheel: rim-0 sits at z = this, rim-1 at
@@ -78,12 +78,12 @@ public final class WheelDemo {
    * at z = 20 the north rim dips into the wall's reach, whose one-sided
    * shove veers the wheel steadily southward.
    */
-  public static int z_offset_px = 60;
+  public static int z_offset_px = 90;
 
   /** Nominal mass for rim nodes (log scale used by the engine). */
   // Mass is functional now: reference mass preserves the tuned behavior
   // (the old values were no-ops when mass was ignored).
-  public static int rim_log_mass = NodeType.REFERENCE_LOG_MASS;
+  public static int rim_log_mass = 17;
 
   /** Nominal mass for the hub node (log scale used by the engine). */
   public static int hub_log_mass = NodeType.REFERENCE_LOG_MASS;
@@ -147,7 +147,7 @@ public final class WheelDemo {
   public static final int posture_axle_max_diff_px = 20;
 
   /** Reflex pull percent (spoke contraction in front stance). */
-  public static int reflex_pull_pct = 5;
+  public static int reflex_pull_pct = 0;
 
   /**
    * How far behind/in front of the hub (px) a spoke's rim pair must be to
@@ -155,7 +155,7 @@ public final class WheelDemo {
    * near-vertical) directs the push forward instead of launching the wheel
    * skyward.
    */
-  public static int reflex_stance_threshold_px = 20;
+  public static int reflex_stance_threshold_px = 47;
 
   /** Rolling direction for the reflex: +1 toward +X, -1 toward -X. */
   public static int roll_direction = 1;
@@ -171,8 +171,37 @@ public final class WheelDemo {
   /** Elasticity for the rim links (all tetrahedron edges). */
   public static int rim_elasticity = 30;
 
+  /**
+   * Elasticity for the inter-rim bracing (cross links and mirror
+   * diagonals). Stiffer than the rim rings: it ties the two rims together
+   * against differential (rolling/rocking) motion, while the softer rings
+   * keep ground impacts gentle.
+   */
+  public static int bracing_elasticity = 30;
+
   /** Elasticity for the hub-to-rim spoke muscles. */
   public static int spoke_elasticity = 10;
+
+  /**
+   * Roll correction gain for the paired reflex, in rest-length units per
+   * unit of inter-rim y-difference (256 = 1.0x). When the two rims of a
+   * spoke pair ride at different heights (the wheel starting to roll),
+   * the high side's spoke extends proportionally, pushing the high rim
+   * back down toward level. This actively damps the roll-rocking mode
+   * that the push-off drive would otherwise pump until the wheel tips
+   * over. 0 disables.
+   */
+  public static int roll_correct_gain = 192;
+
+  /**
+   * Spoke rest-length scale, percent. 100 = rest length equals the built
+   * geometry (zero pre-tension). Below 100 pre-tensions the spokes: they
+   * constantly pull the hub toward the rim centre, so the hub rides at
+   * full axle height instead of sagging toward the floor under gravity.
+   * Tim's rule: the axle must keep a comfortable clearance above the
+   * floor -- a low-riding hub is a failure even if it never touches.
+   */
+  public static int spoke_rest_scale_pct = 100;
 
   /**
    * Builds the wheel with its centre at (x_px, ground - radius).
@@ -251,13 +280,13 @@ public final class WheelDemo {
       // it veer in a circle instead of rolling straight.
       passive(link_manager, clazz, a0, a1, rim_elasticity); // rim0 edge
       passive(link_manager, clazz, b0, rim1[j], rim_elasticity); // rim1 edge
-      final Link cross =
-          passive(link_manager, clazz, a0, b0, rim_elasticity); // cross at i
+      final Link cross = passive(link_manager, clazz, a0, b0,
+          bracing_elasticity); // cross at i
       if (i == 0) {
         axle_link = cross;
       }
-      passive(link_manager, clazz, b0, a1, rim_elasticity); // diagonal /
-      passive(link_manager, clazz, a0, rim1[j], rim_elasticity); // diagonal \
+      passive(link_manager, clazz, b0, a1, bracing_elasticity); // diagonal /
+      passive(link_manager, clazz, a0, rim1[j], bracing_elasticity); // diag \
     }
 
     // Yaw stabilizer: N bias on the north rim end, S bias on the south
@@ -328,12 +357,21 @@ public final class WheelDemo {
   /** Hub-to-rim muscle spoke with an angle-derived oscillator phase. */
   private static void spoke(LinkManager lm, Clazz clazz,
       GlobalOscillatorController controller, Node hub, Node rim, int phase) {
-    final LinkType type =
-        lm.link_type_factory.getNew(distance(hub, rim), spoke_elasticity);
+    final LinkType type = lm.link_type_factory.getNew(
+        scaledSpokeLength(distance(hub, rim)), spoke_elasticity);
     final Link link = lm.setLink(hub, rim, type, clazz);
     link.adjusted_rest_length = type.length;
     link.phase = phase;
     link.controller = controller;
+  }
+
+  /**
+   * Spoke rest length after the pre-tension scale is applied. The link is
+   * built at the geometric distance but its rest length is shorter, so the
+   * spoke is pre-tensioned from tick 0 and holds the hub up at axle height.
+   */
+  private static int scaledSpokeLength(int geometric) {
+    return (int) ((long) geometric * spoke_rest_scale_pct / 100);
   }
 
   /**
@@ -344,18 +382,19 @@ public final class WheelDemo {
    */
   private static void pairedReflexSpokes(LinkManager link_manager, Clazz clazz,
       Node hub, Node rim_a, Node rim_b, int ground_y) {
-    final LinkType type_a =
-        link_manager.link_type_factory.getNew(distance(hub, rim_a), spoke_elasticity);
+    final LinkType type_a = link_manager.link_type_factory.getNew(
+        scaledSpokeLength(distance(hub, rim_a)), spoke_elasticity);
     final Link link_a = link_manager.setLink(hub, rim_a, type_a, clazz);
     link_a.adjusted_rest_length = type_a.length;
-    final LinkType type_b =
-        link_manager.link_type_factory.getNew(distance(hub, rim_b), spoke_elasticity);
+    final LinkType type_b = link_manager.link_type_factory.getNew(
+        scaledSpokeLength(distance(hub, rim_b)), spoke_elasticity);
     final Link link_b = link_manager.setLink(hub, rim_b, type_b, clazz);
     link_b.adjusted_rest_length = type_b.length;
     final PairedSpokeController controller = new PairedSpokeController(hub,
         rim_a, rim_b, link_a, link_b, type_a.length, type_b.length,
         reflex_push_pct, reflex_pull_pct, ground_y, roll_direction,
-        reflex_stance_threshold_px, proportional_drive, rim_radius_px);
+        reflex_stance_threshold_px, proportional_drive, rim_radius_px,
+        roll_correct_gain);
     link_a.controller = controller;
     link_b.controller = controller;
   }

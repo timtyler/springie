@@ -38,6 +38,12 @@ class WheelDemoTest {
   private int old_direction;
   private int old_stabilizer_bias;
   private int old_z_offset;
+  private int old_radius;
+  private int old_half_width;
+  private int old_rim_log_mass;
+  private int old_stance;
+  private int old_bracing;
+  private int old_roll_gain;
   private boolean old_paused;
   private int old_frame_frequency;
   private int old_active_oscillator;
@@ -57,6 +63,12 @@ class WheelDemoTest {
     old_direction = WheelDemo.roll_direction;
     old_stabilizer_bias = WheelDemo.axle_stabilizer_bias;
     old_z_offset = WheelDemo.z_offset_px;
+    old_radius = WheelDemo.rim_radius_px;
+    old_half_width = WheelDemo.rim_half_width_px;
+    old_rim_log_mass = WheelDemo.rim_log_mass;
+    old_stance = WheelDemo.reflex_stance_threshold_px;
+    old_bracing = WheelDemo.bracing_elasticity;
+    old_roll_gain = WheelDemo.roll_correct_gain;
     old_paused = FrEnd.paused;
     old_frame_frequency = FrEnd.frame_frequency;
     old_active_oscillator = Muscles.active_oscillator;
@@ -67,10 +79,16 @@ class WheelDemoTest {
     // even if the statics were changed by an earlier test.
     WheelDemo.use_reflex_drive = true;
     WheelDemo.reflex_push_pct = 30;
-    WheelDemo.reflex_pull_pct = 5;
+    WheelDemo.reflex_pull_pct = 0;
     WheelDemo.roll_direction = 1;
     WheelDemo.axle_stabilizer_bias = 2;
-    WheelDemo.z_offset_px = 60;
+    WheelDemo.z_offset_px = 90;
+    WheelDemo.rim_radius_px = 90;
+    WheelDemo.rim_half_width_px = 90;
+    WheelDemo.rim_log_mass = 17;
+    WheelDemo.reflex_stance_threshold_px = 47;
+    WheelDemo.bracing_elasticity = 30;
+    WheelDemo.roll_correct_gain = 192;
     ContextManager.setNodeManager(new NodeManager());
   }
 
@@ -86,6 +104,12 @@ class WheelDemoTest {
     WheelDemo.roll_direction = old_direction;
     WheelDemo.axle_stabilizer_bias = old_stabilizer_bias;
     WheelDemo.z_offset_px = old_z_offset;
+    WheelDemo.rim_radius_px = old_radius;
+    WheelDemo.rim_half_width_px = old_half_width;
+    WheelDemo.rim_log_mass = old_rim_log_mass;
+    WheelDemo.reflex_stance_threshold_px = old_stance;
+    WheelDemo.bracing_elasticity = old_bracing;
+    WheelDemo.roll_correct_gain = old_roll_gain;
     FrEnd.paused = old_paused;
     FrEnd.frame_frequency = old_frame_frequency;
     Muscles.active_oscillator = old_active_oscillator;
