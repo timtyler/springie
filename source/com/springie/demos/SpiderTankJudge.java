@@ -9,7 +9,7 @@ import com.springie.elements.nodes.NodeManager;
 /**
  * Truly headless judge for the spider tank. Does NOT start FrEnd
  * (no GUI, no animation thread). Single-threaded and deterministic.
- * Scores by distance from start.
+ * Scores by 2D travel on the floor from the start.
  */
 public final class SpiderTankJudge {
   private SpiderTankJudge() {
@@ -30,10 +30,10 @@ public final class SpiderTankJudge {
       node_manager.nodeAndLinkUpdate();
     }
 
+    // 2D travel on the floor: vertical motion doesn't count.
     final long dx = (long) body.pos.x - start_x;
-    final long dy = (long) body.pos.y - start_y;
     final long dz = (long) body.pos.z - start_z;
-    final int dist_internal = (int) Math.sqrt(dx * dx + dy * dy + dz * dz);
+    final int dist_internal = (int) Math.sqrt(dx * dx + dz * dz);
     final int displacement_px = dist_internal >> com.springie.render.Coords.shift;
     final int height_px = body.pos.y >> com.springie.render.Coords.shift;
 

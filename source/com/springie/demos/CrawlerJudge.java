@@ -12,7 +12,7 @@ import com.springie.elements.nodes.NodeManager;
  * and deterministic. Needs DISPLAY set for AWT static init (Xvfb is fine).
  *
  * <p>Usage: java com.springie.demos.CrawlerJudge [ticks]
- * Prints: SCORE <pixels> (3D distance from start), HEIGHT, TICKS.
+ * Prints: SCORE <pixels> (2D travel on the floor), HEIGHT, TICKS.
  */
 public final class CrawlerJudge {
   private CrawlerJudge() {
@@ -35,12 +35,12 @@ public final class CrawlerJudge {
       node_manager.nodeAndLinkUpdate();
     }
 
-    // Score: straight-line distance from the starting spot (pixels).
+    // Score: straight-line travel on the floor from the starting spot (pixels).
     // Direction-agnostic — no need to solve the orientation problem.
+    // Vertical motion doesn't count: this is 2D travel in the floor plane.
     final long dx = (long) body.pos.x - start_x;
-    final long dy = (long) body.pos.y - start_y;
     final long dz = (long) body.pos.z - start_z;
-    final int dist_internal = (int) Math.sqrt(dx * dx + dy * dy + dz * dz);
+    final int dist_internal = (int) Math.sqrt(dx * dx + dz * dz);
     final int displacement_px = dist_internal >> com.springie.render.Coords.shift;
 
     // Also report height (did it fall over?) and tick count.

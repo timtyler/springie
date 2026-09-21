@@ -16,7 +16,7 @@ import com.springie.world.World;
  * (no GUI, no animation thread) -- single-threaded and deterministic.
  * Needs DISPLAY set for AWT static init (Xvfb is fine).
  *
- * <p>Metric: distance traveled by the mid-body node, weighted by how well
+ * <p>Metric: 2D travel on the floor by the mid-body node, weighted by how well
  * the body holds its tubular shape:
  * score = distance * length_keep * xs_keep,
  * where length_keep is the head-to-tail length at the end of the run as a
@@ -40,7 +40,7 @@ public final class SidewinderJudge {
 
   /** Score breakdown for one judged run. */
   public static final class Result {
-    /** 3D distance traveled by the mid-body node, pixels. */
+    /** 2D travel on the floor by the mid-body node, pixels. */
     public int distance_px;
     /** End head-to-tail length / build head-to-tail length. */
     public double length_keep;
@@ -116,7 +116,6 @@ public final class SidewinderJudge {
       node_manager.nodeAndLinkUpdate();
     }
     final int start_x = mid.pos.x;
-    final int start_y = mid.pos.y;
     final int start_z = mid.pos.z;
 
     final int measured = ticks - SETTLE_TICKS;
@@ -124,11 +123,11 @@ public final class SidewinderJudge {
       node_manager.nodeAndLinkUpdate();
     }
 
+    // 2D travel on the floor: vertical motion doesn't count.
     final long dx = (long) mid.pos.x - start_x;
-    final long dy = (long) mid.pos.y - start_y;
     final long dz = (long) mid.pos.z - start_z;
     final int dist_internal =
-        (int) Math.sqrt((double) dx * dx + (double) dy * dy + (double) dz * dz);
+        (int) Math.sqrt((double) dx * dx + (double) dz * dz);
     final int distance_px = dist_internal >> Coords.shift;
 
     final Shape end_shape = measureShape(nodes);

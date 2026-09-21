@@ -14,7 +14,7 @@ import com.springie.world.World;
  * (no GUI, no animation thread) -- single-threaded and deterministic.
  * Needs DISPLAY set for AWT static init (Xvfb is fine).
  *
- * <p>Metric: distance traveled by the tracked node, multiplied by how
+ * <p>Metric: 2D travel on the floor by the tracked node, multiplied by how
  * well the motion matches pure rolling, minus a penalty for vertical
  * bobbing (which is what legged designs do):
  * score = distance * rollingMatch - 3 * heightStd.
@@ -35,7 +35,7 @@ public final class RollingJudge {
 
   /** Score breakdown for one judged run. */
   public static final class Result {
-    /** 3D distance traveled by the tracked node, pixels. */
+    /** 2D travel on the floor by the tracked node, pixels. */
     public int distance_px;
     /** Total unwrapped rotation of the marker about the hub, radians. */
     public double theta_total;
@@ -161,7 +161,6 @@ public final class RollingJudge {
       node_manager.nodeAndLinkUpdate();
     }
     final int start_x = hub.pos.x;
-    final int start_y = hub.pos.y;
     final int start_z = hub.pos.z;
 
     double theta_prev = angleOf(marker, hub);
@@ -216,10 +215,10 @@ public final class RollingJudge {
       n++;
     }
 
+    // 2D travel on the floor: vertical motion doesn't count.
     final long dx = (long) hub.pos.x - start_x;
-    final long dy = (long) hub.pos.y - start_y;
     final long dz = (long) hub.pos.z - start_z;
-    final int dist_internal = (int) Math.sqrt(dx * dx + dy * dy + dz * dz);
+    final int dist_internal = (int) Math.sqrt(dx * dx + dz * dz);
     final int distance_px = dist_internal >> Coords.shift;
 
     final double mean = sum / n;
