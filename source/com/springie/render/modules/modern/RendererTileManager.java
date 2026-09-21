@@ -311,8 +311,11 @@ public class RendererTileManager {
           tile.union.setToUnion(tile.union, drag_damage);
         }
         if (px > 1) {
-          // Cover the pixellation bleed (see expandByBleed).
-          expandByBleed(tile.union, px);
+          // Cover the pixellation bleed (see expandByBleed). In 4x4 and
+          // 5x5 modes the coarse rasterizer can spill a pixel past the
+          // bleed, leaving node-coloured trails peeking out at tile
+          // edges; grow by an extra pixel there.
+          expandByBleed(tile.union, px + ((px == 4 || px == 5) ? 1 : 0));
         }
 
         if (size > 0) {
