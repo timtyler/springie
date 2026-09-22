@@ -101,8 +101,7 @@ public class PanelPreferencesRendererModern {
 		// and removed at the bottom of Main when the renderer is
 		// switched -- a GridLayout gives invisible components space, so
 		// setVisible cannot hide them.
-		this.raytraced_rows =
-				FrEnd.panel_preferences_renderer_raytraced.takeEffectRows();
+		this.raytraced_rows = FrEnd.panel_preferences_renderer_raytraced.takeEffectRows();
 		tab.add("Renderer", FrEnd.panel_preferences_shared_show.panel);
 
 		tab.add("Colours", FrEnd.panel_preferences_renderer_modern_colours.panel);

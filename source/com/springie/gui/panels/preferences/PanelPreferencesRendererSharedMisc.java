@@ -72,18 +72,6 @@ public class PanelPreferencesRendererSharedMisc {
 
   void makePanel() {
 
-//    final TTChoice choose_display_struts = new TTChoice(new ItemListener() {
-//      public void itemStateChanged(ItemEvent e) {
-//        final String scs = (String) e.getItem();
-//        Link.link_display_struts_type = FrEnd.choose_display_struts
-//            .str_to_num(scs);
-//        RendererDelegator.repaintAll();
-//      }
-//    });
-//
-//    FrEnd.choose_display_struts = choose_display_struts;
-
-//    final Panel panel_tile_size = getTileSizePanel();
     final Panel panel_fog = getFogPanel();
     this.panel_fog_row = panel_fog;
 

@@ -142,45 +142,6 @@ public class PanelPreferencesRendererSharedShow {
     });
     panel_render_hidden.add(this.checkbox_render_hidden_polygons);
 
-//    final TTChoice choose_display_struts = new TTChoice(new ItemListener() {
-//      public void itemStateChanged(ItemEvent e) {
-//        final String scs = (String) e.getItem();
-//        Link.link_display_struts_type = FrEnd.choose_display_struts
-//            .str_to_num(scs);
-//        RendererDelegator.repaintAll();
-//      }
-//    });
-//
-//    FrEnd.choose_display_struts = choose_display_struts;
-
-////    final Panel panel_tile_size = getTileSizePanel();
-//    final Panel panel_fog = getFogPanel();
-//
-//    final Panel panel_visible_explosions = new Panel();
-//    this.checkbox_explosions = new Checkbox(GUIStrings.EXPLOSIONS);
-//    this.checkbox_explosions.addItemListener(new ItemListener() {
-//      public void itemStateChanged(ItemEvent e) {
-//        Forget.about(e);
-//        FrEnd.explosions = ((Checkbox) e.getSource()).getState();
-//      }
-//    });
-//    this.checkbox_explosions.setState(FrEnd.explosions);
-//    panel_visible_explosions.add(this.checkbox_explosions);
-//
-//    final Panel panel_redraw_deepest_first = new Panel();
-//    this.checkbox_redraw_deepest_first = new Checkbox(
-//        "Render deepest objects first");
-//    this.checkbox_redraw_deepest_first.addItemListener(new ItemListener() {
-//      public void itemStateChanged(ItemEvent e) {
-//        Forget.about(e);
-//        FrEnd.redraw_deepest_first = ((Checkbox) e.getSource()).getState();
-//      }
-//    });
-//    this.checkbox_redraw_deepest_first.setState(FrEnd.redraw_deepest_first);
-//    panel_redraw_deepest_first.add(this.checkbox_redraw_deepest_first);
-//    
-//    final Panel panel_face_render_number = getFaceRenderNumber();
-
     // Common preferences...
 
     this.panel_main.add(panel_render_normal);
@@ -197,10 +158,6 @@ public class PanelPreferencesRendererSharedShow {
     this.panel.setLayout(new BorderLayout());
     this.panel.add(sub_tabs, BorderLayout.CENTER);
   }
-//    this.panel.add(panel_redraw_deepest_first);
-//    this.panel.add(panel_fog);
-//    this.panel.add(panel_visible_explosions);
-//    this.panel.add(panel_face_render_number);
 
   private Panel getBackgroundPanel() {
     final Panel panel_background = new Panel();
