@@ -24,7 +24,6 @@ public class PanelPreferencesRendererSharedMisc {
 
   public Panel panel_shared = FrEnd.setUpPanelForFrame();
 
-
   public Checkbox checkbox_explosions;
 
   public Checkbox checkbox_redraw_deepest_first;
@@ -71,7 +70,6 @@ public class PanelPreferencesRendererSharedMisc {
   }
 
   void makePanel() {
-
     final Panel panel_fog = getFogPanel();
     this.panel_fog_row = panel_fog;
 
@@ -101,8 +99,7 @@ public class PanelPreferencesRendererSharedMisc {
     
     final Panel panel_relative_fog = new Panel();
     this.panel_relative_fog_row = panel_relative_fog;
-    this.checkbox_relative_fog = new Checkbox(
-        "Fog depth is relative");
+    this.checkbox_relative_fog = new Checkbox("Fog depth is relative");
     this.checkbox_relative_fog.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         Forget.about(e);
@@ -179,12 +176,14 @@ public class PanelPreferencesRendererSharedMisc {
     getLabelFog().setText("" + (DeepObjectColourCalculator.factor / 10));
   }
 
-  public Label getLabelFog() {    return this.label_fog;
+  public Label getLabelFog() {
+	return this.label_fog;
   }
 
   private void reflectLabelFaceRenderNumber() {
     getLabelFaceRenderNumber().setText("" + Face.number_of_render_divisions);
   }
+  
   public Label getLabelFaceRenderNumber() {
     return this.label_face_render_number;
   }
@@ -220,17 +219,14 @@ public class PanelPreferencesRendererSharedMisc {
 
     // Fog strength.
     DeepObjectColourCalculator.factor = 640;
-    this.scroll_bar_fog
-        .setValue(DeepObjectColourCalculator.factor / 10);
+    this.scroll_bar_fog.setValue(DeepObjectColourCalculator.factor / 10);
     reflectLabelFog();
 
     // Face lines.
     Face.number_of_render_divisions = 4;
-    this.scroll_bar_face_render_number
-        .setValue(Face.number_of_render_divisions);
+    this.scroll_bar_face_render_number.setValue(Face.number_of_render_divisions);
     reflectLabelFaceRenderNumber();
 
     RendererDelegator.repaintAll();
   }
-
 }

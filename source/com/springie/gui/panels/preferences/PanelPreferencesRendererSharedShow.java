@@ -135,8 +135,7 @@ public class PanelPreferencesRendererSharedShow {
     this.checkbox_render_hidden_polygons.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         Forget.about(e);
-        FrEnd.render_hidden_faces = getCheckboxRenderHiddenPolygons()
-            .getState();
+        FrEnd.render_hidden_faces = getCheckboxRenderHiddenPolygons().getState();
         RendererDelegator.repaintAll();
       }
     });
@@ -162,8 +161,7 @@ public class PanelPreferencesRendererSharedShow {
   private Panel getBackgroundPanel() {
     final Panel panel_background = new Panel();
     panel_background.add(new Label("Background:"));
-    this.checkbox_scenic_background = new Checkbox("Grass/sky",
-        RendererDelegator.scenic_background);
+    this.checkbox_scenic_background = new Checkbox("Grass/sky", RendererDelegator.scenic_background);
     this.checkbox_scenic_background.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         Forget.about(e);
@@ -177,72 +175,6 @@ public class PanelPreferencesRendererSharedShow {
     panel_background.add(this.checkbox_scenic_background);
     return panel_background;
   }
-
-
-//  private Panel getFogPanel() {
-//    final Panel panel = new Panel();
-//    panel.setLayout(new BorderLayout(0, 8));
-//    panel.add("West", new Label("Fog:", Label.RIGHT));
-//
-//    final Scrollbar scroll_bar_fog = new Scrollbar(Scrollbar.HORIZONTAL,
-//        DeepObjectColourCalculator.factor / 10, 10, 0, 110);
-//    scroll_bar_fog.addAdjustmentListener(new AdjustmentListener() {
-//      public void adjustmentValueChanged(AdjustmentEvent e) {
-//        final int temp = e.getValue();
-//        DeepObjectColourCalculator.factor = temp * 10;
-//        reflectLabelFog();
-//      }
-//    });
-//
-//    panel.add("Center", scroll_bar_fog);
-//
-//    this.label_fog = new Label("", Label.LEFT);
-//    panel.add("East", this.label_fog);
-//    reflectLabelFog();
-//
-//    return panel;
-//  }
-//
-//  private Panel getFaceRenderNumber() {
-//    final Panel panel = new Panel();
-//    panel.setLayout(new BorderLayout(0, 8));
-//    panel.add("West", new Label("Face lines:", Label.RIGHT));
-//
-//    final Scrollbar scroll_bar_face_render_number = new Scrollbar(
-//        Scrollbar.HORIZONTAL, Face.number_of_render_divisions, 4, 0, 28);
-//    scroll_bar_face_render_number
-//        .addAdjustmentListener(new AdjustmentListener() {
-//          public void adjustmentValueChanged(AdjustmentEvent e) {
-//            final int temp = e.getValue();
-//            Face.number_of_render_divisions = temp;
-//            reflectLabelFaceRenderNumber();
-//            RendererDelegator.repaintAll();
-//          }
-//        });
-//
-//    panel.add("Center", scroll_bar_face_render_number);
-//
-//    this.label_face_render_number = new Label("", Label.LEFT);
-//    panel.add("East", this.label_face_render_number);
-//    reflectLabelFaceRenderNumber();
-//
-//    return panel;
-//  }
-//
-//  private void reflectLabelFog() {
-//    getLabelFog().setText("" + (DeepObjectColourCalculator.factor / 10));
-//  }
-//
-//  public Label getLabelFog() {
-//    return this.label_fog;
-//  }
-//
-//  private void reflectLabelFaceRenderNumber() {
-//    getLabelFaceRenderNumber().setText("" + Face.number_of_render_divisions);
-//  }
-//  public Label getLabelFaceRenderNumber() {
-//    return this.label_face_render_number;
-//  }
 
   public Checkbox getCheckboxRenderLinks() {
     return this.checkbox_render_links;
