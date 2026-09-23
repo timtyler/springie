@@ -11,7 +11,6 @@ import java.awt.event.ItemListener;
 
 import com.springie.FrEnd;
 import com.springie.gui.GUIStrings;
-import com.springie.gui.components.TabbedPanel;
 import com.springie.render.RendererDelegator;
 import com.tifsoft.Forget;
 
@@ -21,18 +20,18 @@ public class PanelPreferencesRendererSharedShow {
   public Panel panel_shared = FrEnd.setUpPanelForFrame();
 
   /**
-   * The "Main" sub-tab of the Renderer tab: the primary renderer
+   * The "Main" content of the Renderer tab: the primary renderer
    * options live here.
    */
   public Panel panel_main = FrEnd.setUpPanelForFrame2();
 
   /**
-   * The "Tiles" sub-tab of the Renderer tab: tile size and tile display.
+   * The "Tiles" tab: tile size and tile display.
    */
   public Panel panel_tiles = FrEnd.setUpPanelForFrame2();
 
   /**
-   * The "Fog" sub-tab of the Renderer tab: the fog controls.
+   * The "Fog" tab: the fog controls.
    */
   public Panel panel_fog = FrEnd.setUpPanelForFrame2();
 
@@ -148,14 +147,10 @@ public class PanelPreferencesRendererSharedShow {
     this.panel_main.add(panel_render_hidden);
     this.panel_main.add(getBackgroundPanel());
 
-    // The Renderer tab is split into sub-tabs: the tile controls and the
-    // fog controls each get their own, everything else stays on Main.
-    final TabbedPanel sub_tabs = new TabbedPanel();
-    sub_tabs.add("Main", this.panel_main);
-    sub_tabs.add("Tiles", this.panel_tiles);
-    sub_tabs.add("Fog", this.panel_fog);
+    // The tile and fog controls live on their own top-level tabs
+    // (next to Colours), not as sub-tabs of Renderer.
     this.panel.setLayout(new BorderLayout());
-    this.panel.add(sub_tabs, BorderLayout.CENTER);
+    this.panel.add(this.panel_main, BorderLayout.CENTER);
   }
 
   private Panel getBackgroundPanel() {

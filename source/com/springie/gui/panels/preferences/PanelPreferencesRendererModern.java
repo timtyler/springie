@@ -95,16 +95,20 @@ public class PanelPreferencesRendererModern {
 		final TabbedPanel tab = new TabbedPanel();
 		// The shared renderer options live here now, combined with the
 		// renderer-specific tabs to save the space of a second tab bar.
-		// The Renderer tab holds "Main", "Tiles" and "Fog" sub-tabs (each
-		// one GridLayout on the shared panel): the ray-traced-only options
-		// (Glossiness, Shadows, Specular, Fresnel, Fill light) are added
-		// and removed at the bottom of Main when the renderer is
+		// The top-level tabs are "Renderer" (the Main options), "Colours",
+		// "Tiles" and "Fog": the ray-traced-only options (Glossiness,
+		// Shadows, Specular, Fresnel, Fill light) are added and removed
+		// at the bottom of the Renderer tab when the renderer is
 		// switched -- a GridLayout gives invisible components space, so
 		// setVisible cannot hide them.
 		this.raytraced_rows = FrEnd.panel_preferences_renderer_raytraced.takeEffectRows();
 		tab.add("Renderer", FrEnd.panel_preferences_shared_show.panel);
 
 		tab.add("Colours", FrEnd.panel_preferences_renderer_modern_colours.panel);
+
+		tab.add("Tiles", FrEnd.panel_preferences_shared_show.panel_tiles);
+
+		tab.add("Fog", FrEnd.panel_preferences_shared_show.panel_fog);
 
 		this.panel.add(tab);
 
@@ -129,13 +133,12 @@ public class PanelPreferencesRendererModern {
 
 		this.panel_labels_row = getPanelLabelsWhen();
 
-		// The Renderer tab is split into sub-tabs: the Tiles rows move to
-		// "Tiles", the modern Misc rows (node/tube tessellation) to "Main",
-		// and the shared Misc rows join them there -- except the fog rows,
-		// which get the "Fog" sub-tab. ("Render deepest objects first"
-		// lives on the Renderer tab instead.) PanelPreferencesDisplay
-		// inserts the top rows at fixed indices afterwards, so the final
-		// order is stable.
+		// The Tiles rows move to the "Tiles" tab, the modern Misc rows
+		// (node/tube tessellation) to the "Renderer" tab, and the shared
+		// Misc rows join them there -- except the fog rows, which get the
+		// "Fog" tab. ("Render deepest objects first" lives on the
+		// Renderer tab instead.) PanelPreferencesDisplay inserts the top
+		// rows at fixed indices afterwards, so the final order is stable.
 		final PanelPreferencesRendererSharedShow shared_show =
 				FrEnd.panel_preferences_shared_show;
 		moveRowsInto(shared_show.panel_tiles, this.panel_tiles);
