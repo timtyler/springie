@@ -287,14 +287,21 @@ public final class RendererDelegator {
     final DragBoxManager drag_box_manager = FrEnd.perform_actions.drag_box_manager;
     final boolean repaint = drag_box_manager.drag_box_end != null;
 
-    // While a drag box is active every frame is fully repainted, which
-    // covers the previous rectangle. (The drag box itself is only ever
-    // drawn -- never erased -- so there is nothing to repair.) The modern
-    // renderer forces the damaged tiles dirty and the ray tracer includes
-    // the damaged region in its dirty rectangles; the old polygon
-    // renderer gets a full clear-and-redraw (see below).
-    final RendererDragBox drag_box_renderer = ContextManager.getNodeManager().renderer.renderer_drag_box;
-    drag_box_renderer.draw(graphics, FrEnd.perform_actions.drag_box_manager);
+    // The modern tiled renderer draws the box into the tiles as geometry
+    // (see ModularRendererNew.addDragBoxToTiles), so it needs no
+    // screen-space overlay. The old polygon renderer and the ray tracer
+    // still use the overlay below.
+    final boolean modern_tiled = RendererDelegator.renderer
+        instanceof com.springie.render.modules.modern.ModularRendererNew;
+    if (!modern_tiled) {
+      // While a drag box is active every frame is fully repainted, which
+      // covers the previous rectangle. (The drag box itself is only ever
+      // drawn -- never erased -- so there is nothing to repair.) The ray
+      // tracer includes the damaged region in its dirty rectangles; the
+      // old polygon renderer gets a full clear-and-redraw (see below).
+      final RendererDragBox drag_box_renderer = ContextManager.getNodeManager().renderer.renderer_drag_box;
+      drag_box_renderer.draw(graphics, FrEnd.perform_actions.drag_box_manager);
+    }
 
     if (repaint) {
       // The ray-traced renderer blits a whole frame per paint; asking for

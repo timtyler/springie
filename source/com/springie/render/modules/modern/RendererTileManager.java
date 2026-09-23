@@ -262,12 +262,6 @@ public class RendererTileManager {
 
     final RectangleInt potential = new RectangleInt(0, 0, 0, 0);
 
-    // A drag-box selection is draw-only (never erased): the tiled
-    // renderer skips empty tiles, so without this the old rectangle
-    // would leave a trail. Tiles under the old or new rectangle are
-    // repainted even when empty.
-    final RectangleInt drag_damage = getDragBoxDamage();
-
     // Every tile holding content is re-rendered into its tile; every tile
     // (and every vacated tile's repaired screen area) is blitted below, so
     // exposure damage self-heals on the next frame without any explicit
@@ -282,24 +276,7 @@ public class RendererTileManager {
         final int size_last = last_tile.vector.size();
 
         if (size == 0 && size_last == 0) {
-          // Empty tile: normally skipped. But a drag-box selection
-          // draws directly on the screen, so tiles under its old or new
-          // rectangle must be scrubbed even when empty -- otherwise the
-          // old rectangle leaves a trail.
-          if (drag_damage != null) {
-            potential.min_x = getPixelsFromTileX(i);
-            potential.min_y = getPixelsFromTileY(j);
-            // Cover the full tile cell, not just the content: when
-            // show_tiles is on the tiles are smaller than the cell
-            // (block_size < divisor), leaving gaps that the drag box
-            // still draws over. If the old rectangle falls in a gap it
-            // must be scrubbed too, or it leaves a red trail.
-            potential.max_x = potential.min_x + divisor;
-            potential.max_y = potential.min_y + divisor;
-            if (rectsIntersect(potential, drag_damage)) {
-              scrubDragDamage(graphics, potential, drag_damage);
-            }
-          }
+          // Empty tile: normally skipped.
           continue;
         }
 
@@ -310,11 +287,6 @@ public class RendererTileManager {
 
         tile.setUpActual(potential);
         tile.union.setToUnion(tile.actual, last_tile.actual);
-        if (drag_damage != null) {
-          // A drag-box selection draws on the screen: include its
-          // damage in the scrubbed union.
-          tile.union.setToUnion(tile.union, drag_damage);
-        }
         if (px > 1) {
           // Cover the pixellation bleed (see expandByBleed). In 4x4 and
           // 5x5 modes the coarse rasterizer can spill a pixel past the
@@ -672,83 +644,9 @@ public class RendererTileManager {
     return RendererTileManager.show_tiles ? 4 : 0;
   }
 
-  /**
-   * The screen region damaged by a drag-box selection: the union of the
-   * previous and current rectangles, expanded by the box's line
-   * thickness. Null when no drag is active.
-   */
-  private RectangleInt getDragBoxDamage() {
-    if (FrEnd.perform_actions == null
-        || FrEnd.perform_actions.drag_box_manager == null
-        || FrEnd.perform_actions.drag_box_manager.drag_box_end == null) {
-      return null;
-    }
-    final com.springie.render.RendererDragBox box = ContextManager
-        .getNodeManager().renderer.renderer_drag_box;
-    final int min_x;
-    final int min_y;
-    final int max_x;
-    final int max_y;
-    if (box.cache_valid) {
-      // The box caches its coordinates on draw, so the last drawn
-      // rectangle is known even after release -- when the gesture's
-      // start point is already gone. (A zero-area box from a click
-      // has min == max; that is a valid cached rectangle, not a
-      // missing one.)
-      min_x = Math.min(box.min.x, box.last_min.x);
-      min_y = Math.min(box.min.y, box.last_min.y);
-      max_x = Math.max(box.max.x, box.last_max.x);
-      max_y = Math.max(box.max.y, box.last_max.y);
-    } else {
-      // Not drawn yet (the very first frame): fall back to the
-      // gesture's live points.
-      final java.awt.Point one =
-          FrEnd.perform_actions.drag_box_manager.drag_box_start;
-      final java.awt.Point two =
-          FrEnd.perform_actions.drag_box_manager.drag_box_end;
-      if (one == null || two == null) {
-        return null;
-      }
-      min_x = Math.min(one.x, two.x);
-      max_x = Math.max(one.x, two.x);
-      min_y = Math.min(one.y, two.y);
-      max_y = Math.max(one.y, two.y);
-    }
-    final int pad = 4; // the drag-box lines are drawn 3px thick
-    final RectangleInt damage = new RectangleInt(0, 0, 0, 0);
-    damage.min_x = Coords.getPixelFromInternalCoords(min_x) - pad;
-    damage.min_y = Coords.getPixelFromInternalCoords(min_y) - pad;
-    damage.max_x = Coords.getPixelFromInternalCoords(max_x) + pad;
-    damage.max_y = Coords.getPixelFromInternalCoords(max_y) + pad;
-    return damage;
-  }
-
   private static boolean rectsIntersect(RectangleInt a, RectangleInt b) {
     return a.min_x < b.max_x && a.max_x > b.min_x && a.min_y < b.max_y
         && a.max_y > b.min_y;
-  }
-
-  /**
-   * Scrubs the drag-damaged part of an empty tile straight onto the
-   * screen, erasing the old drag-box rectangle. (Tiles with content go
-   * through the normal tile path, whose union scrub covers the damage.)
-   */
-  private void scrubDragDamage(Graphics graphics, RectangleInt potential,
-      RectangleInt damage) {
-    final int x0 = Math.max(potential.min_x, damage.min_x);
-    final int y0 = Math.max(potential.min_y, damage.min_y);
-    final int x1 = Math.min(potential.max_x, damage.max_x);
-    final int y1 = Math.min(potential.max_y, damage.max_y);
-    graphics.setClip(x0, y0, x1 - x0, y1 - y0);
-    if (RendererDelegator.scenic_background && Coords.x_pixels > 0
-        && Coords.y_pixels > 0) {
-      final BufferedImage scenic = ScenicBackground.imageFor(
-          Coords.x_pixels, Coords.y_pixels);
-      graphics.drawImage(scenic, x0, y0, x1, y1, x0, y0, x1, y1, null);
-    } else {
-      graphics.setColor(RendererDelegator.color_background);
-      graphics.fillRect(x0, y0, x1 - x0, y1 - y0);
-    }
   }
 
   public int min4(int x1, int x2, int x3, int x4) {

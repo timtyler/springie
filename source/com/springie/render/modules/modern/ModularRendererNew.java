@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import com.springie.FrEnd;
+import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
@@ -14,6 +15,7 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
+import com.springie.gui.gestures.DragBoxManager;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.ModularRendererBase;
 import com.tifsoft.Forget;
@@ -59,6 +61,8 @@ public class ModularRendererNew implements ModularRendererBase {
 
     addFacesToTiles(manager, mask, all);
 
+    addDragBoxToTiles(all);
+
     // One global depth sort, then distribute to the tiles in sorted
     // order: every tile's vector arrives at render() pre-sorted, so the
     // per-tile sorts are gone.
@@ -74,6 +78,67 @@ public class ModularRendererNew implements ModularRendererBase {
     this.tiles_current.rotateFrameState(this.tiles_last);
 
     RendererDelegator.countRenderedFrame();
+  }
+
+  /**
+   * Adds the drag-box selection rectangle to the tiled render as geometry.
+   * The box is drawn into the tile images (not as a screen-space overlay),
+   * so the tiled renderer's normal damage repair covers the old rectangle
+   * when it moves -- no trails, even with show_tiles gaps.
+   */
+  private void addDragBoxToTiles(ArrayList<PolygonComposite> all) {
+    final DragBoxManager drag_box_manager =
+        FrEnd.perform_actions.drag_box_manager;
+    if (drag_box_manager == null
+        || drag_box_manager.drag_box_start == null
+        || drag_box_manager.drag_box_end == null) {
+      return;
+    }
+
+    final int x0 = Coords.getPixelFromInternalCoords(
+        Math.min(drag_box_manager.drag_box_start.x,
+            drag_box_manager.drag_box_end.x));
+    final int x1 = Coords.getPixelFromInternalCoords(
+        Math.max(drag_box_manager.drag_box_start.x,
+            drag_box_manager.drag_box_end.x));
+    final int y0 = Coords.getPixelFromInternalCoords(
+        Math.min(drag_box_manager.drag_box_start.y,
+            drag_box_manager.drag_box_end.y));
+    final int y1 = Coords.getPixelFromInternalCoords(
+        Math.max(drag_box_manager.drag_box_start.y,
+            drag_box_manager.drag_box_end.y));
+
+    // 3px thick lines, matching RendererDragBox.drawThickLine.
+    final int t = 3;
+    final int colour = RendererDelegator.colour_selected.getRGB();
+    // On top of everything.
+    final int z = Integer.MAX_VALUE;
+
+    // Left, top, bottom, right edges as filled rectangles.
+    all.add(new PolygonComposite(new PolygonObject2D[] {
+        new PolygonObject2D(
+            new int[] {x0 - t, x0 + t, x0 + t, x0 - t},
+            new int[] {y0 - t, y0 - t, y1 + t, y1 + t},
+            colour)
+    }, z));
+    all.add(new PolygonComposite(new PolygonObject2D[] {
+        new PolygonObject2D(
+            new int[] {x0 - t, x1 + t, x1 + t, x0 - t},
+            new int[] {y0 - t, y0 - t, y0 + t, y0 - t},
+            colour)
+    }, z));
+    all.add(new PolygonComposite(new PolygonObject2D[] {
+        new PolygonObject2D(
+            new int[] {x0 - t, x1 + t, x1 + t, x0 - t},
+            new int[] {y1 - t, y1 - t, y1 + t, y1 - t},
+            colour)
+    }, z));
+    all.add(new PolygonComposite(new PolygonObject2D[] {
+        new PolygonObject2D(
+            new int[] {x1 - t, x1 + t, x1 + t, x1 - t},
+            new int[] {y0 - t, y0 - t, y1 + t, y1 - t},
+            colour)
+    }, z));
   }
 
   private void addFacesToTiles(NodeManager manager, int mask,
