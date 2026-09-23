@@ -84,6 +84,31 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.6.0</version>
+        <configuration>
+          <!-- Tim's original Eclipse rules ("Tim Checks"), severity=warning.
+               checkstyle.xml is a copy of .checkstyle_config with the
+               obsolete FileContentsHolder module removed (modern
+               Checkstyle no longer ships it); the original is untouched. -->
+          <configLocation>${project.basedir}/checkstyle.xml</configLocation>
+          <consoleOutput>true</consoleOutput>
+          <!-- Warnings only: print them, never fail the build. -->
+          <failOnViolation>false</failOnViolation>
+          <failsOnError>false</failsOnError>
+        </configuration>
+        <executions>
+          <execution>
+            <id>checkstyle-warnings</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
         <version>3.6.0</version>
         <executions>
