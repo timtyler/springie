@@ -256,14 +256,20 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       this.frame_staged = true;
     }
     if (this.frame_staged) {
-      // The drag box is drawn into the frame composite, not as a
-      // screen-space overlay. A full blit covers the show_tiles gaps,
-      // which the partial tile blits do not.
+      // The drag box is drawn into the frame composite (not as a
+      // screen-space overlay), clipped to the tile rectangles so it
+      // never lands in the show_tiles gaps. A full blit covers the
+      // gaps, which the partial tile blits do not.
       final boolean drag_box = isDragBoxActive();
       if (this.staged_skip == null) {
         this.frame_image = compositeFrame(this.tiles, width, height);
         if (drag_box) {
-          drawDragBoxIntoFrame(this.frame_image);
+          final Graphics g = this.frame_image.getGraphics();
+          try {
+            drawDragBoxClippedToTiles(g, this.tiles);
+          } finally {
+            g.dispose();
+          }
         }
         graphics.drawImage(this.frame_image, 0, 0, null);
       } else {
@@ -276,7 +282,14 @@ public class ModularRendererRaytraced implements ModularRendererBase {
               if (shown != null) {
                 // Paint the re-traced rectangle into the composite...
                 g2.drawImage(shown.image, shown.rx0, shown.ry0, null);
-                if (!drag_box) {
+                if (drag_box) {
+                  // Draw the box clipped to this tile's rectangle.
+                  final java.awt.Shape old_clip = g2.getClip();
+                  g2.setClip(shown.rx0, shown.ry0,
+                      shown.image.getWidth(), shown.image.getHeight());
+                  drawDragBox(g2);
+                  g2.setClip(old_clip);
+                } else {
                   // ...and blit only that rectangle to the screen.
                   // Skipped when a drag box is active: the full blit
                   // below covers the tile gaps too.
@@ -289,7 +302,6 @@ public class ModularRendererRaytraced implements ModularRendererBase {
             }
           }
           if (drag_box) {
-            drawDragBoxIntoFrame(this.frame_image);
             graphics.drawImage(this.frame_image, 0, 0, null);
           }
         } finally {
@@ -860,11 +872,14 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   }
 
   /**
-   * Draws the drag-box selection rectangle into the frame image. The
+   * Draws the drag-box selection rectangle with the given Graphics. The
    * four 3px-thick edges are filled rectangles, matching
-   * RendererDragBox.drawThickLine.
+   * RendererDragBox.drawThickLine. The caller sets the clip: the box
+   * must be clipped to the tile rectangles so it never lands in the
+   * show_tiles gaps (which are never re-traced, so a box drawn there
+   * would leave a permanent trail).
    */
-  private static void drawDragBoxIntoFrame(BufferedImage frame) {
+  private static void drawDragBox(Graphics g) {
     final DragBoxManager dbm = FrEnd.perform_actions.drag_box_manager;
     final int x0 = Coords.getPixelFromInternalCoords(
         Math.min(dbm.drag_box_start.x, dbm.drag_box_end.x));
@@ -874,17 +889,29 @@ public class ModularRendererRaytraced implements ModularRendererBase {
         Math.min(dbm.drag_box_start.y, dbm.drag_box_end.y));
     final int y1 = Coords.getPixelFromInternalCoords(
         Math.max(dbm.drag_box_start.y, dbm.drag_box_end.y));
-    final Graphics g = frame.getGraphics();
-    try {
-      g.setColor(RendererDelegator.colour_selected);
-      final int t = 3;
-      // Left, top, bottom, right edges.
-      g.fillRect(x0 - t, y0 - t, 2 * t, y1 - y0 + 2 * t);
-      g.fillRect(x0 - t, y0 - t, x1 - x0 + 2 * t, 2 * t);
-      g.fillRect(x0 - t, y1 - t, x1 - x0 + 2 * t, 2 * t);
-      g.fillRect(x1 - t, y0 - t, 2 * t, y1 - y0 + 2 * t);
-    } finally {
-      g.dispose();
+    g.setColor(RendererDelegator.colour_selected);
+    final int t = 3;
+    // Left, top, bottom, right edges.
+    g.fillRect(x0 - t, y0 - t, 2 * t, y1 - y0 + 2 * t);
+    g.fillRect(x0 - t, y0 - t, x1 - x0 + 2 * t, 2 * t);
+    g.fillRect(x0 - t, y1 - t, x1 - x0 + 2 * t, 2 * t);
+    g.fillRect(x1 - t, y0 - t, 2 * t, y1 - y0 + 2 * t);
+  }
+
+  /**
+   * Draws the drag box into the frame, clipped to each tile's
+   * rectangle. Used for the full-frame composite path.
+   */
+  private static void drawDragBoxClippedToTiles(Graphics g, Tile[] tiles) {
+    for (int i = 0; i < tiles.length; i++) {
+      final ShownTile shown = tiles[i].shown;
+      if (shown != null) {
+        final java.awt.Shape old_clip = g.getClip();
+        g.setClip(shown.rx0, shown.ry0,
+            shown.image.getWidth(), shown.image.getHeight());
+        drawDragBox(g);
+        g.setClip(old_clip);
+      }
     }
   }
 
