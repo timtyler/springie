@@ -124,19 +124,19 @@ public class ModularRendererNew implements ModularRendererBase {
     all.add(new PolygonComposite(new PolygonObject2D[] {
         new PolygonObject2D(
             new int[] {x0 - t, x1 + t, x1 + t, x0 - t},
-            new int[] {y0 - t, y0 - t, y0 + t, y0 - t},
+            new int[] {y0 - t, y0 - t, y0 + t, y0 + t},
             colour)
     }, z));
     all.add(new PolygonComposite(new PolygonObject2D[] {
         new PolygonObject2D(
             new int[] {x0 - t, x1 + t, x1 + t, x0 - t},
-            new int[] {y1 - t, y1 - t, y1 + t, y1 - t},
+            new int[] {y1 - t, y1 - t, y1 + t, y1 + t},
             colour)
     }, z));
     all.add(new PolygonComposite(new PolygonObject2D[] {
         new PolygonObject2D(
             new int[] {x1 - t, x1 + t, x1 + t, x1 - t},
-            new int[] {y0 - t, y0 - t, y1 + t, y1 - t},
+            new int[] {y0 - t, y0 - t, y1 + t, y1 + t},
             colour)
     }, z));
   }
