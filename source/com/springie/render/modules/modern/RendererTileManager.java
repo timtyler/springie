@@ -289,8 +289,13 @@ public class RendererTileManager {
           if (drag_damage != null) {
             potential.min_x = getPixelsFromTileX(i);
             potential.min_y = getPixelsFromTileY(j);
-            potential.max_x = potential.min_x + block_size;
-            potential.max_y = potential.min_y + block_size;
+            // Cover the full tile cell, not just the content: when
+            // show_tiles is on the tiles are smaller than the cell
+            // (block_size < divisor), leaving gaps that the drag box
+            // still draws over. If the old rectangle falls in a gap it
+            // must be scrubbed too, or it leaves a red trail.
+            potential.max_x = potential.min_x + divisor;
+            potential.max_y = potential.min_y + divisor;
             if (rectsIntersect(potential, drag_damage)) {
               scrubDragDamage(graphics, potential, drag_damage);
             }
