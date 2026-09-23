@@ -22,7 +22,6 @@ import com.springie.gui.gestures.DragBoxManager;
 import com.springie.render.Coords;
 import com.springie.render.RectangleInt;
 import com.springie.render.RendererDelegator;
-import com.springie.render.RendererDragBox;
 import com.springie.render.ScenicBackground;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.modules.modern.RendererTileManager;
@@ -792,53 +791,58 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   /**
    * The screen region damaged by a drag-box selection: the union of the
    * previous and current rectangles, expanded by the box's line
-   * thickness. Null when no drag is active. Mirrors
-   * RendererTileManager.getDragBoxDamage: the box caches its coordinates
-   * on draw, so the last drawn rectangle is known even after release,
-   * when the gesture's start point is already gone -- and the release
-   * frame is the one that erases the box for good.
+   * thickness. Null when no drag is active and none was active last
+   * frame.
+   *
+   * Tracks the box rectangle here (from the gesture's live points)
+   * instead of the RendererDragBox draw cache: the box is drawn into
+   * the frame composite, not via the screen-space overlay, so the
+   * overlay's cache never updates.
    */
+  private static RectangleInt last_drag_box_damage = null;
+
   private static RectangleInt getDragBoxDamage() {
-    if (FrEnd.perform_actions == null
-        || FrEnd.perform_actions.drag_box_manager == null
-        || FrEnd.perform_actions.drag_box_manager.drag_box_end == null) {
-      return null;
-    }
-    final NodeManager node_manager = ContextManager.getNodeManager();
-    if (node_manager == null) {
-      return null;
-    }
-    final RendererDragBox box = node_manager.renderer.renderer_drag_box;
-    final int min_x;
-    final int min_y;
-    final int max_x;
-    final int max_y;
-    if (box.cache_valid) {
-      min_x = Math.min(box.min.x, box.last_min.x);
-      min_y = Math.min(box.min.y, box.last_min.y);
-      max_x = Math.max(box.max.x, box.last_max.x);
-      max_y = Math.max(box.max.y, box.last_max.y);
+    final boolean active = FrEnd.perform_actions != null
+        && FrEnd.perform_actions.drag_box_manager != null
+        && FrEnd.perform_actions.drag_box_manager.drag_box_end != null
+        && FrEnd.perform_actions.drag_box_manager.drag_box_start != null;
+    final RectangleInt current;
+    if (active) {
+      final DragBoxManager dbm = FrEnd.perform_actions.drag_box_manager;
+      final int min_x = Math.min(dbm.drag_box_start.x, dbm.drag_box_end.x);
+      final int max_x = Math.max(dbm.drag_box_start.x, dbm.drag_box_end.x);
+      final int min_y = Math.min(dbm.drag_box_start.y, dbm.drag_box_end.y);
+      final int max_y = Math.max(dbm.drag_box_start.y, dbm.drag_box_end.y);
+      final int pad = 4; // the drag-box lines are drawn 3px thick
+      current = new RectangleInt(
+          Coords.getPixelFromInternalCoords(min_x) - pad,
+          Coords.getPixelFromInternalCoords(min_y) - pad,
+          Coords.getPixelFromInternalCoords(max_x) + pad,
+          Coords.getPixelFromInternalCoords(max_y) + pad);
     } else {
-      // Not drawn yet (the very first frame): fall back to the
-      // gesture's live points.
-      final DragBoxManager drag_box_manager =
-          FrEnd.perform_actions.drag_box_manager;
-      final java.awt.Point one = drag_box_manager.drag_box_start;
-      final java.awt.Point two = drag_box_manager.drag_box_end;
-      if (one == null || two == null) {
-        return null;
-      }
-      min_x = Math.min(one.x, two.x);
-      max_x = Math.max(one.x, two.x);
-      min_y = Math.min(one.y, two.y);
-      max_y = Math.max(one.y, two.y);
+      current = null;
     }
-    final int pad = 4; // the drag-box lines are drawn 3px thick
-    final RectangleInt damage = new RectangleInt(0, 0, 0, 0);
-    damage.min_x = Coords.getPixelFromInternalCoords(min_x) - pad;
-    damage.min_y = Coords.getPixelFromInternalCoords(min_y) - pad;
-    damage.max_x = Coords.getPixelFromInternalCoords(max_x) + pad;
-    damage.max_y = Coords.getPixelFromInternalCoords(max_y) + pad;
+    final RectangleInt damage;
+    if (current == null) {
+      // No box now: one last damage rect for the previous box, so its
+      // tiles get re-traced and the box is erased for good.
+      damage = last_drag_box_damage;
+      last_drag_box_damage = null;
+    } else if (last_drag_box_damage == null) {
+      damage = current;
+      last_drag_box_damage = new RectangleInt(current.min_x, current.min_y,
+          current.max_x, current.max_y);
+    } else {
+      damage = new RectangleInt(
+          Math.min(current.min_x, last_drag_box_damage.min_x),
+          Math.min(current.min_y, last_drag_box_damage.min_y),
+          Math.max(current.max_x, last_drag_box_damage.max_x),
+          Math.max(current.max_y, last_drag_box_damage.max_y));
+      last_drag_box_damage.min_x = current.min_x;
+      last_drag_box_damage.min_y = current.min_y;
+      last_drag_box_damage.max_x = current.max_x;
+      last_drag_box_damage.max_y = current.max_y;
+    }
     return damage;
   }
 
