@@ -257,8 +257,15 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       this.frame_staged = true;
     }
     if (this.frame_staged) {
+      // The drag box is drawn into the frame composite, not as a
+      // screen-space overlay. A full blit covers the show_tiles gaps,
+      // which the partial tile blits do not.
+      final boolean drag_box = isDragBoxActive();
       if (this.staged_skip == null) {
         this.frame_image = compositeFrame(this.tiles, width, height);
+        if (drag_box) {
+          drawDragBoxIntoFrame(this.frame_image);
+        }
         graphics.drawImage(this.frame_image, 0, 0, null);
       } else {
         final Graphics g2 = this.frame_image.getGraphics();
@@ -268,15 +275,23 @@ public class ModularRendererRaytraced implements ModularRendererBase {
             if (!this.staged_skip[i]) {
               final ShownTile shown = ctiles[i].shown;
               if (shown != null) {
-                // Paint and blit only the rectangle the tile re-traced:
-                // a sub-rectangle of the tile.
+                // Paint the re-traced rectangle into the composite...
                 g2.drawImage(shown.image, shown.rx0, shown.ry0, null);
-                final int rx1 = shown.rx0 + shown.image.getWidth();
-                final int ry1 = shown.ry0 + shown.image.getHeight();
-                graphics.drawImage(this.frame_image, shown.rx0, shown.ry0,
-                    rx1, ry1, shown.rx0, shown.ry0, rx1, ry1, null);
+                if (!drag_box) {
+                  // ...and blit only that rectangle to the screen.
+                  // Skipped when a drag box is active: the full blit
+                  // below covers the tile gaps too.
+                  final int rx1 = shown.rx0 + shown.image.getWidth();
+                  final int ry1 = shown.ry0 + shown.image.getHeight();
+                  graphics.drawImage(this.frame_image, shown.rx0, shown.ry0,
+                      rx1, ry1, shown.rx0, shown.ry0, rx1, ry1, null);
+                }
               }
             }
+          }
+          if (drag_box) {
+            drawDragBoxIntoFrame(this.frame_image);
+            graphics.drawImage(this.frame_image, 0, 0, null);
           }
         } finally {
           g2.dispose();
@@ -825,6 +840,48 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     damage.max_x = Coords.getPixelFromInternalCoords(max_x) + pad;
     damage.max_y = Coords.getPixelFromInternalCoords(max_y) + pad;
     return damage;
+  }
+
+  /**
+   * Whether a drag-box selection is currently active. The box is drawn
+   * into the frame composite (not as a screen-space overlay), so the
+   * tiled blits cover it -- including the show_tiles gaps, which the
+   * partial tile blits do not.
+   */
+  private static boolean isDragBoxActive() {
+    return FrEnd.perform_actions != null
+        && FrEnd.perform_actions.drag_box_manager != null
+        && FrEnd.perform_actions.drag_box_manager.drag_box_start != null
+        && FrEnd.perform_actions.drag_box_manager.drag_box_end != null;
+  }
+
+  /**
+   * Draws the drag-box selection rectangle into the frame image. The
+   * four 3px-thick edges are filled rectangles, matching
+   * RendererDragBox.drawThickLine.
+   */
+  private static void drawDragBoxIntoFrame(BufferedImage frame) {
+    final DragBoxManager dbm = FrEnd.perform_actions.drag_box_manager;
+    final int x0 = Coords.getPixelFromInternalCoords(
+        Math.min(dbm.drag_box_start.x, dbm.drag_box_end.x));
+    final int x1 = Coords.getPixelFromInternalCoords(
+        Math.max(dbm.drag_box_start.x, dbm.drag_box_end.x));
+    final int y0 = Coords.getPixelFromInternalCoords(
+        Math.min(dbm.drag_box_start.y, dbm.drag_box_end.y));
+    final int y1 = Coords.getPixelFromInternalCoords(
+        Math.max(dbm.drag_box_start.y, dbm.drag_box_end.y));
+    final Graphics g = frame.getGraphics();
+    try {
+      g.setColor(RendererDelegator.colour_selected);
+      final int t = 3;
+      // Left, top, bottom, right edges.
+      g.fillRect(x0 - t, y0 - t, 2 * t, y1 - y0 + 2 * t);
+      g.fillRect(x0 - t, y0 - t, x1 - x0 + 2 * t, 2 * t);
+      g.fillRect(x0 - t, y1 - t, x1 - x0 + 2 * t, 2 * t);
+      g.fillRect(x1 - t, y0 - t, 2 * t, y1 - y0 + 2 * t);
+    } finally {
+      g.dispose();
+    }
   }
 
   /**

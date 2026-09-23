@@ -288,12 +288,14 @@ public final class RendererDelegator {
     final boolean repaint = drag_box_manager.drag_box_end != null;
 
     // The modern tiled renderer draws the box into the tiles as geometry
-    // (see ModularRendererNew.addDragBoxToTiles), so it needs no
-    // screen-space overlay. The old polygon renderer and the ray tracer
-    // still use the overlay below.
+    // (see ModularRendererNew.addDragBoxToTiles), and the ray tracer
+    // draws it into the frame composite -- neither needs the
+    // screen-space overlay. The old polygon renderer still uses it.
     final boolean modern_tiled = RendererDelegator.renderer
         instanceof com.springie.render.modules.modern.ModularRendererNew;
-    if (!modern_tiled) {
+    final boolean raytraced = RendererDelegator.renderer
+        instanceof com.springie.render.modules.raytraced.ModularRendererRaytraced;
+    if (!modern_tiled && !raytraced) {
       // While a drag box is active every frame is fully repainted, which
       // covers the previous rectangle. (The drag box itself is only ever
       // drawn -- never erased -- so there is nothing to repair.) The ray
@@ -310,8 +312,6 @@ public final class RendererDelegator {
       // flickers. The ray tracer already repaints on mouse moves (via
       // DragBoxManager.drag) and when frames complete, which is enough
       // to keep the box up to date.
-      final boolean raytraced = RendererDelegator.renderer
-          instanceof com.springie.render.modules.raytraced.ModularRendererRaytraced;
       if (!raytraced) {
         FrEnd.main_canvas.panel.repaint();
         if (RendererDelegator.renderer
