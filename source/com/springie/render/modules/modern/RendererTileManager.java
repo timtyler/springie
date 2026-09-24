@@ -360,7 +360,12 @@ public class RendererTileManager {
       }
     }
 
-    // graphics.setClip(0, 0, 9999, 9999);
+    // The blit loop below leaves the clip on the last tile's union
+    // rectangle: restore the full canvas clip afterwards, so the
+    // screen-space painters that run after the renderer (the
+    // boundary-box dots, the info button) are not clipped to a stale
+    // tile. (Toggling "Show active tiles" used to mask this: its
+    // outline pass resets the clip as a side effect.)
     for (int j = 0; j < this.number_of_tiles_y; j++) {
       for (int i = 0; i < this.number_of_tiles_x; i++) {
         final RendererTile tile = this.array[i][j];
@@ -390,6 +395,8 @@ public class RendererTileManager {
         }
       }
     }
+
+    graphics.setClip(0, 0, 9999, 9999);
 
     drawActiveTileOutlines(graphics);
   }
