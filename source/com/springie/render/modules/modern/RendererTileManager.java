@@ -313,12 +313,21 @@ public class RendererTileManager {
             }
             final Graphics graphics_paint = tile.image.getGraphics();
             if (aa > 1 || px > 1) {
-              // Render in screen coordinates scaled by aa / px: translate
-              // first, then scale, so a screen point p lands on tile pixel
-              // (aa / px) * (p - min). The clip and scrub below are in the
-              // same user space, so they scale along untouched.
+              // Render in screen coordinates scaled to the coarse tile:
+              // translate first, then scale, so a screen point p lands on
+              // tile pixel (coarse_w * aa / block_size) * (p - min). The
+              // scale is the exact inverse of the blit's upscale (which
+              // maps the coarse tile back onto the full tile), not aa /
+              // px: when px does not divide block_size (3x3 on a 340px
+              // tile) aa / px leaves the last coarse row/column only
+              // fractionally covered, the rasterizer skips the sliver, and
+              // the upscale samples the unpainted pixels as a dark seam
+              // along the tile's bottom and right edges. The clip and
+              // scrub below are in the same user space, so they scale
+              // along untouched.
               final Graphics2D graphics_2d = (Graphics2D) graphics_paint;
-              final double scale = (double) aa / px;
+              final double scale =
+                  (double) (coarse_w * aa) / block_size;
               graphics_2d.translate(-potential.min_x * scale,
                   -potential.min_y * scale);
               graphics_2d.scale(scale, scale);
