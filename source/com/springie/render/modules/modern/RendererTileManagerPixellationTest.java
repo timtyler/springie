@@ -96,12 +96,13 @@ public class RendererTileManagerPixellationTest {
 
   @Test
   public void scrubSnapAlignsToTheTileOrigin() {
-    // Tiles start at multiples of the divisor (340), which is not a
-    // multiple of 3: the blocks must align to the tile origin, not the
-    // screen origin. Screen x 347 sits in block [346, 349).
-    final RectangleInt snapped = snap(341, 0, 347, 8, 340, 0, 3);
-    assertEquals(340, snapped.min_x);
-    assertEquals(349, snapped.max_x);
+    // Tiles start at multiples of the divisor (337), which no
+    // pixellation factor divides: the blocks must align to the tile
+    // origin, not the screen origin. Screen x 344 sits in block
+    // [343, 346).
+    final RectangleInt snapped = snap(338, 0, 344, 8, 337, 0, 3);
+    assertEquals(337, snapped.min_x);
+    assertEquals(346, snapped.max_x);
   }
 
   @Test

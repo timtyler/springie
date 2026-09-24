@@ -21,7 +21,10 @@ import com.springie.render.RendererDelegator;
 import com.springie.render.ScenicBackground;
 
 public class RendererTileManager {
-  public static int divisor = 340;
+  // Deliberately prime: no pixellation factor (2, 3, 4, 5) divides it
+  // evenly, so every pixellation mode exercises the inexact
+  // render/upscale path instead of only 3x3.
+  public static int divisor = 337;
 
   int number_of_tiles_x;
 
@@ -318,13 +321,13 @@ public class RendererTileManager {
               // tile pixel (coarse_w * aa / block_size) * (p - min). The
               // scale is the exact inverse of the blit's upscale (which
               // maps the coarse tile back onto the full tile), not aa /
-              // px: when px does not divide block_size (3x3 on a 340px
-              // tile) aa / px leaves the last coarse row/column only
-              // fractionally covered, the rasterizer skips the sliver, and
-              // the upscale samples the unpainted pixels as a dark seam
-              // along the tile's bottom and right edges. The clip and
-              // scrub below are in the same user space, so they scale
-              // along untouched.
+              // px: with a prime tile size no px divides block_size
+              // evenly, so aa / px always leaves the last coarse
+              // row/column only fractionally covered, the rasterizer
+              // skips the sliver, and the upscale samples the unpainted
+              // pixels as a dark seam along the tile's bottom and right
+              // edges. The clip and scrub below are in the same user
+              // space, so they scale along untouched.
               final Graphics2D graphics_2d = (Graphics2D) graphics_paint;
               final double scale =
                   (double) (coarse_w * aa) / block_size;
