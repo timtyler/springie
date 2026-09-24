@@ -327,7 +327,22 @@ public final class ReaderTens {
                     break;
 
                   case Instructions.CE:
-                    FrEnd.continuously_centre = temp == 1;
+                    // Legacy: the old single checkbox centred all axes.
+                    FrEnd.continuously_centre_x = temp == 1;
+                    FrEnd.continuously_centre_y = temp == 1;
+                    FrEnd.continuously_centre_z = temp == 1;
+                    break;
+
+                  case Instructions.CX:
+                    FrEnd.continuously_centre_x = temp == 1;
+                    break;
+
+                  case Instructions.CY:
+                    FrEnd.continuously_centre_y = temp == 1;
+                    break;
+
+                  case Instructions.CZ:
+                    FrEnd.continuously_centre_z = temp == 1;
                     break;
 
                   case Instructions.SL:

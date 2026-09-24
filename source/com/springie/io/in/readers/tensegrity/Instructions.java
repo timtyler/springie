@@ -55,6 +55,9 @@ public class Instructions {
     "MP", // 47 // Muscles period
     "PH", // 48 // Link phase (ticks)
     "CB", // 49 // Compass bias size
+    "CX", // 50 // Continuously centre X
+    "CY", // 51 // Continuously centre Y
+    "CZ", // 52 // Continuously centre Z
 //  "CS", // 29 // Charge strength
   };
 
@@ -108,4 +111,7 @@ public class Instructions {
   static final int MP  = 47;
   static final int PH  = 48;
   static final int CB  = 49;
+  static final int CX  = 50;
+  static final int CY  = 51;
+  static final int CZ  = 52;
 }

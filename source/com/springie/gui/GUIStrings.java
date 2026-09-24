@@ -22,7 +22,11 @@ public interface GUIStrings {
   String PAUSE = "Paused";
 
 
-  String CONTINUOUSLY_CENTRE = "Continuously centre";
+  String CONTINUOUSLY_CENTRE_X = "Continuously center X";
+
+  String CONTINUOUSLY_CENTRE_Y = "Continuously center Y";
+
+  String CONTINUOUSLY_CENTRE_Z = "Continuously center Z";
 
   String SHOW_BOUNDARY_BOX = "Show boundary box";
 

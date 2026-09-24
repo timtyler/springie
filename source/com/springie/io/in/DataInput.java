@@ -101,7 +101,9 @@ public class DataInput {
     Node.viscocity = 0;
     FrEnd.three_d = true;
     FrEnd.check_collisions = true;
-    FrEnd.continuously_centre = false;
+    FrEnd.continuously_centre_x = false;
+    com.springie.FrEnd.continuously_centre_y = false;
+    com.springie.FrEnd.continuously_centre_z = false;
     Muscles.enabled = false;
     Muscles.activeOscillator().setAmplitude(85 * Muscles.UNITY / 100);
     Muscles.activeOscillator().setPeriodTicks(12);

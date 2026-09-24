@@ -146,7 +146,11 @@ public class FrEnd extends Panel implements Runnable {
 	public static String model_index = "resource://" + index_subdirectory + "/index.xml";
 
 
-	public static boolean continuously_centre;
+	public static boolean continuously_centre_x;
+
+	public static boolean continuously_centre_y;
+
+	public static boolean continuously_centre_z;
 
 	public static boolean render_nodes = true;
 

@@ -40,7 +40,9 @@ class UniverseSettingsRoundTripTest {
   private int saved_max_speed;
   private boolean saved_three_d;
   private boolean saved_check_collisions;
-  private boolean saved_continuously_centre;
+  private boolean saved_continuously_centre_x;
+  private boolean saved_continuously_centre_y;
+  private boolean saved_continuously_centre_z;
   private boolean saved_charge_active;
   private boolean saved_muscles_enabled;
   private int saved_muscles_amplitude;
@@ -61,7 +63,9 @@ class UniverseSettingsRoundTripTest {
     this.saved_max_speed = Node.max_speed;
     this.saved_three_d = FrEnd.three_d;
     this.saved_check_collisions = FrEnd.check_collisions;
-    this.saved_continuously_centre = FrEnd.continuously_centre;
+    this.saved_continuously_centre_x = FrEnd.continuously_centre_x;
+    this.saved_continuously_centre_y = FrEnd.continuously_centre_y;
+    this.saved_continuously_centre_z = FrEnd.continuously_centre_z;
     this.saved_charge_active = this.manager.electrostatic.charge_active;
     this.saved_muscles_enabled = Muscles.enabled;
     this.saved_muscles_amplitude = Muscles.activeOscillator().getAmplitude();
@@ -80,7 +84,9 @@ class UniverseSettingsRoundTripTest {
     Node.max_speed = this.saved_max_speed;
     FrEnd.three_d = this.saved_three_d;
     FrEnd.check_collisions = this.saved_check_collisions;
-    FrEnd.continuously_centre = this.saved_continuously_centre;
+    FrEnd.continuously_centre_x = this.saved_continuously_centre_x;
+    FrEnd.continuously_centre_y = this.saved_continuously_centre_y;
+    FrEnd.continuously_centre_z = this.saved_continuously_centre_z;
     ContextManager.getNodeManager().electrostatic.charge_active =
         this.saved_charge_active;
     Muscles.enabled = this.saved_muscles_enabled;
@@ -93,7 +99,8 @@ class UniverseSettingsRoundTripTest {
   private static void setUniverse(int gravity_strength,
       boolean gravity_active, int temperature, int minimum_magnitude,
       int viscocity, int max_speed, boolean three_d,
-      boolean check_collisions, boolean continuously_centre,
+      boolean check_collisions, boolean continuously_centre_x,
+      boolean continuously_centre_y, boolean continuously_centre_z,
       boolean charge_active, int compass_bias_size) {
     World.gravity_strength = gravity_strength;
     World.gravity_active = gravity_active;
@@ -103,7 +110,9 @@ class UniverseSettingsRoundTripTest {
     Node.max_speed = max_speed;
     FrEnd.three_d = three_d;
     FrEnd.check_collisions = check_collisions;
-    FrEnd.continuously_centre = continuously_centre;
+    FrEnd.continuously_centre_x = continuously_centre_x;
+    FrEnd.continuously_centre_y = continuously_centre_y;
+    FrEnd.continuously_centre_z = continuously_centre_z;
     ContextManager.getNodeManager().electrostatic.charge_active =
         charge_active;
     CompassPoint.bias_size = compass_bias_size;
@@ -112,7 +121,8 @@ class UniverseSettingsRoundTripTest {
   private static void assertUniverse(int gravity_strength,
       boolean gravity_active, int temperature, int minimum_magnitude,
       int viscocity, int max_speed, boolean three_d,
-      boolean check_collisions, boolean continuously_centre,
+      boolean check_collisions, boolean continuously_centre_x,
+      boolean continuously_centre_y, boolean continuously_centre_z,
       boolean charge_active, int compass_bias_size) {
     assertEquals(gravity_strength, World.gravity_strength, "gravity_strength");
     assertEquals(gravity_active, World.gravity_active, "gravity_active");
@@ -123,8 +133,12 @@ class UniverseSettingsRoundTripTest {
     assertEquals(three_d, FrEnd.three_d, "3D");
     assertEquals(check_collisions, FrEnd.check_collisions,
         "collision check");
-    assertEquals(continuously_centre, FrEnd.continuously_centre,
-        "continuously centre");
+    assertEquals(continuously_centre_x, FrEnd.continuously_centre_x,
+        "continuously centre x");
+    assertEquals(continuously_centre_y, FrEnd.continuously_centre_y,
+        "continuously centre y");
+    assertEquals(continuously_centre_z, FrEnd.continuously_centre_z,
+        "continuously centre z");
     assertEquals(charge_active,
         ContextManager.getNodeManager().electrostatic.charge_active,
         "charge active");
@@ -154,13 +168,13 @@ class UniverseSettingsRoundTripTest {
 
     // Non-default universe state, saved with the model.
     setUniverse(42, true, 777, 123456, 66, 987654, false, false,
-        true, false, 17);
+        true, false, true, false, 17);
     setMuscles(true, 100, 33);
     final String spr = new Serialiser(this.manager).toString();
 
     // Scramble to unrelated values, proving the load overwrites them.
     setUniverse(7, false, 8, 9, 10, 11, true, true, false,
-        true, 23);
+        true, false, true, 23);
     setMuscles(false, 200, 44);
 
     // Round-trip through a real file: XML -> SAX -> tokens -> parse,
@@ -178,7 +192,7 @@ class UniverseSettingsRoundTripTest {
     }
 
     assertUniverse(42, true, 777, 123456, 66, 987654, false, false,
-        true, false, 17);
+        true, false, true, false, 17);
     assertMuscles(true, 100, 33);
   }
 
@@ -189,7 +203,7 @@ class UniverseSettingsRoundTripTest {
     // attributes absent from the file must not inherit stale values from
     // the previously loaded model.
     setUniverse(42, true, 777, 123456, 66, 987654, false, false,
-        true, false, 17);
+        true, false, true, false, 17);
     setMuscles(true, 100, 33);
 
     new DataInput(this.manager)
@@ -206,7 +220,9 @@ class UniverseSettingsRoundTripTest {
     assertEquals(0, Node.viscocity, "viscosity");
     assertEquals(Integer.MAX_VALUE, Node.max_speed, "speed limit");
     assertFalse(FrEnd.check_collisions, "collision check");
-    assertFalse(FrEnd.continuously_centre, "continuously centre");
+    assertFalse(FrEnd.continuously_centre_x, "continuously centre x");
+    assertFalse(FrEnd.continuously_centre_y, "continuously centre y");
+    assertFalse(FrEnd.continuously_centre_z, "continuously centre z");
     // ...absent attributes back at the defaults.
     assertTrue(FrEnd.three_d, "3D");
     assertMuscles(false, 85 * Muscles.UNITY / 100, 12);

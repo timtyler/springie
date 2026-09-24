@@ -258,7 +258,9 @@ public final class CaterpillarJudge {
     // Tim 2026-09-18: collision detection OFF for this experiment
     // (the usual no-collisions rule is back).
     com.springie.FrEnd.check_collisions = false;
-    com.springie.FrEnd.continuously_centre = false;
+    com.springie.FrEnd.continuously_centre_x = false;
+    com.springie.FrEnd.continuously_centre_y = false;
+    com.springie.FrEnd.continuously_centre_z = false;
     com.springie.FrEnd.boundaries = true;
     com.springie.FrEnd.explosions = true;
     com.springie.FrEnd.oscd = true;

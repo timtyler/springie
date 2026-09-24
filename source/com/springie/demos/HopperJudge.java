@@ -338,7 +338,9 @@ public final class HopperJudge {
     com.springie.elements.nodes.Node.viscocity = 0;
     com.springie.FrEnd.three_d = true;
     com.springie.FrEnd.check_collisions = false;
-    com.springie.FrEnd.continuously_centre = false;
+    com.springie.FrEnd.continuously_centre_x = false;
+    com.springie.FrEnd.continuously_centre_y = false;
+    com.springie.FrEnd.continuously_centre_z = false;
     com.springie.FrEnd.boundaries = true;
     com.springie.FrEnd.explosions = true;
     com.springie.FrEnd.oscd = true;

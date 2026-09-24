@@ -25,7 +25,9 @@ public final class UniverseState {
 
   public boolean three_d;
   public boolean check_collisions;
-  public boolean continuously_centre;
+  public boolean continuously_centre_x;
+  public boolean continuously_centre_y;
+  public boolean continuously_centre_z;
 
   public boolean charge_active;
 
@@ -53,7 +55,9 @@ public final class UniverseState {
 
     state.three_d = FrEnd.three_d;
     state.check_collisions = FrEnd.check_collisions;
-    state.continuously_centre = FrEnd.continuously_centre;
+    state.continuously_centre_x = FrEnd.continuously_centre_x;
+    state.continuously_centre_y = FrEnd.continuously_centre_y;
+    state.continuously_centre_z = FrEnd.continuously_centre_z;
 
     final ElectrostaticRepulsion electrostatic = manager != null
         ? manager.electrostatic : null;
@@ -80,7 +84,9 @@ public final class UniverseState {
 
     FrEnd.three_d = this.three_d;
     FrEnd.check_collisions = this.check_collisions;
-    FrEnd.continuously_centre = this.continuously_centre;
+    FrEnd.continuously_centre_x = this.continuously_centre_x;
+    FrEnd.continuously_centre_y = this.continuously_centre_y;
+    FrEnd.continuously_centre_z = this.continuously_centre_z;
 
     if (manager != null) {
       manager.electrostatic.charge_active = this.charge_active;

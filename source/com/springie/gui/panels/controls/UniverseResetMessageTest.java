@@ -57,12 +57,12 @@ class UniverseResetMessageTest {
 
       // Scramble the toggle checkboxes with real clicks.
       final PanelControlsUniverse panel = FrEnd.panel_universe;
-      clickCheckbox(panel.checkbox_continuously_centre, ItemEvent.SELECTED);
+      clickCheckbox(panel.checkbox_continuously_centre_x, ItemEvent.SELECTED);
       clickCheckbox(panel.checkbox_collision_check, ItemEvent.DESELECTED);
 
       // Let the queued toggles take effect, then drain.
       FrEnd.new_message_manager.process();
-      assertTrue(FrEnd.continuously_centre);
+      assertTrue(FrEnd.continuously_centre_x);
       assertFalse(FrEnd.check_collisions);
       drainMessageQueue();
 
@@ -73,7 +73,7 @@ class UniverseResetMessageTest {
           "resetUniverse must not enqueue messages");
 
       FrEnd.new_message_manager.process();
-      assertFalse(FrEnd.continuously_centre);
+      assertFalse(FrEnd.continuously_centre_x);
       assertTrue(FrEnd.check_collisions);
     });
   }
@@ -86,21 +86,21 @@ class UniverseResetMessageTest {
       // The hazard the silent update guards against: a click queues a
       // toggle message, the reset fixes the static directly, then the
       // queued toggle flips it back when processed.
-      FrEnd.continuously_centre = true;
-      clickCheckbox(FrEnd.panel_universe.checkbox_continuously_centre,
+      FrEnd.continuously_centre_x = true;
+      clickCheckbox(FrEnd.panel_universe.checkbox_continuously_centre_x,
           ItemEvent.DESELECTED);
-      FrEnd.continuously_centre = false;
+      FrEnd.continuously_centre_x = false;
 
       // The click queued a toggle message...
       assertEquals(1, FrEnd.new_message_manager.size());
 
       // ...which flips the static back when the queue is processed.
       FrEnd.new_message_manager.process();
-      assertTrue(FrEnd.continuously_centre,
+      assertTrue(FrEnd.continuously_centre_x,
           "a queued toggle undoes the reset -- this is why the reset updates the checkboxes silently");
 
       // Restore the default for the next test.
-      FrEnd.continuously_centre = false;
+      FrEnd.continuously_centre_x = false;
       drainMessageQueue();
     });
   }

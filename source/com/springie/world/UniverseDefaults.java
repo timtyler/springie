@@ -57,8 +57,10 @@ public final class UniverseDefaults {
   private static int muscle_period_ticks = 12;
   private static int muscle_phase = 0;
 
-  // Continuously centre and node growth.
-  private static boolean continuously_centre = false;
+  // Continuously centre, per axis.
+  private static boolean continuously_centre_x = false;
+  private static boolean continuously_centre_y = false;
+  private static boolean continuously_centre_z = false;
 
   // Development-only: speed limit and minimum excitation magnitude.
   private static int max_speed = Integer.MAX_VALUE;
@@ -86,7 +88,9 @@ public final class UniverseDefaults {
     muscle_amplitude = 85 * Muscles.UNITY / 100;
     muscle_period_ticks = 12;
     muscle_phase = 0;
-    continuously_centre = false;
+    continuously_centre_x = false;
+    continuously_centre_y = false;
+    continuously_centre_z = false;
     max_speed = Integer.MAX_VALUE;
     minimum_magnitude = 0;
     compass_bias_size = 0;
@@ -110,7 +114,9 @@ public final class UniverseDefaults {
     muscle_amplitude = Muscles.activeOscillator().getAmplitude();
     muscle_period_ticks = Muscles.activeOscillator().getPeriodTicks();
     muscle_phase = Muscles.activeOscillator().getPhase();
-    continuously_centre = FrEnd.continuously_centre;
+    continuously_centre_x = FrEnd.continuously_centre_x;
+    continuously_centre_y = FrEnd.continuously_centre_y;
+    continuously_centre_z = FrEnd.continuously_centre_z;
     compass_bias_size = CompassPoint.bias_size;
     if (FrEnd.development_version) {
       max_speed = Node.max_speed;
@@ -136,7 +142,9 @@ public final class UniverseDefaults {
     Muscles.activeOscillator().setAmplitude(muscle_amplitude);
     Muscles.activeOscillator().setPeriodTicks(muscle_period_ticks);
     Muscles.activeOscillator().setPhase(muscle_phase);
-    FrEnd.continuously_centre = continuously_centre;
+    FrEnd.continuously_centre_x = continuously_centre_x;
+    FrEnd.continuously_centre_y = continuously_centre_y;
+    FrEnd.continuously_centre_z = continuously_centre_z;
     CompassPoint.bias_size = compass_bias_size;
     if (FrEnd.development_version) {
       Node.max_speed = max_speed;

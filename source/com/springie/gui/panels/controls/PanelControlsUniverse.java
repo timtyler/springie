@@ -21,6 +21,7 @@ import com.springie.demos.CompassPoint;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.GUIStrings;
+import com.springie.gui.components.TabbedPanel;
 import com.springie.messages.NewMessageManager;
 import com.springie.messages.commands.ContinuouslyCentreMessage;
 import com.springie.muscles.Muscles;
@@ -39,7 +40,11 @@ public class PanelControlsUniverse {
 
 	public Checkbox checkbox_charge_switch;
 
-	public Checkbox checkbox_continuously_centre;
+	public Checkbox checkbox_continuously_centre_x;
+
+	public Checkbox checkbox_continuously_centre_y;
+
+	public Checkbox checkbox_continuously_centre_z;
 
 	public Checkbox checkbox_collision_check;
 
@@ -102,6 +107,7 @@ public class PanelControlsUniverse {
 	}
 
 	void makeEditMiscPanel() {
+		final Panel panel_main = FrEnd.setUpPanelForFrame2();
 		final Panel panel3D = new Panel();
 		this.checkbox_3D = new Checkbox("3D");
 		this.checkbox_3D.setState(FrEnd.three_d);
@@ -261,15 +267,33 @@ public class PanelControlsUniverse {
 		this.label_muscles_period = new Label("12", Label.LEFT);
 		panel_muscles_period.add("East", this.label_muscles_period);
 
-		final Panel panel_continuously_centre = new Panel();
-		this.checkbox_continuously_centre = new Checkbox(GUIStrings.CONTINUOUSLY_CENTRE);
-		this.checkbox_continuously_centre.addItemListener(new ItemListener() {
+		final Panel panel_centering = FrEnd.setUpPanelForFrame2();
+		this.checkbox_continuously_centre_x = new Checkbox(GUIStrings.CONTINUOUSLY_CENTRE_X);
+		this.checkbox_continuously_centre_x.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				Forget.about(e);
-				getNewMessageManager().add(new ContinuouslyCentreMessage());
+				getNewMessageManager().add(new ContinuouslyCentreMessage(0));
 			}
 		});
-		panel_continuously_centre.add(this.checkbox_continuously_centre);
+		panel_centering.add(this.checkbox_continuously_centre_x);
+
+		this.checkbox_continuously_centre_y = new Checkbox(GUIStrings.CONTINUOUSLY_CENTRE_Y);
+		this.checkbox_continuously_centre_y.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				Forget.about(e);
+				getNewMessageManager().add(new ContinuouslyCentreMessage(1));
+			}
+		});
+		panel_centering.add(this.checkbox_continuously_centre_y);
+
+		this.checkbox_continuously_centre_z = new Checkbox(GUIStrings.CONTINUOUSLY_CENTRE_Z);
+		this.checkbox_continuously_centre_z.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				Forget.about(e);
+				getNewMessageManager().add(new ContinuouslyCentreMessage(2));
+			}
+		});
+		panel_centering.add(this.checkbox_continuously_centre_z);
 
 		// elasticity..
 		final Panel panel_viscocity = new Panel();
@@ -355,30 +379,34 @@ public class PanelControlsUniverse {
 		panel_excite.add("East", this.label_impact);
 
 		// universe...
-		this.panel.add(panel3D);
-		this.panel.add(panel_viscocity);
-		this.panel.add(panel_temperature);
-		this.panel.add(panel_gravity);
-		this.panel.add(panel_friction);
-		this.panel.add(panel_compass_bias);
+		panel_main.add(panel3D);
+		panel_main.add(panel_viscocity);
+		panel_main.add(panel_temperature);
+		panel_main.add(panel_gravity);
+		panel_main.add(panel_friction);
+		panel_main.add(panel_compass_bias);
 
-		this.panel.add(panel_muscles_switch);
-		this.panel.add(panel_muscles_amplitude);
-		this.panel.add(panel_muscles_period);
+		panel_main.add(panel_muscles_switch);
+		panel_main.add(panel_muscles_amplitude);
+		panel_main.add(panel_muscles_period);
 
-		this.panel.add(panel_continuously_centre);
-		this.panel.add(panel_collision_check);
-		this.panel.add(panel_charge_switch);
+		panel_main.add(panel_collision_check);
+		panel_main.add(panel_charge_switch);
 
 		if (FrEnd.development_version) {
-			this.panel.add(panel_bias); // bias...
+			panel_main.add(panel_bias); // bias...
 
-			this.panel.add(panel_speed);
+			panel_main.add(panel_speed);
 
-			this.panel.add(panel_excite);
+			panel_main.add(panel_excite);
 		}
 
-		this.panel.add(getResetUniversePanel());
+		panel_main.add(getResetUniversePanel());
+
+		final TabbedPanel universe_tabs = new TabbedPanel();
+		universe_tabs.add("Main", panel_main);
+		universe_tabs.add("Centering", panel_centering);
+		this.panel.add(universe_tabs);
 	}
 
 	private Panel getResetUniversePanel() {
@@ -493,7 +521,12 @@ public class PanelControlsUniverse {
 	 */
 	public void reflectUniverseToggles() {
 		setCheckboxSilently(this.checkbox_collision_check, FrEnd.check_collisions);
-		setCheckboxSilently(this.checkbox_continuously_centre, FrEnd.continuously_centre);
+		setCheckboxSilently(this.checkbox_continuously_centre_x,
+				FrEnd.continuously_centre_x);
+		setCheckboxSilently(this.checkbox_continuously_centre_y,
+				FrEnd.continuously_centre_y);
+		setCheckboxSilently(this.checkbox_continuously_centre_z,
+				FrEnd.continuously_centre_z);
 		final NodeManager manager = ContextManager.getNodeManager();
 		setCheckboxSilently(this.checkbox_charge_switch,
 				manager != null && manager.electrostatic.charge_active);
@@ -571,8 +604,16 @@ public class PanelControlsUniverse {
 		return this.checkbox_collision_check;
 	}
 
-	public Checkbox getCheckboxContinuouslyCentre() {
-		return this.checkbox_continuously_centre;
+	public Checkbox getCheckboxContinuouslyCentreX() {
+		return this.checkbox_continuously_centre_x;
+	}
+
+	public Checkbox getCheckboxContinuouslyCentreY() {
+		return this.checkbox_continuously_centre_y;
+	}
+
+	public Checkbox getCheckboxContinuouslyCentreZ() {
+		return this.checkbox_continuously_centre_z;
 	}
 
 	public Checkbox getCheckboxGravitySwitch() {

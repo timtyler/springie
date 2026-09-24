@@ -21,7 +21,6 @@ import com.springie.messages.ArgumentList;
 import com.springie.messages.NewMessage;
 import com.springie.modification.post.PostModification;
 import com.springie.modification.translation.CentreOnScreen;
-import com.springie.modification.velocity.DampOverallVelocities;
 import com.springie.presets.PresetObjects;
 import com.springie.render.CachedNode;
 import com.springie.render.Coords;
@@ -389,9 +388,10 @@ public class NodeManager extends World {
 	}
 
 	final void agentExpansion() {
-		if (FrEnd.continuously_centre) {
-			CentreOnScreen.moveTowardsCentre(this);
-			DampOverallVelocities.damp(this);
+		if (FrEnd.continuously_centre_x || FrEnd.continuously_centre_y
+				|| FrEnd.continuously_centre_z) {
+			CentreOnScreen.centreOnAxes(this, FrEnd.continuously_centre_x,
+					FrEnd.continuously_centre_y, FrEnd.continuously_centre_z);
 		}
 	}
 

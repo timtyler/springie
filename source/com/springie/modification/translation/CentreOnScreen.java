@@ -39,54 +39,67 @@ public final class CentreOnScreen {
     }
   }
 
-  public static void moveTowardsCentre(NodeManager node_manager) {
-    final Point3D max = new Point3D(0, 0, 0);
-    final Point3D min = new Point3D(Integer.MAX_VALUE, Integer.MAX_VALUE,
-      Integer.MAX_VALUE);
-
+  /**
+   * Translates every node so the model's bounding box sits central on
+   * each selected axis -- a full snap, not a creep. Position only:
+   * velocities are left untouched.
+   */
+  public static void centreOnAxes(NodeManager node_manager,
+      boolean centre_x, boolean centre_y, boolean centre_z) {
     final int number_of_nodes = node_manager.element.size();
+    if (number_of_nodes == 0) {
+      return;
+    }
+
+    int min_x = Integer.MAX_VALUE;
+    int min_y = Integer.MAX_VALUE;
+    int min_z = Integer.MAX_VALUE;
+    int max_x = Integer.MIN_VALUE;
+    int max_y = Integer.MIN_VALUE;
+    int max_z = Integer.MIN_VALUE;
+
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) node_manager.element.get(counter);
-      if (candidate.pos.x < min.x) {
-        min.x = candidate.pos.x;
+      if (candidate.pos.x < min_x) {
+        min_x = candidate.pos.x;
       }
-
-      if (candidate.pos.y < min.y) {
-        min.y = candidate.pos.y;
+      if (candidate.pos.y < min_y) {
+        min_y = candidate.pos.y;
       }
-
-      if (candidate.pos.z < min.z) {
-        min.z = candidate.pos.z;
+      if (candidate.pos.z < min_z) {
+        min_z = candidate.pos.z;
       }
-
-      if (candidate.pos.x > max.x) {
-        max.x = candidate.pos.x;
+      if (candidate.pos.x > max_x) {
+        max_x = candidate.pos.x;
       }
-
-      if (candidate.pos.y > max.y) {
-        max.y = candidate.pos.y;
+      if (candidate.pos.y > max_y) {
+        max_y = candidate.pos.y;
       }
-
-      if (candidate.pos.z > max.z) {
-        max.z = candidate.pos.z;
+      if (candidate.pos.z > max_z) {
+        max_z = candidate.pos.z;
       }
     }
 
-    final int max_screen_size_x = Coords
-      .getInternalFromPixelCoords(Coords.x_pixels);
-    final int max_screen_size_y = Coords
-      .getInternalFromPixelCoords(Coords.y_pixels);
-    final int max_screen_size_z = Coords
-      .getInternalFromPixelCoords(Coords.z_pixels);
+    final Vector3D offset = new Vector3D(0, 0, 0);
+    if (centre_x) {
+      final int screen_x = Coords
+        .getInternalFromPixelCoords(Coords.x_pixels);
+      offset.x = (screen_x - min_x - max_x) >> 1;
+    }
+    if (centre_y) {
+      final int screen_y = Coords
+        .getInternalFromPixelCoords(Coords.y_pixels);
+      offset.y = (screen_y - min_y - max_y) >> 1;
+    }
+    if (centre_z) {
+      final int screen_z = Coords
+        .getInternalFromPixelCoords(Coords.z_pixels);
+      offset.z = (screen_z - min_z - max_z) >> 1;
+    }
 
-    final Vector3D offset_actual = new Vector3D(0, 0, 0);
-
-    offset_actual.x = (max_screen_size_x - max.x - min.x) >> 7;
-    offset_actual.y = (max_screen_size_y - max.y - min.y) >> 7;
-    offset_actual.z = (max_screen_size_z - max.z - min.z) >> 7;
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) node_manager.element.get(counter);
-      candidate.pos.addTuple3D(offset_actual);
+      candidate.pos.addTuple3D(offset);
     }
   }
 }

@@ -334,6 +334,12 @@ public class ReaderSPR extends DefaultHandler {
             this.out.append("CC:" + ("true".equals(val) ? "1" : "0") + " ");
                     } else if ("continuously_centre".equals(nam)) {
             this.out.append("CE:" + ("true".equals(val) ? "1" : "0") + " ");
+                    } else if ("continuously_centre_x".equals(nam)) {
+            this.out.append("CX:" + ("true".equals(val) ? "1" : "0") + " ");
+                    } else if ("continuously_centre_y".equals(nam)) {
+            this.out.append("CY:" + ("true".equals(val) ? "1" : "0") + " ");
+                    } else if ("continuously_centre_z".equals(nam)) {
+            this.out.append("CZ:" + ("true".equals(val) ? "1" : "0") + " ");
           } else if ("speed_limit".equals(nam)) {
             final double sp = Double.valueOf(val).doubleValue();
             this.out.append("SL:" + (int) sp + " ");

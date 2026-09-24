@@ -56,7 +56,8 @@ class UniverseResetTest {
         Node.viscocity = 42;
         FrEnd.three_d = false;
         FrEnd.check_collisions = false;
-        FrEnd.continuously_centre = true;
+        FrEnd.continuously_centre_x = true;
+        FrEnd.continuously_centre_y = true;
         ContextManager.getNodeManager().electrostatic.charge_active = false;
 
         panel.resetUniverse();
@@ -68,7 +69,9 @@ class UniverseResetTest {
         assertEquals(0, Node.viscocity);
         assertTrue(FrEnd.three_d);
         assertTrue(FrEnd.check_collisions);
-        assertFalse(FrEnd.continuously_centre);
+        assertFalse(FrEnd.continuously_centre_x);
+        assertFalse(FrEnd.continuously_centre_y);
+        assertFalse(FrEnd.continuously_centre_z);
         assertTrue(
             ContextManager.getNodeManager().electrostatic.charge_active);
 
@@ -86,8 +89,12 @@ class UniverseResetTest {
         assertTrue(panel.checkbox_charge_switch.getState(), "charge switch");
         assertTrue(panel.checkbox_collision_check.getState(),
             "collision check");
-        assertFalse(panel.checkbox_continuously_centre.getState(),
-            "continuously centre");
+        assertFalse(panel.checkbox_continuously_centre_x.getState(),
+            "continuously centre x");
+        assertFalse(panel.checkbox_continuously_centre_y.getState(),
+            "continuously centre y");
+        assertFalse(panel.checkbox_continuously_centre_z.getState(),
+            "continuously centre z");
       });
     } finally {
       UniverseDefaults.resetToFactoryDefaults();
@@ -164,26 +171,34 @@ class UniverseResetTest {
 
         // What loading Moscow does: the file disagrees with the UI.
         FrEnd.check_collisions = false;
-        FrEnd.continuously_centre = true;
+        FrEnd.continuously_centre_x = true;
+        FrEnd.continuously_centre_y = true;
         ContextManager.getNodeManager().electrostatic.charge_active = false;
 
         panel.reflectUniverseToggles();
 
         assertFalse(panel.checkbox_collision_check.getState(),
             "collision check");
-        assertTrue(panel.checkbox_continuously_centre.getState(),
-            "continuously centre");
+        assertTrue(panel.checkbox_continuously_centre_x.getState(),
+            "continuously centre x");
+        assertTrue(panel.checkbox_continuously_centre_y.getState(),
+            "continuously centre y");
+        assertFalse(panel.checkbox_continuously_centre_z.getState(),
+            "continuously centre z");
         assertFalse(panel.checkbox_charge_switch.getState(),
             "charge switch");
 
         // The statics themselves are untouched: reflecting never toggles.
         assertFalse(FrEnd.check_collisions);
-        assertTrue(FrEnd.continuously_centre);
+        assertTrue(FrEnd.continuously_centre_x);
+        assertTrue(FrEnd.continuously_centre_y);
+        assertFalse(FrEnd.continuously_centre_z);
         assertFalse(ContextManager.getNodeManager().electrostatic.charge_active);
       });
     } finally {
       FrEnd.check_collisions = true;
-      FrEnd.continuously_centre = false;
+      FrEnd.continuously_centre_x = false;
+      com.springie.FrEnd.continuously_centre_y = false;
       ContextManager.getNodeManager().electrostatic.charge_active = true;
     }
   }
