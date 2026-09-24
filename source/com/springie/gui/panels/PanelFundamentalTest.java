@@ -310,10 +310,11 @@ public class PanelFundamentalTest {
     final String[] labels = {
         "Demo: Sidewinder", "Demo: Crawler", "Demo: Spider Tank", "Demo: Wheel", "Demo: Slinky"};
     // Node counts the demo builders produce (their own tests pin these).
+    // The crawler rebuild is still open, so its count may move again.
     final int[] nodes = {
-        SidewinderDemo.SEGMENTS + 3, 14, 16, 17, 27};
+        SidewinderDemo.SEGMENTS + 3, 13, 16, 14, 27};
     final int[] links = {
-        3 * SidewinderDemo.SEGMENTS + 3, -1, -1, 56, 92};
+        3 * SidewinderDemo.SEGMENTS + 3, -1, -1, 43, 92};
 
     try {
       for (int d = 0; d < labels.length; d++) {

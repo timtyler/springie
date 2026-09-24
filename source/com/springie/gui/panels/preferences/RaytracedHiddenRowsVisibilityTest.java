@@ -18,6 +18,7 @@ import javax.swing.SwingUtilities;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -49,9 +50,20 @@ class RaytracedHiddenRowsVisibilityTest {
     GuiTestSupport.disposeFrames();
   }
 
-  /** Pin the Polygon renderer before each test; also restores the state. */
+  /** Pin the Polygon renderer before each test. */
   @BeforeEach
   void pinPolygonRenderer() throws Exception {
+    selectRenderer("Polygon");
+  }
+
+  /**
+   * Leave the Polygon renderer selected after each test. Without this,
+   * whichever test runs last leaves its renderer behind: the ray-traced
+   * renderer paints asynchronously, which breaks later tests that capture
+   * synchronous paints (it leaked all the way to DragBoxTrailTest).
+   */
+  @AfterEach
+  void restorePolygonRenderer() throws Exception {
     selectRenderer("Polygon");
   }
 

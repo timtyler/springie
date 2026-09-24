@@ -15,6 +15,7 @@ import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
+import com.springie.render.modules.ModularRendererBase;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,11 +36,14 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class RaytracedViewportShadeTest {
   static int saved_shift_x;
 
+  static ModularRendererBase saved_renderer;
+
   @BeforeAll
   static void setUpOnce() throws Exception {
     GuiTestSupport.bootApp();
     saved_shift_x = Coords.shift_constant_x;
     SwingUtilities.invokeAndWait(() -> {
+      saved_renderer = RendererDelegator.renderer;
       RendererDelegator.renderer = new ModularRendererRaytraced();
       FrEnd.paused = true;
       FrEnd.main_canvas.forceResize();
@@ -54,6 +58,7 @@ public class RaytracedViewportShadeTest {
   static void tearDownOnce() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       Coords.shift_constant_x = saved_shift_x;
+      RendererDelegator.renderer = saved_renderer;
       RendererDelegator.repaint_all_objects = true;
     });
     GuiTestSupport.disposeFrames();

@@ -10,6 +10,7 @@ import java.awt.Choice;
 import java.awt.Checkbox;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Label;
 import java.awt.Panel;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -125,10 +126,12 @@ public class PanelPreferencesRendererModernTest {
   }
 
   /**
-   * The Renderer tab holds "Main", "Tiles" and "Fog" sub-tabs: the Tiles
-   * rows move to Tiles, the fog rows to Fog, everything else to Main.
-   * "Render deepest objects first" and "Show labels on:" keep their
-   * slots at the top of Main, after Pixellation.
+   * The preferences tab bar holds four top-level tabs -- Renderer
+   * (the old Main content), Colours, Tiles and Fog: the Tiles and Fog
+   * sub-tabs moved up next to Colours, and the shared-show panel just
+   * hosts the Main content now. "Render deepest objects first" and
+   * "Show labels on:" keep their slots at the top of the Renderer tab,
+   * after Pixellation.
    */
   @Test
   void rendererTabHasMainTilesAndFogSubTabs() {
@@ -137,12 +140,27 @@ public class PanelPreferencesRendererModernTest {
         "the old Misc tab panel must be empty after its rows move");
 
     // No Options tab anymore, and Filtering moved under Colours: the
-    // top-level bar is Renderer | Colours.
+    // top-level bar is Renderer | Colours | Tiles | Fog.
     final TabbedPanel top_tabs = findTabbedPanel(
         FrEnd.panel_preferences_renderer_modern.panel);
     assertNotNull(top_tabs, "expected the top-level tab bar");
-    assertEquals(2, top_tabs.getComponentCount(),
-        "the top-level tab bar must be Renderer and Colours");
+    assertEquals(4, top_tabs.getComponentCount(),
+        "the top-level tab bar must be Renderer, Colours, Tiles and Fog");
+    assertTrue(
+        top_tabs.getComponent(0) == FrEnd.panel_preferences_shared_show.panel,
+        "the Renderer card must hold the shared-show panel");
+    assertTrue(
+        top_tabs.getComponent(1)
+            == FrEnd.panel_preferences_renderer_modern_colours.panel,
+        "the Colours card must hold the colours panel");
+    assertTrue(
+        top_tabs.getComponent(2)
+            == FrEnd.panel_preferences_shared_show.panel_tiles,
+        "the Tiles card must hold the tiles panel");
+    assertTrue(
+        top_tabs.getComponent(3)
+            == FrEnd.panel_preferences_shared_show.panel_fog,
+        "the Fog card must hold the fog panel");
 
     // Filtering now lives as the Filters card under Colours, holding
     // the filters panel (Filled:/Wireframe: rows plus the Colour-A/B
@@ -167,16 +185,53 @@ public class PanelPreferencesRendererModernTest {
     assertNotNull(findCheckbox(fog_tab, "Fog depth is relative"),
         "the shared fog checkbox must move to the Fog sub-tab");
 
-    // Deepest-first keeps its slot, after Pixellation...
-    assertTrue(
-        main_tab.getComponent(4)
-            == FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first,
-        "deepest-first must sit at Main sub-tab row 4, after Pixellation");
-    // ...followed by the labels row.
-    assertTrue(
-        main_tab.getComponent(5)
-            == FrEnd.panel_preferences_renderer_modern.panel_labels_row,
-        "the labels row must sit at Main sub-tab row 5, after deepest-first");
+    // Deepest-first keeps its slot after Pixellation, followed by the
+    // labels row. The absolute slot moves: a fresh boot puts them right
+    // after Pixellation (PanelPreferencesDisplay), while the renderer's
+    // visibility helpers re-insert them one slot lower -- the relative
+    // order is what the layout guarantees.
+    final int pixellation = indexOfRowWithLabel(main_tab, "Pixellated:");
+    assertTrue(pixellation >= 0,
+        "expected a Pixellation row on the Renderer tab's Main sub-tab");
+    final int deepest = indexOf(main_tab,
+        FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first);
+    final int labels = indexOf(main_tab,
+        FrEnd.panel_preferences_renderer_modern.panel_labels_row);
+    assertTrue(deepest > pixellation,
+        "deepest-first must sit after Pixellation");
+    assertEquals(deepest + 1, labels,
+        "the labels row must sit right after deepest-first");
+  }
+
+  /**
+   * Finds the index of the given row component. Returns -1 when absent.
+   */
+  private static int indexOf(Panel tab, Component row) {
+    final Component[] rows = tab.getComponents();
+    for (int i = 0; i < rows.length; i++) {
+      if (rows[i] == row) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  /**
+   * Finds the row of a sub-tab whose first Label reads the given text.
+   * Returns -1 when no row carries that label.
+   */
+  private static int indexOfRowWithLabel(Panel tab, String text) {
+    final Component[] rows = tab.getComponents();
+    for (int i = 0; i < rows.length; i++) {
+      if (rows[i] instanceof Container) {
+        for (final Component c : ((Container) rows[i]).getComponents()) {
+          if (c instanceof Label && text.equals(((Label) c).getText())) {
+            return i;
+          }
+        }
+      }
+    }
+    return -1;
   }
 
   private static TabbedPanel findTabbedPanel(Container container) {

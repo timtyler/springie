@@ -27,7 +27,6 @@ import com.springie.geometry.Point3D;
 import com.springie.gui.gestures.PerformActions;
 import com.springie.render.Coords;
 import com.springie.render.RectangleInt;
-import com.springie.render.RendererDragBox;
 import com.springie.render.modules.modern.RendererTileManager;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced.Tile;
 
@@ -303,15 +302,10 @@ public class TileEmptyTest {
       ContextManager.setNodeManager(this.manager);
       final PerformActions actions = new PerformActions();
       FrEnd.perform_actions = actions;
-      actions.drag_box_manager.drag_box_end = new Point(0, 0);
-      // A drawn box: cached coordinates, in internal units (shift 8).
-      final RendererDragBox box =
-          this.manager.renderer.renderer_drag_box;
-      box.min = new Point(50 << 8, 50 << 8);
-      box.max = new Point(150 << 8, 150 << 8);
-      box.last_min = new Point(50 << 8, 50 << 8);
-      box.last_max = new Point(150 << 8, 150 << 8);
-      box.cache_valid = true;
+      // The damage is tracked from the gesture's live points, in internal
+      // units (shift 8) -- not the renderer draw cache.
+      actions.drag_box_manager.drag_box_start = new Point(50 << 8, 50 << 8);
+      actions.drag_box_manager.drag_box_end = new Point(150 << 8, 150 << 8);
       final RectangleInt[] rects =
           this.renderer.computeDirtyRects(this.manager);
       assertNotNull(rects);
@@ -323,6 +317,10 @@ public class TileEmptyTest {
       final int far = tileContaining(grid, 350, 350);
       assertTrue(far >= 0);
       assertTrue(rects[far].isEmpty(), "a far tile must stay empty");
+      // Flush the static last-frame damage so the other tests in this
+      // class see a clean slate.
+      actions.drag_box_manager.drag_box_start = null;
+      this.renderer.computeDirtyRects(this.manager);
     } finally {
       ContextManager.setNodeManager(old_manager);
       FrEnd.perform_actions = old_actions;

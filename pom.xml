@@ -96,6 +96,9 @@
           <!-- Warnings only: print them, never fail the build. -->
           <failOnViolation>false</failOnViolation>
           <failsOnError>false</failsOnError>
+          <!-- Tim's rules are severity=warning; the default (error) would
+               count none of them and print "0 violations". -->
+          <violationSeverity>warning</violationSeverity>
         </configuration>
         <executions>
           <execution>
