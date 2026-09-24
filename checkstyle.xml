@@ -14,7 +14,12 @@
 <module name="Checker">
 <property name="severity" value="warning"/>
 <module name="FileTabCharacter"></module>
-<module name="RegexpSingleline"></module>
+<module name="RegexpSingleline">
+  <!-- A disabled test must stay visible: every @Disabled is a warning,
+       so a skipped test can't rot silently. Re-enable or delete it. -->
+  <property name="format" value="^\s*@Disabled\b"/>
+  <property name="message" value="Disabled test: re-enable it or delete it."/>
+</module>
 
 <module name="TreeWalker">
 
