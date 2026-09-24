@@ -388,8 +388,12 @@ public class NodeManager extends World {
 	}
 
 	final void agentExpansion() {
-		if (FrEnd.continuously_centre_x || FrEnd.continuously_centre_y
-				|| FrEnd.continuously_centre_z) {
+		// The user's hand wins: while a drag is in progress the model must
+		// follow the pointer instead of fighting the centering snap, which
+		// would otherwise yank the bounding box back every frame and make
+		// the dragged link vibrate.
+		if (!FrEnd.currently_dragging && (FrEnd.continuously_centre_x
+				|| FrEnd.continuously_centre_y || FrEnd.continuously_centre_z)) {
 			CentreOnScreen.centreOnAxes(this, FrEnd.continuously_centre_x,
 					FrEnd.continuously_centre_y, FrEnd.continuously_centre_z);
 		}
