@@ -27,25 +27,18 @@
 <module name="EmptyForIteratorPad"></module>
 <module name="NoWhitespaceAfter"></module>
 <module name="NoWhitespaceBefore"></module>
-<module name="OperatorWrap">
-</module>
-<module name="MethodParamPad">
-</module>
-<module name="ParenPad">
-</module>
+<module name="OperatorWrap"></module>
+<module name="MethodParamPad"></module>
+<module name="ParenPad"></module>
 <module name="TypecastParenPad">
-<property name="tokens" value="RPAREN,TYPECAST"/>
-</module>
-<module name="WhitespaceAfter">
-</module>
-<module name="WhitespaceAround">
-</module>
+<property name="tokens" value="RPAREN,TYPECAST"/></module>
+<module name="WhitespaceAfter"></module>
+<module name="WhitespaceAround"></module>
 <module name="RedundantModifier"></module>
 <module name="EmptyBlock"></module>
 <module name="LeftCurly"></module>
 <module name="NeedBraces"></module>
 <module name="RightCurly"></module>
-<module name="AvoidInlineConditionals"></module>
 <module name="CovariantEquals"></module>
 <module name="DefaultComesLast"></module>
 <module name="EmptyStatement"></module>
@@ -63,31 +56,22 @@
 <!-- module name="ImportOrder"></module -->
 <!-- module name="LocalVariableName"><property name="format" value="^[a-z][a-z0-9]*$"/></module -->
 <!-- module name="LocalFinalVariableName"><property name="format" value="^[a-z][a-z0-9]*$"/></module -->
+<!-- module name="AvoidInlineConditionals"></module -->
 <module name="HiddenField"></module>
 <module name="IllegalInstantiation"></module>
 <module name="IllegalCatch"></module>
 <module name="IllegalTokenText">
 </module>
-<module name="IllegalType">
-<property name="tokens" value="METHOD_DEF,PARAMETER_DEF,VARIABLE_DEF"/>
-</module>
+<module name="IllegalType"><property name="tokens" value="METHOD_DEF,PARAMETER_DEF,VARIABLE_DEF"/></module>
 <module name="InnerAssignment"></module>
-<module name="MissingCtor">
-</module>
-<module name="MissingSwitchDefault">
-</module>
-<module name="ModifiedControlVariable">
-</module>
-<module name="MultipleStringLiterals">
-</module>
-<module name="MultipleVariableDeclarations">
-</module>
-<module name="NestedIfDepth">
-</module>
-<module name="NestedTryDepth">
-</module>
-<module name="PackageDeclaration">
-</module>
+<module name="MissingCtor"></module>
+<module name="MissingSwitchDefault"></module>
+<module name="ModifiedControlVariable"></module>
+<module name="MultipleStringLiterals"></module>
+<module name="MultipleVariableDeclarations"></module>
+<module name="NestedIfDepth"></module>
+<module name="NestedTryDepth"></module>
+<module name="PackageDeclaration"></module>
 <module name="ParameterAssignment"></module>
 <module name="ReturnCount"></module>
 <module name="SimplifyBooleanExpression"></module>
