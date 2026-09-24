@@ -21,7 +21,6 @@ import com.springie.messages.commands.DeselectAllMessage;
 import com.springie.messages.commands.SelectAllMessage;
 import com.springie.messages.commands.SelectClazzMessage;
 import com.springie.messages.commands.SelectTypeMessage;
-import com.springie.messages.MessagePump;
 import com.springie.messages.NewMessage;
 
 public class MainCanvas {

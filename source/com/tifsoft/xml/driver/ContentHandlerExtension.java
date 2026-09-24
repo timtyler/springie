@@ -5,6 +5,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
 
 public interface ContentHandlerExtension extends org.xml.sax.ContentHandler {
-  Writer startDocument(final Writer writer) throws SAXException;
-  Writer startElement(final String namespace_uri, final String local_name, final String name_q, final Attributes atts, final Writer writer) throws SAXException;
+  Writer startDocument(Writer writer) throws SAXException;
+  Writer startElement(String namespace_uri, String local_name, String name_q, Attributes atts, Writer writer) throws SAXException;
 }
