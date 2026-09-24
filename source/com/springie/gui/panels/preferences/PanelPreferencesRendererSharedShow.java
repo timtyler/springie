@@ -10,7 +10,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import com.springie.FrEnd;
-import com.springie.gui.GUIStrings;
 import com.springie.render.RendererDelegator;
 import com.tifsoft.Forget;
 

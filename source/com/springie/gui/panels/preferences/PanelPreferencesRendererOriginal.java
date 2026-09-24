@@ -25,7 +25,6 @@ import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TTChoice;
 import com.springie.messages.NewMessageManager;
 import com.springie.messages.commands.LinkLengthMessage;
-import com.springie.preferences.Preferences;
 import com.springie.render.RendererDelegator;
 import com.tifsoft.Forget;
 

@@ -238,8 +238,8 @@ public final class PresetObjects {
 
     for (int x = 0; x < nodes; x++) {
       final int r_x = ix + x * (length / 5) + rnd.nextInt(999);
-      final int r_y = iy + (int)(70 * 256 * Math.sin((float)x / nodes * 40 * circum));
-      final int r_z = iz + (int)(70 * 256 * Math.cos((float)x / nodes * 40 * circum));
+      final int r_y = iy + (int) (70 * 256 * Math.sin((float) x / nodes * 40 * circum));
+      final int r_z = iz + (int) (70 * 256 * Math.cos((float) x / nodes * 40 * circum));
 
       dome += "NG R:" + (length >> 3) + " C:0xff20ff20 ";
       dome += "N X:" + r_x + " Y:" + r_y + " Z:" + r_z + " ";

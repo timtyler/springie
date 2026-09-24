@@ -11,7 +11,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 import com.springie.FrEnd;
-import com.springie.context.ContextManager;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.Link;
@@ -217,7 +216,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
    */
   @Override
   public boolean holdModelForFrame() {
-    return this.frame_done == false
+    return !this.frame_done
         && RendererDelegator.renderer == this;
   }
 

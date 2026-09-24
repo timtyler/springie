@@ -8,18 +8,15 @@ import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.Panel;
-import java.awt.Point;
 import java.awt.Scrollbar;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.AWTEventListener;
-import java.awt.event.ComponentListener;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
@@ -112,1127 +109,1127 @@ import com.springie.utilities.random.Hortensius32Fast;
 import com.tifsoft.Forget;
 
 public class FrEnd extends Panel implements Runnable {
-	static final long serialVersionUID = 1250;
+  static final long serialVersionUID = 1250;
 
-	/**
-	 * true if development version of the app
-	 */
-	public static final boolean development_version = false;
+  /**
+   * true if development version of the app
+   */
+  public static final boolean development_version = false;
 
-	static final boolean testing = false;
+  static final boolean testing = false;
 
-	/**
-	 * true if this is the cut-down viewer version of Springie
-	 */
-	public static final boolean viewer = false;
+  /**
+   * true if this is the cut-down viewer version of Springie
+   */
+  public static final boolean viewer = false;
 
-	public static final String application_name = viewer ? "SprView" : "Springie";
+  public static final String application_name = viewer ? "SprView" : "Springie";
 
-	/*
-	 * <pre> true if 3rd party module is in use &lt;STRONG&gt;MAKE SURE THIS BIT IS
-	 * SET &lt;/STRONG&gt; if developing or using a 3rd party module... </pre>
-	 */
-	public static final boolean module = false;
+  /*
+   * <pre> true if 3rd party module is in use &lt;STRONG&gt;MAKE SURE THIS BIT IS
+   * SET &lt;/STRONG&gt; if developing or using a 3rd party module... </pre>
+   */
+  public static final boolean module = false;
 
-	/**
-	 * true if running in 3D space
-	 */
-	public static boolean three_d = true;
+  /**
+   * true if running in 3D space
+   */
+  public static boolean three_d = true;
 
-	static final boolean chained = true;
+  static final boolean chained = true;
 
-	public static String index_subdirectory = "index";
+  public static String index_subdirectory = "index";
 
-	public static String model_index = "resource://" + index_subdirectory + "/index.xml";
+  public static String model_index = "resource://" + index_subdirectory + "/index.xml";
 
 
-	public static boolean continuously_centre_x;
+  public static boolean continuously_centre_x;
 
-	public static boolean continuously_centre_y;
+  public static boolean continuously_centre_y;
 
-	public static boolean continuously_centre_z;
+  public static boolean continuously_centre_z;
 
-	/**
-	 * True while the current model was built by one of the Demos menu
-	 * entries (as opposed to a model file or preset). The Olympics
-	 * follow-cam dressing -- world markers, boundless world -- only
-	 * applies to demo models.
-	 */
-	public static boolean demo_model;
+  /**
+   * True while the current model was built by one of the Demos menu
+   * entries (as opposed to a model file or preset). The Olympics
+   * follow-cam dressing -- world markers, boundless world -- only
+   * applies to demo models.
+   */
+  public static boolean demo_model;
 
-	/** World location markers streaming past in Olympics follow-cam mode. */
-	public static boolean show_world_markers = true;
+  /** World location markers streaming past in Olympics follow-cam mode. */
+  public static boolean show_world_markers = true;
 
-	public static boolean render_nodes = true;
+  public static boolean render_nodes = true;
 
-	public static boolean render_links = true;
+  public static boolean render_links = true;
 
-	public static boolean render_anaglyph;
+  public static boolean render_anaglyph;
 
-	public static boolean render_faces = true;
+  public static boolean render_faces = true;
 
-	public static boolean render_charges = true;
+  public static boolean render_charges = true;
 
-	public static boolean render_hidden_nodes;
+  public static boolean render_hidden_nodes;
 
-	public static boolean render_hidden_links;
+  public static boolean render_hidden_links;
 
-	public static boolean render_hidden_faces;
+  public static boolean render_hidden_faces;
 
-	public static boolean show_boundary_box = true;
+  public static boolean show_boundary_box = true;
 
-	public static boolean output_linefeeds = true;
+  public static boolean output_linefeeds = true;
 
-	public static boolean check_collisions = true;
+  public static boolean check_collisions = true;
 
-	public static boolean boundaries = true;
+  public static boolean boundaries = true;
 
-	public static boolean oscd = true;
+  public static boolean oscd = true;
 
-	public static boolean controls_visible = true;
+  public static boolean controls_visible = true;
 
-	public static int node_initial_size = 32;
+  public static int node_initial_size = 32;
 
-	public static boolean explosions = true;
+  public static boolean explosions = true;
 
-	public static boolean merge;
+  public static boolean merge;
 
-	static boolean draw_guide = true;
+  static boolean draw_guide = true;
 
-	public static boolean depth_cues;
+  public static boolean depth_cues;
 
-	public static int weapon_type = ToolTypes._PENCIL;
+  public static int weapon_type = ToolTypes._PENCIL;
 
-	public static String initial_type;
+  public static String initial_type;
 
-	public static String initial_initial_type = "Moscow";
+  public static String initial_initial_type = "Moscow";
 
-	public static int frame_frequency = FrameFrequency._FRAME_1;
+  public static int frame_frequency = FrameFrequency._FRAME_1;
 
-	// 2 is too much for IE JVM!
-	public static int delay = Delay._DELAY_2;
+  // 2 is too much for IE JVM!
+  public static int delay = Delay._DELAY_2;
 
-	public static int action_left_type = Actions.SELECT;
+  public static int action_left_type = Actions.SELECT;
 
-	public static int action_middle_type = Actions.TRANSLATE;
+  public static int action_middle_type = Actions.TRANSLATE;
 
-	public static int action_right_type = Actions.ROTATE;
+  public static int action_right_type = Actions.ROTATE;
 
-	public static boolean currently_dragging;
+  public static boolean currently_dragging;
 
-	public static boolean pandemic_paradigm_direct_contact = true;
+  public static boolean pandemic_paradigm_direct_contact = true;
 
-	public static Module extension;
+  public static Module extension;
 
-	static int sample_rate = 64;
+  static int sample_rate = 64;
 
-	static int use_native;
+  static int use_native;
 
-	static long very_old_time = -1;
+  static long very_old_time = -1;
 
-	static long old_time = -1;
+  static long old_time = -1;
 
-	static long last_fps_time = -1;
+  static long last_fps_time = -1;
 
-	static long current_time;
+  static long current_time;
 
-	static long one_frame_takes;
+  static long one_frame_takes;
 
-	static long lastime;
+  static long lastime;
 
-	static long newtime;
+  static long newtime;
 
-	static TTChoice choose_resolution;
+  static TTChoice choose_resolution;
 
-	static TTChoice choose_display;
+  static TTChoice choose_display;
 
-	static TTChoice choose_kill;
+  static TTChoice choose_kill;
 
-	static TTChoice choose_frequency;
+  static TTChoice choose_frequency;
 
-	public static TTChoice choose_delay;
+  public static TTChoice choose_delay;
 
-	static TTChoice choose_sample_rate;
+  static TTChoice choose_sample_rate;
 
-	static TTChoice choose_sample_number;
+  static TTChoice choose_sample_number;
 
-	static TTChoice choose_density;
+  static TTChoice choose_density;
 
-	public static TTChoice choose_quality;
+  public static TTChoice choose_quality;
 
-	public static TTChoice choose_tool;
+  public static TTChoice choose_tool;
 
-	public static TTChoice choose_display_cables;
+  public static TTChoice choose_display_cables;
 
-	public static TTChoice choose_display_struts;
+  public static TTChoice choose_display_struts;
 
-	public static ChoiceWithDescription choose_initial;
+  public static ChoiceWithDescription choose_initial;
 
-	public static ChoiceWithDescription choose_preset_index;
+  public static ChoiceWithDescription choose_preset_index;
 
 
-	public static boolean thread_terminated;
+  public static boolean thread_terminated;
 
-	static int finding_period;
+  static int finding_period;
 
-	public static int killtype;
+  public static int killtype;
 
-	public static boolean mouse_pressed;
+  public static boolean mouse_pressed;
 
-	public static boolean show_exhaust;
+  public static boolean show_exhaust;
 
-	public static int generation;
+  public static int generation;
 
-	public static boolean paused;
+  public static boolean paused;
 
-	public static int stepping;
+  public static int stepping;
 
-	static int start_type;
+  static int start_type;
 
-	static final boolean crippled_version = true;
+  static final boolean crippled_version = true;
 
-	public static SystemMessages system_messages = new SystemMessages();
+  public static SystemMessages system_messages = new SystemMessages();
 
-	static final Color colour_grey1 = new Color(0xB0B0B0);
+  static final Color colour_grey1 = new Color(0xB0B0B0);
 
-	public static boolean button_virginity = true;
+  public static boolean button_virginity = true;
 
-	static boolean statusShown = true;
+  static boolean statusShown = true;
 
-	private static volatile Thread runner;
+  private static volatile Thread runner;
 
-	static final int xoff = 4;
+  static final int xoff = 4;
 
-	static final int yoff = 4;
+  static final int yoff = 4;
 
-	public static Font bold_font = new Font("Dialog", Font.BOLD, 12);
+  public static Font bold_font = new Font("Dialog", Font.BOLD, 12);
 
-	static Hortensius32Fast rnd = new Hortensius32Fast();
+  static Hortensius32Fast rnd = new Hortensius32Fast();
 
-	public static NewMessageManager new_message_manager = new NewMessageManager();
+  public static NewMessageManager new_message_manager = new NewMessageManager();
 
-	public static int last_mousex;
+  public static int last_mousex;
 
-	public static int last_mousey;
+  public static int last_mousey;
 
-	public static boolean application;
+  public static boolean application;
 
-	public static int dragged_x_offset;
+  public static int dragged_x_offset;
 
-	public static int dragged_y_offset;
+  public static int dragged_y_offset;
 
-	static Node temp_node;
+  static Node temp_node;
 
-	static Link temp_link;
+  static Link temp_link;
 
-	// public static Link selected_link;
+  // public static Link selected_link;
 
-	// public static NodeManager node_manager;
+  // public static NodeManager node_manager;
 
-	public static boolean xor;
+  public static boolean xor;
 
-	public static int quality;
+  public static int quality;
 
-	public static Frame frame_main;
+  public static Frame frame_main;
 
-	public static final String window_title_prefix = application_name;
+  public static final String window_title_prefix = application_name;
 
-	public static String last_file_path = "test.spr";
+  public static String last_file_path = "test.spr";
 
-	public static String next_file_path = last_file_path;
+  public static String next_file_path = last_file_path;
 
-	static Panel panel_resolution_selector;
+  static Panel panel_resolution_selector;
 
-	public static Panel panel_with_controls_at_bottom;
+  public static Panel panel_with_controls_at_bottom;
 
-	/**
-	 * The inner area of the main window: holds the canvas (Center) and the
-	 * docked controls panel (East). The bottom bar lives in the outer
-	 * South, so it spans the full window width in every docking mode.
-	 */
-	public static Panel panel_main_area;
+  /**
+   * The inner area of the main window: holds the canvas (Center) and the
+   * docked controls panel (East). The bottom bar lives in the outer
+   * South, so it spans the full window width in every docking mode.
+   */
+  public static Panel panel_main_area;
 
-	public static Frame frame_controls;
+  public static Frame frame_controls;
 
-	/** The controls window can float above the main window, float freely,
-	 * or be docked into the main window's layout. */
-	public static final int CONTROLS_ALWAYS_ON_TOP = 0;
-	public static final int CONTROLS_FREE_FLOATING = 1;
-	public static final int CONTROLS_DOCKED = 2;
+  /** The controls window can float above the main window, float freely,
+   * or be docked into the main window's layout. */
+  public static final int CONTROLS_ALWAYS_ON_TOP = 0;
+  public static final int CONTROLS_FREE_FLOATING = 1;
+  public static final int CONTROLS_DOCKED = 2;
 
-	public static int controls_window_mode = CONTROLS_DOCKED;
+  public static int controls_window_mode = CONTROLS_DOCKED;
 
-	public static Frame frame_panel_about;
+  public static Frame frame_panel_about;
 
-	public static Frame frame_panel_help;
+  public static Frame frame_panel_help;
 
-	static Scrollbar scroll_bar_zoom;
+  static Scrollbar scroll_bar_zoom;
 
-	public static MainCanvas main_canvas;
+  public static MainCanvas main_canvas;
 
-	public static ImageButton button_restart;
+  public static ImageButton button_restart;
 
-	public static ImageButton button_step;
+  public static ImageButton button_step;
 
-	// labels
-	public static Label label_step_size;
+  // labels
+  public static Label label_step_size;
 
-	static Label label_show_time;
+  static Label label_show_time;
 
-	static Label label_show_gen;
+  static Label label_show_gen;
 
-	static Label label_show_cnum;
+  static Label label_show_cnum;
 
-	static Label label_size_x;
+  static Label label_size_x;
 
-	static Label label_size_y;
+  static Label label_size_y;
 
-	public static TextFieldWrapper textfield_step_size;
+  public static TextFieldWrapper textfield_step_size;
 
-	public static PerformActions perform_actions;
+  public static PerformActions perform_actions;
 
-	public static PerformSelection perform_selection;
+  public static PerformSelection perform_selection;
 
-	public static RotationManager rotation_manager;
+  public static RotationManager rotation_manager;
 
-	public static ScaleManager scale_manager;
+  public static ScaleManager scale_manager;
 
-	public static DietManager diet_manager;
+  public static DietManager diet_manager;
 
-	public static TranslationManager translation_manager;
+  public static TranslationManager translation_manager;
 
-	public static boolean redraw_deepest_first = true;
+  public static boolean redraw_deepest_first = true;
 
-	public static Preferences preferences = new Preferences();
+  public static Preferences preferences = new Preferences();
 
-	public static PanelControlsMisc panel_edit_misc = new PanelControlsMisc(new_message_manager);
+  public static PanelControlsMisc panel_edit_misc = new PanelControlsMisc(new_message_manager);
 
-	public static PanelControlsGenerate panel_edit_generate = new PanelControlsGenerate(new_message_manager);
+  public static PanelControlsGenerate panel_edit_generate = new PanelControlsGenerate(new_message_manager);
 
-	public static ColorPicker panel_edit_color = new ColorPicker(new ColorPickerInformer() {
-		public void inform(int colour) {
-			final ColourChanger cc = new ColourChanger(ContextManager.getNodeManager());
-			cc.setColour(colour);
-		}
-	});
+  public static ColorPicker panel_edit_color = new ColorPicker(new ColorPickerInformer() {
+    public void inform(int colour) {
+      final ColourChanger cc = new ColourChanger(ContextManager.getNodeManager());
+      cc.setColour(colour);
+    }
+  });
 
-	public static PanelControlsDelete panel_edit_delete = new PanelControlsDelete(new_message_manager);
+  public static PanelControlsDelete panel_edit_delete = new PanelControlsDelete(new_message_manager);
 
-	public static PanelControlsVelocities panel_edit_velocities = new PanelControlsVelocities(new_message_manager);
+  public static PanelControlsVelocities panel_edit_velocities = new PanelControlsVelocities(new_message_manager);
 
-	public static PanelControlsEdit panel_edit_edit = new PanelControlsEdit();
+  public static PanelControlsEdit panel_edit_edit = new PanelControlsEdit();
 
-	public static PanelControlsUniverse panel_universe = new PanelControlsUniverse(new_message_manager);
+  public static PanelControlsUniverse panel_universe = new PanelControlsUniverse(new_message_manager);
 
-	public static PanelControlsSelectAdvanced panel_edit_select_advanced = new PanelControlsSelectAdvanced(new_message_manager);
+  public static PanelControlsSelectAdvanced panel_edit_select_advanced = new PanelControlsSelectAdvanced(new_message_manager);
 
-	public static PanelControlsSelectLinks panel_edit_select_links = new PanelControlsSelectLinks();
+  public static PanelControlsSelectLinks panel_edit_select_links = new PanelControlsSelectLinks();
 
-	public static PanelControlsSelectMain panel_edit_select_main = new PanelControlsSelectMain(new_message_manager);
+  public static PanelControlsSelectMain panel_edit_select_main = new PanelControlsSelectMain(new_message_manager);
 
-	public static PanelControlsSelect panel_edit_select = new PanelControlsSelect();
+  public static PanelControlsSelect panel_edit_select = new PanelControlsSelect();
 
-	public static PanelControlsPropertiesFlags panel_edit_properties_flags = new PanelControlsPropertiesFlags(new_message_manager);
+  public static PanelControlsPropertiesFlags panel_edit_properties_flags = new PanelControlsPropertiesFlags(new_message_manager);
 
-	public static PanelControlsPropertiesNames panel_edit_properties_names = new PanelControlsPropertiesNames(new_message_manager);
+  public static PanelControlsPropertiesNames panel_edit_properties_names = new PanelControlsPropertiesNames(new_message_manager);
 
-	public static PanelControlsStatistics panel_controls_statistics = new PanelControlsStatistics();
+  public static PanelControlsStatistics panel_controls_statistics = new PanelControlsStatistics();
 
-	public static PanelControlsPropertiesScalars panel_edit_properties_scalars = new PanelControlsPropertiesScalars(new_message_manager);
+  public static PanelControlsPropertiesScalars panel_edit_properties_scalars = new PanelControlsPropertiesScalars(new_message_manager);
 
-	public static PanelControlsProperties panel_edit_properties = new PanelControlsProperties();
+  public static PanelControlsProperties panel_edit_properties = new PanelControlsProperties();
 
-	public static PanelControls panel_controls = new PanelControls();
+  public static PanelControls panel_controls = new PanelControls();
 
-	public static PanelControlsModify panel_edit_model = new PanelControlsModify();
+  public static PanelControlsModify panel_edit_model = new PanelControlsModify();
 
-	public static PanelFundamental panel_fundamental = new PanelFundamental(new_message_manager);
+  public static PanelFundamental panel_fundamental = new PanelFundamental(new_message_manager);
 
-	public static PanelAbout panel_about = new PanelAbout();
+  public static PanelAbout panel_about = new PanelAbout();
 
-	public static PanelHelp panel_help = new PanelHelp();
+  public static PanelHelp panel_help = new PanelHelp();
 
-	public static PanelPreferencesViewpoint panel_preferences_viewpoint = new PanelPreferencesViewpoint();
+  public static PanelPreferencesViewpoint panel_preferences_viewpoint = new PanelPreferencesViewpoint();
 
-	public static PanelPreferencesStereo3D panel_preferences_stereo3d = new PanelPreferencesStereo3D();
+  public static PanelPreferencesStereo3D panel_preferences_stereo3d = new PanelPreferencesStereo3D();
 
-	public static PanelPreferencesRendererSharedShow panel_preferences_shared_show = new PanelPreferencesRendererSharedShow();
+  public static PanelPreferencesRendererSharedShow panel_preferences_shared_show = new PanelPreferencesRendererSharedShow();
 
-	public static PanelPreferencesRendererSharedMisc panel_preferences_shared_misc = new PanelPreferencesRendererSharedMisc();
+  public static PanelPreferencesRendererSharedMisc panel_preferences_shared_misc = new PanelPreferencesRendererSharedMisc();
 
-	public static PanelPreferencesEdit panel_preferences_edit = new PanelPreferencesEdit();
+  public static PanelPreferencesEdit panel_preferences_edit = new PanelPreferencesEdit();
 
-	public static PanelPreferencesUpdate panel_preferences_update = new PanelPreferencesUpdate();
+  public static PanelPreferencesUpdate panel_preferences_update = new PanelPreferencesUpdate();
 
-	public static PanelPreferencesImport panel_preferences_import = new PanelPreferencesImport();
+  public static PanelPreferencesImport panel_preferences_import = new PanelPreferencesImport();
 
-	public static PanelPreferencesPOVExport panel_preferences_pov_export = new PanelPreferencesPOVExport();
+  public static PanelPreferencesPOVExport panel_preferences_pov_export = new PanelPreferencesPOVExport();
 
-	public static PanelPreferencesRendererOriginal panel_preferences_renderer_original = new PanelPreferencesRendererOriginal(new_message_manager);
+  public static PanelPreferencesRendererOriginal panel_preferences_renderer_original = new PanelPreferencesRendererOriginal(new_message_manager);
 
-	public static PanelPreferencesRendererModernFilters panel_preferences_renderer_modern_filters = new PanelPreferencesRendererModernFilters();
+  public static PanelPreferencesRendererModernFilters panel_preferences_renderer_modern_filters = new PanelPreferencesRendererModernFilters();
 
-	public static PanelPreferencesRendererModernColours panel_preferences_renderer_modern_colours = new PanelPreferencesRendererModernColours();
+  public static PanelPreferencesRendererModernColours panel_preferences_renderer_modern_colours = new PanelPreferencesRendererModernColours();
 
-	// Built before the modern panel: the modern panel's Renderer tab
-	// shows these ray-traced-only options at its bottom (South) while
-	// the ray-traced renderer is active.
-	public static PanelPreferencesRendererRaytraced panel_preferences_renderer_raytraced = new PanelPreferencesRendererRaytraced();
+  // Built before the modern panel: the modern panel's Renderer tab
+  // shows these ray-traced-only options at its bottom (South) while
+  // the ray-traced renderer is active.
+  public static PanelPreferencesRendererRaytraced panel_preferences_renderer_raytraced = new PanelPreferencesRendererRaytraced();
 
-	public static PanelPreferencesRendererModern panel_preferences_renderer_modern = new PanelPreferencesRendererModern(new_message_manager);
+  public static PanelPreferencesRendererModern panel_preferences_renderer_modern = new PanelPreferencesRendererModern(new_message_manager);
 
-	public static PanelPreferencesDisplay panel_preferences_display = new PanelPreferencesDisplay();
+  public static PanelPreferencesDisplay panel_preferences_display = new PanelPreferencesDisplay();
 
-	public static PanelPreferences panel_preferences = new PanelPreferences();
+  public static PanelPreferences panel_preferences = new PanelPreferences();
 
-	public static PanelAllControls panel_controls_all = new PanelAllControls();
+  public static PanelAllControls panel_controls_all = new PanelAllControls();
 
-	public static int resolutionx;
+  public static int resolutionx;
 
-	public static int resolutiony;
+  public static int resolutiony;
 
-	public static FrEnd instance;
+  public static FrEnd instance;
 
-	public static DataInput data_input = new DataInput(null);
+  public static DataInput data_input = new DataInput(null);
 
-	public static BaseElement dragged_element;
+  public static BaseElement dragged_element;
 
-	public static boolean forces_disabled_during_gesture;
+  public static boolean forces_disabled_during_gesture;
 
-	public static boolean animation_inactive = true;
+  public static boolean animation_inactive = true;
 
-	public static String archive;
+  public static String archive;
 
-	static int last_known_good_x;
+  static int last_known_good_x;
 
-	static int last_known_good_y;
+  static int last_known_good_y;
 
-	public static boolean artificial_chemistry = true;
+  public static boolean artificial_chemistry = true;
 
-	public void start() {
-		// Log.log("start() called");
-		instance = this;
-		resolutionx = 800;
-		resolutiony = 600;
+  public void start() {
+    // Log.log("start() called");
+    instance = this;
+    resolutionx = 800;
+    resolutiony = 600;
 
-		if (module) {
-			extension = new Module();
-			extension.oneOffInitialisation();
-		}
+    if (module) {
+      extension = new Module();
+      extension.oneOffInitialisation();
+    }
 
-		SetUpCode.initialise(resolutionx, resolutiony);
+    SetUpCode.initialise(resolutionx, resolutiony);
 
-		setUpGestureManagers();
+    setUpGestureManagers();
 
-		main_canvas = new MainCanvas(this);
+    main_canvas = new MainCanvas(this);
 
-		paused = false;
+    paused = false;
 
-		show_exhaust = true;
-		quality = Quality.MULTIPLE;
+    show_exhaust = true;
+    quality = Quality.MULTIPLE;
 
-		panel_with_controls_at_bottom = setUpPanelForFrame2();
+    panel_with_controls_at_bottom = setUpPanelForFrame2();
 
-		this.setBackground(Color.black);
+    this.setBackground(Color.black);
 
-		final Panel panelFPS = new Panel();
-		panelFPS.add(new Label("Frames per second:", Label.RIGHT));
-		final String string_4_zeros = "0000";
-		label_show_time = new Label(string_4_zeros, Label.LEFT);
-		panelFPS.add(label_show_time);
+    final Panel panelFPS = new Panel();
+    panelFPS.add(new Label("Frames per second:", Label.RIGHT));
+    final String string_4_zeros = "0000";
+    label_show_time = new Label(string_4_zeros, Label.LEFT);
+    panelFPS.add(label_show_time);
 
-		final Panel panel_cnum = new Panel();
-		panel_cnum.add(new Label("Number of creatures:", Label.RIGHT));
-		label_show_cnum = new Label(string_4_zeros, Label.LEFT);
-		panel_cnum.add(label_show_cnum);
+    final Panel panel_cnum = new Panel();
+    panel_cnum.add(new Label("Number of creatures:", Label.RIGHT));
+    label_show_cnum = new Label(string_4_zeros, Label.LEFT);
+    panel_cnum.add(label_show_cnum);
 
-		final Panel panel_generation = new Panel();
-		panel_generation.add(new Label("Generation:", Label.RIGHT));
-		label_show_gen = new Label("0       ", Label.LEFT);
-		panel_generation.add(label_show_gen);
+    final Panel panel_generation = new Panel();
+    panel_generation.add(new Label("Generation:", Label.RIGHT));
+    label_show_gen = new Label("0       ", Label.LEFT);
+    panel_generation.add(label_show_gen);
 
-		FrEnd.panel_universe.reflectMaxSpeed();
+    FrEnd.panel_universe.reflectMaxSpeed();
 
-		setLayout(new BorderLayout(0, 0));
+    setLayout(new BorderLayout(0, 0));
 
-		if (!viewer) {
-			panel_with_controls_at_bottom.add(panel_fundamental.panel);
-			// panel_funfidamental.panel.setVisible(false);
-			// this.validate();
-		}
+    if (!viewer) {
+      panel_with_controls_at_bottom.add(panel_fundamental.panel);
+      // panel_funfidamental.panel.setVisible(false);
+      // this.validate();
+    }
 
-		add("South", panel_with_controls_at_bottom);
+    add("South", panel_with_controls_at_bottom);
 
-		setUpFrames();
+    setUpFrames();
 
-		// The docked controls dock into this inner panel (East), never
-		// into the outer layout: the bottom bar above keeps the full
-		// window width whatever the docking option.
-		panel_main_area = new Panel(new BorderLayout(0, 0));
-		panel_main_area.add("Center", main_canvas.panel);
-		add("Center", panel_main_area);
+    // The docked controls dock into this inner panel (East), never
+    // into the outer layout: the bottom bar above keeps the full
+    // window width whatever the docking option.
+    panel_main_area = new Panel(new BorderLayout(0, 0));
+    panel_main_area.add("Center", main_canvas.panel);
+    add("Center", panel_main_area);
 
-		greyStepIfNeeded();
+    greyStepIfNeeded();
 
-		loadInitialModel();
+    loadInitialModel();
 
-		ContextManager.getNodeManager().initialSetUp();
+    ContextManager.getNodeManager().initialSetUp();
 
-		reflectValuesInGUIAfterPropertyEditing();
+    reflectValuesInGUIAfterPropertyEditing();
 
-		main_canvas.start_up();
+    main_canvas.start_up();
 
-		startThread();
+    startThread();
 
-		if (application) {
-			resize(resolutionx, resolutiony);
-		} else if (last_known_good_x > 0) {
-			resize(last_known_good_x, last_known_good_y);
-		}
+    if (application) {
+      resize(resolutionx, resolutiony);
+    } else if (last_known_good_x > 0) {
+      resize(last_known_good_x, last_known_good_y);
+    }
 
-		new_message_manager.add(FrEnd.system_messages.getRestartMessage());
+    new_message_manager.add(FrEnd.system_messages.getRestartMessage());
 
-		validate();
-		repaint();
-	}
+    validate();
+    repaint();
+  }
 
-	// Note: sequence is important here...
-	private void loadInitialModel() {
-		// FrEnd.archive = null;
+  // Note: sequence is important here...
+  private void loadInitialModel() {
+    // FrEnd.archive = null;
 
-		initial_type = initial_initial_type;
+    initial_type = initial_initial_type;
 
-		SetUpCode.clearAndThenAddInitialObjects();
-	}
+    SetUpCode.clearAndThenAddInitialObjects();
+  }
 
-	private void setUpGestureManagers() {
-		translation_manager = new TranslationManager();
+  private void setUpGestureManagers() {
+    translation_manager = new TranslationManager();
 
-		perform_actions = new PerformActions();
+    perform_actions = new PerformActions();
 
-		perform_selection = new PerformSelection();
+    perform_selection = new PerformSelection();
 
-		rotation_manager = new RotationManager();
+    rotation_manager = new RotationManager();
 
-		scale_manager = new ScaleManager();
+    scale_manager = new ScaleManager();
 
-		diet_manager = new DietManager();
-	}
+    diet_manager = new DietManager();
+  }
 
-	public static Panel setUpPanelForFrame() {
-		final Panel p = new Panel();
-		p.setLayout(new GridLayout(0, 1, 0, 0));
-		p.setForeground(Color.black);
-		p.setBackground(Color.lightGray);
-		return p;
-	}
+  public static Panel setUpPanelForFrame() {
+    final Panel p = new Panel();
+    p.setLayout(new GridLayout(0, 1, 0, 0));
+    p.setForeground(Color.black);
+    p.setBackground(Color.lightGray);
+    return p;
+  }
 
-	public static Panel setUpPanelForFrame2() {
-		if (application && usingJava120()) {
-			final DropablePanel p = new DropablePanel();
-			p.setLayout(new GridLayout(0, 1, 0, 0));
-			p.setForeground(Color.black);
-			p.setBackground(Color.lightGray);
-			return p;
-		}
+  public static Panel setUpPanelForFrame2() {
+    if (application && usingJava120()) {
+      final DropablePanel p = new DropablePanel();
+      p.setLayout(new GridLayout(0, 1, 0, 0));
+      p.setForeground(Color.black);
+      p.setBackground(Color.lightGray);
+      return p;
+    }
 
-		return setUpPanelForFrame();
-	}
+    return setUpPanelForFrame();
+  }
 
-	public static boolean usingJava120() {
-		final String version = System.getProperty("java.version");
-		return "1.1.9".compareTo(version) < 0;
-	}
+  public static boolean usingJava120() {
+    final String version = System.getProperty("java.version");
+    return "1.1.9".compareTo(version) < 0;
+  }
 
-	private void setUpFrames() {
-		final FrameMaker frame_maker = new FrameMaker();
+  private void setUpFrames() {
+    final FrameMaker frame_maker = new FrameMaker();
 
-		frame_panel_about = frame_maker.setUpFrameAbout();
-		frame_panel_help = frame_maker.setUpFrameHelp();
-		// frame_preferences = frame_maker.setUpFramePreferences();
-		frame_controls = frame_maker.setUpFrameControls();
-	}
+    frame_panel_about = frame_maker.setUpFrameAbout();
+    frame_panel_help = frame_maker.setUpFrameHelp();
+    // frame_preferences = frame_maker.setUpFramePreferences();
+    frame_controls = frame_maker.setUpFrameControls();
+  }
 
-	/**
-	 * Applies the controls-window options: stay-on-top and docking with the
-	 * main window. Idempotent; call it whenever the options change and once
-	 * at startup.
-	 *
-	 * "Stay on top" keeps the controls above the main window only -- never
-	 * above every window on the machine. A toolkit-level listener brings
-	 * the controls forward when the main window is activated (title bar,
-	 * task bar, Alt+Tab, ...) and when the mouse is pressed inside it.
-	 * The activation raise is done without activating the controls: the
-	 * old plain toFront() here stole focus mid-click and cancelled the
-	 * main window's menus on Windows. Presses on the menu bar need no
-	 * special-casing: the native menu bar is not an AWT component, so
-	 * clicking Load/Save/... never triggers the press branch and the menus
-	 * open normally.
-	 */
-	public static void applyControlsWindowOptions() {
-		// Never system-wide: the controls must not sit above other
-		// applications' windows.
-		if (frame_controls != null) {
-			try {
-				frame_controls.setAlwaysOnTop(false);
-			} catch (SecurityException e) {
-				// Sandboxed environments may not allow changing this.
-				Forget.about(e);
-			}
-		}
+  /**
+   * Applies the controls-window options: stay-on-top and docking with the
+   * main window. Idempotent; call it whenever the options change and once
+   * at startup.
+   *
+   * "Stay on top" keeps the controls above the main window only -- never
+   * above every window on the machine. A toolkit-level listener brings
+   * the controls forward when the main window is activated (title bar,
+   * task bar, Alt+Tab, ...) and when the mouse is pressed inside it.
+   * The activation raise is done without activating the controls: the
+   * old plain toFront() here stole focus mid-click and cancelled the
+   * main window's menus on Windows. Presses on the menu bar need no
+   * special-casing: the native menu bar is not an AWT component, so
+   * clicking Load/Save/... never triggers the press branch and the menus
+   * open normally.
+   */
+  public static void applyControlsWindowOptions() {
+    // Never system-wide: the controls must not sit above other
+    // applications' windows.
+    if (frame_controls != null) {
+      try {
+        frame_controls.setAlwaysOnTop(false);
+      } catch (SecurityException e) {
+        // Sandboxed environments may not allow changing this.
+        Forget.about(e);
+      }
+    }
 
-		if (controls_window_mode == CONTROLS_ALWAYS_ON_TOP) {
-			startControlsStayOnTop();
-		} else {
-			stopControlsStayOnTop();
-		}
+    if (controls_window_mode == CONTROLS_ALWAYS_ON_TOP) {
+      startControlsStayOnTop();
+    } else {
+      stopControlsStayOnTop();
+    }
 
-		if (controls_window_mode == CONTROLS_DOCKED) {
-			dockControlsWithMain();
-		} else {
-			undockControlsFromMain();
-		}
-	}
+    if (controls_window_mode == CONTROLS_DOCKED) {
+      dockControlsWithMain();
+    } else {
+      undockControlsFromMain();
+    }
+  }
 
-	private static AWTEventListener controls_stay_on_top_listener;
+  private static AWTEventListener controls_stay_on_top_listener;
 
-	/**
-	 * Whether the stay-on-top listener is currently installed. Exposed for
-	 * the tests.
-	 */
-	public static boolean isControlsStayOnTopActive() {
-		return controls_stay_on_top_listener != null;
-	}
+  /**
+   * Whether the stay-on-top listener is currently installed. Exposed for
+   * the tests.
+   */
+  public static boolean isControlsStayOnTopActive() {
+    return controls_stay_on_top_listener != null;
+  }
 
-	private static void startControlsStayOnTop() {
-		if (frame_main == null || frame_controls == null) {
-			return;
-		}
+  private static void startControlsStayOnTop() {
+    if (frame_main == null || frame_controls == null) {
+      return;
+    }
 
-		if (controls_stay_on_top_listener != null) {
-			// Already installed. It reads the current frame_main, so it
-			// follows recreated frames with no re-attaching.
-			return;
-		}
+    if (controls_stay_on_top_listener != null) {
+      // Already installed. It reads the current frame_main, so it
+      // follows recreated frames with no re-attaching.
+      return;
+    }
 
-		controls_stay_on_top_listener = new AWTEventListener() {
-			public void eventDispatched(AWTEvent e) {
-				if (frame_controls == null || !frame_controls.isVisible()) {
-					return;
-				}
-				if (e.getID() == WindowEvent.WINDOW_ACTIVATED
-						&& e.getSource() == frame_main) {
-					// The main window was activated by any path (content,
-					// title bar, task bar, Alt+Tab, ...): bring the controls
-					// back above it, without activating them -- stealing
-					// focus here is what used to cancel the main window's
-					// menus mid-click.
-					bringControlsForwardNonActivating();
-				} else if (e.getID() == MouseEvent.MOUSE_PRESSED
-						&& isMainWindowContent(e.getSource())) {
-					// Non-activating: a plain toFront() here could steal
-					// window activation, which dismisses the model-selection
-					// dropdown in the main window (seen on Windows).
-					bringControlsForwardNonActivating();
-				}
-			}
-		};
-		try {
-			Toolkit.getDefaultToolkit().addAWTEventListener(
-					controls_stay_on_top_listener, AWTEvent.MOUSE_EVENT_MASK
-							| AWTEvent.WINDOW_EVENT_MASK);
-		} catch (SecurityException e) {
-			// Sandboxed environments may not allow listening to toolkit events.
-			Forget.about(e);
-			controls_stay_on_top_listener = null;
-			return;
-		}
-		// Bring the controls forward once, now that the option is on.
-		// (Not on every apply: that would yank the window forward while
-		// the user works in another application.)
-		frame_controls.toFront();
-	}
+    controls_stay_on_top_listener = new AWTEventListener() {
+      public void eventDispatched(AWTEvent e) {
+        if (frame_controls == null || !frame_controls.isVisible()) {
+          return;
+        }
+        if (e.getID() == WindowEvent.WINDOW_ACTIVATED
+            && e.getSource() == frame_main) {
+          // The main window was activated by any path (content,
+          // title bar, task bar, Alt+Tab, ...): bring the controls
+          // back above it, without activating them -- stealing
+          // focus here is what used to cancel the main window's
+          // menus mid-click.
+          bringControlsForwardNonActivating();
+        } else if (e.getID() == MouseEvent.MOUSE_PRESSED
+            && isMainWindowContent(e.getSource())) {
+          // Non-activating: a plain toFront() here could steal
+          // window activation, which dismisses the model-selection
+          // dropdown in the main window (seen on Windows).
+          bringControlsForwardNonActivating();
+        }
+      }
+    };
+    try {
+      Toolkit.getDefaultToolkit().addAWTEventListener(
+          controls_stay_on_top_listener, AWTEvent.MOUSE_EVENT_MASK
+              | AWTEvent.WINDOW_EVENT_MASK);
+    } catch (SecurityException e) {
+      // Sandboxed environments may not allow listening to toolkit events.
+      Forget.about(e);
+      controls_stay_on_top_listener = null;
+      return;
+    }
+    // Bring the controls forward once, now that the option is on.
+    // (Not on every apply: that would yank the window forward while
+    // the user works in another application.)
+    frame_controls.toFront();
+  }
 
-	/**
-	 * Raises the controls window above the main window without giving it
-	 * focus. A plain toFront() may activate the window, which is what used
-	 * to cancel the main window's menus when they were clicked while the
-	 * controls were on top. A momentarily non-focusable window is raised
-	 * without activation; the flag is restored immediately, synchronously
-	 * on this event dispatch, so nothing in between can observe it.
-	 */
-	private static void bringControlsForwardNonActivating() {
-		final boolean focusable = frame_controls.getFocusableWindowState();
-		try {
-			if (focusable) {
-				frame_controls.setFocusableWindowState(false);
-			}
-			frame_controls.toFront();
-		} finally {
-			if (focusable) {
-				frame_controls.setFocusableWindowState(true);
-			}
-		}
-	}
+  /**
+   * Raises the controls window above the main window without giving it
+   * focus. A plain toFront() may activate the window, which is what used
+   * to cancel the main window's menus when they were clicked while the
+   * controls were on top. A momentarily non-focusable window is raised
+   * without activation; the flag is restored immediately, synchronously
+   * on this event dispatch, so nothing in between can observe it.
+   */
+  private static void bringControlsForwardNonActivating() {
+    final boolean focusable = frame_controls.getFocusableWindowState();
+    try {
+      if (focusable) {
+        frame_controls.setFocusableWindowState(false);
+      }
+      frame_controls.toFront();
+    } finally {
+      if (focusable) {
+        frame_controls.setFocusableWindowState(true);
+      }
+    }
+  }
 
-	/**
-	 * True when the event source is the main window itself or a component
-	 * inside it -- but not inside one of its owned windows (such as a file
-	 * dialog), which must be left alone. The native menu bar is not a
-	 * component at all, so presses on Load/Save/... never reach this test.
-	 */
-	private static boolean isMainWindowContent(Object source) {
-		if (!(source instanceof Component)) {
-			return false;
-		}
+  /**
+   * True when the event source is the main window itself or a component
+   * inside it -- but not inside one of its owned windows (such as a file
+   * dialog), which must be left alone. The native menu bar is not a
+   * component at all, so presses on Load/Save/... never reach this test.
+   */
+  private static boolean isMainWindowContent(Object source) {
+    if (!(source instanceof Component)) {
+      return false;
+    }
 
-		Component c = (Component) source;
-		while (c != null && c != frame_main) {
-			if (c instanceof Window) {
-				// Inside an owned window (e.g. a file dialog), not the main
-				// window's own content.
-				return false;
-			}
-			c = c.getParent();
-		}
+    Component c = (Component) source;
+    while (c != null && c != frame_main) {
+      if (c instanceof Window) {
+        // Inside an owned window (e.g. a file dialog), not the main
+        // window's own content.
+        return false;
+      }
+      c = c.getParent();
+    }
 
-		return c == frame_main;
-	}
+    return c == frame_main;
+  }
 
-	private static void stopControlsStayOnTop() {
-		if (controls_stay_on_top_listener != null) {
-			Toolkit.getDefaultToolkit().removeAWTEventListener(
-					controls_stay_on_top_listener);
-			controls_stay_on_top_listener = null;
-		}
-	}
+  private static void stopControlsStayOnTop() {
+    if (controls_stay_on_top_listener != null) {
+      Toolkit.getDefaultToolkit().removeAWTEventListener(
+          controls_stay_on_top_listener);
+      controls_stay_on_top_listener = null;
+    }
+  }
 
-	/**
-	 * True docking: reparents the controls panel into the main window's
-	 * inner area (panel_main_area, BorderLayout.EAST, beside the canvas)
-	 * and hides the separate controls frame. The layout manager keeps
-	 * them joined -- no coordinate snapping. The bottom bar stays in the
-	 * outer South, so it spans the full window width while docked.
-	 */
-	private static void dockControlsWithMain() {
-		if (frame_main == null || frame_controls == null
-				|| panel_main_area == null) {
-			return;
-		}
-		final java.awt.Panel controls_panel = panel_controls_all.panel;
-		if (controls_panel.getParent() == panel_main_area) {
-			// Already docked.
-			return;
-		}
-		// Undock first (in case it was in the controls frame).
-		frame_controls.remove(controls_panel);
-		panel_main_area.add(controls_panel, java.awt.BorderLayout.EAST);
-		// A fresh dock shows the panel: the toggle may have hidden it.
-		controls_panel.setVisible(true);
-		panel_main_area.validate();
-		frame_controls.setVisible(false);
-	}
+  /**
+   * True docking: reparents the controls panel into the main window's
+   * inner area (panel_main_area, BorderLayout.EAST, beside the canvas)
+   * and hides the separate controls frame. The layout manager keeps
+   * them joined -- no coordinate snapping. The bottom bar stays in the
+   * outer South, so it spans the full window width while docked.
+   */
+  private static void dockControlsWithMain() {
+    if (frame_main == null || frame_controls == null
+        || panel_main_area == null) {
+      return;
+    }
+    final java.awt.Panel controls_panel = panel_controls_all.panel;
+    if (controls_panel.getParent() == panel_main_area) {
+      // Already docked.
+      return;
+    }
+    // Undock first (in case it was in the controls frame).
+    frame_controls.remove(controls_panel);
+    panel_main_area.add(controls_panel, java.awt.BorderLayout.EAST);
+    // A fresh dock shows the panel: the toggle may have hidden it.
+    controls_panel.setVisible(true);
+    panel_main_area.validate();
+    frame_controls.setVisible(false);
+  }
 
-	/**
-	 * Restores the controls panel to its own frame.
-	 */
-	private static void undockControlsFromMain() {
-		if (frame_main == null || frame_controls == null
-				|| panel_main_area == null) {
-			return;
-		}
-		final java.awt.Panel controls_panel = panel_controls_all.panel;
-		if (controls_panel.getParent() == frame_controls) {
-			// Already undocked.
-			return;
-		}
-		panel_main_area.remove(controls_panel);
-		panel_main_area.validate();
-		frame_controls.add(controls_panel, "Center");
-		// The toggle may have hidden it while docked.
-		controls_panel.setVisible(true);
-		frame_controls.validate();
-		// Only show the frame if we're not in the middle of docking;
-		// the caller decides visibility for free-floating vs always-on-top.
-		// (Both need the frame visible.)
-		if (controls_window_mode != CONTROLS_DOCKED) {
-			frame_controls.setVisible(true);
-		}
-	}
+  /**
+   * Restores the controls panel to its own frame.
+   */
+  private static void undockControlsFromMain() {
+    if (frame_main == null || frame_controls == null
+        || panel_main_area == null) {
+      return;
+    }
+    final java.awt.Panel controls_panel = panel_controls_all.panel;
+    if (controls_panel.getParent() == frame_controls) {
+      // Already undocked.
+      return;
+    }
+    panel_main_area.remove(controls_panel);
+    panel_main_area.validate();
+    frame_controls.add(controls_panel, "Center");
+    // The toggle may have hidden it while docked.
+    controls_panel.setVisible(true);
+    frame_controls.validate();
+    // Only show the frame if we're not in the middle of docking;
+    // the caller decides visibility for free-floating vs always-on-top.
+    // (Both need the frame visible.)
+    if (controls_window_mode != CONTROLS_DOCKED) {
+      frame_controls.setVisible(true);
+    }
+  }
 
-	static void setUpResolutionSelector2() {
-		panel_resolution_selector.removeAll();
-		panel_resolution_selector.setBackground(colour_grey1);
-		panel_resolution_selector.add(label_size_x);
-		panel_resolution_selector.add(label_size_y);
-		panel_resolution_selector.add(panel_edit_properties_scalars.button_setsize);
-	}
+  static void setUpResolutionSelector2() {
+    panel_resolution_selector.removeAll();
+    panel_resolution_selector.setBackground(colour_grey1);
+    panel_resolution_selector.add(label_size_x);
+    panel_resolution_selector.add(label_size_y);
+    panel_resolution_selector.add(panel_edit_properties_scalars.button_setsize);
+  }
 
-	public static void postCleanup() {
-		new PostModification(ContextManager.getNodeManager()).cleanup();
-		reflectAllValuesInGUIAfterSeriousEditing();
-	}
+  public static void postCleanup() {
+    new PostModification(ContextManager.getNodeManager()).cleanup();
+    reflectAllValuesInGUIAfterSeriousEditing();
+  }
 
-	public static void reflectAllValuesInGUIAfterSeriousEditing() {
-		reflectElementNumbersInGUI();
-		reflectValuesInGUIAfterPropertyEditing();
-	}
+  public static void reflectAllValuesInGUIAfterSeriousEditing() {
+    reflectElementNumbersInGUI();
+    reflectValuesInGUIAfterPropertyEditing();
+  }
 
-	public static void reflectValuesInGUIAfterPropertyEditing() {
-		reflectStatusInGUI();
-		updateGUIToReflectSelectionChange();
-	}
+  public static void reflectValuesInGUIAfterPropertyEditing() {
+    reflectStatusInGUI();
+    updateGUIToReflectSelectionChange();
+  }
 
-	private static void reflectElementNumbersInGUI() {
-		final int n_nodes = ContextManager.getNodeManager().element.size();
-		final int n_links = ContextManager.getLinkManager().element.size();
-		final int n_faces = ContextManager.getFaceManager().element.size();
+  private static void reflectElementNumbersInGUI() {
+    final int n_nodes = ContextManager.getNodeManager().element.size();
+    final int n_links = ContextManager.getLinkManager().element.size();
+    final int n_faces = ContextManager.getFaceManager().element.size();
 
-		panel_controls_statistics.updateGUIToReflectSelectionChange();
+    panel_controls_statistics.updateGUIToReflectSelectionChange();
 
-		FrEnd.panel_edit_select_main.resetPanelTypeSelector(n_nodes != 0, n_links != 0, n_faces != 0);
-	}
+    FrEnd.panel_edit_select_main.resetPanelTypeSelector(n_nodes != 0, n_links != 0, n_faces != 0);
+  }
 
-	public static void reflectStatusInGUI() {
-		panel_edit_properties_scalars.reflectRadius();
-		panel_edit_properties_scalars.reflectCharge();
-		panel_edit_properties_scalars.reflectLength();
-		panel_edit_properties_scalars.reflectElasticity();
-		panel_edit_properties_scalars.reflectStiffness();
+  public static void reflectStatusInGUI() {
+    panel_edit_properties_scalars.reflectRadius();
+    panel_edit_properties_scalars.reflectCharge();
+    panel_edit_properties_scalars.reflectLength();
+    panel_edit_properties_scalars.reflectElasticity();
+    panel_edit_properties_scalars.reflectStiffness();
 
-		FrEnd.panel_universe.reflectMaxSpeed();
-		FrEnd.panel_universe.reflectImpact();
-		FrEnd.panel_universe.reflectViscocity();
-		FrEnd.panel_universe.reflectGravity();
-		FrEnd.panel_universe.reflectFriction();
-		FrEnd.panel_universe.reflectTemperature();
-		FrEnd.panel_universe.reflect3D();
-		FrEnd.panel_universe.reflectMuscles();
-		FrEnd.panel_universe.checkbox_muscles.setState(Muscles.enabled);
-		FrEnd.panel_universe.reflectUniverseToggles();
+    FrEnd.panel_universe.reflectMaxSpeed();
+    FrEnd.panel_universe.reflectImpact();
+    FrEnd.panel_universe.reflectViscocity();
+    FrEnd.panel_universe.reflectGravity();
+    FrEnd.panel_universe.reflectFriction();
+    FrEnd.panel_universe.reflectTemperature();
+    FrEnd.panel_universe.reflect3D();
+    FrEnd.panel_universe.reflectMuscles();
+    FrEnd.panel_universe.checkbox_muscles.setState(Muscles.enabled);
+    FrEnd.panel_universe.reflectUniverseToggles();
 
-		FrEnd.panel_controls_statistics.updateGUIToReflectPropertiesChange();
+    FrEnd.panel_controls_statistics.updateGUIToReflectPropertiesChange();
 
-		RendererDelegator.repaintAll();
-	}
+    RendererDelegator.repaintAll();
+  }
 
-	public static void updateGUIToReflectSelectionChange() {
-		RendererDelegator.repaint_some_objects = true;
-		UpdateEnabledComponents.updateGUIGreyItemsDependingOnSelection();
+  public static void updateGUIToReflectSelectionChange() {
+    RendererDelegator.repaint_some_objects = true;
+    UpdateEnabledComponents.updateGUIGreyItemsDependingOnSelection();
 
-		FrEnd.panel_edit_properties_scalars.updateGUIToReflectSelectionChange();
-		FrEnd.panel_controls_statistics.updateGUIToReflectSelectionChange();
+    FrEnd.panel_edit_properties_scalars.updateGUIToReflectSelectionChange();
+    FrEnd.panel_controls_statistics.updateGUIToReflectSelectionChange();
 
-		FrEnd.panel_edit_properties_names.updatePrefix();
-		FrEnd.panel_edit_properties_names.updateSuffix();
-	}
+    FrEnd.panel_edit_properties_names.updatePrefix();
+    FrEnd.panel_edit_properties_names.updateSuffix();
+  }
 
-	public static void selectNewNodeIfAppropriate(Node selected_node) {
-		if ((main_canvas.modifiers & 2) != 0) {
-			if (button_virginity) {
-				prepareToModifyNodeTypes();
-				selected_node.type.selected = !selected_node.type.selected;
-			}
-		} else {
-			prepareToModifyNodeTypes();
-			selected_node.type.selected = true;
-		}
+  public static void selectNewNodeIfAppropriate(Node selected_node) {
+    if ((main_canvas.modifiers & 2) != 0) {
+      if (button_virginity) {
+        prepareToModifyNodeTypes();
+        selected_node.type.selected = !selected_node.type.selected;
+      }
+    } else {
+      prepareToModifyNodeTypes();
+      selected_node.type.selected = true;
+    }
 
-		updateGUIToReflectSelectionChange();
-	}
+    updateGUIToReflectSelectionChange();
+  }
 
-	public static void prepareToModifyAllTypes() {
-		FrEnd.prepareToModifyNodeTypes();
-		FrEnd.prepareToModifyLinkTypes();
-		FrEnd.prepareToModifyFaceTypes();
-	}
+  public static void prepareToModifyAllTypes() {
+    FrEnd.prepareToModifyNodeTypes();
+    FrEnd.prepareToModifyLinkTypes();
+    FrEnd.prepareToModifyFaceTypes();
+  }
 
-	// .....................Run Method......................
-	public final void run() {
-		// Log.log("run() called");
-		thread_terminated = false;
+  // .....................Run Method......................
+  public final void run() {
+    // Log.log("run() called");
+    thread_terminated = false;
 
-		while (!thread_terminated) {
-			if (!paused) {
-				if (stepping > 0) {
-					if (--stepping == 0) {
-						endStepping();
-					}
-				}
-			}
+    while (!thread_terminated) {
+      if (!paused) {
+        if (stepping > 0) {
+          if (--stepping == 0) {
+            endStepping();
+          }
+        }
+      }
 
-			// Process messages on the animation thread (not the AWT thread):
-			// model-building messages must not run concurrently with physics.
-			MessagePump.processAll();
+      // Process messages on the animation thread (not the AWT thread):
+      // model-building messages must not run concurrently with physics.
+      MessagePump.processAll();
 
-			main_canvas.panel.repaint();
+      main_canvas.panel.repaint();
 
-			if (delay > 0) {
-				takeFortyWinks();
-			}
+      if (delay > 0) {
+        takeFortyWinks();
+      }
 
-			Thread.yield();
-		}
+      Thread.yield();
+    }
 
-		thread_terminated = true;
+    thread_terminated = true;
 
-		Thread.yield();
+    Thread.yield();
 
-		// Log.log("Exit via thread_terminated");
-	}
+    // Log.log("Exit via thread_terminated");
+  }
 
-	private void takeFortyWinks() {
-		try {
-			Thread.sleep(delay);
-		} catch (InterruptedException e) {
-			Forget.about(e);
-		}
-	}
+  private void takeFortyWinks() {
+    try {
+      Thread.sleep(delay);
+    } catch (InterruptedException e) {
+      Forget.about(e);
+    }
+  }
 
-	public static final void endStepping() {
-		stepping = 0;
-		paused = true;
-		greyPauseAndRestartIfNeeded();
-		// button_step.setLabel(GUIStrings.STEP);
-		button_step.setEnabled(true);
-	}
+  public static final void endStepping() {
+    stepping = 0;
+    paused = true;
+    greyPauseAndRestartIfNeeded();
+    // button_step.setLabel(GUIStrings.STEP);
+    button_step.setEnabled(true);
+  }
 
-	public void startThread() {
-		// Log.log("startThread() called");
+  public void startThread() {
+    // Log.log("startThread() called");
 
-		main_canvas.forceResize();
-		thread_terminated = false;
+    main_canvas.forceResize();
+    thread_terminated = false;
 
-		runner = new Thread(this);
-		runner.start();
+    runner = new Thread(this);
+    runner.start();
 
-		validate();
-		repaint();
-		// Log.log("startThread() exited");
-	}
+    validate();
+    repaint();
+    // Log.log("startThread() exited");
+  }
 
-	public void stop() {
-		// Log.log("Call to 'stop' method");
+  public void stop() {
+    // Log.log("Call to 'stop' method");
 
-		last_known_good_x = Coords.x_pixels;
-		last_known_good_y = Coords.y_pixels;
-		thread_terminated = true;
-		runner = null;
+    last_known_good_x = Coords.x_pixels;
+    last_known_good_y = Coords.y_pixels;
+    thread_terminated = true;
+    runner = null;
 
-		removeAll();
-	}
+    removeAll();
+  }
 
-	public static final void performResize() {
-		main_canvas.forceResize();
-		// BinGrid.set_size(resolutionx, resolutiony);
-		RendererDelegator.repaintAll();
-	}
+  public static final void performResize() {
+    main_canvas.forceResize();
+    // BinGrid.set_size(resolutionx, resolutiony);
+    RendererDelegator.repaintAll();
+  }
 
-	public static void greyStepIfNeeded() {
-		button_step.setEnabled(paused);
-	}
+  public static void greyStepIfNeeded() {
+    button_step.setEnabled(paused);
+  }
 
-	public static void greyPauseAndRestartIfNeeded() {
-		panel_fundamental.button_paused.setEnabled(paused);
-		button_restart.setEnabled(paused);
-	}
+  public static void greyPauseAndRestartIfNeeded() {
+    panel_fundamental.button_paused.setEnabled(paused);
+    button_restart.setEnabled(paused);
+  }
 
-	public static void processMouseClick(int x, int y) {
-		if ((main_canvas.modifiers & InputEvent.BUTTON1_MASK) != 0) {
-			perform_actions.actionSwitch(x, y, action_left_type);
-		}
+  public static void processMouseClick(int x, int y) {
+    if ((main_canvas.modifiers & InputEvent.BUTTON1_MASK) != 0) {
+      perform_actions.actionSwitch(x, y, action_left_type);
+    }
 
-		if ((main_canvas.modifiers & InputEvent.BUTTON2_MASK) != 0) {
-			perform_actions.actionSwitch(x, y, action_middle_type);
-		}
+    if ((main_canvas.modifiers & InputEvent.BUTTON2_MASK) != 0) {
+      perform_actions.actionSwitch(x, y, action_middle_type);
+    }
 
-		if ((main_canvas.modifiers & InputEvent.BUTTON3_MASK) != 0) {
-			perform_actions.actionSwitch(x, y, action_right_type);
-		}
+    if ((main_canvas.modifiers & InputEvent.BUTTON3_MASK) != 0) {
+      perform_actions.actionSwitch(x, y, action_right_type);
+    }
 
-		last_mousex = x;
-		last_mousey = y;
-	}
+    last_mousex = x;
+    last_mousey = y;
+  }
 
-	public static void springieMouseClicked(int x, int y) {
-		if (!button_virginity) {
-			processMouseClick(x, y);
-			button_virginity = false;
-		}
-	}
+  public static void springieMouseClicked(int x, int y) {
+    if (!button_virginity) {
+      processMouseClick(x, y);
+      button_virginity = false;
+    }
+  }
 
-	public static void springieMousePressed(int x, int y) {
-		processMouseClick(x, y);
-		button_virginity = false;
-	}
+  public static void springieMousePressed(int x, int y) {
+    processMouseClick(x, y);
+    button_virginity = false;
+  }
 
-	public static void springieMouseDragged(int x, int y) {
-		processMouseClick(x, y);
-		button_virginity = false;
-	}
+  public static void springieMouseDragged(int x, int y) {
+    processMouseClick(x, y);
+    button_virginity = false;
+  }
 
-	public static void springieMouseReleased(int x, int y) {
-		perform_actions.dragged_link_manager.terminateLink(x, y);
-		perform_actions.drag_box_manager.terminate(x, y);
-		rotation_manager.terminate(x, y);
-		translation_manager.terminate(x, y);
-		scale_manager.terminate(x, y);
-		diet_manager.terminate(x, y);
+  public static void springieMouseReleased(int x, int y) {
+    perform_actions.dragged_link_manager.terminateLink(x, y);
+    perform_actions.drag_box_manager.terminate(x, y);
+    rotation_manager.terminate(x, y);
+    translation_manager.terminate(x, y);
+    scale_manager.terminate(x, y);
+    diet_manager.terminate(x, y);
 
-		perform_actions.dragged_link_manager.pointer_node = null;
-		currently_dragging = false;
-		button_virginity = true;
-		dragged_element = null;
-	}
+    perform_actions.dragged_link_manager.pointer_node = null;
+    currently_dragging = false;
+    button_virginity = true;
+    dragged_element = null;
+  }
 
-	public static void springieMouseEntered(int x, int y) {
-		last_mousex = x;
-		last_mousey = y;
+  public static void springieMouseEntered(int x, int y) {
+    last_mousex = x;
+    last_mousey = y;
 
-		animation_inactive = false;
-		if (((Boolean) FrEnd.preferences.map.get(Preferences.key_update_animation_when_pointer_over)).booleanValue()) {
-			RendererDelegator.repaintAll();
-		}
-	}
+    animation_inactive = false;
+    if (((Boolean) FrEnd.preferences.map.get(Preferences.key_update_animation_when_pointer_over)).booleanValue()) {
+      RendererDelegator.repaintAll();
+    }
+  }
 
-	public static void springieMouseExited(int x, int y) {
-		last_mousex = x;
-		last_mousey = y;
+  public static void springieMouseExited(int x, int y) {
+    last_mousex = x;
+    last_mousey = y;
 
-		animation_inactive = true;
-	}
+    animation_inactive = true;
+  }
 
-	public static void prepareToModifyNodeTypes() {
-		final PrepareToModifyNodeTypes prepare = new PrepareToModifyNodeTypes(ContextManager.getNodeManager());
-		prepare.prepare();
-		RendererDelegator.repaint_some_objects = true;
-	}
+  public static void prepareToModifyNodeTypes() {
+    final PrepareToModifyNodeTypes prepare = new PrepareToModifyNodeTypes(ContextManager.getNodeManager());
+    prepare.prepare();
+    RendererDelegator.repaint_some_objects = true;
+  }
 
-	public static void prepareToModifyLinkTypes() {
-		final PrepareToModifyLinkTypes prepare = new PrepareToModifyLinkTypes(ContextManager.getLinkManager());
-		prepare.prepare();
-		RendererDelegator.repaint_some_objects = true;
-	}
+  public static void prepareToModifyLinkTypes() {
+    final PrepareToModifyLinkTypes prepare = new PrepareToModifyLinkTypes(ContextManager.getLinkManager());
+    prepare.prepare();
+    RendererDelegator.repaint_some_objects = true;
+  }
 
-	public static void prepareToModifyFaceTypes() {
-		final PrepareToModifyFaceTypes prepare = new PrepareToModifyFaceTypes(ContextManager.getFaceManager());
-		prepare.prepare();
-		RendererDelegator.repaint_some_objects = true;
-	}
+  public static void prepareToModifyFaceTypes() {
+    final PrepareToModifyFaceTypes prepare = new PrepareToModifyFaceTypes(ContextManager.getFaceManager());
+    prepare.prepare();
+    RendererDelegator.repaint_some_objects = true;
+  }
 
-	static void prepareToModifyNodeClazzes() {
-		final PrepareToModifyNodeClazzes prepare = new PrepareToModifyNodeClazzes(ContextManager.getNodeManager());
-		prepare.prepare();
-		RendererDelegator.repaint_some_objects = true;
-	}
+  static void prepareToModifyNodeClazzes() {
+    final PrepareToModifyNodeClazzes prepare = new PrepareToModifyNodeClazzes(ContextManager.getNodeManager());
+    prepare.prepare();
+    RendererDelegator.repaint_some_objects = true;
+  }
 
-	static void prepareToModifyLinkClazzes() {
-		final PrepareToModifyLinkClazzes prepare = new PrepareToModifyLinkClazzes(ContextManager.getNodeManager());
-		prepare.prepare();
-		RendererDelegator.repaint_some_objects = true;
-	}
+  static void prepareToModifyLinkClazzes() {
+    final PrepareToModifyLinkClazzes prepare = new PrepareToModifyLinkClazzes(ContextManager.getNodeManager());
+    prepare.prepare();
+    RendererDelegator.repaint_some_objects = true;
+  }
 
-	static void prepareToModifyPolygonClazzes() {
-		final PrepareToModifyFaceClazzes prepare = new PrepareToModifyFaceClazzes(ContextManager.getNodeManager());
-		prepare.prepare();
-		RendererDelegator.repaint_some_objects = true;
-	}
+  static void prepareToModifyPolygonClazzes() {
+    final PrepareToModifyFaceClazzes prepare = new PrepareToModifyFaceClazzes(ContextManager.getNodeManager());
+    prepare.prepare();
+    RendererDelegator.repaint_some_objects = true;
+  }
 
-	public static void killAllLinks(Node e) {
-		ContextManager.getLinkManager().killAllLinks(e);
+  public static void killAllLinks(Node e) {
+    ContextManager.getLinkManager().killAllLinks(e);
 
-		postCleanup();
-	}
+    postCleanup();
+  }
 
-	public static void killLastLink(Node e) {
-		ContextManager.getLinkManager().killLastLink(e);
+  public static void killLastLink(Node e) {
+    ContextManager.getLinkManager().killLastLink(e);
 
-		postCleanup();
-	}
+    postCleanup();
+  }
 
-	public static void dragCurrentObject(int x, int y) {
-		if (FrEnd.dragged_element != null) {
-			if (FrEnd.dragged_element.isSelected()) {
-				// Node dragged_node = (Node)FrEnd.dragged_element;
-				final Point3D centre = FrEnd.dragged_element.getCoordinatesOfCentrePoint();
-				final int d_x = x - dragged_x_offset - centre.x;
-				final int d_y = y - dragged_y_offset - centre.y;
+  public static void dragCurrentObject(int x, int y) {
+    if (FrEnd.dragged_element != null) {
+      if (FrEnd.dragged_element.isSelected()) {
+        // Node dragged_node = (Node)FrEnd.dragged_element;
+        final Point3D centre = FrEnd.dragged_element.getCoordinatesOfCentrePoint();
+        final int d_x = x - dragged_x_offset - centre.x;
+        final int d_y = y - dragged_y_offset - centre.y;
 
-				final List<Node> list_of_nodes = getallNodesInContactWithSelection();
+        final List<Node> list_of_nodes = getallNodesInContactWithSelection();
 
-				ContextManager.getNodeManager().moveNodesInList(list_of_nodes, d_x, d_y);
-				RendererDelegator.repaint_some_objects = true;
-			}
-		}
-	}
+        ContextManager.getNodeManager().moveNodesInList(list_of_nodes, d_x, d_y);
+        RendererDelegator.repaint_some_objects = true;
+      }
+    }
+  }
 
-	private static List<Node> getallNodesInContactWithSelection() {
-		List<Node> list_of_nodes;
-		List<Node> list_of_nodes_2;
-		list_of_nodes = ContextManager.getNodeManager().getListOfSelectedNodes();
-		list_of_nodes_2 = ContextManager.getLinkManager().getListOfNodesOnSelectedLinks();
+  private static List<Node> getallNodesInContactWithSelection() {
+    List<Node> list_of_nodes;
+    List<Node> list_of_nodes_2;
+    list_of_nodes = ContextManager.getNodeManager().getListOfSelectedNodes();
+    list_of_nodes_2 = ContextManager.getLinkManager().getListOfNodesOnSelectedLinks();
 
-		addElementsOfList2ToList1(list_of_nodes, list_of_nodes_2);
+    addElementsOfList2ToList1(list_of_nodes, list_of_nodes_2);
 
-		return list_of_nodes;
-	}
+    return list_of_nodes;
+  }
 
-	private static void addElementsOfList2ToList1(List<Node> list_1, List<Node> list_2) {
-		final int size = list_2.size();
-		for (int i = 0; i < size; i++) {
-			final Node o = list_2.get(i);
-			if (!list_1.contains(o)) {
-				list_1.add(o);
-			}
-		}
-	}
+  private static void addElementsOfList2ToList1(List<Node> list_1, List<Node> list_2) {
+    final int size = list_2.size();
+    for (int i = 0; i < size; i++) {
+      final Node o = list_2.get(i);
+      if (!list_1.contains(o)) {
+        list_1.add(o);
+      }
+    }
+  }
 
-	public static void loadFile(FilePath filepath) {
-		final String path = "file://" + filepath;
-		ModelManager.replaceCurrentModel(path);
-	}
+  public static void loadFile(FilePath filepath) {
+    final String path = "file://" + filepath;
+    ModelManager.replaceCurrentModel(path);
+  }
 
-	/** Loads a model file as an additional model, keeping the current one. */
-	public static void loadFileAsNewModel(FilePath filepath) {
-		final String path = "file://" + filepath;
-		ModelManager.loadNewModel(path);
-	}
+  /** Loads a model file as an additional model, keeping the current one. */
+  public static void loadFileAsNewModel(FilePath filepath) {
+    final String path = "file://" + filepath;
+    ModelManager.loadNewModel(path);
+  }
 
-	public static boolean isAnimationInactive() {
-		if (FrEnd.paused) {
-			return true;
-		}
+  public static boolean isAnimationInactive() {
+    if (FrEnd.paused) {
+      return true;
+    }
 
-		final Boolean edit_animation_with_pointer = (Boolean) FrEnd.preferences.map
-				.get(Preferences.key_update_animation_when_pointer_over);
+    final Boolean edit_animation_with_pointer = (Boolean) FrEnd.preferences.map
+        .get(Preferences.key_update_animation_when_pointer_over);
 
-		return FrEnd.animation_inactive && edit_animation_with_pointer.booleanValue();
-	}
+    return FrEnd.animation_inactive && edit_animation_with_pointer.booleanValue();
+  }
 
-	public static void setFilePath(String path) {
-		FrEnd.last_file_path = path;
-		FrEnd.next_file_path = path;
+  public static void setFilePath(String path) {
+    FrEnd.last_file_path = path;
+    FrEnd.next_file_path = path;
 
-		if (FrEnd.frame_main == null) {
-			return;
-		}
+    if (FrEnd.frame_main == null) {
+      return;
+    }
 
-		final String s = FrEnd.window_title_prefix + " - " + FrEnd.last_file_path;
+    final String s = FrEnd.window_title_prefix + " - " + FrEnd.last_file_path;
 
-		FrEnd.frame_main.setTitle(s);
-	}
+    FrEnd.frame_main.setTitle(s);
+  }
 
-	public static void main(String[] args) {
-		Forget.about(args);
+  public static void main(String[] args) {
+    Forget.about(args);
 
-		final FrEnd frontend = new FrEnd();
+    final FrEnd frontend = new FrEnd();
 
-		FrEnd.application = true;
+    FrEnd.application = true;
 
-		frame_main = new FrameMain(window_title_prefix, frontend);
+    frame_main = new FrameMain(window_title_prefix, frontend);
 
-		frame_main.setVisible(true);
+    frame_main.setVisible(true);
 
-		FrEnd.applyControlsWindowOptions();
-	}
+    FrEnd.applyControlsWindowOptions();
+  }
 }

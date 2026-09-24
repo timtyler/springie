@@ -88,7 +88,7 @@ public class PanelControlsDelete {
   }
 
   private Panel getDeleteAllPanel() {
-	this.button_delete_all = new Button(GUIStrings.BUTTON_CLEAR);
+  this.button_delete_all = new Button(GUIStrings.BUTTON_CLEAR);
     button_delete_all.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Forget.about(e);

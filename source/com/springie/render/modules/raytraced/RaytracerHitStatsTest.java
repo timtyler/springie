@@ -76,7 +76,7 @@ public class RaytracerHitStatsTest {
     final double t = 300000.0;
     final Primitive[] primitives = new Primitive[] {
         new RTSphere(ray.ox + ray.dx * t, ray.oy + ray.dy * t,
-            ray.oz + ray.dz * t, 8000.0, 0xFFFFFF) };
+            ray.oz + ray.dz * t, 8000.0, 0xFFFFFF), };
     return new BVH(primitives);
   }
 

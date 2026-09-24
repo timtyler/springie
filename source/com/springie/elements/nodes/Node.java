@@ -61,7 +61,7 @@ public class Node extends BaseElement {
   public static final int DEFAULT_2D_DEPTH = 320;
 
   public Node() {
-	  //...
+    //...
   }
 
   public Node(Point3D pos, int seed, NodeTypeFactory node_type_factory) {
@@ -369,7 +369,7 @@ public class Node extends BaseElement {
   }
 
   public void killWithNoExplosion() {
-	temp_private_world.getLinkManager().killAllLinks(this);
+  temp_private_world.getLinkManager().killAllLinks(this);
 
     temp_private_world.killThisNode(this);
 }

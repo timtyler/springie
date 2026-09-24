@@ -177,7 +177,7 @@ public class PanelPreferencesRendererSharedMisc {
   }
 
   public Label getLabelFog() {
-	return this.label_fog;
+  return this.label_fog;
   }
 
   private void reflectLabelFaceRenderNumber() {

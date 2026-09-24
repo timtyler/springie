@@ -133,7 +133,7 @@ public class ReaderM {
         final int z = (int) (zd * this.scale_factor);
 
         out.append("NG R:" + radius + " ");
-        out.append("C:0xFF" + Long.toString(colour & 0xFFFFFF , 16) + " ");
+        out.append("C:0xFF" + Long.toString(colour & 0xFFFFFF, 16) + " ");
         out.append("N X:" + x + " Y:" + y + " Z:" + z + " ");
         //Log.log("X:" + x + " Y:" + y + " Z:" + z + " ");
 

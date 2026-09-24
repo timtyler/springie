@@ -2,7 +2,6 @@ package com.springie.render.modules.modern;
 
 import com.springie.render.RectangleInt;
 
-import com.springie.render.RectangleInt;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -225,7 +224,8 @@ class ElementRendererLinkTest {
   }
 
   @Test
-  void cullingAppliesPerLengthDivision() {    RendererDelegator.link_sides = 4;
+  void cullingAppliesPerLengthDivision() {
+    RendererDelegator.link_sides = 4;
     ElementRendererLink.strut_divisions = 3;
     final Node a = nodeAt(0, 0, 0);
     final Node b = nodeAt(512 << Coords.shift, 0, 0);

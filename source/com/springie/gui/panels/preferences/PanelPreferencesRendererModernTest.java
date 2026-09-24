@@ -110,7 +110,8 @@ public class PanelPreferencesRendererModernTest {
   }
 
   @Test
-  void eachPolyhedronOptionInstallsItsRendererShape() {    final Choice choice = polyhedronDropdown();
+  void eachPolyhedronOptionInstallsItsRendererShape() {
+    final Choice choice = polyhedronDropdown();
     final String[] items = {"C60", "Dodecahedron", "Octahedron", "Cube",
         "Icosahedron", "Square", "Hexagon"};
     final Class<?>[] shapes = {SimpleC60.class, SimpleDodecahedron.class,

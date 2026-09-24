@@ -85,7 +85,11 @@
 <module name="DescendantToken"></module>
 <module name="TodoComment"></module>
 <!-- module name="TrailingComment"></module -->
-<module name="UncommentedMain"></module>
+<module name="UncommentedMain">
+  <!-- Legitimate program entry points: the app itself, the judge CLI,
+       and two developer utilities. -->
+  <property name="excludedClasses" value="com\.springie\.FrEnd|com\.springie\.demos\.SpiderTankJudge|com\.springie\.utilities\.math\.SquareRootAnalysis|uk\.org\.fdl\.reader\.FDLReader"/>
+</module>
 <module name="UpperEll"></module>
 </module>
 <!-- module name="NewlineAtEndOfFile"></module -->

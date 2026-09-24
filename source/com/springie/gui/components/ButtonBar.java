@@ -57,8 +57,8 @@ public class ButtonBar extends Panel implements ItemSelectable {
         + "_o.png");
     final ImageWrapper image_i = ImageLoader.getImage(GraphicsDirectory.directory + iname
         + "_i.png");
-    final ImageButton ib = new ImageButton(image_o, image_i
-        , this.image_button_group, name, this.first);
+    final ImageButton ib = new ImageButton(image_o, image_i,
+        this.image_button_group, name, this.first);
     final ActionListener action_listener = new ActionListener() {
       public void actionPerformed(ActionEvent event) {
         Forget.about(event);

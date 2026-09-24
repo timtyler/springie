@@ -39,8 +39,8 @@ class RendererTileManagerSortTest {
   private static PolygonComposite composite(int z, int x0, int y0, int x1,
       int y1) {
     return new PolygonComposite(new PolygonObject2D[] {
-        new PolygonObject2D(new int[] {x0, x1, x1, x0},
-            new int[] {y0, y0, y1, y1}, 0xFFFFFFFF) }, z);
+        new PolygonObject2D(new int[] {x0, x1, x1, x0, },
+            new int[] {y0, y0, y1, y1, }, 0xFFFFFFFF), }, z);
   }
 
   private static RendererTileManager manager() {

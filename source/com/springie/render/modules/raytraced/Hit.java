@@ -2,7 +2,6 @@
 
 package com.springie.render.modules.raytraced;
 
-import com.springie.render.Coords;
 
 /**
  * The closest-hit record. Reused across pixels; reset() before each ray.

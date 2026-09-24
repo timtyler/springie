@@ -275,7 +275,8 @@ public final class PNGReader {
           int i2;
           for (int l1 = 0; l1 < i1; l1 += i2) {
             i2 = 0;
-            if ((i2 = this.png_maker.read(this.xb, l1, i1 - l1)) == -1) {
+            i2 = this.png_maker.read(this.xb, l1, i1 - l1);
+            if (i2 == -1) {
               throw error(verbose ? "Early EOF in IDAT" : "");
             }
           }
@@ -705,7 +706,7 @@ public final class PNGReader {
   private class PNGMaker extends InflaterInputStream {
     int total;
 
-    public PNGMaker(InputStream input_stream_two, Inflater inflater, int i) {
+    PNGMaker(InputStream input_stream_two, Inflater inflater, int i) {
       super(input_stream_two, inflater, i);
     }
 

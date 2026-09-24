@@ -128,7 +128,7 @@ public class RaytracerShadowTest {
     return new Primitive[] {
         new RTSphere(EX, EY, 0.0, 20000.0, 0xFFFFFF),
         new RTSphere(pole_x + lx * distance, pole_y + ly * distance,
-            pole_z + lz * distance, radius, 0xFF0000) };
+            pole_z + lz * distance, radius, 0xFF0000), };
   }
 
   @Test

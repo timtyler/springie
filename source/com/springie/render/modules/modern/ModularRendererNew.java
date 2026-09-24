@@ -17,7 +17,6 @@ import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.gestures.DragBoxManager;
-import com.springie.render.RendererDelegator;
 import com.springie.render.modules.ModularRendererBase;
 import com.tifsoft.Forget;
 
@@ -123,27 +122,27 @@ public class ModularRendererNew implements ModularRendererBase {
     // Left, top, bottom, right edges as filled rectangles.
     all.add(new PolygonComposite(new PolygonObject2D[] {
         new PolygonObject2D(
-            new int[] {x0 - t, x0 + t, x0 + t, x0 - t},
-            new int[] {y0 - t, y0 - t, y1 + t, y1 + t},
-            colour)
+            new int[] {x0 - t, x0 + t, x0 + t, x0 - t, },
+            new int[] {y0 - t, y0 - t, y1 + t, y1 + t, },
+            colour),
     }, z));
     all.add(new PolygonComposite(new PolygonObject2D[] {
         new PolygonObject2D(
-            new int[] {x0 - t, x1 + t, x1 + t, x0 - t},
-            new int[] {y0 - t, y0 - t, y0 + t, y0 + t},
-            colour)
+            new int[] {x0 - t, x1 + t, x1 + t, x0 - t, },
+            new int[] {y0 - t, y0 - t, y0 + t, y0 + t, },
+            colour),
     }, z));
     all.add(new PolygonComposite(new PolygonObject2D[] {
         new PolygonObject2D(
-            new int[] {x0 - t, x1 + t, x1 + t, x0 - t},
-            new int[] {y1 - t, y1 - t, y1 + t, y1 + t},
-            colour)
+            new int[] {x0 - t, x1 + t, x1 + t, x0 - t, },
+            new int[] {y1 - t, y1 - t, y1 + t, y1 + t, },
+            colour),
     }, z));
     all.add(new PolygonComposite(new PolygonObject2D[] {
         new PolygonObject2D(
-            new int[] {x1 - t, x1 + t, x1 + t, x1 - t},
-            new int[] {y0 - t, y0 - t, y1 + t, y1 + t},
-            colour)
+            new int[] {x1 - t, x1 + t, x1 + t, x1 - t, },
+            new int[] {y0 - t, y0 - t, y1 + t, y1 + t, },
+            colour),
     }, z));
   }
 

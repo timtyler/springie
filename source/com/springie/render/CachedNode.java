@@ -59,7 +59,7 @@ public class CachedNode {
         break;
 
       case Quality.QUALITY_TERRIBLE:
-        RendererDelegator.graphics_handle.drawRect(this.pos.x - 1 -(this.radius >> 1),
+        RendererDelegator.graphics_handle.drawRect(this.pos.x - 1 - (this.radius >> 1),
           this.pos.y - (this.radius >> 1) - 1, this.radius, this.radius);
         break;
 
@@ -127,7 +127,7 @@ public class CachedNode {
         break;
 
       case Quality.QUALITY_TERRIBLE:
-          RendererDelegator.graphics_handle.drawRect(this.pos.x - 1 -(this.radius >> 1),
+          RendererDelegator.graphics_handle.drawRect(this.pos.x - 1 - (this.radius >> 1),
                   this.pos.y - (this.radius >> 1) - 1, this.radius, this.radius);
         break;
 

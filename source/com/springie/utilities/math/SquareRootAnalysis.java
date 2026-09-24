@@ -28,7 +28,7 @@ public final class SquareRootAnalysis {
 
   private static final int RANDOM_SAMPLES = 1_000_000;
 
-  private record Candidate(String name, IntUnaryOperator fn) {}
+  private record Candidate(String name, IntUnaryOperator fn) { }
 
   private static final Candidate[] CANDIDATES = {
       new Candidate("sqrt (incumbent)", SquareRoot::sqrt),

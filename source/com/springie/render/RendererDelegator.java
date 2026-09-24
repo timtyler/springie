@@ -10,11 +10,9 @@ import com.springie.explosions.fragments.LineFragmentManager;
 import com.springie.explosions.particles.ParticleManager;
 import com.springie.gui.gestures.DragBoxManager;
 import com.springie.gui.panels.UpdateEnabledComponents;
-import com.springie.preferences.Preferences;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;
-import com.springie.render.modules.modern.RendererTileManager;
 import com.springie.utilities.random.JUR;
 import com.springie.world.WorldManager;
 

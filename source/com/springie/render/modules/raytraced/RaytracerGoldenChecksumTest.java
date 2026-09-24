@@ -164,7 +164,7 @@ public class RaytracerGoldenChecksumTest {
         new RTCylinder(40 * s, 40 * s, 0.0, 160 * s, 40 * s, 0.0,
             4.0 * 192, 0x40C040),
         new RTTriangle(60 * s, 120 * s, 0.0, 120 * s, 180 * s, 0.0,
-            180 * s, 120 * s, 0.0, 0x4040C0) };
+            180 * s, 120 * s, 0.0, 0x4040C0), };
     return new BVH(primitives);
   }
 

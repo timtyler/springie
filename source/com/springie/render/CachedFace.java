@@ -152,7 +152,8 @@ public class CachedFace {
     RendererDelegator.graphics_handle.fillPolygon(xs, ys, npoints);
   }
 
-  private void renderThinConcentric(Face face, int num) {    final int npoints = face.nodes.size();
+  private void renderThinConcentric(Face face, int num) {
+    final int npoints = face.nodes.size();
     final int rpoints = this.render.size();
     if (rpoints != npoints) {
       setUpRenderingScratchSpace(face);

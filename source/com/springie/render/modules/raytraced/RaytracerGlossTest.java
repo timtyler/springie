@@ -177,7 +177,7 @@ public class RaytracerGlossTest {
         new RTSphere(EX + 15000.0, EY - 45000.0, -90000.0, 5000.0,
             0xFFFF00),
         new RTSphere(EX - 10000.0, EY + 40000.0, -90000.0, 5000.0,
-            0xFFFF00) };
+            0xFFFF00), };
     RendererDelegator.glossiness = 100;
     final int[] pixels = renderTile(scene);
     int worst = 0;
