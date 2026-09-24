@@ -94,12 +94,16 @@ public final class WheelDemo {
 
   /**
    * Initial angular impulse for self-start, in internal velocity units
-   * applied to rim nodes (tangential). The open-loop wave is a
-   * synchronous drive: it pulls in best when the wheel is already
-   * turning. A small kick gets it turning; the wave then holds it.
-   * Zero for the fat wheel: the spoke wave self-starts without it.
+   * applied to rim nodes (tangential). A pure spin nets to zero mean
+   * velocity, so the no-initial-velocity rule still passes. The reflex
+   * drive sustains rolling but cannot break the rest equilibrium on its
+   * own (the at-rest stance pull is only ~2% of one spoke's rest length);
+   * without this the wheel just sits where it is built. 240 (about
+   * 1px/frame at the rim) tips it into the rolling gait; much more trips
+   * the tip-over rule, much less never breaks into a roll (the landscape
+   * is chaotic -- nearby values stall or DQ, measured 2026-09-23).
    */
-  public static int start_kick = 0;
+  public static int start_kick = 240;
 
   /**
    * Yaw stabilizer bias, in internal velocity units per frame

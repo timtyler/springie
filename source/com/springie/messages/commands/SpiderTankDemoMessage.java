@@ -14,6 +14,10 @@ public class SpiderTankDemoMessage extends NewMessage {
   public Object execute() {
     // Build at x=100 (pixels) to leave room to walk to the right.
     SpiderTankDemo.buildAt(100);
+    // Demo models run boundless with a follow camera: pin the creature
+    // on X so it can never touch the side walls. The user can untick
+    // 'Continuously center X' in Universe > Centering to get the walls back.
+    FrEnd.continuously_centre_x = true;
     FrEnd.demo_model = true;
     com.springie.world.UniverseDefaults.snapshot();
     // Sync the Universe panel (gravity etc.) with the demo's settings.

@@ -162,7 +162,11 @@ public final class RollingJudge {
       marker = (Node) node_manager.element.get(1);
       radius_px = CrawlerDemo.body_length_px;
     } else {
-      hub = WheelDemo.buildAt(120);
+      // Built clear of the side walls (rim spans 140-460px of the 800px
+      // world): the wheel must roll from its own gait, never from a
+      // tick-1 kick off the left wall. Tim: runners must not touch the
+      // side walls.
+      hub = WheelDemo.buildAt(300);
       // Node 0 is rim0[0] at body angle 0 (see WheelDemo docs).
       marker = (Node) node_manager.element.get(0);
       radius_px = WheelDemo.rim_radius_px;

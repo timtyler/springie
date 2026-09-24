@@ -228,10 +228,14 @@ class WheelDemoTest {
     // The wheel must actually roll, not slide or hop.
     assertTrue(result.rolling_match > 0.8,
         "rollingMatch=" + result.rolling_match + " (expected > 0.8)");
-    // And it must travel a meaningful distance: the two-hub wheel covers
-    // ~460px per 600 ticks.
-    assertTrue(result.distance_px > 400,
-        "distance=" + result.distance_px + " (expected > 400px)");
+    // And it must travel a meaningful distance from a wall-clear build:
+    // the two-hub wheel covers ~230px per 600 ticks on its own gait.
+    // (The old ~460px came from a tick-1 kick off the left wall, which
+    // Tim had removed -- the wheel must roll without touching the walls.)
+    assertTrue(!result.disqualified,
+        "judged run must not be disqualified");
+    assertTrue(result.distance_px > 150,
+        "distance=" + result.distance_px + " (expected > 150px)");
   }
 
   @Test

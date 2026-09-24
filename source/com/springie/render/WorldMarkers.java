@@ -20,9 +20,12 @@ import com.springie.render.modules.modern.PolygonObject2D;
  * The markers are not model nodes: they have no physics, take no part
  * in collisions, never enter the bounding box, and are never centered
  * themselves. Each tick they ride the same world offset the centering
- * applied to the creature, which keeps them world-locked. Markers that
- * leave the screen are destroyed and respawn -- from the incoming edge
- * when the flow direction is clear, else at a random screen position.
+ * applied to the creature, which keeps them world-locked. The markers
+ * are spread through the depth of the world, so the perspective
+ * projection gives parallax scrolling: near markers stream past
+ * faster (and draw a touch bigger) than far ones. Markers that leave
+ * the screen are destroyed and respawn scattered, so the swarm never
+ * marches across in lockstep.
  *
  * Rendering follows the drag-box pattern, one path per renderer, so
  * moving markers never leave trails:
@@ -39,10 +42,27 @@ import com.springie.render.modules.modern.PolygonObject2D;
  */
 public final class WorldMarkers {
   /** Markers kept in play. */
-  static final int TARGET_COUNT = 10;
+  static final int TARGET_COUNT = 100;
 
-  /** Half the marker square's side, in pixels. */
-  private static final int MARKER_HALF = 3;
+  /**
+   * Marker half-size at mid depth, in screen pixels. Nearer markers
+   * draw bigger, farther ones smaller -- the same perspective the
+   * projection gives their streaming motion.
+   */
+  private static final int MARKER_HALF_MID = 5;
+
+  private static final int MARKER_HALF_MIN = 3;
+
+  private static final int MARKER_HALF_MAX = 8;
+
+  /**
+   * Depth band the markers spawn in, as fractions of the z-glass
+   * depth: spread through the depth for parallax, kept clear of the
+   * eye plane (z = 0, where the projection divides) and the far glass.
+   */
+  private static final double Z_NEAR_FRAC = 0.10;
+
+  private static final double Z_FAR_FRAC = 0.90;
 
   private static final int MARKER_COLOUR = new Color(255, 200, 60).getRGB();
 
@@ -130,8 +150,8 @@ public final class WorldMarkers {
       for (Point3D p : markers) {
         final int sx = Coords.getXCoords((int) p.x, (int) p.z);
         final int sy = Coords.getYCoords((int) p.y, (int) p.z);
-        graphics.fillRect(sx - MARKER_HALF, sy - MARKER_HALF,
-            MARKER_HALF * 2, MARKER_HALF * 2);
+        final int half = screenHalf((int) p.z);
+        graphics.fillRect(sx - half, sy - half, half * 2, half * 2);
       }
     }
   }
@@ -149,16 +169,26 @@ public final class WorldMarkers {
       for (Point3D p : markers) {
         final int sx = Coords.getXCoords((int) p.x, (int) p.z);
         final int sy = Coords.getYCoords((int) p.y, (int) p.z);
+        final int half = screenHalf((int) p.z);
         all.add(new PolygonComposite(new PolygonObject2D[] {
-            new PolygonObject2D(
-                new int[] {sx - MARKER_HALF, sx + MARKER_HALF,
-                    sx + MARKER_HALF, sx - MARKER_HALF,},
-                new int[] {sy - MARKER_HALF, sy + MARKER_HALF,
-                    sy + MARKER_HALF, sy - MARKER_HALF,},
-                MARKER_COLOUR)
+            buildQuad(sx, sy, half),
         }, MARKER_Z));
       }
     }
+  }
+
+  /**
+   * One marker's screen-space quad. Package-visible for tests: the
+   * corner pairing is easy to get wrong (a swapped y pairing collapses
+   * the quad into a diagonal line, caught by screenshot 2026-09-23).
+   */
+  static PolygonObject2D buildQuad(int sx, int sy, int half) {
+    return new PolygonObject2D(
+        new int[] {sx - half, sx + half,
+            sx + half, sx - half, },
+        new int[] {sy - half, sy - half,
+            sy + half, sy + half, },
+        MARKER_COLOUR);
   }
 
   /**
@@ -207,13 +237,13 @@ public final class WorldMarkers {
       for (Point3D p : markers) {
         final int sx = Coords.getXCoords((int) p.x, (int) p.z);
         final int sy = Coords.getYCoords((int) p.y, (int) p.z);
-        min_x = Math.min(min_x, sx);
-        min_y = Math.min(min_y, sy);
-        max_x = Math.max(max_x, sx);
-        max_y = Math.max(max_y, sy);
+        final int half = screenHalf((int) p.z);
+        min_x = Math.min(min_x, sx - half);
+        min_y = Math.min(min_y, sy - half);
+        max_x = Math.max(max_x, sx + half);
+        max_y = Math.max(max_y, sy + half);
       }
-      return new RectangleInt(min_x - MARKER_HALF, min_y - MARKER_HALF,
-          max_x + MARKER_HALF, max_y + MARKER_HALF);
+      return new RectangleInt(min_x, min_y, max_x, max_y);
     }
   }
 
@@ -221,6 +251,20 @@ public final class WorldMarkers {
     return FrEnd.demo_model && FrEnd.show_world_markers
         && (FrEnd.continuously_centre_x || FrEnd.continuously_centre_y
             || FrEnd.continuously_centre_z);
+  }
+
+  /**
+   * Screen half-size of a marker at the given internal depth: the
+   * perspective divisor at mid depth over the divisor here, so nearer
+   * markers draw bigger and farther ones smaller.
+   */
+  static int screenHalf(int z) {
+    final int divisor = Coords.shift_constant_z + (z >> Coords.shift_z);
+    final int mid_z = (Coords.z_pixels << Coords.shift) >> 1;
+    final int mid_divisor =
+        Coords.shift_constant_z + (mid_z >> Coords.shift_z);
+    final int half = (MARKER_HALF_MID * mid_divisor) / Math.max(1, divisor);
+    return Math.min(MARKER_HALF_MAX, Math.max(MARKER_HALF_MIN, half));
   }
 
   /** Drops markers that have left the screen (with a small margin). */
@@ -238,10 +282,13 @@ public final class WorldMarkers {
 
   /**
    * Spawns one marker at a random screen position (marginally
-   * off-screen included, so markers drift in). The markers all ride
-   * the same world offset, so their shared streaming motion is what
-   * shows the viewport moving -- scattering them keeps them from
-   * marching across in lockstep.
+   * off-screen included, so markers drift in) and a random depth
+   * inside the parallax band. The internal coords invert the
+   * perspective projection exactly, so the marker lands on the chosen
+   * screen pixel at its depth. The markers all ride the same world
+   * offset, so their shared streaming motion is what shows the
+   * viewport moving -- the depth spread turns it into parallax, and
+   * the scatter keeps them from marching across in lockstep.
    */
   private static void spawn() {
     final int x_pixels = Coords.x_pixels;
@@ -249,9 +296,14 @@ public final class WorldMarkers {
     final int margin = 20;
     final int sx = -margin + rnd.nextInt(Math.max(1, x_pixels + margin * 2));
     final int sy = -margin + rnd.nextInt(Math.max(1, y_pixels + margin * 2));
-    markers.add(new Point3D(
-        Coords.getInternalFromPixelCoords(sx),
-        Coords.getInternalFromPixelCoords(sy),
-        Coords.z_pixels << Coords.shift >> 1));
+    final int z_depth = Coords.z_pixels << Coords.shift;
+    final int z = (int) (z_depth * (Z_NEAR_FRAC
+        + rnd.nextDouble() * (Z_FAR_FRAC - Z_NEAR_FRAC)));
+    final int divisor = Coords.shift_constant_z + (z >> Coords.shift_z);
+    final int ix = (sx - Coords.x_pixelso2) * divisor
+        + (Coords.x_pixelso2 << Coords.shift) - Coords.shift_constant_x;
+    final int iy = (sy - Coords.y_pixelso2) * divisor
+        + (Coords.y_pixelso2 << Coords.shift) - Coords.shift_constant_y;
+    markers.add(new Point3D(ix, iy, z));
   }
 }
