@@ -26,6 +26,7 @@ import com.springie.render.CachedNode;
 import com.springie.render.Coords;
 import com.springie.render.DepthSort;
 import com.springie.render.RendererDelegator;
+import com.springie.render.WorldMarkers;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;
 import com.springie.utilities.math.SquareRoot;
 import com.springie.world.World;
@@ -215,6 +216,12 @@ public class NodeManager extends World {
 			updateLinks(this.getLinkManager());
 
 			applyAcceleration();
+			// The follow-cam (continuous centering) and the Olympics
+			// location markers run every tick. They are not gated on
+			// collision detection: the demo models switch node
+			// collisions off, and the centering checkbox must still do
+			// something for them.
+			agentExpansion();
 			if (FrEnd.check_collisions) {
 				collisionCheck();
 			}
@@ -392,11 +399,16 @@ public class NodeManager extends World {
 		// follow the pointer instead of fighting the centering snap, which
 		// would otherwise yank the bounding box back every frame and make
 		// the dragged link vibrate.
+		Vector3D offset = new Vector3D(0, 0, 0);
 		if (!FrEnd.currently_dragging && (FrEnd.continuously_centre_x
 				|| FrEnd.continuously_centre_y || FrEnd.continuously_centre_z)) {
-			CentreOnScreen.centreOnAxes(this, FrEnd.continuously_centre_x,
-					FrEnd.continuously_centre_y, FrEnd.continuously_centre_z);
+			offset = CentreOnScreen.centreOnAxes(this,
+					FrEnd.continuously_centre_x, FrEnd.continuously_centre_y,
+					FrEnd.continuously_centre_z);
 		}
+		// The Olympics location markers ride the same shift, so they stay
+		// locked to the world while the creature stays centred.
+		WorldMarkers.onFrame(offset);
 	}
 
 	public void collisionCheckNbyN() {
@@ -412,8 +424,6 @@ public class NodeManager extends World {
 	}
 
 	final void collisionCheck() {
-		agentExpansion();
-
 		collisionCheckNbyN();
 	}
 

@@ -204,6 +204,11 @@ public final class RendererDelegator {
     // paint.)
     ViewportShade.shadeOutsideBox(graphics);
 
+    // Olympics follow-cam decoration: world-locked location markers
+    // streaming past while continuous centering holds a demo creature
+    // on screen centre.
+    renderWorldMarkers(graphics);
+
     renderDragBox(graphics);
 
     refreshFpsLabel();
@@ -280,6 +285,31 @@ public final class RendererDelegator {
     if (RendererDelegator.repaint_all_objects) {
       ContextManager.getNodeManager().renderer.clear();
       ContextManager.getNodeManager().renderer2.clear();
+    }
+  }
+
+  /**
+   * Olympics follow-cam markers, one path per renderer like the drag
+   * box: the modern tiled renderer takes them as tile geometry (see
+   * ModularRendererNew), the ray tracer joins their damage to its
+   * dirty rectangles and plots them over the blit here. Only the old
+   * polygon renderer paints straight onto the screen with no damage
+   * repair, so only it gets the screen-space draw -- with a full
+   * clear-and-redraw every frame while markers are up, or the old dots
+   * would never be erased.
+   */
+  private static void renderWorldMarkers(Graphics graphics) {
+    final boolean modern_tiled = RendererDelegator.renderer
+        instanceof com.springie.render.modules.modern.ModularRendererNew;
+    final boolean raytraced = RendererDelegator.renderer
+        instanceof com.springie.render.modules.raytraced.ModularRendererRaytraced;
+    if (modern_tiled) {
+      return;
+    }
+    WorldMarkers.draw(graphics);
+    if (!raytraced && WorldMarkers.size() > 0 && !FrEnd.paused) {
+      FrEnd.main_canvas.panel.repaint();
+      repaint_all_objects = true;
     }
   }
 

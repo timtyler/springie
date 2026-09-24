@@ -46,6 +46,8 @@ public class PanelControlsUniverse {
 
 	public Checkbox checkbox_continuously_centre_z;
 
+	public Checkbox checkbox_show_world_markers;
+
 	public Checkbox checkbox_collision_check;
 
 
@@ -295,6 +297,23 @@ public class PanelControlsUniverse {
 		});
 		panel_centering.add(this.checkbox_continuously_centre_z);
 
+		this.checkbox_show_world_markers = new Checkbox(
+			GUIStrings.SHOW_WORLD_MARKERS);
+		this.checkbox_show_world_markers.setState(FrEnd.show_world_markers);
+		this.checkbox_show_world_markers.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				Forget.about(e);
+				FrEnd.show_world_markers =
+						getCheckboxShowWorldMarkers().getState();
+				// Screen-space dots: turning them off must clear them from
+				// the whole canvas, and the flag alone schedules no paint
+				// while the animation is paused.
+				RendererDelegator.repaint_all_objects = true;
+				FrEnd.main_canvas.panel.repaint();
+			}
+		});
+		panel_centering.add(this.checkbox_show_world_markers);
+
 		// elasticity..
 		final Panel panel_viscocity = new Panel();
 		panel_viscocity.setLayout(new BorderLayout(0, 8));
@@ -527,6 +546,8 @@ public class PanelControlsUniverse {
 				FrEnd.continuously_centre_y);
 		setCheckboxSilently(this.checkbox_continuously_centre_z,
 				FrEnd.continuously_centre_z);
+		setCheckboxSilently(this.checkbox_show_world_markers,
+				FrEnd.show_world_markers);
 		final NodeManager manager = ContextManager.getNodeManager();
 		setCheckboxSilently(this.checkbox_charge_switch,
 				manager != null && manager.electrostatic.charge_active);
@@ -614,6 +635,10 @@ public class PanelControlsUniverse {
 
 	public Checkbox getCheckboxContinuouslyCentreZ() {
 		return this.checkbox_continuously_centre_z;
+	}
+
+	public Checkbox getCheckboxShowWorldMarkers() {
+		return this.checkbox_show_world_markers;
 	}
 
 	public Checkbox getCheckboxGravitySwitch() {

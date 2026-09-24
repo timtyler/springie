@@ -152,6 +152,17 @@ public class FrEnd extends Panel implements Runnable {
 
 	public static boolean continuously_centre_z;
 
+	/**
+	 * True while the current model was built by one of the Demos menu
+	 * entries (as opposed to a model file or preset). The Olympics
+	 * follow-cam dressing -- world markers, boundless world -- only
+	 * applies to demo models.
+	 */
+	public static boolean demo_model;
+
+	/** World location markers streaming past in Olympics follow-cam mode. */
+	public static boolean show_world_markers = true;
+
 	public static boolean render_nodes = true;
 
 	public static boolean render_links = true;

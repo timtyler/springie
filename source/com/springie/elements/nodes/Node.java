@@ -229,17 +229,28 @@ public class Node extends BaseElement {
 
   public void boundaryCheck() {
     final int radius = this.type.radius;
-    if ((this.pos.x + radius) > (Coords.x_pixels << Coords.shift)) {
-      this.pos.x = (Coords.x_pixels << Coords.shift) - radius;
-      if (this.velocity.x > 0) {
-        this.velocity.x = -(int) (this.velocity.x * 0.95);
+    // Olympic mode: a demo model running under the follow-cam
+    // (continuous centering) gets infinite track and sky -- no side
+    // walls on a followed x axis, no ceiling for the jumpers to hit.
+    // The depth glass stays: the demos are tuned against it, and the
+    // renderer cannot see past the eye plane. The ground always
+    // stays: runners need something to run on.
+    final boolean olympic = FrEnd.demo_model
+        && (FrEnd.continuously_centre_x || FrEnd.continuously_centre_y
+            || FrEnd.continuously_centre_z);
+    if (!(olympic && FrEnd.continuously_centre_x)) {
+      if ((this.pos.x + radius) > (Coords.x_pixels << Coords.shift)) {
+        this.pos.x = (Coords.x_pixels << Coords.shift) - radius;
+        if (this.velocity.x > 0) {
+          this.velocity.x = -(int) (this.velocity.x * 0.95);
+        }
       }
-    }
 
-    if (this.pos.x < radius) {
-      this.pos.x = radius;
-      if (this.velocity.x < 0) {
-        this.velocity.x = -(int) (this.velocity.x * 0.95);
+      if (this.pos.x < radius) {
+        this.pos.x = radius;
+        if (this.velocity.x < 0) {
+          this.velocity.x = -(int) (this.velocity.x * 0.95);
+        }
       }
     }
 
@@ -257,7 +268,7 @@ public class Node extends BaseElement {
       }
     }
 
-    if (this.pos.y < radius) {
+    if (!olympic && this.pos.y < radius) {
       this.pos.y = radius;
       if (this.velocity.y < 0) {
         this.velocity.y = -(int) (this.velocity.y * 0.95);

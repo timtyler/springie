@@ -30,6 +30,8 @@ public interface GUIStrings {
 
   String SHOW_BOUNDARY_BOX = "Show boundary box";
 
+  String SHOW_WORLD_MARKERS = "Show world markers";
+
   String CANCEL = "Cancel";
 
   String PERIOD_FIND = "Find period";

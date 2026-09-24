@@ -42,13 +42,16 @@ public final class CentreOnScreen {
   /**
    * Translates every node so the model's bounding box sits central on
    * each selected axis -- a full snap, not a creep. Position only:
-   * velocities are left untouched.
+   * velocities are left untouched. Returns the translation applied, so
+   * world-locked decoration (the Olympics location markers) can ride the
+   * same shift.
    */
-  public static void centreOnAxes(NodeManager node_manager,
+  public static Vector3D centreOnAxes(NodeManager node_manager,
       boolean centre_x, boolean centre_y, boolean centre_z) {
+    final Vector3D offset = new Vector3D(0, 0, 0);
     final int number_of_nodes = node_manager.element.size();
     if (number_of_nodes == 0) {
-      return;
+      return offset;
     }
 
     int min_x = Integer.MAX_VALUE;
@@ -80,7 +83,6 @@ public final class CentreOnScreen {
       }
     }
 
-    final Vector3D offset = new Vector3D(0, 0, 0);
     if (centre_x) {
       final int screen_x = Coords
         .getInternalFromPixelCoords(Coords.x_pixels);
@@ -101,5 +103,7 @@ public final class CentreOnScreen {
       final Node candidate = (Node) node_manager.element.get(counter);
       candidate.pos.addTuple3D(offset);
     }
+
+    return offset;
   }
 }

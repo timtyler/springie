@@ -11,7 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.springie.FrEnd;
+import com.springie.context.ContextManager;
 import com.springie.geometry.Point3D;
+import com.springie.geometry.Vector3D;
 import com.springie.render.Coords;
 
 /**
@@ -27,6 +29,8 @@ class NodeManagerCenteringDragTest {
   private boolean saved_y;
   private boolean saved_z;
   private boolean saved_dragging;
+  private boolean saved_collisions;
+  private boolean saved_paused;
 
   @BeforeEach
   void setUp() {
@@ -35,6 +39,8 @@ class NodeManagerCenteringDragTest {
     this.saved_y = FrEnd.continuously_centre_y;
     this.saved_z = FrEnd.continuously_centre_z;
     this.saved_dragging = FrEnd.currently_dragging;
+    this.saved_collisions = FrEnd.check_collisions;
+    this.saved_paused = FrEnd.paused;
     FrEnd.continuously_centre_x = true;
     FrEnd.continuously_centre_y = false;
     FrEnd.continuously_centre_z = false;
@@ -53,6 +59,8 @@ class NodeManagerCenteringDragTest {
     FrEnd.continuously_centre_y = this.saved_y;
     FrEnd.continuously_centre_z = this.saved_z;
     FrEnd.currently_dragging = this.saved_dragging;
+    FrEnd.check_collisions = this.saved_collisions;
+    FrEnd.paused = this.saved_paused;
   }
 
   @Test
@@ -75,6 +83,35 @@ class NodeManagerCenteringDragTest {
     final int offset_x = (screen_x - 1000 - 2000) >> 1;
     assertEquals(1000 + offset_x, node(0).pos.x, "node 0 x centred");
     assertEquals(2000 + offset_x, node(1).pos.x, "node 1 x centred");
+  }
+
+  /**
+   * The demo models switch node-node collisions off, which used to
+   * gate the whole agentExpansion() call -- so "Continuously center"
+   * silently did nothing for every demo. The follow-cam must run on
+   * the per-tick path regardless of the collision flag.
+   */
+  @Test
+  void centeringRunsWhenCollisionsAreOff() {
+    FrEnd.currently_dragging = false;
+    FrEnd.check_collisions = false;
+    FrEnd.paused = false;
+    node(0).velocity = new Vector3D(0, 0, 0);
+    node(1).velocity = new Vector3D(0, 0, 0);
+    final NodeManager saved_manager = ContextManager.getNodeManager();
+    ContextManager.setNodeManager(this.manager);
+    try {
+      this.manager.nodeAndLinkUpdate();
+    } finally {
+      ContextManager.setNodeManager(saved_manager);
+    }
+
+    final int screen_x = Coords.getInternalFromPixelCoords(Coords.x_pixels);
+    final int offset_x = (screen_x - 1000 - 2000) >> 1;
+    assertEquals(1000 + offset_x, node(0).pos.x,
+        "node 0 x centred with collisions off");
+    assertEquals(2000 + offset_x, node(1).pos.x,
+        "node 1 x centred with collisions off");
   }
 
   private Node node(int index) {

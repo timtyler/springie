@@ -14,6 +14,7 @@ public class WheelDemoMessage extends NewMessage {
   public Object execute() {
     // Build at x=120 (pixels) to leave room to roll to the right.
     WheelDemo.buildAt(120);
+    FrEnd.demo_model = true;
     com.springie.world.UniverseDefaults.snapshot();
     // Sync the Universe panel (gravity etc.) with the demo's settings.
     // Must run on the AWT thread: this message executes on the animation

@@ -104,6 +104,7 @@ public class DataInput {
     FrEnd.continuously_centre_x = false;
     com.springie.FrEnd.continuously_centre_y = false;
     com.springie.FrEnd.continuously_centre_z = false;
+    FrEnd.demo_model = false;
     Muscles.enabled = false;
     Muscles.activeOscillator().setAmplitude(85 * Muscles.UNITY / 100);
     Muscles.activeOscillator().setPeriodTicks(12);

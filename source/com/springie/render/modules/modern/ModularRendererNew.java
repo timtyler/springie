@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import com.springie.FrEnd;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
+import com.springie.render.WorldMarkers;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.Link;
@@ -62,6 +63,11 @@ public class ModularRendererNew implements ModularRendererBase {
     addFacesToTiles(manager, mask, all);
 
     addDragBoxToTiles(all);
+
+    // Olympics follow-cam: the world-locked location markers ride the
+    // tile geometry, so the tiled damage repair scrubs the old quads
+    // when they move -- no trails.
+    WorldMarkers.addToTiles(all);
 
     // One global depth sort, then distribute to the tiles in sorted
     // order: every tile's vector arrives at render() pre-sorted, so the
