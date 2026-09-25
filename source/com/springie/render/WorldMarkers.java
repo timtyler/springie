@@ -262,21 +262,27 @@ public final class WorldMarkers {
       return;
     }
 
-    // Remove the old dots.
-    for (RectangleInt r : old_dots) {
-      graphics.clearRect(r.min_x, r.min_y, r.max_x - r.min_x, r.max_y - r.min_y);
-    }
-    old_dots.clear();
-
-    // Draw the new dots.
+    // Tim: clear each dot's old spot and draw its new spot atomically,
+    // per marker. Clearing all then drawing all leaves a full "no dots"
+    // moment that flickers.
     graphics.setColor(new Color(MARKER_COLOUR));
     // Tim: cull dots outside the physics boundary box (the dotted
     // outline). We don't need those.
     final int x_max = Coords.x_pixels << Coords.shift;
     final int y_max = Coords.y_pixels << Coords.shift;
     final int z_max = Coords.z_pixels << Coords.shift;
+    final List<RectangleInt> new_old_dots = new ArrayList<>();
     synchronized (markers) {
-      for (Point3D p : markers) {
+      final int count = markers.size();
+      for (int i = 0; i < count; i++) {
+        // Clear this marker's old spot (survivors keep their index;
+        // cullOffscreen preserves order, spawns append).
+        if (i < old_dots.size()) {
+          final RectangleInt old = old_dots.get(i);
+          graphics.clearRect(old.min_x, old.min_y,
+              old.max_x - old.min_x, old.max_y - old.min_y);
+        }
+        final Point3D p = markers.get(i);
         final int px = (int) p.x;
         final int py = (int) p.y;
         final int pz = (int) p.z;
@@ -287,9 +293,18 @@ public final class WorldMarkers {
         final int sy = Coords.getYCoords(py, pz);
         final int half = screenHalf(pz);
         graphics.fillRect(sx - half, sy - half, half * 2, half * 2);
-        old_dots.add(new RectangleInt(sx - half, sy - half, sx + half, sy + half));
+        new_old_dots.add(new RectangleInt(sx - half, sy - half,
+            sx + half, sy + half));
+      }
+      // Clear old spots for markers that were culled (beyond the new count).
+      for (int i = count; i < old_dots.size(); i++) {
+        final RectangleInt old = old_dots.get(i);
+        graphics.clearRect(old.min_x, old.min_y,
+            old.max_x - old.min_x, old.max_y - old.min_y);
       }
     }
+    old_dots.clear();
+    old_dots.addAll(new_old_dots);
   }
 
   /**
