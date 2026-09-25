@@ -22,7 +22,7 @@ public final class Reproduction {
      }
   
   
-     final static void reset() {
+     static final void reset() {
         genome_size = 0;
         genome_index = 0;
         executing = false;
@@ -35,7 +35,7 @@ public final class Reproduction {
 */
 
   /*
-     final static void add(int data) {
+     static final void add(int data) {
         if (genome_size >= max_genome_size) {
            makeMoreReproduction();
         }
@@ -45,7 +45,7 @@ public final class Reproduction {
   
   
     // again, this is wasteful :-|
-     final static void makeMoreReproduction() {
+     static final void makeMoreReproduction() {
         max_genome_size++;
      
         new_genome = new int[max_genome_size];

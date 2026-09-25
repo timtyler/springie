@@ -55,7 +55,7 @@
 <!-- module name="ExplicitInitialization"></module -->
 <!-- module name="NoWhitespaceAfter"></module -->
 <!-- module name="DeclarationOrder"></module -->
-<!-- module name="ModifierOrder"></module -->
+    <module name="ModifierOrder"/>
 <!-- module name="FinalLocalVariable"></module -->
 <!-- module name="IllegalToken"><property name="tokens" value="POST_INC,POST_DEC,LITERAL_SWITCH"/></module -->
 <!-- module name="MagicNumber"></module -->

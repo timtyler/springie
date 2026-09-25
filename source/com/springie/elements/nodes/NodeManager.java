@@ -80,7 +80,7 @@ public class NodeManager extends World {
 
   public boolean is_tensegrity;
 
-  final static int virus_color = 0xFFFF00FF;
+  static final int virus_color = 0xFFFF00FF;
 
   public NodeManager() {
     super();
