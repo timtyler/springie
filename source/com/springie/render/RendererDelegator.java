@@ -185,6 +185,11 @@ public final class RendererDelegator {
 
     possibleInitialClear(graphics);
 
+    // Tim: gold dots get their own simple 2D space, drawn BEFORE the
+    // main model tiles. The tiles obliterate any dots underneath them.
+    // Same renderer for ray-tracer and polygon mode.
+    WorldMarkers.drawUnder(graphics);
+
     // Mutually exclusive with message execution (see NewMessageManager):
     // the AWT-thread renderer must not access the model while the
     // animation thread is building it.
@@ -201,11 +206,6 @@ public final class RendererDelegator {
     // costs nothing extra. (Same reason BoundaryBoxDots repaints every
     // paint.)
     ViewportShade.shadeOutsideBox(graphics);
-
-    // Olympics follow-cam decoration: world-locked location markers
-    // streaming past while continuous centering holds a demo creature
-    // on screen centre.
-    renderWorldMarkers(graphics);
 
     renderDragBox(graphics);
 
@@ -296,20 +296,6 @@ public final class RendererDelegator {
    * clear-and-redraw every frame while markers are up, or the old dots
    * would never be erased.
    */
-  private static void renderWorldMarkers(Graphics graphics) {
-    final boolean modern_tiled = RendererDelegator.renderer
-        instanceof com.springie.render.modules.modern.ModularRendererNew;
-    final boolean raytraced = RendererDelegator.renderer
-        instanceof com.springie.render.modules.raytraced.ModularRendererRaytraced;
-    if (modern_tiled) {
-      return;
-    }
-    WorldMarkers.draw(graphics);
-    if (!raytraced && WorldMarkers.size() > 0 && !FrEnd.paused) {
-      FrEnd.main_canvas.panel.repaint();
-      repaint_all_objects = true;
-    }
-  }
 
   private static void renderDragBox(Graphics graphics) {
     final DragBoxManager drag_box_manager = FrEnd.perform_actions.drag_box_manager;

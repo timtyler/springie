@@ -157,6 +157,43 @@ public final class WorldMarkers {
   }
 
   /**
+   * Tim's separate-space renderer: draws the markers as a simple 2D
+   * overlay BEFORE the main model tiles. Removes the old dots, draws
+   * the new dots. The tiles then obliterate any dots underneath them.
+   * Same for ray-tracer and polygon renderer.
+   */
+  private static final List<RectangleInt> old_dots = new ArrayList<>();
+
+  public static void drawUnder(Graphics graphics) {
+    if (!olympicsActive()) {
+      // Clear any leftover dots.
+      for (RectangleInt r : old_dots) {
+        graphics.clearRect(r.min_x, r.min_y, r.max_x - r.min_x, r.max_y - r.min_y);
+      }
+      old_dots.clear();
+      return;
+    }
+
+    // Remove the old dots.
+    for (RectangleInt r : old_dots) {
+      graphics.clearRect(r.min_x, r.min_y, r.max_x - r.min_x, r.max_y - r.min_y);
+    }
+    old_dots.clear();
+
+    // Draw the new dots.
+    graphics.setColor(new Color(MARKER_COLOUR));
+    synchronized (markers) {
+      for (Point3D p : markers) {
+        final int sx = Coords.getXCoords((int) p.x, (int) p.z);
+        final int sy = Coords.getYCoords((int) p.y, (int) p.z);
+        final int half = screenHalf((int) p.z);
+        graphics.fillRect(sx - half, sy - half, half * 2, half * 2);
+        old_dots.add(new RectangleInt(sx - half, sy - half, sx + half, sy + half));
+      }
+    }
+  }
+
+  /**
    * Feeds one quad per marker into the modern tiled renderer's polygon
    * list. The quads ride the normal tile damage repair, so the old
    * marker images are scrubbed when the markers move -- no trails.

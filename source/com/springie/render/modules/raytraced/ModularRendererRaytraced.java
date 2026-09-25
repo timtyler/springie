@@ -20,7 +20,6 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.gestures.DragBoxManager;
 import com.springie.render.Coords;
 import com.springie.render.RectangleInt;
-import com.springie.render.WorldMarkers;
 import com.springie.render.RendererDelegator;
 import com.springie.render.ScenicBackground;
 import com.springie.render.modules.ModularRendererBase;
@@ -797,16 +796,6 @@ public class ModularRendererRaytraced implements ModularRendererBase {
           drag_damage.max_y);
     }
 
-    // Olympics follow-cam: the world markers are plotted screen-space
-    // over the blit, so their old and new bounds join the dirty region
-    // here -- otherwise the old dots would never be re-traced away and
-    // the markers would leave trails.
-    final RectangleInt marker_damage = WorldMarkers.getDamage();
-    if (marker_damage != null) {
-      markTilesDirty(rects, tiles, nx, divisor, width, height,
-          marker_damage.min_x, marker_damage.min_y, marker_damage.max_x,
-          marker_damage.max_y);
-    }
 
     return rects;
   }
