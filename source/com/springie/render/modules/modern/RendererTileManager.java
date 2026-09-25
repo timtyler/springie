@@ -669,7 +669,18 @@ public class RendererTileManager {
   }
 
   void scrubTile(Graphics graphics, int tile_min_x, int tile_min_y) {
-    final int block_size = divisor - getMargin();
+    final int block_size;
+    if (one_big_tile) {
+      // Tim: one big tile has unlimited size -- blank the whole canvas.
+      final java.awt.Rectangle clip = graphics.getClipBounds();
+      if (clip != null) {
+        block_size = Math.max(clip.width, clip.height);
+      } else {
+        block_size = 10000;
+      }
+    } else {
+      block_size = divisor - getMargin();
+    }
 
     // graphics.setColor(new Color(rnd.nextInt() & 0x7F7F7F));
     if (RendererDelegator.scenic_background && Coords.x_pixels > 0
