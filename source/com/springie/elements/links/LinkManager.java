@@ -535,18 +535,6 @@ public class LinkManager extends BaseElementManager<Link> {
     }
   }
 
-  /**
-   * Sets the muscle phase on all links (not just selected).
-   * Used by the global muscle phase slider.
-   */
-  public final void setPhaseOfAll(int phase) {
-    final int n_o_l = this.element.size();
-    for (int temp = n_o_l; --temp >= 0;) {
-      final Link l = (Link) this.element.get(temp);
-      l.phase = phase;
-    }
-  }
-
   public final void setRadiusOfSelected(int radius) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
