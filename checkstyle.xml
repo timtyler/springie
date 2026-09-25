@@ -70,7 +70,7 @@
 <module name="IllegalInstantiation"></module>
 <module name="IllegalCatch"></module>
 <module name="IllegalTokenText"></module>
-<module name="IllegalType"><property name="tokens" value="METHOD_DEF,PARAMETER_DEF,VARIABLE_DEF"/</module>
+<module name="IllegalType"><property name="tokens" value="METHOD_DEF,PARAMETER_DEF,VARIABLE_DEF"/></module>
 <module name="InnerAssignment"></module>
 <module name="MissingSwitchDefault"></module>
 <module name="ModifiedControlVariable"></module>
