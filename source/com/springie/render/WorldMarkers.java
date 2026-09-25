@@ -174,9 +174,9 @@ public final class WorldMarkers {
         int dy;
         int dz;
         if (cw_acw) {
-          // Rotate about Z axis.
-          dx = (int) (rx * Math.cos(theta1) - ry * Math.sin(theta1));
-          dy = (int) (ry * Math.cos(theta1) + rx * Math.sin(theta1));
+          // Rotate about Z axis (matches RotationManager.rotateAboutZAxis).
+          dx = (int) (rx * Math.cos(theta1) + ry * Math.sin(theta1));
+          dy = (int) (ry * Math.cos(theta1) - rx * Math.sin(theta1));
           dz = rz;
         } else {
           // Rotate about Y axis by theta1, then X axis by theta2.
