@@ -49,11 +49,11 @@ public final class WorldMarkers {
    * draw bigger, farther ones smaller -- the same perspective the
    * projection gives their streaming motion.
    */
-  private static final int MARKER_HALF_MID = 5;
+  private static final int MARKER_HALF_MID = 2;
 
-  private static final int MARKER_HALF_MIN = 3;
+  private static final int MARKER_HALF_MIN = 1;
 
-  private static final int MARKER_HALF_MAX = 8;
+  private static final int MARKER_HALF_MAX = 4;
 
   /**
    * Depth band the markers spawn in, as fractions of the z-glass

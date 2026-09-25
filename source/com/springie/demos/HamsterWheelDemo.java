@@ -18,20 +18,22 @@ import com.springie.world.Grounding;
 import com.springie.world.World;
 
 /**
- * A big, clean rolling wheel: 6 nodes per rim (radius 160px), two
+ * A big, clean rolling wheel: 9 nodes per rim (radius 160px), two
  * parallel rims, each with its own single central hub node -- two hubs
- * total, joined by a stiff passive axle. Fewer, thinner spokes than the
- * old design: 12 cable spokes (6 per hub), not 16.
+ * total, joined by a stiff passive axle. 18 cable spokes (9 per hub).
  *
- * <p>Geometry follows Tim's directive (2026-09-21): bigger nodes, longer
- * struts, fewer thinner spokes, one central node per rim. Each hub sits
+ * <p>Geometry follows Tim's directives: 2026-09-21 (bigger nodes, longer
+ * struts, fewer thinner spokes, one central node per rim) and 2026-09-24
+ * (heavy axis nodes, much lighter rim nodes, bigger nodes still, thinner
+ * links) -- perfecting the hamster-ball drive, where the heavy hubs'
+ * centre-of-mass shift is what gravity rolls the wheel on. Each hub sits
  * in its rim's plane and spokes radially to its 6 rim nodes, like a
  * bicycle wheel; the axle ties the two hubs into a single rigid shaft.
  * The rim uses alternating diagonal bracing to resist shear, and each
  * hub connects via tetrahedra -- never triangles sharing only the hub
  * corner.
  *
- * <p>Drive: the 12 hub spokes are cable muscles (tension-only, per Tim's
+ * <p>Drive: the 18 hub spokes are cable muscles (tension-only, per Tim's
  * "muscles on cables" rule) with a ground-contact pull reflex. When a
  * spoke pair's rim nodes are on the ground ahead of the hub (in the
  * rolling direction) the spokes contract, pulling the hub forward and
@@ -46,12 +48,14 @@ import com.springie.world.World;
  *
  * <p>Parameters are public fields so the judge can sweep them.
  */
-public final class WheelDemo {
-  private WheelDemo() {
+public final class HamsterWheelDemo {
+  private HamsterWheelDemo() {
   }
 
   /** Nodes per rim. */
-  public static final int RIM_COUNT = 6;
+  // Tim's directive (2026-09-24): 9 spokes per rim, not 6 -- a rounder
+  // wheel rolls better (more ground-contact points, smaller polygon steps).
+  public static final int RIM_COUNT = 9;
 
   /** Rim radius, in pixels. */
   public static int rim_radius_px = 160;
@@ -70,13 +74,31 @@ public final class WheelDemo {
   /** Nominal mass for rim nodes (log scale used by the engine). */
   // Mass is functional now: reference mass preserves the tuned behavior
   // (the old values were no-ops when mass was ignored).
-  public static int rim_log_mass = 17;
+  // Tim's directive (2026-09-24): the rim nodes are much lighter than the
+  // hubs -- log 13 is 8x lighter than the reference mass, so the heavy
+  // hubs dominate the centre of mass and the hamster-ball drive gets real
+  // gravitational torque from each hub shift.
+  public static int rim_log_mass = 15;
 
   /** Nominal mass for the hub node (log scale used by the engine). */
-  public static int hub_log_mass = NodeType.REFERENCE_LOG_MASS;
+  // Tim's directive (2026-09-24): the axis (hub) nodes are heavy -- log 19
+  // is 8x the reference mass. The two hubs carry ~90% of the wheel's mass,
+  // so pulling a hub forward shifts the centre of mass hard and gravity
+  // does the rolling.
+  public static int hub_log_mass = 19;
 
   /** Drawn node size for the wheel's nodes, in pixels. */
-  public static int node_size_px = 60;
+  // Tim's directive (2026-09-24): bigger nodes (was 60). Node size is
+  // PHYSICAL -- the boundary clamp and the ground line both use it.
+  public static int node_size_px = 80;
+
+  /**
+   * Link rendering thinness: radius = length / this. Tim's directive
+   * (2026-09-24): thinner links to go with the bigger nodes (was the
+   * LinkType default of length / 8). Visual only -- link radius never
+   * enters the physics.
+   */
+  public static int link_radius_divisor = 16;
 
   /** Muscle amplitude for the spoke wave, 0-100%. */
   /** Spoke muscle amplitude, percent (travelling-wave mode only). */
@@ -174,7 +196,7 @@ public final class WheelDemo {
   public static boolean proportional_drive = true;
 
   /** Elasticity for the rim links (all tetrahedron edges). */
-  public static int rim_elasticity = 30;
+  public static int rim_elasticity = 60;
 
   /**
    * Elasticity for the inter-rim bracing (cross links and mirror
@@ -182,10 +204,10 @@ public final class WheelDemo {
    * against differential (rolling/rocking) motion, while the softer rings
    * keep ground impacts gentle.
    */
-  public static int bracing_elasticity = 30;
+  public static int bracing_elasticity = 60;
 
   /** Elasticity for the hub-to-rim spoke muscles. */
-  public static int spoke_elasticity = 10;
+  public static int spoke_elasticity = 60;
 
   /**
    * Roll correction gain for the paired reflex, in rest-length units per
@@ -205,7 +227,7 @@ public final class WheelDemo {
    * cables go slack under the hub and it sags until the wheel tips.
    * 95 holds the hub at axle height like a bicycle wheel.
    */
-  public static int spoke_rest_scale_pct = 95;
+  public static int spoke_rest_scale_pct = 85;
 
   /**
    * Builds the wheel with its centre at (x_px, ground - radius).
@@ -280,8 +302,8 @@ public final class WheelDemo {
     axle_link.controller =
         new AxleStabilizerController(rim0, rim1, axle_stabilizer_bias);
 
-    // Rim: two 6-gon rings (12 links) + 6 cross links + 12 mirror diagonals
-    // (30 total). The diagonals come in mirror pairs so the bracing has
+    // Rim: two 9-gon rings (18 links) + 9 cross links + 18 mirror diagonals
+    // (45 total). The diagonals come in mirror pairs so the bracing has
     // no chirality: single-handed diagonals twist the wheel and make it
     // veer in a circle instead of rolling straight.
     final GlobalOscillatorController controller =
@@ -303,7 +325,7 @@ public final class WheelDemo {
       passive(link_manager, clazz, a0, rim1[j], bracing_elasticity); // diag \
     }
 
-    // Hub spokes: 12 cable muscles, 6 per hub, each hub spoking radially
+    // Hub spokes: 18 cable muscles, 9 per hub, each hub spoking radially
     // to its own rim (in-plane, like a bicycle wheel). For each i, the
     // pair (hub0-rim0[i], hub1-rim1[i]) fires together from midpoint
     // geometry, keeping lateral forces symmetric.
@@ -356,17 +378,27 @@ public final class WheelDemo {
   private static Link passive(LinkManager lm, Clazz clazz, Node a, Node b,
       int elasticity) {
     final LinkType type =
-        lm.link_type_factory.getNew(distance(a, b), elasticity);
+        thin(lm.link_type_factory.getNew(distance(a, b), elasticity));
     final Link link = lm.setLink(a, b, type, clazz);
     link.adjusted_rest_length = type.length;
     return link;
   }
 
+  /**
+   * Thins a link type for rendering: radius = length / link_radius_divisor.
+   * Each type from the factory is fresh (never shared), so mutating it is
+   * safe. Visual only -- link radius never enters the physics.
+   */
+  private static LinkType thin(LinkType type) {
+    type.radius = type.length / link_radius_divisor;
+    return type;
+  }
+
   /** Hub-to-rim cable muscle spoke with an angle-derived oscillator phase. */
   private static void spoke(LinkManager lm, Clazz clazz,
       GlobalOscillatorController controller, Node hub, Node rim, int phase) {
-    final LinkType type = lm.link_type_factory.getNew(
-        scaledSpokeLength(distance(hub, rim)), spoke_elasticity);
+    final LinkType type = thin(lm.link_type_factory.getNew(
+        scaledSpokeLength(distance(hub, rim)), spoke_elasticity));
     type.compression = false;
     final Link link = lm.setLink(hub, rim, type, clazz);
     link.adjusted_rest_length = type.length;
@@ -398,13 +430,13 @@ public final class WheelDemo {
    */
   private static void pairedReflexSpokes(LinkManager link_manager, Clazz clazz,
       Node hub0, Node hub1, Node rim_a, Node rim_b, int ground_y) {
-    final LinkType type_a = link_manager.link_type_factory.getNew(
-        scaledSpokeLength(distance(hub0, rim_a)), spoke_elasticity);
+    final LinkType type_a = thin(link_manager.link_type_factory.getNew(
+        scaledSpokeLength(distance(hub0, rim_a)), spoke_elasticity));
     type_a.compression = false;
     final Link link_a = link_manager.setLink(hub0, rim_a, type_a, clazz);
     link_a.adjusted_rest_length = type_a.length;
-    final LinkType type_b = link_manager.link_type_factory.getNew(
-        scaledSpokeLength(distance(hub1, rim_b)), spoke_elasticity);
+    final LinkType type_b = thin(link_manager.link_type_factory.getNew(
+        scaledSpokeLength(distance(hub1, rim_b)), spoke_elasticity));
     type_b.compression = false;
     final Link link_b = link_manager.setLink(hub1, rim_b, type_b, clazz);
     link_b.adjusted_rest_length = type_b.length;
@@ -425,7 +457,7 @@ public final class WheelDemo {
   private static void reflexSpoke(LinkManager lm, Clazz clazz,
       Node hub, Node rim, int ground_y) {
     final LinkType type =
-        lm.link_type_factory.getNew(distance(hub, rim), spoke_elasticity);
+        thin(lm.link_type_factory.getNew(distance(hub, rim), spoke_elasticity));
     final Link link = lm.setLink(hub, rim, type, clazz);
     link.adjusted_rest_length = type.length;
     link.controller = new WheelPushController(hub, rim, type.length,

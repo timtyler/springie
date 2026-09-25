@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.springie.context.ContextManager;
-import com.springie.demos.WheelDemo;
+import com.springie.demos.HamsterWheelDemo;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.muscles.Muscles;
@@ -63,15 +63,15 @@ public class GroundingTest {
     }
   }
 
-  private static NodeManager freshWheel() {
+  private static NodeManager freshHamsterWheel() {
     ContextManager.setNodeManager(new NodeManager());
-    WheelDemo.buildAt(120);
+    HamsterWheelDemo.buildAt(120);
     return ContextManager.getNodeManager();
   }
 
   @Test
   void floatingModelIsSetDownOnTheGround() {
-    final NodeManager node_manager = freshWheel();
+    final NodeManager node_manager = freshHamsterWheel();
     final int ground = Coords.y_pixels << Coords.shift;
     assertEquals(ground, lowestExtent(node_manager),
         "the demo build must already rest on the ground");
@@ -88,7 +88,7 @@ public class GroundingTest {
 
   @Test
   void buriedModelIsLiftedOntoTheGround() {
-    final NodeManager node_manager = freshWheel();
+    final NodeManager node_manager = freshHamsterWheel();
     final int ground = Coords.y_pixels << Coords.shift;
 
     // Push the whole model below the ground plane.
@@ -103,7 +103,7 @@ public class GroundingTest {
 
   @Test
   void groundedModelKeepsItsExactPositions() {
-    final NodeManager node_manager = freshWheel();
+    final NodeManager node_manager = freshHamsterWheel();
     final int n = node_manager.element.size();
     final int[] before = new int[n];
     for (int i = 0; i < n; i++) {

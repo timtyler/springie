@@ -32,7 +32,7 @@ import com.springie.gui.components.ImageButton;
 import com.springie.messages.commands.CrawlerDemoMessage;
 import com.springie.messages.commands.SidewinderDemoMessage;
 import com.springie.messages.commands.SpiderTankDemoMessage;
-import com.springie.messages.commands.WheelDemoMessage;
+import com.springie.messages.commands.HamsterWheelDemoMessage;
 
 /**
  * Tests for the floppy-disc toggle in the bottom button bar: pressed in
@@ -293,7 +293,7 @@ public class PanelFundamentalTest {
     assertTrue(DemoCatalog.forName("Spider Tank")
         .newMessage() instanceof SpiderTankDemoMessage);
     assertTrue(
-        DemoCatalog.forName("Wheel").newMessage() instanceof WheelDemoMessage);
+        DemoCatalog.forName("Hamster wheel").newMessage() instanceof HamsterWheelDemoMessage);
     assertNull(DemoCatalog.forName("Moscow"),
         "a model file must not dispatch to any demo");
     assertNull(DemoCatalog.forName(PanelFundamental.DEMO_PLACEHOLDER),
@@ -303,8 +303,8 @@ public class PanelFundamentalTest {
   @Test
   void selectDemoShowsItInTheDropdown() throws Exception {
     try {
-      SwingUtilities.invokeAndWait(() -> panel().selectDemo("Wheel"));
-      assertEquals("Wheel",
+      SwingUtilities.invokeAndWait(() -> panel().selectDemo("Hamster wheel"));
+      assertEquals("Hamster wheel",
           panel().choose_demo.choice.getSelectedItem(),
           "choosing the demo from the menu must show it in the demos dropdown");
     } finally {
@@ -319,7 +319,7 @@ public class PanelFundamentalTest {
   @Test
   void choosingADemoLaunchesItAtOnce() throws Exception {
     final String[] names = {
-        "Sidewinder", "Crawler", "Spider Tank", "Wheel", "Slinky"};
+        "Sidewinder", "Crawler", "Spider Tank", "Hamster wheel", "Slinky"};
     // Node counts the demo builders produce (their own tests pin these).
     // The crawler rebuild is still open, so its count may move again.
     final int[] nodes = {
@@ -370,9 +370,9 @@ public class PanelFundamentalTest {
     try {
       SwingUtilities.invokeAndWait(() -> {
         final Choice demos = panel().choose_demo.choice;
-        demos.select("Wheel");
+        demos.select("Hamster wheel");
         demos.dispatchEvent(new ItemEvent(demos, ItemEvent.ITEM_STATE_CHANGED,
-            "Wheel", ItemEvent.SELECTED));
+            "Hamster wheel", ItemEvent.SELECTED));
       });
       waitForBuild(14, 43);
       final Object first_node_before =

@@ -55,6 +55,8 @@ public final class RollingJudge {
     public double upright_fraction;
     /** True when the posture rule was violated at least once. */
     public boolean tipped_over;
+    /** True when any node flew >400px from the hub (fell apart). */
+    public boolean shattered;
     /** True when disqualified (tipped over). Score is 0 when set. */
     public boolean disqualified;
     /**
@@ -79,6 +81,7 @@ public final class RollingJudge {
           + "\nHEIGHT_STD " + String.format("%.2f", this.height_std_px)
           + "\nUPRIGHT_FRAC " + String.format("%.3f", this.upright_fraction)
           + "\nTIPPED_OVER " + this.tipped_over
+          + "\nSHATTERED " + this.shattered
           + "\nDISQUALIFIED " + this.disqualified
           + "\nINITIAL_VELOCITY "
           + String.format("%.4f", this.initial_velocity_px_per_frame)
@@ -119,7 +122,7 @@ public final class RollingJudge {
     // tests) leak values into these statics; the demos' buildAt methods
     // set only a subset, so two consecutive score() calls could otherwise
     // diverge in a polluted suite.
-    // NOTE: temperature is NOT pinned here -- WheelDemo.buildAt sets
+    // NOTE: temperature is NOT pinned here -- HamsterWheelDemo.buildAt sets
     // World.global_temperature = 0 (deterministic build; Caterpillar2Demo
     // and SlinkyDemo do the same). Pinning 6 here would be dead code
     // because buildAt overrides it.
@@ -166,10 +169,10 @@ public final class RollingJudge {
       // world): the wheel must roll from its own gait, never from a
       // tick-1 kick off the left wall. Tim: runners must not touch the
       // side walls.
-      hub = WheelDemo.buildAt(300);
-      // Node 0 is rim0[0] at body angle 0 (see WheelDemo docs).
+      hub = HamsterWheelDemo.buildAt(300);
+      // Node 0 is rim0[0] at body angle 0 (see HamsterWheelDemo docs).
       marker = (Node) node_manager.element.get(0);
-      radius_px = WheelDemo.rim_radius_px;
+      radius_px = HamsterWheelDemo.rim_radius_px;
     }
 
     // No free shove: the model must start at rest in the target
@@ -196,14 +199,15 @@ public final class RollingJudge {
     // Tim's "not tipping over" rule: wheel = axle stays level (two axle-end
     // nodes); crawler = dorsal top node stays above the belly reference.
     final AxleLevelRule axle_rule = use_crawler ? null
-        : new AxleLevelRule(WheelDemo.posture_axle_left_index,
-            WheelDemo.posture_axle_right_index,
-            WheelDemo.posture_axle_max_diff_px);
+        : new AxleLevelRule(HamsterWheelDemo.posture_axle_left_index,
+            HamsterWheelDemo.posture_axle_right_index,
+            HamsterWheelDemo.posture_axle_max_diff_px);
     final TipOverRule tip_rule = !use_crawler ? null
         : new TipOverRule(CrawlerDemo.posture_top_index,
             CrawlerDemo.posture_bottom_index,
             CrawlerDemo.posture_min_separation_px);
     boolean tipped_over = false;
+    boolean shattered = false;
 
     final int measured = ticks - SETTLE_TICKS;
     for (int i = 0; i < measured; i++) {
@@ -219,6 +223,12 @@ public final class RollingJudge {
         upright_ticks++;
       } else {
         tipped_over = true;
+      }
+      // A model that falls apart (nodes flung far from the hub) is not
+      // a valid run, even if the hub happens to stay put and level --
+      // without this, a shattered wheel can score "upright 1.0".
+      if (!shattered && i % 60 == 0 && shattered(node_manager, hub)) {
+        shattered = true;
       }
 
       final double theta = angleOf(marker, hub);
@@ -258,7 +268,8 @@ public final class RollingJudge {
     result.height_std_px = height_std_px;
     result.upright_fraction = (double) upright_ticks / measured;
     result.tipped_over = tipped_over;
-    result.disqualified = tipped_over || shoved;
+    result.shattered = shattered;
+    result.disqualified = tipped_over || shoved || shattered;
     result.initial_velocity_px_per_frame = initial_velocity;
     result.z_drift_px =
         (hub.pos.z - start_z) >> com.springie.render.Coords.shift;
@@ -266,6 +277,30 @@ public final class RollingJudge {
         : distance_px * rolling_match - 3.0 * height_std_px;
     result.ticks = ticks;
     return result;
+  }
+
+  /**
+   * True if any node has flown further than 400px from the hub -- the
+   * model has fallen apart (links overstretched or nodes teleported).
+   * An intact wheel spans 320px and an intact crawler 100px, so 400px
+   * of separation means structural failure, not a valid configuration.
+   * Without this, a shattered wheel whose hub happens to stay put and
+   * level can score a bogus "upright 1.0, not disqualified".
+   */
+  private static boolean shattered(NodeManager node_manager, Node hub) {
+    final int n = node_manager.element.size();
+    final long limit = 400L << com.springie.render.Coords.shift;
+    final long limit2 = limit * limit;
+    for (int i = 0; i < n; i++) {
+      final Node node = (Node) node_manager.element.get(i);
+      final long dx = (long) node.pos.x - hub.pos.x;
+      final long dy = (long) node.pos.y - hub.pos.y;
+      final long dz = (long) node.pos.z - hub.pos.z;
+      if (dx * dx + dy * dy + dz * dz > limit2) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /** Marker angle about the hub in the XY (rolling) plane, radians. */
