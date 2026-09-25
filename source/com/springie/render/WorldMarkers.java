@@ -42,7 +42,7 @@ import com.springie.render.modules.modern.PolygonObject2D;
  */
 public final class WorldMarkers {
   /** Markers kept in play. */
-  static final int TARGET_COUNT = 20;
+  static final int TARGET_COUNT = 100;
 
   /**
    * Marker half-size at mid depth, in screen pixels. Nearer markers
