@@ -183,16 +183,37 @@ public class Link extends BaseElement {
     return fixed / Coords.shift_shifted;
   }
 
+  /**
+   * Clamps a descaled delta to prevent overflow when squaring.
+   * 26000^2 * 3 = 2.028B < Integer.MAX_VALUE (2.147B), so the sum of
+   * three squared clamped deltas cannot overflow.
+   */
+  private static int clampDelta(final int d) {
+    if (d > 26000) {
+      return 26000;
+    }
+    if (d < -26000) {
+      return -26000;
+    }
+    return d;
+  }
+
   public int getActualLength() {
     final int total = this.nodes.length;
     int actual_length_squared = 0;
     for (int section = 0; section < total - 1; section++) {
-      final int delta_x = descaleSymmetric(this.nodes[section].pos.x - this.nodes[section + 1].pos.x);
-      final int delta_y = descaleSymmetric(this.nodes[section].pos.y - this.nodes[section + 1].pos.y);
-      final int delta_z = descaleSymmetric(this.nodes[section].pos.z - this.nodes[section + 1].pos.z);
+      final int delta_x = clampDelta(descaleSymmetric(this.nodes[section].pos.x - this.nodes[section + 1].pos.x));
+      final int delta_y = clampDelta(descaleSymmetric(this.nodes[section].pos.y - this.nodes[section + 1].pos.y));
+      final int delta_z = clampDelta(descaleSymmetric(this.nodes[section].pos.z - this.nodes[section + 1].pos.z));
 
-      actual_length_squared += (delta_x * delta_x) + (delta_y * delta_y)
+      final int add = (delta_x * delta_x) + (delta_y * delta_y)
           + (delta_z * delta_z);
+      // Prevent overflow in the accumulation.
+      if (actual_length_squared > Integer.MAX_VALUE - add) {
+        actual_length_squared = Integer.MAX_VALUE;
+        break;
+      }
+      actual_length_squared += add;
     }
     return (SquareRoot.fastSqrt(1 + actual_length_squared)) << Coords.shift;
   }
@@ -232,16 +253,12 @@ public class Link extends BaseElement {
     for (int i = 0; i < number_of_nodes - 1; i++) {
       final Node n0 = this.nodes[i];
       final Node n1 = this.nodes[i + 1];
-      final int d_x = descaleSymmetric(n0.pos.x - n1.pos.x);
-      final int d_y = descaleSymmetric(n0.pos.y - n1.pos.y);
-      final int d_z = descaleSymmetric(n0.pos.z - n1.pos.z);
-      // Use long: d_x*d_x overflows int when nodes fly far apart,
-      // giving a negative square and a sqrt crash.
-      final long actual_length_squared =
-          (long) d_x * d_x + (long) d_y * d_y + (long) d_z * d_z;
+      final int d_x = clampDelta(descaleSymmetric(n0.pos.x - n1.pos.x));
+      final int d_y = clampDelta(descaleSymmetric(n0.pos.y - n1.pos.y));
+      final int d_z = clampDelta(descaleSymmetric(n0.pos.z - n1.pos.z));
+      final int actual_length_squared = (d_x * d_x) + (d_y * d_y) + (d_z * d_z);
       final int actual_length =
-          SquareRoot.fastSqrt(1 + (int) Math.min(actual_length_squared,
-              Integer.MAX_VALUE - 1));
+          SquareRoot.fastSqrt(1 + actual_length_squared);
 
       final int d_dx = n0.velocity.x - n1.velocity.x;
       final int d_dy = n0.velocity.y - n1.velocity.y;
@@ -483,16 +500,11 @@ public class Link extends BaseElement {
     for (int i = 0; i < number_of_nodes - 1; i++) {
       final Node n0 = this.nodes[i];
       final Node n1 = this.nodes[i + 1];
-      final int d_x = descaleSymmetric(n0.pos.x - n1.pos.x);
-      final int d_y = descaleSymmetric(n0.pos.y - n1.pos.y);
-      final int d_z = descaleSymmetric(n0.pos.z - n1.pos.z);
-      // Use long: d_x*d_x overflows int when nodes fly far apart,
-      // giving a negative square and a sqrt crash.
-      final long actual_length_squared =
-          (long) d_x * d_x + (long) d_y * d_y + (long) d_z * d_z;
-      final int actual_length =
-          SquareRoot.fastSqrt(1 + (int) Math.min(actual_length_squared,
-              Integer.MAX_VALUE - 1));
+      final int d_x = clampDelta(descaleSymmetric(n0.pos.x - n1.pos.x));
+      final int d_y = clampDelta(descaleSymmetric(n0.pos.y - n1.pos.y));
+      final int d_z = clampDelta(descaleSymmetric(n0.pos.z - n1.pos.z));
+      final int actual_length_squared = (d_x * d_x) + (d_y * d_y) + (d_z * d_z);
+      final int actual_length = SquareRoot.fastSqrt(1 + actual_length_squared);
 
       total_length += actual_length;
     }
