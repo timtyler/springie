@@ -38,10 +38,10 @@ import com.springie.world.World;
  * and are offset in-plane, giving significant 3D volume. Not a
  * stabilized square (near-planar quad with cross-bracing).
  *
- * <p>Drive: the 12 inner-circle links (I[i]-I[i+1]) are cable muscles
- * (tension-only, per Tim's "muscles on cables" rule). Each has a phase
- * offset so the contraction wave runs twice around the circle (f=2).
- * The other 5 edges of each tetrahedron are passive struts.
+ * <p>Drive: the 12 inner-circle links (I[i]-I[i+1]) are strut muscles.
+ * Each has a phase offset so the contraction wave runs twice around
+ * the circle (f=2). The other 5 edges of each tetrahedron are passive
+ * struts. (Tim: struts everywhere for this model, even with muscles.)
  *
  * <p>Tim's plan: stabilize the direction with an axle (to be added later).
  *
@@ -158,14 +158,15 @@ public final class CaterpillarTrackDemo {
     final GlobalOscillatorController controller =
         new GlobalOscillatorController(0);
 
-    // Inner circle: 12 cable muscle links with f=2 phase wave.
+    // Inner circle: 12 strut muscle links with f=2 phase wave.
     // Link i connects I[i]-I[i+1]; phase is 2 full cycles around.
     // These are the shared edges of the tetrahedra pairs.
+    // Tim: struts everywhere for this model, even with muscles.
     for (int i = 0; i < SEGMENTS; i++) {
       final int j = (i + 1) % SEGMENTS;
       final LinkType type = link_manager.link_type_factory.getNew(
           distance(inner[i], inner[j]), elasticity);
-      type.compression = false; // cable: tension-only.
+      // Strut (compression enabled), with muscle.
       final Link link = link_manager.setLink(inner[i], inner[j], type, clazz);
       link.adjusted_rest_length = type.length;
       // Phase in ticks: f=2 waves around SEGMENTS links.
