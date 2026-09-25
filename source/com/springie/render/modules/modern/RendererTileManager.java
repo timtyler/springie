@@ -215,14 +215,9 @@ public class RendererTileManager {
     final int block_size;
     if (one_big_tile) {
       // Tim: one big tile has unlimited size -- it covers the whole
-      // canvas, not limited by the divisor.
-      final java.awt.Rectangle clip = graphics.getClipBounds();
-      if (clip != null) {
-        block_size = Math.max(clip.width, clip.height);
-      } else {
-        // Fallback: very large, effectively unlimited.
-        block_size = 10000;
-      }
+      // canvas. Use the actual canvas size from Coords, not the clip
+      // bounds (the clip is reset to 9999x9999, which would OOM).
+      block_size = Math.max(Coords.x_pixels, Coords.y_pixels);
     } else {
       block_size = divisor - getMargin();
     }
