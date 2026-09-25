@@ -603,6 +603,11 @@ public class PanelFundamental {
       logger.error("Unexpected exception", e1);
     }
 
+    // Tim: "Demos" at the bottom of dropdown 1; selecting it lists the
+    // demos in dropdown 2.
+    FrEnd.choose_preset_index.choice.addItem("Demos");
+    FrEnd.choose_preset_index.hashtable.put("Demos", "Demos");
+
     setUpDemosChoice();
     setUpInitialChoice();
   }
@@ -615,6 +620,17 @@ public class PanelFundamental {
         }
 
         final String string = (String) (e.getItem());
+
+        // Tim: when "Demos" is selected in dropdown 1, dropdown 2 lists
+        // demos -- sync the hidden demos dropdown so launchSelected() works.
+        final String preset = FrEnd.choose_preset_index.choice.getSelectedItem();
+        if ("Demos".equals(preset)) {
+          final DemoCatalog.Demo demo = DemoCatalog.forName(string);
+          if (demo != null && choose_demo != null) {
+            choose_demo.choice.select(string);
+          }
+          return;
+        }
 
         final String path = (String) FrEnd.choose_initial.hashtable.get(string);
         if (path != null) {
@@ -662,9 +678,26 @@ public class PanelFundamental {
         final String path = (String) FrEnd.choose_preset_index.hashtable
             .get(string);
 
-        setUpLeafIndex(path);
+        if ("Demos".equals(string)) {
+          setUpDemosLeafIndex();
+        } else {
+          setUpLeafIndex(path);
+        }
       }
     });
+  }
+
+  /**
+   * Populates dropdown 2 with the demo names (when "Demos" is selected
+   * in dropdown 1).
+   */
+  private void setUpDemosLeafIndex() {
+    FrEnd.choose_initial.removeAll();
+    FrEnd.choose_initial.hashtable.clear();
+    for (final DemoCatalog.Demo demo : DemoCatalog.DEMOS) {
+      FrEnd.choose_initial.choice.addItem(demo.name);
+      FrEnd.choose_initial.hashtable.put(demo.name, demo.name);
+    }
   }
 
   private void setUpLeafIndex(final String path) {
