@@ -23,6 +23,7 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TabbedPanel;
 import com.springie.messages.NewMessageManager;
+import com.springie.messages.commands.AlterAllPhasesMessage;
 import com.springie.messages.commands.ContinuouslyCentreMessage;
 import com.springie.muscles.Muscles;
 import com.springie.render.RendererDelegator;
@@ -76,6 +77,8 @@ public class PanelControlsUniverse {
 
   Label label_muscles_period;
 
+  Label label_muscles_phase;
+
   Scrollbar scroll_bar_noc;
 
   Scrollbar scroll_bar_n;
@@ -96,6 +99,8 @@ public class PanelControlsUniverse {
   Scrollbar scroll_bar_muscles_amplitude;
 
   Scrollbar scroll_bar_muscles_period;
+
+  Scrollbar scroll_bar_muscles_phase;
 
   Scrollbar scroll_bar_impact;
 
@@ -269,6 +274,23 @@ public class PanelControlsUniverse {
     this.label_muscles_period = new Label("12", Label.LEFT);
     panel_muscles_period.add("East", this.label_muscles_period);
 
+    final Panel panel_muscles_phase = new Panel();
+    panel_muscles_phase.setLayout(new BorderLayout(0, 8));
+    panel_muscles_phase.add("West", new Label("Muscle phase (ticks):", Label.RIGHT));
+
+    this.scroll_bar_muscles_phase = new Scrollbar(Scrollbar.HORIZONTAL, 0, 10, 0, 610);
+    this.scroll_bar_muscles_phase.addAdjustmentListener(new AdjustmentListener() {
+      public void adjustmentValueChanged(AdjustmentEvent e) {
+        getNewMessageManager().add(new AlterAllPhasesMessage(e.getValue()));
+        label_muscles_phase.setText("" + e.getValue());
+      }
+    });
+
+    panel_muscles_phase.add("Center", this.scroll_bar_muscles_phase);
+
+    this.label_muscles_phase = new Label("0", Label.LEFT);
+    panel_muscles_phase.add("East", this.label_muscles_phase);
+
     final Panel panel_centering = FrEnd.setUpPanelForFrame2();
     this.checkbox_continuously_centre_x = new Checkbox(GUIStrings.CONTINUOUSLY_CENTRE_X);
     this.checkbox_continuously_centre_x.addItemListener(new ItemListener() {
@@ -408,6 +430,7 @@ public class PanelControlsUniverse {
     panel_main.add(panel_muscles_switch);
     panel_main.add(panel_muscles_amplitude);
     panel_main.add(panel_muscles_period);
+    panel_main.add(panel_muscles_phase);
 
     panel_main.add(panel_collision_check);
     panel_main.add(panel_charge_switch);
