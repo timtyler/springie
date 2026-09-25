@@ -184,16 +184,21 @@ public class Link extends BaseElement {
   }
 
   /**
+   * Maximum descaled delta before clamping to prevent overflow when
+   * squaring. MAX_DELTA^2 * 3 < Integer.MAX_VALUE, so the sum of three
+   * squared clamped deltas cannot overflow.
+   */
+  private static final int MAX_DELTA = 26000;
+
+  /**
    * Clamps a descaled delta to prevent overflow when squaring.
-   * 26000^2 * 3 = 2.028B < Integer.MAX_VALUE (2.147B), so the sum of
-   * three squared clamped deltas cannot overflow.
    */
   private static int clampDelta(final int d) {
-    if (d > 26000) {
-      return 26000;
+    if (d > MAX_DELTA) {
+      return MAX_DELTA;
     }
-    if (d < -26000) {
-      return -26000;
+    if (d < -MAX_DELTA) {
+      return -MAX_DELTA;
     }
     return d;
   }
