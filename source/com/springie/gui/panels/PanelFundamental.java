@@ -93,6 +93,19 @@ public class PanelFundamental {
 
   public ImageButton button_file_presets;
 
+  /**
+   * The demos dropdown: the procedural demos have a menu of their own in
+   * the presets card now, below the preset dropdowns, instead of sitting
+   * mixed into the bottom of the preset leaf dropdown.
+   */
+  ChoiceWithDescription choose_demo;
+
+  /**
+   * Placeholder shown in the demos dropdown when no demo is current (a
+   * model file is). Choosing it does nothing; it maps to no demo.
+   */
+  static final String DEMO_PLACEHOLDER = "Select...";
+
   public PanelFundamental(NewMessageManager new_message_manager) {
     this.new_message_manager = new_message_manager;
     makePanelGenerate();
@@ -168,6 +181,7 @@ public class PanelFundamental {
     panel.setLayout(new WrapLayout());
     panel.add(makePanelPresetIndex());
     panel.add(makePanelInitialCvonfiguration());
+    panel.add(makePanelDemos());
     return panel;
   }
 
@@ -355,6 +369,39 @@ public class PanelFundamental {
     final Panel panel_initial_configuration = new Panel();
     panel_initial_configuration.add(FrEnd.choose_initial.choice);
     return panel_initial_configuration;
+  }
+
+  private Panel makePanelDemos() {
+    final Panel panel_demos = new Panel();
+    panel_demos.add(new Label("Demos:"));
+    panel_demos.add(this.choose_demo.choice);
+    return panel_demos;
+  }
+
+  /**
+   * The demos dropdown is a menu, not a selector: choosing a demo launches
+   * it at once, through the exact message the Models > Demos menu
+   * enqueues. Programmatic select() fires no item event, so selectDemo
+   * (the menu's sync path) never double-launches.
+   */
+  private void setUpDemosChoice() {
+    this.choose_demo = new ChoiceWithDescription(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        if (e == null) {
+          return;
+        }
+        // The placeholder maps to no demo and is ignored.
+        final DemoCatalog.Demo demo =
+            DemoCatalog.forName((String) e.getItem());
+        if (demo != null) {
+          getNewMessageManager().add(demo.newMessage());
+        }
+      }
+    });
+    this.choose_demo.choice.addItem(DEMO_PLACEHOLDER);
+    for (final DemoCatalog.Demo demo : DemoCatalog.DEMOS) {
+      this.choose_demo.choice.addItem(demo.name);
+    }
   }
 
   private Panel makePanelPause() {
@@ -564,6 +611,7 @@ public class PanelFundamental {
       logger.error("Unexpected exception", e1);
     }
 
+    setUpDemosChoice();
     setUpInitialChoice();
   }
 
@@ -576,11 +624,15 @@ public class PanelFundamental {
 
         final String string = (String) (e.getItem());
 
-        // Demo entries have no file path; leave next_file_path pointing at
-        // the last real file so the file-based restart path stays intact.
         final String path = (String) FrEnd.choose_initial.hashtable.get(string);
         if (path != null) {
           FrEnd.next_file_path = path;
+          // A model file is current again: stand the demos dropdown back
+          // down to its placeholder, so the launch button rebuilds the
+          // file rather than the last demo.
+          if (choose_demo != null) {
+            choose_demo.choice.select(0);
+          }
         }
       }
     });
@@ -632,12 +684,11 @@ public class PanelFundamental {
     } catch (SAXException e1) {
       logger.error("Unexpected exception", e1);
     }
-    // The procedural demos sit at the end of the file list, grouped under
-    // a common "Demo: " prefix. They are AWT Choice items only -- they have
-    // no file path, so they go straight into the Choice rather than the
-    // description-to-path map; the launch dispatch recognises them by label.
-    for (final DemoCatalog.Demo demo : DemoCatalog.DEMOS) {
-      FrEnd.choose_initial.choice.addItem(demo.label());
+    // The demos have their own dropdown now: switching the preset index
+    // stands it back down to its placeholder, so the launch button follows
+    // the visible file selection.
+    if (this.choose_demo != null) {
+      this.choose_demo.choice.select(0);
     }
     // Repopulating the leaf dropdown fires no item event, so next_file_path
     // would keep pointing at the previous index's model (and the restart
@@ -675,42 +726,49 @@ public class PanelFundamental {
   }
 
   /**
-   * Shows the given demo in the bottom-bar leaf dropdown, as if the user had
-   * picked it there. Used by the Models menu's Demos submenu so the two
-   * stay in agreement; Choice.select fires no item event, so next_file_path
-   * is untouched (demos have no file path anyway).
+   * Shows the given demo in the bottom-bar demos dropdown, as if the user
+   * had picked it there. Used by the Models menu's Demos submenu so the two
+   * stay in agreement; Choice.select fires no item event, so the menu's own
+   * launch message is the only one enqueued.
    */
   public void selectDemo(String name) {
-    if (FrEnd.choose_initial == null) {
+    if (this.choose_demo == null) {
       return;
     }
-    for (final DemoCatalog.Demo demo : DemoCatalog.DEMOS) {
-      if (demo.name.equals(name)) {
-        final java.awt.Choice choice = FrEnd.choose_initial.choice;
-        for (int i = 0; i < choice.getItemCount(); i++) {
-          if (choice.getItem(i).equals(demo.label())) {
-            choice.select(i);
-            return;
-          }
-        }
+    final java.awt.Choice choice = this.choose_demo.choice;
+    for (int i = 0; i < choice.getItemCount(); i++) {
+      if (choice.getItem(i).equals(name)) {
+        choice.select(i);
+        return;
       }
     }
   }
 
   /**
-   * The launch button (and Enter in the leaf dropdown): when a demo entry
-   * is selected, enqueues the demo's own launch message -- the exact one
-   * the Models > Demos menu uses. Otherwise restarts from the selected
-   * model file, as before.
+   * The launch button (and Enter in the leaf dropdown): when a demo is
+   * chosen in the demos dropdown, enqueues the demo's own launch message --
+   * the exact one the Models > Demos menu uses. Otherwise restarts from the
+   * selected model file, as before.
    */
   void launchSelected() {
-    final String selected = FrEnd.choose_initial.choice.getSelectedItem();
-    final DemoCatalog.Demo demo = DemoCatalog.forLabel(selected);
+    final DemoCatalog.Demo demo = selectedDemo();
     if (demo != null) {
       getNewMessageManager().add(demo.newMessage());
     } else {
       getNewMessageManager().add(FrEnd.system_messages.getRestartMessage());
     }
+  }
+
+  /**
+   * The demo currently chosen in the demos dropdown, or null when the
+   * placeholder is showing (a model file is current).
+   */
+  DemoCatalog.Demo selectedDemo() {
+    if (this.choose_demo == null) {
+      return null;
+    }
+    // The placeholder maps to no demo.
+    return DemoCatalog.forName(this.choose_demo.choice.getSelectedItem());
   }
 
   public static String getXMLIndexPath() {

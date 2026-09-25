@@ -10,7 +10,6 @@ import org.xml.sax.SAXException;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
-import com.springie.demos.DemoCatalog;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.electrostatics.ElectrostaticRepulsion;
 import com.springie.elements.links.LinkManager;
@@ -116,15 +115,6 @@ public class NodeManager extends World {
 
   private void addCreature() {
     final String desc = FrEnd.choose_initial.choice.getSelectedItem();
-
-    final DemoCatalog.Demo demo = DemoCatalog.forLabel(desc);
-    if (demo != null) {
-      // A demo entry is selected: build it directly, running the same
-      // launch message the Demos menu and the file card's launch
-      // button enqueue.
-      demo.newMessage().execute();
-      return;
-    }
 
     final String location = (String) FrEnd.choose_initial.hashtable.get(desc);
 

@@ -36,11 +36,6 @@ public final class DemoCatalog {
       this.message = message;
     }
 
-    /** The label this demo appears under in the bottom bar's file card. */
-    public String label() {
-      return "Demo: " + this.name;
-    }
-
     /** The launch message -- the same one the Demos menu enqueues. */
     public NewMessage newMessage() {
       return this.message.get();
@@ -59,15 +54,15 @@ public final class DemoCatalog {
   };
 
   /**
-   * Finds the demo shown under the given file-card label, or null when the
-   * label is a model file rather than a demo entry.
+   * Finds the demo with the given name, or null when there is none. The
+   * placeholder in the demos dropdown maps to no demo.
    */
-  public static Demo forLabel(String label) {
-    if (label == null) {
+  public static Demo forName(String name) {
+    if (name == null) {
       return null;
     }
     for (final Demo demo : DEMOS) {
-      if (demo.label().equals(label)) {
+      if (demo.name.equals(name)) {
         return demo;
       }
     }

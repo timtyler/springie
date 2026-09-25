@@ -33,7 +33,6 @@ import com.springie.messages.commands.CrawlerDemoMessage;
 import com.springie.messages.commands.SidewinderDemoMessage;
 import com.springie.messages.commands.SpiderTankDemoMessage;
 import com.springie.messages.commands.WheelDemoMessage;
-import com.springie.render.SetUpCode;
 
 /**
  * Tests for the floppy-disc toggle in the bottom button bar: pressed in
@@ -230,15 +229,26 @@ public class PanelFundamentalTest {
   }
 
   @Test
-  void demosAppearGroupedAtEndOfLeafDropdown() {
+  void leafDropdownOffersFilesOnly() {
     final Choice leaf = FrEnd.choose_initial.choice;
-    final int n = leaf.getItemCount();
-    assertTrue(n > DemoCatalog.DEMOS.length,
-        "the leaf dropdown must offer files as well as demos");
+    assertTrue(leaf.getItemCount() > 0,
+        "the leaf dropdown must offer model files");
+    for (int i = 0; i < leaf.getItemCount(); i++) {
+      assertNull(DemoCatalog.forName(leaf.getItem(i)),
+          "the leaf dropdown must not mix demos into the file list");
+    }
+  }
+
+  @Test
+  void demosDropdownOffersTheCataloguedDemos() {
+    final Choice demos = panel().choose_demo.choice;
+    assertEquals(DemoCatalog.DEMOS.length + 1, demos.getItemCount(),
+        "the demos dropdown must offer the catalogued demos plus a placeholder");
+    assertEquals(PanelFundamental.DEMO_PLACEHOLDER, demos.getItem(0),
+        "the demos dropdown must open on its placeholder");
     for (int i = 0; i < DemoCatalog.DEMOS.length; i++) {
-      assertEquals(DemoCatalog.DEMOS[i].label(),
-          leaf.getItem(n - DemoCatalog.DEMOS.length + i),
-          "the demos must sit grouped at the end of the file list");
+      assertEquals(DemoCatalog.DEMOS[i].name, demos.getItem(i + 1),
+          "demos dropdown item " + i + " must match the catalog");
     }
   }
 
@@ -273,42 +283,43 @@ public class PanelFundamentalTest {
 
   @Test
   void demoDispatchUsesTheDemosOwnLaunchMessages() {
-    // The file card must launch each demo through the exact message the
-    // Models > Demos menu enqueues -- same class, same builder, same
+    // The demos dropdown must launch each demo through the exact message
+    // the Models > Demos menu enqueues -- same class, same builder, same
     // universe setup.
     assertTrue(
-        DemoCatalog.forLabel("Demo: Sidewinder").newMessage() instanceof SidewinderDemoMessage);
+        DemoCatalog.forName("Sidewinder").newMessage() instanceof SidewinderDemoMessage);
     assertTrue(
-        DemoCatalog.forLabel("Demo: Crawler").newMessage() instanceof CrawlerDemoMessage);
-    assertTrue(DemoCatalog.forLabel("Demo: Spider Tank")
+        DemoCatalog.forName("Crawler").newMessage() instanceof CrawlerDemoMessage);
+    assertTrue(DemoCatalog.forName("Spider Tank")
         .newMessage() instanceof SpiderTankDemoMessage);
     assertTrue(
-        DemoCatalog.forLabel("Demo: Wheel").newMessage() instanceof WheelDemoMessage);
-    assertNull(DemoCatalog.forLabel("Moscow"),
+        DemoCatalog.forName("Wheel").newMessage() instanceof WheelDemoMessage);
+    assertNull(DemoCatalog.forName("Moscow"),
         "a model file must not dispatch to any demo");
+    assertNull(DemoCatalog.forName(PanelFundamental.DEMO_PLACEHOLDER),
+        "the placeholder must not dispatch to any demo");
   }
 
   @Test
   void selectDemoShowsItInTheDropdown() throws Exception {
     try {
       SwingUtilities.invokeAndWait(() -> panel().selectDemo("Wheel"));
-      assertEquals("Demo: Wheel",
-          FrEnd.choose_initial.choice.getSelectedItem(),
-          "choosing the demo from the menu must show it in the file card");
+      assertEquals("Wheel",
+          panel().choose_demo.choice.getSelectedItem(),
+          "choosing the demo from the menu must show it in the demos dropdown");
     } finally {
-      SwingUtilities.invokeAndWait(() -> FrEnd.choose_initial.choice.select(0));
+      SwingUtilities.invokeAndWait(() -> panel().choose_demo.choice.select(0));
     }
   }
 
   /**
-   * Selecting each demo entry in the file card and pressing the launch
-   * button must build the same model the menu launch produces: the demo
-   * builders' node/link counts.
+   * Choosing a demo in the file card's demos dropdown launches it at once
+   * (like the Models > Demos menu): the demo builders' node/link counts.
    */
   @Test
-  void launchButtonLaunchesEachSelectedDemo() throws Exception {
-    final String[] labels = {
-        "Demo: Sidewinder", "Demo: Crawler", "Demo: Spider Tank", "Demo: Wheel", "Demo: Slinky"};
+  void choosingADemoLaunchesItAtOnce() throws Exception {
+    final String[] names = {
+        "Sidewinder", "Crawler", "Spider Tank", "Wheel", "Slinky"};
     // Node counts the demo builders produce (their own tests pin these).
     // The crawler rebuild is still open, so its count may move again.
     final int[] nodes = {
@@ -317,80 +328,107 @@ public class PanelFundamentalTest {
         3 * SidewinderDemo.SEGMENTS + 3, -1, -1, 43, 92};
 
     try {
-      for (int d = 0; d < labels.length; d++) {
-        final String label = labels[d];
+      for (int d = 0; d < names.length; d++) {
+        final String name = names[d];
         SwingUtilities.invokeAndWait(() -> {
-          final Choice leaf = FrEnd.choose_initial.choice;
-          leaf.select(label);
-          leaf.dispatchEvent(new ItemEvent(leaf, ItemEvent.ITEM_STATE_CHANGED,
-              label, ItemEvent.SELECTED));
-          // The rightmost button's action: a demo entry launches the demo,
-          // a file entry restarts from the file.
-          panel().launchSelected();
+          final Choice demos = panel().choose_demo.choice;
+          demos.select(name);
+          demos.dispatchEvent(new ItemEvent(demos, ItemEvent.ITEM_STATE_CHANGED,
+              name, ItemEvent.SELECTED));
         });
 
-        // The demo's launch message runs on the animation thread; wait for
-        // the build to land.
-        final long deadline = System.currentTimeMillis() + 60000;
-        int got_nodes = -1;
-        int got_links = -1;
-        while (System.currentTimeMillis() < deadline) {
-          got_nodes = ContextManager.getNodeManager().element.size();
-          got_links =
-              ContextManager.getNodeManager().getLinkManager().element.size();
-          // Wait for the full build: nodes land before links, so checking
-          // nodes alone can catch the build mid-flight (links still being
-          // added). Only break when both counts match (when the demo has
-          // an expected link count).
-          if (got_nodes == nodes[d]
-              && (links[d] < 0 || got_links == links[d])) {
-            break;
-          }
-          Thread.sleep(25);
-        }
+        waitForBuild(nodes[d], links[d]);
+        final int got_nodes = ContextManager.getNodeManager().element.size();
+        final int got_links =
+            ContextManager.getNodeManager().getLinkManager().element.size();
         assertEquals(nodes[d], got_nodes,
-            label + " must build its demo's node count via the launch button");
+            name + " must build its demo's node count when chosen");
         if (links[d] >= 0) {
           assertEquals(links[d], got_links,
-              label + " must build its demo's link count via the launch button");
+              name + " must build its demo's link count when chosen");
         } else {
           assertTrue(got_links > got_nodes,
-              label + " must build a linked structure via the launch button");
+              name + " must build a linked structure when chosen");
         }
       }
     } finally {
       // Leave the file card on a model file, as the other tests expect.
-      SwingUtilities.invokeAndWait(() -> FrEnd.choose_initial.choice.select(0));
+      SwingUtilities.invokeAndWait(() -> {
+        panel().choose_demo.choice.select(0);
+        FrEnd.choose_initial.choice.select(0);
+      });
     }
   }
 
   /**
-   * The boot path reads the same dropdown: with a demo selected, starting
-   * (or restarting) the model must build the demo, not blow up on the
-   * missing file path.
+   * The launch button after a demo: with a demo chosen in the demos
+   * dropdown, the launch button must rebuild the demo rather than the
+   * selected model file.
    */
   @Test
-  void initialLoadBuildsSelectedDemo() throws Exception {
+  void launchButtonRebuildsTheChosenDemo() throws Exception {
     try {
-      SwingUtilities.invokeAndWait(
-          () -> FrEnd.choose_initial.choice.select("Demo: Wheel"));
-      // The same lock the message pump holds while running model-building
-      // messages: the animation thread must not step physics mid-build.
-      synchronized (ContextManager.class) {
-        SetUpCode.clearAndThenAddInitialObjects();
+      SwingUtilities.invokeAndWait(() -> {
+        final Choice demos = panel().choose_demo.choice;
+        demos.select("Wheel");
+        demos.dispatchEvent(new ItemEvent(demos, ItemEvent.ITEM_STATE_CHANGED,
+            "Wheel", ItemEvent.SELECTED));
+      });
+      waitForBuild(14, 43);
+      final Object first_node_before =
+          ContextManager.getNodeManager().element.get(0);
+
+      SwingUtilities.invokeAndWait(() -> panel().launchSelected());
+
+      // The node/link counts are the same before and after, so prove the
+      // rebuild ran by waiting for fresh node instances to land.
+      final long deadline = System.currentTimeMillis() + 60000;
+      boolean rebuilt = false;
+      while (System.currentTimeMillis() < deadline) {
+        final java.util.List<?> elements =
+            ContextManager.getNodeManager().element;
+        if (!elements.isEmpty() && elements.get(0) != first_node_before) {
+          rebuilt = true;
+          break;
+        }
+        Thread.sleep(25);
       }
+      assertTrue(rebuilt,
+          "the launch button must rebuild the chosen demo");
       assertEquals(14,
           ContextManager.getNodeManager().element.size(),
-          "the initial load must build the selected demo");
+          "the rebuilt demo must have the wheel's node count");
       assertEquals(43,
           ContextManager.getNodeManager().getLinkManager().element.size(),
-          "the initial load must build the selected demo's links");
+          "the rebuilt demo must have the wheel's link count");
     } finally {
-      // Leave a model file loaded, as the other tests expect.
-      SwingUtilities.invokeAndWait(() -> FrEnd.choose_initial.choice.select(0));
-      synchronized (ContextManager.class) {
-        SetUpCode.clearAndThenAddInitialObjects();
+      SwingUtilities.invokeAndWait(() -> {
+        panel().choose_demo.choice.select(0);
+        FrEnd.choose_initial.choice.select(0);
+      });
+    }
+  }
+
+  /**
+   * Waits for the animation thread to land a build with the given node
+   * count (and link count, when non-negative).
+   */
+  private void waitForBuild(int nodes, int links) throws Exception {
+    // The demo's launch message runs on the animation thread; wait for
+    // the build to land.
+    final long deadline = System.currentTimeMillis() + 60000;
+    while (System.currentTimeMillis() < deadline) {
+      final int got_nodes = ContextManager.getNodeManager().element.size();
+      final int got_links =
+          ContextManager.getNodeManager().getLinkManager().element.size();
+      // Wait for the full build: nodes land before links, so checking
+      // nodes alone can catch the build mid-flight (links still being
+      // added). Only break when both counts match (when the demo has
+      // an expected link count).
+      if (got_nodes == nodes && (links < 0 || got_links == links)) {
+        return;
       }
+      Thread.sleep(25);
     }
   }
 }

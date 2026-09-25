@@ -143,7 +143,7 @@ class HopperDemoTest {
 
   @Test
   void demoIsRegisteredInTheCatalog() {
-    final DemoCatalog.Demo demo = DemoCatalog.forLabel("Demo: Hopper");
+    final DemoCatalog.Demo demo = DemoCatalog.forName("Hopper");
     assertTrue(demo != null, "hopper must be in the DemoCatalog");
     assertTrue(demo.newMessage() instanceof HopperDemoMessage,
         "the catalog entry must launch via HopperDemoMessage");
