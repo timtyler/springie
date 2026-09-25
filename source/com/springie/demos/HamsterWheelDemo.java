@@ -18,9 +18,9 @@ import com.springie.world.Grounding;
 import com.springie.world.World;
 
 /**
- * A big, clean rolling wheel: 7 nodes per rim (radius 160px), two
+ * A big, clean rolling wheel: 6 nodes per rim (radius 160px), two
  * parallel rims, each with its own single central hub node -- two hubs
- * total, joined by a stiff passive axle. 14 cable spokes (7 per hub).
+ * total, joined by a stiff passive axle. 12 cable spokes (6 per hub).
  *
  * <p>Geometry follows Tim's directives: 2026-09-21 (bigger nodes, longer
  * struts, fewer thinner spokes, one central node per rim) and 2026-09-24
@@ -55,13 +55,20 @@ public final class HamsterWheelDemo {
   /** Nodes per rim. */
   // Tim's directive (2026-09-24): 9 spokes per rim, not 6 -- a rounder
   // wheel rolls better (more ground-contact points, smaller polygon steps).
-  public static final int RIM_COUNT = 7;
+  public static final int RIM_COUNT = 6;
 
   /** Rim radius, in pixels. */
   public static int rim_radius_px = 160;
 
   /** Rims sit at z = z_offset and z = z_offset + 2 * this, in pixels. */
   public static int rim_half_width_px = 162;
+
+  /**
+   * How far the hubs sit inside the rim planes on each side, in pixels.
+   * The axle is shorter than the track -- the spokes pull the rims
+   * together like a bicycle wheel, instead of apart.
+   */
+  public static int axle_inset_px = 40;
 
   /**
    * Z offset of the whole wheel: rim-0 sits at z = this, rim-1 at
@@ -90,7 +97,7 @@ public final class HamsterWheelDemo {
   /** Drawn node size for the wheel's nodes, in pixels. */
   // Tim's directive (2026-09-24): bigger nodes (was 60). Node size is
   // PHYSICAL -- the boundary clamp and the ground line both use it.
-  public static int node_size_px = 100;
+  public static int node_size_px = 130;
 
   /**
    * Link rendering thinness: radius = length / this. Tim's directive
@@ -98,7 +105,7 @@ public final class HamsterWheelDemo {
    * LinkType default of length / 8). Visual only -- link radius never
    * enters the physics.
    */
-  public static int link_radius_divisor = 16;
+  public static int link_radius_divisor = 48;
 
   /** Muscle amplitude for the spoke wave, 0-100%. */
   /** Spoke muscle amplitude, percent (travelling-wave mode only). */
@@ -174,7 +181,7 @@ public final class HamsterWheelDemo {
    * for the two-hub wheel: the in-plane spokes are shorter and more
    * direct, so less pull is needed; stronger pull tips it over.
    */
-  public static int reflex_pull_pct = 8;
+  public static int reflex_pull_pct = 16;
 
   /**
    * How far behind/in front of the hub (px) a spoke's rim pair must be to
@@ -290,20 +297,24 @@ public final class HamsterWheelDemo {
       rim1[i] = addNode(node_manager, clazz, rim_type,
           cx + (int) (radius * c), cy + (int) (radius * s), z0 + 2 * hw);
     }
-    final Node hub0 = addNode(node_manager, clazz, hub_type, cx, cy, z0);
-    final Node hub1 =
-        addNode(node_manager, clazz, hub_type, cx, cy, z0 + 2 * hw);
+    final Node hub0 = addNode(node_manager, clazz, hub_type,
+        cx, cy, z0 + (axle_inset_px << Coords.shift));
+    final Node hub1 = addNode(node_manager, clazz, hub_type,
+        cx, cy, z0 + 2 * hw - (axle_inset_px << Coords.shift));
 
     // Axle: a stiff passive link joining the two hubs into a single
-    // rigid shaft. Also carries the yaw stabilizer (one instance, so the
-    // bias applies exactly once per dynamics step).
+    // rigid shaft. The hubs sit inside the rim planes (axle_inset_px
+    // per side), so the axle is shorter than the track -- the spokes
+    // pull the rims together like a bicycle wheel. Also carries the
+    // yaw stabilizer (one instance, so the bias applies exactly once
+    // per dynamics step).
     final Link axle_link =
         passive(link_manager, clazz, hub0, hub1, bracing_elasticity);
     axle_link.controller =
         new AxleStabilizerController(rim0, rim1, axle_stabilizer_bias);
 
-    // Rim: two 7-gon rings (14 links) + 7 cross links + 14 mirror diagonals
-    // (35 total). The diagonals come in mirror pairs so the bracing has
+    // Rim: two 6-gon rings (12 links) + 6 cross links + 12 mirror diagonals
+    // (30 total). The diagonals come in mirror pairs so the bracing has
     // no chirality: single-handed diagonals twist the wheel and make it
     // veer in a circle instead of rolling straight.
     final GlobalOscillatorController controller =

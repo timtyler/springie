@@ -25,7 +25,7 @@ import com.springie.world.World;
  * The wheel demo must build a big, clean rolling wheel: 6 nodes per rim,
  * two rims each with its own central hub node (two hubs joined by an
  * axle), 30 rim links (rim edges, cross links, diagonal bracing), 1 axle
- * link, 14 cable muscle spokes (16 nodes, 50 links). The spokes are
+ * link, 12 cable muscle spokes (14 nodes, 43 links). The spokes are
  * tension-only cables (Tim's "muscles on cables" rule) carrying
  * ground-contact pull reflex controllers (self-synchronizing).
  */
@@ -43,6 +43,7 @@ class HamsterWheelDemoTest {
   private int old_z_offset;
   private int old_radius;
   private int old_half_width;
+  private int old_inset;
   private int old_rim_log_mass;
   private int old_node_size;
   private int old_stance;
@@ -70,6 +71,7 @@ class HamsterWheelDemoTest {
     old_z_offset = HamsterWheelDemo.z_offset_px;
     old_radius = HamsterWheelDemo.rim_radius_px;
     old_half_width = HamsterWheelDemo.rim_half_width_px;
+    old_inset = HamsterWheelDemo.axle_inset_px;
     old_rim_log_mass = HamsterWheelDemo.rim_log_mass;
     old_node_size = HamsterWheelDemo.node_size_px;
     old_stance = HamsterWheelDemo.reflex_stance_threshold_px;
@@ -86,14 +88,15 @@ class HamsterWheelDemoTest {
     // even if the statics were changed by an earlier test.
     HamsterWheelDemo.use_reflex_drive = true;
     HamsterWheelDemo.reflex_push_pct = 0;
-    HamsterWheelDemo.reflex_pull_pct = 8;
+    HamsterWheelDemo.reflex_pull_pct = 16;
     HamsterWheelDemo.roll_direction = 1;
     HamsterWheelDemo.axle_stabilizer_bias = 13;
     HamsterWheelDemo.z_offset_px = 100;
     HamsterWheelDemo.rim_radius_px = 160;
-    HamsterWheelDemo.rim_half_width_px = 130;
+    HamsterWheelDemo.rim_half_width_px = 162;
+    HamsterWheelDemo.axle_inset_px = 40;
     HamsterWheelDemo.rim_log_mass = 17;
-    HamsterWheelDemo.node_size_px = 100;
+    HamsterWheelDemo.node_size_px = 130;
     HamsterWheelDemo.reflex_stance_threshold_px = 60;
     HamsterWheelDemo.bracing_elasticity = 30;
     HamsterWheelDemo.roll_correct_gain = 0;
@@ -115,6 +118,7 @@ class HamsterWheelDemoTest {
     HamsterWheelDemo.z_offset_px = old_z_offset;
     HamsterWheelDemo.rim_radius_px = old_radius;
     HamsterWheelDemo.rim_half_width_px = old_half_width;
+    HamsterWheelDemo.axle_inset_px = old_inset;
     HamsterWheelDemo.rim_log_mass = old_rim_log_mass;
     HamsterWheelDemo.node_size_px = old_node_size;
     HamsterWheelDemo.reflex_stance_threshold_px = old_stance;
@@ -152,7 +156,7 @@ class HamsterWheelDemoTest {
     final NodeManager nm = ContextManager.getNodeManager();
     for (int i = 0; i < nm.element.size(); i++) {
       final Node node = (Node) nm.element.get(i);
-      assertEquals(100, node.type.radius, "wheel node size");
+      assertEquals(130, node.type.radius, "wheel node size");
     }
   }
 
@@ -162,13 +166,13 @@ class HamsterWheelDemoTest {
     assertNotNull(hub0);
 
     final NodeManager nm = ContextManager.getNodeManager();
-    // 7 nodes per rim x 2 rims + 2 hubs (one per rim) = 16 nodes.
-    assertEquals(16, nm.element.size());
+    // 6 nodes per rim x 2 rims + 2 hubs (one per rim) = 14 nodes.
+    assertEquals(14, nm.element.size());
 
     final LinkManager lm = nm.getLinkManager();
-    // 7 segments x 5 (rim0, rim1, cross, 2 mirror diagonals) = 35 rim links
-    // + 1 axle (hub0-hub1) + 14 hub spokes = 50 links.
-    assertEquals(50, lm.element.size());
+    // 6 segments x 5 (rim0, rim1, cross, 2 mirror diagonals) = 30 rim links
+    // + 1 axle (hub0-hub1) + 12 hub spokes = 43 links.
+    assertEquals(43, lm.element.size());
   }
 
   @Test
@@ -187,8 +191,8 @@ class HamsterWheelDemoTest {
             "spoke must be tension-only (cable)");
       }
     }
-    // 14 hub-to-rim cable spokes (the only muscles), in 7 paired controllers.
-    assertEquals(14, muscle_count);
+    // 12 hub-to-rim cable spokes (the only muscles), in 6 paired controllers.
+    assertEquals(12, muscle_count);
   }
 
   @Test
@@ -240,7 +244,6 @@ class HamsterWheelDemoTest {
         "distance=" + result.distance_px + " (expected > 150px)");
   }
 
-  @Disabled("re-enable when the hamster-wheel retune lands: 9-spoke heavy-hub build tips (upright 0.39)")
   @Test
   void staysUprightWhileRolling() {
     final RollingJudge.Result result = RollingJudge.score(600, false);
