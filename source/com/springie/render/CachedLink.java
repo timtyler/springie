@@ -263,9 +263,9 @@ public class CachedLink {
 
       if (Link.link_display_length == Link.SHORT
         && (!node0.type.hidden || node1.type.hidden)) {
-        final int d_x = (node0.pos.x - node1.pos.x) >> Coords.shift;
-        final int d_y = (node0.pos.y - node1.pos.y) >> Coords.shift;
-        final int d_z = (node0.pos.z - node1.pos.z) >> Coords.shift;
+        final int d_x = Link.clampDelta((node0.pos.x - node1.pos.x) >> Coords.shift);
+        final int d_y = Link.clampDelta((node0.pos.y - node1.pos.y) >> Coords.shift);
+        final int d_z = Link.clampDelta((node0.pos.z - node1.pos.z) >> Coords.shift);
 
         final int actual_length_squared = (d_x * d_x) + (d_y * d_y)
           + (d_z * d_z);

@@ -193,7 +193,7 @@ public class Link extends BaseElement {
   /**
    * Clamps a descaled delta to prevent overflow when squaring.
    */
-  private static int clampDelta(final int d) {
+  public static int clampDelta(final int d) {
     if (d > MAX_DELTA) {
       return MAX_DELTA;
     }
