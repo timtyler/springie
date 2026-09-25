@@ -435,6 +435,11 @@ public class ModularRendererRaytraced implements ModularRendererBase {
    * background shows through as black grid lines between the tiles.
    */
   static Tile[] buildTileGrid(int width, int height) {
+    if (RendererTileManager.one_big_tile) {
+      // Tim: one big tile instead of the grid. The tile covers the
+      // canvas; the content rectangle crops to the model during render.
+      return new Tile[] { new Tile(0, 0, width, height) };
+    }
     final int divisor = RendererTileManager.divisor;
     // Same margin as the default renderer's getMargin().
     final int margin = RendererTileManager.show_tiles ? 4 : 0;
@@ -470,7 +475,11 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     this.tile_empty = null;
     this.staged_skip = null;
     final int divisor = RendererTileManager.divisor;
-    this.tile_nx = (width + divisor - 1) / divisor;
+    if (RendererTileManager.one_big_tile) {
+      this.tile_nx = 1;
+    } else {
+      this.tile_nx = (width + divisor - 1) / divisor;
+    }
     this.frame_image = null;
     this.frame_staged = false;
   }

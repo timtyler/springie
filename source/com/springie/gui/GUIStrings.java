@@ -149,6 +149,8 @@ public interface GUIStrings {
 
   String SHOW_ACTIVE_TILES = "Show active tiles";
 
+  String ONE_BIG_TILE = "One big tile";
+
   String FACE_REVERSE = "Face mirror";
 
   String EDIT_FUSE_SELECTED_NODES = "Fuse selected nodes";

@@ -66,6 +66,8 @@ public class PanelPreferencesRendererModern {
 
   private Checkbox checkbox_show_active_tiles;
 
+  private Checkbox checkbox_one_big_tile;
+
   private TTChoice choose_polyhedron;
 
   private Label label_tile_size_number;
@@ -284,9 +286,23 @@ public class PanelPreferencesRendererModern {
     });
     panel_show_active_tiles.add(this.checkbox_show_active_tiles);
 
+    final Panel panel_one_big_tile = new Panel();
+    this.checkbox_one_big_tile = new Checkbox(GUIStrings.ONE_BIG_TILE,
+        RendererTileManager.one_big_tile);
+    this.checkbox_one_big_tile.addItemListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        Forget.about(e);
+        RendererTileManager.one_big_tile = ((Checkbox) e.getSource()).getState();
+        FrEnd.main_canvas.forceResize();
+      }
+    });
+    panel_one_big_tile.add(this.checkbox_one_big_tile);
+
     this.panel_tiles.add(panel_show_tiles);
 
     this.panel_tiles.add(panel_show_active_tiles);
+
+    this.panel_tiles.add(panel_one_big_tile);
 
     this.panel_tiles.add(panel_tile_size);
   }

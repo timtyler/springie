@@ -47,6 +47,12 @@ public class RendererTileManager {
 
   public static boolean show_active_tiles;
 
+  /**
+   * Tim: when true, use a single tile cropped to the model's bounds
+   * instead of the grid. Works for polygon and ray-traced renderers.
+   */
+  public static boolean one_big_tile;
+
   public static int colour_modifier_filled = ColourModifier.natural;
 
   public static int colour_modifier_wireframe = ColourModifier.darker;
@@ -94,8 +100,16 @@ public class RendererTileManager {
   }
 
   void resize(int number_of_pixels_x, int number_of_pixels_y) {
-    int x = calcTileX(number_of_pixels_x) + 1;
-    int y = calcTileY(number_of_pixels_y) + 1;
+    int x;
+    int y;
+    if (one_big_tile) {
+      // Tim: one big tile instead of the grid.
+      x = 1;
+      y = 1;
+    } else {
+      x = calcTileX(number_of_pixels_x) + 1;
+      y = calcTileY(number_of_pixels_y) + 1;
+    }
 
     // Log.log("BinManager.resize");
     // Log.log("number_of_pixels_x:" + number_of_pixels_x);
