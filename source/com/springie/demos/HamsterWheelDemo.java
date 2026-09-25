@@ -18,9 +18,9 @@ import com.springie.world.Grounding;
 import com.springie.world.World;
 
 /**
- * A big, clean rolling wheel: 9 nodes per rim (radius 160px), two
+ * A big, clean rolling wheel: 7 nodes per rim (radius 160px), two
  * parallel rims, each with its own single central hub node -- two hubs
- * total, joined by a stiff passive axle. 18 cable spokes (9 per hub).
+ * total, joined by a stiff passive axle. 14 cable spokes (7 per hub).
  *
  * <p>Geometry follows Tim's directives: 2026-09-21 (bigger nodes, longer
  * struts, fewer thinner spokes, one central node per rim) and 2026-09-24
@@ -55,13 +55,13 @@ public final class HamsterWheelDemo {
   /** Nodes per rim. */
   // Tim's directive (2026-09-24): 9 spokes per rim, not 6 -- a rounder
   // wheel rolls better (more ground-contact points, smaller polygon steps).
-  public static final int RIM_COUNT = 9;
+  public static final int RIM_COUNT = 7;
 
   /** Rim radius, in pixels. */
   public static int rim_radius_px = 160;
 
   /** Rims sit at z = z_offset and z = z_offset + 2 * this, in pixels. */
-  public static int rim_half_width_px = 130;
+  public static int rim_half_width_px = 162;
 
   /**
    * Z offset of the whole wheel: rim-0 sits at z = this, rim-1 at
@@ -302,8 +302,8 @@ public final class HamsterWheelDemo {
     axle_link.controller =
         new AxleStabilizerController(rim0, rim1, axle_stabilizer_bias);
 
-    // Rim: two 9-gon rings (18 links) + 9 cross links + 18 mirror diagonals
-    // (45 total). The diagonals come in mirror pairs so the bracing has
+    // Rim: two 7-gon rings (14 links) + 7 cross links + 14 mirror diagonals
+    // (35 total). The diagonals come in mirror pairs so the bracing has
     // no chirality: single-handed diagonals twist the wheel and make it
     // veer in a circle instead of rolling straight.
     final GlobalOscillatorController controller =

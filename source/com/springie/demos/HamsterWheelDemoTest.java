@@ -25,7 +25,7 @@ import com.springie.world.World;
  * The wheel demo must build a big, clean rolling wheel: 6 nodes per rim,
  * two rims each with its own central hub node (two hubs joined by an
  * axle), 30 rim links (rim edges, cross links, diagonal bracing), 1 axle
- * link, 18 cable muscle spokes (20 nodes, 64 links). The spokes are
+ * link, 14 cable muscle spokes (16 nodes, 50 links). The spokes are
  * tension-only cables (Tim's "muscles on cables" rule) carrying
  * ground-contact pull reflex controllers (self-synchronizing).
  */
@@ -162,13 +162,13 @@ class HamsterWheelDemoTest {
     assertNotNull(hub0);
 
     final NodeManager nm = ContextManager.getNodeManager();
-    // 9 nodes per rim x 2 rims + 2 hubs (one per rim) = 20 nodes.
-    assertEquals(20, nm.element.size());
+    // 7 nodes per rim x 2 rims + 2 hubs (one per rim) = 16 nodes.
+    assertEquals(16, nm.element.size());
 
     final LinkManager lm = nm.getLinkManager();
-    // 9 segments x 5 (rim0, rim1, cross, 2 mirror diagonals) = 45 rim links
-    // + 1 axle (hub0-hub1) + 18 hub spokes = 64 links.
-    assertEquals(64, lm.element.size());
+    // 7 segments x 5 (rim0, rim1, cross, 2 mirror diagonals) = 35 rim links
+    // + 1 axle (hub0-hub1) + 14 hub spokes = 50 links.
+    assertEquals(50, lm.element.size());
   }
 
   @Test
@@ -187,8 +187,8 @@ class HamsterWheelDemoTest {
             "spoke must be tension-only (cable)");
       }
     }
-    // 18 hub-to-rim cable spokes (the only muscles), in 9 paired controllers.
-    assertEquals(18, muscle_count);
+    // 14 hub-to-rim cable spokes (the only muscles), in 7 paired controllers.
+    assertEquals(14, muscle_count);
   }
 
   @Test
