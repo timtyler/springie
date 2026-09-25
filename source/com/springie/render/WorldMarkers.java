@@ -285,7 +285,7 @@ public final class WorldMarkers {
   }
 
   private static boolean olympicsActive() {
-    return FrEnd.demo_model && FrEnd.show_world_markers
+    return FrEnd.show_world_markers
         && (FrEnd.continuously_centre_x || FrEnd.continuously_centre_y
             || FrEnd.continuously_centre_z);
   }
