@@ -182,11 +182,22 @@ public final class WorldMarkers {
 
     // Draw the new dots.
     graphics.setColor(new Color(MARKER_COLOUR));
+    // Tim: cull dots outside the physics boundary box (the dotted
+    // outline). We don't need those.
+    final int x_max = Coords.x_pixels << Coords.shift;
+    final int y_max = Coords.y_pixels << Coords.shift;
+    final int z_max = Coords.z_pixels << Coords.shift;
     synchronized (markers) {
       for (Point3D p : markers) {
-        final int sx = Coords.getXCoords((int) p.x, (int) p.z);
-        final int sy = Coords.getYCoords((int) p.y, (int) p.z);
-        final int half = screenHalf((int) p.z);
+        final int px = (int) p.x;
+        final int py = (int) p.y;
+        final int pz = (int) p.z;
+        if (px < 0 || px > x_max || py < 0 || py > y_max || pz < 0 || pz > z_max) {
+          continue;
+        }
+        final int sx = Coords.getXCoords(px, pz);
+        final int sy = Coords.getYCoords(py, pz);
+        final int half = screenHalf(pz);
         graphics.fillRect(sx - half, sy - half, half * 2, half * 2);
         old_dots.add(new RectangleInt(sx - half, sy - half, sx + half, sy + half));
       }
@@ -309,9 +320,19 @@ public final class WorldMarkers {
     final int margin = 40;
     final int x_pixels = Coords.x_pixels;
     final int y_pixels = Coords.y_pixels;
+    // Tim: also cull markers outside the physics boundary box.
+    final int x_max = Coords.x_pixels << Coords.shift;
+    final int y_max = Coords.y_pixels << Coords.shift;
+    final int z_max = Coords.z_pixels << Coords.shift;
     markers.removeIf(p -> {
-      final int sx = Coords.getXCoords((int) p.x, (int) p.z);
-      final int sy = Coords.getYCoords((int) p.y, (int) p.z);
+      final int px = (int) p.x;
+      final int py = (int) p.y;
+      final int pz = (int) p.z;
+      if (px < 0 || px > x_max || py < 0 || py > y_max || pz < 0 || pz > z_max) {
+        return true;
+      }
+      final int sx = Coords.getXCoords(px, pz);
+      final int sy = Coords.getYCoords(py, pz);
       return sx < -margin || sx > x_pixels + margin
           || sy < -margin || sy > y_pixels + margin;
     });
