@@ -117,6 +117,41 @@ public final class WorldMarkers {
     }
   }
 
+  /**
+   * Tim: rotates all markers about the given centre, using the same
+   * angles as the model's rotation drag. Called from RotationManager,
+   * so the dots rotate with the model when the user drags to rotate.
+   */
+  public static void rotate(float theta1, float theta2, boolean cw_acw,
+      Point3D centre) {
+    synchronized (markers) {
+      for (Point3D p : markers) {
+        final int rx = p.x - centre.x;
+        final int ry = p.y - centre.y;
+        final int rz = p.z - centre.z;
+        int dx;
+        int dy;
+        int dz;
+        if (cw_acw) {
+          // Rotate about Z axis.
+          dx = (int) (rx * Math.cos(theta1) - ry * Math.sin(theta1));
+          dy = (int) (ry * Math.cos(theta1) + rx * Math.sin(theta1));
+          dz = rz;
+        } else {
+          // Rotate about Y axis by theta1, then X axis by theta2.
+          final int x1 = (int) (rx * Math.cos(theta1) - rz * Math.sin(theta1));
+          final int z1 = (int) (rz * Math.cos(theta1) + rx * Math.sin(theta1));
+          dx = x1;
+          dy = (int) (ry * Math.cos(theta2) - z1 * Math.sin(theta2));
+          dz = (int) (z1 * Math.cos(theta2) + ry * Math.sin(theta2));
+        }
+        p.x = dx + centre.x;
+        p.y = dy + centre.y;
+        p.z = dz + centre.z;
+      }
+    }
+  }
+
   /** Clears all markers; tests and probes start from here. */
   static void clear() {
     synchronized (markers) {

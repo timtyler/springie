@@ -8,6 +8,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
+import com.springie.render.WorldMarkers;
 
 public class RotationManager {
   private int start_x;
@@ -54,6 +55,9 @@ public class RotationManager {
         }
       }
     }
+
+    // Tim: the gold dots rotate with the model.
+    WorldMarkers.rotate(theta1, theta2, this.cw_acw, this.centre);
 
     RendererDelegator.repaint_some_objects = true;
   }
