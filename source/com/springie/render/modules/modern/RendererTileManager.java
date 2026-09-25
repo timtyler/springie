@@ -628,7 +628,8 @@ public class RendererTileManager {
       graphics.setClip(union.min_x, union.min_y, union.max_x - union.min_x,
           union.max_y - union.min_y);
     }
-    scrubTile(graphics, potential.min_x, potential.min_y);
+    // Tim: blank the minimal content box, not the whole tile/canvas.
+    scrubTile(graphics, union);
   }
 
   // Scratch rect for the snapped scrub clip, reused across tiles and
@@ -668,32 +669,24 @@ public class RendererTileManager {
     out.max_y = tile_min_y + px * ((rect.max_y - tile_min_y + px - 1) / px);
   }
 
-  void scrubTile(Graphics graphics, int tile_min_x, int tile_min_y) {
-    final int block_size;
-    if (one_big_tile) {
-      // Tim: one big tile has unlimited size -- blank the whole canvas.
-      final java.awt.Rectangle clip = graphics.getClipBounds();
-      if (clip != null) {
-        block_size = Math.max(clip.width, clip.height);
-      } else {
-        block_size = 10000;
-      }
-    } else {
-      block_size = divisor - getMargin();
-    }
+  void scrubTile(Graphics graphics, RectangleInt union) {
+    // Tim: blank the minimal content box (union), roughly the same size
+    // as what was drawn -- not the whole tile or canvas.
+    final int x = union.min_x;
+    final int y = union.min_y;
+    final int w = union.max_x - union.min_x;
+    final int h = union.max_y - union.min_y;
 
     // graphics.setColor(new Color(rnd.nextInt() & 0x7F7F7F));
     if (RendererDelegator.scenic_background && Coords.x_pixels > 0
         && Coords.y_pixels > 0) {
-      // Repaint the scenic background under the scrubbed tile.
+      // Repaint the scenic background under the scrubbed area.
       final BufferedImage scenic = ScenicBackground.imageFor(
           Coords.x_pixels, Coords.y_pixels);
-      graphics.drawImage(scenic, tile_min_x, tile_min_y,
-          tile_min_x + block_size, tile_min_y + block_size, tile_min_x,
-          tile_min_y, tile_min_x + block_size, tile_min_y + block_size, null);
+      graphics.drawImage(scenic, x, y, x + w, y + h, x, y, x + w, y + h, null);
     } else {
       graphics.setColor(RendererDelegator.color_background);
-      graphics.fillRect(tile_min_x, tile_min_y, block_size, block_size);
+      graphics.fillRect(x, y, w, h);
     }
   }
 
