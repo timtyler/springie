@@ -18,31 +18,32 @@ import com.springie.world.Grounding;
 import com.springie.world.World;
 
 /**
- * Caterpillar track (Tim, 2026-09-25): a ring composed entirely of
- * tetrahedra, like a tank tread. Three rings of nodes: an inner circle
- * (in the wheel plane) and two outer circles displaced to either side
- * (along the axle axis). Two opposing spirals of links connect them:
- * the left side spirals forward (I[i] to L[i+1]), the right side
- * spirals backward (I[i] to R[i-1]).
+ * Caterpillar track (Tim, 2026-09-25): a ring of proper volumetric
+ * tetrahedra, like a tank tread.
  *
- * <p>Structure: 12 segments around the circle, 36 nodes total (12 per
- * ring). Each segment contributes two tetrahedra:
+ * <p>Structure: 12 segments around the circle, 36 nodes total. Three
+ * rings: inner (I, in the wheel plane, z=0), left outer (L, z=+30),
+ * right outer (R, z=-30).
+ *
+ * <p>Each segment i contributes TWO proper tetrahedra:
  * <ul>
- * <li>Left: (I[i], I[i+1], L[i], L[i+1])</li>
- * <li>Right: (I[i], I[i+1], R[i-1], R[i])</li>
+ * <li>Tetra A: (I[i], I[i+1], L[i], R[i])</li>
+ * <li>Tetra B: (I[i], I[i+1], L[i+1], R[i+1])</li>
  * </ul>
- * The left and right tetrahedra share the inner edge I[i]-I[i+1].
- * Consecutive left tetrahedra share the edge I[i+1]-L[i+1]; consecutive
- * right tetrahedra share I[i+1]-R[i]. All joins are edge-joins (2 nodes),
- * per Tim's tetrahedra rule -- never single-corner attachments.
+ * The two tetras share the inner edge I[i]-I[i+1] (edge-join).
+ * Consecutive segments share the face (I[i+1], L[i+1], R[i+1])
+ * (face-join). All joins are edge or face -- never single-corner.
  *
- * <p>Drive: the 12 inner-circle links are cable muscles (tension-only,
- * per Tim's "muscles on cables" rule). Each has a phase offset so the
- * contraction wave runs twice around the circle (f=2): two full sine
- * waves per revolution, a peristaltic pump meant to drive rolling.
+ * <p>Each tetrahedron is VOLUMETRIC: the four nodes span z=-30 to +30
+ * and are offset in-plane, giving significant 3D volume. Not a
+ * stabilized square (near-planar quad with cross-bracing).
+ *
+ * <p>Drive: the 12 inner-circle links (I[i]-I[i+1]) are cable muscles
+ * (tension-only, per Tim's "muscles on cables" rule). Each has a phase
+ * offset so the contraction wave runs twice around the circle (f=2).
+ * The other 5 edges of each tetrahedron are passive struts.
  *
  * <p>Tim's plan: stabilize the direction with an axle (to be added later).
- * For now the ring is built without one.
  *
  * <p>Node order: inner[0..11], left[0..11], right[0..11] (element indices
  * 0-11, 12-23, 24-35). buildAt returns inner[0].
@@ -60,8 +61,8 @@ public final class CaterpillarTrackDemo {
   /** Outer circle radius, in pixels. */
   public static final int OUTER_RADIUS_PX = 140;
 
-  /** Track width (distance between the two outer circles), in pixels. */
-  public static final int WIDTH_PX = 60;
+  /** Track half-width (z offset of outer rings), in pixels. */
+  public static final int HALF_WIDTH_PX = 30;
 
   /** Node size, in pixels (physical radius). */
   public static int node_size_px = 16;
@@ -124,7 +125,7 @@ public final class CaterpillarTrackDemo {
     final Node[] inner = new Node[SEGMENTS];
     final Node[] left = new Node[SEGMENTS];
     final Node[] right = new Node[SEGMENTS];
-    final int half_width = (WIDTH_PX / 2) << Coords.shift;
+    final int half_width = HALF_WIDTH_PX << Coords.shift;
 
     for (int i = 0; i < SEGMENTS; i++) {
       final double angle = 2.0 * Math.PI * i / SEGMENTS;
@@ -159,6 +160,7 @@ public final class CaterpillarTrackDemo {
 
     // Inner circle: 12 cable muscle links with f=2 phase wave.
     // Link i connects I[i]-I[i+1]; phase is 2 full cycles around.
+    // These are the shared edges of the tetrahedra pairs.
     for (int i = 0; i < SEGMENTS; i++) {
       final int j = (i + 1) % SEGMENTS;
       final LinkType type = link_manager.link_type_factory.getNew(
@@ -171,32 +173,28 @@ public final class CaterpillarTrackDemo {
       link.controller = controller;
     }
 
-    // Outer circles: passive cable links.
+    // Build the tetrahedra. Each segment i has two:
+    //   Tetra A: (I[i], I[i+1], L[i], R[i])
+    //   Tetra B: (I[i], I[i+1], L[i+1], R[i+1])
+    // The I[i]-I[i+1] edge is the muscle (above). The other 5 edges
+    // of each tetra are passive struts.
     for (int i = 0; i < SEGMENTS; i++) {
       final int j = (i + 1) % SEGMENTS;
-      cable(link_manager, clazz, left[i], left[j], elasticity);
-      cable(link_manager, clazz, right[i], right[j], elasticity);
-    }
 
-    // Left tetrahedra: (I[i], I[i+1], L[i], L[i+1]).
-    // The I[i]-L[i+1] links form the forward spiral.
-    for (int i = 0; i < SEGMENTS; i++) {
-      final int j = (i + 1) % SEGMENTS;
-      cable(link_manager, clazz, inner[i], left[i], elasticity);
-      cable(link_manager, clazz, inner[i], left[j], elasticity);
-      cable(link_manager, clazz, inner[j], left[i], elasticity);
-      cable(link_manager, clazz, inner[j], left[j], elasticity);
-    }
+      // Tetra A: (I[i], I[j], L[i], R[i]).
+      // Edges (I[i]-I[j] is the muscle, not a strut):
+      strut(link_manager, clazz, inner[i], left[i]);
+      strut(link_manager, clazz, inner[i], right[i]);
+      strut(link_manager, clazz, inner[j], left[i]);
+      strut(link_manager, clazz, inner[j], right[i]);
+      strut(link_manager, clazz, left[i], right[i]);
 
-    // Right tetrahedra: (I[i], I[i+1], R[i-1], R[i]).
-    // The I[i]-R[i-1] links form the backward (opposing) spiral.
-    for (int i = 0; i < SEGMENTS; i++) {
-      final int j = (i + 1) % SEGMENTS;
-      final int k = (i - 1 + SEGMENTS) % SEGMENTS;
-      cable(link_manager, clazz, inner[i], right[i], elasticity);
-      cable(link_manager, clazz, inner[i], right[k], elasticity);
-      cable(link_manager, clazz, inner[j], right[i], elasticity);
-      cable(link_manager, clazz, inner[j], right[k], elasticity);
+      // Tetra B: (I[i], I[j], L[j], R[j]).
+      strut(link_manager, clazz, inner[i], left[j]);
+      strut(link_manager, clazz, inner[i], right[j]);
+      strut(link_manager, clazz, inner[j], left[j]);
+      strut(link_manager, clazz, inner[j], right[j]);
+      strut(link_manager, clazz, left[j], right[j]);
     }
 
     // Rest on the ground (no mid-air start, per Tim's grounding rule).
@@ -210,12 +208,11 @@ public final class CaterpillarTrackDemo {
     return buildAt(300);
   }
 
-  /** A passive cable link (tension-only) between two nodes. */
-  private static void cable(LinkManager lm, Clazz clazz, Node a, Node b,
-      int elasticity) {
+  /** A passive strut link (compression+tensor) between two nodes. */
+  private static void strut(LinkManager lm, Clazz clazz, Node a, Node b) {
     final LinkType type =
         lm.link_type_factory.getNew(distance(a, b), elasticity);
-    type.compression = false;
+    // Strut: compression enabled (default).
     final Link link = lm.setLink(a, b, type, clazz);
     link.adjusted_rest_length = type.length;
   }
