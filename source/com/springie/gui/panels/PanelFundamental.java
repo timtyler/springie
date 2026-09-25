@@ -181,7 +181,6 @@ public class PanelFundamental {
     panel.setLayout(new WrapLayout());
     panel.add(makePanelPresetIndex());
     panel.add(makePanelInitialCvonfiguration());
-    panel.add(makePanelDemos());
     return panel;
   }
 
@@ -369,13 +368,6 @@ public class PanelFundamental {
     final Panel panel_initial_configuration = new Panel();
     panel_initial_configuration.add(FrEnd.choose_initial.choice);
     return panel_initial_configuration;
-  }
-
-  private Panel makePanelDemos() {
-    final Panel panel_demos = new Panel();
-    panel_demos.add(new Label("Demos:"));
-    panel_demos.add(this.choose_demo.choice);
-    return panel_demos;
   }
 
   /**
