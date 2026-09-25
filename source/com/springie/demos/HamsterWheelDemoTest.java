@@ -93,7 +93,7 @@ class HamsterWheelDemoTest {
     HamsterWheelDemo.rim_radius_px = 160;
     HamsterWheelDemo.rim_half_width_px = 130;
     HamsterWheelDemo.rim_log_mass = 17;
-    HamsterWheelDemo.node_size_px = 80;
+    HamsterWheelDemo.node_size_px = 100;
     HamsterWheelDemo.reflex_stance_threshold_px = 60;
     HamsterWheelDemo.bracing_elasticity = 30;
     HamsterWheelDemo.roll_correct_gain = 0;
@@ -152,7 +152,7 @@ class HamsterWheelDemoTest {
     final NodeManager nm = ContextManager.getNodeManager();
     for (int i = 0; i < nm.element.size(); i++) {
       final Node node = (Node) nm.element.get(i);
-      assertEquals(80, node.type.radius, "wheel node size");
+      assertEquals(100, node.type.radius, "wheel node size");
     }
   }
 

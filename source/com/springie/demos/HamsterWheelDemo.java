@@ -90,7 +90,7 @@ public final class HamsterWheelDemo {
   /** Drawn node size for the wheel's nodes, in pixels. */
   // Tim's directive (2026-09-24): bigger nodes (was 60). Node size is
   // PHYSICAL -- the boundary clamp and the ground line both use it.
-  public static int node_size_px = 80;
+  public static int node_size_px = 100;
 
   /**
    * Link rendering thinness: radius = length / this. Tim's directive
@@ -227,7 +227,7 @@ public final class HamsterWheelDemo {
    * cables go slack under the hub and it sags until the wheel tips.
    * 95 holds the hub at axle height like a bicycle wheel.
    */
-  public static int spoke_rest_scale_pct = 85;
+  public static int spoke_rest_scale_pct = 100;
 
   /**
    * Builds the wheel with its centre at (x_px, ground - radius).
@@ -407,9 +407,9 @@ public final class HamsterWheelDemo {
   }
 
   /**
-   * Spoke rest length after the pre-tension scale is applied. The link is
-   * built at the geometric distance but its rest length is shorter, so the
-   * spoke is pre-tensioned from tick 0 and holds the hub up at axle height.
+   * Spoke rest length after the pre-tension scale is applied. At 100 the
+   * link is built at its geometric distance with no pre-tension; lower
+   * values pre-tension the spoke so it holds the hub up at axle height.
    */
   private static int scaledSpokeLength(int geometric) {
     return (int) ((long) geometric * spoke_rest_scale_pct / 100);
