@@ -44,6 +44,12 @@ import org.slf4j.LoggerFactory;
 public class DataInput {
   private static final Logger logger = LoggerFactory.getLogger(DataInput.class);
 
+  /**
+   * Last model-load error to paint on the canvas (null if none).
+   * Set when a load fails; cleared on the next successful load.
+   */
+  public static String load_error = null;
+
   Reader in;
 
   public NodeManager manager_destination;
@@ -175,10 +181,14 @@ public class DataInput {
     String input = null;
     try {
       input = new ReaderSPR().translate(filename);
+      // Success: clear any previous load error.
+      load_error = null;
     } catch (IOException e) {
       logger.error("Unexpected exception", e);
+      load_error = "Failed to load: " + filename + " (" + e.getMessage() + ")";
     } catch (SAXException e) {
       logger.error("Unexpected exception", e);
+      load_error = "Failed to parse: " + filename + " (" + e.getMessage() + ")";
     }
 
     if (FrEnd.development_version) {

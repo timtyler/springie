@@ -10,6 +10,7 @@ import com.springie.explosions.fragments.LineFragmentManager;
 import com.springie.explosions.particles.ParticleManager;
 import com.springie.gui.gestures.DragBoxManager;
 import com.springie.gui.panels.UpdateEnabledComponents;
+import com.springie.io.in.DataInput;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;
@@ -209,9 +210,25 @@ public final class RendererDelegator {
 
     renderDragBox(graphics);
 
+    paintLoadError(graphics);
+
     refreshFpsLabel();
 
     UpdateEnabledComponents.actuallyUpdate();
+  }
+
+  /**
+   * Paints the last model-load error on the canvas (if any), instead
+   * of leaving the user with a silent failure and a stack trace in
+   * the logs.
+   */
+  private static void paintLoadError(Graphics graphics) {
+    final String error = DataInput.load_error;
+    if (error == null) {
+      return;
+    }
+    graphics.setColor(java.awt.Color.RED);
+    graphics.drawString(error, 20, 40);
   }
 
   /**
