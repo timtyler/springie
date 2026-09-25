@@ -757,14 +757,43 @@ public class PanelFundamental {
    * launch message is the only one enqueued.
    */
   public void selectDemo(String name) {
-    if (this.choose_demo == null) {
-      return;
+    // Sync the hidden demos dropdown (for launchSelected).
+    if (this.choose_demo != null) {
+      final java.awt.Choice choice = this.choose_demo.choice;
+      for (int i = 0; i < choice.getItemCount(); i++) {
+        if (choice.getItem(i).equals(name)) {
+          choice.select(i);
+          break;
+        }
+      }
     }
-    final java.awt.Choice choice = this.choose_demo.choice;
-    for (int i = 0; i < choice.getItemCount(); i++) {
-      if (choice.getItem(i).equals(name)) {
-        choice.select(i);
-        return;
+    // Tim: show the demo in the bottom button bar too. The bar has
+    // Preset (dropdown 1) and Initial (dropdown 2); selecting "Demos"
+    // in Preset lists demos in Initial. Choice.select() fires no item
+    // event, so populate Initial manually.
+    if (FrEnd.choose_preset_index != null) {
+      final java.awt.Choice preset = FrEnd.choose_preset_index.choice;
+      for (int i = 0; i < preset.getItemCount(); i++) {
+        if ("Demos".equals(preset.getItem(i))) {
+          preset.select(i);
+          break;
+        }
+      }
+    }
+    if (FrEnd.choose_initial != null) {
+      // Populate Initial with the demo names (as setUpDemosLeafIndex does).
+      FrEnd.choose_initial.removeAll();
+      FrEnd.choose_initial.hashtable.clear();
+      for (final DemoCatalog.Demo demo : DemoCatalog.DEMOS) {
+        FrEnd.choose_initial.choice.addItem(demo.name);
+        FrEnd.choose_initial.hashtable.put(demo.name, demo.name);
+      }
+      final java.awt.Choice initial = FrEnd.choose_initial.choice;
+      for (int i = 0; i < initial.getItemCount(); i++) {
+        if (initial.getItem(i).equals(name)) {
+          initial.select(i);
+          return;
+        }
       }
     }
   }
