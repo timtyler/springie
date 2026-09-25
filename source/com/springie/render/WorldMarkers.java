@@ -74,6 +74,13 @@ public final class WorldMarkers {
   private static final Random rnd = new Random();
 
   /**
+   * Snapshot of marker positions at drag start. The translation/
+   * rotation is absolute from the drag start (like the nodes), not
+   * incremental, so we restore from here before applying.
+   */
+  private static final List<Point3D> drag_snapshot = new ArrayList<>();
+
+  /**
    * Previous damage rect for the ray tracer: the union of the marker
    * bounds before and after the last move, so one dirty computation
    * covers both.
@@ -118,14 +125,48 @@ public final class WorldMarkers {
   }
 
   /**
+   * Tim: saves the current marker positions. Called at drag start,
+   * so the translation/rotation can be absolute from the drag start
+   * (like the nodes) instead of incremental.
+   */
+  public static void snapshotForDrag() {
+    synchronized (markers) {
+      drag_snapshot.clear();
+      for (Point3D p : markers) {
+        drag_snapshot.add(new Point3D(p.x, p.y, p.z));
+      }
+    }
+  }
+
+  /**
+   * Tim: restores markers from the drag snapshot, then translates by
+   * the given delta. Called from TranslationManager, so the dots
+   * translate with the model when the user drags with the Translate
+   * button enabled.
+   */
+  public static void translateFromSnapshot(int dx, int dy) {
+    synchronized (markers) {
+      // Restore from snapshot, then apply the absolute delta.
+      markers.clear();
+      for (Point3D p : drag_snapshot) {
+        markers.add(new Point3D(p.x + dx, p.y + dy, p.z));
+      }
+    }
+  }
+
+  /**
    * Tim: rotates all markers about the given centre, using the same
    * angles as the model's rotation drag. Called from RotationManager,
    * so the dots rotate with the model when the user drags to rotate.
+   * Restores from the drag snapshot first, so the rotation is
+   * absolute from drag start, not incremental.
    */
   public static void rotate(float theta1, float theta2, boolean cw_acw,
       Point3D centre) {
     synchronized (markers) {
-      for (Point3D p : markers) {
+      // Restore from snapshot, then apply the absolute rotation.
+      markers.clear();
+      for (Point3D p : drag_snapshot) {
         final int rx = p.x - centre.x;
         final int ry = p.y - centre.y;
         final int rz = p.z - centre.z;
@@ -145,9 +186,7 @@ public final class WorldMarkers {
           dy = (int) (ry * Math.cos(theta2) - z1 * Math.sin(theta2));
           dz = (int) (z1 * Math.cos(theta2) + ry * Math.sin(theta2));
         }
-        p.x = dx + centre.x;
-        p.y = dy + centre.y;
-        p.z = dz + centre.z;
+        markers.add(new Point3D(dx + centre.x, dy + centre.y, dz + centre.z));
       }
     }
   }

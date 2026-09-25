@@ -7,6 +7,7 @@ import com.springie.context.ContextManager;
 import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;
 import com.springie.render.RendererDelegator;
+import com.springie.render.WorldMarkers;
 
 public class TranslationManager {
   private int start_x;
@@ -21,6 +22,8 @@ public class TranslationManager {
       this.start_y = y;
 
       this.pos = new TransferUtilities().transferPositions();
+      // Tim: snapshot the gold dots so they translate with the model.
+      WorldMarkers.snapshotForDrag();
       FrEnd.forces_disabled_during_gesture = true;
     } else {
       performTranslation(x, y);
@@ -38,6 +41,9 @@ public class TranslationManager {
       node.pos.y = point.y + ((y - this.start_y) >> 0);
       node.pos.z = point.z;
     }
+
+    // Tim: the gold dots translate with the model.
+    WorldMarkers.translateFromSnapshot(x - this.start_x, y - this.start_y);
     
     RendererDelegator.repaint_some_objects = true;
 //    FrEnd.postCleanup();

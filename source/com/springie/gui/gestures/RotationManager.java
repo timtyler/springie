@@ -31,6 +31,9 @@ public class RotationManager {
 
       this.centre = ContextManager.getNodeManager().getCentre();
 
+      // Tim: snapshot the gold dots so they rotate with the model.
+      WorldMarkers.snapshotForDrag();
+
       FrEnd.forces_disabled_during_gesture = true;
     } else {
       performRotation(x, y);
