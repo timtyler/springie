@@ -250,6 +250,9 @@ public final class WorldMarkers {
   private static final List<RectangleInt> old_dots = new ArrayList<>();
 
   public static void drawUnder(Graphics graphics) {
+    // Reset the clip: the last frame's renderer may have left a small
+    // clip set, which would clip our clearRect and leave golden trails.
+    graphics.setClip(0, 0, 9999, 9999);
     if (!olympicsActive()) {
       // Clear any leftover dots.
       for (RectangleInt r : old_dots) {
