@@ -235,8 +235,13 @@ public class Link extends BaseElement {
       final int d_x = descaleSymmetric(n0.pos.x - n1.pos.x);
       final int d_y = descaleSymmetric(n0.pos.y - n1.pos.y);
       final int d_z = descaleSymmetric(n0.pos.z - n1.pos.z);
-      final int actual_length_squared = (d_x * d_x) + (d_y * d_y) + (d_z * d_z);
-      final int actual_length = SquareRoot.fastSqrt(1 + actual_length_squared);
+      // Use long: d_x*d_x overflows int when nodes fly far apart,
+      // giving a negative square and a sqrt crash.
+      final long actual_length_squared =
+          (long) d_x * d_x + (long) d_y * d_y + (long) d_z * d_z;
+      final int actual_length =
+          SquareRoot.fastSqrt(1 + (int) Math.min(actual_length_squared,
+              Integer.MAX_VALUE - 1));
 
       final int d_dx = n0.velocity.x - n1.velocity.x;
       final int d_dy = n0.velocity.y - n1.velocity.y;
@@ -481,8 +486,13 @@ public class Link extends BaseElement {
       final int d_x = descaleSymmetric(n0.pos.x - n1.pos.x);
       final int d_y = descaleSymmetric(n0.pos.y - n1.pos.y);
       final int d_z = descaleSymmetric(n0.pos.z - n1.pos.z);
-      final int actual_length_squared = (d_x * d_x) + (d_y * d_y) + (d_z * d_z);
-      final int actual_length = SquareRoot.fastSqrt(1 + actual_length_squared);
+      // Use long: d_x*d_x overflows int when nodes fly far apart,
+      // giving a negative square and a sqrt crash.
+      final long actual_length_squared =
+          (long) d_x * d_x + (long) d_y * d_y + (long) d_z * d_z;
+      final int actual_length =
+          SquareRoot.fastSqrt(1 + (int) Math.min(actual_length_squared,
+              Integer.MAX_VALUE - 1));
 
       total_length += actual_length;
     }
