@@ -741,7 +741,7 @@ public class WriterPOV {
       final Node n2 = link.nodes[link.nodes.length - 1];
       final int max_r = Math.max(n1.type.radius, n2.type.radius);
       final double barrel = a_len - max_r * 3;
-      double proportion_d = (barrel / a_len);
+      double proportion_d = barrel / a_len;
       if (proportion_d < 0.1) {
         proportion_d = 0.1;
       }

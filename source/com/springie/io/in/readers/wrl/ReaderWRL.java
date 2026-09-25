@@ -376,7 +376,7 @@ public final class ReaderWRL {
     do {
       tok = st.nextToken();
 
-      while ((tok.length() > 1) && (tok.charAt(0) < 33)) {
+      while (tok.length() > 1 && tok.charAt(0) < 33) {
         tok = tok.substring(1);
       }
 

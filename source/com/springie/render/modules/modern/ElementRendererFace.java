@@ -40,8 +40,8 @@ public final class ElementRendererFace {
 
     // "Face lines = 0" fills the face in a solid colour: a single
     // full-coverage quad per edge, whatever the face's opacity.
-    final boolean solid_fill = (opacity == 255)
-        || (Face.number_of_render_divisions == 0);
+    final boolean solid_fill = opacity == 255
+        || Face.number_of_render_divisions == 0;
 
     final int n = solid_fill ? 1 : Face.number_of_render_divisions;
 

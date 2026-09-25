@@ -29,7 +29,7 @@ public class AutomaticNodeRadius {
         .get(counter);
       if (candidate.type.selected) {
         final int largest_radius = getRadiusOfLargestLink(candidate);
-        if ((!only_set_if_zero) || (candidate.type.radius == 0)) {
+        if (!only_set_if_zero || candidate.type.radius == 0) {
           candidate.type.setSize((int) (largest_radius * ans_d));
         }
       }

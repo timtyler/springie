@@ -40,7 +40,7 @@ class LinkTest {
     // outside its fully-accurate range, so allow a small tolerance.
     final Link link = linkBetween(
         nodeAt(0, 0, 0),
-        nodeAt((300 << Coords.shift), (400 << Coords.shift), 0));
+        nodeAt(300 << Coords.shift, 400 << Coords.shift, 0));
     final int actual = link.getActualLength();
     final int expected = 500 << Coords.shift;
     assertTrue(Math.abs(actual - expected) <= (5 << Coords.shift),

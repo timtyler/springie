@@ -143,7 +143,7 @@ public class TabbedPanel extends Panel implements MouseListener,
     if (i < this.selected) {
       setSelected(this.selected - 1, true);
       // was selected, select another
-    } else if ((i == this.selected) && (this.nCards > 0)) {
+    } else if (i == this.selected && this.nCards > 0) {
       setSelected(this.selected % this.nCards, true);
     }
     // already showing? better rebuild!
@@ -173,7 +173,7 @@ public class TabbedPanel extends Panel implements MouseListener,
    */
 
   void setSelected(int i, boolean force) {
-    if (force || ((i != this.selected) && (i >= 0) && (i < this.nCards))) {
+    if (force || i != this.selected && i >= 0 && i < this.nCards) {
       if (this.nCards > 0) {
         this.selected = i % this.nCards;
       }
@@ -220,7 +220,7 @@ public class TabbedPanel extends Panel implements MouseListener,
     if (y <= this.tabH) {
       xx += this.offset;
       for (int i = 0; i < this.nCards; i++) {
-        if ((this.pos[i] <= xx) && (xx < this.pos[i + 1])) {
+        if (this.pos[i] <= xx && xx < this.pos[i + 1]) {
           return i;
         }
       }
@@ -282,7 +282,7 @@ public class TabbedPanel extends Panel implements MouseListener,
 
   // Compute positions of the tabs.
   void computeTabs() {
-    if ((this.pos == null) || (this.pos.length <= this.nCards)) {
+    if (this.pos == null || this.pos.length <= this.nCards) {
       this.width = new int[this.nCards + 1];
       this.pos = new int[this.nCards + 1];
     } // make sure pos & width are big enough.
@@ -297,9 +297,9 @@ public class TabbedPanel extends Panel implements MouseListener,
     this.pos[this.nCards] = x;
     final Dimension dim = getSize();
     int w = dim.width;
-    if ((this.offscreen == null)
-        || (this.offscreen.getHeight(this) < this.margin_top + this.tabH)
-        || (this.offscreen.getWidth(this) < w)) {
+    if (this.offscreen == null
+        || this.offscreen.getHeight(this) < this.margin_top + this.tabH
+        || this.offscreen.getWidth(this) < w) {
       if (w < 1) {
         w = 1;
       }
@@ -395,13 +395,13 @@ public class TabbedPanel extends Panel implements MouseListener,
       final int offmax = this.pos[s] - r - Math.min(nShadows, s) * shadow;
       final int offmin = this.pos[s + 1] - w + r
           + Math.min(this.nCards - s, nShadows) * shadow;
-      if ((this.offset < offmin) || (this.offset > offmax)) {
+      if (this.offset < offmin || this.offset > offmax) {
         this.offset = Math.min(Math.max(0, (offmin + offmax) / 2),
             this.pos[this.nCards] + r - w);
       }
 
       // Draw first tabs from the left (offscreen ones only partly visible)
-      for (j = 0, x = this.offset + r; (j < s) && (this.pos[j] <= x); j++) {
+      for (j = 0, x = this.offset + r; j < s && this.pos[j] <= x; j++) {
         continue;
       }
       if (j > 0) {
@@ -416,8 +416,8 @@ public class TabbedPanel extends Panel implements MouseListener,
       }
 
       // Draw last tabs from the right (offscreen ones only partly visible)
-      for (j = this.nCards - 1, x = this.offset + w - r; (j > s)
-          && (this.pos[j + 1] >= x); j--) {
+      for (j = this.nCards - 1, x = this.offset + w - r; j > s
+          && this.pos[j + 1] >= x; j--) {
         continue;
       }
       if (j < this.nCards - 1) {

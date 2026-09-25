@@ -5,7 +5,7 @@ public class ArrayOfNodesToRender {
   public CachedNode[] array;
 
   public void ensureCapacity(int size) {
-    if (this.array == null || (this.array.length != size)) {
+    if (this.array == null || this.array.length != size) {
       this.array = new CachedNode[size];
       for (int i = size; --i >= 0;) {
         this.array[i] = new CachedNode();

@@ -175,7 +175,7 @@ public class CompositeManager {
   }
 
   final void killNumberedCreature(int n) {
-    if ((n >= 0) && (n < this.number_of_creatures)) {
+    if (n >= 0 && n < this.number_of_creatures) {
       temp_creature = this.creature[n];
       if ((temp_creature.status & Composite.DEAD) == 0) {
         // temp_creature.status |= Creature.DEAD; // you need to make sure you

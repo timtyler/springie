@@ -438,8 +438,8 @@ public class NodeManager extends World {
         new_bin_z = 0;
       }
 
-      if ((temp_agent.current_bin.x != new_bin_x) || (temp_agent.current_bin.y != new_bin_y)
-          || (temp_agent.current_bin.z != new_bin_z)) {
+      if (temp_agent.current_bin.x != new_bin_x || temp_agent.current_bin.y != new_bin_y
+          || temp_agent.current_bin.z != new_bin_z) {
         this.node_grid.addToList(new_bin_x, new_bin_y, new_bin_z, temp_agent);
         this.node_grid.removeFromList(temp_agent.current_bin.x, temp_agent.current_bin.y,
             temp_agent.current_bin.z, temp_agent);
@@ -566,19 +566,19 @@ public class NodeManager extends World {
   public final byte arcTangent(int dx, int dy) {
     final int temp_x0 = World.rnd.nextInt();
 
-    if ((dx < 0) && (dy < 0)) {
+    if (dx < 0 && dy < 0) {
       if (dx < dy) {
         return (byte) ((temp_x0 & 0xF) + (temp_x0 >>> 31));
       }
       return (byte) ((temp_x0 & 0xF) + (temp_x0 >>> 31) + 0x10);
     }
-    if ((dx < 0) && (dy >= 0)) {
+    if (dx < 0 && dy >= 0) {
       if (-dx < dy) {
         return (byte) ((temp_x0 & 0xF) + (temp_x0 >>> 31) + 0x60);
       }
       return (byte) (((temp_x0 & 0xF) + (temp_x0 >>> 31) + 0x70) & Node.TRIG_TAB_SIZEMO);
     }
-    if ((dx >= 0) && (dy < 0)) {
+    if (dx >= 0 && dy < 0) {
       if (dx < -dy) {
         return (byte) ((temp_x0 & 0xF) + (temp_x0 >>> 31) + 0x20);
       }
@@ -773,7 +773,7 @@ public class NodeManager extends World {
             final int temp_detection_distance_squared = tadx2 * tadx2;
             if (temp_radius < temp_detection_distance_squared) {
               // Log.log("temp_detection_distance:" + temp_detection_distance);
-              if ((candidate == null) || (candidate.pos.z > temp_agent.pos.z)) {
+              if (candidate == null || candidate.pos.z > temp_agent.pos.z) {
                 candidate = temp_agent;
               }
             }

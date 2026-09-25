@@ -303,7 +303,7 @@ public final class ElementRendererLink {
 
     final int render_label_when = PanelPreferencesRendererModern.render_label_when;
 
-    if ((render_label_when == 1) || ((render_label_when == 3) && link.isSelected())) {
+    if (render_label_when == 1 || render_label_when == 3 && link.isSelected()) {
       return_vector.add(addRelevantText(link, min_z));
     }
 

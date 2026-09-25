@@ -310,8 +310,8 @@ public class MainCanvas {
 
     setUpCoordsSize();
 
-    if ((Coords.x_pixels != Coords.x_pixels_old)
-      || (Coords.y_pixels != Coords.y_pixels_old)) {
+    if (Coords.x_pixels != Coords.x_pixels_old
+      || Coords.y_pixels != Coords.y_pixels_old) {
       this.old_gridsize = this.new_gridsize;
 
       Coords.x_pixels_old = Coords.x_pixels;

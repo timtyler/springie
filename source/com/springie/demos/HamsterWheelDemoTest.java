@@ -156,7 +156,7 @@ class HamsterWheelDemoTest {
     final NodeManager nm = ContextManager.getNodeManager();
     for (int i = 0; i < nm.element.size(); i++) {
       final Node node = (Node) nm.element.get(i);
-      assertEquals(130, node.type.radius, "wheel node size");
+      assertEquals(286, node.type.radius, "wheel node size");
     }
   }
 

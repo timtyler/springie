@@ -99,7 +99,7 @@ public class ImageWrapper {
   }
 
   public final int[] getSource() {
-    if ((this.source == null) || (this.source.length < 1)) {
+    if (this.source == null || this.source.length < 1) {
       makeSource();
     }
 

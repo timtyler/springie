@@ -306,8 +306,8 @@ public final class CaterpillarDemo {
     final int n_o_l = link_manager.element.size();
     for (int i = n_o_l; --i >= 0;) {
       final Link existing = (Link) link_manager.element.get(i);
-      if ((existing.nodes[0] == n1 && existing.nodes[1] == n2)
-          || (existing.nodes[0] == n2 && existing.nodes[1] == n1)) {
+      if (existing.nodes[0] == n1 && existing.nodes[1] == n2
+          || existing.nodes[0] == n2 && existing.nodes[1] == n1) {
         return true;
       }
     }

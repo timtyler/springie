@@ -261,7 +261,7 @@ public class CachedLink {
       final Node node0 = link.nodes[i];
       final Node node1 = link.nodes[i + 1];
 
-      if ((Link.link_display_length == Link.SHORT)
+      if (Link.link_display_length == Link.SHORT
         && (!node0.type.hidden || node1.type.hidden)) {
         final int d_x = (node0.pos.x - node1.pos.x) >> Coords.shift;
         final int d_y = (node0.pos.y - node1.pos.y) >> Coords.shift;
@@ -276,14 +276,14 @@ public class CachedLink {
         final int unit_vector_y = (d_y << Coords.shift) / actual_length;
         final int unit_vector_z = (d_z << Coords.shift) / actual_length;
 
-        if ((Link.link_display_length == Link.SHORT) && (!node0.type.hidden)) {
+        if (Link.link_display_length == Link.SHORT && !node0.type.hidden) {
           getPreservedShortNodeCoordinates(this.preserved_node_start[i], node0, -unit_vector_x,
             -unit_vector_y, -unit_vector_z);
         } else {
           getPreservedNodeCoordinates(this.preserved_node_start[i], node0);
         }
 
-        if ((Link.link_display_length == Link.SHORT) && (!node1.type.hidden)) {
+        if (Link.link_display_length == Link.SHORT && !node1.type.hidden) {
           getPreservedShortNodeCoordinates(this.preserved_node_end[i], node1, unit_vector_x, unit_vector_y,
             unit_vector_z);
         } else {

@@ -5,7 +5,7 @@ public class ArrayOfFacesToRender {
   public CachedFace[] array;
 
   public void ensureCapacity(int size) {
-    if (this.array == null || (this.array.length != size)) {
+    if (this.array == null || this.array.length != size) {
       this.array = new CachedFace[size];
       for (int i = size; --i >= 0;) {
         this.array[i] = new CachedFace();

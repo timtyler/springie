@@ -50,9 +50,9 @@ public final class GridOfBinsForCachedNodes {
   }
 
   public void removeFromList(int x, int y, int z, Node agent) {
-    if ((x < this.nx) && (x >= 0)) {
-      if ((y < this.ny) && (y >= 0)) {
-        if ((z < this.nz) && (z >= 0)) {
+    if (x < this.nx && x >= 0) {
+      if (y < this.ny && y >= 0) {
+        if (z < this.nz && z >= 0) {
           this.node_list[x][y][z].remove(agent);
         }
       }

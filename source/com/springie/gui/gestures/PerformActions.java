@@ -266,8 +266,8 @@ public class PerformActions {
     for (int cx = -r; cx < r; cx = cx + 0x800) {
       for (int cy = -r; cy < r; cy = cy + 0x800) {
         if ((this.rnd.nextInt() & f) == 0) {
-          if (((cx + cy) > (r * -1.5)) && ((cx + cy) < (r * 1.5)) && ((cx - cy) > (r * -1.5))
-              && ((cx - cy) < (r * 1.5))) {
+          if ((cx + cy) > (r * -1.5) && (cx + cy) < (r * 1.5) && (cx - cy) > (r * -1.5)
+              && (cx - cy) < (r * 1.5)) {
             kill_a_cell(x + cx, y + cy);
           }
         }

@@ -109,7 +109,7 @@ public final class FDLWriter {
         }
         sb.append(makeString(node, spaces));
         if (list.newlines) {
-          if (!recent_end_tag || (i < (children_size - 1))) {
+          if (!recent_end_tag || i < (children_size - 1)) {
             sb.append("\n");
           }
         }

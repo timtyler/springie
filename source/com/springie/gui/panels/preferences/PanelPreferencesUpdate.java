@@ -69,8 +69,8 @@ public class PanelPreferencesUpdate {
   }
 
   private Panel getAnimatePointerOverPanel() {
-    final boolean b = ((Boolean) FrEnd.preferences.map
-        .get(Preferences.key_update_animation_when_pointer_over));
+    final boolean b = (Boolean) FrEnd.preferences.map
+        .get(Preferences.key_update_animation_when_pointer_over);
 
     final Checkbox checkbox_animate_pointer_over = new Checkbox(
         "Stop animating when pointer exits", b);

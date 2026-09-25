@@ -77,11 +77,11 @@ public class LinkManager extends BaseElementManager<Link> {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final Link l = (Link) this.element.get(temp);
-      if ((l.nodes[0] == e1) && (l.nodes[1] == e2)) {
+      if (l.nodes[0] == e1 && l.nodes[1] == e2) {
         return true;
       }
 
-      if ((l.nodes[0] == e2) && (l.nodes[1] == e1)) {
+      if (l.nodes[0] == e2 && l.nodes[1] == e1) {
         return true;
       }
     }
@@ -101,11 +101,11 @@ public class LinkManager extends BaseElementManager<Link> {
     for (int temp = n_o_l; --temp >= 0;) {
       final Link l = (Link) this.element.get(temp);
 
-      if ((l.nodes[0] == e1) && (l.nodes[1] == e2)) {
+      if (l.nodes[0] == e1 && l.nodes[1] == e2) {
         killNumberedLink(temp);
       }
 
-      if ((l.nodes[0] == e2) && (l.nodes[1] == e1)) {
+      if (l.nodes[0] == e2 && l.nodes[1] == e1) {
         killNumberedLink(temp);
       }
     }
@@ -142,11 +142,11 @@ public class LinkManager extends BaseElementManager<Link> {
     for (int temp = n_o_l; --temp >= 0;) {
       final Link l = (Link) this.element.get(temp);
       if (!l.type.hidden) {
-        if ((l.nodes[0] == e1) && (l.nodes[1] == e2)) {
+        if (l.nodes[0] == e1 && l.nodes[1] == e2) {
           return true;
         }
 
-        if ((l.nodes[0] == e2) && (l.nodes[1] == e1)) {
+        if (l.nodes[0] == e2 && l.nodes[1] == e1) {
           return true;
         }
       }
@@ -164,11 +164,11 @@ public class LinkManager extends BaseElementManager<Link> {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final Link l = (Link) this.element.get(temp);
-      if ((l.nodes[0] == e1) && (l.nodes[1] == e2)) {
+      if (l.nodes[0] == e1 && l.nodes[1] == e2) {
         return l;
       }
 
-      if ((l.nodes[0] == e2) && (l.nodes[1] == e1)) {
+      if (l.nodes[0] == e2 && l.nodes[1] == e1) {
         return l;
       }
     }
@@ -183,7 +183,7 @@ public class LinkManager extends BaseElementManager<Link> {
     for (int temp = n_o_l; --temp >= 0;) {
       final Link l = (Link) this.element.get(temp);
       // one way only...
-      if ((l.nodes[0] == e1) && (l.nodes[1] == e2)) {
+      if (l.nodes[0] == e1 && l.nodes[1] == e2) {
         return true;
       }
     }
@@ -197,7 +197,7 @@ public class LinkManager extends BaseElementManager<Link> {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final Link l = (Link) this.element.get(temp);
-      if ((l.nodes[0] == e1) && (l.nodes[1] == e2)) {
+      if (l.nodes[0] == e1 && l.nodes[1] == e2) {
         return l;
       }
 
@@ -214,7 +214,7 @@ public class LinkManager extends BaseElementManager<Link> {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final Link l = (Link) this.element.get(temp);
-      if ((l.nodes[0] == e) || (l.nodes[1] == e)) {
+      if (l.nodes[0] == e || l.nodes[1] == e) {
         killNumberedLink(temp);
       }
     }
@@ -229,7 +229,7 @@ public class LinkManager extends BaseElementManager<Link> {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final Link l = (Link) this.element.get(temp);
-      if ((l.nodes[0] == e) || (l.nodes[1] == e)) {
+      if (l.nodes[0] == e || l.nodes[1] == e) {
         // if () {//TODO!!!!
         killNumberedLink(temp);
         return true;

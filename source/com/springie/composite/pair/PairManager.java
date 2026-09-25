@@ -75,11 +75,11 @@ public class PairManager {
 
   final boolean aPairLikeThisExists(Node e1, Node e2) {
     for (int temp = this.number_of_pairs; --temp >= 0;) {
-      if ((this.node_pair[temp].node1 == e1) && (this.node_pair[temp].node2 == e2)) {
+      if (this.node_pair[temp].node1 == e1 && this.node_pair[temp].node2 == e2) {
         return true;
       }
 
-      if ((this.node_pair[temp].node1 == e2) && (this.node_pair[temp].node2 == e1)) {
+      if (this.node_pair[temp].node1 == e2 && this.node_pair[temp].node2 == e1) {
         return true;
       }
     }
@@ -91,11 +91,11 @@ public class PairManager {
   // doesn't quite work properly...
   final void deleteAllPairsBetween(Node e1, Node e2) {
     for (int temp = this.number_of_pairs; --temp >= 0;) {
-      if ((this.node_pair[temp].node1 == e1) && (this.node_pair[temp].node2 == e2)) {
+      if (this.node_pair[temp].node1 == e1 && this.node_pair[temp].node2 == e2) {
         killNumberedPair(temp);
       }
 
-      if ((this.node_pair[temp].node1 == e2) && (this.node_pair[temp].node2 == e1)) {
+      if (this.node_pair[temp].node1 == e2 && this.node_pair[temp].node2 == e1) {
         killNumberedPair(temp);
       }
     }
@@ -104,7 +104,7 @@ public class PairManager {
   // ?.
   final boolean thereIsAPair(Node e1, Node e2) {
     for (int temp = this.number_of_pairs; --temp >= 0;) {
-      if ((this.node_pair[temp].node1 == e1) && (this.node_pair[temp].node2 == e2)) {
+      if (this.node_pair[temp].node1 == e1 && this.node_pair[temp].node2 == e2) {
         return true;
       }
     }
@@ -125,7 +125,7 @@ public class PairManager {
   // hmm...
   final void killAllPairs(Node e) {
     for (int temp = this.number_of_pairs; --temp >= 0;) {
-      if ((this.node_pair[temp].node1 == e) || (this.node_pair[temp].node2 == e)) {
+      if (this.node_pair[temp].node1 == e || this.node_pair[temp].node2 == e) {
         killNumberedPair(temp);
       }
     }
@@ -134,7 +134,7 @@ public class PairManager {
   // hmm...
   final boolean killLastPair(Node e) {
     for (int temp = this.number_of_pairs; --temp >= 0;) {
-      if ((this.node_pair[temp].node1 == e) || (this.node_pair[temp].node2 == e)) {
+      if (this.node_pair[temp].node1 == e || this.node_pair[temp].node2 == e) {
         killNumberedPair(temp);
         return true;
       }

@@ -322,7 +322,7 @@ public class PanelControlsPropertiesNames {
 
     String proposed = name;
     final char c0 = name.charAt(0);
-    if ((c0 >= '0') && (c0 <= '9')) {
+    if (c0 >= '0' && c0 <= '9') {
       proposed = '_' + proposed;
     }
 

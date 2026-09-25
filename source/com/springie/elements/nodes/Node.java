@@ -128,7 +128,7 @@ public class Node extends BaseElement {
   public void travel() {
     capVelocities();
 
-    final boolean motionless = this.type.pinned || (FrEnd.dragged_element != null && this.type.selected);
+    final boolean motionless = this.type.pinned || FrEnd.dragged_element != null && this.type.selected;
     
     if (motionless) {
       this.velocity = new Vector3D(0, 0, 0);
@@ -337,8 +337,8 @@ public class Node extends BaseElement {
       final int new_bin_y = this.pos.y >>> bg.log2binsize;
       final int new_bin_z = this.pos.z >>> bg.log2binsize;
 
-      if ((this.current_bin.x != new_bin_x)
-        || (this.current_bin.y != new_bin_y)) {
+      if (this.current_bin.x != new_bin_x
+        || this.current_bin.y != new_bin_y) {
         bg.addToList(new_bin_x, new_bin_y, new_bin_z,
           this);
         bg.removeFromList(this.current_bin.x,

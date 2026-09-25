@@ -59,10 +59,10 @@ public class LineFragment {
     this.direction = (ContextManager.getNodeManager().arcTangent(jx2, jy2)) << 8;
 
     this.angular_velocity = rnd.nextInt(rotspeed) - (rotspeed >> 1);
-    if ((this.angular_velocity < 256) && (this.angular_velocity >= 0)) {
+    if (this.angular_velocity < 256 && this.angular_velocity >= 0) {
       this.angular_velocity = 256;
     }
-    if ((this.angular_velocity > -256) && (this.angular_velocity <= 0)) {
+    if (this.angular_velocity > -256 && this.angular_velocity <= 0) {
       this.angular_velocity = -256;
     }
 
@@ -85,10 +85,10 @@ public class LineFragment {
     this.direction = (ContextManager.getNodeManager().arcTangent(jx2, jy2)) << 8;
 
     this.angular_velocity = rnd.nextInt(rotspeed) - (rotspeed >> 1);
-    if ((this.angular_velocity < 128) && (this.angular_velocity > 0)) {
+    if (this.angular_velocity < 128 && this.angular_velocity > 0) {
       this.angular_velocity = 128;
     }
-    if ((this.angular_velocity > -128) && (this.angular_velocity < 0)) {
+    if (this.angular_velocity > -128 && this.angular_velocity < 0) {
       this.angular_velocity = -128;
     }
 

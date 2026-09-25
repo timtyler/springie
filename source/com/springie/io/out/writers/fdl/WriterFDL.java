@@ -606,7 +606,7 @@ public class WriterFDL {
   }
 
   private FDLObjectChain getVelocityPosition(final Node node) {
-    if ((node.velocity.x != 0) && (node.velocity.y != 0) && (node.velocity.z != 0)) {
+    if (node.velocity.x != 0 && node.velocity.y != 0 && node.velocity.z != 0) {
       final FDLObjectChain chain = new FDLObjectChain("=");
       chain.add(new FDLObjectIdentifier("velocity"));
       final FDLObjectBracketList list = new FDLObjectBracketList();

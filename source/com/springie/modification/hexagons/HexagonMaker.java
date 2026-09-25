@@ -276,7 +276,7 @@ public class HexagonMaker {
     for (int temp = n_o_l; --temp >= 0;) {
       final Link link = (Link) this.link_manager.element.get(temp);
       if (link.clazz.colour == colour) {
-        if ((link.nodes[0] == node) || (link.nodes[1] == node)) {
+        if (link.nodes[0] == node || link.nodes[1] == node) {
           count++;
         }
       }

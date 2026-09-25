@@ -76,7 +76,7 @@ public final class ReaderTens {
       }
 
       if (!in_instruction) {
-        if ((c == '-') || (Character.isDigit(c))) { // start number...
+        if (c == '-' || (Character.isDigit(c))) { // start number...
           in_number = true;
           in_instruction = true;
           number += c;
@@ -90,7 +90,7 @@ public final class ReaderTens {
         }
       } else { // is in existing instruction...
         if (in_token != 0) {
-          if ((c >= '0') && (c != ':')) {
+          if (c >= '0' && c != ':') {
             token += c;
           } else { // finished this token...
             int t = 0;
@@ -140,7 +140,7 @@ public final class ReaderTens {
                   found = true;
                   t--;
                 }
-              } while (!found && (t != MAX_INS));
+              } while (!found && t != MAX_INS);
 
               if (t == MAX_INS) {
                 if (debug_parser) {
@@ -282,7 +282,7 @@ public final class ReaderTens {
             number += c;
           } else { // finished number...
             int temp;
-            if ((number.length() >= 3) && (number.charAt(1) == 'x')) {
+            if (number.length() >= 3 && number.charAt(1) == 'x') {
               number = number.substring(2);
               if (debug_parser) {
                 logger.debug("Hex number: 0x" + number + " ("

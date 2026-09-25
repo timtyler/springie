@@ -509,7 +509,7 @@ public class ReaderCrudeClay {
     do {
       tok = st.nextToken();
 
-      while ((tok.length() > 1) && (tok.charAt(0) == ' ')) {
+      while (tok.length() > 1 && tok.charAt(0) == ' ') {
         tok = tok.substring(1);
       }
 

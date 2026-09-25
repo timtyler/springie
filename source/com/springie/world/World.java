@@ -441,8 +441,8 @@ public class World extends BaseElementManager<Node> {
     temp_z0 = temp_agent.pos.z - this.associated_node.pos.z;
     temp_z1 = (temp_z0 < 0) ? -temp_z0 : temp_z0;
 
-    if ((temp_y1 > temp_detection_distance2o2) || (temp_x1 > temp_detection_distance2o2)
-        || (temp_z1 > temp_detection_distance2o2)) {
+    if (temp_y1 > temp_detection_distance2o2 || temp_x1 > temp_detection_distance2o2
+        || temp_z1 > temp_detection_distance2o2) {
       // probable collision...
       // inner diamond check...
       // (FrEnd.three_d)
