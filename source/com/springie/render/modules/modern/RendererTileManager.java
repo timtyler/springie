@@ -50,8 +50,9 @@ public class RendererTileManager {
   /**
    * Tim: when true, use a single tile cropped to the model's bounds
    * instead of the grid. Works for polygon and ray-traced renderers.
+   * On by default (Tim, 2026-09-25).
    */
-  public static boolean one_big_tile;
+  public static boolean one_big_tile = true;
 
   public static int colour_modifier_filled = ColourModifier.natural;
 
