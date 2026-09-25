@@ -101,8 +101,9 @@ public final class CaterpillarTrackDemo {
     node_type.log_mass = log_mass;
     node_type.setSize(node_size_px);
 
-    // The muscle wave runs on oscillator slot 0.
-    Muscles.enabled = true;
+    // Muscles off for now (Tim). The links keep their controller/phase
+    // so they can be re-enabled later.
+    Muscles.enabled = false;
     Muscles.active_oscillator = 0;
     Muscles.activeOscillator().setAmplitude(
         muscle_amplitude_pct * Muscles.UNITY / 100);
