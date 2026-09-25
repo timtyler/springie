@@ -94,14 +94,25 @@ public final class WorldMarkers {
         markers.clear();
         return;
       }
-      for (Point3D p : markers) {
-        p.x += delta.x;
-        p.y += delta.y;
-        p.z += delta.z;
-      }
+      translate((int) delta.x, (int) delta.y, (int) delta.z);
       cullOffscreen();
       while (markers.size() < TARGET_COUNT) {
         spawn();
+      }
+    }
+  }
+
+  /**
+   * Tim: shifts all markers by the given world delta. Called from
+   * the drag handler, so the dots translate with the model when the
+   * user drags it.
+   */
+  public static void translate(int dx, int dy, int dz) {
+    synchronized (markers) {
+      for (Point3D p : markers) {
+        p.x += dx;
+        p.y += dy;
+        p.z += dz;
       }
     }
   }

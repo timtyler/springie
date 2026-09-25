@@ -104,6 +104,7 @@ import com.springie.render.Coords;
 import com.springie.render.MainCanvas;
 import com.springie.render.RendererDelegator;
 import com.springie.render.SetUpCode;
+import com.springie.render.WorldMarkers;
 import com.springie.utilities.FilePath;
 import com.springie.utilities.random.Hortensius32Fast;
 import com.tifsoft.Forget;
@@ -1158,6 +1159,8 @@ public class FrEnd extends Panel implements Runnable {
         final List<Node> list_of_nodes = getallNodesInContactWithSelection();
 
         ContextManager.getNodeManager().moveNodesInList(list_of_nodes, d_x, d_y);
+        // Tim: the gold dots translate with the model when dragging.
+        WorldMarkers.translate(d_x, d_y, 0);
         RendererDelegator.repaint_some_objects = true;
       }
     }
