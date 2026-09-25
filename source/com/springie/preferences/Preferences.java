@@ -3,6 +3,7 @@
 package com.springie.preferences;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import com.springie.FrEnd;
 
@@ -15,7 +16,7 @@ public class Preferences {
 
   public static final String key_update_animation_when_pointer_over = "update.animation.when.pointer.over";
 
-  public HashMap<String, Object> map = new HashMap<>();
+  public Map<String, Object> map = new HashMap<>();
 
   public Preferences() {
     this.map.put(Preferences.key_output_pov_ground, "none");

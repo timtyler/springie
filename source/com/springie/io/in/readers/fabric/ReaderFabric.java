@@ -5,6 +5,7 @@ package com.springie.io.in.readers.fabric;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -18,7 +19,7 @@ import com.tifsoft.Forget;
 public class ReaderFabric extends DefaultHandler {
   static final int scale_factor = 18000;
   static int node_count;
-  static HashMap<String, String> map;
+  static Map<String, String> map;
 
   static String value;
   static String last_element;

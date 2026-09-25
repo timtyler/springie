@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Set;
 
 import com.springie.elements.links.Link;
 import com.springie.elements.nodes.Node;
@@ -114,7 +115,7 @@ public class FaceCycleFinder {
       adj.get(b.intValue()).add(new Edge(a.intValue(), li));
     }
 
-    final HashSet<String> seen = new HashSet<>();
+    final Set<String> seen = new HashSet<>();
     final int[] dist = new int[n];
     final int[] queue = new int[n];
 

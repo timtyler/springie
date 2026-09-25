@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -22,7 +23,7 @@ public class AddXMLModelIndexLeaves extends DefaultHandler {
   ChoiceWithDescription choice;
 
   /** When set, leaves are collected here instead of in the AWT choice. */
-  LinkedHashMap<String, String> sink;
+  Map<String, String> sink;
 
   int index;
 
@@ -36,7 +37,7 @@ public class AddXMLModelIndexLeaves extends DefaultHandler {
    * touching AWT: the instance addLeaves populates a ChoiceWithDescription,
    * which cannot be created headless.
    */
-  public static LinkedHashMap<String, String> getLeaves(String source)
+  public static Map<String, String> getLeaves(String source)
     throws IOException, SAXException {
 
     final XMLReader xr = new com.tifsoft.xml.driver.Driver();
@@ -44,7 +45,7 @@ public class AddXMLModelIndexLeaves extends DefaultHandler {
     final AddXMLModelIndexLeaves handler = new AddXMLModelIndexLeaves();
     xr.setContentHandler(handler);
     xr.setErrorHandler(handler);
-    final LinkedHashMap<String, String> leaves = new LinkedHashMap<>();
+    final Map<String, String> leaves = new LinkedHashMap<>();
     handler.sink = leaves;
 
     final Reader reader = new ResourceLoader().getReader(source);

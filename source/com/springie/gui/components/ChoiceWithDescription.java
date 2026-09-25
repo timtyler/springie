@@ -8,9 +8,10 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ItemListener;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class ChoiceWithDescription {
-  public LinkedHashMap<String, String> hashtable;
+  public Map<String, String> hashtable;
 
   public Choice choice;
 

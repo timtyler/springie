@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -61,7 +62,7 @@ class FaceCycleFinderTest {
   /** Every consecutive pair (wrapping round) must share a link. */
   private static void assertIsCycle(ArrayList<Node> cycle,
       ArrayList<Link> links) {
-    final HashSet<String> pairs = new HashSet<>();
+    final Set<String> pairs = new HashSet<>();
     for (Link link : links) {
       pairs.add(System.identityHashCode(link.nodes[0]) + ">"
         + System.identityHashCode(link.nodes[1]));

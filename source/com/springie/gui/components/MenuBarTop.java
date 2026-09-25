@@ -12,7 +12,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -169,11 +168,11 @@ public class MenuBarTop extends MenuBar {
   private Menu makePresetsMenu() {
     final Menu presets = new Menu("Presets");
     try {
-      final LinkedHashMap<String, String> indexes =
+      final Map<String, String> indexes =
           AddXMLModelIndexLeaves.getLeaves(FrEnd.model_index);
       for (Map.Entry<String, String> index : indexes.entrySet()) {
         final Menu index_menu = new Menu(index.getKey());
-        final LinkedHashMap<String, String> leaves =
+        final Map<String, String> leaves =
             AddXMLModelIndexLeaves.getLeaves(index.getValue());
         for (Map.Entry<String, String> leaf : leaves.entrySet()) {
           final MenuItem item = new MenuItem(leaf.getKey());

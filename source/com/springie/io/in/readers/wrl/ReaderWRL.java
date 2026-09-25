@@ -4,6 +4,7 @@ package com.springie.io.in.readers.wrl;
 
 import java.awt.Point;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
 
@@ -257,7 +258,7 @@ public final class ReaderWRL {
     }
 
     // links...
-    final HashMap<Point, Point> already = new HashMap<>();
+    final Map<Point, Point> already = new HashMap<>();
     for (int i = 0; i < main_size; i++) {
       final ReaderWRLGroup group = groups.get(i);
       if (group.colour != 0xFFFFFF) {
