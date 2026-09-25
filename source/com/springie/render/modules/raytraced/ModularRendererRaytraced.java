@@ -1027,6 +1027,27 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       x1 += px;
       y1 += px;
     }
+    if (RendererTileManager.one_big_tile) {
+      // Tim: one big tile -- there's only tile 0, mark it dirty.
+      // Clamp to the canvas.
+      if (x1 < 0 || y1 < 0 || x0 >= width || y0 >= height) {
+        return;
+      }
+      if (x0 < 0) {
+        x0 = 0;
+      }
+      if (y0 < 0) {
+        y0 = 0;
+      }
+      if (x1 >= width) {
+        x1 = width - 1;
+      }
+      if (y1 >= height) {
+        y1 = height - 1;
+      }
+      rects[0].unionBox(x0, y0, x1, y1);
+      return;
+    }
     if (x1 < 0 || y1 < 0 || x0 >= width || y0 >= height) {
       return;
     }
