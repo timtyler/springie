@@ -94,9 +94,9 @@ class HamsterWheelDemoTest {
     HamsterWheelDemo.z_offset_px = 100;
     HamsterWheelDemo.rim_radius_px = 160;
     HamsterWheelDemo.rim_half_width_px = 162;
-    HamsterWheelDemo.axle_inset_px = 40;
+    HamsterWheelDemo.axle_inset_px = 60;
     HamsterWheelDemo.rim_log_mass = 17;
-    HamsterWheelDemo.node_size_px = 130;
+    HamsterWheelDemo.node_size_px = 286;
     HamsterWheelDemo.reflex_stance_threshold_px = 60;
     HamsterWheelDemo.bracing_elasticity = 30;
     HamsterWheelDemo.roll_correct_gain = 0;

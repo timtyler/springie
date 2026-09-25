@@ -68,7 +68,7 @@ public final class HamsterWheelDemo {
    * The axle is shorter than the track -- the spokes pull the rims
    * together like a bicycle wheel, instead of apart.
    */
-  public static int axle_inset_px = 40;
+  public static int axle_inset_px = 60;
 
   /**
    * Z offset of the whole wheel: rim-0 sits at z = this, rim-1 at
@@ -97,7 +97,7 @@ public final class HamsterWheelDemo {
   /** Drawn node size for the wheel's nodes, in pixels. */
   // Tim's directive (2026-09-24): bigger nodes (was 60). Node size is
   // PHYSICAL -- the boundary clamp and the ground line both use it.
-  public static int node_size_px = 130;
+  public static int node_size_px = 286;
 
   /**
    * Link rendering thinness: radius = length / this. Tim's directive
@@ -105,7 +105,7 @@ public final class HamsterWheelDemo {
    * LinkType default of length / 8). Visual only -- link radius never
    * enters the physics.
    */
-  public static int link_radius_divisor = 48;
+  public static int link_radius_divisor = 32;
 
   /** Muscle amplitude for the spoke wave, 0-100%. */
   /** Spoke muscle amplitude, percent (travelling-wave mode only). */
@@ -263,7 +263,7 @@ public final class HamsterWheelDemo {
     Muscles.activeOscillator().setPeriodTicks(muscle_period_ticks);
     Muscles.activeOscillator().setPhase(0);
     World.gravity_active = true;
-    World.gravity_strength = 5;
+    World.gravity_strength = 2;
     World.ground_friction = friction;
     // Zero thermal jitter: the reflex drive is a delicate self-synchronizing
     // mechanism, and thermal kicks knock it off rhythm into chaotic
