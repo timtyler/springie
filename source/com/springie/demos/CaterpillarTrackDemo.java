@@ -39,7 +39,7 @@ public final class CaterpillarTrackDemo {
   }
 
   /** Nodes per ring before deletion. */
-  public static final int NODES_PER_RING = 15;
+  public static final int NODES_PER_RING = 21;
 
   /** Inner ring radius, in pixels. */
   public static final int INNER_RADIUS_PX = 120;
