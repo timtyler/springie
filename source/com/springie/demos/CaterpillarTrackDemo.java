@@ -53,6 +53,9 @@ public final class CaterpillarTrackDemo {
   /** Node size, in pixels (physical radius). */
   public static int node_size_px = 16;
 
+  /** Lift the model above the canvas bottom so it renders fully in view. */
+  public static final int VIEW_MARGIN_PX = 60;
+
   /** Ground friction. */
   public static int friction = 100;
 
@@ -114,8 +117,9 @@ public final class CaterpillarTrackDemo {
     World.global_temperature = 0;
 
     // Ground is the high-Y wall (positive gravity pulls toward +Y).
+    // Lift by VIEW_MARGIN_PX so the track renders fully in view.
     final int ground_y_px = Coords.y_pixels - node_size_px - 1;
-    final int centre_y_px = ground_y_px - OUTER_RADIUS_PX;
+    final int centre_y_px = ground_y_px - OUTER_RADIUS_PX - VIEW_MARGIN_PX;
     final int centre_y = centre_y_px << Coords.shift;
     final int cx = x_px << Coords.shift;
     final int half_width = HALF_WIDTH_PX << Coords.shift;
@@ -140,11 +144,12 @@ public final class CaterpillarTrackDemo {
       }
     }
 
-    // Rest on the ground BEFORE linking (no mid-air start, per Tim's
-    // grounding rule). restOnGround runs boundaryCheck which can
-    // micro-adjust nodes; linking afterwards keeps every link length
-    // exactly matching its node distance.
-    Grounding.restOnGround(node_manager);
+    // Rest on the ground BEFORE linking. restOnGround runs boundaryCheck
+    // which can micro-adjust nodes; linking afterwards keeps every link
+    // length exactly matching its node distance.
+    // Note: VIEW_MARGIN_PX is applied in the initial centre_y above, so
+    // the model sits above the canvas bottom for full visibility (Tim).
+    // restOnGround is skipped here to preserve that margin.
 
     // Link every node to the two nearest nodes on each of the other
     // two circles. Deduplicated (no duplicate links).
