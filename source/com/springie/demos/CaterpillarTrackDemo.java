@@ -71,12 +71,25 @@ public final class CaterpillarTrackDemo {
         || (ring == 2 && mod == 0);
   }
 
-  /** Squared 3D distance between two nodes (descaled). */
+  /** Squared 3D distance between two nodes (descaled, for comparisons). */
   private static long dist2(Node a, Node b) {
     final long dx = (long) (a.pos.x - b.pos.x) >> Coords.shift;
     final long dy = (long) (a.pos.y - b.pos.y) >> Coords.shift;
     final long dz = (long) (a.pos.z - b.pos.z) >> Coords.shift;
     return dx * dx + dy * dy + dz * dz;
+  }
+
+  /**
+   * Exact link length in fixed-point units, matching the actual distance
+   * between the nodes (no integer-pixel truncation).
+   */
+  private static int exactLength(Node a, Node b) {
+    final double scale = 1 << Coords.shift;
+    final double dx = (a.pos.x - b.pos.x) / scale;
+    final double dy = (a.pos.y - b.pos.y) / scale;
+    final double dz = (a.pos.z - b.pos.z) / scale;
+    final double dist_px = Math.sqrt(dx * dx + dy * dy + dz * dz);
+    return (int) Math.round(dist_px * scale);
   }
 
   /**
@@ -127,6 +140,12 @@ public final class CaterpillarTrackDemo {
       }
     }
 
+    // Rest on the ground BEFORE linking (no mid-air start, per Tim's
+    // grounding rule). restOnGround runs boundaryCheck which can
+    // micro-adjust nodes; linking afterwards keeps every link length
+    // exactly matching its node distance.
+    Grounding.restOnGround(node_manager);
+
     // Link every node to the two nearest nodes on each of the other
     // two circles. Deduplicated (no duplicate links).
     final Set<String> linked = new HashSet<>();
@@ -164,8 +183,7 @@ public final class CaterpillarTrackDemo {
             final String key =
                 Math.min(h1, h2) + "-" + Math.max(h1, h2);
             if (linked.add(key)) {
-              final int length =
-                  (int) Math.sqrt(dist2(node, other)) << Coords.shift;
+              final int length = exactLength(node, other);
               final LinkType type = link_manager.link_type_factory.getNew(
                   length, elasticity);
               // Struts everywhere for this model (Tim).
@@ -187,15 +205,12 @@ public final class CaterpillarTrackDemo {
       final int h2 = System.identityHashCode(b);
       final String key = Math.min(h1, h2) + "-" + Math.max(h1, h2);
       if (linked.add(key)) {
-        final int length = (int) Math.sqrt(dist2(a, b)) << Coords.shift;
+        final int length = exactLength(a, b);
         final LinkType type =
             link_manager.link_type_factory.getNew(length, elasticity);
         link_manager.setLink(a, b, type, clazz);
       }
     }
-
-    // Rest on the ground (no mid-air start, per Tim's grounding rule).
-    Grounding.restOnGround(node_manager);
 
     return ring0.get(0);
   }
