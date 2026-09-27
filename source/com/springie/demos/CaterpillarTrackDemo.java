@@ -199,21 +199,23 @@ public final class CaterpillarTrackDemo {
       }
     }
 
-    // Link adjacent nodes within the inner circle (Ring 0).
+    // Link adjacent nodes within each circle.
     // The kept nodes are in angular order; link consecutive pairs
-    // plus the wraparound, forming a closed ring.
-    final int n0 = ring0.size();
-    for (int i = 0; i < n0; i++) {
-      final Node a = ring0.get(i);
-      final Node b = ring0.get((i + 1) % n0);
-      final int h1 = System.identityHashCode(a);
-      final int h2 = System.identityHashCode(b);
-      final String key = Math.min(h1, h2) + "-" + Math.max(h1, h2);
-      if (linked.add(key)) {
-        final int length = exactLength(a, b);
-        final LinkType type =
-            link_manager.link_type_factory.getNew(length, elasticity);
-        link_manager.setLink(a, b, type, clazz);
+    // plus the wraparound, forming a closed ring per circle.
+    for (final List<Node> ring : rings) {
+      final int n = ring.size();
+      for (int i = 0; i < n; i++) {
+        final Node a = ring.get(i);
+        final Node b = ring.get((i + 1) % n);
+        final int h1 = System.identityHashCode(a);
+        final int h2 = System.identityHashCode(b);
+        final String key = Math.min(h1, h2) + "-" + Math.max(h1, h2);
+        if (linked.add(key)) {
+          final int length = exactLength(a, b);
+          final LinkType type =
+              link_manager.link_type_factory.getNew(length, elasticity);
+          link_manager.setLink(a, b, type, clazz);
+        }
       }
     }
 
