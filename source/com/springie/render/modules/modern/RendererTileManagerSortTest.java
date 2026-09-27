@@ -25,15 +25,21 @@ class RendererTileManagerSortTest {
 
   private int saved_divisor;
 
+  private boolean saved_one_big_tile;
+
   @BeforeEach
   void saveDivisor() {
     this.saved_divisor = RendererTileManager.divisor;
+    this.saved_one_big_tile = RendererTileManager.one_big_tile;
     RendererTileManager.divisor = 100;
+    // These tests verify grid tiling; force grid mode.
+    RendererTileManager.one_big_tile = false;
   }
 
   @AfterEach
   void restoreDivisor() {
     RendererTileManager.divisor = this.saved_divisor;
+    RendererTileManager.one_big_tile = this.saved_one_big_tile;
   }
 
   private static PolygonComposite composite(int z, int x0, int y0, int x1,

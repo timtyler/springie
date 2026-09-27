@@ -53,6 +53,9 @@ public class RendererTileManagerPx3SeamTest {
   public void px3LeavesNoSeamAlongTileEdges() throws Exception {
     final int saved_pixellation = RendererDelegator.pixellation;
     final int saved_frame = RendererTileManager.render_frame;
+    final boolean saved_one_big_tile = RendererTileManager.one_big_tile;
+    // This test verifies grid tiling; force grid mode.
+    RendererTileManager.one_big_tile = false;
     final int block_size = RendererTileManager.divisor;
     final int coarse = (block_size + 3 - 1) / 3;
     RendererDelegator.pixellation = 3;
@@ -109,6 +112,7 @@ public class RendererTileManagerPx3SeamTest {
     } finally {
       RendererDelegator.pixellation = saved_pixellation;
       RendererTileManager.render_frame = saved_frame;
+      RendererTileManager.one_big_tile = saved_one_big_tile;
     }
   }
 }

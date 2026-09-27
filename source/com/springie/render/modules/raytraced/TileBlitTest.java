@@ -64,6 +64,8 @@ public class TileBlitTest {
 
   private boolean saved_show_active_tiles;
 
+  private boolean saved_one_big_tile;
+
   private boolean saved_render_nodes;
 
   private boolean saved_render_links;
@@ -116,9 +118,12 @@ public class TileBlitTest {
     this.saved_divisor = RendererTileManager.divisor;
     this.saved_show_tiles = RendererTileManager.show_tiles;
     this.saved_show_active_tiles = RendererTileManager.show_active_tiles;
+    this.saved_one_big_tile = RendererTileManager.one_big_tile;
     RendererTileManager.divisor = DIVISOR;
     RendererTileManager.show_tiles = false;
     RendererTileManager.show_active_tiles = false;
+    // These tests verify grid tiling; force grid mode.
+    RendererTileManager.one_big_tile = false;
 
     this.saved_render_nodes = FrEnd.render_nodes;
     this.saved_render_links = FrEnd.render_links;
@@ -153,6 +158,7 @@ public class TileBlitTest {
     RendererTileManager.divisor = this.saved_divisor;
     RendererTileManager.show_tiles = this.saved_show_tiles;
     RendererTileManager.show_active_tiles = this.saved_show_active_tiles;
+    RendererTileManager.one_big_tile = this.saved_one_big_tile;
     FrEnd.render_nodes = this.saved_render_nodes;
     FrEnd.render_links = this.saved_render_links;
     RendererDelegator.shadows = this.saved_shadows;

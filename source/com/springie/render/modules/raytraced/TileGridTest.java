@@ -21,17 +21,23 @@ public class TileGridTest {
 
   private boolean saved_show_tiles;
 
+  private boolean saved_one_big_tile;
+
   @BeforeEach
   public void saveDivisor() {
     this.saved_divisor = RendererTileManager.divisor;
     this.saved_show_tiles = RendererTileManager.show_tiles;
+    this.saved_one_big_tile = RendererTileManager.one_big_tile;
     RendererTileManager.show_tiles = false;
+    // These tests verify the grid tiling; force grid mode.
+    RendererTileManager.one_big_tile = false;
   }
 
   @AfterEach
   public void restoreDivisor() {
     RendererTileManager.divisor = this.saved_divisor;
     RendererTileManager.show_tiles = this.saved_show_tiles;
+    RendererTileManager.one_big_tile = this.saved_one_big_tile;
   }
 
   private void checkGrid(int width, int height, int divisor) {
