@@ -39,7 +39,7 @@ public final class CaterpillarTrackDemo {
   }
 
   /** Nodes per ring before deletion. */
-  public static final int NODES_PER_RING = 21;
+  public static final int NODES_PER_RING = 25;
 
   /** Inner ring radius, in pixels. */
   public static final int INNER_RADIUS_PX = 120;
@@ -67,10 +67,10 @@ public final class CaterpillarTrackDemo {
 
   /** Returns true if the node at index i in the given ring is kept. */
   private static boolean keep(int ring, int i) {
-    final int mod = i % 3;
-    // Ring 0: XXO, Ring 1: XOX, Ring 2: OXX (X=delete, O=keep).
-    return (ring == 0 && mod == 2)
-        || (ring == 1 && mod == 1)
+    final int mod = i % 5;
+    // Ring 0: XXXXO, Ring 1: XXOXX, Ring 2: OXXXX (X=delete, O=keep).
+    return (ring == 0 && mod == 4)
+        || (ring == 1 && mod == 2)
         || (ring == 2 && mod == 0);
   }
 
