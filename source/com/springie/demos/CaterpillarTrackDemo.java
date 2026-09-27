@@ -25,14 +25,19 @@ import java.util.Set;
  * Two-thirds of the nodes are deleted per the patterns (X=delete,
  * O=keep):
  * <ul>
- * <li>Ring 0 (inner, r=120, z=0): XXO -- keep i%3==2</li>
- * <li>Ring 1 (outer, r=140, z=+30): XOX -- keep i%3==1</li>
- * <li>Ring 2 (outer, r=140, z=-30): OXX -- keep i%3==0</li>
+ * <li>Ring 0 (inner, r=60, z=0): XXO -- keep i%3==2</li>
+ * <li>Ring 1 (outer, r=140, z=+46): XOX -- keep i%3==1</li>
+ * <li>Ring 2 (outer, r=140, z=-46): OXX -- keep i%3==0</li>
  * </ul>
  * 7 nodes per ring (21 total), staggered so they interleave.
  *
+ * <p>The (radius, z) positions of the three rings form an equilateral
+ * triangle: (60, 0), (140, +46), (140, -46) -- sides 92.3, 92.3, 92 --
+ * so a slice through the donut has a triangular cross-section (Tim).
+ *
  * <p>Each node is linked to the two nearest nodes on each of the other
- * two circles (struts, deduplicated).
+ * two circles (struts, deduplicated). Node radius and link radius are
+ * equal (Tim): the track is a uniform tube.
  */
 public final class CaterpillarTrackDemo {
   private CaterpillarTrackDemo() {
@@ -41,17 +46,30 @@ public final class CaterpillarTrackDemo {
   /** Nodes per ring before deletion. */
   public static final int NODES_PER_RING = 21;
 
-  /** Inner ring radius, in pixels. */
-  public static final int INNER_RADIUS_PX = 120;
+  /** Inner ring radius, in pixels. Halved from 120 (Tim, 2026-09-27). */
+  public static final int INNER_RADIUS_PX = 60;
 
   /** Outer ring radius, in pixels. */
   public static final int OUTER_RADIUS_PX = 140;
 
-  /** Outer ring z offset (half the track width), in pixels. */
-  public static final int HALF_WIDTH_PX = 30;
+  /**
+   * Outer ring z offset (half the track width), in pixels. With inner
+   * radius 60 and outer radius 140, half-width 80/sqrt(3) makes the
+   * (radius, z) cross-section an equilateral triangle.
+   */
+  public static final int HALF_WIDTH_PX = 46;
 
   /** Node size, in pixels (physical radius). */
   public static int node_size_px = 16;
+
+  /**
+   * Node/link radius in fixed-point units. Radii are stored in
+   * fixed-point (pixels &lt;&lt; Coords.shift); node radius and link
+   * radius are equal (Tim).
+   */
+  private static int nodeRadius() {
+    return node_size_px << Coords.shift;
+  }
 
   /** Lift the model above the canvas bottom so it renders fully in view. */
   public static final int VIEW_MARGIN_PX = 60;
@@ -111,7 +129,7 @@ public final class CaterpillarTrackDemo {
     final Clazz clazz = node_manager.clazz_factory.getNew(0xFFFFFFFF);
     final NodeType node_type = node_manager.node_type_factory.getNew();
     node_type.log_mass = log_mass;
-    node_type.setSize(node_size_px);
+    node_type.setSize(nodeRadius());
 
     World.gravity_active = true;
     World.gravity_strength = 2;
@@ -193,6 +211,8 @@ public final class CaterpillarTrackDemo {
               final int length = exactLength(node, other);
               final LinkType type = link_manager.link_type_factory.getNew(
                   length, elasticity);
+              // Link radius equals the node radius (Tim).
+              type.radius = nodeRadius();
               // Struts everywhere for this model (Tim).
               link_manager.setLink(node, other, type, clazz);
             }
@@ -216,6 +236,8 @@ public final class CaterpillarTrackDemo {
           final int length = exactLength(a, b);
           final LinkType type =
               link_manager.link_type_factory.getNew(length, elasticity);
+          // Link radius equals the node radius (Tim).
+          type.radius = nodeRadius();
           link_manager.setLink(a, b, type, clazz);
         }
       }
