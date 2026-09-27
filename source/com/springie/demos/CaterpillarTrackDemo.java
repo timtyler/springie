@@ -59,11 +59,13 @@ public final class CaterpillarTrackDemo {
   /** Ground friction. */
   public static int friction = 100;
 
-  /** Log mass for all nodes. */
-  public static int log_mass = 0;
+  /** Log mass for all nodes. Was 0 (mass=1): far too light for the
+      spring stiffness, causing numerical divergence. 15 matches
+      HamsterWheel rim. */
+  public static int log_mass = 15;
 
   /** Link elasticity. */
-  public static int elasticity = 64;
+  public static int elasticity = 20;
 
   /** Returns true if the node at index i in the given ring is kept. */
   private static boolean keep(int ring, int i) {
