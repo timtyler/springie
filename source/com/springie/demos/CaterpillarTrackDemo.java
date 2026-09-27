@@ -176,6 +176,24 @@ public final class CaterpillarTrackDemo {
       }
     }
 
+    // Link adjacent nodes within the inner circle (Ring 0).
+    // The kept nodes are in angular order; link consecutive pairs
+    // plus the wraparound, forming a closed ring.
+    final int n0 = ring0.size();
+    for (int i = 0; i < n0; i++) {
+      final Node a = ring0.get(i);
+      final Node b = ring0.get((i + 1) % n0);
+      final int h1 = System.identityHashCode(a);
+      final int h2 = System.identityHashCode(b);
+      final String key = Math.min(h1, h2) + "-" + Math.max(h1, h2);
+      if (linked.add(key)) {
+        final int length = (int) Math.sqrt(dist2(a, b)) << Coords.shift;
+        final LinkType type =
+            link_manager.link_type_factory.getNew(length, elasticity);
+        link_manager.setLink(a, b, type, clazz);
+      }
+    }
+
     // Rest on the ground (no mid-air start, per Tim's grounding rule).
     Grounding.restOnGround(node_manager);
 
