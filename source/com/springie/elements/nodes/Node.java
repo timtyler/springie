@@ -3,6 +3,7 @@
 package com.springie.elements.nodes;
 
 import com.springie.FrEnd;
+import com.springie.demos.CompassPoint;
 import com.springie.elements.base.BaseElement;
 import com.springie.elements.clazz.ClazzFactory;
 import com.springie.elements.lists.ListOfIntegers;
@@ -33,7 +34,14 @@ public class Node extends BaseElement {
   public ListOfIntegers list_of_polygons = new ListOfIntegers();
 
   public Point3D current_bin = new Point3D(-1, -1, -1);
-  
+
+  /**
+   * Compass heading for the universe compass bias (N/S/E/W); null means
+   * this node gets no bias. Set by demo builders; the bias itself comes
+   * from the Compass bias slider (Universe tab) via CompassPoint.bias_size.
+   */
+  public CompassPoint compass;
+
   public static int thickness = 6; // display only...
 
   public static int max_speed = Integer.MAX_VALUE;

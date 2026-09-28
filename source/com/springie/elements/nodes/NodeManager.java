@@ -10,6 +10,7 @@ import org.xml.sax.SAXException;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
+import com.springie.demos.CompassPoint;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.electrostatics.ElectrostaticRepulsion;
 import com.springie.elements.links.LinkManager;
@@ -469,6 +470,7 @@ public class NodeManager extends World {
         temp_agent = (Node) this.element.get(temp);
         applyGravity();
         applyTemperature();
+        applyCompassBias();
         decrementCounter();
       }
     }
@@ -559,6 +561,22 @@ public class NodeManager extends World {
       temp_agent.velocity.x += rnd.nextInt(temperature << 1) - temperature;
       temp_agent.velocity.y += rnd.nextInt(temperature << 1) - temperature;
       temp_agent.velocity.z += rnd.nextInt(temperature << 1) - temperature;
+    }
+  }
+
+  /**
+   * Applies the universe compass bias: each node carrying a compass
+   * heading (N/S/E/W) gains bias_size velocity units per frame along its
+   * heading on the floor plane. Nodes with a null heading are untouched,
+   * and a zero bias disables the whole thing.
+   */
+  private void applyCompassBias() {
+    if (CompassPoint.bias_size != 0) {
+      final CompassPoint heading = temp_agent.compass;
+      if (heading != null) {
+        temp_agent.velocity.x += heading.biasDx();
+        temp_agent.velocity.z += heading.biasDz();
+      }
     }
   }
 
