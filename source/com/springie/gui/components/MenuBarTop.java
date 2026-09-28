@@ -215,6 +215,9 @@ public class MenuBarTop extends MenuBar {
           // Keep the bottom-bar file card showing the same demo that was
           // just chosen here.
           FrEnd.panel_fundamental.selectDemo(demo.name);
+          // Demos are built in code, not loaded from a file, so show the
+          // demo's name in the window title the way file loads do.
+          FrEnd.setFilePath(demo.name);
           FrEnd.new_message_manager.add(demo.newMessage());
         }
       });

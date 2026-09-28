@@ -386,6 +386,9 @@ public class PanelFundamental {
         final DemoCatalog.Demo demo =
             DemoCatalog.forName((String) e.getItem());
         if (demo != null) {
+          // Demos are built in code, not loaded from a file, so show the
+          // demo's name in the window title the way file loads do.
+          FrEnd.setFilePath(demo.name);
           getNewMessageManager().add(demo.newMessage());
         }
       }
@@ -807,6 +810,9 @@ public class PanelFundamental {
   void launchSelected() {
     final DemoCatalog.Demo demo = selectedDemo();
     if (demo != null) {
+      // Demos are built in code, not loaded from a file, so show the
+      // demo's name in the window title the way file loads do.
+      FrEnd.setFilePath(demo.name);
       getNewMessageManager().add(demo.newMessage());
     } else {
       getNewMessageManager().add(FrEnd.system_messages.getRestartMessage());
