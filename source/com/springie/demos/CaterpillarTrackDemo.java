@@ -4,12 +4,16 @@ package com.springie.demos;
 
 import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
+import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.links.LinkType;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
 import com.springie.geometry.Point3D;
+import com.springie.muscles.GlobalOscillatorController;
+import com.springie.muscles.Muscles;
+import com.springie.muscles.Oscillator;
 import com.springie.render.Coords;
 import com.springie.world.Grounding;
 import com.springie.world.World;
@@ -107,8 +111,9 @@ public final class CaterpillarTrackDemo {
    * (same units as the gravity strength). N on the -z end and S on the
    * +z end, so the bias pulls the ends apart and tensions the spokes.
    * Tunable live via the Compass bias slider (Universe tab); 0 disables.
+   * Set to 40 on Tim's order (2026-09-28).
    */
-  public static int compass_bias = 2;
+  public static int compass_bias = 40;
 
   /** Log mass for all nodes. Was 0 (mass=1): far too light for the
       spring stiffness, causing numerical divergence. 15 matches
@@ -117,6 +122,19 @@ public final class CaterpillarTrackDemo {
 
   /** Link elasticity. */
   public static int elasticity = 20;
+
+  /**
+   * Muscle pulse depth on the central-circle links, as a percent of the
+   * rest length: the links vary in length about their rest length (Tim).
+   */
+  public static int muscle_amplitude_pct = 20;
+
+  /**
+   * Muscle oscillator period, in ticks. The central-circle links pulse
+   * as a travelling wave; tuned so the wave completes 2 turns for every
+   * turn of the wheel (Tim: f = 2).
+   */
+  public static int muscle_period_ticks = 480;
 
   /** Returns true if the node at index i in the given ring is kept. */
   private static boolean keep(int ring, int i) {
@@ -188,6 +206,15 @@ public final class CaterpillarTrackDemo {
     World.gravity_strength = 2;
     World.ground_friction = friction;
     World.global_temperature = 0;
+
+    // The muscle wave runs on oscillator slot 0 (Tim): the central
+    // circle's links vary in length about their rest length.
+    Muscles.enabled = true;
+    Muscles.active_oscillator = 0;
+    Muscles.activeOscillator().setAmplitude(
+        muscle_amplitude_pct * Muscles.UNITY / 100);
+    Muscles.activeOscillator().setPeriodTicks(muscle_period_ticks);
+    Muscles.activeOscillator().setPhase(0);
 
     // Ground is the high-Y wall (positive gravity pulls toward +Y).
     // Lift by VIEW_MARGIN_PX so the track renders fully in view.
@@ -279,7 +306,15 @@ public final class CaterpillarTrackDemo {
     // Link adjacent nodes within each circle.
     // The kept nodes are in angular order; link consecutive pairs
     // plus the wraparound, forming a closed ring per circle.
-    for (final List<Node> ring : rings) {
+    // The central circle's links are muscles (Tim): each varies in
+    // length about its rest length, phased as a travelling wave with
+    // one full wavelength around the ring.
+    final Oscillator oscillator = Muscles.activeOscillator();
+    final int period = oscillator.getPeriodTicks();
+    final GlobalOscillatorController muscle =
+        new GlobalOscillatorController(Muscles.active_oscillator);
+    for (int r = 0; r < rings.size(); r++) {
+      final List<Node> ring = rings.get(r);
       final int n = ring.size();
       for (int i = 0; i < n; i++) {
         final Node a = ring.get(i);
@@ -293,7 +328,17 @@ public final class CaterpillarTrackDemo {
               link_manager.link_type_factory.getNew(length, elasticity);
           // Link radius equals the node radius (Tim).
           type.radius = nodeRadius();
-          link_manager.setLink(a, b, type, clazz);
+          // Struts everywhere for this model (Tim); the central
+          // circle's links additionally carry the muscle wave.
+          final Link link = link_manager.setLink(a, b, type, clazz);
+          if (r == 0) {
+            final int phase = i * period / n;
+            link.phase = phase;
+            link.controller = muscle;
+            link.adjusted_rest_length = (int) (
+                ((long) type.length * oscillator.getScale(0, phase))
+                    >> Coords.shift);
+          }
         }
       }
     }
