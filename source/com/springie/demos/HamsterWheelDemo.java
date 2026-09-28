@@ -94,10 +94,17 @@ public final class HamsterWheelDemo {
   // does the rolling.
   public static int hub_log_mass = 19;
 
-  /** Drawn node size for the wheel's nodes, in pixels. */
-  // Tim's directive (2026-09-24): bigger nodes (was 60). Node size is
-  // PHYSICAL -- the boundary clamp and the ground line both use it.
-  public static int node_size_px = 286;
+  /** Node radius, in fixed-point units: the same as the rim links' radius. */
+  // Tim's directive (2026-09-27): nodes the same size as the link radius.
+  // (The old node_size_px field passed unshifted pixels to setSize, so the
+  // nodes were rendering at ~1px while the ground line assumed 286px.)
+  // Node size is PHYSICAL -- the boundary clamp and the ground line both
+  // use it.
+  static int nodeRadius() {
+    final int chord =
+        (int) (2.0 * (rim_radius_px << Coords.shift) * Math.sin(Math.PI / RIM_COUNT));
+    return chord / link_radius_divisor;
+  }
 
   /**
    * Link rendering thinness: radius = length / this. Tim's directive
@@ -252,8 +259,8 @@ public final class HamsterWheelDemo {
     final NodeType hub_type = node_manager.node_type_factory.getNew();
     rim_type.log_mass = rim_log_mass;
     hub_type.log_mass = hub_log_mass;
-    rim_type.setSize(node_size_px);
-    hub_type.setSize(node_size_px);
+    rim_type.radius = nodeRadius();
+    hub_type.radius = nodeRadius();
 
     // The spoke wave runs on oscillator slot 0.
     Muscles.enabled = true;
@@ -278,7 +285,7 @@ public final class HamsterWheelDemo {
     // rim-node centres start exactly at their rest height -- no tick-1
     // launch from the boundary clamp (which uses the node radius).
     final int ground =
-        (Coords.y_pixels << Coords.shift) - (node_size_px << Coords.shift);
+        (Coords.y_pixels << Coords.shift) - nodeRadius();
     final int cx = x_px << Coords.shift;
     final int cy = ground - (rim_radius_px << Coords.shift);
     final int radius = rim_radius_px << Coords.shift;

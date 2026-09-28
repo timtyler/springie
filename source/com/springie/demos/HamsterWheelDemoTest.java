@@ -45,7 +45,6 @@ class HamsterWheelDemoTest {
   private int old_half_width;
   private int old_inset;
   private int old_rim_log_mass;
-  private int old_node_size;
   private int old_stance;
   private int old_bracing;
   private int old_roll_gain;
@@ -73,7 +72,6 @@ class HamsterWheelDemoTest {
     old_half_width = HamsterWheelDemo.rim_half_width_px;
     old_inset = HamsterWheelDemo.axle_inset_px;
     old_rim_log_mass = HamsterWheelDemo.rim_log_mass;
-    old_node_size = HamsterWheelDemo.node_size_px;
     old_stance = HamsterWheelDemo.reflex_stance_threshold_px;
     old_bracing = HamsterWheelDemo.bracing_elasticity;
     old_roll_gain = HamsterWheelDemo.roll_correct_gain;
@@ -96,7 +94,6 @@ class HamsterWheelDemoTest {
     HamsterWheelDemo.rim_half_width_px = 162;
     HamsterWheelDemo.axle_inset_px = 60;
     HamsterWheelDemo.rim_log_mass = 17;
-    HamsterWheelDemo.node_size_px = 286;
     HamsterWheelDemo.reflex_stance_threshold_px = 60;
     HamsterWheelDemo.bracing_elasticity = 30;
     HamsterWheelDemo.roll_correct_gain = 0;
@@ -120,7 +117,6 @@ class HamsterWheelDemoTest {
     HamsterWheelDemo.rim_half_width_px = old_half_width;
     HamsterWheelDemo.axle_inset_px = old_inset;
     HamsterWheelDemo.rim_log_mass = old_rim_log_mass;
-    HamsterWheelDemo.node_size_px = old_node_size;
     HamsterWheelDemo.reflex_stance_threshold_px = old_stance;
     HamsterWheelDemo.bracing_elasticity = old_bracing;
     HamsterWheelDemo.roll_correct_gain = old_roll_gain;
@@ -150,13 +146,14 @@ class HamsterWheelDemoTest {
   }
 
   @Test
-  void wheelNodesAreSizeSixty() {
+  void wheelNodesMatchLinkRadius() {
     HamsterWheelDemo.buildAt(120);
 
+    final int expected = HamsterWheelDemo.nodeRadius();
     final NodeManager nm = ContextManager.getNodeManager();
     for (int i = 0; i < nm.element.size(); i++) {
       final Node node = (Node) nm.element.get(i);
-      assertEquals(286, node.type.radius, "wheel node size");
+      assertEquals(expected, node.type.radius, "wheel node size");
     }
   }
 
