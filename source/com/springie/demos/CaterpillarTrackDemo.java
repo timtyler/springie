@@ -38,6 +38,15 @@ import java.util.Set;
  * <p>Each node is linked to the two nearest nodes on each of the other
  * two circles (struts, deduplicated). Node radius and link radius are
  * equal (Tim): the track is a uniform tube.
+ *
+ * <p>Axle (Tim, 2026-09-27): two nodes on the z-axis through the middle
+ * of the track, joined by a rigid shaft and spoked to every inner ring
+ * node on both sides. The ends carry opposite compass headings (N on
+ * the -z end, S on the +z end), so the universe compass bias pulls them
+ * apart and tensions the spokes -- stabilising the track against
+ * tipping over. The whole model is offset +z (Z_OFFSET_PX): the depth
+ * wall at z=0 would otherwise crush the -z ring and axle end flat
+ * against it on the first tick.
  */
 public final class CaterpillarTrackDemo {
   private CaterpillarTrackDemo() {
@@ -59,6 +68,22 @@ public final class CaterpillarTrackDemo {
    */
   public static final int HALF_WIDTH_PX = 46;
 
+  /**
+   * Axle half-length, in pixels. The axle runs along the z-axis through
+   * the middle of the track; its ends sit outside the outer rings so the
+   * spokes angle outward like a bicycle wheel.
+   */
+  public static final int AXLE_HALF_PX = 92;
+
+  /**
+   * Z offset of the track middle, in pixels. The depth wall at z=0 (with
+   * the 16px node radius, nothing may sit below z=16) would otherwise
+   * crush the -z ring and the -z axle end flat against it on the first
+   * tick -- measured 2026-09-27. The offset puts the rearmost point (the
+   * -z axle end) at 32px, clear of the wall with margin.
+   */
+  public static final int Z_OFFSET_PX = 124;
+
   /** Node size, in pixels (physical radius). */
   public static int node_size_px = 16;
 
@@ -76,6 +101,14 @@ public final class CaterpillarTrackDemo {
 
   /** Ground friction. */
   public static int friction = 100;
+
+  /**
+   * Default compass pull on the axle ends, in velocity units per frame
+   * (same units as the gravity strength). N on the -z end and S on the
+   * +z end, so the bias pulls the ends apart and tensions the spokes.
+   * Tunable live via the Compass bias slider (Universe tab); 0 disables.
+   */
+  public static int compass_bias = 2;
 
   /** Log mass for all nodes. Was 0 (mass=1): far too light for the
       spring stiffness, causing numerical divergence. 15 matches
@@ -116,6 +149,26 @@ public final class CaterpillarTrackDemo {
   }
 
   /**
+   * Adds a strut link between two nodes (deduplicated), with exact rest
+   * length and the track's uniform node/link radius. Struts everywhere
+   * for this model (Tim).
+   */
+  private static void addStrut(LinkManager link_manager, Clazz clazz,
+      Set<String> linked, Node a, Node b) {
+    final int h1 = System.identityHashCode(a);
+    final int h2 = System.identityHashCode(b);
+    final String key = Math.min(h1, h2) + "-" + Math.max(h1, h2);
+    if (linked.add(key)) {
+      final int length = exactLength(a, b);
+      final LinkType type =
+          link_manager.link_type_factory.getNew(length, elasticity);
+      // Link radius equals the node radius (Tim).
+      type.radius = nodeRadius();
+      link_manager.setLink(a, b, type, clazz);
+    }
+  }
+
+  /**
    * Builds the rings centred at the given x (pixels), resting on the
    * ground. Returns the first kept inner-ring node.
    */
@@ -143,6 +196,8 @@ public final class CaterpillarTrackDemo {
     final int centre_y = centre_y_px << Coords.shift;
     final int cx = x_px << Coords.shift;
     final int half_width = HALF_WIDTH_PX << Coords.shift;
+    // The whole model sits forward of the z=0 depth wall (see Z_OFFSET_PX).
+    final int z_offset = Z_OFFSET_PX << Coords.shift;
 
     final List<Node> ring0 = new ArrayList<>();
     final List<Node> ring1 = new ArrayList<>();
@@ -151,7 +206,7 @@ public final class CaterpillarTrackDemo {
     for (int ring = 0; ring < 3; ring++) {
       final List<Node> kept = ring == 0 ? ring0 : ring == 1 ? ring1 : ring2;
       final int radius_px = ring == 0 ? INNER_RADIUS_PX : OUTER_RADIUS_PX;
-      final int z = ring == 0 ? 0 : ring == 1 ? half_width : -half_width;
+      final int z = z_offset + (ring == 0 ? 0 : ring == 1 ? half_width : -half_width);
       for (int i = 0; i < NODES_PER_RING; i++) {
         if (!keep(ring, i)) {
           continue;
@@ -240,6 +295,34 @@ public final class CaterpillarTrackDemo {
           type.radius = nodeRadius();
           link_manager.setLink(a, b, type, clazz);
         }
+      }
+    }
+
+    // Axle (Tim, 2026-09-27): through the middle of the track along the
+    // z-axis, attached to the inner circle nodes on both sides. The two
+    // ends are joined by a rigid shaft; each end is spoked to every
+    // inner ring node.
+    final int axle_half = AXLE_HALF_PX << Coords.shift;
+    final Node axle_north = node_manager.addNewAgent(
+        new Point3D(cx, centre_y, z_offset - axle_half), clazz, node_type);
+    final Node axle_south = node_manager.addNewAgent(
+        new Point3D(cx, centre_y, z_offset + axle_half), clazz, node_type);
+
+    // Opposite compass headings: the universe compass bias pulls the -z
+    // end toward N and the +z end toward S -- the ends are pulled apart,
+    // tensioning the spokes and stabilising the track against tipping
+    // over (same convention as the hamster wheel axle stabilizer).
+    axle_north.compass = CompassPoint.N;
+    axle_south.compass = CompassPoint.S;
+    CompassPoint.bias_size = compass_bias;
+
+    // Rigid shaft joining the ends into a single axle.
+    addStrut(link_manager, clazz, linked, axle_north, axle_south);
+
+    // Spokes: each axle end to every inner ring node.
+    for (final Node end : new Node[] {axle_north, axle_south}) {
+      for (final Node inner : ring0) {
+        addStrut(link_manager, clazz, linked, end, inner);
       }
     }
 
