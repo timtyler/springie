@@ -4,6 +4,7 @@ package com.springie.gui.panels.controls;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
+import java.awt.Choice;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.Scrollbar;
@@ -11,12 +12,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
+import com.springie.demos.CompassPoint;
+import com.springie.elements.nodes.Node;
+import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TextFieldWrapper;
 import com.springie.messages.NewMessageManager;
+import com.springie.messages.commands.AlterCompassMessage;
 import com.springie.messages.commands.AlterLengthMessage;
 import com.springie.messages.commands.AlterPhaseMessage;
 import com.springie.messages.commands.AlterRadiusMessage;
@@ -58,6 +65,8 @@ public class PanelControlsPropertiesScalars {
   public Scrollbar scroll_bar_damping;
 
   public Scrollbar scroll_bar_phase;
+
+  public Choice choice_compass;
 
   public Label label_elasticity;
 
@@ -153,6 +162,8 @@ public class PanelControlsPropertiesScalars {
 
     final Panel panel_charge = setUpChargeSlider();
 
+    final Panel panel_compass = setUpCompassChoice();
+
     this.panel.removeAll();
 
     if (!nodes && !links) {
@@ -170,6 +181,7 @@ public class PanelControlsPropertiesScalars {
       }
       if (nodes) {
         this.panel.add(panel_charge);
+        this.panel.add(panel_compass);
       }
     }
 
@@ -334,6 +346,34 @@ public class PanelControlsPropertiesScalars {
     return panel;
   }
 
+  private Panel setUpCompassChoice() {
+    final Panel panel = new Panel();
+    panel.setLayout(new BorderLayout(0, 8));
+    panel.add("West", new Label("Compass:", Label.RIGHT));
+
+    this.choice_compass = new Choice();
+    this.choice_compass.add("-");
+    this.choice_compass.add("N");
+    this.choice_compass.add("S");
+    this.choice_compass.add("E");
+    this.choice_compass.add("W");
+    this.choice_compass.addItemListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        if (e.getStateChange() != ItemEvent.SELECTED) {
+          return;
+        }
+        final String selected = (String) e.getItem();
+        final CompassPoint heading = "-".equals(selected) ? null
+            : CompassPoint.valueOf(selected);
+        getNewMessageManager().add(new AlterCompassMessage(heading));
+      }
+    });
+
+    panel.add("Center", this.choice_compass);
+
+    return panel;
+  }
+
   private Panel setUpElasticitySlider() {
     final Panel panel = new Panel();
     panel.setLayout(new BorderLayout(0, 8));
@@ -430,6 +470,7 @@ public class PanelControlsPropertiesScalars {
     reflectLength();
     reflectCharge();
     reflectPhase();
+    reflectCompass();
   }
 
   public void reflectElasticity() {
@@ -473,6 +514,32 @@ public class PanelControlsPropertiesScalars {
         .getAverage();
     this.scroll_bar_charge.setValue(v);
     this.label_charge.setText("" + v);
+  }
+
+  /**
+   * Shows the compass heading shared by the selected nodes: unanimous
+   * selections show their heading, mixed selections show "-".
+   */
+  public void reflectCompass() {
+    final NodeManager node_manager = ContextManager.getNodeManager();
+    CompassPoint heading = null;
+    boolean mixed = false;
+    boolean any = false;
+    final int n_o_n = node_manager.element.size();
+    for (int i = n_o_n; --i >= 0;) {
+      final Node node = (Node) node_manager.element.get(i);
+      if (node.type.selected) {
+        if (!any) {
+          heading = node.compass;
+          any = true;
+        } else if (heading != node.compass) {
+          mixed = true;
+          break;
+        }
+      }
+    }
+    this.choice_compass.select(mixed || !any ? "-"
+        : heading == null ? "-" : heading.name());
   }
 
   public void setElasticityLabel(int e) {

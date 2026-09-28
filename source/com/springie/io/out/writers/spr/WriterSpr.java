@@ -438,6 +438,9 @@ public class WriterSpr {
     if (node.name != null) {
       tag_node.add(getName(node));
     }
+    if (node.compass != null) {
+      tag_node.add(new XMLWriterAttribute("compass", node.compass.name()));
+    }
     final XMLWriterSinglet position = getNodePosition(node);
     tag_node.add(position);
     tag_node.add(getVelocityPosition(node));

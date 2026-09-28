@@ -102,6 +102,10 @@ public final class ReaderTens {
               current_node.name = token;
               current_object = Instructions.N;
               done = true;
+            } else if (current_object == Instructions.CD) {
+              current_node.compass = parseCompass(token);
+              current_object = Instructions.N;
+              done = true;
             } else if (current_object == Instructions.LK) {
               if (last_token_number == Instructions.V) {
                 final char ch = token.charAt(0);
@@ -166,6 +170,10 @@ public final class ReaderTens {
                     break;
 
                   case Instructions.NA:
+                    current_object = last_token_number;
+                    break;
+
+                  case Instructions.CD:
                     current_object = last_token_number;
                     break;
 
@@ -598,9 +606,21 @@ public final class ReaderTens {
     }
   }
 
+  /**
+   * Parses a node compass heading value token (e.g. "N"). Unknown values
+   * read as null (no heading) rather than failing the load.
+   */
+  private static CompassPoint parseCompass(String token) {
+    for (CompassPoint heading : CompassPoint.values()) {
+      if (heading.name().equals(token)) {
+        return heading;
+      }
+    }
+    return null;
+  }
+
   //?
-  private static void setUpUniverseProperties(NodeManager node_manager) {
-    FrEnd.three_d = true;
+  private static void setUpUniverseProperties(NodeManager node_manager) {    FrEnd.three_d = true;
     node_manager.electrostatic.charge_active = true;
     World.gravity_active = false;
     World.gravity_strength = 10;

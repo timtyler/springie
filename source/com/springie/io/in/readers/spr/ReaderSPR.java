@@ -240,6 +240,8 @@ public class ReaderSPR extends DefaultHandler {
             //outputNodeNumber(Integer.parseInt(val));
           } else if ("name".equals(nam)) {
             this.out.append("NA:" + val + " ");
+          } else if ("compass".equals(nam)) {
+            this.out.append("CD:" + val + " ");
           }
         } else if (is_link || is_face) {
           if ("nodes".equals(nam)) {

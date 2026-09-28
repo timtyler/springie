@@ -818,6 +818,18 @@ public class NodeManager extends World {
     }
   }
 
+  public final void setCompassOfSelected(CompassPoint heading) {
+    final int n_o_n = this.element.size();
+    for (int temp = n_o_n; --temp >= 0;) {
+      final Node node = (Node) this.element.get(temp);
+      if (node.type.selected) {
+        node.compass = heading;
+      }
+    }
+
+    new PostModification(this).cleanup();
+  }
+
   public final void setChargeOfSelected(int charge) {
     final int n_o_n = this.element.size();
     for (int temp = n_o_n; --temp >= 0;) {

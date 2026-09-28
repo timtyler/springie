@@ -58,6 +58,7 @@ public class Instructions {
     "CX", // 50 // Continuously centre X
     "CY", // 51 // Continuously centre Y
     "CZ", // 52 // Continuously centre Z
+    "CD", // 53 // Node compass heading
 //  "CS", // 29 // Charge strength
   };
 
@@ -114,4 +115,5 @@ public class Instructions {
   static final int CX  = 50;
   static final int CY  = 51;
   static final int CZ  = 52;
+  static final int CD  = 53;
 }

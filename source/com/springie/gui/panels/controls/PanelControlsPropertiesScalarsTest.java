@@ -59,8 +59,8 @@ class PanelControlsPropertiesScalarsTest {
           .resetPanel(true, true, false));
 
       final Component[] with_selection = scalarsChildren();
-      assertEquals(6, with_selection.length,
-          "radius, length, elasticity, damping, phase and charge panels expected");
+      assertEquals(7, with_selection.length,
+          "radius, length, elasticity, damping, phase, charge and compass panels expected");
       for (final Component child : with_selection) {
         assertTrue(!(child instanceof Label)
             || !((Label) child).getText().contains("Nothing is selected"),
