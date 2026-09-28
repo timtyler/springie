@@ -22,8 +22,9 @@ import com.springie.render.modules.modern.PolygonComposite;
 import com.springie.render.modules.modern.PolygonObject2D;
 
 /**
- * The Olympics location markers only exist for demo models running
- * under the follow-cam; they ride the centering shift, are destroyed
+ * The Olympics location markers appear whenever 'Show world markers' is
+ * on and continuous centering is enabled (Tim, 2026-09-25: they no longer
+ * require a demo model); they ride the centering shift, are destroyed
  * off-screen, and respawn so a handful stays in play.
  */
 class WorldMarkersTest {
@@ -144,12 +145,16 @@ class WorldMarkersTest {
   }
 
   @Test
-  void inactiveWhenNotDemo() {
+  void activeForRegularModelsWithCentering() {
+    // Tim, 2026-09-25: the gold dots no longer require a demo model --
+    // they appear whenever 'Show world markers' is on and continuous
+    // centering is enabled.
     FrEnd.demo_model = false;
 
     WorldMarkers.onFrame(new Vector3D(0, 0, 0));
 
-    assertEquals(0, WorldMarkers.size(), "no markers for regular models");
+    assertEquals(WorldMarkers.TARGET_COUNT, WorldMarkers.size(),
+        "markers show for regular models while centering");
   }
 
   @Test
