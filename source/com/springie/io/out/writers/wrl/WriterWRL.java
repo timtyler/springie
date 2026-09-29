@@ -23,7 +23,6 @@ import com.springie.io.out.GarbageCollection;
 import com.springie.io.out.WriteFloatingPoint;
 import com.springie.metrics.BoundingBox;
 import com.springie.modification.redundancy.RedundancyRemover;
-import com.tifsoft.Forget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -326,7 +325,6 @@ public class WriterWRL {
   }
 
   private void outputFaceType(Clazz clazz, int number) {
-    Forget.about(number);
 
     final float r = (((clazz.colour >> 16) & 0xFF)) / 255f;
     final float g = (((clazz.colour >> 8) & 0xFF)) / 255f;

@@ -10,7 +10,6 @@ import com.springie.FrEnd;
 import com.springie.io.in.readers.spr.ReaderSPR;
 import com.springie.messages.ArgumentList;
 import com.springie.utilities.random.JUR;
-import com.tifsoft.Forget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -281,7 +280,6 @@ public final class PresetObjects {
   }
 
   static String makeString(int nodes, int number) {
-    Forget.about(number);
     final int[] colours = new ColourFactory(65418).getColourArray(3);
     final int scale_factor = 1;
     String dome = "CR ";

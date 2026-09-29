@@ -107,7 +107,6 @@ import com.springie.render.SetUpCode;
 import com.springie.render.WorldMarkers;
 import com.springie.utilities.FilePath;
 import com.springie.utilities.random.Hortensius32Fast;
-import com.tifsoft.Forget;
 
 public class FrEnd extends Panel implements Runnable {
   static final long serialVersionUID = 1250;
@@ -675,7 +674,6 @@ public class FrEnd extends Panel implements Runnable {
         frame_controls.setAlwaysOnTop(false);
       } catch (SecurityException e) {
         // Sandboxed environments may not allow changing this.
-        Forget.about(e);
       }
     }
 
@@ -741,7 +739,6 @@ public class FrEnd extends Panel implements Runnable {
               | AWTEvent.WINDOW_EVENT_MASK);
     } catch (SecurityException e) {
       // Sandboxed environments may not allow listening to toolkit events.
-      Forget.about(e);
       controls_stay_on_top_listener = null;
       return;
     }
@@ -983,7 +980,6 @@ public class FrEnd extends Panel implements Runnable {
     try {
       Thread.sleep(delay);
     } catch (InterruptedException e) {
-      Forget.about(e);
     }
   }
 
@@ -1223,7 +1219,6 @@ public class FrEnd extends Panel implements Runnable {
   }
 
   public static void main(String[] args) {
-    Forget.about(args);
 
     final FrEnd frontend = new FrEnd();
 

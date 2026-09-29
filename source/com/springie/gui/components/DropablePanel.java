@@ -22,7 +22,6 @@ import javax.swing.JOptionPane;
 
 import com.springie.FrEnd;
 import com.springie.utilities.FilePath;
-import com.tifsoft.Forget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,12 +49,10 @@ public class DropablePanel extends Panel {
 
   class DTListener implements DropTargetListener {
     private boolean isDragFlavorSupported(DropTargetDragEvent e) {
-      Forget.about(e);
       return true;
     }
 
     private DataFlavor chooseDropFlavor(DropTargetDropEvent e) {
-      Forget.about(e);
 
       DataFlavor chosen = null;
 
@@ -114,7 +111,6 @@ public class DropablePanel extends Panel {
     }
 
     public void dragExit(DropTargetEvent e) {
-      Forget.about(e);
       //Log.log("dtlistener dragExit");
     }
 

@@ -29,7 +29,6 @@ import com.springie.render.modules.modern.SimpleHexagon;
 import com.springie.render.modules.modern.SimpleIcosahedron;
 import com.springie.render.modules.modern.SimpleOctahedron;
 import com.springie.render.modules.modern.SimpleSquare;
-import com.tifsoft.Forget;
 
 public class PanelPreferencesRendererModern {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -267,7 +266,6 @@ public class PanelPreferencesRendererModern {
     this.checkbox_show_tiles = new Checkbox(GUIStrings.SHOW_TILES, RendererTileManager.show_tiles);
     this.checkbox_show_tiles.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         RendererTileManager.show_tiles = ((Checkbox) e.getSource()).getState();
         FrEnd.main_canvas.forceResize();
       }
@@ -279,7 +277,6 @@ public class PanelPreferencesRendererModern {
         RendererTileManager.show_active_tiles);
     this.checkbox_show_active_tiles.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         RendererTileManager.show_active_tiles = ((Checkbox) e.getSource()).getState();
         FrEnd.main_canvas.forceResize();
       }
@@ -291,7 +288,6 @@ public class PanelPreferencesRendererModern {
         RendererTileManager.one_big_tile);
     this.checkbox_one_big_tile.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         RendererTileManager.one_big_tile = ((Checkbox) e.getSource()).getState();
         FrEnd.main_canvas.forceResize();
       }
@@ -336,7 +332,6 @@ public class PanelPreferencesRendererModern {
 
     this.choose_link_sides = new TTChoice(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         final String scs = (String) e.getItem();
         final int val = PanelPreferencesRendererModern.this.choose_link_sides.str_to_num(scs);
         RendererDelegator.link_sides = val;

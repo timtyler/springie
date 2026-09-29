@@ -11,7 +11,6 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.geometry.Point3D;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
-import com.tifsoft.Forget;
 
 public class ScaleManager {
   private int start_x;
@@ -51,7 +50,6 @@ public class ScaleManager {
   }
 
   public void performScale(int x, int y) {
-    Forget.about(y);
     final float scale_factor = 1F + (x - this.start_x)
       / (float) (1 << (Coords.shift + 7));
 

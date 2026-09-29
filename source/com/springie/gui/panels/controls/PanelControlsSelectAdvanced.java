@@ -16,7 +16,6 @@ import com.springie.messages.NewMessage;
 import com.springie.messages.NewMessageManager;
 import com.springie.messages.commands.SelectFacesWithNSidesMessage;
 import com.springie.messages.commands.SpreadSelectionViaLinksMessage;
-import com.tifsoft.Forget;
 
 public class PanelControlsSelectAdvanced {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -49,7 +48,6 @@ public class PanelControlsSelectAdvanced {
     this.button_edit_spread_selection_via_links
         .addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            Forget.about(e);
             getNewMessageManager().add(new SpreadSelectionViaLinksMessage());
           }
         });
@@ -65,7 +63,6 @@ public class PanelControlsSelectAdvanced {
     button_select_faces = new Button("Select faces with");
     button_select_faces.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new SelectFacesWithNSidesMessage());
       }
     });
@@ -86,7 +83,6 @@ public class PanelControlsSelectAdvanced {
     this.button_select_nodes = new Button("Select nodes with");
     this.button_select_nodes.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             FrEnd.prepareToModifyNodeTypes();

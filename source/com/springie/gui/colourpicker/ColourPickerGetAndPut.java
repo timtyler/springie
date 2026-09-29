@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import com.springie.gui.components.ComponentAccess;
-import com.tifsoft.Forget;
 
 public class ColourPickerGetAndPut extends Panel {
   static final long serialVersionUID = 1250; 
@@ -29,7 +28,6 @@ public class ColourPickerGetAndPut extends Panel {
     this.button_get = new Button("Get");
     this.button_get.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         setColour();
       }
     });
@@ -39,7 +37,6 @@ public class ColourPickerGetAndPut extends Panel {
     this.button_put = new Button("Put");
     this.button_put.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getColourPicker().setCurrentColour(getColour());
       }
     });

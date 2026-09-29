@@ -47,7 +47,6 @@ import com.springie.metrics.AveragePhaseGetter;
 import com.springie.metrics.AverageRadiusGetter;
 import com.springie.metrics.AverageStiffnessGetter;
 import com.springie.render.Coords;
-import com.tifsoft.Forget;
 
 public class PanelControlsPropertiesScalars {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -148,7 +147,6 @@ public class PanelControlsPropertiesScalars {
   }
 
   public void resetPanel(boolean nodes, boolean links, boolean faces) {
-    Forget.about(faces);
 
     final Panel panel_length = setUpLengthSlider();
 
@@ -213,7 +211,6 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_lengths_up = new Button(GUIStrings.EDIT_CHANGE_UP);
     this.button_scale_lengths_up.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new LengthenLinksMessage());
       }
     });
@@ -221,7 +218,6 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_lengths_down = new Button(GUIStrings.EDIT_CHANGE_DOWN);
     this.button_scale_lengths_down.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new ShortenLinksMessage());
       }
     });
@@ -279,7 +275,6 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_radius_up = new Button(GUIStrings.EDIT_CHANGE_UP);
     this.button_scale_radius_up.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new ExpandNodesMessage());
       }
     });
@@ -287,7 +282,6 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_radius_down = new Button(GUIStrings.EDIT_CHANGE_DOWN);
     this.button_scale_radius_down.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new ContractNodesMessage());
       }
     });
@@ -323,7 +317,6 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_charge_up = new Button(GUIStrings.EDIT_CHANGE_UP);
     this.button_scale_charge_up.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new ChargeUpMessage());
       }
     });
@@ -331,7 +324,6 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_charge_down = new Button(GUIStrings.EDIT_CHANGE_DOWN);
     this.button_scale_charge_down.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new ChargeDownMessage());
       }
     });
@@ -394,7 +386,6 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_elasticity_up = new Button(GUIStrings.EDIT_CHANGE_UP);
     this.button_scale_elasticity_up.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new ElasticityUpMessage());
       }
     });
@@ -402,7 +393,6 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_elasticity_down = new Button(GUIStrings.EDIT_CHANGE_DOWN);
     this.button_scale_elasticity_down.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new ElasticityDownMessage());
       }
     });
@@ -436,7 +426,6 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_damping_up = new Button(GUIStrings.EDIT_CHANGE_UP);
     this.button_scale_damping_up.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new StiffnessUpMessage());
       }
     });
@@ -444,7 +433,6 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_damping_down = new Button(GUIStrings.EDIT_CHANGE_DOWN);
     this.button_scale_damping_down.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new StiffnessDownMessage());
       }
     });

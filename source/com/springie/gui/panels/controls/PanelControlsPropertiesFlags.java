@@ -22,7 +22,6 @@ import com.springie.messages.commands.FixFlagMessage;
 import com.springie.messages.commands.DisableFlagMessage;
 import com.springie.messages.commands.RopeFlagMessage;
 import com.springie.messages.NewMessageManager;
-import com.tifsoft.Forget;
 
 public class PanelControlsPropertiesFlags {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -49,7 +48,6 @@ public class PanelControlsPropertiesFlags {
     this.checkbox_hidden = new Checkbox("Hidden", anySelectedThingHidden());
     this.checkbox_hidden.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new HideFlagMessage());
       }
     });
@@ -60,7 +58,6 @@ public class PanelControlsPropertiesFlags {
     this.checkbox_pinned = new Checkbox("Pinned", anySelectedNodesPinned());
     this.checkbox_pinned.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new FixFlagMessage());
       }
     });
@@ -72,7 +69,6 @@ public class PanelControlsPropertiesFlags {
         anySelectedLinksDisabled());
     this.checkbox_disabled.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new DisableFlagMessage());
       }
     });
@@ -90,7 +86,6 @@ public class PanelControlsPropertiesFlags {
         anySelectedLinksSustainCompression());
     this.checkbox_compression.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new RopeFlagMessage());
       }
     });
@@ -103,7 +98,6 @@ public class PanelControlsPropertiesFlags {
         anySelectedLinksSustainTension());
     this.checkbox_tension.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new RopeFlagMessage());
       }
     });

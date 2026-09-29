@@ -13,7 +13,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import com.springie.FrEnd;
-import com.tifsoft.Forget;
 
 public class PanelPreferencesImport {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -36,7 +35,6 @@ public class PanelPreferencesImport {
         "Merge new structures with the scene");
     this.checkbox_merge.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         FrEnd.merge = ((Checkbox) e.getSource()).getState();
       }
     });

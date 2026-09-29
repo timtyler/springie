@@ -12,7 +12,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-import com.tifsoft.Forget;
 
 public class ColourPickerBase extends Component implements MouseListener,
     MouseMotionListener {
@@ -118,7 +117,6 @@ public class ColourPickerBase extends Component implements MouseListener,
   }
 
   public void mouseClicked(MouseEvent e) {
-    Forget.about(e);
 
     throw new RuntimeException("mouseClicked bug");
   }
@@ -129,23 +127,18 @@ public class ColourPickerBase extends Component implements MouseListener,
 
   // motion...
   public void mouseReleased(MouseEvent e) {
-    Forget.about(e);
   }
 
   public void mousePressed(MouseEvent e) {
-    Forget.about(e);
   }
 
   public void mouseEntered(MouseEvent e) {
-    Forget.about(e);
   }
 
   public void mouseExited(MouseEvent e) {
-    Forget.about(e);
   }
 
   public void mouseMoved(MouseEvent e) {
-    Forget.about(e);
   }
 
   public void paint(Graphics g) {

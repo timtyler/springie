@@ -17,7 +17,6 @@ import com.springie.messages.commands.GenerateMatrixMessage;
 import com.springie.messages.commands.GenerateSpherePackMessage;
 import com.springie.messages.commands.GenerateStringMessage;
 import com.springie.messages.commands.GenerateTubeMessage;
-import com.tifsoft.Forget;
 
 public class PanelControlsGenerate {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -70,7 +69,6 @@ public class PanelControlsGenerate {
     final Button button = new Button(GUIStrings.GENERATE_TUBE);
     button.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new GenerateTubeMessage());
       }
     });
@@ -93,7 +91,6 @@ public class PanelControlsGenerate {
     final Button button = new Button(GUIStrings.GENERATE_STRING);
     button.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new GenerateStringMessage());
       }
     });
@@ -112,7 +109,6 @@ public class PanelControlsGenerate {
     final Button button = new Button(GUIStrings.GENERATE_MATRIX);
     button.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new GenerateMatrixMessage());
       }
     });
@@ -140,7 +136,6 @@ public class PanelControlsGenerate {
       GUIStrings.GENERATE_FREE_NODES);
     button.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new GenerateFreeNodesMessage());
       }
     });
@@ -161,7 +156,6 @@ public class PanelControlsGenerate {
       GUIStrings.GENERATE_SPHERE_PACK);
     button.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new GenerateSpherePackMessage());
       }
     });

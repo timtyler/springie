@@ -3,7 +3,6 @@
 package com.springie.extension;
 
 import com.springie.elements.nodes.Node;
-import com.tifsoft.Forget;
 
 /**
  * Here is a sample module. <BR>
@@ -24,7 +23,6 @@ public class Module implements ModuleInterface {
    * Performs any one-time set-up operations
    */
   public void oneOffInitialisation() {
-    Forget.about(null);
   }
 
   /**

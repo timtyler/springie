@@ -18,7 +18,6 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.SAXParseException;
 
-import com.tifsoft.Forget;
 
 public class Driver implements XMLReaderExtension, ContentHandlerExtension,
   Locator, ErrorHandler {
@@ -307,11 +306,9 @@ public class Driver implements XMLReaderExtension, ContentHandlerExtension,
   }
 
   public void setDocumentLocator(final Locator locator) {
-    Forget.about(locator);
   }
 
   public void setDTDHandler(final DTDHandler handler) {
-    Forget.about(handler);
   }
 
   public DTDHandler getDTDHandler() {
@@ -319,7 +316,6 @@ public class Driver implements XMLReaderExtension, ContentHandlerExtension,
   }
 
   public void setEntityResolver(final EntityResolver resolver) {
-    Forget.about(resolver);
   }
 
   public EntityResolver getEntityResolver() {
@@ -331,12 +327,10 @@ public class Driver implements XMLReaderExtension, ContentHandlerExtension,
   }
 
   public String getNamespace(final String tag) {
-    Forget.about(tag);
     return null;
   }
 
   public void startDocument() throws SAXException {
-    Forget.about(null);
   }
 
   public Writer startDocument(final Writer writer) throws SAXException {
@@ -350,21 +344,14 @@ public class Driver implements XMLReaderExtension, ContentHandlerExtension,
 
   public void startPrefixMapping(final String prefix, final String uri)
     throws SAXException {
-    Forget.about(prefix);
-    Forget.about(uri);
   }
 
   public void endPrefixMapping(final String prefix) throws SAXException {
     //...
-    Forget.about(prefix);
   }
 
   public void startElement(final String namespace_uri, final String name_local,
     final String name_q, final Attributes atts) throws SAXException {
-    Forget.about(namespace_uri);
-    Forget.about(name_local);
-    Forget.about(name_q);
-    Forget.about(atts);
     //...
   }
 
@@ -377,33 +364,21 @@ public class Driver implements XMLReaderExtension, ContentHandlerExtension,
 
   public void endElement(final String namespace_uri, final String name_local,
     final String name_q) throws SAXException {
-    Forget.about(namespace_uri);
-    Forget.about(name_local);
-    Forget.about(name_q);
   }
 
   public void characters(final char[] ch, final int start, final int length)
     throws SAXException {
-    Forget.about(length);
-    Forget.about(ch);
-    Forget.about(start);
   }
 
   public void ignorableWhitespace(final char[] ch, final int start,
     final int length) throws SAXException {
-    Forget.about(length);
-    Forget.about(ch);
-    Forget.about(start);
   }
 
   public void processingInstruction(final String target, final String data)
     throws SAXException {
-    Forget.about(target);
-    Forget.about(data);
   }
 
   public void skippedEntity(final String name) throws SAXException {
-    Forget.about(name);
   }
 
   public boolean getFeature(final String name)
@@ -413,7 +388,6 @@ public class Driver implements XMLReaderExtension, ContentHandlerExtension,
 
   public void setFeature(final String name, final boolean value)
     throws SAXNotRecognizedException, SAXNotSupportedException {
-    Forget.about(value);
     throw new SAXNotSupportedException(name);
   }
 
@@ -424,16 +398,13 @@ public class Driver implements XMLReaderExtension, ContentHandlerExtension,
 
   public void setProperty(final String name, final Object value)
     throws SAXNotRecognizedException, SAXNotSupportedException {
-    Forget.about(value);
     throw new SAXNotRecognizedException(name);
   }
 
   public void warning(final SAXParseException e) throws SAXException {
-    Forget.about(e);
   }
 
   public void error(final SAXParseException e) throws SAXException {
-    Forget.about(e);
   }
 
   public void fatalError(final SAXParseException e) throws SAXException {

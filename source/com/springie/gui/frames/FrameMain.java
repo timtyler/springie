@@ -11,7 +11,6 @@ import com.springie.gui.components.GraphicsDirectory;
 import com.springie.gui.components.MenuBarTop;
 import com.springie.utilities.ImageLoader;
 import com.springie.utilities.ImageWrapper;
-import com.tifsoft.Forget;
 
 public class FrameMain extends Frame {
   static final long serialVersionUID = 1250; 
@@ -62,17 +61,14 @@ public class FrameMain extends Frame {
 
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
-        Forget.about(e);
         //Log.log("Exited vig window closing event");
         System.exit(0);
       }
 
       public void windowDeiconified(WindowEvent e) {
-        Forget.about(e);
       }
 
       public void windowIconified(WindowEvent e) {
-        Forget.about(e);
       }
     });
     
@@ -91,7 +87,6 @@ public class FrameMain extends Frame {
   //          // fd.setFile("tempfile.dat");
   //          fd.setFilenameFilter(new FilenameFilter() {
   //            public boolean accept(File dir, String name) {
-  //              Forget.about(dir);
   //              // return false;
   //              System.out.println("Done DataDump!" + name);
   //              return !(name.endsWith(".dat"));
@@ -110,7 +105,6 @@ public class FrameMain extends Frame {
   //            "Save objects as", FileDialog.SAVE);
   //          fd.setFilenameFilter(new FilenameFilter() {
   //            public boolean accept(File dir, String name) {
-  //              Forget.about(dir);
   //              // return false;
   //              System.out.println("Done DataDump!" + name);
   //              return !(name.endsWith(".dat"));
@@ -128,7 +122,6 @@ public class FrameMain extends Frame {
   //            "Load objects", FileDialog.LOAD);
   //          fd.setFilenameFilter(new FilenameFilter() {
   //            public boolean accept(File dir, String name) {
-  //              Forget.about(dir);
   //              return !(name.endsWith(".dat"));
   //            }
   //          });
@@ -146,7 +139,6 @@ public class FrameMain extends Frame {
   //    // fd.setFile("tempfile.dat");
   //    fd.setFilenameFilter(new FilenameFilter() {
   //      public boolean accept(File dir, String name) {
-  //        Forget.about(dir);
   //        return !(name.endsWith(".dat"));
   //      }
   //    });
@@ -175,7 +167,6 @@ public class FrameMain extends Frame {
   //    fd.setFile(no_ext + ".wrl");
   //    fd.setFilenameFilter(new FilenameFilter() {
   //      public boolean accept(File dir, String name) {
-  //        Forget.about(dir);
   //        return !(name.endsWith(".wrl"));
   //      }
   //    });
@@ -196,7 +187,6 @@ public class FrameMain extends Frame {
   //
   //    fd.setFilenameFilter(new FilenameFilter() {
   //      public boolean accept(File dir, String name) {
-  //        Forget.about(dir);
   //        return !(name.endsWith(".spr"));
   //      }
   //    });
@@ -220,7 +210,6 @@ public class FrameMain extends Frame {
   //
   //    fd.setFilenameFilter(new FilenameFilter() {
   //      public boolean accept(File dir, String name) {
-  //        Forget.about(dir);
   //        return !(name.endsWith("off"));
   //      }
   //    });

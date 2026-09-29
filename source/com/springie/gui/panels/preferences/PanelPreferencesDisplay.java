@@ -16,7 +16,6 @@ import com.springie.gui.components.TTChoice;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;
-import com.tifsoft.Forget;
 
 public class PanelPreferencesDisplay {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -160,7 +159,6 @@ public class PanelPreferencesDisplay {
 
     this.choose_antialiasing = new TTChoice(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         final String scs = (String) e.getItem();
         RendererDelegator.antialiasing =
             PanelPreferencesDisplay.this.choose_antialiasing.str_to_num(scs);
@@ -187,7 +185,6 @@ public class PanelPreferencesDisplay {
 
     this.choose_pixellation = new TTChoice(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         final String scs = (String) e.getItem();
         RendererDelegator.pixellation =
             PanelPreferencesDisplay.this.choose_pixellation.str_to_num(scs);

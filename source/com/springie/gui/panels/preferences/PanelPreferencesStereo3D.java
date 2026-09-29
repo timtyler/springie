@@ -16,7 +16,6 @@ import com.springie.FrEnd;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.components.TTChoice;
 import com.springie.render.RendererDelegator;
-import com.tifsoft.Forget;
 
 public class PanelPreferencesStereo3D {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -44,7 +43,6 @@ public class PanelPreferencesStereo3D {
     this.checkbox_anaglyph = new Checkbox("Stereo3D", FrEnd.render_anaglyph);
     this.checkbox_anaglyph.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         FrEnd.render_anaglyph = ((Checkbox) e.getSource()).getState();
         RendererDelegator.repaintAll();
       }

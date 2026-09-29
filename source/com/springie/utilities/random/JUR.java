@@ -1,6 +1,5 @@
 package com.springie.utilities.random;
 
-import com.tifsoft.Forget;
 
 public class JUR {
   static final long serialVersionUID = 3905348978240129619L;
@@ -135,7 +134,6 @@ public class JUR {
   }
 
   String returnName() {
-    Forget.about(nextNextGaussianNullify());
     return "java.util.Random";
   }
 }

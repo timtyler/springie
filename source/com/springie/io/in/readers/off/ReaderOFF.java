@@ -4,7 +4,6 @@ package com.springie.io.in.readers.off;
 
 import java.util.StringTokenizer;
 
-import com.tifsoft.Forget;
 
 // See: http://astronomy.swin.edu.au/~pbourke/polyhedra/waterman/gen/
 // http://www.cs.sunysb.edu/~algorith/implement/CONVEX-HULL-JAVA/implement.shtml
@@ -60,7 +59,6 @@ public final class ReaderOFF {
     // Log.log("OFF: number_of_faces:" + number_of_nodes);
     dealWithFaces(st, out, number_of_faces);
 
-    Forget.about(number_of_edges);
 
     return out;
   }

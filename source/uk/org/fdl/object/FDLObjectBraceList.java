@@ -31,7 +31,6 @@ public class FDLObjectBraceList extends FDLObjectCollection {
 //
 //  private void outputStartTagAndAttributes(final int indent,
 //      final StringBuilder sb) {
-//    Forget.about(indent);
 //    sb.append(this.open);
 //    if (this.newlines) {
 //      sb.append("\n");

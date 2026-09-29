@@ -13,7 +13,6 @@ import java.util.ArrayList;
 
 import com.springie.utilities.ImageLoader;
 import com.springie.utilities.ImageWrapper;
-import com.tifsoft.Forget;
 
 public class ButtonBar extends Panel implements ItemSelectable {
   static final long serialVersionUID = 1L;
@@ -61,7 +60,6 @@ public class ButtonBar extends Panel implements ItemSelectable {
         this.image_button_group, name, this.first);
     final ActionListener action_listener = new ActionListener() {
       public void actionPerformed(ActionEvent event) {
-        Forget.about(event);
         if (ButtonBar.this.listener != null) {
           final String action_string = event.getActionCommand();
           //Log.log("Button found:" + action_string);
@@ -92,7 +90,6 @@ public class ButtonBar extends Panel implements ItemSelectable {
   }
 
   public void removeItemListener(ItemListener listener) {
-    Forget.about(listener);
     this.listener = null;
   }
 

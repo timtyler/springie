@@ -6,7 +6,6 @@ import com.springie.elements.nodes.Node;
 import com.springie.muscles.Oscillator;
 import com.springie.utilities.random.Hortensius32Fast;
 import com.springie.world.World;
-import com.tifsoft.Forget;
 
 public class Composite {
   public Node[] node_list;
@@ -120,7 +119,6 @@ public class Composite {
   }
 
   final void init(Composite c) {
-    Forget.about(c);
   }
 
   public final void add(Node e) {

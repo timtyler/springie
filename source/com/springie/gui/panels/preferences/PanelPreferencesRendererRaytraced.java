@@ -11,7 +11,6 @@ import java.awt.event.ItemListener;
 import com.springie.FrEnd;
 import com.springie.gui.components.TTChoice;
 import com.springie.render.RendererDelegator;
-import com.tifsoft.Forget;
 
 /**
  * Ray-traced renderer options: glossiness (the smooth satin sheen),
@@ -177,7 +176,6 @@ public class PanelPreferencesRendererRaytraced {
     final TTChoice[] holder = new TTChoice[1];
     final TTChoice tt_choice = new TTChoice(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         final String scs = (String) e.getItem();
         setter.setStrength(holder[0].str_to_num(scs));
       }
@@ -190,7 +188,6 @@ public class PanelPreferencesRendererRaytraced {
 
     checkbox.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         final boolean on = ((Checkbox) e.getSource()).getState();
         setter.setEnabled(on);
         tt_choice.choice.setVisible(on);
@@ -213,7 +210,6 @@ public class PanelPreferencesRendererRaytraced {
         RendererDelegator.shadows);
     this.checkbox_shadows.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         RendererDelegator.shadows = PanelPreferencesRendererRaytraced.this.checkbox_shadows
             .getState();
       }

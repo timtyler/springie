@@ -8,7 +8,6 @@ import uk.org.fdl.object.FDLObjectIdentifier;
 import uk.org.fdl.object.FDLObjectNumber;
 import uk.org.fdl.object.FDLObjectString;
 
-import com.tifsoft.Forget;
 
 public final class FDLWriter {
 
@@ -29,7 +28,6 @@ public final class FDLWriter {
   }
 
   public static String makeString(FDLObject object, int indent) {
-    Forget.about(indent);
     if (object instanceof FDLObjectIdentifier) {
       return ((FDLObjectIdentifier) object).identifier;
     } else if (object instanceof FDLObjectNumber) {
@@ -87,7 +85,6 @@ public final class FDLWriter {
 
   private static void outputListStartTagAndAttributes(FDLObjectBraceList list, final int indent,
       final StringBuilder sb) {
-    Forget.about(indent);
     sb.append(list.open);
     if (list.newlines) {
       sb.append("\n");

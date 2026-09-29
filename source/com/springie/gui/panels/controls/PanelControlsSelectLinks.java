@@ -11,7 +11,6 @@ import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.gui.components.TTChoice;
-import com.tifsoft.Forget;
 
 public class PanelControlsSelectLinks {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -33,7 +32,6 @@ public class PanelControlsSelectLinks {
 
   public static FilterSelectLinks filter_any_member = new FilterSelectLinks() {
     public boolean qualifies(Link l) {
-      Forget.about(l);
       return true;
     }
   };

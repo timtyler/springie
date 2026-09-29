@@ -17,7 +17,6 @@ import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.faces.Face;
 import com.springie.gui.GUIStrings;
 import com.springie.render.RendererDelegator;
-import com.tifsoft.Forget;
 
 public class PanelPreferencesRendererSharedMisc {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -77,7 +76,6 @@ public class PanelPreferencesRendererSharedMisc {
     this.checkbox_explosions = new Checkbox(GUIStrings.EXPLOSIONS);
     this.checkbox_explosions.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         FrEnd.explosions = ((Checkbox) e.getSource()).getState();
       }
     });
@@ -90,7 +88,6 @@ public class PanelPreferencesRendererSharedMisc {
         "Render deepest objects first");
     this.checkbox_redraw_deepest_first.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         FrEnd.redraw_deepest_first = ((Checkbox) e.getSource()).getState();
       }
     });
@@ -102,7 +99,6 @@ public class PanelPreferencesRendererSharedMisc {
     this.checkbox_relative_fog = new Checkbox("Fog depth is relative");
     this.checkbox_relative_fog.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         DeepObjectColourCalculator.depth_is_relative = ((Checkbox) e.getSource()).getState();
       }
     });

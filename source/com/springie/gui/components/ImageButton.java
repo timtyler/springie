@@ -12,7 +12,6 @@ import java.awt.event.ActionListener;
 
 import com.springie.utilities.ImageLoader;
 import com.springie.utilities.ImageWrapper;
-import com.tifsoft.Forget;
 
 public class ImageButton extends Canvas implements ActionListener {
 
@@ -210,9 +209,6 @@ public class ImageButton extends Canvas implements ActionListener {
   }
 
   public boolean mouseDown(Event evt, int x, int y) {
-    Forget.about(evt);
-    Forget.about(x);
-    Forget.about(y);
     cancelTooltip();
     this.button_pressed = true;
     repaint();
@@ -220,9 +216,6 @@ public class ImageButton extends Canvas implements ActionListener {
   }
 
   public boolean mouseUp(Event evt, int x, int y) {
-    Forget.about(evt);
-    Forget.about(x);
-    Forget.about(y);
     if (this.button_pressed && this.pointer_over) {
       // //postEvent(new Event(this, evt.when, Event.ACTION_EVENT, evt.x, evt.y,
       // evt.key, evt.modifiers, evt.arg));
@@ -244,7 +237,6 @@ public class ImageButton extends Canvas implements ActionListener {
   }
 
   public boolean mouseEnter(Event evt, int x, int y) {
-    Forget.about(evt);
 
     this.pointer_over = true;
     repaint();
@@ -253,9 +245,6 @@ public class ImageButton extends Canvas implements ActionListener {
   }
 
   public boolean mouseExit(Event evt, int x, int y) {
-    Forget.about(evt);
-    Forget.about(x);
-    Forget.about(y);
 
     this.pointer_over = false;
     cancelTooltip();
@@ -341,7 +330,6 @@ public class ImageButton extends Canvas implements ActionListener {
     try {
       screen = target.getLocationOnScreen();
     } catch (java.awt.IllegalComponentStateException e) {
-      Forget.about(e);
       return;
     }
     final java.awt.Window owner = findWindowAncestor(target);

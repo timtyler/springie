@@ -13,7 +13,6 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.springie.io.in.ResourceLoader;
-import com.tifsoft.Forget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +57,6 @@ public class ReadXMLModelIndexFile extends DefaultHandler {
 
   public void startElement(String uri, String name, String element_name,
     Attributes atts) {
-    Forget.about(name);
     boolean node = false;
     boolean leaf = false;
 
@@ -92,9 +90,6 @@ public class ReadXMLModelIndexFile extends DefaultHandler {
   }
 
   public void endElement(String uri, String name, String element_name) {
-    Forget.about(uri);
-    Forget.about(name);
-    Forget.about(element_name);
 
     if ("node".equals(element_name)) {
       this.directories.remove(this.directories.size() - 1);
@@ -106,12 +101,8 @@ public class ReadXMLModelIndexFile extends DefaultHandler {
   }
 
   public void skippedEntity(String name) {
-    Forget.about(name);
   }
 
   public void characters(char[] ch, int start, int length) {
-    Forget.about(ch);
-    Forget.about(start);
-    Forget.about(length);
   }
 }

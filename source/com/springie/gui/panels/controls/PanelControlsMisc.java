@@ -40,7 +40,6 @@ import com.springie.modification.faces.FaceReverser;
 import com.springie.modification.links.ExtendLinks;
 import com.springie.modification.projection.PrismaticProjection;
 import com.springie.modification.stellation.DimpleMaker;
-import com.tifsoft.Forget;
 
 public class PanelControlsMisc {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -122,7 +121,6 @@ public class PanelControlsMisc {
         GUIStrings.EDIT_ADD_NODES_INNER_EDEN);
     button_add_nodes_inner_eden.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new AddInnerEdenNodesMessage());
       }
     });
@@ -134,7 +132,6 @@ public class PanelControlsMisc {
     this.button_split_links = new Button(GUIStrings.EDIT_SPLIT_LINKS);
     this.button_split_links.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new SplitLinksMessage());
       }
     });
@@ -148,7 +145,6 @@ public class PanelControlsMisc {
     this.button_add_stellations = new Button(GUIStrings.EDIT_ADD_STELLATIONS);
     this.button_add_stellations.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new AddStellationsMessage());
       }
     });
@@ -162,7 +158,6 @@ public class PanelControlsMisc {
         GUIStrings.EDIT_PRISMATIC_PROJECTION);
     button_prismatic_projection.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             final PrismaticProjection prismatic_projection = new PrismaticProjection(
@@ -181,7 +176,6 @@ public class PanelControlsMisc {
     this.button_extend_links = new Button(GUIStrings.EDIT_EXTEND_LINKS);
     this.button_extend_links.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             final ExtendLinks extend_links = new ExtendLinks(ContextManager.getNodeManager());
@@ -199,7 +193,6 @@ public class PanelControlsMisc {
     this.button_dimple = new Button(GUIStrings.EDIT_DIMPLE);
     this.button_dimple.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             final DimpleMaker dimple_maker = new DimpleMaker(ContextManager.getNodeManager());
@@ -216,7 +209,6 @@ public class PanelControlsMisc {
     this.button_face_reverse = new Button(GUIStrings.FACE_REVERSE);
     this.button_face_reverse.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             final FaceReverser face_reverser = new FaceReverser(
@@ -243,7 +235,6 @@ public class PanelControlsMisc {
     this.button_hex_triaxial = new Button(GUIStrings.EDIT_ADD_NODES_TRIAXIAL);
     this.button_hex_triaxial.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new AddTriaxialNodesMessage());
       }
     });
@@ -257,7 +248,6 @@ public class PanelControlsMisc {
     this.button_connect_nodes_to_nearest_nodes
         .addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            Forget.about(e);
             getNewMessageManager().add(new ConnectNodesToNearestNodesMessage());
           }
         });
@@ -271,7 +261,6 @@ public class PanelControlsMisc {
     this.button_add_faces = new Button(GUIStrings.EDIT_ADD_POLYGONS);
     this.button_add_faces.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new AddPolygonsMessage());
       }
     });
@@ -317,7 +306,6 @@ public class PanelControlsMisc {
 //        GUIStrings.DOME_MAKE_MOTIONLESS);
 //    this.button_edit_make_motionless.addActionListener(new ActionListener() {
 //      public void actionPerformed(ActionEvent e) {
-//        Forget.about(e);
 //        getMessageManager().sendMessage(Message.MSG_DOME_MAKE_MOTIONLESS, 0, 0);
 //      }
 //    });
@@ -372,7 +360,6 @@ public class PanelControlsMisc {
 //    this.button_edit_remove_link_and_fuse_ends
 //        .addActionListener(new ActionListener() {
 //          public void actionPerformed(ActionEvent e) {
-//            Forget.about(e);
 //            getMessageManager().sendMessage(
 //                Message.MSG_EDIT_REMOVE_LINK_AND_FUSE_ENDS, 0, 0);
 //          }
@@ -389,7 +376,6 @@ public class PanelControlsMisc {
 //    this.button_edit_fuse_nodes
 //        .addActionListener(new ActionListener() {
 //          public void actionPerformed(ActionEvent e) {
-//            Forget.about(e);
 //            getNewMessageManager().add(new NewMessage(null) {
 //              public Object execute() {
 //                Log.log("EXEXC!");
@@ -411,7 +397,6 @@ public class PanelControlsMisc {
         GUIStrings.DOME_LINKS_RESET_LENGTHS);
     this.button_edit_reset_link_lengths.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new ResetLinkLengthsMessage());
       }
     });
@@ -426,7 +411,6 @@ public class PanelControlsMisc {
     this.button_edit_equalise_link_lengths
         .addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            Forget.about(e);
             getNewMessageManager().add(new EqualiseLinkLengthsMessage());
           }
         });
@@ -441,7 +425,6 @@ public class PanelControlsMisc {
     final Button button = new Button(GUIStrings.GENERATE_FACES_FROM_SELECTION);
     button.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new GenerateFacesFromSelectionMessage());
       }
     });
@@ -457,7 +440,6 @@ public class PanelControlsMisc {
     this.button_muscles_add_selected
         .addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            Forget.about(e);
             getNewMessageManager().add(new MusclesAddSelectedMessage());
           }
         });
@@ -474,7 +456,6 @@ public class PanelControlsMisc {
     this.button_muscles_add_all
         .addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            Forget.about(e);
             getNewMessageManager().add(new MusclesAddAllMessage());
           }
         });
@@ -491,7 +472,6 @@ public class PanelControlsMisc {
     this.button_muscles_remove
         .addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            Forget.about(e);
             getNewMessageManager().add(new MusclesRemoveMessage());
           }
         });
@@ -507,7 +487,6 @@ public class PanelControlsMisc {
         GUIStrings.EDIT_AUTOMATIC_LINK_RADIUS);
     this.button_automatic_link_radius.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new AutomaticLinkRadiusMessage());
       }
     });
@@ -525,7 +504,6 @@ public class PanelControlsMisc {
         GUIStrings.EDIT_AUTOMATIC_NODE_RADIUS);
     this.button_automatic_node_radius.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new AutomaticNodeRadiusMessage());
       }
     });
@@ -542,7 +520,6 @@ public class PanelControlsMisc {
     this.button_add_central_hub = new Button(GUIStrings.EDIT_ADD_CENTRAL_HUB);
     this.button_add_central_hub.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new AddCentralHubMessage());
       }
     });
@@ -556,7 +533,6 @@ public class PanelControlsMisc {
   // GUIStrings.DOME_REMOVE_POLYGONS);
   // this.button_edit_remove_polygons.addActionListener(new ActionListener() {
   // public void actionPerformed(ActionEvent e) {
-  // Forget.about(e);
   // getMessageManager().newmessage(Message.MSG_EDIT_REMOVE_POLYGONS, 0, 0);
   // }
   // });
@@ -569,7 +545,6 @@ public class PanelControlsMisc {
   // this.button_edit_remove_links = new Button(GUIStrings.DOME_REMOVE_LINKS);
   // this.button_edit_remove_links.addActionListener(new ActionListener() {
   // public void actionPerformed(ActionEvent e) {
-  // Forget.about(e);
   // getMessageManager().newmessage(Message.MSG_EDIT_REMOVE_LINKS, 0, 0);
   // }
   // });
@@ -584,7 +559,6 @@ public class PanelControlsMisc {
   // this.button_edit_spread_selection_via_links.addActionListener(new
   // ActionListener() {
   // public void actionPerformed(ActionEvent e) {
-  // Forget.about(e);
   // getMessageManager().newmessage(Message.MSG_EDIT_SPREAD_SELECTION_VIA_LINKS,
   // 0, 0);
   // }
@@ -598,7 +572,6 @@ public class PanelControlsMisc {
   // final Button button_clear = new Button(GUIStrings.BUTTON_CLEAR);
   // button_clear.addActionListener(new ActionListener() {
   // public void actionPerformed(ActionEvent e) {
-  // Forget.about(e);
   // getNewMessageManager().add(new NewMessage(null) {
   // public Object execute() {
   // ContextManager.getNodeManager().initialSetUp();
@@ -636,7 +609,6 @@ public class PanelControlsMisc {
   // button_select_faces = new Button("Select faces with");
   // button_select_faces.addActionListener(new ActionListener() {
   // public void actionPerformed(ActionEvent e) {
-  // Forget.about(e);
   // getMessageManager().newmessage(
   // Message.MSG_SELECT_ALL_FACES_WITH_N_SIDES, 0, 0);
   // }
@@ -658,7 +630,6 @@ public class PanelControlsMisc {
   // this.button_select_nodes = new Button("Select nodes with");
   // this.button_select_nodes.addActionListener(new ActionListener() {
   // public void actionPerformed(ActionEvent e) {
-  // Forget.about(e);
   // getNewMessageManager().add(new NewMessage(null) {
   // public Object execute() {
   // FrEnd.prepareToModifyNodeTypes();
@@ -689,7 +660,6 @@ public class PanelControlsMisc {
     this.button_cartesian_colourer = new Button("Cartesian colourer");
     this.button_cartesian_colourer.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new ColourCartesianMessage());
       }
     });

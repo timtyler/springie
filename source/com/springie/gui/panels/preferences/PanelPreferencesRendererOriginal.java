@@ -26,7 +26,6 @@ import com.springie.gui.components.TTChoice;
 import com.springie.messages.NewMessageManager;
 import com.springie.messages.commands.LinkLengthMessage;
 import com.springie.render.RendererDelegator;
-import com.tifsoft.Forget;
 
 public class PanelPreferencesRendererOriginal {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -123,7 +122,6 @@ public class PanelPreferencesRendererOriginal {
     this.checkbox_shortlinks = new Checkbox("short", checkbox_linklength, true);
     this.checkbox_shortlinks.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new LinkLengthMessage(Link.SHORT));
       }
     });
@@ -131,7 +129,6 @@ public class PanelPreferencesRendererOriginal {
     this.checkbox_longlinks = new Checkbox("long", checkbox_linklength, false);
     this.checkbox_longlinks.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new LinkLengthMessage(Link.LONG));
       }
     });
@@ -143,7 +140,6 @@ public class PanelPreferencesRendererOriginal {
 //    this.checkbox_explosions = new Checkbox(GUIStrings.EXPLOSIONS);
 //    this.checkbox_explosions.addItemListener(new ItemListener() {
 //      public void itemStateChanged(ItemEvent e) {
-//        Forget.about(e);
 //        FrEnd.explosions = ((Checkbox) e.getSource()).getState();
 //      }
 //    });
@@ -155,7 +151,6 @@ public class PanelPreferencesRendererOriginal {
 //        "Render deepest objects first");
 //    this.checkbox_redraw_deepest_first.addItemListener(new ItemListener() {
 //      public void itemStateChanged(ItemEvent e) {
-//        Forget.about(e);
 //        FrEnd.redraw_deepest_first = ((Checkbox) e.getSource()).getState();
 //      }
 //    });
@@ -167,7 +162,6 @@ public class PanelPreferencesRendererOriginal {
     final Checkbox checkbox_xor = new Checkbox(GUIStrings.XOR, FrEnd.xor);
     checkbox_xor.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         FrEnd.xor = ((Checkbox) e.getSource()).getState();
         RendererDelegator.repaintAll();
       }

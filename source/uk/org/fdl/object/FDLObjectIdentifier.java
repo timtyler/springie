@@ -12,7 +12,6 @@ public class FDLObjectIdentifier extends FDLObject {
 //  }
 //
 //  public String makeString(int indent) {
-//    Forget.about(indent);
 //    return this.identifier;
 //  }  
 }

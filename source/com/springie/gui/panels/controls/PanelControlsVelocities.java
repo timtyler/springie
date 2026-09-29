@@ -13,7 +13,6 @@ import com.springie.gui.GUIStrings;
 import com.springie.messages.NewMessage;
 import com.springie.messages.NewMessageManager;
 import com.springie.modification.velocity.MotionlessMaker;
-import com.tifsoft.Forget;
 
 public class PanelControlsVelocities {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -42,7 +41,6 @@ public class PanelControlsVelocities {
     this.button_edit_make_motionless = new Button(GUIStrings.VELOCITY_REDUCE);
     this.button_edit_make_motionless.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             new MotionlessMaker().reduce(ContextManager.getNodeManager(), 0.5f);
@@ -60,7 +58,6 @@ public class PanelControlsVelocities {
     this.button_edit_make_motionless = new Button(GUIStrings.VELOCITY_INCREASE);
     this.button_edit_make_motionless.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             new MotionlessMaker().reduce(ContextManager.getNodeManager(), 2.0f);
@@ -78,7 +75,6 @@ public class PanelControlsVelocities {
     this.button_edit_freeze = new Button(GUIStrings.VELOCITY_FREEZE);
     this.button_edit_freeze.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             new MotionlessMaker().reduce(ContextManager.getNodeManager(), 0.0f);
@@ -97,7 +93,6 @@ public class PanelControlsVelocities {
     this.button_edit_reverse = new Button(GUIStrings.VELOCITY_REVERSE);
     this.button_edit_reverse.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             new MotionlessMaker().reduce(ContextManager.getNodeManager(), -1.0f);

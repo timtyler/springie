@@ -20,7 +20,6 @@ import com.springie.gui.components.TabbedPanel;
 import com.springie.preferences.Preferences;
 import com.springie.render.RendererDelegator;
 import com.springie.render.RendererInfoButton;
-import com.tifsoft.Forget;
 
 public class PanelPreferences {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -79,7 +78,6 @@ public class PanelPreferences {
     this.choice_controls_window_mode.select(FrEnd.controls_window_mode);
     this.choice_controls_window_mode.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         FrEnd.controls_window_mode =
             ((Choice) e.getSource()).getSelectedIndex();
         FrEnd.applyControlsWindowOptions();

@@ -30,7 +30,6 @@ import com.springie.render.WorldMarkers;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;
 import com.springie.utilities.math.SquareRoot;
 import com.springie.world.World;
-import com.tifsoft.Forget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -238,7 +237,6 @@ public class NodeManager extends World {
   }
 
   private void updateLinks(LinkManager link_manager) {
-    Forget.about(link_manager);
     if (needToMoveNodes()) {
       if (!FrEnd.paused) {
         final int n_o_l = this.getLinkManager().element.size();

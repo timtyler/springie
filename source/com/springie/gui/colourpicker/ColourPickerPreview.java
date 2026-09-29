@@ -9,7 +9,6 @@ import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import com.tifsoft.Forget;
 
 public class ColourPickerPreview extends Panel {
   static final long serialVersionUID = 1250;
@@ -41,7 +40,6 @@ public class ColourPickerPreview extends Panel {
 
     final ActionListener action_listener_set = new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         final int color = getColour();
         ColourPickerPreview.this.last_colour = color;
         ColourPickerPreview.this.original_colour = color;
@@ -56,7 +54,6 @@ public class ColourPickerPreview extends Panel {
 
     final ActionListener action_listener_put_original = new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         final int colour = ColourPickerPreview.this.original_colour;
         ColourPickerPreview.this.colour_picker.setColour(colour);
       }
@@ -68,7 +65,6 @@ public class ColourPickerPreview extends Panel {
 
     final ActionListener action_listener_put_last = new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         final int colour = ColourPickerPreview.this.last_colour;
         ColourPickerPreview.this.colour_picker.setColour(colour);
       }

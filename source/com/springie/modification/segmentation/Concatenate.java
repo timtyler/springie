@@ -4,7 +4,6 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.utilities.random.JUR;
-import com.tifsoft.Forget;
 
 public class Concatenate {
   JUR rnd = new JUR();
@@ -28,7 +27,6 @@ public class Concatenate {
   }
 
   private void concatenateFrom(Link link) {
-    Forget.about(link);
     // TODO Auto-generated method stub
   }
 }

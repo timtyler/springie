@@ -9,11 +9,9 @@ import com.springie.FrEnd;
 import com.springie.render.RendererDelegator;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.render.modules.ModularRendererBase;
-import com.tifsoft.Forget;
 
 public class ModularRendererOld implements ModularRendererBase {
   public void repaint(Graphics graphics, NodeManager manager) {
-    Forget.about(graphics);
     nodeAndLinkRender(manager);
   }
 
@@ -30,8 +28,6 @@ public class ModularRendererOld implements ModularRendererBase {
   }
 
   public void resize(int x, int y) {
-    Forget.about(x);
-    Forget.about(y);
     reset();
   }
 

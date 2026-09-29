@@ -20,7 +20,6 @@ import com.springie.messages.NewMessage;
 import com.springie.messages.NewMessageManager;
 import com.springie.messages.commands.SelectClazzMessage;
 import com.springie.messages.commands.SelectTypeMessage;
-import com.tifsoft.Forget;
 
 public class PanelControlsSelectMain {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -71,7 +70,6 @@ public class PanelControlsSelectMain {
     this.button_select_clazz = new Button("class");
     this.button_select_clazz.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new SelectClazzMessage());
       }
     });
@@ -80,7 +78,6 @@ public class PanelControlsSelectMain {
     this.button_select_type = new Button("type");
     this.button_select_type.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new SelectTypeMessage());
       }
     });
@@ -94,7 +91,6 @@ public class PanelControlsSelectMain {
     this.button_select_all_type = new Button("Select");
     this.button_select_all_type.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             FrEnd.prepareToModifyAllTypes();
@@ -110,7 +106,6 @@ public class PanelControlsSelectMain {
     this.button_deselect_all_type = new Button("Deselect");
     this.button_deselect_all_type.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             FrEnd.prepareToModifyAllTypes();
@@ -127,7 +122,6 @@ public class PanelControlsSelectMain {
     this.button_invert_all_type = new Button("Invert");
     this.button_invert_all_type.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             FrEnd.prepareToModifyAllTypes();
@@ -181,7 +175,6 @@ public class PanelControlsSelectMain {
           nodes_checked);
       this.checkbox_select_nodes.addItemListener(new ItemListener() {
         public void itemStateChanged(ItemEvent e) {
-          Forget.about(e);
           UpdateEnabledComponents.greySelectButtonsDependingOnSelection();
         }
       });
@@ -193,7 +186,6 @@ public class PanelControlsSelectMain {
           links_checked);
       this.checkbox_select_links.addItemListener(new ItemListener() {
         public void itemStateChanged(ItemEvent e) {
-          Forget.about(e);
           UpdateEnabledComponents.greySelectButtonsDependingOnSelection();
         }
       });
@@ -205,7 +197,6 @@ public class PanelControlsSelectMain {
           faces_checked);
       this.checkbox_select_faces.addItemListener(new ItemListener() {
         public void itemStateChanged(ItemEvent e) {
-          Forget.about(e);
           UpdateEnabledComponents.greySelectButtonsDependingOnSelection();
         }
       });
@@ -247,7 +238,6 @@ public class PanelControlsSelectMain {
     this.button_select_nodes = new Button("nodes");
     this.button_select_nodes.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             FrEnd.prepareToModifyNodeTypes();
@@ -276,7 +266,6 @@ public class PanelControlsSelectMain {
     this.button_select_links = new Button("links");
     this.button_select_links.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             FrEnd.prepareToModifyLinkTypes();
@@ -304,7 +293,6 @@ public class PanelControlsSelectMain {
     this.button_select_faces = new Button("faces");
     this.button_select_faces.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             FrEnd.prepareToModifyFaceTypes();

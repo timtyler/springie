@@ -11,7 +11,6 @@ import java.awt.event.ItemListener;
 
 import com.springie.FrEnd;
 import com.springie.render.RendererDelegator;
-import com.tifsoft.Forget;
 
 public class PanelPreferencesRendererSharedShow {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -64,7 +63,6 @@ public class PanelPreferencesRendererSharedShow {
     this.checkbox_render_nodes = new Checkbox("Nodes", FrEnd.render_nodes);
     this.checkbox_render_nodes.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         FrEnd.render_nodes = ((Checkbox) e.getSource()).getState();
         RendererDelegator.repaintAll();
       }
@@ -74,7 +72,6 @@ public class PanelPreferencesRendererSharedShow {
     this.checkbox_render_links = new Checkbox("Links", FrEnd.render_links);
     this.checkbox_render_links.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         FrEnd.render_links = ((Checkbox) e.getSource()).getState();
         RendererDelegator.repaintAll();
       }
@@ -84,7 +81,6 @@ public class PanelPreferencesRendererSharedShow {
     this.checkbox_render_polygons = new Checkbox("Faces", FrEnd.render_faces);
     this.checkbox_render_polygons.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         FrEnd.render_faces = getCheckboxRenderPolygons().getState();
         RendererDelegator.repaintAll();
       }
@@ -97,7 +93,6 @@ public class PanelPreferencesRendererSharedShow {
     this.checkbox_render_charges = new Checkbox("Charges", FrEnd.render_charges);
     this.checkbox_render_charges.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         FrEnd.render_charges = ((Checkbox) e.getSource()).getState();
         RendererDelegator.repaintAll();
       }
@@ -109,7 +104,6 @@ public class PanelPreferencesRendererSharedShow {
         FrEnd.render_hidden_nodes);
     this.checkbox_render_hidden_nodes.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         FrEnd.render_hidden_nodes = getCheckboxRenderHiddenNodes().getState();
         RendererDelegator.repaintAll();
       }
@@ -121,7 +115,6 @@ public class PanelPreferencesRendererSharedShow {
         FrEnd.render_hidden_links);
     this.checkbox_render_hidden_links.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         FrEnd.render_hidden_links = getCheckboxRenderHiddenLinks().getState();
         RendererDelegator.repaintAll();
       }
@@ -132,7 +125,6 @@ public class PanelPreferencesRendererSharedShow {
         FrEnd.render_hidden_faces);
     this.checkbox_render_hidden_polygons.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         FrEnd.render_hidden_faces = getCheckboxRenderHiddenPolygons().getState();
         RendererDelegator.repaintAll();
       }
@@ -158,7 +150,6 @@ public class PanelPreferencesRendererSharedShow {
     this.checkbox_scenic_background = new Checkbox("Grass/sky", RendererDelegator.scenic_background);
     this.checkbox_scenic_background.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         RendererDelegator.scenic_background =
             ((Checkbox) e.getSource()).getState();
         // The background is baked into the cached tile tiles; a full

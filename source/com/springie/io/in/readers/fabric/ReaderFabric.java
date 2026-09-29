@@ -14,7 +14,6 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.springie.io.in.ResourceLoader;
-import com.tifsoft.Forget;
 
 public class ReaderFabric extends DefaultHandler {
   static final int scale_factor = 18000;
@@ -67,7 +66,6 @@ public class ReaderFabric extends DefaultHandler {
 
   public void startElement(String uri, String name, String desc,
     Attributes atts) {
-    Forget.about(name);
     boolean is_joint = false;
     boolean is_locus = false;
     boolean is_interval = false;
@@ -147,9 +145,6 @@ public class ReaderFabric extends DefaultHandler {
   }
 
   public void endElement(String uri, String name, String desc) {
-    Forget.about(name);
-    Forget.about(desc);
-    Forget.about(uri);
   }
 
   public void ignorableWhitespace(char[] ch, int start, int length) {
@@ -157,12 +152,8 @@ public class ReaderFabric extends DefaultHandler {
   }
 
   public void skippedEntity(String name) {
-    Forget.about(name);
   }
 
   public void characters(char[] ch, int start, int length) {
-    Forget.about(ch);
-    Forget.about(start);
-    Forget.about(length);
   }
 }

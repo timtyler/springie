@@ -17,7 +17,6 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.gestures.DragBoxManager;
 import com.springie.render.modules.ModularRendererBase;
-import com.tifsoft.Forget;
 
 public class ModularRendererNew implements ModularRendererBase {
   RendererTileManager tiles_current = new RendererTileManager();
@@ -142,7 +141,6 @@ public class ModularRendererNew implements ModularRendererBase {
 
   private void addFacesToTiles(NodeManager manager, int mask,
       ArrayList<PolygonComposite> all) {
-    Forget.about(mask);
     if (FrEnd.render_faces) {
       final FaceManager face_manager = manager.getFaceManager();
       final List<Face> faces = face_manager.element;
@@ -192,7 +190,6 @@ public class ModularRendererNew implements ModularRendererBase {
 
   private void addNodesToTiles(NodeManager manager, int mask,
       ArrayList<PolygonComposite> all) {
-    Forget.about(mask);
 
     final int number_of_nodes = manager.element.size();
 

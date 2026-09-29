@@ -12,7 +12,6 @@ import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
-import com.tifsoft.Forget;
 
 public final class ElementRendererNode {
   private ElementRendererNode() {
@@ -140,7 +139,6 @@ public final class ElementRendererNode {
 
   static Vector3D getNormal(ObjectBase base, int poly_count) {
     // NOT TRUE
-    Forget.about(poly_count);
     if (base.normals == null) {
       final int size = base.faces.length;
       base.normals = new Vector3D[size];
@@ -150,7 +148,6 @@ public final class ElementRendererNode {
     if (normal == null) {
       final int[] face_data = base.faces[poly_count];
       // NOT TRUE
-      Forget.about(face_data);
 
       final Double3D point0 = base.points[face_data[0]];
       final Double3D point1 = base.points[face_data[1]];

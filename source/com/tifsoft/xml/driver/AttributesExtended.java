@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 
-import com.tifsoft.Forget;
 
 public class AttributesExtended implements Attributes {
   static String CDATA = "CDATA";
@@ -31,7 +30,6 @@ public class AttributesExtended implements Attributes {
   }
 
   public String getType(final int i) {
-    Forget.about(i);
     return AttributesExtended.CDATA;
   }
 
@@ -66,13 +64,10 @@ public class AttributesExtended implements Attributes {
   }
 
   public String getType(final String uri, final String local_name) {
-    Forget.about(uri);
-    Forget.about(local_name);
     return AttributesExtended.CDATA;
   }
 
   public String getType(final String q_name) {
-    Forget.about(q_name);
     return AttributesExtended.CDATA;
   }
 

@@ -6,7 +6,6 @@ import java.awt.image.ColorModel;
 import java.awt.image.MemoryImageSource;
 import java.awt.image.PixelGrabber;
 
-import com.tifsoft.Forget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +49,6 @@ public class ImageWrapper {
   }
 
   public ImageWrapper(final int[] a, final int w, final int h, final boolean x) {
-    Forget.about(x);
     this.image = toolkit.createImage(new MemoryImageSource(w, h, a, 0, w));
   }
 
@@ -88,13 +86,11 @@ public class ImageWrapper {
 
   // /!??!
   public final int getWidth(final Object o) {
-    Forget.about(o);
     return this.image.getWidth(null);
   }
 
   // /!?!
   public final int getHeight(final Object o) {
-    Forget.about(o);
     return this.image.getHeight(null);
   }
 

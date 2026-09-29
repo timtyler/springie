@@ -12,7 +12,6 @@ import com.springie.geometry.Tuple3D;
 import com.springie.modification.post.PostModification;
 import com.springie.modification.pre.PrepareToModifyLinkTypes;
 import com.springie.modification.pre.PrepareToModifyNodeTypes;
-import com.tifsoft.Forget;
 
 public class ExtendLinks {
   NodeManager node_manager;
@@ -31,7 +30,6 @@ public class ExtendLinks {
 
   public void extend(float sf) {
     //Log.log("Extend:" + sf);
-    Forget.about(sf);
     final int n_o_l = this.link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final Link l = (Link) this.link_manager.element.get(temp);
@@ -46,7 +44,6 @@ public class ExtendLinks {
   }
 
   private void extend(Link l, float sf) {
-    Forget.about(sf);
     if (l.nodes.length == 2) {
       final Node n1 = l.nodes[0];
       final Node n2 = l.nodes[1];

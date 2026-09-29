@@ -8,7 +8,6 @@ import com.springie.explosions.fragments.LineFragmentManager;
 import com.springie.explosions.particles.ParticleManager;
 import com.springie.messages.ArgumentList;
 import com.springie.world.WorldManager;
-import com.tifsoft.Forget;
 
 /*
  * To do: ======
@@ -23,8 +22,6 @@ public final class SetUpCode {
   }
 
   public static void initialise(int resolutionx, int resolutiony) {
-    Forget.about(resolutionx);
-    Forget.about(resolutiony);
 
     // Fresh boot: drop the previous boot's model slots (they are
     // JVM-static), so the new model loads into the new manager.

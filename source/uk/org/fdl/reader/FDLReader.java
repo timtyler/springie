@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import uk.org.fdl.tokeniser.FDLTokeniser;
 import uk.org.fdl.tokens.FDLElement;
 
-import com.tifsoft.Forget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +15,6 @@ public final class FDLReader {
 
 
   public static void main(String[] args) {
-    Forget.about(args);
     logger.debug(test("foo bar() {  0 10 1.9 -3 <Comment> 'aoe' \"aseo\" }"));
   }
 

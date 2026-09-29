@@ -16,7 +16,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.springie.gui.components.ChoiceWithDescription;
 import com.springie.io.in.ResourceLoader;
-import com.tifsoft.Forget;
 
 public class AddXMLModelIndexLeaves extends DefaultHandler {
 
@@ -80,7 +79,6 @@ public class AddXMLModelIndexLeaves extends DefaultHandler {
 
   public void startElement(String uri, String name, String element_name,
     Attributes atts) {
-    Forget.about(name);
     boolean node = false;
     boolean leaf = false;
 
@@ -130,9 +128,6 @@ public class AddXMLModelIndexLeaves extends DefaultHandler {
   }
 
   public void endElement(String uri, String name, String element_name) {
-    Forget.about(uri);
-    Forget.about(name);
-    Forget.about(element_name);
 
     if ("node".equals(element_name)) {
       this.directories.remove(this.directories.size() - 1);
@@ -144,13 +139,9 @@ public class AddXMLModelIndexLeaves extends DefaultHandler {
   }
 
   public void skippedEntity(String name) {
-    Forget.about(name);
   }
 
   public void characters(char[] ch, int start, int length) {
-    Forget.about(ch);
-    Forget.about(start);
-    Forget.about(length);
     //...
   }
 }

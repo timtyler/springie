@@ -13,7 +13,6 @@ import com.springie.FrEnd;
 import com.springie.gui.components.GraphicsDirectory;
 import com.springie.utilities.ImageLoader;
 import com.springie.utilities.ImageWrapper;
-import com.tifsoft.Forget;
 
 public class FrameMaker {
   // static final String program_name = FrEnd.application_name;
@@ -22,7 +21,6 @@ public class FrameMaker {
     final Frame frame = new Frame();
     frame.addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
-        Forget.about(e);
         FrEnd.frame_controls.setVisible(false);
       }
     });
@@ -44,7 +42,6 @@ public class FrameMaker {
     final Frame frame = new Frame();
     frame.addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
-        Forget.about(e);
         FrEnd.frame_panel_about.setVisible(false);
       }
     });
@@ -60,7 +57,6 @@ public class FrameMaker {
     final Frame frame = new Frame();
     frame.addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
-        Forget.about(e);
         FrEnd.frame_panel_help.setVisible(false);
       }
     });

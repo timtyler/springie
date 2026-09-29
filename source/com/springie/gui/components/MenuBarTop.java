@@ -32,7 +32,6 @@ import com.springie.io.out.writers.spr.WriterSpr;
 import com.springie.io.out.writers.wrl.WriterWRL;
 import com.springie.presets.AddXMLModelIndexLeaves;
 import com.springie.utilities.FilePath;
-import com.tifsoft.Forget;
 
 public class MenuBarTop extends MenuBar {
   static final long serialVersionUID = 1250; 
@@ -181,7 +180,6 @@ public class MenuBarTop extends MenuBar {
           final String path = leaf.getValue();
           item.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-              Forget.about(e);
               // Keep the bottom-bar preset dropdowns showing the same
               // preset that was just chosen here.
               FrEnd.panel_fundamental.selectPreset(index_name, leaf_name);
@@ -211,7 +209,6 @@ public class MenuBarTop extends MenuBar {
       final MenuItem item = new MenuItem(demo.name);
       item.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          Forget.about(e);
           // Keep the bottom-bar file card showing the same demo that was
           // just chosen here.
           FrEnd.panel_fundamental.selectDemo(demo.name);
@@ -339,7 +336,6 @@ public class MenuBarTop extends MenuBar {
 
     fd.setFilenameFilter(new FilenameFilter() {
       public boolean accept(File dir, String name) {
-        Forget.about(dir);
         return !(name.endsWith(".wrl"));
       }
     });
@@ -360,7 +356,6 @@ public class MenuBarTop extends MenuBar {
 
     fd.setFilenameFilter(new FilenameFilter() {
       public boolean accept(File dir, String name) {
-        Forget.about(dir);
         return !(name.endsWith(".spr"));
       }
     });
@@ -384,7 +379,6 @@ public class MenuBarTop extends MenuBar {
 
     fd.setFilenameFilter(new FilenameFilter() {
       public boolean accept(File dir, String name) {
-        Forget.about(dir);
         return !(name.endsWith(".fdl"));
       }
     });
@@ -408,7 +402,6 @@ public class MenuBarTop extends MenuBar {
 
     fd.setFilenameFilter(new FilenameFilter() {
       public boolean accept(File dir, String name) {
-        Forget.about(dir);
         return !(name.endsWith("off"));
       }
     });
@@ -432,7 +425,6 @@ public class MenuBarTop extends MenuBar {
 
     fd.setFilenameFilter(new FilenameFilter() {
       public boolean accept(File dir, String name) {
-        Forget.about(dir);
         return !(name.endsWith("eig"));
       }
     });
@@ -456,7 +448,6 @@ public class MenuBarTop extends MenuBar {
 
     fd.setFilenameFilter(new FilenameFilter() {
       public boolean accept(File dir, String name) {
-        Forget.about(dir);
         return !(name.endsWith("pov"));
       }
     });

@@ -27,7 +27,6 @@ import com.springie.messages.commands.ContinuouslyCentreMessage;
 import com.springie.muscles.Muscles;
 import com.springie.render.RendererDelegator;
 import com.springie.world.World;
-import com.tifsoft.Forget;
 
 public class PanelControlsUniverse {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -116,7 +115,6 @@ public class PanelControlsUniverse {
 
     this.checkbox_3D.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         FrEnd.three_d = getCheckbox3D().getState();
 
         RendererDelegator.repaintAll();
@@ -131,7 +129,6 @@ public class PanelControlsUniverse {
     this.checkbox_gravity_switch = new Checkbox(GUIStrings.GRAVITY);
     this.checkbox_gravity_switch.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         final boolean active = ((Checkbox) e.getSource()).getState();
         World.gravity_active = active;
         scroll_bar_gravity.setEnabled(active);
@@ -218,7 +215,6 @@ public class PanelControlsUniverse {
     this.checkbox_charge_switch = new Checkbox(GUIStrings.CHARGE, true);
     this.checkbox_charge_switch.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         ContextManager.getNodeManager().electrostatic.charge_active = ((Checkbox) e.getSource()).getState();
       }
     });
@@ -229,7 +225,6 @@ public class PanelControlsUniverse {
     this.checkbox_muscles = new Checkbox(GUIStrings.MUSCLES);
     this.checkbox_muscles.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         Muscles.enabled = ((Checkbox) e.getSource()).getState();
       }
     });
@@ -273,7 +268,6 @@ public class PanelControlsUniverse {
     this.checkbox_continuously_centre_x = new Checkbox(GUIStrings.CONTINUOUSLY_CENTRE_X);
     this.checkbox_continuously_centre_x.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new ContinuouslyCentreMessage(0));
       }
     });
@@ -282,7 +276,6 @@ public class PanelControlsUniverse {
     this.checkbox_continuously_centre_y = new Checkbox(GUIStrings.CONTINUOUSLY_CENTRE_Y);
     this.checkbox_continuously_centre_y.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new ContinuouslyCentreMessage(1));
       }
     });
@@ -291,7 +284,6 @@ public class PanelControlsUniverse {
     this.checkbox_continuously_centre_z = new Checkbox(GUIStrings.CONTINUOUSLY_CENTRE_Z);
     this.checkbox_continuously_centre_z.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new ContinuouslyCentreMessage(2));
       }
     });
@@ -302,7 +294,6 @@ public class PanelControlsUniverse {
     this.checkbox_show_world_markers.setState(FrEnd.show_world_markers);
     this.checkbox_show_world_markers.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         FrEnd.show_world_markers =
             getCheckboxShowWorldMarkers().getState();
         // Screen-space dots: turning them off must clear them from
@@ -337,7 +328,6 @@ public class PanelControlsUniverse {
     this.checkbox_collision_check.setState(true);
     this.checkbox_collision_check.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        Forget.about(e);
         FrEnd.check_collisions = !FrEnd.check_collisions;
       }
     });

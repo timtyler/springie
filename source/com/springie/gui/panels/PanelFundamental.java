@@ -39,7 +39,6 @@ import com.springie.presets.AddXMLModelIndexLeaves;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.utilities.FilePath;
-import com.tifsoft.Forget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,7 +151,6 @@ public class PanelFundamental {
 
     this.button_file_presets.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
-        Forget.about(arg0);
         showPresetsCard(button_file_presets.getState());
       }
     });
@@ -194,7 +192,6 @@ public class PanelFundamental {
     final Button button_load = new Button("Load");
     button_load.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
-        Forget.about(arg0);
         chooseLoadFile();
       }
     });
@@ -203,7 +200,6 @@ public class PanelFundamental {
     final Button button_save = new Button("Save");
     button_save.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
-        Forget.about(arg0);
         chooseSaveFile();
       }
     });
@@ -312,7 +308,6 @@ public class PanelFundamental {
 
     this.button_controls.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
-        Forget.about(arg0);
         if (FrEnd.controls_window_mode == FrEnd.CONTROLS_DOCKED) {
           // The controls live docked in the main window: toggle the
           // docked panel, so the button still operates -- hiding them
@@ -337,7 +332,6 @@ public class PanelFundamental {
   // GUIStrings.CONTROLS_PREFERENCES);
   // button_controls_preferences.addActionListener(new ActionListener() {
   // public void actionPerformed(ActionEvent e) {
-  // Forget.about(e);
   // FrEnd.frame_preferences.setVisible(true);
   // }
   // });
@@ -350,7 +344,6 @@ public class PanelFundamental {
   // final Button button_controls_edit = new Button(GUIStrings.CONTROLS_EDIT);
   // button_controls_edit.addActionListener(new ActionListener() {
   // public void actionPerformed(ActionEvent e) {
-  // Forget.about(e);
   // FrEnd.frame_controls.setVisible(true);
   // }
   // });
@@ -410,7 +403,6 @@ public class PanelFundamental {
 
     this.button_paused.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
-        Forget.about(arg0);
         getNewMessageManager().add(FrEnd.system_messages.getPauseMessage());
       }
     });
@@ -431,7 +423,6 @@ public class PanelFundamental {
     // FrEnd.button_step = new Button(GUIStrings.STEP);
     FrEnd.button_step.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             // FrEnd.new_message_manager.add(getRestartMessage());
@@ -469,7 +460,6 @@ public class PanelFundamental {
 
     FrEnd.button_restart.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
-        Forget.about(arg0);
         launchSelected();
       }
     });
@@ -488,7 +478,6 @@ public class PanelFundamental {
 
     button_zoom_in.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
-        Forget.about(arg0);
 
         Coords.shift_constant_z -= 20;
         if (Coords.shift_constant_z < 1) {
@@ -515,7 +504,6 @@ public class PanelFundamental {
 
     button.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
-        Forget.about(arg0);
 
         Coords.shift_constant_z += 20;
         RendererDelegator.repaintAll();
@@ -563,7 +551,6 @@ public class PanelFundamental {
 
     this.button_delete.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
-        Forget.about(arg0);
         getNewMessageManager().add(new DeleteSelectedMessage());
       }
     });
@@ -584,7 +571,6 @@ public class PanelFundamental {
 
     this.button_select_all_of_class.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
-        Forget.about(arg0);
         getNewMessageManager().add(new SelectClazzMessage());
       }
     });
@@ -655,7 +641,6 @@ public class PanelFundamental {
 
     FrEnd.choose_initial.choice.addKeyListener(new KeyListener() {
       public void keyTyped(KeyEvent arg0) {
-        Forget.about(arg0);
       }
 
       public void keyPressed(KeyEvent arg0) {
@@ -665,7 +650,6 @@ public class PanelFundamental {
       }
 
       public void keyReleased(KeyEvent arg0) {
-        Forget.about(arg0);
       }
     });
   }

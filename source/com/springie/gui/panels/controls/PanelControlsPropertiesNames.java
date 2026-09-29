@@ -20,7 +20,6 @@ import com.springie.messages.NewMessageManager;
 import com.springie.utilities.general.Executor;
 import com.springie.utilities.general.StringMatcher;
 import com.springie.utilities.general.StringPair;
-import com.tifsoft.Forget;
 
 public class PanelControlsPropertiesNames {
   public Panel panel = FrEnd.setUpPanelForFrame2();
@@ -57,8 +56,6 @@ public class PanelControlsPropertiesNames {
     }
 
     public String set(String from, String to, String current) {
-      Forget.about(current);
-      Forget.about(from);
       return to;
     }
   };
@@ -98,8 +95,6 @@ public class PanelControlsPropertiesNames {
     }
 
     public String set(String from, String to, String current) {
-      Forget.about(current);
-      Forget.about(from);
       return to;
     }
   };
@@ -168,7 +163,6 @@ public class PanelControlsPropertiesNames {
 
     this.button_set_prefix.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         final String proposed = PanelControlsPropertiesNames.this.textfield.getText();
         final String sanitised = sanitise(proposed);
         getNewMessageManager().add(new NewMessage(sanitised) {
@@ -230,7 +224,6 @@ public class PanelControlsPropertiesNames {
 
     this.button_select_prefix.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Forget.about(e);
         getNewMessageManager().add(
             new NewMessage(PanelControlsPropertiesNames.this.textfield
                 .getText()) {

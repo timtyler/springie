@@ -23,7 +23,6 @@ import com.springie.io.out.WriteFloatingPoint;
 import com.springie.metrics.BoundingBox;
 import com.springie.modification.redundancy.RedundancyRemover;
 import com.springie.preferences.Preferences;
-import com.tifsoft.Forget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -531,7 +530,6 @@ public class WriterPOV {
   }
 
   private void outputLinks(Clazz clazz, LinkType link_type, int n_clazz, int n_type) {
-    Forget.about(link_type);
 
     outputLinks(clazz, n_clazz, n_type);
     writeLine("");
@@ -547,7 +545,6 @@ public class WriterPOV {
   }
 
   private void outputFaces(Clazz clazz, int n_clazz) {
-    Forget.about(clazz);
 
     // final FaceType type = (FaceType)
     // this.face_manager.face_type_factory.array
@@ -620,7 +617,6 @@ public class WriterPOV {
   }
 
   private void outputNode(final Node node, int n_clazz, int n_type) {
-    Forget.about(n_type);
 
     final double x = toVRMLCoords(node.pos.x - this.middle.x);
     // final float y = toVRMLCoords(node.pos.y - this.middle.y);
@@ -652,7 +648,6 @@ public class WriterPOV {
   }
 
   private void outputLink(Link link, int n_clazz, int n_type) {
-    Forget.about(n_type);
     final int total = link.nodes.length;
     for (int i = 0; i < total - 1; i++) {
       final Point3D pos_A = link.nodes[i].pos;

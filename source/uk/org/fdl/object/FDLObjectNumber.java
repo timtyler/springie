@@ -13,7 +13,6 @@ public class FDLObjectNumber extends FDLObject {
 //  }
 //
 //  public String makeString(int indent) {
-//    Forget.about(indent);
 //    return this.number;
 //  }  
 }

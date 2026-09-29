@@ -19,7 +19,6 @@ import com.springie.io.in.readers.spr.types.TypeFace;
 import com.springie.io.in.readers.spr.types.TypeLink;
 import com.springie.io.in.readers.spr.types.TypeNode;
 import com.springie.render.Coords;
-import com.tifsoft.Forget;
 
 public class ReaderSPR extends DefaultHandler {
   final int scale_factor = 1;
@@ -116,7 +115,6 @@ public class ReaderSPR extends DefaultHandler {
 
   public void startElement(String uri, String name, String qName,
     Attributes atts) {
-    Forget.about(name);
     boolean is_nodes = false;
     boolean is_links = false;
     boolean is_faces = false;
@@ -420,7 +418,6 @@ public class ReaderSPR extends DefaultHandler {
   }
 
   public void endElement(String uri, String name, String tag) {
-    Forget.about(name);
     if ("".equals(uri)) {
       if ("nodes".equals(tag)) {
         this.in_nodes_section = false;
@@ -443,12 +440,8 @@ public class ReaderSPR extends DefaultHandler {
   }
 
   public void skippedEntity(String name) {
-    Forget.about(name);
   }
 
   public void characters(char[] ch, int start, int length) {
-    Forget.about(ch);
-    Forget.about(start);
-    Forget.about(length);
   }
 }

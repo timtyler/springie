@@ -14,7 +14,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.springie.io.in.ResourceLoader;
 import com.springie.presets.ColourFactory;
-import com.tifsoft.Forget;
 import com.tifsoft.xml.driver.SomeStringUtilities;
 
 public class ReaderEIG extends DefaultHandler {
@@ -77,7 +76,6 @@ public class ReaderEIG extends DefaultHandler {
     int node_group_count = 0;
     int link_group_count = 0;
     
-    Forget.about(name);
     final int[] colours = new ColourFactory(17854).getColourArray(64);
     boolean node_group = false;
     boolean link_group = false;
@@ -183,9 +181,6 @@ public class ReaderEIG extends DefaultHandler {
   }
 
   public void endElement(String uri, String name, String qName) {
-    Forget.about(uri);
-    Forget.about(name);
-    Forget.about(qName);
 
     //if ("SPRINGSET".equals(qName)) {
     //link_group = false;
@@ -207,7 +202,6 @@ public class ReaderEIG extends DefaultHandler {
   }
 
   public void skippedEntity(String name) {
-    Forget.about(name);
     //Log.put("skippedEntity:" + name);
   }
 
