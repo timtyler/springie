@@ -165,6 +165,28 @@ public final class HamsterWheelDemo {
    */
   public static int axle_stabilizer_bias = 13;
 
+  /**
+   * Gravity strength for the hamster universe, in velocity units per frame.
+   * Tim, 2026-09-28: turned down from 2 to 1 -- the hamster ball was
+   * hitting the ground with significant velocity and shattering (a node
+   * flung &gt;400px from the hub disqualifies the run). Lower gravity
+   * softens the impact; it also weakens the gravitational drive, so this
+   * is an experiment to be judged.
+   */
+  public static int gravity_strength = 1;
+
+  /**
+   * Per-node compass bias for the axle ends, in velocity units per frame
+   * (same units as {@link #axle_stabilizer_bias}). Tim, 2026-09-28: N on
+   * the north axle end, S on the south axle end -- the universe compass
+   * bias pulls the ends apart along the axle, restoring yaw wander and
+   * tip-over the same way the track's axle headings do. E/W are deliberately
+   * not assigned: on a z-axle wheel an E/W pair on opposite ends is a pure
+   * force couple about the vertical (constant yaw torque -- a turn, not a
+   * restoring force), so it would curve the wheel instead of steadying it.
+   */
+  public static int compass_bias = 13;
+
   /** Ground friction, 0-100. */
   public static int friction = 100;
 
@@ -228,7 +250,7 @@ public final class HamsterWheelDemo {
     // climb controllers and the axle stabilizer).
     Muscles.enabled = true;
     World.gravity_active = true;
-    World.gravity_strength = 2;
+    World.gravity_strength = gravity_strength;
     World.ground_friction = friction;
     // Zero thermal jitter: the reflex drive is a delicate self-synchronizing
     // mechanism, and thermal kicks knock it off rhythm into chaotic
@@ -277,6 +299,15 @@ public final class HamsterWheelDemo {
         passive(link_manager, clazz, hub0, hub1, bracing_elasticity);
     axle_link.controller =
         new AxleStabilizerController(rim0, rim1, axle_stabilizer_bias);
+
+    // Per-node compass headings (Tim, 2026-09-28): N on the north (-z)
+    // axle end, S on the south (+z) axle end. With bias_size set below,
+    // the universe compass bias pulls the ends apart along the axle
+    // every frame -- functional yaw/tip stabilization, the same
+    // mechanism as the caterpillar track's axle headings.
+    hub0.compass = CompassPoint.N;
+    hub1.compass = CompassPoint.S;
+    CompassPoint.bias_size = compass_bias;
 
     // Rim: two 7-gon rings (14 links) + 7 cross links + 14 mirror diagonals
     // (35 total). The diagonals come in mirror pairs so the bracing has
