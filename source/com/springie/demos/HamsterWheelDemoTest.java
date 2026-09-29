@@ -27,7 +27,7 @@ import com.springie.world.World;
  * The wheel demo must build a big, clean rolling wheel: 7 nodes per rim,
  * two rims each with its own central hub node (two hubs joined by an
  * axle), 35 rim links (rim edges, cross links, diagonal bracing), 1 axle
- * link, 14 muscle cable spokes (16 nodes, 50 links). The spokes are the
+ * link, 12 muscle cable spokes (14 nodes, 43 links). The spokes are the
  * only muscles, all sharing one GlobalOscillatorController with identical
  * phase -- no subset special treatment (Tim, 2026-09-28 redesign: hamster
  * deleted, its mass moved into the axle, its muscles moved onto the
@@ -148,13 +148,13 @@ class HamsterWheelDemoTest {
     assertNotNull(hub0);
 
     final NodeManager nm = ContextManager.getNodeManager();
-    // 7 nodes per rim x 2 rims + 2 hubs (one per rim) = 16 (no hamster).
-    assertEquals(16, nm.element.size());
+    // 6 nodes per rim x 2 rims + 2 hubs (one per rim) = 14 (no hamster).
+    assertEquals(14, nm.element.size());
 
     final LinkManager lm = nm.getLinkManager();
-    // 7 segments x 5 (rim0, rim1, cross, 2 mirror diagonals) = 35 rim
-    // links + 1 axle (hub0-hub1) + 14 muscle spokes = 50 links.
-    assertEquals(50, lm.element.size());
+    // 6 segments x 5 (rim0, rim1, cross, 2 mirror diagonals) = 30 rim
+    // links + 1 axle (hub0-hub1) + 12 muscle spokes = 43 links.
+    assertEquals(43, lm.element.size());
   }
 
   @Test
@@ -182,8 +182,8 @@ class HamsterWheelDemoTest {
         }
       }
     }
-    // 14 hub-to-rim spoke muscles (the only muscles).
-    assertEquals(14, muscle_count);
+    // 12 hub-to-rim spoke muscles (the only muscles).
+    assertEquals(12, muscle_count);
   }
 
   @Test

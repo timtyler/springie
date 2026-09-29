@@ -49,7 +49,7 @@ public final class HamsterWheelDemo {
 
   /** Nodes per rim. */
   // Tim's directive (2026-09-28): 7 spokes per rim.
-  public static final int RIM_COUNT = 7;
+  public static final int RIM_COUNT = 6;
 
   /** Rim radius, in pixels. */
   public static int rim_radius_px = 160;
