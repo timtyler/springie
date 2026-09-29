@@ -19,9 +19,9 @@ import com.springie.world.World;
  * bobbing (which is what legged designs do):
  * score = distance * rollingMatch - 3 * heightStd.
  *
- * <p>rollingMatch = min(1, R * |theta_total| / distance): a smooth roller
- * has distance ~= R * theta (pure rolling ~= 1); sliders, hoppers, and
- * legged walkers score lower. heightStd is the stddev of the centre-of-mass
+ * <p>rollingMatch: 1 when distance ~= R * theta (pure rolling), falling
+ * off on both sides -- sliding (too little spin) and churning (too much
+ * spin) both score down. heightStd is the stddev of the centre-of-mass
  * height over the measured ticks -- rollers hold a steady height.
  *
  * <p>Usage: java com.springie.demos.RollingJudge [ticks] [crawler]
@@ -39,7 +39,12 @@ public final class RollingJudge {
     public int distance_px;
     /** Total unwrapped rotation of the marker about the hub, radians. */
     public double theta_total;
-    /** min(1, R*|theta| / distance): 1 for pure rolling. */
+    /**
+     * min(1, R*|theta| / distance), symmetric: 1 for pure rolling, falling
+     * on both sides. Too little spin is sliding; too much spin is
+     * churning in place (a wheel that spins 10x more than it travels is
+     * not rolling, and the old one-sided cap scored it a perfect 1).
+     */
     public double rolling_match;
     /** Stddev of centre-of-mass height over measured ticks, pixels. */
     public double height_std_px;
@@ -258,8 +263,20 @@ public final class RollingJudge {
     final double variance = Math.max(0.0, sum2 / n - mean * mean);
     final double height_std_px = Math.sqrt(variance);
 
-    final double rolling_match = Math.min(1.0,
-        radius_px * Math.abs(theta_total) / Math.max(distance_px, 1));
+    // Symmetric: 1 for pure rolling, punished both for sliding (too
+    // little spin for the distance) and for churning (spinning far more
+    // than the travel needs). The old min(1, spin/dist) capped at 1, so
+    // a wheel spinning 10x too fast scored a perfect match.
+    final double spin_px = radius_px * Math.abs(theta_total);
+    final double rolling_match;
+    if (distance_px < 1) {
+      rolling_match = spin_px < 1 ? 1.0 : 0.0;
+    } else if (spin_px < 1) {
+      rolling_match = 0.0;
+    } else {
+      rolling_match =
+          Math.min(spin_px / distance_px, distance_px / spin_px);
+    }
 
     final Result result = new Result();
     result.distance_px = distance_px;
