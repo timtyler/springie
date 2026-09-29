@@ -18,6 +18,7 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
+import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
 import com.springie.render.Coords;
 import com.springie.world.World;
@@ -27,10 +28,10 @@ import com.springie.world.World;
  * two rims each with its own central hub node (two hubs joined by an
  * axle), a dedicated heavy hamster node, 35 rim links (rim edges, cross
  * links, diagonal bracing), 1 axle link, 14 passive cable spokes, 14
- * hamster engine struts, 2 capture tethers (17 nodes, 66 links). The hamster engine links
- * are struts (Tim relaxed the "muscles on cables" rule for this on
- * 2026-09-28) carrying a single HamsterEngineController -- the
- * two-stroke suspended-hamster drive.
+ * hamster engine cables, 2 capture tethers (17 nodes, 66 links). The
+ * hamster engine cables are the only muscles, all sharing one
+ * GlobalOscillatorController -- only the muscles may change cable lengths
+ * (Tim, 2026-09-28).
  */
 class HamsterWheelDemoTest {
 
@@ -46,8 +47,6 @@ class HamsterWheelDemoTest {
   private int old_inset;
   private int old_rim_log_mass;
   private int old_hamster_log_mass;
-  private int old_engine_pull;
-  private int old_engine_deadband;
   private int old_engine_elasticity;
   private int old_hamster_dx;
   private int old_hamster_dy;
@@ -73,8 +72,6 @@ class HamsterWheelDemoTest {
     old_inset = HamsterWheelDemo.axle_inset_px;
     old_rim_log_mass = HamsterWheelDemo.rim_log_mass;
     old_hamster_log_mass = HamsterWheelDemo.hamster_log_mass;
-    old_engine_pull = HamsterWheelDemo.engine_pull_pct;
-    old_engine_deadband = HamsterWheelDemo.engine_deadband_px;
     old_engine_elasticity = HamsterWheelDemo.engine_elasticity;
     old_hamster_dx = HamsterWheelDemo.hamster_dx_px;
     old_hamster_dy = HamsterWheelDemo.hamster_dy_px;
@@ -95,8 +92,6 @@ class HamsterWheelDemoTest {
     HamsterWheelDemo.axle_inset_px = 60;
     HamsterWheelDemo.rim_log_mass = 17;
     HamsterWheelDemo.hamster_log_mass = 25;
-    HamsterWheelDemo.engine_pull_pct = 2;
-    HamsterWheelDemo.engine_deadband_px = 40;
     HamsterWheelDemo.engine_elasticity = 60;
     HamsterWheelDemo.hamster_dx_px = 60;
     HamsterWheelDemo.hamster_dy_px = 40;
@@ -119,8 +114,6 @@ class HamsterWheelDemoTest {
     HamsterWheelDemo.axle_inset_px = old_inset;
     HamsterWheelDemo.rim_log_mass = old_rim_log_mass;
     HamsterWheelDemo.hamster_log_mass = old_hamster_log_mass;
-    HamsterWheelDemo.engine_pull_pct = old_engine_pull;
-    HamsterWheelDemo.engine_deadband_px = old_engine_deadband;
     HamsterWheelDemo.engine_elasticity = old_engine_elasticity;
     HamsterWheelDemo.hamster_dx_px = old_hamster_dx;
     HamsterWheelDemo.hamster_dy_px = old_hamster_dy;
@@ -187,11 +180,10 @@ class HamsterWheelDemoTest {
     int passive_spoke_count = 0;
     for (int i = 0; i < lm.element.size(); i++) {
       final Link link = (Link) lm.element.get(i);
-      if (link.controller instanceof HamsterEngineController) {
+      if (link.controller instanceof GlobalOscillatorController) {
         muscle_count++;
         // The engine links are cables (tension-only): they haul the
-        // back of the wheel forward. The hamster's mass (not strut
-        // pushing) is what breaks the cable bootstrap.
+        // wheel. Only the muscles may change cable lengths.
         assertFalse(link.type.compression,
             "hamster engine link must be a cable (tension-only)");
       } else if (link.controller == null && !link.type.compression) {
