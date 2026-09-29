@@ -111,9 +111,15 @@ public class DataInput {
     com.springie.FrEnd.continuously_centre_y = false;
     com.springie.FrEnd.continuously_centre_z = false;
     FrEnd.demo_model = false;
+    FrEnd.show_world_markers = true;
     Muscles.enabled = false;
+    // Which oscillator first: the amplitude/period/phase below must land on
+    // oscillator 0, not on whichever oscillator the previous model left
+    // selected.
+    Muscles.active_oscillator = 0;
     Muscles.activeOscillator().setAmplitude(85 * Muscles.UNITY / 100);
     Muscles.activeOscillator().setPeriodTicks(12);
+    Muscles.activeOscillator().setPhase(0);
     CompassPoint.bias_size = 0;
     final NodeManager manager = ContextManager.getNodeManager();
     if (manager != null) {

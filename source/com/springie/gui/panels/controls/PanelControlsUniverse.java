@@ -328,7 +328,11 @@ public class PanelControlsUniverse {
     this.checkbox_collision_check.setState(true);
     this.checkbox_collision_check.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        FrEnd.check_collisions = !FrEnd.check_collisions;
+        // Set from the checkbox state, never toggle: the static can be
+        // changed from under the UI (model files carry their own
+        // collision_check), and a toggle would then flip it the wrong way.
+        FrEnd.check_collisions =
+            ((Checkbox) e.getSource()).getState();
       }
     });
     panel_collision_check.add(this.checkbox_collision_check);

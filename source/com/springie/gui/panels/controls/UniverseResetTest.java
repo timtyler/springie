@@ -58,6 +58,11 @@ class UniverseResetTest {
         FrEnd.check_collisions = false;
         FrEnd.continuously_centre_x = true;
         FrEnd.continuously_centre_y = true;
+        FrEnd.show_world_markers = false;
+        // Phase on oscillator 0, then switch to an uninitialized slot: the
+        // reset must bring the index back to 0 (and the phase to 0).
+        Muscles.activeOscillator().setPhase(7);
+        Muscles.active_oscillator = 3;
         ContextManager.getNodeManager().electrostatic.charge_active = false;
 
         panel.resetUniverse();
@@ -72,6 +77,9 @@ class UniverseResetTest {
         assertFalse(FrEnd.continuously_centre_x);
         assertFalse(FrEnd.continuously_centre_y);
         assertFalse(FrEnd.continuously_centre_z);
+        assertTrue(FrEnd.show_world_markers);
+        assertEquals(0, Muscles.active_oscillator);
+        assertEquals(0, Muscles.activeOscillator().getPhase());
         assertTrue(
             ContextManager.getNodeManager().electrostatic.charge_active);
 
@@ -95,6 +103,8 @@ class UniverseResetTest {
             "continuously centre y");
         assertFalse(panel.checkbox_continuously_centre_z.getState(),
             "continuously centre z");
+        assertTrue(panel.checkbox_show_world_markers.getState(),
+            "show world markers");
       });
     } finally {
       UniverseDefaults.resetToFactoryDefaults();
@@ -114,6 +124,9 @@ class UniverseResetTest {
         // Load Caterpillar, which sets gravity 5/on, friction 50,
         // charge off, collisions off, muscles on at 6%/120 ticks.
         CaterpillarDemo.buildAt(100);
+        // The demo leaves the markers at their ambient value; pin it so
+        // the snapshot (and the assertion below) is deterministic.
+        FrEnd.show_world_markers = true;
         UniverseDefaults.snapshot();
 
         // Scramble everything the reset covers.
@@ -123,6 +136,7 @@ class UniverseResetTest {
         World.global_temperature = 500;
         Node.viscocity = 42;
         FrEnd.check_collisions = true;
+        FrEnd.show_world_markers = false;
         ContextManager.getNodeManager().electrostatic.charge_active = true;
         Muscles.enabled = false;
 
@@ -135,6 +149,8 @@ class UniverseResetTest {
         assertEquals(0, World.global_temperature);
         assertEquals(2, Node.viscocity);
         assertFalse(FrEnd.check_collisions);
+        // Caterpillar leaves the markers on (its snapshot value).
+        assertTrue(FrEnd.show_world_markers);
         assertFalse(
             ContextManager.getNodeManager().electrostatic.charge_active);
         assertTrue(Muscles.enabled);

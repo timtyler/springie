@@ -62,6 +62,9 @@ public final class UniverseDefaults {
   private static boolean continuously_centre_y = false;
   private static boolean continuously_centre_z = false;
 
+  // World markers (the gold dots that stream past in Olympic mode).
+  private static boolean show_world_markers = true;
+
   // Development-only: speed limit and minimum excitation magnitude.
   private static int max_speed = Integer.MAX_VALUE;
   private static int minimum_magnitude = 0;
@@ -91,6 +94,7 @@ public final class UniverseDefaults {
     continuously_centre_x = false;
     continuously_centre_y = false;
     continuously_centre_z = false;
+    show_world_markers = true;
     max_speed = Integer.MAX_VALUE;
     minimum_magnitude = 0;
     compass_bias_size = 0;
@@ -117,6 +121,7 @@ public final class UniverseDefaults {
     continuously_centre_x = FrEnd.continuously_centre_x;
     continuously_centre_y = FrEnd.continuously_centre_y;
     continuously_centre_z = FrEnd.continuously_centre_z;
+    show_world_markers = FrEnd.show_world_markers;
     compass_bias_size = CompassPoint.bias_size;
     if (FrEnd.development_version) {
       max_speed = Node.max_speed;
@@ -145,6 +150,7 @@ public final class UniverseDefaults {
     FrEnd.continuously_centre_x = continuously_centre_x;
     FrEnd.continuously_centre_y = continuously_centre_y;
     FrEnd.continuously_centre_z = continuously_centre_z;
+    FrEnd.show_world_markers = show_world_markers;
     CompassPoint.bias_size = compass_bias_size;
     if (FrEnd.development_version) {
       Node.max_speed = max_speed;
