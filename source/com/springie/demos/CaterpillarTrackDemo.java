@@ -29,23 +29,27 @@ import java.util.Set;
  * Two-thirds of the nodes are deleted per the patterns (X=delete,
  * O=keep):
  * <ul>
- * <li>Ring 0 (inner, r=60, z=0): XXO -- keep i%3==2</li>
- * <li>Ring 1 (outer, r=140, z=+46): XOX -- keep i%3==1</li>
- * <li>Ring 2 (outer, r=140, z=-46): OXX -- keep i%3==0</li>
+ * <li>Ring 0 (inner, r=120, z=0): XXO -- keep i%3==2</li>
+ * <li>Ring 1 (outer, r=280, z=+92): XOX -- keep i%3==1</li>
+ * <li>Ring 2 (outer, r=280, z=-92): OXX -- keep i%3==0</li>
  * </ul>
  * 7 nodes per ring (21 total), staggered so they interleave.
  *
  * <p>The (radius, z) positions of the three rings form an equilateral
- * triangle: (60, 0), (140, +46), (140, -46) -- sides 92.3, 92.3, 92 --
- * so a slice through the donut has a triangular cross-section (Tim).
+ * triangle: (120, 0), (280, +92), (280, -92) -- sides 184.6, 184.6,
+ * 184 -- so a slice through the donut has a triangular cross-section
+ * (Tim).
  *
  * <p>Each node is linked to the two nearest nodes on each of the other
  * two circles (struts, deduplicated). Node radius and link radius are
- * equal (Tim): the track is a uniform tube.
+ * equal (Tim): the track is a uniform tube. The track was doubled in
+ * size on 2026-09-28 (Tim); the axle below was excepted and keeps its
+ * old 16px size.
  *
  * <p>Axle (Tim, 2026-09-27): two nodes on the z-axis through the middle
  * of the track, joined by a rigid shaft and spoked to every inner ring
- * node on both sides. The ends carry opposite compass headings (N on
+ * node on both sides. Excepted from the 2026-09-28 doubling (Tim): the
+ * axle keeps its old size. The ends carry opposite compass headings (N on
  * the -z end, S on the +z end), so the universe compass bias pulls them
  * apart and tensions the spokes -- stabilising the track against
  * tipping over. The whole model is offset +z (Z_OFFSET_PX): the depth
@@ -59,37 +63,45 @@ public final class CaterpillarTrackDemo {
   /** Nodes per ring before deletion. */
   public static final int NODES_PER_RING = 21;
 
-  /** Inner ring radius, in pixels. Halved from 120 (Tim, 2026-09-27). */
-  public static final int INNER_RADIUS_PX = 60;
+  /** Inner ring radius, in pixels. Doubled from 60 (Tim, 2026-09-28). */
+  public static final int INNER_RADIUS_PX = 120;
 
-  /** Outer ring radius, in pixels. */
-  public static final int OUTER_RADIUS_PX = 140;
+  /** Outer ring radius, in pixels. Doubled from 140 (Tim, 2026-09-28). */
+  public static final int OUTER_RADIUS_PX = 280;
 
   /**
    * Outer ring z offset (half the track width), in pixels. With inner
-   * radius 60 and outer radius 140, half-width 80/sqrt(3) makes the
+   * radius 120 and outer radius 280, half-width 160/sqrt(3) makes the
    * (radius, z) cross-section an equilateral triangle.
    */
-  public static final int HALF_WIDTH_PX = 46;
+  public static final int HALF_WIDTH_PX = 92;
 
   /**
    * Axle half-length, in pixels. The axle runs along the z-axis through
    * the middle of the track; its ends sit outside the outer rings so the
-   * spokes angle outward like a bicycle wheel.
+   * spokes angle outward like a bicycle wheel. Excepted from the
+   * doubling (Tim, 2026-09-28): unchanged.
    */
   public static final int AXLE_HALF_PX = 92;
 
   /**
-   * Z offset of the track middle, in pixels. The depth wall at z=0 (with
-   * the 16px node radius, nothing may sit below z=16) would otherwise
-   * crush the -z ring and the -z axle end flat against it on the first
-   * tick -- measured 2026-09-27. The offset puts the rearmost point (the
-   * -z axle end) at 32px, clear of the wall with margin.
+   * Axle node/link size, in pixels (physical radius). Excepted from the
+   * doubling (Tim, 2026-09-28): the axle keeps its old size while the
+   * track doubles around it.
    */
-  public static final int Z_OFFSET_PX = 124;
+  public static final int AXLE_NODE_SIZE_PX = 16;
 
-  /** Node size, in pixels (physical radius). */
-  public static int node_size_px = 16;
+  /**
+   * Z offset of the track middle, in pixels. The depth wall at z=0
+   * would otherwise crush the rearmost points flat against it on the
+   * first tick -- measured 2026-09-27. The offset puts the rearmost
+   * point (the -z ring, at z_offset - 92 - 32) at 16px, clear of the
+   * wall with margin.
+   */
+  public static final int Z_OFFSET_PX = 140;
+
+  /** Node size, in pixels (physical radius). Doubled from 16 (Tim, 2026-09-28). */
+  public static int node_size_px = 32;
 
   /**
    * Node/link radius in fixed-point units. Radii are stored in
@@ -98,6 +110,11 @@ public final class CaterpillarTrackDemo {
    */
   private static int nodeRadius() {
     return node_size_px << Coords.shift;
+  }
+
+  /** Axle node/link radius in fixed-point units (excepted from the doubling). */
+  private static int axleNodeRadius() {
+    return AXLE_NODE_SIZE_PX << Coords.shift;
   }
 
   /** Lift the model above the canvas bottom so it renders fully in view. */
@@ -167,9 +184,9 @@ public final class CaterpillarTrackDemo {
   }
 
   /**
-   * Adds a strut link between two nodes (deduplicated), with exact rest
-   * length and the track's uniform node/link radius. Struts everywhere
-   * for this model (Tim).
+   * Adds an axle strut link between two nodes (deduplicated), with exact
+   * rest length and the axle's radius (the axle is excepted from the
+   * doubling, Tim). Struts everywhere for this model (Tim).
    */
   private static void addStrut(LinkManager link_manager, Clazz clazz,
       Set<String> linked, Node a, Node b) {
@@ -180,8 +197,8 @@ public final class CaterpillarTrackDemo {
       final int length = exactLength(a, b);
       final LinkType type =
           link_manager.link_type_factory.getNew(length, elasticity);
-      // Link radius equals the node radius (Tim).
-      type.radius = nodeRadius();
+      // Axle link radius equals the axle node radius (Tim).
+      type.radius = axleNodeRadius();
       link_manager.setLink(a, b, type, clazz);
     }
   }
@@ -346,12 +363,18 @@ public final class CaterpillarTrackDemo {
     // Axle (Tim, 2026-09-27): through the middle of the track along the
     // z-axis, attached to the inner circle nodes on both sides. The two
     // ends are joined by a rigid shaft; each end is spoked to every
-    // inner ring node.
+    // inner ring node. The axle is excepted from the doubling (Tim,
+    // 2026-09-28): it keeps its own node type at the old 16px size.
+    final NodeType axle_node_type = node_manager.node_type_factory.getNew();
+    axle_node_type.log_mass = log_mass;
+    axle_node_type.setSize(axleNodeRadius());
     final int axle_half = AXLE_HALF_PX << Coords.shift;
     final Node axle_north = node_manager.addNewAgent(
-        new Point3D(cx, centre_y, z_offset - axle_half), clazz, node_type);
+        new Point3D(cx, centre_y, z_offset - axle_half), clazz,
+        axle_node_type);
     final Node axle_south = node_manager.addNewAgent(
-        new Point3D(cx, centre_y, z_offset + axle_half), clazz, node_type);
+        new Point3D(cx, centre_y, z_offset + axle_half), clazz,
+        axle_node_type);
 
     // Opposite compass headings: the universe compass bias pulls the -z
     // end toward N and the +z end toward S -- the ends are pulled apart,
