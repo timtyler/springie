@@ -3,11 +3,6 @@
   Derived from Tim's original Eclipse checkstyle configuration
   (.checkstyle_config, "Tim Checks", severity=warning), adapted for
   modern Checkstyle (run via maven-checkstyle-plugin during the build):
-  - removed FileContentsHolder, RedundantThrows, DoubleCheckedLocking,
-    JUnitTestCase, RequiredRegexp, StrictDuplicateCode and the usage.*
-    checks (no longer shipped by Checkstyle);
-  - TabCharacter -> FileTabCharacter (now a Checker-level module);
-  - GenericIllegalRegexp -> RegexpSingleline (renamed, Checker-level).
   The original .checkstyle_config is left untouched.
 -->
 <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.2//EN" "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
@@ -47,6 +42,15 @@
 <module name="EmptyStatement"></module>
 <module name="EqualsHashCode"></module>
 <module name="FallThrough"></module>
+<module name="ModifierOrder"/>
+<module name="TrailingComment"></module>
+<module name="FinalParameters"></module>
+<module name="ImportOrder"></module>
+<module name="HiddenField"></module>
+<module name="IllegalInstantiation"></module>
+<module name="IllegalCatch"></module>
+<module name="IllegalTokenText"></module>
+<!-- module name="UncommentedMain"></module -->
 <!-- module name="MissingCtor"></module -->
 <!-- module name="ReturnCount"></module -->
 <!-- module name="MultipleStringLiterals"></module -->
@@ -55,21 +59,14 @@
 <!-- module name="ExplicitInitialization"></module -->
 <!-- module name="NoWhitespaceAfter"></module -->
 <!-- module name="DeclarationOrder"></module -->
-    <module name="ModifierOrder"/>
 <!-- module name="FinalLocalVariable"></module -->
 <!-- module name="IllegalToken"><property name="tokens" value="POST_INC,POST_DEC,LITERAL_SWITCH"/></module -->
 <!-- module name="MagicNumber"></module -->
 <!-- module name="RequireThis"></module -->
-<!-- module name="FinalParameters"></module -->
 <!-- module name="Indentation"></module -->
-<!-- module name="ImportOrder"></module -->
 <!-- module name="LocalVariableName"><property name="format" value="^[a-z][a-z0-9]*$"/></module -->
 <!-- module name="LocalFinalVariableName"><property name="format" value="^[a-z][a-z0-9]*$"/></module -->
 <!-- module name="AvoidInlineConditionals"></module -->
-<!-- module name="HiddenField"></module -->
-<module name="IllegalInstantiation"></module>
-<module name="IllegalCatch"></module>
-<module name="IllegalTokenText"></module>
 <module name="IllegalType"><property name="tokens" value="METHOD_DEF,PARAMETER_DEF,VARIABLE_DEF"/></module>
 <module name="InnerAssignment"></module>
 <module name="MissingSwitchDefault"></module>
@@ -87,8 +84,6 @@
 <module name="ArrayTypeStyle"></module>
 <module name="DescendantToken"></module>
 <module name="TodoComment"></module>
-<!-- module name="TrailingComment"></module -->
-<module name="UncommentedMain"></module>
 <module name="UpperEll"></module>
 </module>
 <module name="NewlineAtEndOfFile"></module>
