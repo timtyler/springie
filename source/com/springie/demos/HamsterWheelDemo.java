@@ -158,7 +158,7 @@ public final class HamsterWheelDemo {
    * force couple about the vertical (constant yaw torque -- a turn, not a
    * restoring force), so it would curve the wheel instead of steadying it.
    */
-  public static int compass_bias = 13;
+  public static int compass_bias = 50;
 
   /** Ground friction, 0-100. */
   public static int friction = 100;

@@ -41,6 +41,7 @@ class HamsterWheelDemoTest {
   private int old_temperature;
   private int old_direction;
   private int old_stabilizer_bias;
+  private int old_compass_bias;
   private int old_z_offset;
   private int old_radius;
   private int old_half_width;
@@ -63,6 +64,7 @@ class HamsterWheelDemoTest {
     old_temperature = World.global_temperature;
     old_direction = HamsterWheelDemo.roll_direction;
     old_stabilizer_bias = HamsterWheelDemo.axle_stabilizer_bias;
+    old_compass_bias = HamsterWheelDemo.compass_bias;
     old_z_offset = HamsterWheelDemo.z_offset_px;
     old_radius = HamsterWheelDemo.rim_radius_px;
     old_half_width = HamsterWheelDemo.rim_half_width_px;
@@ -80,6 +82,7 @@ class HamsterWheelDemoTest {
     // even if the statics were changed by an earlier test.
     HamsterWheelDemo.roll_direction = 1;
     HamsterWheelDemo.axle_stabilizer_bias = 13;
+    HamsterWheelDemo.compass_bias = 50;
     HamsterWheelDemo.z_offset_px = 100;
     HamsterWheelDemo.rim_radius_px = 160;
     HamsterWheelDemo.rim_half_width_px = 162;
@@ -99,6 +102,7 @@ class HamsterWheelDemoTest {
     World.global_temperature = old_temperature;
     HamsterWheelDemo.roll_direction = old_direction;
     HamsterWheelDemo.axle_stabilizer_bias = old_stabilizer_bias;
+    HamsterWheelDemo.compass_bias = old_compass_bias;
     HamsterWheelDemo.z_offset_px = old_z_offset;
     HamsterWheelDemo.rim_radius_px = old_radius;
     HamsterWheelDemo.rim_half_width_px = old_half_width;
