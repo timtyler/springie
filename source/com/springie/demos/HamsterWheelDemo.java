@@ -11,6 +11,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
 import com.springie.geometry.Point3D;
+import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
 import com.springie.render.Coords;
 import com.springie.world.Grounding;
@@ -118,28 +119,21 @@ public final class HamsterWheelDemo {
 
   /**
    * Nominal mass for the hamster node (log scale used by the engine).
-   * The hamster is by far the heaviest part of the model -- log 25 is
-   * ~12x the whole wheel -- so it stays centred while the engine moves
-   * the wheel around it. (A lighter hamster gets shoved by its own
-   * engine.)
+   * Tim, 2026-09-28: log 22 was too heavy -- use a lighter hamster.
    */
-  public static int hamster_log_mass = 22;
-
-  /**
-   * How far the back cables contract, as a percent of their current
-   * length. They haul the back of the wheel forward; the hamster is too
-   * heavy to be dragged back.
-   */
-  public static int engine_pull_pct = 2;
-
-  /**
-   * Back deadband, in pixels: only anchors behind the hub by more than
-   * this pull (front/top/bottom stay slack).
-   */
-  public static int engine_deadband_px = 40;
+  public static int hamster_log_mass = 16;
 
   /** Elasticity for the hamster's engine links. */
   public static int engine_elasticity = 60;
+
+  /**
+   * Muscle drive for the hamster's 14 cables (Tim, 2026-09-28: only the
+   * muscles may change cable lengths). Gentle: 5% amplitude, 120-tick
+   * period -- the old custom controller's constant 2% chase is replaced
+   * by the oscillator's rhythmic pump.
+   */
+  public static int muscle_amplitude_pct = 5;
+  public static int muscle_period_ticks = 120;
 
   /**
    * The hamster's parking spot, in pixels: this far forward of the hub
@@ -241,8 +235,14 @@ public final class HamsterWheelDemo {
     hamster_type.radius = nodeRadius();
 
     // Muscles.enabled gates the per-link controllers (the hamster's
-    // climb controllers and the axle stabilizer).
+    // 14 muscle cables). Only the muscles may change cable lengths
+    // (Tim, 2026-09-28) -- no custom controllers.
     Muscles.enabled = true;
+    Muscles.active_oscillator = 0;
+    Muscles.activeOscillator().setAmplitude(
+        muscle_amplitude_pct * Muscles.UNITY / 100);
+    Muscles.activeOscillator().setPeriodTicks(muscle_period_ticks);
+    Muscles.activeOscillator().setPhase(0);
     World.gravity_active = true;
     World.gravity_strength = gravity_strength;
     World.ground_friction = friction;
@@ -395,28 +395,23 @@ public final class HamsterWheelDemo {
   }
 
   /**
-   * The hamster engine: strut links (they push as well as pull -- Tim
-   * relaxed the cables-only rule for this) from the hamster to every rim
-   * node, driven by a single HamsterEngineController. One instance
-   * classifies front/back in the world frame and fires all links, so the
-   * drive stays aligned as the wheel rolls. Paired across the two rims
-   * (station i on both) so lateral forces stay symmetric.
+   * The hamster engine: 14 muscle cables (7 per rim, paired across the
+   * two rims so lateral forces stay symmetric) from the hamster to every
+   * rim node, driven by the standard muscle oscillator (Tim, 2026-09-28:
+   * only the muscles may change cable lengths -- no custom controllers).
+   * All 14 pulse in sync via the shared oscillator; the hamster's
+   * forward-parked offset makes the geometry asymmetric, so the rhythmic
+   * haul drives the wheel. Cables (not struts): they haul, never push.
    */
   private static void hamsterEngine(LinkManager lm, Clazz clazz,
       Node hamster, Node hub0, Node hub1, Node[] rim0, Node[] rim1) {
-    final java.util.List<Link> links = new java.util.ArrayList<>();
-    final java.util.List<Node> anchors = new java.util.ArrayList<>();
+    final GlobalOscillatorController muscle =
+        new GlobalOscillatorController(Muscles.active_oscillator);
     for (int i = 0; i < RIM_COUNT; i++) {
-      links.add(engineLink(lm, clazz, hamster, rim0[i]));
-      anchors.add(rim0[i]);
-      links.add(engineLink(lm, clazz, hamster, rim1[i]));
-      anchors.add(rim1[i]);
-    }
-    final HamsterEngineController controller = new HamsterEngineController(
-        hamster, hub0, hub1, links, anchors, engine_pull_pct,
-        engine_deadband_px);
-    for (Link link : links) {
-      link.controller = controller;
+      final Link l0 = engineLink(lm, clazz, hamster, rim0[i]);
+      l0.controller = muscle;
+      final Link l1 = engineLink(lm, clazz, hamster, rim1[i]);
+      l1.controller = muscle;
     }
 
     // Capture tethers: passive tension-only cables from the hamster to
