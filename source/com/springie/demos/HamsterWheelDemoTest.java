@@ -28,10 +28,8 @@ import com.springie.world.World;
  * two rims each with its own central hub node (two hubs joined by an
  * axle), 35 rim links (rim edges, cross links, diagonal bracing), 1 axle
  * link, 12 muscle cable spokes (14 nodes, 43 links). The spokes are the
- * only muscles, all sharing one GlobalOscillatorController with identical
- * phase -- no subset special treatment (Tim, 2026-09-28 redesign: hamster
- * deleted, its mass moved into the axle, its muscles moved onto the
- * spokes).
+ * only muscles, all sharing one GlobalOscillatorController with f=1 traveling
+ * wave phases -- same phase on both hubs for the same angle (Tim, 2026-09-29).
  */
 class HamsterWheelDemoTest {
 

@@ -31,11 +31,11 @@ import com.springie.world.World;
  * the axle ties the two hubs into a single rigid shaft. The rim uses
  * alternating diagonal bracing to resist shear.
  *
- * <p>Drive (Tim, 2026-09-28 redesign): the hamster is gone -- its mass
- * moved into the axle (hubs are log 20) and its muscles moved onto the
- * 14 spokes. All 14 spokes share one muscle oscillator with identical
- * phase/amplitude, pulsing in sync. No custom controllers, no subset
- * special treatment -- only the muscles change cable lengths.
+ * <p>Drive (Tim, 2026-09-29): f=1 traveling wave on the 12 spokes -- per-spoke
+ * phase, one full wave around the rim, same phase on both hubs for the same
+ * angle. All spokes share one muscle oscillator; each link's phase offset
+ * creates the wave. No custom controllers -- only the muscles change cable
+ * lengths.
  *
  * <p>Node order: rim-0[i] and rim-1[i] interleaved per iteration (element
  * indices 2*i and 2*i+1), then hub0, then hub1. Node 0 (rim-0[0], body
@@ -125,8 +125,8 @@ public final class HamsterWheelDemo {
    * period. All 14 spokes share one oscillator instance with identical
    * phase -- no subset special treatment.
    */
-  public static int muscle_amplitude_pct = 5;
-  public static int muscle_period_ticks = 120;
+  public static int muscle_amplitude_pct = 2;
+  public static int muscle_period_ticks = 480;
 
   /**
    * Yaw stabilizer bias, in internal velocity units per frame
@@ -306,17 +306,19 @@ public final class HamsterWheelDemo {
       passive(link_manager, clazz, a0, rim1[j], bracing_elasticity); // diag \
     }
 
-    // Hub spokes: 14 muscle cables, 7 per hub, each hub spoking radially
+    // Hub spokes: 12 muscle cables, 6 per hub, each hub spoking radially
     // to its own rim (in-plane, like a bicycle wheel). Pre-tensioned via
     // spoke_rest_scale_pct so each hub hangs from its upper spokes.
-    // The muscles moved across from the deleted hamster (Tim, 2026-09-28):
-    // all 14 share one oscillator instance, identical phase -- no subset
-    // special treatment.
+    // Tim, 2026-09-29: f=1 traveling wave -- per-spoke phase, one full wave
+    // around the rim, same phase on both hubs for the same angle. The
+    // shared oscillator drives all spokes; each link's phase offset creates
+    // the wave.
     final GlobalOscillatorController spokeMuscle =
         new GlobalOscillatorController(Muscles.active_oscillator);
     for (int i = 0; i < RIM_COUNT; i++) {
-      muscleSpoke(link_manager, clazz, hub0, rim0[i], spokeMuscle);
-      muscleSpoke(link_manager, clazz, hub1, rim1[i], spokeMuscle);
+      final int phase = i * muscle_period_ticks / RIM_COUNT;
+      muscleSpoke(link_manager, clazz, hub0, rim0[i], spokeMuscle, phase);
+      muscleSpoke(link_manager, clazz, hub1, rim1[i], spokeMuscle, phase);
     }
 
     // No mid-air starts: rest the whole model on the ground plane.
@@ -357,17 +359,17 @@ public final class HamsterWheelDemo {
    * Muscle hub-to-rim cable spoke, pre-tensioned via
    * spoke_rest_scale_pct so the hub hangs from its upper spokes like a
    * bicycle wheel. Tension-only (compression=false): a spoke can pull the
-   * hub up, never push it down. The muscles moved across from the deleted
-   * hamster (Tim, 2026-09-28) -- all 14 spokes get the identical
-   * controller, no subset special treatment.
+   * hub up, never push it down. Tim, 2026-09-29: f=1 traveling wave --
+   * per-spoke phase offset, same phase on both hubs for the same angle.
    */
   private static void muscleSpoke(LinkManager lm, Clazz clazz,
-      Node hub, Node rim, GlobalOscillatorController muscle) {
+      Node hub, Node rim, GlobalOscillatorController muscle, int phase) {
     final LinkType type = thin(lm.link_type_factory.getNew(
         scaledSpokeLength(distance(hub, rim)), spoke_elasticity));
     type.compression = false;
     final Link link = lm.setLink(hub, rim, type, clazz);
     link.adjusted_rest_length = type.length;
+    link.phase = phase;
     link.controller = muscle;
   }
 
