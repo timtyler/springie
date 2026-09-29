@@ -20,7 +20,7 @@ import com.springie.world.World;
 /**
  * A big, clean rolling wheel: 7 nodes per rim (radius 160px), two
  * parallel rims, each with its own single central hub node -- two hubs
- * total, joined by a stiff passive axle. 14 passive cable spokes (7 per
+ * total, joined by a stiff passive axle. 14 muscle cable spokes (7 per
  * hub).
  *
  * <p>Geometry follows Tim's directives: 2026-09-21 (bigger nodes, longer
@@ -31,18 +31,15 @@ import com.springie.world.World;
  * the axle ties the two hubs into a single rigid shaft. The rim uses
  * alternating diagonal bracing to resist shear.
  *
- * <p>Drive: the suspended hamster (Tim, 2026-09-28): a very heavy node
- * parked forward-up inside the wheel, driving it via weak back cables.
- * The hamster (~12x the wheel's mass) is too heavy for the cables to
- * drag back, so it stays by inertia while the cables haul the back of
- * the wheel forward under it. Back is classified in the world frame,
- * so the drive stays aligned as the wheel rolls. The hub spokes are
- * passive tension-only cables (they just hang the hubs like a bicycle
- * wheel). Self-starting: no kick needed.
+ * <p>Drive (Tim, 2026-09-28 redesign): the hamster is gone -- its mass
+ * moved into the axle (hubs are log 20) and its muscles moved onto the
+ * 14 spokes. All 14 spokes share one muscle oscillator with identical
+ * phase/amplitude, pulsing in sync. No custom controllers, no subset
+ * special treatment -- only the muscles change cable lengths.
  *
  * <p>Node order: rim-0[i] and rim-1[i] interleaved per iteration (element
- * indices 2*i and 2*i+1), then hub0, then hub1, then the hamster. Node 0
- * (rim-0[0], body angle 0) is the rotation marker. buildAt returns hub0.
+ * indices 2*i and 2*i+1), then hub0, then hub1. Node 0 (rim-0[0], body
+ * angle 0) is the rotation marker. buildAt returns hub0.
  *
  * <p>Parameters are public fields so the judge can sweep them.
  */
@@ -89,6 +86,10 @@ public final class HamsterWheelDemo {
   // is 8x the reference mass. The two hubs carry ~90% of the wheel's mass,
   // so pulling a hub forward shifts the centre of mass hard and gravity
   // does the rolling.
+  /**
+   * Hub mass (log scale). Tim, 2026-09-28: hubs are the heavy central
+   * shaft of the wheel.
+   */
   public static int hub_log_mass = 19;
 
   /** Node radius, in fixed-point units: the same as the rim links' radius. */
@@ -112,36 +113,20 @@ public final class HamsterWheelDemo {
   public static int link_radius_divisor = 32;
 
   /**
-   * Rolling direction for the hamster drive: +1 toward +X, -1 toward -X.
-   * The hamster parks up the front wall on this side.
+   * Rolling direction: +1 toward +X, -1 toward -X. (Legacy from the
+   * hamster drive; the spoke muscles are symmetric so this no longer
+   * steers the drive.)
    */
   public static int roll_direction = 1;
 
   /**
-   * Nominal mass for the hamster node (log scale used by the engine).
-   * Tim, 2026-09-28: log 22 was too heavy -- use a lighter hamster.
-   */
-  public static int hamster_log_mass = 16;
-
-  /** Elasticity for the hamster's engine links. */
-  public static int engine_elasticity = 60;
-
-  /**
-   * Muscle drive for the hamster's 14 cables (Tim, 2026-09-28: only the
+   * Muscle drive for the 14 spoke muscles (Tim, 2026-09-28: only the
    * muscles may change cable lengths). Gentle: 5% amplitude, 120-tick
-   * period -- the old custom controller's constant 2% chase is replaced
-   * by the oscillator's rhythmic pump.
+   * period. All 14 spokes share one oscillator instance with identical
+   * phase -- no subset special treatment.
    */
   public static int muscle_amplitude_pct = 5;
   public static int muscle_period_ticks = 120;
-
-  /**
-   * The hamster's parking spot, in pixels: this far forward of the hub
-   * (in the rolling direction) and this far above it. It starts here
-   * and stays by inertia (it is ~12x the wheel's mass).
-   */
-  public static int hamster_dx_px = 60;
-  public static int hamster_dy_px = 40;
 
   /**
    * Yaw stabilizer bias, in internal velocity units per frame
@@ -154,12 +139,12 @@ public final class HamsterWheelDemo {
   public static int axle_stabilizer_bias = 13;
 
   /**
-   * Gravity strength for the hamster universe, in velocity units per frame.
-   * Tim, 2026-09-28: turned down from 2 to 1 -- the hamster ball was
-   * hitting the ground with significant velocity and shattering (a node
-   * flung &gt;400px from the hub disqualifies the run). Lower gravity
-   * softens the impact; it also weakens the gravitational drive, so this
-   * is an experiment to be judged.
+   * Gravity strength for the wheel universe, in velocity units per frame.
+   * Tim, 2026-09-28: turned down from 2 to 1 -- the wheel was hitting the
+   * ground with significant velocity and shattering (a node flung &gt;400px
+   * from the hub disqualifies the run). Lower gravity softens the impact;
+   * it also weakens the gravitational drive, so this is an experiment to
+   * be judged.
    */
   public static int gravity_strength = 1;
 
@@ -226,16 +211,13 @@ public final class HamsterWheelDemo {
     final Clazz clazz = node_manager.clazz_factory.getNew(0xFFFFFFFF);
     final NodeType rim_type = node_manager.node_type_factory.getNew();
     final NodeType hub_type = node_manager.node_type_factory.getNew();
-    final NodeType hamster_type = node_manager.node_type_factory.getNew();
     rim_type.log_mass = rim_log_mass;
     hub_type.log_mass = hub_log_mass;
-    hamster_type.log_mass = hamster_log_mass;
     rim_type.radius = nodeRadius();
     hub_type.radius = nodeRadius();
-    hamster_type.radius = nodeRadius();
 
-    // Muscles.enabled gates the per-link controllers (the hamster's
-    // 14 muscle cables). Only the muscles may change cable lengths
+    // Muscles.enabled gates the per-link controllers (the 14 spoke
+    // muscles). Only the muscles may change cable lengths
     // (Tim, 2026-09-28) -- no custom controllers.
     Muscles.enabled = true;
     Muscles.active_oscillator = 0;
@@ -324,26 +306,18 @@ public final class HamsterWheelDemo {
       passive(link_manager, clazz, a0, rim1[j], bracing_elasticity); // diag \
     }
 
-    // Hub spokes: 14 passive cables, 7 per hub, each hub spoking radially
+    // Hub spokes: 14 muscle cables, 7 per hub, each hub spoking radially
     // to its own rim (in-plane, like a bicycle wheel). Pre-tensioned via
     // spoke_rest_scale_pct so each hub hangs from its upper spokes.
+    // The muscles moved across from the deleted hamster (Tim, 2026-09-28):
+    // all 14 share one oscillator instance, identical phase -- no subset
+    // special treatment.
+    final GlobalOscillatorController spokeMuscle =
+        new GlobalOscillatorController(Muscles.active_oscillator);
     for (int i = 0; i < RIM_COUNT; i++) {
-      passiveSpoke(link_manager, clazz, hub0, rim0[i]);
-      passiveSpoke(link_manager, clazz, hub1, rim1[i]);
+      muscleSpoke(link_manager, clazz, hub0, rim0[i], spokeMuscle);
+      muscleSpoke(link_manager, clazz, hub1, rim1[i], spokeMuscle);
     }
-
-    // The suspended hamster (Tim, 2026-09-28): a very heavy node
-    // parked forward-up inside the wheel, driving it via weak back
-    // cables. The hamster (~12x the wheel) is too heavy for the cables
-    // to drag back, so it stays by inertia while the cables haul the
-    // back of the wheel forward under it. Self-starting: the cables
-    // pull from the first tick, so no kick is needed (and none is given
-    // -- the no-initial-velocity rule holds exactly).
-    final int hmx = cx + (roll_direction * hamster_dx_px << Coords.shift);
-    final int hmy = cy - (hamster_dy_px << Coords.shift);
-    final Node hamster = addNode(node_manager, clazz, hamster_type,
-        hmx, hmy, z0 + hw);
-    hamsterEngine(link_manager, clazz, hamster, hub0, hub1, rim0, rim1);
 
     // No mid-air starts: rest the whole model on the ground plane.
     Grounding.restOnGround(node_manager);
@@ -380,79 +354,21 @@ public final class HamsterWheelDemo {
   }
 
   /**
-   * Passive hub-to-rim cable spoke, pre-tensioned via
+   * Muscle hub-to-rim cable spoke, pre-tensioned via
    * spoke_rest_scale_pct so the hub hangs from its upper spokes like a
    * bicycle wheel. Tension-only (compression=false): a spoke can pull the
-   * hub up, never push it down.
+   * hub up, never push it down. The muscles moved across from the deleted
+   * hamster (Tim, 2026-09-28) -- all 14 spokes get the identical
+   * controller, no subset special treatment.
    */
-  private static void passiveSpoke(LinkManager lm, Clazz clazz,
-      Node hub, Node rim) {
+  private static void muscleSpoke(LinkManager lm, Clazz clazz,
+      Node hub, Node rim, GlobalOscillatorController muscle) {
     final LinkType type = thin(lm.link_type_factory.getNew(
         scaledSpokeLength(distance(hub, rim)), spoke_elasticity));
     type.compression = false;
     final Link link = lm.setLink(hub, rim, type, clazz);
     link.adjusted_rest_length = type.length;
-  }
-
-  /**
-   * The hamster engine: 14 muscle cables (7 per rim, paired across the
-   * two rims so lateral forces stay symmetric) from the hamster to every
-   * rim node, driven by the standard muscle oscillator (Tim, 2026-09-28:
-   * only the muscles may change cable lengths -- no custom controllers).
-   * All 14 pulse in sync via the shared oscillator; the hamster's
-   * forward-parked offset makes the geometry asymmetric, so the rhythmic
-   * haul drives the wheel. Cables (not struts): they haul, never push.
-   */
-  private static void hamsterEngine(LinkManager lm, Clazz clazz,
-      Node hamster, Node hub0, Node hub1, Node[] rim0, Node[] rim1) {
-    final GlobalOscillatorController muscle =
-        new GlobalOscillatorController(Muscles.active_oscillator);
-    for (int i = 0; i < RIM_COUNT; i++) {
-      final Link l0 = engineLink(lm, clazz, hamster, rim0[i]);
-      l0.controller = muscle;
-      final Link l1 = engineLink(lm, clazz, hamster, rim1[i]);
-      l1.controller = muscle;
-    }
-
-    // Capture tethers: passive tension-only cables from the hamster to
-    // the two hubs. They go taut if the hamster tries to leave the
-    // shuttle zone, so the engine cannot eject it; they stay slack
-    // during the normal fore-aft shuttle.
-    tether(lm, clazz, hamster, hub0);
-    tether(lm, clazz, hamster, hub1);
-  }
-
-  /**
-   * A passive capture tether: tension-only, built with a little slack
-   * but short enough to keep the hamster inside the wheel if the drive
-   * ever shoves it hard.
-   */
-  private static void tether(LinkManager lm, Clazz clazz,
-      Node hamster, Node hub) {
-    final int geometric = distance(hamster, hub);
-    final int rest = geometric + (10 << Coords.shift);
-    final LinkType type =
-        thin(lm.link_type_factory.getNew(rest, engine_elasticity));
-    type.compression = false;
-    final Link link = lm.setLink(hamster, hub, type, clazz);
-    link.adjusted_rest_length = type.length;
-  }
-
-  /**
-   * One engine link: a tension-only cable from the hamster to a rim
-   * anchor. Built at its geometric length; the controller drives
-   * adjusted_rest_length every tick. Cables (not struts): they haul the
-   * wheel forward, never push it back.
-   */
-  private static Link engineLink(LinkManager lm, Clazz clazz,
-      Node hamster, Node anchor) {
-    final int length = distance(hamster, anchor);
-    final LinkType type =
-        thin(lm.link_type_factory.getNew(length, engine_elasticity));
-    type.compression = false;
-    final Link link = lm.setLink(hamster, anchor, type, clazz);
-    link.adjusted_rest_length = type.length;
-    return link;
+    link.controller = muscle;
   }
 
   /**

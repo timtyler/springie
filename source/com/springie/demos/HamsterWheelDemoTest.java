@@ -26,12 +26,12 @@ import com.springie.world.World;
 /**
  * The wheel demo must build a big, clean rolling wheel: 7 nodes per rim,
  * two rims each with its own central hub node (two hubs joined by an
- * axle), a dedicated heavy hamster node, 35 rim links (rim edges, cross
- * links, diagonal bracing), 1 axle link, 14 passive cable spokes, 14
- * hamster engine cables, 2 capture tethers (17 nodes, 66 links). The
- * hamster engine cables are the only muscles, all sharing one
- * GlobalOscillatorController -- only the muscles may change cable lengths
- * (Tim, 2026-09-28).
+ * axle), 35 rim links (rim edges, cross links, diagonal bracing), 1 axle
+ * link, 14 muscle cable spokes (16 nodes, 50 links). The spokes are the
+ * only muscles, all sharing one GlobalOscillatorController with identical
+ * phase -- no subset special treatment (Tim, 2026-09-28 redesign: hamster
+ * deleted, its mass moved into the axle, its muscles moved onto the
+ * spokes).
  */
 class HamsterWheelDemoTest {
 
@@ -46,10 +46,7 @@ class HamsterWheelDemoTest {
   private int old_half_width;
   private int old_inset;
   private int old_rim_log_mass;
-  private int old_hamster_log_mass;
-  private int old_engine_elasticity;
-  private int old_hamster_dx;
-  private int old_hamster_dy;
+  private int old_hub_log_mass;
   private int old_bracing;
   private int old_spoke_scale;
   private boolean old_paused;
@@ -71,10 +68,7 @@ class HamsterWheelDemoTest {
     old_half_width = HamsterWheelDemo.rim_half_width_px;
     old_inset = HamsterWheelDemo.axle_inset_px;
     old_rim_log_mass = HamsterWheelDemo.rim_log_mass;
-    old_hamster_log_mass = HamsterWheelDemo.hamster_log_mass;
-    old_engine_elasticity = HamsterWheelDemo.engine_elasticity;
-    old_hamster_dx = HamsterWheelDemo.hamster_dx_px;
-    old_hamster_dy = HamsterWheelDemo.hamster_dy_px;
+    old_hub_log_mass = HamsterWheelDemo.hub_log_mass;
     old_bracing = HamsterWheelDemo.bracing_elasticity;
     old_spoke_scale = HamsterWheelDemo.spoke_rest_scale_pct;
     old_paused = FrEnd.paused;
@@ -91,10 +85,7 @@ class HamsterWheelDemoTest {
     HamsterWheelDemo.rim_half_width_px = 162;
     HamsterWheelDemo.axle_inset_px = 60;
     HamsterWheelDemo.rim_log_mass = 17;
-    HamsterWheelDemo.hamster_log_mass = 25;
-    HamsterWheelDemo.engine_elasticity = 60;
-    HamsterWheelDemo.hamster_dx_px = 60;
-    HamsterWheelDemo.hamster_dy_px = 40;
+    HamsterWheelDemo.hub_log_mass = 20;
     HamsterWheelDemo.bracing_elasticity = 30;
     HamsterWheelDemo.spoke_rest_scale_pct = 95;
     ContextManager.setNodeManager(new NodeManager());
@@ -113,10 +104,7 @@ class HamsterWheelDemoTest {
     HamsterWheelDemo.rim_half_width_px = old_half_width;
     HamsterWheelDemo.axle_inset_px = old_inset;
     HamsterWheelDemo.rim_log_mass = old_rim_log_mass;
-    HamsterWheelDemo.hamster_log_mass = old_hamster_log_mass;
-    HamsterWheelDemo.engine_elasticity = old_engine_elasticity;
-    HamsterWheelDemo.hamster_dx_px = old_hamster_dx;
-    HamsterWheelDemo.hamster_dy_px = old_hamster_dy;
+    HamsterWheelDemo.hub_log_mass = old_hub_log_mass;
     HamsterWheelDemo.bracing_elasticity = old_bracing;
     HamsterWheelDemo.spoke_rest_scale_pct = old_spoke_scale;
     FrEnd.paused = old_paused;
@@ -155,46 +143,47 @@ class HamsterWheelDemoTest {
   }
 
   @Test
-  void buildsSeventeenNodesSixtySixLinks() {
+  void buildsSixteenNodesFiftyLinks() {
     final Node hub0 = HamsterWheelDemo.buildAt(120);
     assertNotNull(hub0);
 
     final NodeManager nm = ContextManager.getNodeManager();
-    // 7 nodes per rim x 2 rims + 2 hubs (one per rim) + 1 hamster = 17.
-    assertEquals(17, nm.element.size());
+    // 7 nodes per rim x 2 rims + 2 hubs (one per rim) = 16 (no hamster).
+    assertEquals(16, nm.element.size());
 
     final LinkManager lm = nm.getLinkManager();
     // 7 segments x 5 (rim0, rim1, cross, 2 mirror diagonals) = 35 rim
-    // links + 1 axle (hub0-hub1) + 14 passive hub spokes + 14 hamster
-    // engine struts + 2 capture tethers = 66 links.
-    assertEquals(66, lm.element.size());
+    // links + 1 axle (hub0-hub1) + 14 muscle spokes = 50 links.
+    assertEquals(50, lm.element.size());
   }
 
   @Test
-  void hamsterEngineLinksAreTheOnlyMuscles() {
+  void spokeMusclesAreTheOnlyMuscles() {
     HamsterWheelDemo.buildAt(120);
     final LinkManager lm =
         ContextManager.getNodeManager().getLinkManager();
 
     int muscle_count = 0;
-    int passive_spoke_count = 0;
+    GlobalOscillatorController first = null;
     for (int i = 0; i < lm.element.size(); i++) {
       final Link link = (Link) lm.element.get(i);
       if (link.controller instanceof GlobalOscillatorController) {
         muscle_count++;
-        // The engine links are cables (tension-only): they haul the
-        // wheel. Only the muscles may change cable lengths.
+        // The spokes are cables (tension-only): they haul, never push.
         assertFalse(link.type.compression,
-            "hamster engine link must be a cable (tension-only)");
-      } else if (link.controller == null && !link.type.compression) {
-        // Tension-only with no controller: a passive hub spoke.
-        passive_spoke_count++;
+            "spoke muscle must be a cable (tension-only)");
+        // All spokes share the identical controller instance -- no
+        // subset special treatment.
+        if (first == null) {
+          first = (GlobalOscillatorController) link.controller;
+        } else {
+          assertTrue(link.controller == first,
+              "all spoke muscles must share one controller");
+        }
       }
     }
-    // 14 hamster-to-rim engine cables (the only muscles).
+    // 14 hub-to-rim spoke muscles (the only muscles).
     assertEquals(14, muscle_count);
-    // 14 passive hub spokes (7 per hub).
-    assertEquals(14, passive_spoke_count);
   }
 
   @Test
@@ -229,17 +218,13 @@ class HamsterWheelDemoTest {
     }
   }
 
-  @Disabled("re-enable when the hamster-wheel retune lands: 9-spoke heavy-hub build tips (upright 0.39)")
+  @Disabled("re-enable when the wheel retune lands: spoke-muscle drive needs judging")
   @Test
   void rollingMatchExceedsThreshold() {
     final RollingJudge.Result result = RollingJudge.score(600, false);
     // The wheel must actually roll, not slide or hop.
     assertTrue(result.rolling_match > 0.8,
         "rollingMatch=" + result.rolling_match + " (expected > 0.8)");
-    // And it must travel a meaningful distance from a wall-clear build:
-    // the two-hub wheel covers ~230px per 600 ticks on its own gait.
-    // (The old ~460px came from a tick-1 kick off the left wall, which
-    // Tim had removed -- the wheel must roll without touching the walls.)
     assertTrue(!result.disqualified,
         "judged run must not be disqualified");
     assertTrue(result.distance_px > 150,
