@@ -215,6 +215,10 @@ public class NodeManager extends World {
       if (FrEnd.check_collisions) {
         collisionCheck();
       }
+      // Camera-frame walls run last, so they are the final word on
+      // positions each tick (Tim, 2026-09-28: "Nodes must stay in the
+      // bounding box. That should never happen!").
+      confineToCameraFrame();
     }
   }
 
@@ -398,6 +402,76 @@ public class NodeManager extends World {
     // The Olympics location markers ride the same shift, so they stay
     // locked to the world while the creature stays centred.
     WorldMarkers.onFrame(offset);
+  }
+
+  /**
+   * Camera-frame walls (Tim, 2026-09-28): "Nodes must stay in the
+   * bounding box. That should never happen!" Olympic follow-cam mode
+   * drops the world x-walls (boundless track) and the ceiling
+   * (jumpers), so when a model shatters its fragments fly to infinity.
+   * After the centering snap the camera frame IS the box, so clamp each
+   * followed axis to it here, every tick. The intact model keeps
+   * running boundless (it stays centred); fragments bounce off instead
+   * of leaving the world. Non-followed axes keep their existing wall
+   * behaviour (the hopper's open ceiling is untouched).
+   */
+  private void confineToCameraFrame() {
+    final boolean olympic = FrEnd.demo_model
+        && (FrEnd.continuously_centre_x || FrEnd.continuously_centre_y
+            || FrEnd.continuously_centre_z);
+    if (!olympic) {
+      return;
+    }
+    final int max_x = Coords.x_pixels << Coords.shift;
+    final int max_y = Coords.y_pixels << Coords.shift;
+    final int max_z = Coords.z_pixels << Coords.shift;
+    final int number_of_nodes = this.element.size();
+    for (int counter = number_of_nodes; --counter >= 0;) {
+      final Node node = (Node) this.element.get(counter);
+      final int radius = node.type.radius;
+      if (FrEnd.continuously_centre_x) {
+        if ((node.pos.x + radius) > max_x) {
+          node.pos.x = max_x - radius;
+          if (node.velocity.x > 0) {
+            node.velocity.x = -(int) (node.velocity.x * 0.95);
+          }
+        }
+        if (node.pos.x < radius) {
+          node.pos.x = radius;
+          if (node.velocity.x < 0) {
+            node.velocity.x = -(int) (node.velocity.x * 0.95);
+          }
+        }
+      }
+      if (FrEnd.continuously_centre_y) {
+        if ((node.pos.y + radius) > max_y) {
+          node.pos.y = max_y - radius;
+          if (node.velocity.y > 0) {
+            node.velocity.y = -(int) (node.velocity.y * 0.95);
+          }
+        }
+        if (node.pos.y < radius) {
+          node.pos.y = radius;
+          if (node.velocity.y < 0) {
+            node.velocity.y = -(int) (node.velocity.y * 0.95);
+          }
+        }
+      }
+      if (FrEnd.continuously_centre_z) {
+        if ((node.pos.z + radius) > max_z) {
+          node.pos.z = max_z - radius;
+          if (node.velocity.z > 0) {
+            node.velocity.z = -(int) (node.velocity.z * 0.95);
+          }
+        }
+        if (node.pos.z < radius) {
+          node.pos.z = radius;
+          if (node.velocity.z < 0) {
+            node.velocity.z = -(int) (node.velocity.z * 0.95);
+          }
+        }
+      }
+    }
   }
 
   public void collisionCheckNbyN() {
