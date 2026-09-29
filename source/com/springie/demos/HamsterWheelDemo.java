@@ -285,8 +285,8 @@ public final class HamsterWheelDemo {
     hub1.compass = CompassPoint.S;
     CompassPoint.bias_size = compass_bias;
 
-    // Rim: two 7-gon rings (14 links) + 7 cross links + 14 mirror diagonals
-    // (35 total). The diagonals come in mirror pairs so the bracing has
+    // Rim: two 6-gon rings (12 links) + 6 cross links + 12 mirror diagonals
+    // (30 total). The diagonals come in mirror pairs so the bracing has
     // no chirality: single-handed diagonals twist the wheel and make it
     // veer in a circle instead of rolling straight.
     for (int i = 0; i < RIM_COUNT; i++) {
