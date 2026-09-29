@@ -142,12 +142,6 @@ public final class HamsterWheelDemo {
   public static int engine_elasticity = 60;
 
   /**
-   * Damping for the hamster: 256ths of its hub-relative velocity bled
-   * per tick. It should barely move, but this settles any drift.
-   */
-  public static int engine_damping = 26;
-
-  /**
    * The hamster's parking spot, in pixels: this far forward of the hub
    * (in the rolling direction) and this far above it. It starts here
    * and stays by inertia (it is ~12x the wheel's mass).
@@ -420,7 +414,7 @@ public final class HamsterWheelDemo {
     }
     final HamsterEngineController controller = new HamsterEngineController(
         hamster, hub0, hub1, links, anchors, engine_pull_pct,
-        engine_deadband_px, engine_damping);
+        engine_deadband_px);
     for (Link link : links) {
       link.controller = controller;
     }

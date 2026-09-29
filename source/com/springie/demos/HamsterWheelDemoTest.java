@@ -49,7 +49,6 @@ class HamsterWheelDemoTest {
   private int old_engine_pull;
   private int old_engine_deadband;
   private int old_engine_elasticity;
-  private int old_engine_damping;
   private int old_hamster_dx;
   private int old_hamster_dy;
   private int old_bracing;
@@ -77,7 +76,6 @@ class HamsterWheelDemoTest {
     old_engine_pull = HamsterWheelDemo.engine_pull_pct;
     old_engine_deadband = HamsterWheelDemo.engine_deadband_px;
     old_engine_elasticity = HamsterWheelDemo.engine_elasticity;
-    old_engine_damping = HamsterWheelDemo.engine_damping;
     old_hamster_dx = HamsterWheelDemo.hamster_dx_px;
     old_hamster_dy = HamsterWheelDemo.hamster_dy_px;
     old_bracing = HamsterWheelDemo.bracing_elasticity;
@@ -100,7 +98,6 @@ class HamsterWheelDemoTest {
     HamsterWheelDemo.engine_pull_pct = 2;
     HamsterWheelDemo.engine_deadband_px = 40;
     HamsterWheelDemo.engine_elasticity = 60;
-    HamsterWheelDemo.engine_damping = 26;
     HamsterWheelDemo.hamster_dx_px = 60;
     HamsterWheelDemo.hamster_dy_px = 40;
     HamsterWheelDemo.bracing_elasticity = 30;
@@ -125,7 +122,6 @@ class HamsterWheelDemoTest {
     HamsterWheelDemo.engine_pull_pct = old_engine_pull;
     HamsterWheelDemo.engine_deadband_px = old_engine_deadband;
     HamsterWheelDemo.engine_elasticity = old_engine_elasticity;
-    HamsterWheelDemo.engine_damping = old_engine_damping;
     HamsterWheelDemo.hamster_dx_px = old_hamster_dx;
     HamsterWheelDemo.hamster_dy_px = old_hamster_dy;
     HamsterWheelDemo.bracing_elasticity = old_bracing;

@@ -9,13 +9,14 @@ import java.util.List;
 
 /**
  * The suspended hamster (Tim, 2026-09-28): a very heavy node parked
- * forward-up inside the wheel, driving it via weak back cables.
+ * forward-up inside the wheel, driving it via the back cables.
  *
- * <p>The cables-only rule is relaxed, but the insight is mass, not
- * struts: the hamster (log 25, ~12x the wheel) is too heavy for the
- * weak back cables to drag backward, so it stays parked forward by
- * inertia while the cables haul the back of the wheel forward under
- * it. The wheel rolls; the hamster barely moves.
+ * <p>Physics stays honest: the controller only shortens cable rest
+ * lengths (a muscle doing work, applied as an equal-and-opposite force
+ * pair by the link solver). It never touches velocities directly --
+ * the momentum cheat (damping the hamster toward hub velocity, which
+ * deleted its backward reaction momentum and created forward momentum
+ * from nothing) was removed on Tim's order, 2026-09-28.
  *
  * <p>One instance drives all the engine links. Back is classified in
  * the world frame every tick (anchor behind the hub), so the drive
@@ -30,12 +31,11 @@ public final class HamsterEngineController implements Controller {
   private final List<Node> anchors;
   private final int pull_pct;
   private final int deadband;
-  private final int damping;
   private long last_tick = -1;
 
   public HamsterEngineController(Node hamster, Node hub0, Node hub1,
       List<Link> links, List<Node> anchors, int pull_pct,
-      int deadband_px, int damping) {
+      int deadband_px) {
     this.hamster = hamster;
     this.hub0 = hub0;
     this.hub1 = hub1;
@@ -43,7 +43,6 @@ public final class HamsterEngineController implements Controller {
     this.anchors = anchors;
     this.pull_pct = pull_pct;
     this.deadband = deadband_px;
-    this.damping = damping;
   }
 
   @Override
@@ -68,16 +67,6 @@ public final class HamsterEngineController implements Controller {
       }
       l.adjusted_rest_length = rest;
     }
-
-    // Settle the hamster (it should barely move, but damp any drift).
-    // Damping toward the hub (not the world frame) never brakes the
-    // wheel's bulk motion.
-    final int uvx = (hub0.velocity.x + hub1.velocity.x) / 2;
-    final int uvy = (hub0.velocity.y + hub1.velocity.y) / 2;
-    final int uvz = (hub0.velocity.z + hub1.velocity.z) / 2;
-    hamster.velocity.x -= (hamster.velocity.x - uvx) * damping / 256;
-    hamster.velocity.y -= (hamster.velocity.y - uvy) * damping / 256;
-    hamster.velocity.z -= (hamster.velocity.z - uvz) * damping / 256;
   }
 
   private static int distance(Node a, Node b) {
