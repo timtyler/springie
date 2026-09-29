@@ -3,6 +3,7 @@
 package com.springie.demos;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -22,12 +23,14 @@ import com.springie.render.Coords;
 import com.springie.world.World;
 
 /**
- * The wheel demo must build a big, clean rolling wheel: 6 nodes per rim,
+ * The wheel demo must build a big, clean rolling wheel: 7 nodes per rim,
  * two rims each with its own central hub node (two hubs joined by an
- * axle), 30 rim links (rim edges, cross links, diagonal bracing), 1 axle
- * link, 12 cable muscle spokes (14 nodes, 43 links). The spokes are
- * tension-only cables (Tim's "muscles on cables" rule) carrying
- * ground-contact pull reflex controllers (self-synchronizing).
+ * axle), a dedicated heavy hamster node, 35 rim links (rim edges, cross
+ * links, diagonal bracing), 1 axle link, 14 passive cable spokes, 14
+ * hamster engine struts, 2 capture tethers (17 nodes, 66 links). The hamster engine links
+ * are struts (Tim relaxed the "muscles on cables" rule for this on
+ * 2026-09-28) carrying a single HamsterEngineController -- the
+ * two-stroke suspended-hamster drive.
  */
 class HamsterWheelDemoTest {
 
@@ -35,9 +38,6 @@ class HamsterWheelDemoTest {
   private boolean old_gravity_active;
   private int old_friction;
   private int old_temperature;
-  private boolean old_reflex;
-  private int old_push;
-  private int old_pull;
   private int old_direction;
   private int old_stabilizer_bias;
   private int old_z_offset;
@@ -45,13 +45,17 @@ class HamsterWheelDemoTest {
   private int old_half_width;
   private int old_inset;
   private int old_rim_log_mass;
-  private int old_stance;
+  private int old_hamster_log_mass;
+  private int old_engine_pull;
+  private int old_engine_deadband;
+  private int old_engine_elasticity;
+  private int old_engine_damping;
+  private int old_hamster_dx;
+  private int old_hamster_dy;
   private int old_bracing;
-  private int old_roll_gain;
   private int old_spoke_scale;
   private boolean old_paused;
   private int old_frame_frequency;
-  private int old_active_oscillator;
   private int old_coords_x;
   private int old_coords_y;
   private int old_coords_z;
@@ -62,9 +66,6 @@ class HamsterWheelDemoTest {
     old_gravity_active = World.gravity_active;
     old_friction = World.ground_friction;
     old_temperature = World.global_temperature;
-    old_reflex = HamsterWheelDemo.use_reflex_drive;
-    old_push = HamsterWheelDemo.reflex_push_pct;
-    old_pull = HamsterWheelDemo.reflex_pull_pct;
     old_direction = HamsterWheelDemo.roll_direction;
     old_stabilizer_bias = HamsterWheelDemo.axle_stabilizer_bias;
     old_z_offset = HamsterWheelDemo.z_offset_px;
@@ -72,21 +73,22 @@ class HamsterWheelDemoTest {
     old_half_width = HamsterWheelDemo.rim_half_width_px;
     old_inset = HamsterWheelDemo.axle_inset_px;
     old_rim_log_mass = HamsterWheelDemo.rim_log_mass;
-    old_stance = HamsterWheelDemo.reflex_stance_threshold_px;
+    old_hamster_log_mass = HamsterWheelDemo.hamster_log_mass;
+    old_engine_pull = HamsterWheelDemo.engine_pull_pct;
+    old_engine_deadband = HamsterWheelDemo.engine_deadband_px;
+    old_engine_elasticity = HamsterWheelDemo.engine_elasticity;
+    old_engine_damping = HamsterWheelDemo.engine_damping;
+    old_hamster_dx = HamsterWheelDemo.hamster_dx_px;
+    old_hamster_dy = HamsterWheelDemo.hamster_dy_px;
     old_bracing = HamsterWheelDemo.bracing_elasticity;
-    old_roll_gain = HamsterWheelDemo.roll_correct_gain;
     old_spoke_scale = HamsterWheelDemo.spoke_rest_scale_pct;
     old_paused = FrEnd.paused;
     old_frame_frequency = FrEnd.frame_frequency;
-    old_active_oscillator = Muscles.active_oscillator;
     old_coords_x = Coords.x_pixels;
     old_coords_y = Coords.y_pixels;
     old_coords_z = Coords.z_pixels;
     // Pin the drive to the tuned values so the tests are deterministic
     // even if the statics were changed by an earlier test.
-    HamsterWheelDemo.use_reflex_drive = true;
-    HamsterWheelDemo.reflex_push_pct = 0;
-    HamsterWheelDemo.reflex_pull_pct = 16;
     HamsterWheelDemo.roll_direction = 1;
     HamsterWheelDemo.axle_stabilizer_bias = 13;
     HamsterWheelDemo.z_offset_px = 100;
@@ -94,9 +96,14 @@ class HamsterWheelDemoTest {
     HamsterWheelDemo.rim_half_width_px = 162;
     HamsterWheelDemo.axle_inset_px = 60;
     HamsterWheelDemo.rim_log_mass = 17;
-    HamsterWheelDemo.reflex_stance_threshold_px = 60;
+    HamsterWheelDemo.hamster_log_mass = 25;
+    HamsterWheelDemo.engine_pull_pct = 2;
+    HamsterWheelDemo.engine_deadband_px = 40;
+    HamsterWheelDemo.engine_elasticity = 60;
+    HamsterWheelDemo.engine_damping = 26;
+    HamsterWheelDemo.hamster_dx_px = 60;
+    HamsterWheelDemo.hamster_dy_px = 40;
     HamsterWheelDemo.bracing_elasticity = 30;
-    HamsterWheelDemo.roll_correct_gain = 0;
     HamsterWheelDemo.spoke_rest_scale_pct = 95;
     ContextManager.setNodeManager(new NodeManager());
   }
@@ -107,9 +114,6 @@ class HamsterWheelDemoTest {
     World.gravity_active = old_gravity_active;
     World.ground_friction = old_friction;
     World.global_temperature = old_temperature;
-    HamsterWheelDemo.use_reflex_drive = old_reflex;
-    HamsterWheelDemo.reflex_push_pct = old_push;
-    HamsterWheelDemo.reflex_pull_pct = old_pull;
     HamsterWheelDemo.roll_direction = old_direction;
     HamsterWheelDemo.axle_stabilizer_bias = old_stabilizer_bias;
     HamsterWheelDemo.z_offset_px = old_z_offset;
@@ -117,13 +121,17 @@ class HamsterWheelDemoTest {
     HamsterWheelDemo.rim_half_width_px = old_half_width;
     HamsterWheelDemo.axle_inset_px = old_inset;
     HamsterWheelDemo.rim_log_mass = old_rim_log_mass;
-    HamsterWheelDemo.reflex_stance_threshold_px = old_stance;
+    HamsterWheelDemo.hamster_log_mass = old_hamster_log_mass;
+    HamsterWheelDemo.engine_pull_pct = old_engine_pull;
+    HamsterWheelDemo.engine_deadband_px = old_engine_deadband;
+    HamsterWheelDemo.engine_elasticity = old_engine_elasticity;
+    HamsterWheelDemo.engine_damping = old_engine_damping;
+    HamsterWheelDemo.hamster_dx_px = old_hamster_dx;
+    HamsterWheelDemo.hamster_dy_px = old_hamster_dy;
     HamsterWheelDemo.bracing_elasticity = old_bracing;
-    HamsterWheelDemo.roll_correct_gain = old_roll_gain;
     HamsterWheelDemo.spoke_rest_scale_pct = old_spoke_scale;
     FrEnd.paused = old_paused;
     FrEnd.frame_frequency = old_frame_frequency;
-    Muscles.active_oscillator = old_active_oscillator;
     Coords.x_pixels = old_coords_x;
     Coords.y_pixels = old_coords_y;
     Coords.z_pixels = old_coords_z;
@@ -158,38 +166,47 @@ class HamsterWheelDemoTest {
   }
 
   @Test
-  void buildsFourteenNodesFortyThreeLinks() {
+  void buildsSeventeenNodesSixtySixLinks() {
     final Node hub0 = HamsterWheelDemo.buildAt(120);
     assertNotNull(hub0);
 
     final NodeManager nm = ContextManager.getNodeManager();
-    // 6 nodes per rim x 2 rims + 2 hubs (one per rim) = 14 nodes.
-    assertEquals(14, nm.element.size());
+    // 7 nodes per rim x 2 rims + 2 hubs (one per rim) + 1 hamster = 17.
+    assertEquals(17, nm.element.size());
 
     final LinkManager lm = nm.getLinkManager();
-    // 6 segments x 5 (rim0, rim1, cross, 2 mirror diagonals) = 30 rim links
-    // + 1 axle (hub0-hub1) + 12 hub spokes = 43 links.
-    assertEquals(43, lm.element.size());
+    // 7 segments x 5 (rim0, rim1, cross, 2 mirror diagonals) = 35 rim
+    // links + 1 axle (hub0-hub1) + 14 passive hub spokes + 14 hamster
+    // engine struts + 2 capture tethers = 66 links.
+    assertEquals(66, lm.element.size());
   }
 
   @Test
-  void spokesAreCableMusclesWithReflexControllers() {
+  void hamsterEngineLinksAreTheOnlyMuscles() {
     HamsterWheelDemo.buildAt(120);
     final LinkManager lm =
         ContextManager.getNodeManager().getLinkManager();
 
     int muscle_count = 0;
+    int passive_spoke_count = 0;
     for (int i = 0; i < lm.element.size(); i++) {
       final Link link = (Link) lm.element.get(i);
-      if (link.controller instanceof PairedSpokeController) {
+      if (link.controller instanceof HamsterEngineController) {
         muscle_count++;
-        // Tim's rule: muscles on cables, not struts.
-        assertTrue(!link.type.compression,
-            "spoke must be tension-only (cable)");
+        // The engine links are cables (tension-only): they haul the
+        // back of the wheel forward. The hamster's mass (not strut
+        // pushing) is what breaks the cable bootstrap.
+        assertFalse(link.type.compression,
+            "hamster engine link must be a cable (tension-only)");
+      } else if (link.controller == null && !link.type.compression) {
+        // Tension-only with no controller: a passive hub spoke.
+        passive_spoke_count++;
       }
     }
-    // 12 hub-to-rim cable spokes (the only muscles), in 6 paired controllers.
-    assertEquals(12, muscle_count);
+    // 14 hamster-to-rim engine cables (the only muscles).
+    assertEquals(14, muscle_count);
+    // 14 passive hub spokes (7 per hub).
+    assertEquals(14, passive_spoke_count);
   }
 
   @Test

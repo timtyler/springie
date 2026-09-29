@@ -11,40 +11,37 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
 import com.springie.geometry.Point3D;
-import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
 import com.springie.render.Coords;
 import com.springie.world.Grounding;
 import com.springie.world.World;
 
 /**
- * A big, clean rolling wheel: 6 nodes per rim (radius 160px), two
+ * A big, clean rolling wheel: 7 nodes per rim (radius 160px), two
  * parallel rims, each with its own single central hub node -- two hubs
- * total, joined by a stiff passive axle. 12 cable spokes (6 per hub).
+ * total, joined by a stiff passive axle. 14 passive cable spokes (7 per
+ * hub).
  *
  * <p>Geometry follows Tim's directives: 2026-09-21 (bigger nodes, longer
- * struts, fewer thinner spokes, one central node per rim) and 2026-09-24
+ * struts, fewer thinner spokes, one central node per rim), 2026-09-24
  * (heavy axis nodes, much lighter rim nodes, bigger nodes still, thinner
- * links) -- perfecting the hamster-ball drive, where the heavy hubs'
- * centre-of-mass shift is what gravity rolls the wheel on. Each hub sits
- * in its rim's plane and spokes radially to its 6 rim nodes, like a
- * bicycle wheel; the axle ties the two hubs into a single rigid shaft.
- * The rim uses alternating diagonal bracing to resist shear, and each
- * hub connects via tetrahedra -- never triangles sharing only the hub
- * corner.
+ * links) and 2026-09-28 (7 spokes per rim). Each hub sits in its rim's
+ * plane and spokes radially to its 7 rim nodes, like a bicycle wheel;
+ * the axle ties the two hubs into a single rigid shaft. The rim uses
+ * alternating diagonal bracing to resist shear.
  *
- * <p>Drive: the 18 hub spokes are cable muscles (tension-only, per Tim's
- * "muscles on cables" rule) with a ground-contact pull reflex. When a
- * spoke pair's rim nodes are on the ground ahead of the hub (in the
- * rolling direction) the spokes contract, pulling the hub forward and
- * down toward the rim -- like pulling yourself forward. The reflex is
- * self-synchronizing: ground contact sets the timing. Spokes are
- * pre-tensioned (spoke_rest_scale_pct) so each hub hangs from its upper
- * spokes instead of sagging.
+ * <p>Drive: the suspended hamster (Tim, 2026-09-28): a very heavy node
+ * parked forward-up inside the wheel, driving it via weak back cables.
+ * The hamster (~12x the wheel's mass) is too heavy for the cables to
+ * drag back, so it stays by inertia while the cables haul the back of
+ * the wheel forward under it. Back is classified in the world frame,
+ * so the drive stays aligned as the wheel rolls. The hub spokes are
+ * passive tension-only cables (they just hang the hubs like a bicycle
+ * wheel). Self-starting: no kick needed.
  *
  * <p>Node order: rim-0[i] and rim-1[i] interleaved per iteration (element
- * indices 2*i and 2*i+1), then hub0, then hub1. Node 0 (rim-0[0], body
- * angle 0) is the rotation marker. buildAt returns hub0.
+ * indices 2*i and 2*i+1), then hub0, then hub1, then the hamster. Node 0
+ * (rim-0[0], body angle 0) is the rotation marker. buildAt returns hub0.
  *
  * <p>Parameters are public fields so the judge can sweep them.
  */
@@ -53,9 +50,8 @@ public final class HamsterWheelDemo {
   }
 
   /** Nodes per rim. */
-  // Tim's directive (2026-09-24): 9 spokes per rim, not 6 -- a rounder
-  // wheel rolls better (more ground-contact points, smaller polygon steps).
-  public static final int RIM_COUNT = 6;
+  // Tim's directive (2026-09-28): 7 spokes per rim.
+  public static final int RIM_COUNT = 7;
 
   /** Rim radius, in pixels. */
   public static int rim_radius_px = 160;
@@ -114,32 +110,50 @@ public final class HamsterWheelDemo {
    */
   public static int link_radius_divisor = 32;
 
-  /** Muscle amplitude for the spoke wave, 0-100%. */
-  /** Spoke muscle amplitude, percent (travelling-wave mode only). */
-  public static int muscle_amplitude_pct = 25;
-
-  /** Oscillator period for the spoke wave, in ticks. */
-  public static int muscle_period_ticks = 120;
+  /**
+   * Rolling direction for the hamster drive: +1 toward +X, -1 toward -X.
+   * The hamster parks up the front wall on this side.
+   */
+  public static int roll_direction = 1;
 
   /**
-   * Direction of the travelling wave: +1 or -1. The spoke phase is
-   * phase_direction * angle * period / (2*PI). Sign verified
-   * empirically: -1 drives the wheel toward +X.
+   * Nominal mass for the hamster node (log scale used by the engine).
+   * The hamster is by far the heaviest part of the model -- log 25 is
+   * ~12x the whole wheel -- so it stays centred while the engine moves
+   * the wheel around it. (A lighter hamster gets shoved by its own
+   * engine.)
    */
-  public static int phase_direction = -1;
+  public static int hamster_log_mass = 22;
 
   /**
-   * Initial angular impulse for self-start, in internal velocity units
-   * applied to rim nodes (tangential). A pure spin nets to zero mean
-   * velocity, so the no-initial-velocity rule still passes. The reflex
-   * drive sustains rolling but cannot break the rest equilibrium on its
-   * own (the at-rest stance pull is only ~2% of one spoke's rest length);
-   * without this the wheel just sits where it is built. 240 (about
-   * 1px/frame at the rim) tips it into the rolling gait; much more trips
-   * the tip-over rule, much less never breaks into a roll (the landscape
-   * is chaotic -- nearby values stall or DQ, measured 2026-09-23).
+   * How far the back cables contract, as a percent of their current
+   * length. They haul the back of the wheel forward; the hamster is too
+   * heavy to be dragged back.
    */
-  public static int start_kick = 240;
+  public static int engine_pull_pct = 2;
+
+  /**
+   * Back deadband, in pixels: only anchors behind the hub by more than
+   * this pull (front/top/bottom stay slack).
+   */
+  public static int engine_deadband_px = 40;
+
+  /** Elasticity for the hamster's engine links. */
+  public static int engine_elasticity = 60;
+
+  /**
+   * Damping for the hamster: 256ths of its hub-relative velocity bled
+   * per tick. It should barely move, but this settles any drift.
+   */
+  public static int engine_damping = 26;
+
+  /**
+   * The hamster's parking spot, in pixels: this far forward of the hub
+   * (in the rolling direction) and this far above it. It starts here
+   * and stays by inertia (it is ~12x the wheel's mass).
+   */
+  public static int hamster_dx_px = 60;
+  public static int hamster_dy_px = 40;
 
   /**
    * Yaw stabilizer bias, in internal velocity units per frame
@@ -155,21 +169,6 @@ public final class HamsterWheelDemo {
   public static int friction = 100;
 
   /**
-   * Drive mode: true for the ground-contact push-off reflex
-   * (self-synchronizing), false for the open-loop travelling wave.
-   * The paired reflex fires both spokes of a rim-pair together, keeping
-   * lateral forces symmetric -- this is what stops the tip-over. Geometry
-   * (short/fat) helps but is not sufficient alone.
-   */
-  public static boolean use_reflex_drive = true;
-
-  /**
-   * Reflex push percent (spoke extension in back stance). Zero: the
-   * spokes are cables (tension-only), so extension fires nothing -- the
-   * drive is pull-only on the ahead stance (see reflex_pull_pct).
-   */
-  public static int reflex_push_pct = 0;
-  /**
    * Tim's "not tipping over" rule for the wheel: the axle must stay level.
    * Element indices of one node on each end of the axle (rim0[0], rim1[0]
    * -- same angular station, so they ride together while rolling). Their
@@ -180,37 +179,8 @@ public final class HamsterWheelDemo {
   /** Max allowed axle-end height difference (px) for the tip-over rule. */
   public static final int posture_axle_max_diff_px = 20;
 
-  /**
-   * Reflex pull percent (spoke contraction in front stance). The drive:
-   * with cable-only spokes the push phase cannot fire (cables don't
-   * push), so the reflex pulls on the ahead stance instead -- contracting
-   * spokes yank the hub forward toward the grounded front rim. Tuned to 8
-   * for the two-hub wheel: the in-plane spokes are shorter and more
-   * direct, so less pull is needed; stronger pull tips it over.
-   */
-  public static int reflex_pull_pct = 16;
-
-  /**
-   * How far behind/in front of the hub (px) a spoke's rim pair must be to
-   * fire the push/pull. Firing only when the spoke is well angled (not
-   * near-vertical) directs the push forward instead of launching the wheel
-   * skyward.
-   */
-  public static int reflex_stance_threshold_px = 60;
-
-  /** Rolling direction for the reflex: +1 toward +X, -1 toward -X. */
-  public static int roll_direction = 1;
-
-  /**
-   * When true, the paired reflex ramps the push/pull smoothly with spoke
-   * angle (0 at the stance threshold, full at horizontal) instead of
-   * snapping on/off. Removes the impulsive kick that pumps the rocking
-   * mode; concentrates push where the spoke is most horizontal.
-   */
-  public static boolean proportional_drive = true;
-
   /** Elasticity for the rim links (all tetrahedron edges). */
-  public static int rim_elasticity = 60;
+  public static int rim_elasticity = 120;
 
   /**
    * Elasticity for the inter-rim bracing (cross links and mirror
@@ -218,21 +188,10 @@ public final class HamsterWheelDemo {
    * against differential (rolling/rocking) motion, while the softer rings
    * keep ground impacts gentle.
    */
-  public static int bracing_elasticity = 60;
+  public static int bracing_elasticity = 150;
 
-  /** Elasticity for the hub-to-rim spoke muscles. */
-  public static int spoke_elasticity = 60;
-
-  /**
-   * Roll correction gain for the paired reflex, in rest-length units per
-   * unit of inter-rim y-difference (256 = 1.0x). Zero: with cable-only
-   * spokes the correction is counterproductive -- extending a cable does
-   * nothing, and the asymmetric contraction pumps the very rocking mode
-   * it was meant to damp. The paired reflex fires symmetrically from
-   * midpoint geometry, which is sufficient; the axle stays level without
-   * active correction.
-   */
-  public static int roll_correct_gain = 0;
+  /** Elasticity for the hub-to-rim spokes (passive cables). */
+  public static int spoke_elasticity = 120;
 
   /**
    * Spoke rest-length scale, percent. 100 = rest length equals the built
@@ -257,18 +216,17 @@ public final class HamsterWheelDemo {
     final Clazz clazz = node_manager.clazz_factory.getNew(0xFFFFFFFF);
     final NodeType rim_type = node_manager.node_type_factory.getNew();
     final NodeType hub_type = node_manager.node_type_factory.getNew();
+    final NodeType hamster_type = node_manager.node_type_factory.getNew();
     rim_type.log_mass = rim_log_mass;
     hub_type.log_mass = hub_log_mass;
+    hamster_type.log_mass = hamster_log_mass;
     rim_type.radius = nodeRadius();
     hub_type.radius = nodeRadius();
+    hamster_type.radius = nodeRadius();
 
-    // The spoke wave runs on oscillator slot 0.
+    // Muscles.enabled gates the per-link controllers (the hamster's
+    // climb controllers and the axle stabilizer).
     Muscles.enabled = true;
-    Muscles.active_oscillator = 0;
-    Muscles.activeOscillator().setAmplitude(
-        muscle_amplitude_pct * Muscles.UNITY / 100);
-    Muscles.activeOscillator().setPeriodTicks(muscle_period_ticks);
-    Muscles.activeOscillator().setPhase(0);
     World.gravity_active = true;
     World.gravity_strength = 2;
     World.ground_friction = friction;
@@ -320,12 +278,10 @@ public final class HamsterWheelDemo {
     axle_link.controller =
         new AxleStabilizerController(rim0, rim1, axle_stabilizer_bias);
 
-    // Rim: two 6-gon rings (12 links) + 6 cross links + 12 mirror diagonals
-    // (30 total). The diagonals come in mirror pairs so the bracing has
+    // Rim: two 7-gon rings (14 links) + 7 cross links + 14 mirror diagonals
+    // (35 total). The diagonals come in mirror pairs so the bracing has
     // no chirality: single-handed diagonals twist the wheel and make it
     // veer in a circle instead of rolling straight.
-    final GlobalOscillatorController controller =
-        new GlobalOscillatorController(0);
     for (int i = 0; i < RIM_COUNT; i++) {
       final int j = (i + 1) % RIM_COUNT;
       final Node a0 = rim0[i];
@@ -343,40 +299,26 @@ public final class HamsterWheelDemo {
       passive(link_manager, clazz, a0, rim1[j], bracing_elasticity); // diag \
     }
 
-    // Hub spokes: 18 cable muscles, 9 per hub, each hub spoking radially
-    // to its own rim (in-plane, like a bicycle wheel). For each i, the
-    // pair (hub0-rim0[i], hub1-rim1[i]) fires together from midpoint
-    // geometry, keeping lateral forces symmetric.
-    //
-    // Drive: either the ground-contact pull reflex (self-synchronizing)
-    // or the open-loop travelling wave (per-link phases).
+    // Hub spokes: 14 passive cables, 7 per hub, each hub spoking radially
+    // to its own rim (in-plane, like a bicycle wheel). Pre-tensioned via
+    // spoke_rest_scale_pct so each hub hangs from its upper spokes.
     for (int i = 0; i < RIM_COUNT; i++) {
-      final double a = 2.0 * Math.PI * i / RIM_COUNT;
-      // Phase in ticks: one full wave around the rim.
-      final int phase =
-          (int) (phase_direction * a * muscle_period_ticks / (2.0 * Math.PI));
-      if (use_reflex_drive) {
-        pairedReflexSpokes(link_manager, clazz, hub0, hub1, rim0[i], rim1[i],
-            ground);
-      } else {
-        spoke(link_manager, clazz, controller, hub0, rim0[i], phase);
-        spoke(link_manager, clazz, controller, hub1, rim1[i], phase);
-      }
+      passiveSpoke(link_manager, clazz, hub0, rim0[i]);
+      passiveSpoke(link_manager, clazz, hub1, rim1[i]);
     }
 
-    // Optional self-start kick: tangential rim velocities.
-    if (start_kick != 0) {
-      for (int i = 0; i < RIM_COUNT; i++) {
-        final double a = 2.0 * Math.PI * i / RIM_COUNT;
-        // Tangent for +X rolling (screen coords, y down): clockwise.
-        final int tx = (int) (-Math.sin(a) * start_kick);
-        final int ty = (int) (Math.cos(a) * start_kick);
-        rim0[i].velocity.x += tx;
-        rim0[i].velocity.y += ty;
-        rim1[i].velocity.x += tx;
-        rim1[i].velocity.y += ty;
-      }
-    }
+    // The suspended hamster (Tim, 2026-09-28): a very heavy node
+    // parked forward-up inside the wheel, driving it via weak back
+    // cables. The hamster (~12x the wheel) is too heavy for the cables
+    // to drag back, so it stays by inertia while the cables haul the
+    // back of the wheel forward under it. Self-starting: the cables
+    // pull from the first tick, so no kick is needed (and none is given
+    // -- the no-initial-velocity rule holds exactly).
+    final int hmx = cx + (roll_direction * hamster_dx_px << Coords.shift);
+    final int hmy = cy - (hamster_dy_px << Coords.shift);
+    final Node hamster = addNode(node_manager, clazz, hamster_type,
+        hmx, hmy, z0 + hw);
+    hamsterEngine(link_manager, clazz, hamster, hub0, hub1, rim0, rim1);
 
     // No mid-air starts: rest the whole model on the ground plane.
     Grounding.restOnGround(node_manager);
@@ -412,16 +354,85 @@ public final class HamsterWheelDemo {
     return type;
   }
 
-  /** Hub-to-rim cable muscle spoke with an angle-derived oscillator phase. */
-  private static void spoke(LinkManager lm, Clazz clazz,
-      GlobalOscillatorController controller, Node hub, Node rim, int phase) {
+  /**
+   * Passive hub-to-rim cable spoke, pre-tensioned via
+   * spoke_rest_scale_pct so the hub hangs from its upper spokes like a
+   * bicycle wheel. Tension-only (compression=false): a spoke can pull the
+   * hub up, never push it down.
+   */
+  private static void passiveSpoke(LinkManager lm, Clazz clazz,
+      Node hub, Node rim) {
     final LinkType type = thin(lm.link_type_factory.getNew(
         scaledSpokeLength(distance(hub, rim)), spoke_elasticity));
     type.compression = false;
     final Link link = lm.setLink(hub, rim, type, clazz);
     link.adjusted_rest_length = type.length;
-    link.phase = phase;
-    link.controller = controller;
+  }
+
+  /**
+   * The hamster engine: strut links (they push as well as pull -- Tim
+   * relaxed the cables-only rule for this) from the hamster to every rim
+   * node, driven by a single HamsterEngineController. One instance
+   * classifies front/back in the world frame and fires all links, so the
+   * drive stays aligned as the wheel rolls. Paired across the two rims
+   * (station i on both) so lateral forces stay symmetric.
+   */
+  private static void hamsterEngine(LinkManager lm, Clazz clazz,
+      Node hamster, Node hub0, Node hub1, Node[] rim0, Node[] rim1) {
+    final java.util.List<Link> links = new java.util.ArrayList<>();
+    final java.util.List<Node> anchors = new java.util.ArrayList<>();
+    for (int i = 0; i < RIM_COUNT; i++) {
+      links.add(engineLink(lm, clazz, hamster, rim0[i]));
+      anchors.add(rim0[i]);
+      links.add(engineLink(lm, clazz, hamster, rim1[i]));
+      anchors.add(rim1[i]);
+    }
+    final HamsterEngineController controller = new HamsterEngineController(
+        hamster, hub0, hub1, links, anchors, engine_pull_pct,
+        engine_deadband_px, engine_damping);
+    for (Link link : links) {
+      link.controller = controller;
+    }
+
+    // Capture tethers: passive tension-only cables from the hamster to
+    // the two hubs. They go taut if the hamster tries to leave the
+    // shuttle zone, so the engine cannot eject it; they stay slack
+    // during the normal fore-aft shuttle.
+    tether(lm, clazz, hamster, hub0);
+    tether(lm, clazz, hamster, hub1);
+  }
+
+  /**
+   * A passive capture tether: tension-only, built with a little slack
+   * but short enough to keep the hamster inside the wheel if the drive
+   * ever shoves it hard.
+   */
+  private static void tether(LinkManager lm, Clazz clazz,
+      Node hamster, Node hub) {
+    final int geometric = distance(hamster, hub);
+    final int rest = geometric + (10 << Coords.shift);
+    final LinkType type =
+        thin(lm.link_type_factory.getNew(rest, engine_elasticity));
+    type.compression = false;
+    final Link link = lm.setLink(hamster, hub, type, clazz);
+    link.adjusted_rest_length = type.length;
+  }
+
+  /**
+   * One engine link: a tension-only cable from the hamster to a rim
+   * anchor. Built at its geometric length; the controller drives
+   * adjusted_rest_length every tick. Cables (not struts): they haul the
+   * wheel forward, never push it back.
+   */
+  private static Link engineLink(LinkManager lm, Clazz clazz,
+      Node hamster, Node anchor) {
+    final int length = distance(hamster, anchor);
+    final LinkType type =
+        thin(lm.link_type_factory.getNew(length, engine_elasticity));
+    type.compression = false;
+    final Link link = lm.setLink(hamster, anchor, type, clazz);
+    link.adjusted_rest_length = type.length;
+    return link;
   }
 
   /**
@@ -431,55 +442,6 @@ public final class HamsterWheelDemo {
    */
   private static int scaledSpokeLength(int geometric) {
     return (int) ((long) geometric * spoke_rest_scale_pct / 100);
-  }
-
-  /**
-   * One paired reflex controller driving both spokes of angular station
-   * i: hub0 to rim0[i] and hub1 to rim1[i]. The pair fires together from
-   * its midpoint geometry, keeping the sideways spoke forces symmetric so
-   * a small tilt cannot grow into a capsize (see PairedSpokeController).
-   * Both hubs sit on the axle (same x, y), so hub0 serves as the
-   * controller's position reference.
-   *
-   * <p>The spokes are cables (tension-only, compression=false) per Tim's
-   * "muscles on cables" rule. They are pre-tensioned via
-   * spoke_rest_scale_pct so each hub hangs from its upper spokes like a
-   * bicycle wheel, instead of sagging.
-   */
-  private static void pairedReflexSpokes(LinkManager link_manager, Clazz clazz,
-      Node hub0, Node hub1, Node rim_a, Node rim_b, int ground_y) {
-    final LinkType type_a = thin(link_manager.link_type_factory.getNew(
-        scaledSpokeLength(distance(hub0, rim_a)), spoke_elasticity));
-    type_a.compression = false;
-    final Link link_a = link_manager.setLink(hub0, rim_a, type_a, clazz);
-    link_a.adjusted_rest_length = type_a.length;
-    final LinkType type_b = thin(link_manager.link_type_factory.getNew(
-        scaledSpokeLength(distance(hub1, rim_b)), spoke_elasticity));
-    type_b.compression = false;
-    final Link link_b = link_manager.setLink(hub1, rim_b, type_b, clazz);
-    link_b.adjusted_rest_length = type_b.length;
-    final PairedSpokeController controller = new PairedSpokeController(hub0,
-        rim_a, rim_b, link_a, link_b, type_a.length, type_b.length,
-        reflex_push_pct, reflex_pull_pct, ground_y, roll_direction,
-        reflex_stance_threshold_px, proportional_drive, rim_radius_px,
-        roll_correct_gain);
-    link_a.controller = controller;
-    link_b.controller = controller;
-  }
-
-  /**
-   * Hub-to-rim muscle spoke with a ground-contact push-off reflex.
-   * Extends when its rim node is on the ground behind the hub (push-off),
-   * contracts when on the ground in front (pull-forward).
-   */
-  private static void reflexSpoke(LinkManager lm, Clazz clazz,
-      Node hub, Node rim, int ground_y) {
-    final LinkType type =
-        thin(lm.link_type_factory.getNew(distance(hub, rim), spoke_elasticity));
-    final Link link = lm.setLink(hub, rim, type, clazz);
-    link.adjusted_rest_length = type.length;
-    link.controller = new WheelPushController(hub, rim, type.length,
-        reflex_push_pct, reflex_pull_pct, ground_y, roll_direction);
   }
 
   private static int distance(Node a, Node b) {
