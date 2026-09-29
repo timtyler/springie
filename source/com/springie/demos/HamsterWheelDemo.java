@@ -169,8 +169,8 @@ public final class HamsterWheelDemo {
    * -- same angular station, so they ride together while rolling). Their
    * heights must stay within the max difference for the whole run.
    */
-  public static final int posture_axle_left_index = 0;
-  public static final int posture_axle_right_index = 1;
+  public static final int posture_axle_left_index = 12;
+  public static final int posture_axle_right_index = 13;
   /** Max allowed axle-end height difference (px) for the tip-over rule. */
   public static final int posture_axle_max_diff_px = 20;
 
