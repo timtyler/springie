@@ -197,6 +197,13 @@ public final class HamsterWheelDemo {
   public static int spoke_elasticity = 120;
 
   /**
+   * Hamster cable elasticity (Tim, 2026-09-29): "Use less springier
+   * springs to support the hamster." Lower than spoke_elasticity so the
+   * hamster muscles exert less force on the structure.
+   */
+  public static int hamster_elasticity = 40;
+
+  /**
    * Spoke rest-length scale, percent. 100 = rest length equals the built
    * geometry (zero pre-tension). Below 100 pre-tensions the spokes: with
    * cable-only spokes this is structural, not optional -- un-tensioned
@@ -273,14 +280,20 @@ public final class HamsterWheelDemo {
     final Node hub1 = addNode(node_manager, clazz, hub_type,
         cx, cy, z0 + 2 * hw - (axle_inset_px << Coords.shift));
 
-    // Tim, 2026-09-29: axle killed. No hub-to-hub link -- the hubs are
-    // independent spoke anchors now, not a rigid shaft. Spokes are
-    // structural (passive); the hamster is separate drive (muscles).
-    // Don't mix them.
-    // Tim, 2026-09-29: axle killed, but the hubs still get N/S compass
-    // for tip-over stabilization (the Z-force/Y-offset lever arm gives a
-    // restoring torque for axle tilt). The bias is applied via the
-    // universe compass setting.
+    // Tim, 2026-09-29: rigid axle restored. The N/S compass force on the
+    // hubs goes through the axle (tension) instead of through the spokes.
+    // This isolates the spoke/rim/hamster structure from the N/S stress.
+    final LinkType axle_type = thin(link_manager.link_type_factory.getNew(
+        distance(hub0, hub1), spoke_elasticity));
+    axle_type.compression = false;
+    final Link axle = link_manager.setLink(hub0, hub1, axle_type, clazz);
+    axle.adjusted_rest_length = axle_type.length;
+    // Passive structure -- no muscle, no controller.
+
+    // Tim, 2026-09-29: hubs get N/S compass for tip-over stabilization
+    // (the Z-force/Y-offset lever arm gives a restoring torque for axle
+    // tilt). The bias is applied via the universe compass setting.
+    // The N/S tension is carried by the rigid axle, not the spokes.
     hub0.compass = CompassPoint.N;
     hub1.compass = CompassPoint.S;
     CompassPoint.bias_size = compass_bias;
@@ -406,7 +419,7 @@ public final class HamsterWheelDemo {
   private static void hamsterMuscleLink(LinkManager lm, Clazz clazz,
       Node hamster, Node rim, GlobalOscillatorController muscle, int phase) {
     final LinkType type = thin(lm.link_type_factory.getNew(
-        distance(hamster, rim), spoke_elasticity));
+        distance(hamster, rim), hamster_elasticity));
     type.compression = false;
     final Link link = lm.setLink(hamster, rim, type, clazz);
     link.adjusted_rest_length = type.length;

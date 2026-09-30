@@ -28,7 +28,7 @@ import com.springie.world.World;
  * two rims each with its own central hub node (hubs NOT joined -- axle
  * killed Tim, 2026-09-29), 30 rim links (rim edges, cross links, diagonal
  * bracing), 12 passive structural spokes, 12 hamster drive muscles
- * (15 nodes, 54 links). The hamster muscles are the only muscles, all
+ * (15 nodes, 55 links). The hamster muscles are the only muscles, all
  * sharing one GlobalOscillatorController with f=1 traveling wave phases --
  * same phase on both rims for the same angle (Tim, 2026-09-29).
  */
@@ -156,10 +156,10 @@ class HamsterWheelDemoTest {
 
     final LinkManager lm = nm.getLinkManager();
     // 6 segments x 5 (rim0, rim1, cross, 2 mirror diagonals) = 30 rim
-    // links + 12 passive spokes + 12 hamster muscles = 54 links.
+    // links + 1 rigid axle + 12 passive spokes + 12 hamster muscles = 55.
     // Nodes: 12 rim + 2 hubs + 1 hamster = 15.
     assertEquals(15, nm.element.size());
-    assertEquals(54, lm.element.size());
+    assertEquals(55, lm.element.size());
   }
 
   @Test
