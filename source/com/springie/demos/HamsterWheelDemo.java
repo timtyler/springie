@@ -277,10 +277,13 @@ public final class HamsterWheelDemo {
     // independent spoke anchors now, not a rigid shaft. Spokes are
     // structural (passive); the hamster is separate drive (muscles).
     // Don't mix them.
-    // Tim, 2026-09-29: axle killed, so no N/S compass on hubs -- there is
-    // no axle to stabilize. The wheel stands on its rims.
-    // (N/S tried and removed: it shatters the wheel when combined with
-    // the hamster's pull on the rims.)
+    // Tim, 2026-09-29: axle killed, but the hubs still get N/S compass
+    // for tip-over stabilization (the Z-force/Y-offset lever arm gives a
+    // restoring torque for axle tilt). The bias is applied via the
+    // universe compass setting.
+    hub0.compass = CompassPoint.N;
+    hub1.compass = CompassPoint.S;
+    CompassPoint.bias_size = compass_bias;
 
     // Rim: two 6-gon rings (12 links) + 6 cross links + 12 mirror diagonals
     // (30 total). The diagonals come in mirror pairs so the bracing has
