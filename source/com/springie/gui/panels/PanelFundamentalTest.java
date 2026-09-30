@@ -303,8 +303,8 @@ public class PanelFundamentalTest {
   @Test
   void selectDemoShowsItInTheDropdown() throws Exception {
     try {
-      SwingUtilities.invokeAndWait(() -> panel().selectDemo("Hamster wheel"));
-      assertEquals("Hamster wheel",
+      SwingUtilities.invokeAndWait(() -> panel().selectDemo("Wheelbarrow"));
+      assertEquals("Wheelbarrow",
           panel().choose_demo.choice.getSelectedItem(),
           "choosing the demo from the menu must show it in the demos dropdown");
     } finally {
@@ -319,7 +319,7 @@ public class PanelFundamentalTest {
   @Test
   void choosingADemoLaunchesItAtOnce() throws Exception {
     final String[] names = {
-        "Sidewinder", "Crawler", "Spider Tank", "Hamster wheel", "Slinky"};
+        "Sidewinder", "Crawler", "Spider Tank", "Wheelbarrow", "Slinky"};
     // Node counts the demo builders produce (their own tests pin these).
     // The crawler rebuild is still open, so its count may move again.
     final int[] nodes = {
@@ -370,9 +370,9 @@ public class PanelFundamentalTest {
     try {
       SwingUtilities.invokeAndWait(() -> {
         final Choice demos = panel().choose_demo.choice;
-        demos.select("Hamster wheel");
+        demos.select("Wheelbarrow");
         demos.dispatchEvent(new ItemEvent(demos, ItemEvent.ITEM_STATE_CHANGED,
-            "Hamster wheel", ItemEvent.SELECTED));
+            "Wheelbarrow", ItemEvent.SELECTED));
       });
       waitForBuild(14, 43);
       final Object first_node_before =
