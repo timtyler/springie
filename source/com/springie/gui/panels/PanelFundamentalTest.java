@@ -323,9 +323,9 @@ public class PanelFundamentalTest {
     // Node counts the demo builders produce (their own tests pin these).
     // The crawler rebuild is still open, so its count may move again.
     final int[] nodes = {
-        SidewinderDemo.SEGMENTS + 3, 13, 16, 14, 27};
+        SidewinderDemo.SEGMENTS + 3, 13, 16, 18, 27};
     final int[] links = {
-        3 * SidewinderDemo.SEGMENTS + 3, -1, -1, 43, 92};
+        3 * SidewinderDemo.SEGMENTS + 3, -1, -1, 49, 92};
 
     try {
       for (int d = 0; d < names.length; d++) {
@@ -395,10 +395,10 @@ public class PanelFundamentalTest {
       }
       assertTrue(rebuilt,
           "the launch button must rebuild the chosen demo");
-      assertEquals(14,
+      assertEquals(18,
           ContextManager.getNodeManager().element.size(),
           "the rebuilt demo must have the wheel's node count");
-      assertEquals(43,
+      assertEquals(49,
           ContextManager.getNodeManager().getLinkManager().element.size(),
           "the rebuilt demo must have the wheel's link count");
     } finally {
