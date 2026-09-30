@@ -133,7 +133,7 @@ public final class HamsterWheelDemo {
    * period. All 14 spokes share one oscillator instance with identical
    * phase -- no subset special treatment.
    */
-  public static int muscle_amplitude_pct = 2;
+  public static int muscle_amplitude_pct = 15;
   public static int muscle_period_ticks = 480;
 
   /**
