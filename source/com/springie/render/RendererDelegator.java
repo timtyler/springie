@@ -377,6 +377,8 @@ public final class RendererDelegator {
       }
 
       ContextManager.getNodeManager().nodeAndLinkUpdate();
+
+      stepIfNeeded();
     }
 
     // While the renderer holds the model for an in-flight frame, its
@@ -399,5 +401,22 @@ public final class RendererDelegator {
 
   public static void resize(int x_pixels, int y_pixels) {
     renderer.resize(x_pixels, y_pixels);
+  }
+
+  /**
+   * Decrement the stepping counter synchronously with a physics frame.
+   * This used to live in FrEnd.run(), but repaint() is async -- the
+   * animation thread would decrement the counter and set paused=true
+   * before the AWT thread ran the physics, losing steps. (Tim, 2026-09-30:
+   * pause+step only advanced less than half the time.) By decrementing
+   * here, right after nodeAndLinkUpdate(), each step corresponds to exactly
+   * one physics frame. Package-private for testing.
+   */
+  static void stepIfNeeded() {
+    if (FrEnd.stepping > 0) {
+      if (--FrEnd.stepping == 0) {
+        FrEnd.endStepping();
+      }
+    }
   }
 }

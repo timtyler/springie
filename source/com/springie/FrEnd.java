@@ -282,7 +282,9 @@ public class FrEnd extends Panel implements Runnable {
 
   public static boolean paused;
 
-  public static int stepping;
+  // Volatile: written on the animation thread (step button message),
+  // read/written on the AWT thread (RendererDelegator, sync with physics).
+  public static volatile int stepping;
 
   static int start_type;
 
@@ -949,13 +951,11 @@ public class FrEnd extends Panel implements Runnable {
     thread_terminated = false;
 
     while (!thread_terminated) {
-      if (!paused) {
-        if (stepping > 0) {
-          if (--stepping == 0) {
-            endStepping();
-          }
-        }
-      }
+      // Stepping is decremented in RendererDelegator, synchronously with
+      // the physics (nodeAndLinkUpdate). It used to be here, but repaint()
+      // is async -- the counter would hit zero and set paused=true before
+      // the AWT thread ran the physics, so steps were lost. (f9abb82 moved
+      // message processing to this thread, introducing the race.)
 
       // Process messages on the animation thread (not the AWT thread):
       // model-building messages must not run concurrently with physics.
@@ -989,7 +989,9 @@ public class FrEnd extends Panel implements Runnable {
     paused = true;
     greyPauseAndRestartIfNeeded();
     // button_step.setLabel(GUIStrings.STEP);
-    button_step.setEnabled(true);
+    if (button_step != null) {
+      button_step.setEnabled(true);
+    }
   }
 
   public void startThread() {
@@ -1028,8 +1030,12 @@ public class FrEnd extends Panel implements Runnable {
   }
 
   public static void greyPauseAndRestartIfNeeded() {
-    panel_fundamental.button_paused.setEnabled(paused);
-    button_restart.setEnabled(paused);
+    if (panel_fundamental != null && panel_fundamental.button_paused != null) {
+      panel_fundamental.button_paused.setEnabled(paused);
+    }
+    if (button_restart != null) {
+      button_restart.setEnabled(paused);
+    }
   }
 
   public static void processMouseClick(int x, int y) {
