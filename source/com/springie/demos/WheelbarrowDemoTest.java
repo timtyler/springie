@@ -32,7 +32,7 @@ import com.springie.world.World;
  * sharing one GlobalOscillatorController with f=1 traveling wave phases --
  * same phase on both rims for the same angle (Tim, 2026-09-29).
  */
-class HamsterWheelDemoTest {
+class WheelbarrowDemoTest {
 
   private boolean old_muscles_enabled;
   private boolean old_gravity_active;
@@ -61,17 +61,17 @@ class HamsterWheelDemoTest {
     old_gravity_active = World.gravity_active;
     old_friction = World.ground_friction;
     old_temperature = World.global_temperature;
-    old_direction = HamsterWheelDemo.roll_direction;
-    old_stabilizer_bias = HamsterWheelDemo.axle_stabilizer_bias;
-    old_compass_bias = HamsterWheelDemo.compass_bias;
-    old_z_offset = HamsterWheelDemo.z_offset_px;
-    old_radius = HamsterWheelDemo.rim_radius_px;
-    old_half_width = HamsterWheelDemo.rim_half_width_px;
-    old_inset = HamsterWheelDemo.axle_inset_px;
-    old_rim_log_mass = HamsterWheelDemo.rim_log_mass;
-    old_hub_log_mass = HamsterWheelDemo.hub_log_mass;
-    old_bracing = HamsterWheelDemo.bracing_elasticity;
-    old_spoke_scale = HamsterWheelDemo.spoke_rest_scale_pct;
+    old_direction = WheelbarrowDemo.roll_direction;
+    old_stabilizer_bias = WheelbarrowDemo.axle_stabilizer_bias;
+    old_compass_bias = WheelbarrowDemo.compass_bias;
+    old_z_offset = WheelbarrowDemo.z_offset_px;
+    old_radius = WheelbarrowDemo.rim_radius_px;
+    old_half_width = WheelbarrowDemo.rim_half_width_px;
+    old_inset = WheelbarrowDemo.axle_inset_px;
+    old_rim_log_mass = WheelbarrowDemo.rim_log_mass;
+    old_hub_log_mass = WheelbarrowDemo.hub_log_mass;
+    old_bracing = WheelbarrowDemo.bracing_elasticity;
+    old_spoke_scale = WheelbarrowDemo.spoke_rest_scale_pct;
     old_paused = FrEnd.paused;
     old_frame_frequency = FrEnd.frame_frequency;
     old_coords_x = Coords.x_pixels;
@@ -79,17 +79,17 @@ class HamsterWheelDemoTest {
     old_coords_z = Coords.z_pixels;
     // Pin the drive to the tuned values so the tests are deterministic
     // even if the statics were changed by an earlier test.
-    HamsterWheelDemo.roll_direction = 1;
-    HamsterWheelDemo.axle_stabilizer_bias = 13;
-    HamsterWheelDemo.compass_bias = 50;
-    HamsterWheelDemo.z_offset_px = 100;
-    HamsterWheelDemo.rim_radius_px = 160;
-    HamsterWheelDemo.rim_half_width_px = 162;
-    HamsterWheelDemo.axle_inset_px = 60;
-    HamsterWheelDemo.rim_log_mass = 17;
-    HamsterWheelDemo.hub_log_mass = 20;
-    HamsterWheelDemo.bracing_elasticity = 30;
-    HamsterWheelDemo.spoke_rest_scale_pct = 95;
+    WheelbarrowDemo.roll_direction = 1;
+    WheelbarrowDemo.axle_stabilizer_bias = 13;
+    WheelbarrowDemo.compass_bias = 50;
+    WheelbarrowDemo.z_offset_px = 100;
+    WheelbarrowDemo.rim_radius_px = 160;
+    WheelbarrowDemo.rim_half_width_px = 162;
+    WheelbarrowDemo.axle_inset_px = 60;
+    WheelbarrowDemo.rim_log_mass = 17;
+    WheelbarrowDemo.hub_log_mass = 20;
+    WheelbarrowDemo.bracing_elasticity = 30;
+    WheelbarrowDemo.spoke_rest_scale_pct = 95;
     ContextManager.setNodeManager(new NodeManager());
   }
 
@@ -99,17 +99,17 @@ class HamsterWheelDemoTest {
     World.gravity_active = old_gravity_active;
     World.ground_friction = old_friction;
     World.global_temperature = old_temperature;
-    HamsterWheelDemo.roll_direction = old_direction;
-    HamsterWheelDemo.axle_stabilizer_bias = old_stabilizer_bias;
-    HamsterWheelDemo.compass_bias = old_compass_bias;
-    HamsterWheelDemo.z_offset_px = old_z_offset;
-    HamsterWheelDemo.rim_radius_px = old_radius;
-    HamsterWheelDemo.rim_half_width_px = old_half_width;
-    HamsterWheelDemo.axle_inset_px = old_inset;
-    HamsterWheelDemo.rim_log_mass = old_rim_log_mass;
-    HamsterWheelDemo.hub_log_mass = old_hub_log_mass;
-    HamsterWheelDemo.bracing_elasticity = old_bracing;
-    HamsterWheelDemo.spoke_rest_scale_pct = old_spoke_scale;
+    WheelbarrowDemo.roll_direction = old_direction;
+    WheelbarrowDemo.axle_stabilizer_bias = old_stabilizer_bias;
+    WheelbarrowDemo.compass_bias = old_compass_bias;
+    WheelbarrowDemo.z_offset_px = old_z_offset;
+    WheelbarrowDemo.rim_radius_px = old_radius;
+    WheelbarrowDemo.rim_half_width_px = old_half_width;
+    WheelbarrowDemo.axle_inset_px = old_inset;
+    WheelbarrowDemo.rim_log_mass = old_rim_log_mass;
+    WheelbarrowDemo.hub_log_mass = old_hub_log_mass;
+    WheelbarrowDemo.bracing_elasticity = old_bracing;
+    WheelbarrowDemo.spoke_rest_scale_pct = old_spoke_scale;
     FrEnd.paused = old_paused;
     FrEnd.frame_frequency = old_frame_frequency;
     Coords.x_pixels = old_coords_x;
@@ -135,9 +135,9 @@ class HamsterWheelDemoTest {
 
   @Test
   void wheelNodesMatchLinkRadius() {
-    HamsterWheelDemo.buildAt(120);
+    WheelbarrowDemo.buildAt(120);
 
-    final int expected = HamsterWheelDemo.nodeRadius();
+    final int expected = WheelbarrowDemo.nodeRadius();
     final NodeManager nm = ContextManager.getNodeManager();
     for (int i = 0; i < nm.element.size(); i++) {
       final Node node = (Node) nm.element.get(i);
@@ -146,25 +146,25 @@ class HamsterWheelDemoTest {
   }
 
   @Test
-  void buildsSixteenNodesFiftyLinks() {
-    final Node hub0 = HamsterWheelDemo.buildAt(120);
+  void buildsEighteenNodesFortyNineLinks() {
+    final Node hub0 = WheelbarrowDemo.buildAt(120);
     assertNotNull(hub0);
 
     final NodeManager nm = ContextManager.getNodeManager();
-    // 6 nodes per rim x 2 rims + 2 hubs (one per rim) + 1 hamster = 15.
-    assertEquals(15, nm.element.size());
+    // 6 nodes per rim x 2 rims + 2 hubs + 4 paddle nodes (foot+top per side)
+    // = 18. (Tim, 2026-09-30: wheelbarrow, no hamster -- paddles are drive.)
+    assertEquals(18, nm.element.size());
 
     final LinkManager lm = nm.getLinkManager();
     // 6 segments x 5 (rim0, rim1, cross, 2 mirror diagonals) = 30 rim
-    // links + 1 rigid axle + 12 passive spokes + 12 hamster muscles = 55.
-    // Nodes: 12 rim + 2 hubs + 1 hamster = 15.
-    assertEquals(15, nm.element.size());
-    assertEquals(55, lm.element.size());
+    // links + 1 rigid axle + 12 passive spokes + 2 paddle shaft struts
+    // + 2 drive struts + 2 paddle muscles = 49.
+    assertEquals(49, lm.element.size());
   }
 
   @Test
-  void hamsterMusclesAreTheOnlyMuscles() {
-    HamsterWheelDemo.buildAt(120);
+  void paddleMusclesAreTheOnlyMuscles() {
+    WheelbarrowDemo.buildAt(120);
     final LinkManager lm =
         ContextManager.getNodeManager().getLinkManager();
 
@@ -174,21 +174,22 @@ class HamsterWheelDemoTest {
       final Link link = (Link) lm.element.get(i);
       if (link.controller instanceof GlobalOscillatorController) {
         muscle_count++;
-        // The hamster muscles are cables (tension-only): they haul,
+        // The paddle muscles are cables (tension-only): they haul,
         // never push.
         assertFalse(link.type.compression,
-            "hamster muscle must be a cable (tension-only)");
-        // All hamster muscles share the identical controller instance.
+            "paddle muscle must be a cable (tension-only)");
+        // All paddle muscles share the identical controller instance.
         if (first == null) {
           first = (GlobalOscillatorController) link.controller;
         } else {
           assertTrue(link.controller == first,
-              "all hamster muscles must share one controller");
+              "all paddle muscles must share one controller");
         }
       }
     }
-    // 12 hamster-to-rim muscles (the only muscles). Spokes are passive.
-    assertEquals(12, muscle_count);
+    // 2 paddle muscles (front rim to paddle top, one per side).
+    // Spokes and drive struts are passive.
+    assertEquals(2, muscle_count);
   }
 
   @Test
@@ -203,7 +204,7 @@ class HamsterWheelDemoTest {
 
   @Test
   void remainsNumericallyStableFor120Ticks() {
-    final Node hub = HamsterWheelDemo.buildAt(120);
+    final Node hub = WheelbarrowDemo.buildAt(120);
     final NodeManager nm = ContextManager.getNodeManager();
 
     for (int t = 0; t < 120; t++) {
@@ -252,7 +253,7 @@ class HamsterWheelDemoTest {
 
   @Test
   void enablesGravityAndFriction() {
-    HamsterWheelDemo.buildAt(120);
+    WheelbarrowDemo.buildAt(120);
     assertTrue(World.gravity_active);
     assertTrue(World.ground_friction > 0);
     assertTrue(Muscles.enabled);

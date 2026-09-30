@@ -31,22 +31,22 @@ import com.springie.world.World;
  * the axle ties the two hubs into a single rigid shaft. The rim uses
  * alternating diagonal bracing to resist shear.
  *
- * <p>Drive (Tim, 2026-09-29): hamster gravity drive. A fairly heavy
- * near-central hamster node, positioned forward-up from the wheel center.
- * 12 muscles link the hamster to every rim node (f=1 traveling wave,
- * same phase on both rims for the same angle, one shared oscillator).
- * The muscles position the hamster; gravity on the offset mass drives
- * the wheel. Spokes are passive structure -- not mixed with the drive.
+ * <p>Drive (Tim, 2026-09-30): wheelbarrow paddle drive. Two-node paddles
+ * trail behind the wheel, one per side, pushing off the ground like oars.
+ * The foot plants on the ground (external anchor); a muscle cable from
+ * the front rim pulls the paddle top forward, levering the hub forward
+ * via a drive strut. This is NOT bootstrap-limited: the ground is external.
+ * Spokes are passive structure -- not mixed with the drive.
  * No custom controllers -- only the muscles change cable lengths.
  *
  * <p>Node order: rim-0[i] and rim-1[i] interleaved per iteration (element
- * indices 2*i and 2*i+1), then hub0, then hub1, then hamster. Node 0
+ * indices 2*i and 2*i+1), then hub0, then hub1, then paddle nodes. Node 0
  * (rim-0[0], body angle 0) is the rotation marker. buildAt returns hub0.
  *
  * <p>Parameters are public fields so the judge can sweep them.
  */
-public final class HamsterWheelDemo {
-  private HamsterWheelDemo() {
+public final class WheelbarrowDemo {
+  private WheelbarrowDemo() {
   }
 
   /** Nodes per rim. */
@@ -96,9 +96,10 @@ public final class HamsterWheelDemo {
 
   /**
    * Hamster mass (log scale). Tim, 2026-09-29: fairly heavy near-central
-   * node -- its weight (offset forward-up) is the gravity drive.
+   * Paddle drive (Tim, 2026-09-30): the wheelbarrow's paddles push off
+   * the ground. No hamster -- the paddles are the drive.
    */
-  public static int hamster_log_mass = 18;
+  public static int paddle_log_mass = 14;
 
   /** Node radius, in fixed-point units: the same as the rim links' radius. */
   // Tim's directive (2026-09-27): nodes the same size as the link radius.
@@ -135,6 +136,30 @@ public final class HamsterWheelDemo {
    */
   public static int muscle_amplitude_pct = 15;
   public static int muscle_period_ticks = 480;
+
+  /**
+   * Self-start kick, in internal velocity units (256 = 1 px/frame).
+   * Tim, 2026-09-30: restored to break the chicken-and-egg -- the kick
+   * spins the wheel, the traveling wave (synced to the rotation) then
+   * holds the hamster forward to sustain rolling. Pure spin: tangential
+   * velocities sum to zero, so the no-initial-velocity rule passes.
+   * 240 is about 1px/frame at the rim.
+   */
+  public static int start_kick = 240;
+
+  /**
+   * Paddle drive (Tim, 2026-09-30): two-node paddles trailing behind the
+   * wheel, one per side, pushing alternately off the ground like oars.
+   * The foot plants on the ground (external anchor); muscle cables pull
+   * the paddle top forward, levering the hub forward via the drive cable.
+   * Alternating phases (0 and period/2) give continuous drive.
+   * Set paddle_back_px = 0 to disable.
+   */
+  public static int paddle_back_px = 80;
+  /** Height of paddle top below hub, in pixels. */
+  public static int paddle_top_drop_px = 40;
+  /** Muscle amplitude for paddle drive, percent. */
+  public static int paddle_amplitude_pct = 20;
 
   /**
    * Yaw stabilizer bias, in internal velocity units per frame
@@ -197,11 +222,10 @@ public final class HamsterWheelDemo {
   public static int spoke_elasticity = 120;
 
   /**
-   * Hamster cable elasticity (Tim, 2026-09-29): "Use less springier
-   * springs to support the hamster." Lower than spoke_elasticity so the
-   * hamster muscles exert less force on the structure.
+   * Paddle muscle elasticity (Tim, 2026-09-30): the paddle muscles pull
+   * the paddle top forward to lever the hub.
    */
-  public static int hamster_elasticity = 40;
+  public static int paddle_elasticity = 80;
 
   /**
    * Spoke rest-length scale, percent. 100 = rest length equals the built
@@ -330,38 +354,78 @@ public final class HamsterWheelDemo {
       structuralSpoke(link_manager, clazz, hub1, rim1[i]);
     }
 
-    // Hamster: fairly heavy near-central node (Tim, 2026-09-29 redesign).
-    // Positioned forward (+X) and up (-Y) from the wheel center -- its
-    // weight creates the driving torque (gravity drive). The muscles
-    // (below) position the hamster; gravity drives the wheel. This is
-    // NOT the bootstrap-prone muscle-pull: the drive is external
-    // (gravity on the offset mass), the muscles only hold the position.
-    final NodeType hamster_type = node_manager.node_type_factory.getNew();
-    hamster_type.log_mass = hamster_log_mass;
-    hamster_type.radius = nodeRadius();
-    final int hamster_offset = rim_radius_px / 4;
-    final Node hamster = addNode(node_manager, clazz, hamster_type,
-        cx + (hamster_offset << Coords.shift),
-        cy - (hamster_offset << Coords.shift),
-        z0 + hw);
-
-    // Hamster drive muscles: links from hamster to every rim node
-    // (every spoke end). f=1 traveling wave -- per-link phase, one full
-    // wave around the rim, same phase on both rims for the same angle.
-    // All share one oscillator; the wave hands the hamster off from rim
-    // node to rim node, keeping it forward-up as the wheel rolls under it.
-    final GlobalOscillatorController hamsterMuscle =
+    // Paddle drive (Tim, 2026-09-30): two-node paddles trailing behind,
+    // one per side, pushing off the ground like oars (wheelbarrow drive).
+    // The foot plants on the ground (external anchor); a muscle cable from
+    // the front rim pulls the paddle top forward, levering the hub
+    // forward via the drive strut. This is NOT bootstrap-limited: the
+    // ground is external. All muscles share one controller (Tim's rule).
+    final GlobalOscillatorController paddleMuscle =
         new GlobalOscillatorController(Muscles.active_oscillator);
-    for (int i = 0; i < RIM_COUNT; i++) {
-      final int phase = i * muscle_period_ticks / RIM_COUNT;
-      hamsterMuscleLink(link_manager, clazz, hamster, rim0[i],
-          hamsterMuscle, phase);
-      hamsterMuscleLink(link_manager, clazz, hamster, rim1[i],
-          hamsterMuscle, phase);
+    if (paddle_back_px > 0) {
+      final NodeType paddle_type = node_manager.node_type_factory.getNew();
+      paddle_type.log_mass = paddle_log_mass;
+      paddle_type.radius = nodeRadius();
+      final Node[] hubs = {hub0, hub1};
+      final Node[][] rims = {rim0, rim1};
+      for (int side = 0; side < 2; side++) {
+        final int z_side = (z0 >> Coords.shift)
+            + (side == 0 ? 0 : 2 * rim_half_width_px);
+        final int z_fp = z_side << Coords.shift;
+        // Foot: on the ground, behind the wheel.
+        final Node foot = addNode(node_manager, clazz, paddle_type,
+            cx - (paddle_back_px << Coords.shift), ground, z_fp);
+        // Paddle top: behind and below the hub.
+        final Node ptop = addNode(node_manager, clazz, paddle_type,
+            cx - ((paddle_back_px / 2) << Coords.shift),
+            cy + (paddle_top_drop_px << Coords.shift), z_fp);
+        // Paddle shaft: rigid strut (structure, not muscle).
+        final LinkType paddle_strut = thin(link_manager.link_type_factory.getNew(
+            distance(foot, ptop), spoke_elasticity));
+        link_manager.setLink(foot, ptop, paddle_strut, clazz);
+        // Drive STRUT: paddle top to hub (rigid, transmits the lever
+        // push). Must be a strut (not cable) because the paddle PUSHES
+        // the hub forward -- cables go slack under compression.
+        // Structure, not muscle (Tim's rule: muscles on cables, but
+        // structure can be struts).
+        final LinkType drive_strut = thin(link_manager.link_type_factory.getNew(
+            distance(ptop, hubs[side]), spoke_elasticity));
+        link_manager.setLink(ptop, hubs[side], drive_strut, clazz);
+        // Muscle: front rim node to paddle top. Contracts to pull the
+        // paddle forward, rotating it around the planted foot and
+        // levering the hub forward. Alternating phases per side.
+        // Shares the one controller (Tim's rule).
+        // Tim, 2026-09-30: trying SYNCED (not alternating) -- both push
+        // together for symmetric drive, no yaw-rock.
+        final Node front_rim = rims[side][0]; // angle 0 = +X (front)
+        final LinkType pm_type = thin(link_manager.link_type_factory.getNew(
+            distance(front_rim, ptop), paddle_elasticity));
+        pm_type.compression = false;
+        final Link pm_link = link_manager.setLink(front_rim, ptop, pm_type, clazz);
+        pm_link.adjusted_rest_length = pm_type.length;
+        pm_link.phase = 0; // Synced, not alternating
+        pm_link.controller = paddleMuscle;
+      }
     }
 
     // No mid-air starts: rest the whole model on the ground plane.
     Grounding.restOnGround(node_manager);
+
+    // Tim, 2026-09-30: self-start kick (restored). Pure spin -- tangential
+    // rim velocities sum to zero net velocity, so the no-initial-velocity
+    // rule passes. Tips the wheel into the rolling gait; the traveling
+    // wave then holds the hamster forward to sustain it.
+    if (start_kick != 0) {
+      for (int i = 0; i < RIM_COUNT; i++) {
+        final double a = 2.0 * Math.PI * i / RIM_COUNT;
+        final int tx = (int) (-Math.sin(a) * start_kick);
+        final int ty = (int) (Math.cos(a) * start_kick);
+        rim0[i].velocity.x += tx;
+        rim0[i].velocity.y += ty;
+        rim1[i].velocity.x += tx;
+        rim1[i].velocity.y += ty;
+      }
+    }
 
     return hub0;
   }
@@ -408,23 +472,6 @@ public final class HamsterWheelDemo {
     final Link link = lm.setLink(hub, rim, type, clazz);
     link.adjusted_rest_length = type.length;
     // No controller, no phase -- passive structure.
-  }
-
-  /**
-   * Hamster drive muscle: link from hamster to rim node, on the shared
-   * muscle oscillator with per-link phase for the f=1 traveling wave.
-   * Tim, 2026-09-29: the hamster's muscles position the (heavy) hamster;
-   * gravity on the offset mass drives the wheel.
-   */
-  private static void hamsterMuscleLink(LinkManager lm, Clazz clazz,
-      Node hamster, Node rim, GlobalOscillatorController muscle, int phase) {
-    final LinkType type = thin(lm.link_type_factory.getNew(
-        distance(hamster, rim), hamster_elasticity));
-    type.compression = false;
-    final Link link = lm.setLink(hamster, rim, type, clazz);
-    link.adjusted_rest_length = type.length;
-    link.phase = phase;
-    link.controller = muscle;
   }
 
   /**

@@ -32,7 +32,7 @@ import com.springie.gui.components.ImageButton;
 import com.springie.messages.commands.CrawlerDemoMessage;
 import com.springie.messages.commands.SidewinderDemoMessage;
 import com.springie.messages.commands.SpiderTankDemoMessage;
-import com.springie.messages.commands.HamsterWheelDemoMessage;
+import com.springie.messages.commands.WheelbarrowDemoMessage;
 
 /**
  * Tests for the floppy-disc toggle in the bottom button bar: pressed in
@@ -293,7 +293,7 @@ public class PanelFundamentalTest {
     assertTrue(DemoCatalog.forName("Spider Tank")
         .newMessage() instanceof SpiderTankDemoMessage);
     assertTrue(
-        DemoCatalog.forName("Hamster wheel").newMessage() instanceof HamsterWheelDemoMessage);
+        DemoCatalog.forName("Wheelbarrow").newMessage() instanceof WheelbarrowDemoMessage);
     assertNull(DemoCatalog.forName("Moscow"),
         "a model file must not dispatch to any demo");
     assertNull(DemoCatalog.forName(PanelFundamental.DEMO_PLACEHOLDER),

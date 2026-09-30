@@ -127,7 +127,7 @@ public final class RollingJudge {
     // tests) leak values into these statics; the demos' buildAt methods
     // set only a subset, so two consecutive score() calls could otherwise
     // diverge in a polluted suite.
-    // NOTE: temperature is NOT pinned here -- HamsterWheelDemo.buildAt sets
+    // NOTE: temperature is NOT pinned here -- WheelbarrowDemo.buildAt sets
     // World.global_temperature = 0 (deterministic build; Caterpillar2Demo
     // and SlinkyDemo do the same). Pinning 6 here would be dead code
     // because buildAt overrides it.
@@ -174,10 +174,10 @@ public final class RollingJudge {
       // world): the wheel must roll from its own gait, never from a
       // tick-1 kick off the left wall. Tim: runners must not touch the
       // side walls.
-      hub = HamsterWheelDemo.buildAt(300);
-      // Node 0 is rim0[0] at body angle 0 (see HamsterWheelDemo docs).
+      hub = WheelbarrowDemo.buildAt(300);
+      // Node 0 is rim0[0] at body angle 0 (see WheelbarrowDemo docs).
       marker = (Node) node_manager.element.get(0);
-      radius_px = HamsterWheelDemo.rim_radius_px;
+      radius_px = WheelbarrowDemo.rim_radius_px;
     }
 
     // No free shove: the model must start at rest in the target
@@ -204,9 +204,9 @@ public final class RollingJudge {
     // Tim's "not tipping over" rule: wheel = axle stays level (two axle-end
     // nodes); crawler = dorsal top node stays above the belly reference.
     final AxleLevelRule axle_rule = use_crawler ? null
-        : new AxleLevelRule(HamsterWheelDemo.posture_axle_left_index,
-            HamsterWheelDemo.posture_axle_right_index,
-            HamsterWheelDemo.posture_axle_max_diff_px);
+        : new AxleLevelRule(WheelbarrowDemo.posture_axle_left_index,
+            WheelbarrowDemo.posture_axle_right_index,
+            WheelbarrowDemo.posture_axle_max_diff_px);
     final TipOverRule tip_rule = !use_crawler ? null
         : new TipOverRule(CrawlerDemo.posture_top_index,
             CrawlerDemo.posture_bottom_index,

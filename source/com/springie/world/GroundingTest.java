@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.springie.context.ContextManager;
-import com.springie.demos.HamsterWheelDemo;
+import com.springie.demos.WheelbarrowDemo;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.muscles.Muscles;
@@ -65,7 +65,7 @@ public class GroundingTest {
 
   private static NodeManager freshHamsterWheel() {
     ContextManager.setNodeManager(new NodeManager());
-    HamsterWheelDemo.buildAt(120);
+    WheelbarrowDemo.buildAt(120);
     return ContextManager.getNodeManager();
   }
 

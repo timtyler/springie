@@ -13,7 +13,7 @@ import com.springie.messages.commands.HopperDemoMessage;
 import com.springie.messages.commands.SlinkyDemoMessage;
 import com.springie.messages.commands.SidewinderDemoMessage;
 import com.springie.messages.commands.SpiderTankDemoMessage;
-import com.springie.messages.commands.HamsterWheelDemoMessage;
+import com.springie.messages.commands.WheelbarrowDemoMessage;
 
 /**
  * The procedural demos in one place: display name plus the message that
@@ -47,7 +47,7 @@ public final class DemoCatalog {
       new Demo("Sidewinder", SidewinderDemoMessage::new),
       new Demo("Crawler", CrawlerDemoMessage::new),
       new Demo("Spider Tank", SpiderTankDemoMessage::new),
-      new Demo("Hamster wheel", HamsterWheelDemoMessage::new),
+      new Demo("Wheelbarrow", WheelbarrowDemoMessage::new),
       new Demo("Hopper", HopperDemoMessage::new),
       new Demo("Caterpillar", CaterpillarDemoMessage::new),
       new Demo("Caterpillar 2", Caterpillar2DemoMessage::new),
