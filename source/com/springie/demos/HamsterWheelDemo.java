@@ -31,15 +31,17 @@ import com.springie.world.World;
  * the axle ties the two hubs into a single rigid shaft. The rim uses
  * alternating diagonal bracing to resist shear.
  *
- * <p>Drive (Tim, 2026-09-29): f=1 traveling wave on the 12 spokes -- per-spoke
- * phase, one full wave around the rim, same phase on both hubs for the same
- * angle. All spokes share one muscle oscillator; each link's phase offset
- * creates the wave. No custom controllers -- only the muscles change cable
- * lengths.
+ * <p>Drive (Tim, 2026-09-29): hamster gravity drive. A fairly heavy
+ * near-central hamster node, positioned forward-up from the wheel center.
+ * 12 muscles link the hamster to every rim node (f=1 traveling wave,
+ * same phase on both rims for the same angle, one shared oscillator).
+ * The muscles position the hamster; gravity on the offset mass drives
+ * the wheel. Spokes are passive structure -- not mixed with the drive.
+ * No custom controllers -- only the muscles change cable lengths.
  *
  * <p>Node order: rim-0[i] and rim-1[i] interleaved per iteration (element
- * indices 2*i and 2*i+1), then hub0, then hub1. Node 0 (rim-0[0], body
- * angle 0) is the rotation marker. buildAt returns hub0.
+ * indices 2*i and 2*i+1), then hub0, then hub1, then hamster. Node 0
+ * (rim-0[0], body angle 0) is the rotation marker. buildAt returns hub0.
  *
  * <p>Parameters are public fields so the judge can sweep them.
  */
@@ -91,6 +93,12 @@ public final class HamsterWheelDemo {
    * shaft of the wheel.
    */
   public static int hub_log_mass = 19;
+
+  /**
+   * Hamster mass (log scale). Tim, 2026-09-29: fairly heavy near-central
+   * node -- its weight (offset forward-up) is the gravity drive.
+   */
+  public static int hamster_log_mass = 18;
 
   /** Node radius, in fixed-point units: the same as the rim links' radius. */
   // Tim's directive (2026-09-27): nodes the same size as the link radius.
@@ -265,25 +273,14 @@ public final class HamsterWheelDemo {
     final Node hub1 = addNode(node_manager, clazz, hub_type,
         cx, cy, z0 + 2 * hw - (axle_inset_px << Coords.shift));
 
-    // Axle: a stiff passive link joining the two hubs into a single
-    // rigid shaft. The hubs sit inside the rim planes (axle_inset_px
-    // per side), so the axle is shorter than the track -- the spokes
-    // pull the rims together like a bicycle wheel. Also carries the
-    // yaw stabilizer (one instance, so the bias applies exactly once
-    // per dynamics step).
-    final Link axle_link =
-        passive(link_manager, clazz, hub0, hub1, bracing_elasticity);
-    axle_link.controller =
-        new AxleStabilizerController(rim0, rim1, axle_stabilizer_bias);
-
-    // Per-node compass headings (Tim, 2026-09-28): N on the north (-z)
-    // axle end, S on the south (+z) axle end. With bias_size set below,
-    // the universe compass bias pulls the ends apart along the axle
-    // every frame -- functional yaw/tip stabilization, the same
-    // mechanism as the caterpillar track's axle headings.
-    hub0.compass = CompassPoint.N;
-    hub1.compass = CompassPoint.S;
-    CompassPoint.bias_size = compass_bias;
+    // Tim, 2026-09-29: axle killed. No hub-to-hub link -- the hubs are
+    // independent spoke anchors now, not a rigid shaft. Spokes are
+    // structural (passive); the hamster is separate drive (muscles).
+    // Don't mix them.
+    // Tim, 2026-09-29: axle killed, so no N/S compass on hubs -- there is
+    // no axle to stabilize. The wheel stands on its rims.
+    // (N/S tried and removed: it shatters the wheel when combined with
+    // the hamster's pull on the rims.)
 
     // Rim: two 6-gon rings (12 links) + 6 cross links + 12 mirror diagonals
     // (30 total). The diagonals come in mirror pairs so the bracing has
@@ -306,19 +303,45 @@ public final class HamsterWheelDemo {
       passive(link_manager, clazz, a0, rim1[j], bracing_elasticity); // diag \
     }
 
-    // Hub spokes: 12 muscle cables, 6 per hub, each hub spoking radially
-    // to its own rim (in-plane, like a bicycle wheel). Pre-tensioned via
-    // spoke_rest_scale_pct so each hub hangs from its upper spokes.
-    // Tim, 2026-09-29: f=1 traveling wave -- per-spoke phase, one full wave
-    // around the rim, same phase on both hubs for the same angle. The
-    // shared oscillator drives all spokes; each link's phase offset creates
-    // the wave.
-    final GlobalOscillatorController spokeMuscle =
+    // Hub spokes: 12 PASSIVE structural cables, 6 per hub, each hub
+    // spoking radially to its own rim (in-plane, like a bicycle wheel).
+    // Pre-tensioned via spoke_rest_scale_pct so each hub hangs from its
+    // upper spokes. Tim, 2026-09-29: spokes are structure, NOT drive --
+    // don't mix spokes and hamster support. The drive is the hamster
+    // (below), positioned by its own muscles.
+    for (int i = 0; i < RIM_COUNT; i++) {
+      structuralSpoke(link_manager, clazz, hub0, rim0[i]);
+      structuralSpoke(link_manager, clazz, hub1, rim1[i]);
+    }
+
+    // Hamster: fairly heavy near-central node (Tim, 2026-09-29 redesign).
+    // Positioned forward (+X) and up (-Y) from the wheel center -- its
+    // weight creates the driving torque (gravity drive). The muscles
+    // (below) position the hamster; gravity drives the wheel. This is
+    // NOT the bootstrap-prone muscle-pull: the drive is external
+    // (gravity on the offset mass), the muscles only hold the position.
+    final NodeType hamster_type = node_manager.node_type_factory.getNew();
+    hamster_type.log_mass = hamster_log_mass;
+    hamster_type.radius = nodeRadius();
+    final int hamster_offset = rim_radius_px / 4;
+    final Node hamster = addNode(node_manager, clazz, hamster_type,
+        cx + (hamster_offset << Coords.shift),
+        cy - (hamster_offset << Coords.shift),
+        z0 + hw);
+
+    // Hamster drive muscles: links from hamster to every rim node
+    // (every spoke end). f=1 traveling wave -- per-link phase, one full
+    // wave around the rim, same phase on both rims for the same angle.
+    // All share one oscillator; the wave hands the hamster off from rim
+    // node to rim node, keeping it forward-up as the wheel rolls under it.
+    final GlobalOscillatorController hamsterMuscle =
         new GlobalOscillatorController(Muscles.active_oscillator);
     for (int i = 0; i < RIM_COUNT; i++) {
       final int phase = i * muscle_period_ticks / RIM_COUNT;
-      muscleSpoke(link_manager, clazz, hub0, rim0[i], spokeMuscle, phase);
-      muscleSpoke(link_manager, clazz, hub1, rim1[i], spokeMuscle, phase);
+      hamsterMuscleLink(link_manager, clazz, hamster, rim0[i],
+          hamsterMuscle, phase);
+      hamsterMuscleLink(link_manager, clazz, hamster, rim1[i],
+          hamsterMuscle, phase);
     }
 
     // No mid-air starts: rest the whole model on the ground plane.
@@ -356,18 +379,33 @@ public final class HamsterWheelDemo {
   }
 
   /**
-   * Muscle hub-to-rim cable spoke, pre-tensioned via
+   * Structural hub-to-rim spoke: passive cable, pre-tensioned via
    * spoke_rest_scale_pct so the hub hangs from its upper spokes like a
-   * bicycle wheel. Tension-only (compression=false): a spoke can pull the
-   * hub up, never push it down. Tim, 2026-09-29: f=1 traveling wave --
-   * per-spoke phase offset, same phase on both hubs for the same angle.
+   * bicycle wheel. Tension-only (compression=false). Tim, 2026-09-29:
+   * spokes are structure, NOT drive -- no controller, no muscle.
    */
-  private static void muscleSpoke(LinkManager lm, Clazz clazz,
-      Node hub, Node rim, GlobalOscillatorController muscle, int phase) {
+  private static void structuralSpoke(LinkManager lm, Clazz clazz,
+      Node hub, Node rim) {
     final LinkType type = thin(lm.link_type_factory.getNew(
         scaledSpokeLength(distance(hub, rim)), spoke_elasticity));
     type.compression = false;
     final Link link = lm.setLink(hub, rim, type, clazz);
+    link.adjusted_rest_length = type.length;
+    // No controller, no phase -- passive structure.
+  }
+
+  /**
+   * Hamster drive muscle: link from hamster to rim node, on the shared
+   * muscle oscillator with per-link phase for the f=1 traveling wave.
+   * Tim, 2026-09-29: the hamster's muscles position the (heavy) hamster;
+   * gravity on the offset mass drives the wheel.
+   */
+  private static void hamsterMuscleLink(LinkManager lm, Clazz clazz,
+      Node hamster, Node rim, GlobalOscillatorController muscle, int phase) {
+    final LinkType type = thin(lm.link_type_factory.getNew(
+        distance(hamster, rim), spoke_elasticity));
+    type.compression = false;
+    final Link link = lm.setLink(hamster, rim, type, clazz);
     link.adjusted_rest_length = type.length;
     link.phase = phase;
     link.controller = muscle;
