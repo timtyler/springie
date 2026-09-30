@@ -901,6 +901,7 @@ public class FrEnd extends Panel implements Runnable {
     FrEnd.panel_universe.reflectGravity();
     FrEnd.panel_universe.reflectFriction();
     FrEnd.panel_universe.reflectTemperature();
+    FrEnd.panel_universe.reflectCompassBias();
     FrEnd.panel_universe.reflect3D();
     FrEnd.panel_universe.reflectMuscles();
     FrEnd.panel_universe.checkbox_muscles.setState(Muscles.enabled);
