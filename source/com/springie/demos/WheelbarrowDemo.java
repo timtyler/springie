@@ -154,7 +154,7 @@ public final class WheelbarrowDemo {
    * forward (+X, opposite the trailing handle). Both share one
    * oscillator; phase 0 = in-phase, phase period/2 = alternating.
    */
-  public static int muscle_amplitude_pct = 32;
+  public static int muscle_amplitude_pct = 20;
   public static int muscle_period_ticks = 510;
   /** Phase offset for the second handle muscle, in ticks. */
   public static int muscle_phase2_ticks = 0;
@@ -268,16 +268,15 @@ public final class WheelbarrowDemo {
     // Handle nodes get their own clazz color (pastel peach), distinct
     // from the wheel's nodes (Tim, 2026-10-01).
     final Clazz handle_clazz = node_manager.clazz_factory.getNew(0xFFDAB9);
-    // Tetrahedron handle (Tim, 2026-10-01): the two handle nodes are
-    // repositioned to form a tetrahedron with the axle nodes (hub0,
-    // hub1). Shorter, centered, 200px behind -- a proper 3D tetrahedron,
-    // not a flat quadrilateral.
-    final int thx = cx - (200 << Coords.shift);
-    final int thz = z0 + (hw << Coords.shift);
+    // Tetrahedron handle (Tim, 2026-10-01): the two handle nodes form a
+    // tetrahedron with the axle nodes (hub0, hub1). Based on the stable
+    // original positions (240px back, full axle width); handle0 is 20px
+    // further back to break coplanarity -- a true 3D tetrahedron.
+    final int thx = cx - (240 << Coords.shift);
     final Node handle0 = addNode(node_manager, handle_clazz, handle_type,
-        thx, ground, thz - (50 << Coords.shift));
+        thx - (20 << Coords.shift), ground, z0 + (axle_inset_px << Coords.shift));
     final Node handle1 = addNode(node_manager, handle_clazz, handle_type,
-        thx, ground, thz + (50 << Coords.shift));
+        thx, ground, z0 + 2 * hw - (axle_inset_px << Coords.shift));
     // The two shafts are MUSCLES (cables, not struts -- Tim's rule).
     // They share one oscillator; phase2 controls in-phase vs alternating.
     // These are the ONLY muscles in the handle.
@@ -288,10 +287,11 @@ public final class WheelbarrowDemo {
         muscle_phase2_ticks).handle = true;
     // Tetrahedron edges (passive): handle0-handle1, hub0-handle1,
     // hub1-handle0. With the axle (hub0-hub1) and the two muscles, this
-    // completes the 6 edges of the tetrahedron.
-    passive(link_manager, clazz, handle0, handle1, handle_elasticity).handle = true;
-    passive(link_manager, clazz, hub0, handle1, handle_elasticity).handle = true;
-    passive(link_manager, clazz, hub1, handle0, handle_elasticity).handle = true;
+    // completes the 6 edges of the tetrahedron. Softer than the muscles
+    // (xbrace_elasticity) so the tetrahedron can flex without tipping.
+    passive(link_manager, clazz, handle0, handle1, xbrace_elasticity).handle = true;
+    passive(link_manager, clazz, hub0, handle1, xbrace_elasticity).handle = true;
+    passive(link_manager, clazz, hub1, handle0, xbrace_elasticity).handle = true;
 
     // No mid-air starts: rest the whole model on the ground plane.
     Grounding.restOnGround(node_manager);
