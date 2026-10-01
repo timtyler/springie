@@ -420,6 +420,8 @@ public class NodeManager extends World {
     final int max_x = Coords.x_pixels << Coords.shift;
     final int max_y = Coords.y_pixels << Coords.shift;
     final int max_z = Coords.z_pixels << Coords.shift;
+    // Bounding box bounciness: 100 = perfectly elastic, 0 = dead stop.
+    final double bounce = World.bounding_box_bounciness / 100.0;
     final int number_of_nodes = this.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node node = (Node) this.element.get(counter);
@@ -427,37 +429,37 @@ public class NodeManager extends World {
       if ((node.pos.x + radius) > max_x) {
         node.pos.x = max_x - radius;
         if (node.velocity.x > 0) {
-          node.velocity.x = -(int) (node.velocity.x * 0.95);
+          node.velocity.x = -(int) (node.velocity.x * bounce);
         }
       }
       if (node.pos.x < radius) {
         node.pos.x = radius;
         if (node.velocity.x < 0) {
-          node.velocity.x = -(int) (node.velocity.x * 0.95);
+          node.velocity.x = -(int) (node.velocity.x * bounce);
         }
       }
       if ((node.pos.y + radius) > max_y) {
         node.pos.y = max_y - radius;
         if (node.velocity.y > 0) {
-          node.velocity.y = -(int) (node.velocity.y * 0.95);
+          node.velocity.y = -(int) (node.velocity.y * bounce);
         }
       }
       if (node.pos.y < radius) {
         node.pos.y = radius;
         if (node.velocity.y < 0) {
-          node.velocity.y = -(int) (node.velocity.y * 0.95);
+          node.velocity.y = -(int) (node.velocity.y * bounce);
         }
       }
       if ((node.pos.z + radius) > max_z) {
         node.pos.z = max_z - radius;
         if (node.velocity.z > 0) {
-          node.velocity.z = -(int) (node.velocity.z * 0.95);
+          node.velocity.z = -(int) (node.velocity.z * bounce);
         }
       }
       if (node.pos.z < radius) {
         node.pos.z = radius;
         if (node.velocity.z < 0) {
-          node.velocity.z = -(int) (node.velocity.z * 0.95);
+          node.velocity.z = -(int) (node.velocity.z * bounce);
         }
       }
     }

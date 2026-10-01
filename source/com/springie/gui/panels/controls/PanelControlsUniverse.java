@@ -71,6 +71,8 @@ public class PanelControlsUniverse {
 
   Label label_compass_bias;
 
+  Label label_bounciness;
+
   Label label_muscles_amplitude;
 
   Label label_muscles_period;
@@ -101,6 +103,8 @@ public class PanelControlsUniverse {
   Scrollbar scroll_bar_friction;
 
   Scrollbar scroll_bar_compass_bias;
+
+  Scrollbar scroll_bar_bounciness;
 
   public PanelControlsUniverse(NewMessageManager new_message_manager) {
     this.new_message_manager = new_message_manager;
@@ -191,6 +195,27 @@ public class PanelControlsUniverse {
     panel_compass_bias.add("East", this.label_compass_bias);
 
     // END COMPASS BIAS (added below, under friction)
+
+    // START BOUNDING BOX BOUNCINESS
+    final Panel panel_bounciness = new Panel();
+    panel_bounciness.setLayout(new BorderLayout(0, 8));
+    panel_bounciness.add("West", new Label("Bounciness:", Label.RIGHT));
+
+    this.scroll_bar_bounciness = new Scrollbar(Scrollbar.HORIZONTAL, 95, 10, 0, 110);
+    this.scroll_bar_bounciness.addAdjustmentListener(new AdjustmentListener() {
+      public void adjustmentValueChanged(AdjustmentEvent e) {
+        final int temp = e.getValue();
+        World.bounding_box_bounciness = temp;
+        getLabelBounciness().setText("" + temp);
+      }
+    });
+
+    panel_bounciness.add("Center", this.scroll_bar_bounciness);
+
+    this.label_bounciness = new Label("" + World.bounding_box_bounciness, Label.LEFT);
+    panel_bounciness.add("East", this.label_bounciness);
+
+    // END BOUNDING BOX BOUNCINESS
 
     // START TEMPERATURE
     final Panel panel_temperature = new Panel();
@@ -398,6 +423,7 @@ public class PanelControlsUniverse {
     panel_main.add(panel_gravity);
     panel_main.add(panel_friction);
     panel_main.add(panel_compass_bias);
+    panel_main.add(panel_bounciness);
 
     panel_main.add(panel_muscles_switch);
     panel_main.add(panel_muscles_amplitude);
@@ -448,6 +474,7 @@ public class PanelControlsUniverse {
     reflectGravity();
     reflectFriction();
     reflectCompassBias();
+    reflectBounciness();
     reflectTemperature();
     reflectViscocity();
     reflectUniverseToggles();
@@ -514,6 +541,12 @@ public class PanelControlsUniverse {
     this.label_compass_bias.setText("" + CompassPoint.bias_size);
   }
 
+  public void reflectBounciness() {
+    this.scroll_bar_bounciness.setValue(World.bounding_box_bounciness);
+
+    this.label_bounciness.setText("" + World.bounding_box_bounciness);
+  }
+
   public void reflectTemperature() {
     this.scroll_bar_temperature.setValue(World.global_temperature);
 
@@ -577,6 +610,10 @@ public class PanelControlsUniverse {
 
   public Label getLabelCompassBias() {
     return this.label_compass_bias;
+  }
+
+  public Label getLabelBounciness() {
+    return this.label_bounciness;
   }
 
   public Label getLabelGravity() {

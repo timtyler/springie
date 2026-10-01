@@ -133,6 +133,7 @@ class UniverseResetTest {
         World.gravity_strength = 99;
         World.gravity_active = false;
         World.ground_friction = 0;
+        World.bounding_box_bounciness = 0;
         World.global_temperature = 500;
         Node.viscocity = 42;
         FrEnd.check_collisions = true;
@@ -146,6 +147,7 @@ class UniverseResetTest {
         assertEquals(5, World.gravity_strength);
         assertTrue(World.gravity_active);
         assertEquals(50, World.ground_friction);
+        assertEquals(95, World.bounding_box_bounciness);
         assertEquals(0, World.global_temperature);
         assertEquals(2, Node.viscocity);
         assertFalse(FrEnd.check_collisions);

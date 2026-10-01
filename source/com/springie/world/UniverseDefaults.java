@@ -36,6 +36,9 @@ public final class UniverseDefaults {
   // Friction.
   private static int ground_friction = 0;
 
+  // Bounding box bounciness.
+  private static int bounding_box_bounciness = 95;
+
   // Temperature.
   private static int global_temperature = 6;
 
@@ -82,6 +85,7 @@ public final class UniverseDefaults {
     gravity_strength = 2;
     gravity_active = false;
     ground_friction = 0;
+    bounding_box_bounciness = 95;
     global_temperature = 6;
     viscocity = 0;
     check_collisions = true;
@@ -109,6 +113,7 @@ public final class UniverseDefaults {
     gravity_strength = World.gravity_strength;
     gravity_active = World.gravity_active;
     ground_friction = World.ground_friction;
+    bounding_box_bounciness = World.bounding_box_bounciness;
     global_temperature = World.global_temperature;
     viscocity = Node.viscocity;
     check_collisions = FrEnd.check_collisions;
@@ -138,6 +143,7 @@ public final class UniverseDefaults {
     World.gravity_strength = gravity_strength;
     World.gravity_active = gravity_active;
     World.ground_friction = ground_friction;
+    World.bounding_box_bounciness = bounding_box_bounciness;
     World.global_temperature = global_temperature;
     Node.viscocity = viscocity;
     FrEnd.check_collisions = check_collisions;

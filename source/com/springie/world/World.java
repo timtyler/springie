@@ -73,6 +73,14 @@ public class World extends BaseElementManager<Node> {
    */
   public static int ground_friction = 0;
 
+  /**
+   * Bounding box bounciness, 0-100. When a node hits the bounding box
+   * wall, the velocity component perpendicular to the wall is scaled
+   * by -bounciness / 100: 100 = perfectly elastic bounce, 0 = dead
+   * stop (no bounce back).
+   */
+  public static int bounding_box_bounciness = 95;
+
   protected static Node temp_agent;
 
   protected static Node temp2_agent;
