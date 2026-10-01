@@ -56,6 +56,16 @@ public final class BoundaryBoxDots {
 
   private static int next_dot;
 
+  /**
+   * Resets the dot cycle to the start, for tests. The shared counter
+   * may start anywhere (advanced by the app's animation thread), forcing
+   * tests to loop until a visible dot appears. Resetting makes the first
+   * dot deterministic.
+   */
+  static void resetForTest() {
+    next_dot = 0;
+  }
+
   private BoundaryBoxDots() {
   }
 

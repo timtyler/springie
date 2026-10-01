@@ -68,12 +68,17 @@ class BoundaryBoxDotsTest {
   }
 
   private static int dotPixels(BufferedImage img) {
+    // Bulk getRGB: per-pixel getRGB(x,y) is a synchronized method call,
+    // ~10x slower than a single bulk read into an array. The test loops
+    // calling this after each drawOneDot, so the speedup compounds.
+    final int w = img.getWidth();
+    final int h = img.getHeight();
+    final int[] pixels = img.getRGB(0, 0, w, h, null, 0, w);
+    final int gray = Color.gray.getRGB();
     int n = 0;
-    for (int y = 0; y < img.getHeight(); y++) {
-      for (int x = 0; x < img.getWidth(); x++) {
-        if (img.getRGB(x, y) == Color.gray.getRGB()) {
-          n++;
-        }
+    for (int p : pixels) {
+      if (p == gray) {
+        n++;
       }
     }
     return n;
@@ -96,15 +101,12 @@ class BoundaryBoxDotsTest {
         BufferedImage.TYPE_INT_RGB);
     final Graphics2D g = img.createGraphics();
     FrEnd.show_boundary_box = true;
-    // Draw until a dot lands visibly: depth-edge dots near the front
-    // face can project off-screen, and the shared dot counter may start
-    // anywhere, so the first plotted dot is not necessarily visible.
+    // Reset the shared dot counter: dot 0 is on a visible edge with the
+    // pinned test Coords, so one draw plots one visible dot. No loop.
+    BoundaryBoxDots.resetForTest();
     final int before = dotPixels(img);
-    int afterOne = before;
-    for (int i = 0; i < 1000 && afterOne == before; i++) {
-      BoundaryBoxDots.drawOneDot(g);
-      afterOne = dotPixels(img);
-    }
+    BoundaryBoxDots.drawOneDot(g);
+    final int afterOne = dotPixels(img);
     g.dispose();
     assertTrue(afterOne - before > 0 && afterOne - before <= 4,
         "one call plots a single 2x2 dot, got " + (afterOne - before));
