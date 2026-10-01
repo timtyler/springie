@@ -13,7 +13,7 @@ import com.springie.render.Coords;
  * yaws and pitches but its axle stays horizontal; tipping over puts one end
  * of the axle on (or toward) the ground, which disqualifies the run.
  */
-public final class AxleLevelRule {
+public final class AxleLevelRule implements PostureRule {
   private final int left_index;
   private final int right_index;
   private final int max_difference;

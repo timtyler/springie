@@ -18,7 +18,7 @@ import com.springie.render.Coords;
  *
  * <p>Heights are screen Y (grows downward): "above" means smaller Y.
  */
-public final class TipOverRule {
+public final class TipOverRule implements PostureRule {
   private final int top_index;
   private final int bottom_index;
   private final int min_separation;

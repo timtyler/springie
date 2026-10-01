@@ -2,12 +2,8 @@
 
 package com.springie.demos;
 
-import com.springie.context.ContextManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.render.Coords;
-import com.springie.utilities.random.Hortensius32Fast;
-import com.springie.world.World;
 
 /**
  * Truly headless judge that scores a rolling design. Does NOT start FrEnd
@@ -29,7 +25,7 @@ import com.springie.world.World;
  * as a sanity check that the metric crushes non-rolling designs.
  * Prints: DISTANCE, THETA_REV, ROLLING_MATCH, HEIGHT_STD, SCORE, TICKS.
  */
-public final class RollingJudge {
+public final class RollingJudge extends HeadlessJudge {
   private RollingJudge() {
   }
 
@@ -105,61 +101,11 @@ public final class RollingJudge {
    * even in a JVM where a GUI test has left the animation thread running.
    */
   public static Result score(int ticks, boolean use_crawler) {
-    // Hold the model lock for the whole run. A GUI test's animation thread
-    // never stops: it keeps repainting, and the AWT thread would otherwise
-    // step physics on this run's NodeManager concurrently with the loop
-    // below (extra ticks plus data races on node positions), so two
-    // back-to-back runs diverge. This is the same lock the AWT renderer
-    // and the message pump already use (see
-    // RendererDelegator.redrawChanged); the physics path never needs the
-    // AWT tree lock, so this cannot deadlock.
-    synchronized (ContextManager.class) {
-      return scoreWithLockHeld(ticks, use_crawler);
-    }
+    return withModelLock(() -> scoreWithLockHeld(ticks, use_crawler));
   }
 
   private static Result scoreWithLockHeld(int ticks, boolean use_crawler) {
-    // Reset the world's RNG so every scored run starts from identical
-    // initial conditions (temperature jitter and node seeds).
-    resetWorldRandom();
-
-    // Pin down all global physics state. Earlier tests (especially GUI
-    // tests) leak values into these statics; the demos' buildAt methods
-    // set only a subset, so two consecutive score() calls could otherwise
-    // diverge in a polluted suite.
-    // NOTE: temperature is NOT pinned here -- WheelbarrowDemo.buildAt sets
-    // World.global_temperature = 0 (deterministic build; Caterpillar2Demo
-    // and SlinkyDemo do the same). Pinning 6 here would be dead code
-    // because buildAt overrides it.
-    World.gravity_active = true;
-    World.gravity_strength = 5;
-    World.ground_friction = 100;
-    World.minimum_magnitude = 0;
-    World.maximum_magnitude = Integer.MAX_VALUE;
-    com.springie.elements.nodes.Node.max_speed = Integer.MAX_VALUE;
-    com.springie.elements.nodes.Node.viscocity = 0;
-    com.springie.FrEnd.three_d = true;
-    com.springie.FrEnd.check_collisions = true;
-    com.springie.FrEnd.continuously_centre_x = false;
-    com.springie.FrEnd.continuously_centre_y = false;
-    com.springie.FrEnd.continuously_centre_z = false;
-    com.springie.FrEnd.boundaries = true;
-    com.springie.FrEnd.explosions = true;
-    com.springie.FrEnd.oscd = true;
-    com.springie.FrEnd.dragged_element = null;
-    com.springie.FrEnd.forces_disabled_during_gesture = false;
-    com.springie.FrEnd.paused = false;
-    com.springie.FrEnd.frame_frequency = 0;
-    com.springie.muscles.Muscles.enabled = false;
-    com.springie.muscles.Muscles.active_oscillator = 0;
-    // Pin the universe size: a booted GUI resizes Coords to its canvas,
-    // moving the ground walls and changing the absolute score.
-    com.springie.render.Coords.x_pixels = 800;
-    com.springie.render.Coords.y_pixels = 600;
-    com.springie.render.Coords.z_pixels = 1024;
-
-    ContextManager.setNodeManager(new NodeManager());
-    final NodeManager node_manager = ContextManager.getNodeManager();
+    final NodeManager node_manager = newJudgedRun();
 
     final Node hub;
     final Node marker;
@@ -188,9 +134,7 @@ public final class RollingJudge {
     final boolean shoved = !InitialVelocityCheck.atRestAlong(node_manager,
         CompassPoint.E);
 
-    for (int i = 0; i < SETTLE_TICKS; i++) {
-      node_manager.nodeAndLinkUpdate();
-    }
+    settle(node_manager, SETTLE_TICKS);
     final int start_x = hub.pos.x;
     final int start_z = hub.pos.z;
 
@@ -232,7 +176,8 @@ public final class RollingJudge {
       // A model that falls apart (nodes flung far from the hub) is not
       // a valid run, even if the hub happens to stay put and level --
       // without this, a shattered wheel can score "upright 1.0".
-      if (!shattered && i % 60 == 0 && shattered(node_manager, hub)) {
+      if (!shattered && i % 60 == 0
+          && shattered(node_manager, hub, 400)) {
         shattered = true;
       }
 
@@ -254,10 +199,7 @@ public final class RollingJudge {
     }
 
     // 2D travel on the floor: vertical motion doesn't count.
-    final long dx = (long) hub.pos.x - start_x;
-    final long dz = (long) hub.pos.z - start_z;
-    final int dist_internal = (int) Math.sqrt(dx * dx + dz * dz);
-    final int distance_px = dist_internal >> Coords.shift;
+    final int distance_px = distance2DPx(start_x, start_z, hub.pos.x, hub.pos.z);
 
     final double mean = sum / n;
     final double variance = Math.max(0.0, sum2 / n - mean * mean);
@@ -296,63 +238,10 @@ public final class RollingJudge {
     return result;
   }
 
-  /**
-   * True if any node has flown further than 400px from the hub -- the
-   * model has fallen apart (links overstretched or nodes teleported).
-   * An intact wheel spans 320px and an intact crawler 100px, so 400px
-   * of separation means structural failure, not a valid configuration.
-   * Without this, a shattered wheel whose hub happens to stay put and
-   * level can score a bogus "upright 1.0, not disqualified".
-   */
-  private static boolean shattered(NodeManager node_manager, Node hub) {
-    final int n = node_manager.element.size();
-    final long limit = 400L << com.springie.render.Coords.shift;
-    final long limit2 = limit * limit;
-    for (int i = 0; i < n; i++) {
-      final Node node = (Node) node_manager.element.get(i);
-      final long dx = (long) node.pos.x - hub.pos.x;
-      final long dy = (long) node.pos.y - hub.pos.y;
-      final long dz = (long) node.pos.z - hub.pos.z;
-      if (dx * dx + dy * dy + dz * dz > limit2) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   /** Marker angle about the hub in the XY (rolling) plane, radians. */
   private static double angleOf(Node marker, Node hub) {
     return Math.atan2((double) (marker.pos.y - hub.pos.y),
         (double) (marker.pos.x - hub.pos.x));
-  }
-
-  /** Mean node height (centre-of-mass height), in pixels. */
-  private static double comHeightPx(NodeManager node_manager) {
-    final int n = node_manager.element.size();
-    long sum = 0;
-    for (int i = 0; i < n; i++) {
-      sum += ((Node) node_manager.element.get(i)).pos.y;
-    }
-    return (double) (sum >> Coords.shift) / n;
-  }
-
-  /**
-   * Resets the world's random number generator to its initial seed.
-   * The physics uses this for temperature jitter and node seeds; without
-   * a reset, consecutive scored runs diverge (the wheel is chaotic).
-   */
-  private static void resetWorldRandom() {
-    try {
-      final java.lang.reflect.Field field =
-          World.class.getDeclaredField("rnd");
-      field.setAccessible(true);
-      final Hortensius32Fast rnd =
-          (Hortensius32Fast) field.get(null);
-      // GOOD_SEED = 4357 (the default seed for a new generator).
-      rnd.setSeed(4357);
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to reset World.rnd", e);
-    }
   }
 
   public static void main(String[] args) throws Exception {
