@@ -11,37 +11,30 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
 import com.springie.geometry.Point3D;
-import com.springie.muscles.GlobalOscillatorController;
-import com.springie.muscles.Muscles;
 import com.springie.render.Coords;
 import com.springie.world.Grounding;
 import com.springie.world.World;
 
 /**
- * A big, clean rolling wheel: 7 nodes per rim (radius 160px), two
- * parallel rims, each with its own single central hub node -- two hubs
- * total, joined by a stiff passive axle. 14 muscle cable spokes (7 per
- * hub).
+ * A minimal rolling wheel: hexagonal prism (6 nodes per rim, radius
+ * 160px), two parallel rims, each with its own single central hub node
+ * -- two hubs total, joined by a stiff passive axle in the middle.
+ *
+ * <p>Nothing else: no hamster, no muscles, no paddles, no kick. The hubs
+ * carry N/S compass headings for tip-over stabilization (Tim, 2026-09-28);
+ * the N/S tension is carried by the rigid axle, not the spokes.
  *
  * <p>Geometry follows Tim's directives: 2026-09-21 (bigger nodes, longer
  * struts, fewer thinner spokes, one central node per rim), 2026-09-24
  * (heavy axis nodes, much lighter rim nodes, bigger nodes still, thinner
- * links) and 2026-09-28 (7 spokes per rim). Each hub sits in its rim's
- * plane and spokes radially to its 7 rim nodes, like a bicycle wheel;
- * the axle ties the two hubs into a single rigid shaft. The rim uses
- * alternating diagonal bracing to resist shear.
- *
- * <p>Drive (Tim, 2026-09-30): wheelbarrow paddle drive. Two-node paddles
- * trail behind the wheel, one per side, pushing off the ground like oars.
- * The foot plants on the ground (external anchor); a muscle cable from
- * the front rim pulls the paddle top forward, levering the hub forward
- * via a drive strut. This is NOT bootstrap-limited: the ground is external.
- * Spokes are passive structure -- not mixed with the drive.
- * No custom controllers -- only the muscles change cable lengths.
+ * links). Each hub sits in its rim's plane and spokes radially to its 6
+ * rim nodes, like a bicycle wheel; the axle ties the two hubs into a
+ * single rigid shaft. The rim uses alternating diagonal bracing to resist
+ * shear.
  *
  * <p>Node order: rim-0[i] and rim-1[i] interleaved per iteration (element
- * indices 2*i and 2*i+1), then hub0, then hub1, then paddle nodes. Node 0
- * (rim-0[0], body angle 0) is the rotation marker. buildAt returns hub0.
+ * indices 2*i and 2*i+1), then hub0, then hub1. Node 0 (rim-0[0], body
+ * angle 0) is the rotation marker. buildAt returns hub0.
  *
  * <p>Parameters are public fields so the judge can sweep them.
  */
@@ -49,8 +42,7 @@ public final class WheelbarrowDemo {
   private WheelbarrowDemo() {
   }
 
-  /** Nodes per rim. */
-  // Tim's directive (2026-09-28): 7 spokes per rim.
+  /** Nodes per rim: hexagonal prism. */
   public static final int RIM_COUNT = 6;
 
   /** Rim radius, in pixels. */
@@ -75,37 +67,12 @@ public final class WheelbarrowDemo {
   public static int z_offset_px = 100;
 
   /** Nominal mass for rim nodes (log scale used by the engine). */
-  // Mass is functional now: reference mass preserves the tuned behavior
-  // (the old values were no-ops when mass was ignored).
-  // Tim's directive (2026-09-24): the rim nodes are much lighter than the
-  // hubs -- log 13 is 8x lighter than the reference mass, so the heavy
-  // hubs dominate the centre of mass and the hamster-ball drive gets real
-  // gravitational torque from each hub shift.
   public static int rim_log_mass = 15;
 
   /** Nominal mass for the hub node (log scale used by the engine). */
-  // Tim's directive (2026-09-24): the axis (hub) nodes are heavy -- log 19
-  // is 8x the reference mass. The two hubs carry ~90% of the wheel's mass,
-  // so pulling a hub forward shifts the centre of mass hard and gravity
-  // does the rolling.
-  /**
-   * Hub mass (log scale). Tim, 2026-09-28: hubs are the heavy central
-   * shaft of the wheel.
-   */
   public static int hub_log_mass = 19;
 
-  /**
-   * Hamster mass (log scale). Tim, 2026-09-29: fairly heavy near-central
-   * mass, restored 2026-09-30 after the paddle experiment exploded.
-   */
-  public static int hamster_log_mass = 18;
-
   /** Node radius, in fixed-point units: the same as the rim links' radius. */
-  // Tim's directive (2026-09-27): nodes the same size as the link radius.
-  // (The old node_size_px field passed unshifted pixels to setSize, so the
-  // nodes were rendering at ~1px while the ground line assumed 286px.)
-  // Node size is PHYSICAL -- the boundary clamp and the ground line both
-  // use it.
   static int nodeRadius() {
     final int chord =
         (int) (2.0 * (rim_radius_px << Coords.shift) * Math.sin(Math.PI / RIM_COUNT));
@@ -113,93 +80,33 @@ public final class WheelbarrowDemo {
   }
 
   /**
-   * Link rendering thinness: radius = length / this. Tim's directive
-   * (2026-09-24): thinner links to go with the bigger nodes (was the
-   * LinkType default of length / 8). Visual only -- link radius never
-   * enters the physics.
+   * Link rendering thinness: radius = length / this. Visual only -- link
+   * radius never enters the physics.
    */
   public static int link_radius_divisor = 32;
 
   /**
-   * Rolling direction: +1 toward +X, -1 toward -X. (Legacy from the
-   * hamster drive; the spoke muscles are symmetric so this no longer
-   * steers the drive.)
+   * Per-node compass bias for the axle ends, in velocity units per frame.
+   * Tim, 2026-09-28: N on the north axle end, S on the south axle end --
+   * the universe compass bias pulls the ends apart along the axle,
+   * restoring yaw wander and tip-over. E/W are deliberately not assigned.
+   * Tuned to 10 (Tim, 2026-10-01): 50 causes Z-drift and tip-over by
+   * ~350 ticks; 10 holds 100% upright for 600 ticks with no shatter.
    */
-  public static int roll_direction = 1;
-
-  /**
-   * Muscle drive for the 14 spoke muscles (Tim, 2026-09-28: only the
-   * muscles may change cable lengths). Gentle: 5% amplitude, 120-tick
-   * period. All 14 spokes share one oscillator instance with identical
-   * phase -- no subset special treatment.
-   */
-  public static int muscle_amplitude_pct = 15;
-  public static int muscle_period_ticks = 480;
-
-  /**
-   * Self-start kick, in internal velocity units (256 = 1 px/frame).
-   * Tim, 2026-09-30: restored to break the chicken-and-egg -- the kick
-   * spins the wheel, the traveling wave (synced to the rotation) then
-   * holds the hamster forward to sustain rolling. Pure spin: tangential
-   * velocities sum to zero, so the no-initial-velocity rule passes.
-   * 240 is about 1px/frame at the rim.
-   */
-  public static int start_kick = 240;
-
-  /**
-   * Paddle drive (Tim, 2026-09-30): two-node paddles trailing behind the
-   * wheel, one per side, pushing alternately off the ground like oars.
-   * The foot plants on the ground (external anchor); muscle cables pull
-   * the paddle top forward, levering the hub forward via the drive cable.
-   * Alternating phases (0 and period/2) give continuous drive.
-   * Set paddle_back_px = 0 to disable.
-   */
-  public static int paddle_back_px = 0;
-  /** Height of paddle top below hub, in pixels. */
-  public static int paddle_top_drop_px = 40;
-  /** Muscle amplitude for paddle drive, percent. */
-  public static int paddle_amplitude_pct = 20;
-
-  /**
-   * Yaw stabilizer bias, in internal velocity units per frame
-   * (256 units = 1 px/frame). Tim's directive: N and S bias on opposite
-   * ends of the wheel axle -- this does not turn the wheel around, it
-   * stabilizes the initial rolling direction (see
-   * {@link AxleStabilizerController}). Tuned to 13 for the two-hub wheel;
-   * 0 disables.
-   */
-  public static int axle_stabilizer_bias = 13;
-
-  /**
-   * Gravity strength for the wheel universe, in velocity units per frame.
-   * Tim, 2026-09-28: turned down from 2 to 1 -- the wheel was hitting the
-   * ground with significant velocity and shattering (a node flung &gt;400px
-   * from the hub disqualifies the run). Lower gravity softens the impact;
-   * it also weakens the gravitational drive, so this is an experiment to
-   * be judged.
-   */
-  public static int gravity_strength = 1;
-
-  /**
-   * Per-node compass bias for the axle ends, in velocity units per frame
-   * (same units as {@link #axle_stabilizer_bias}). Tim, 2026-09-28: N on
-   * the north axle end, S on the south axle end -- the universe compass
-   * bias pulls the ends apart along the axle, restoring yaw wander and
-   * tip-over the same way the track's axle headings do. E/W are deliberately
-   * not assigned: on a z-axle wheel an E/W pair on opposite ends is a pure
-   * force couple about the vertical (constant yaw torque -- a turn, not a
-   * restoring force), so it would curve the wheel instead of steadying it.
-   */
-  public static int compass_bias = 50;
+  public static int compass_bias = 10;
 
   /** Ground friction, 0-100. */
   public static int friction = 100;
 
   /**
+   * Gravity strength for the wheel universe, in velocity units per frame.
+   */
+  public static int gravity_strength = 1;
+
+  /**
    * Tim's "not tipping over" rule for the wheel: the axle must stay level.
-   * Element indices of one node on each end of the axle (rim0[0], rim1[0]
-   * -- same angular station, so they ride together while rolling). Their
-   * heights must stay within the max difference for the whole run.
+   * Element indices of one node on each end of the axle (hub0, hub1).
+   * Their heights must stay within the max difference for the whole run.
    */
   public static final int posture_axle_left_index = 12;
   public static final int posture_axle_right_index = 13;
@@ -221,19 +128,21 @@ public final class WheelbarrowDemo {
   public static int spoke_elasticity = 120;
 
   /**
-   * Paddle muscle elasticity (Tim, 2026-09-30): the paddle muscles pull
-   * the paddle top forward to lever the hub.
-   */
-  public static int paddle_elasticity = 80;
-
-  /**
    * Spoke rest-length scale, percent. 100 = rest length equals the built
-   * geometry (zero pre-tension). Below 100 pre-tensions the spokes: with
-   * cable-only spokes this is structural, not optional -- un-tensioned
-   * cables go slack under the hub and it sags until the wheel tips.
-   * 95 holds the hub at axle height like a bicycle wheel.
+   * geometry (zero pre-tension).
    */
   public static int spoke_rest_scale_pct = 100;
+
+  /**
+   * Handle: how far behind the wheel centre the handle nodes sit, in
+   * pixels. Tim, 2026-10-01: two nodes on the ground behind the wheel,
+   * linked from the axle ends -- a wheelbarrow tripod (wheel + two
+   * handle ends) that resists tip-over.
+   */
+  public static int handle_back_px = 240;
+
+  /** Elasticity for the handle shafts and cross-brace. */
+  public static int handle_elasticity = 150;
 
   /**
    * Builds the wheel with its centre at (x_px, ground - radius).
@@ -254,30 +163,12 @@ public final class WheelbarrowDemo {
     rim_type.radius = nodeRadius();
     hub_type.radius = nodeRadius();
 
-    // Muscles.enabled gates the per-link controllers (the 14 spoke
-    // muscles). Only the muscles may change cable lengths
-    // (Tim, 2026-09-28) -- no custom controllers.
-    Muscles.enabled = true;
-    Muscles.active_oscillator = 0;
-    Muscles.activeOscillator().setAmplitude(
-        muscle_amplitude_pct * Muscles.UNITY / 100);
-    Muscles.activeOscillator().setPeriodTicks(muscle_period_ticks);
-    Muscles.activeOscillator().setPhase(0);
     World.gravity_active = true;
     World.gravity_strength = gravity_strength;
     World.ground_friction = friction;
-    // Zero thermal jitter: the reflex drive is a delicate self-synchronizing
-    // mechanism, and thermal kicks knock it off rhythm into chaotic
-    // tip/veer modes (with temperature=6 the same build gives wildly
-    // different results per RNG seed). Caterpillar2Demo and SlinkyDemo
-    // already build with temperature 0 for the same reason; the judge and
-    // the UI both go through buildAt, so both see the deterministic build.
     World.global_temperature = 0;
 
     // Ground is the high-Y wall (positive gravity pulls toward +Y).
-    // The ground line sits one node radius above the canvas floor, so
-    // rim-node centres start exactly at their rest height -- no tick-1
-    // launch from the boundary clamp (which uses the node radius).
     final int ground =
         (Coords.y_pixels << Coords.shift) - nodeRadius();
     final int cx = x_px << Coords.shift;
@@ -303,37 +194,28 @@ public final class WheelbarrowDemo {
     final Node hub1 = addNode(node_manager, clazz, hub_type,
         cx, cy, z0 + 2 * hw - (axle_inset_px << Coords.shift));
 
-    // Tim, 2026-09-29: rigid axle restored. The N/S compass force on the
-    // hubs goes through the axle (tension) instead of through the spokes.
-    // This isolates the spoke/rim/hamster structure from the N/S stress.
+    // Rigid axle in the middle: ties the two hubs into a single shaft.
+    // The N/S compass force goes through the axle (tension) instead of
+    // through the spokes, isolating the spoke/rim structure from N/S stress.
     final LinkType axle_type = thin(link_manager.link_type_factory.getNew(
         distance(hub0, hub1), spoke_elasticity));
     axle_type.compression = false;
     final Link axle = link_manager.setLink(hub0, hub1, axle_type, clazz);
     axle.adjusted_rest_length = axle_type.length;
-    // Passive structure -- no muscle, no controller.
 
-    // Tim, 2026-09-29: hubs get N/S compass for tip-over stabilization
-    // (the Z-force/Y-offset lever arm gives a restoring torque for axle
-    // tilt). The bias is applied via the universe compass setting.
-    // The N/S tension is carried by the rigid axle, not the spokes.
+    // N/S compass on the hubs for tip-over stabilization (Tim, 2026-09-28).
     hub0.compass = CompassPoint.N;
     hub1.compass = CompassPoint.S;
     CompassPoint.bias_size = compass_bias;
 
     // Rim: two 6-gon rings (12 links) + 6 cross links + 12 mirror diagonals
     // (30 total). The diagonals come in mirror pairs so the bracing has
-    // no chirality: single-handed diagonals twist the wheel and make it
-    // veer in a circle instead of rolling straight.
+    // no chirality.
     for (int i = 0; i < RIM_COUNT; i++) {
       final int j = (i + 1) % RIM_COUNT;
       final Node a0 = rim0[i];
       final Node b0 = rim1[i];
       final Node a1 = rim0[j];
-      // Passive: rim edges, cross links, and diagonals maintain shape.
-      // The diagonals come in mirror pairs (b0-a1 and a0-b1) so the bracing
-      // has no chirality: single-handed diagonals twist the wheel and make
-      // it veer in a circle instead of rolling straight.
       passive(link_manager, clazz, a0, a1, rim_elasticity); // rim0 edge
       passive(link_manager, clazz, b0, rim1[j], rim_elasticity); // rim1 edge
       passive(link_manager, clazz, a0, b0,
@@ -342,66 +224,36 @@ public final class WheelbarrowDemo {
       passive(link_manager, clazz, a0, rim1[j], bracing_elasticity); // diag \
     }
 
-    // Hub spokes: 12 PASSIVE structural cables, 6 per hub, each hub
+    // Hub spokes: 12 passive structural cables, 6 per hub, each hub
     // spoking radially to its own rim (in-plane, like a bicycle wheel).
-    // Pre-tensioned via spoke_rest_scale_pct so each hub hangs from its
-    // upper spokes. Tim, 2026-09-29: spokes are structure, NOT drive --
-    // don't mix spokes and hamster support. The drive is the hamster
-    // (below), positioned by its own muscles.
     for (int i = 0; i < RIM_COUNT; i++) {
       structuralSpoke(link_manager, clazz, hub0, rim0[i]);
       structuralSpoke(link_manager, clazz, hub1, rim1[i]);
     }
 
-    // Hamster: fairly heavy near-central node (Tim, 2026-09-29 redesign,
-    // restored 2026-09-30 after the paddle experiment exploded).
-    // Positioned forward (+X) and up (-Y) from the wheel center -- its
-    // weight creates the driving torque (gravity drive). The muscles
-    // (below) position the hamster; gravity drives the wheel. This is
-    // NOT the bootstrap-prone muscle-pull: the drive is external
-    // (gravity on the offset mass), the muscles only hold the position.
-    final NodeType hamster_type = node_manager.node_type_factory.getNew();
-    hamster_type.log_mass = hamster_log_mass;
-    hamster_type.radius = nodeRadius();
-    final int hamster_offset = rim_radius_px / 4;
-    final Node hamster = addNode(node_manager, clazz, hamster_type,
-        cx + (hamster_offset << Coords.shift),
-        cy - (hamster_offset << Coords.shift),
-        z0 + hw);
-
-    // Hamster drive muscles: links from hamster to every rim node
-    // (every spoke end). f=1 traveling wave -- per-link phase, one full
-    // wave around the rim, same phase on both rims for the same angle.
-    // All share one oscillator; the wave hands the hamster off from rim
-    // node to rim node, keeping it forward-up as the wheel rolls under it.
-    final GlobalOscillatorController hamsterMuscle =
-        new GlobalOscillatorController(Muscles.active_oscillator);
-    for (int i = 0; i < RIM_COUNT; i++) {
-      final int phase = i * muscle_period_ticks / RIM_COUNT;
-      hamsterMuscleLink(link_manager, clazz, hamster, rim0[i],
-          hamsterMuscle, phase);
-      hamsterMuscleLink(link_manager, clazz, hamster, rim1[i],
-          hamsterMuscle, phase);
-    }
+    // Handle (Tim, 2026-10-01): two nodes on the ground behind the wheel
+    // (-X, the wheel rolls toward +X). Two links from the axle ends
+    // (hub0, hub1) to the trailing handle nodes, plus one link between
+    // the handle nodes. Wheel + two handle ends = tripod, stable
+    // against tip-over. The handle nodes sit at the hubs' z so the
+    // shafts run straight back with no twist.
+    final NodeType handle_type = node_manager.node_type_factory.getNew();
+    handle_type.log_mass = rim_log_mass;
+    handle_type.radius = nodeRadius();
+    // Handle nodes get their own clazz color (pastel peach), distinct
+    // from the wheel's nodes (Tim, 2026-10-01).
+    final Clazz handle_clazz = node_manager.clazz_factory.getNew(0xFFDAB9);
+    final int hx = cx - (handle_back_px << Coords.shift);
+    final Node handle0 = addNode(node_manager, handle_clazz, handle_type,
+        hx, ground, z0 + (axle_inset_px << Coords.shift));
+    final Node handle1 = addNode(node_manager, handle_clazz, handle_type,
+        hx, ground, z0 + 2 * hw - (axle_inset_px << Coords.shift));
+    passive(link_manager, clazz, hub0, handle0, handle_elasticity).handle = true;
+    passive(link_manager, clazz, hub1, handle1, handle_elasticity).handle = true;
+    passive(link_manager, clazz, handle0, handle1, handle_elasticity).handle = true;
 
     // No mid-air starts: rest the whole model on the ground plane.
     Grounding.restOnGround(node_manager);
-
-    // Tim, 2026-09-30: self-start kick (restored). Pure spin -- tangential
-    // rim velocities sum to zero net velocity, so the no-initial-velocity
-    // rule passes. Tips the wheel into the rolling gait; the traveling
-    // wave then holds the hamster forward to sustain it.
-    if (start_kick != 0) {
-      for (int i = 0; i < RIM_COUNT; i++) {
-        final double a = 2.0 * Math.PI * i / RIM_COUNT;
-        final int tx = (int) (-Math.sin(a) * start_kick);
-        final int ty = (int) (Math.cos(a) * start_kick);
-        rim0[i].velocity.x += tx;
-        rim0[i].velocity.y += ty;
-        rim1[i].velocity.x += tx;
-        rim1[i].velocity.y += ty;
-      }
-    }
 
     return hub0;
   }
@@ -413,7 +265,7 @@ public final class WheelbarrowDemo {
 
   /**
    * Passive link with its own type so the rest length matches its actual
-   * geometry exactly. Returns the link so callers can attach a controller.
+   * geometry exactly.
    */
   private static Link passive(LinkManager lm, Clazz clazz, Node a, Node b,
       int elasticity) {
@@ -426,8 +278,7 @@ public final class WheelbarrowDemo {
 
   /**
    * Thins a link type for rendering: radius = length / link_radius_divisor.
-   * Each type from the factory is fresh (never shared), so mutating it is
-   * safe. Visual only -- link radius never enters the physics.
+   * Visual only -- link radius never enters the physics.
    */
   private static LinkType thin(LinkType type) {
     type.radius = type.length / link_radius_divisor;
@@ -435,10 +286,8 @@ public final class WheelbarrowDemo {
   }
 
   /**
-   * Structural hub-to-rim spoke: passive cable, pre-tensioned via
-   * spoke_rest_scale_pct so the hub hangs from its upper spokes like a
-   * bicycle wheel. Tension-only (compression=false). Tim, 2026-09-29:
-   * spokes are structure, NOT drive -- no controller, no muscle.
+   * Structural hub-to-rim spoke: passive cable. Tension-only
+   * (compression=false).
    */
   private static void structuralSpoke(LinkManager lm, Clazz clazz,
       Node hub, Node rim) {
@@ -447,25 +296,8 @@ public final class WheelbarrowDemo {
     type.compression = false;
     final Link link = lm.setLink(hub, rim, type, clazz);
     link.adjusted_rest_length = type.length;
-    // No controller, no phase -- passive structure.
   }
 
-  private static void hamsterMuscleLink(LinkManager lm, Clazz clazz,
-      Node hamster, Node rim, GlobalOscillatorController muscle, int phase) {
-    final LinkType type = thin(lm.link_type_factory.getNew(
-        distance(hamster, rim), spoke_elasticity));
-    type.compression = false;
-    final Link link = lm.setLink(hamster, rim, type, clazz);
-    link.adjusted_rest_length = type.length;
-    link.phase = phase;
-    link.controller = muscle;
-  }
-
-  /**
-   * Spoke rest length after the pre-tension scale is applied. At 100 the
-   * link is built at its geometric distance with no pre-tension; lower
-   * values pre-tension the spoke so it holds the hub up at axle height.
-   */
   private static int scaledSpokeLength(int geometric) {
     return (int) ((long) geometric * spoke_rest_scale_pct / 100);
   }

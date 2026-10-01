@@ -30,6 +30,12 @@ public class Link extends BaseElement {
   public Controller controller;
 
   /**
+   * Handle marker (Tim, 2026-10-01): true for the wheelbarrow handle
+   * links, which render in a distinct pastel color.
+   */
+  public boolean handle;
+
+  /**
    * The rest length after the controller has acted, in fixed point.
    * Starts equal to the default rest length ({@link LinkType#length});
    * the controller rewrites it every dynamics step. Read through

@@ -24,13 +24,18 @@ public class CachedLink {
   private static final int COLOUR_MUSCLE = 0xFFB3BA; // pastel rose
   private static final int COLOUR_STRUT = 0xAEC6CF;  // pastel blue
   private static final int COLOUR_CABLE = 0xB5EAD7;  // pastel mint
+  private static final int COLOUR_HANDLE = 0xFFF3B0; // pastel yellow
 
   /**
-   * Returns the pastel color for a link's category: muscle (has a
-   * controller) -> rose; strut (compression member) -> blue; cable
-   * (tension-only, no controller) -> mint.
+   * Returns the pastel color for a link's category: handle (wheelbarrow
+   * handle) -> yellow; muscle (has a controller) -> rose; strut
+   * (compression member) -> blue; cable (tension-only, no controller)
+   * -> mint.
    */
   private static int getCategoryColour(Link link) {
+    if (link.handle) {
+      return COLOUR_HANDLE;
+    }
     if (link.controller != null) {
       return COLOUR_MUSCLE;
     }
