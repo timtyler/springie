@@ -17,6 +17,29 @@ import org.slf4j.LoggerFactory;
 public class CachedLink {
   private static final Logger logger = LoggerFactory.getLogger(CachedLink.class);
 
+  /** Pastel link-category colors (Tim, 2026-09-30): muscles are pastel
+   * rose, struts (compression members) are pastel blue, cables (tension
+   * members) are pastel mint. Different link categories get different
+   * colors; the model's base clazz color is no longer used for links. */
+  private static final int COLOUR_MUSCLE = 0xFFB3BA; // pastel rose
+  private static final int COLOUR_STRUT = 0xAEC6CF;  // pastel blue
+  private static final int COLOUR_CABLE = 0xB5EAD7;  // pastel mint
+
+  /**
+   * Returns the pastel color for a link's category: muscle (has a
+   * controller) -> rose; strut (compression member) -> blue; cable
+   * (tension-only, no controller) -> mint.
+   */
+  private static int getCategoryColour(Link link) {
+    if (link.controller != null) {
+      return COLOUR_MUSCLE;
+    }
+    if (link.type.compression) {
+      return COLOUR_STRUT;
+    }
+    return COLOUR_CABLE;
+  }
+
   public Point3D[] preserved_node_start; //= new Point3D(0, 0, 0); // needed?
 
   public Point3D[] preserved_node_end; //= new Point3D(0, 0, 0); // needed?
@@ -247,7 +270,7 @@ public class CachedLink {
 
     //final int depth = (link.node1.pos.z + link.node2.pos.z) >> 1;
     this.colour = DeepObjectColourCalculator.getColourOfDeepObject(
-      link.clazz.colour, depth)
+      getCategoryColour(link), depth)
       & mask;
 
     this.selected_colour = DeepObjectColourCalculator.getColourOfDeepObject(
