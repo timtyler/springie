@@ -145,6 +145,7 @@ public final class WheelbarrowDemo {
 
   /** Elasticity for the handle shafts and cross-brace. */
   public static int handle_elasticity = 150;
+  public static int xbrace_elasticity = 80;
 
   /**
    * Handle muscle drive (Tim, 2026-10-01): the two handle shafts
@@ -153,7 +154,7 @@ public final class WheelbarrowDemo {
    * forward (+X, opposite the trailing handle). Both share one
    * oscillator; phase 0 = in-phase, phase period/2 = alternating.
    */
-  public static int muscle_amplitude_pct = 15;
+  public static int muscle_amplitude_pct = 20;
   public static int muscle_period_ticks = 480;
   /** Phase offset for the second handle muscle, in ticks. */
   public static int muscle_phase2_ticks = 0;
@@ -280,6 +281,11 @@ public final class WheelbarrowDemo {
         muscle_phase2_ticks).handle = true;
     // Cross-brace stays passive.
     passive(link_manager, clazz, handle0, handle1, handle_elasticity).handle = true;
+    // X-brace diagonals (Tim, 2026-10-01): cables (tension-only, not
+    // struts) with some give -- they check lateral yaw without tying
+    // the handle down rigidly.
+    xBraceCable(link_manager, clazz, hub0, handle1);
+    xBraceCable(link_manager, clazz, hub1, handle0);
 
     // No mid-air starts: rest the whole model on the ground plane.
     Grounding.restOnGround(node_manager);
@@ -303,6 +309,21 @@ public final class WheelbarrowDemo {
     final Link link = lm.setLink(a, b, type, clazz);
     link.adjusted_rest_length = type.length;
     return link;
+  }
+
+  /**
+   * X-brace diagonal: passive cable (tension-only, compression=false)
+   * with moderate give -- checks lateral yaw without over-constraining
+   * the handle (Tim, 2026-10-01).
+   */
+  private static void xBraceCable(LinkManager lm, Clazz clazz,
+      Node hub, Node handle) {
+    final LinkType type = thin(lm.link_type_factory.getNew(
+        distance(hub, handle), xbrace_elasticity));
+    type.compression = false;
+    final Link link = lm.setLink(hub, handle, type, clazz);
+    link.adjusted_rest_length = type.length;
+    link.handle = true;
   }
 
   /**

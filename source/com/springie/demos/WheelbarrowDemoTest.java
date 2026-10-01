@@ -93,7 +93,7 @@ class WheelbarrowDemoTest {
     WheelbarrowDemo.spoke_rest_scale_pct = 100;
     WheelbarrowDemo.handle_back_px = 240;
     WheelbarrowDemo.handle_elasticity = 150;
-    WheelbarrowDemo.muscle_amplitude_pct = 15;
+    WheelbarrowDemo.muscle_amplitude_pct = 20;
     WheelbarrowDemo.muscle_period_ticks = 480;
     WheelbarrowDemo.muscle_phase2_ticks = 0;
     ContextManager.setNodeManager(new NodeManager());
@@ -153,7 +153,7 @@ class WheelbarrowDemoTest {
   }
 
   @Test
-  void buildsSixteenNodesFortySixLinks() {
+  void buildsSixteenNodesFortyEightLinks() {
     final Node hub0 = WheelbarrowDemo.buildAt(120);
     assertNotNull(hub0);
 
@@ -165,8 +165,8 @@ class WheelbarrowDemoTest {
     final LinkManager lm = nm.getLinkManager();
     // 6 segments x 5 (rim0, rim1, cross, 2 mirror diagonals) = 30 rim
     // links + 1 rigid axle + 12 passive spokes + 2 handle shafts
-    // + 1 handle cross-brace = 46.
-    assertEquals(46, lm.element.size());
+    // + 1 handle cross-brace + 2 X-brace cables = 48.
+    assertEquals(48, lm.element.size());
   }
 
   @Test
@@ -216,7 +216,7 @@ class WheelbarrowDemoTest {
         handle_count++;
       }
     }
-    assertEquals(3, handle_count, "must have 3 handle links");
+    assertEquals(5, handle_count, "must have 5 handle links");
   }
 
   @Test
