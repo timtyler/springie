@@ -93,8 +93,8 @@ class WheelbarrowDemoTest {
     WheelbarrowDemo.spoke_rest_scale_pct = 100;
     WheelbarrowDemo.handle_back_px = 240;
     WheelbarrowDemo.handle_elasticity = 150;
-    WheelbarrowDemo.muscle_amplitude_pct = 20;
-    WheelbarrowDemo.muscle_period_ticks = 480;
+    WheelbarrowDemo.muscle_amplitude_pct = 32;
+    WheelbarrowDemo.muscle_period_ticks = 510;
     WheelbarrowDemo.muscle_phase2_ticks = 0;
     ContextManager.setNodeManager(new NodeManager());
   }

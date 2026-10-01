@@ -154,8 +154,8 @@ public final class WheelbarrowDemo {
    * forward (+X, opposite the trailing handle). Both share one
    * oscillator; phase 0 = in-phase, phase period/2 = alternating.
    */
-  public static int muscle_amplitude_pct = 20;
-  public static int muscle_period_ticks = 480;
+  public static int muscle_amplitude_pct = 32;
+  public static int muscle_period_ticks = 510;
   /** Phase offset for the second handle muscle, in ticks. */
   public static int muscle_phase2_ticks = 0;
 
