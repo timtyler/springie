@@ -80,6 +80,7 @@ public final class SlinkyDemo {
     World.gravity_active = true;
     World.gravity_strength = 5;
     World.ground_friction = friction;
+    World.bounding_box_bounciness = 0; // Tim, 2026-10-01: no wall bounce for demos.
     World.global_temperature = 0;
     com.springie.elements.nodes.Node.viscocity = 2;
 

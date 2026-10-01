@@ -174,6 +174,7 @@ public final class HopperDemo {
     World.gravity_active = true;
     World.gravity_strength = gravity;
     World.ground_friction = friction;
+    World.bounding_box_bounciness = 0; // Tim, 2026-10-01: no wall bounce for demos.
     // Deterministic physics: thermal jitter makes identical builds
     // diverge per RNG seed (the wheel's lesson). The judge and the UI
     // both build through here, so both see the same motion.

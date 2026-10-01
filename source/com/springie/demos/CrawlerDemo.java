@@ -191,6 +191,7 @@ public final class CrawlerDemo {
     World.gravity_active = true;
     World.gravity_strength = 5; // Strong gravity to keep it grounded.
     World.ground_friction = friction;
+    World.bounding_box_bounciness = 0; // Tim, 2026-10-01: no wall bounce for demos.
     // No node-node collisions: the structure holds itself together.
     FrEnd.check_collisions = false;
 

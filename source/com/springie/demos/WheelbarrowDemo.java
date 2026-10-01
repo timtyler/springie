@@ -181,6 +181,7 @@ public final class WheelbarrowDemo {
     World.gravity_active = true;
     World.gravity_strength = gravity_strength;
     World.ground_friction = friction;
+    World.bounding_box_bounciness = 0; // Tim, 2026-10-01: no wall bounce for demos.
     World.global_temperature = 0;
 
     // Muscles: the two handle shafts share one oscillator (Tim's rule:
