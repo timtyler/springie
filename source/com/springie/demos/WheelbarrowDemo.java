@@ -268,25 +268,30 @@ public final class WheelbarrowDemo {
     // Handle nodes get their own clazz color (pastel peach), distinct
     // from the wheel's nodes (Tim, 2026-10-01).
     final Clazz handle_clazz = node_manager.clazz_factory.getNew(0xFFDAB9);
-    final int hx = cx - (handle_back_px << Coords.shift);
+    // Tetrahedron handle (Tim, 2026-10-01): the two handle nodes are
+    // repositioned to form a tetrahedron with the axle nodes (hub0,
+    // hub1). Shorter, centered, 200px behind -- a proper 3D tetrahedron,
+    // not a flat quadrilateral.
+    final int thx = cx - (200 << Coords.shift);
+    final int thz = z0 + (hw << Coords.shift);
     final Node handle0 = addNode(node_manager, handle_clazz, handle_type,
-        hx, ground, z0 + (axle_inset_px << Coords.shift));
+        thx, ground, thz - (50 << Coords.shift));
     final Node handle1 = addNode(node_manager, handle_clazz, handle_type,
-        hx, ground, z0 + 2 * hw - (axle_inset_px << Coords.shift));
+        thx, ground, thz + (50 << Coords.shift));
     // The two shafts are MUSCLES (cables, not struts -- Tim's rule).
     // They share one oscillator; phase2 controls in-phase vs alternating.
+    // These are the ONLY muscles in the handle.
     final GlobalOscillatorController muscle =
         new GlobalOscillatorController(Muscles.active_oscillator);
     handleMuscle(link_manager, clazz, hub0, handle0, muscle, 0).handle = true;
     handleMuscle(link_manager, clazz, hub1, handle1, muscle,
         muscle_phase2_ticks).handle = true;
-    // Cross-brace stays passive.
+    // Tetrahedron edges (passive): handle0-handle1, hub0-handle1,
+    // hub1-handle0. With the axle (hub0-hub1) and the two muscles, this
+    // completes the 6 edges of the tetrahedron.
     passive(link_manager, clazz, handle0, handle1, handle_elasticity).handle = true;
-    // X-brace diagonals (Tim, 2026-10-01): cables (tension-only, not
-    // struts) with some give -- they check lateral yaw without tying
-    // the handle down rigidly.
-    xBraceCable(link_manager, clazz, hub0, handle1);
-    xBraceCable(link_manager, clazz, hub1, handle0);
+    passive(link_manager, clazz, hub0, handle1, handle_elasticity).handle = true;
+    passive(link_manager, clazz, hub1, handle0, handle_elasticity).handle = true;
 
     // No mid-air starts: rest the whole model on the ground plane.
     Grounding.restOnGround(node_manager);
