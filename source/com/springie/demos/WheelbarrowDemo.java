@@ -11,6 +11,8 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
 import com.springie.geometry.Point3D;
+import com.springie.muscles.GlobalOscillatorController;
+import com.springie.muscles.Muscles;
 import com.springie.render.Coords;
 import com.springie.world.Grounding;
 import com.springie.world.World;
@@ -145,6 +147,18 @@ public final class WheelbarrowDemo {
   public static int handle_elasticity = 150;
 
   /**
+   * Handle muscle drive (Tim, 2026-10-01): the two handle shafts
+   * (hub-to-handle) are muscles. They haul the trailing handle nodes,
+   * stabbing them into the ground; the ground reaction drives the wheel
+   * forward (+X, opposite the trailing handle). Both share one
+   * oscillator; phase 0 = in-phase, phase period/2 = alternating.
+   */
+  public static int muscle_amplitude_pct = 15;
+  public static int muscle_period_ticks = 480;
+  /** Phase offset for the second handle muscle, in ticks. */
+  public static int muscle_phase2_ticks = 0;
+
+  /**
    * Builds the wheel with its centre at (x_px, ground - radius).
    * Returns the hub node.
    */
@@ -167,6 +181,15 @@ public final class WheelbarrowDemo {
     World.gravity_strength = gravity_strength;
     World.ground_friction = friction;
     World.global_temperature = 0;
+
+    // Muscles: the two handle shafts share one oscillator (Tim's rule:
+    // all muscles share one controller instance, no subset treatment).
+    Muscles.enabled = true;
+    Muscles.active_oscillator = 0;
+    Muscles.activeOscillator().setAmplitude(
+        muscle_amplitude_pct * Muscles.UNITY / 100);
+    Muscles.activeOscillator().setPeriodTicks(muscle_period_ticks);
+    Muscles.activeOscillator().setPhase(0);
 
     // Ground is the high-Y wall (positive gravity pulls toward +Y).
     final int ground =
@@ -248,8 +271,14 @@ public final class WheelbarrowDemo {
         hx, ground, z0 + (axle_inset_px << Coords.shift));
     final Node handle1 = addNode(node_manager, handle_clazz, handle_type,
         hx, ground, z0 + 2 * hw - (axle_inset_px << Coords.shift));
-    passive(link_manager, clazz, hub0, handle0, handle_elasticity).handle = true;
-    passive(link_manager, clazz, hub1, handle1, handle_elasticity).handle = true;
+    // The two shafts are MUSCLES (cables, not struts -- Tim's rule).
+    // They share one oscillator; phase2 controls in-phase vs alternating.
+    final GlobalOscillatorController muscle =
+        new GlobalOscillatorController(Muscles.active_oscillator);
+    handleMuscle(link_manager, clazz, hub0, handle0, muscle, 0).handle = true;
+    handleMuscle(link_manager, clazz, hub1, handle1, muscle,
+        muscle_phase2_ticks).handle = true;
+    // Cross-brace stays passive.
     passive(link_manager, clazz, handle0, handle1, handle_elasticity).handle = true;
 
     // No mid-air starts: rest the whole model on the ground plane.
@@ -296,6 +325,23 @@ public final class WheelbarrowDemo {
     type.compression = false;
     final Link link = lm.setLink(hub, rim, type, clazz);
     link.adjusted_rest_length = type.length;
+  }
+
+  /**
+   * Handle muscle: cable (tension-only, per Tim's muscle-on-cables rule)
+   * from hub to handle node, driven by the shared oscillator.
+   * Returns the link so callers can set the handle flag.
+   */
+  private static Link handleMuscle(LinkManager lm, Clazz clazz,
+      Node hub, Node handle, GlobalOscillatorController muscle, int phase) {
+    final LinkType type = thin(lm.link_type_factory.getNew(
+        distance(hub, handle), handle_elasticity));
+    type.compression = false;
+    final Link link = lm.setLink(hub, handle, type, clazz);
+    link.adjusted_rest_length = type.length;
+    link.phase = phase;
+    link.controller = muscle;
+    return link;
   }
 
   private static int scaledSpokeLength(int geometric) {

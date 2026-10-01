@@ -3,6 +3,7 @@
 package com.springie.demos;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -17,6 +18,7 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
+import com.springie.muscles.Muscles;
 import com.springie.render.Coords;
 import com.springie.world.World;
 
@@ -43,6 +45,10 @@ class WheelbarrowDemoTest {
   private int old_spoke_scale;
   private int old_handle_back;
   private int old_handle_elasticity;
+  private int old_muscle_amp;
+  private int old_muscle_period;
+  private int old_muscle_phase2;
+  private boolean old_muscles_enabled;
   private boolean old_paused;
   private int old_frame_frequency;
   private int old_coords_x;
@@ -65,6 +71,10 @@ class WheelbarrowDemoTest {
     old_spoke_scale = WheelbarrowDemo.spoke_rest_scale_pct;
     old_handle_back = WheelbarrowDemo.handle_back_px;
     old_handle_elasticity = WheelbarrowDemo.handle_elasticity;
+    old_muscle_amp = WheelbarrowDemo.muscle_amplitude_pct;
+    old_muscle_period = WheelbarrowDemo.muscle_period_ticks;
+    old_muscle_phase2 = WheelbarrowDemo.muscle_phase2_ticks;
+    old_muscles_enabled = Muscles.enabled;
     old_paused = FrEnd.paused;
     old_frame_frequency = FrEnd.frame_frequency;
     old_coords_x = Coords.x_pixels;
@@ -83,6 +93,9 @@ class WheelbarrowDemoTest {
     WheelbarrowDemo.spoke_rest_scale_pct = 100;
     WheelbarrowDemo.handle_back_px = 240;
     WheelbarrowDemo.handle_elasticity = 150;
+    WheelbarrowDemo.muscle_amplitude_pct = 15;
+    WheelbarrowDemo.muscle_period_ticks = 480;
+    WheelbarrowDemo.muscle_phase2_ticks = 0;
     ContextManager.setNodeManager(new NodeManager());
   }
 
@@ -102,6 +115,10 @@ class WheelbarrowDemoTest {
     WheelbarrowDemo.spoke_rest_scale_pct = old_spoke_scale;
     WheelbarrowDemo.handle_back_px = old_handle_back;
     WheelbarrowDemo.handle_elasticity = old_handle_elasticity;
+    WheelbarrowDemo.muscle_amplitude_pct = old_muscle_amp;
+    WheelbarrowDemo.muscle_period_ticks = old_muscle_period;
+    WheelbarrowDemo.muscle_phase2_ticks = old_muscle_phase2;
+    Muscles.enabled = old_muscles_enabled;
     FrEnd.paused = old_paused;
     FrEnd.frame_frequency = old_frame_frequency;
     Coords.x_pixels = old_coords_x;
@@ -153,16 +170,23 @@ class WheelbarrowDemoTest {
   }
 
   @Test
-  void hasNoMuscles() {
+  void hasTwoHandleMuscles() {
     WheelbarrowDemo.buildAt(120);
     final LinkManager lm =
         ContextManager.getNodeManager().getLinkManager();
 
+    int muscle_count = 0;
     for (int i = 0; i < lm.element.size(); i++) {
       final Link link = (Link) lm.element.get(i);
-      assertTrue(link.controller == null,
-          "link " + i + " must have no controller (no muscles)");
+      if (link.controller != null) {
+        muscle_count++;
+        // Muscles are cables (tension-only), not struts.
+        assertFalse(link.type.compression,
+            "handle muscle must be a cable (tension-only)");
+      }
     }
+    // 2 handle shaft muscles. Cross-brace and spokes are passive.
+    assertEquals(2, muscle_count, "must have 2 handle muscles");
   }
 
   @Test
