@@ -171,21 +171,18 @@ public final class RollingJudge extends HeadlessJudge {
     boolean tipped_over = false;
     boolean shattered = false;
     boolean reversed_direction = false;
-    int max_x = start_x;
     int prev_x = start_x;
 
     final int measured = ticks - SETTLE_TICKS;
     for (int i = 0; i < measured; i++) {
       node_manager.nodeAndLinkUpdate();
 
-      // Direction reversal: hub moving -X (backwards). Track max x;
-      // if we drop more than 20px below max, it's a reversal.
-      // (Tim: reversals kill the marathon bonus.)
+      // Direction reversal (Tim): the hub must always move in the same
+      // direction (+X). If it ever moves backwards more than 2px in a
+      // tick (allowing for numerical jitter), it's a reversal -- no
+      // marathon bonus.
       final int cur_x = hub.pos.x >> com.springie.render.Coords.shift;
-      if (cur_x > max_x) {
-        max_x = cur_x;
-      }
-      if (max_x - cur_x > 20) {
+      if (cur_x < prev_x - 2) {
         reversed_direction = true;
       }
       prev_x = cur_x;
