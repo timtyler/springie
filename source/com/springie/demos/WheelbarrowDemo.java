@@ -95,7 +95,7 @@ public final class WheelbarrowDemo {
    * Tuned to 10 (Tim, 2026-10-01): 50 causes Z-drift and tip-over by
    * ~350 ticks; 10 holds 100% upright for 600 ticks with no shatter.
    */
-  public static int compass_bias = 10;
+  public static int compass_bias = 20;
 
   /** Ground friction, 0-100. */
   public static int friction = 100;
