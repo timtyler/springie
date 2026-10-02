@@ -61,6 +61,17 @@ public final class RollingJudge extends HeadlessJudge {
     /** True when disqualified (tipped over). Score is 0 when set. */
     public boolean disqualified;
     /**
+     * True when the hub reversed direction (moved -X) during the run.
+     * Tim: reversals kill the marathon bonus -- a marathon runner doesn't
+     * run backwards.
+     */
+    public boolean reversed_direction;
+    /**
+     * Sliding distance in pixels: max(0, distance - spin). How far the
+     * wheel traveled without rolling. Pure rolling gives 0.
+     */
+    public double sliding_px;
+    /**
      * Hub z displacement over the measured ticks, pixels. A wheel that
      * stays in its rolling plane keeps this near zero; wall-riding or
      * veering shows up here.
@@ -83,6 +94,8 @@ public final class RollingJudge extends HeadlessJudge {
           + "\nUPRIGHT_FRAC " + String.format("%.3f", this.upright_fraction)
           + "\nTIPPED_OVER " + this.tipped_over
           + "\nSHATTERED " + this.shattered
+          + "\nREVERSED " + this.reversed_direction
+          + "\nSLIDING_PX " + String.format("%.1f", this.sliding_px)
           + "\nDISQUALIFIED " + this.disqualified
           + "\nINITIAL_VELOCITY "
           + String.format("%.4f", this.initial_velocity_px_per_frame)
@@ -157,10 +170,25 @@ public final class RollingJudge extends HeadlessJudge {
             CrawlerDemo.posture_min_separation_px);
     boolean tipped_over = false;
     boolean shattered = false;
+    boolean reversed_direction = false;
+    int max_x = start_x;
+    int prev_x = start_x;
 
     final int measured = ticks - SETTLE_TICKS;
     for (int i = 0; i < measured; i++) {
       node_manager.nodeAndLinkUpdate();
+
+      // Direction reversal: hub moving -X (backwards). Track max x;
+      // if we drop more than 20px below max, it's a reversal.
+      // (Tim: reversals kill the marathon bonus.)
+      final int cur_x = hub.pos.x >> com.springie.render.Coords.shift;
+      if (cur_x > max_x) {
+        max_x = cur_x;
+      }
+      if (max_x - cur_x > 20) {
+        reversed_direction = true;
+      }
+      prev_x = cur_x;
 
       final boolean ok;
       if (use_crawler) {
@@ -228,12 +256,21 @@ public final class RollingJudge extends HeadlessJudge {
     result.upright_fraction = (double) upright_ticks / measured;
     result.tipped_over = tipped_over;
     result.shattered = shattered;
+    result.reversed_direction = reversed_direction;
+    // Sliding: distance traveled without rolling. Penalize explicitly.
+    result.sliding_px = Math.max(0.0, distance_px - spin_px);
     result.disqualified = tipped_over || shoved || shattered;
     result.initial_velocity_px_per_frame = initial_velocity;
     result.z_drift_px =
         (hub.pos.z - start_z) >> com.springie.render.Coords.shift;
-    result.score = result.disqualified ? 0.0
-        : distance_px * rolling_match - 3.0 * height_std_px;
+    // Score: rolling match rewards pure rolling; sliding penalty punishes
+    // sliding; reversals kill the marathon bonus (score halved).
+    double base = distance_px * rolling_match - 3.0 * height_std_px
+        - result.sliding_px;
+    if (reversed_direction) {
+      base *= 0.5;
+    }
+    result.score = result.disqualified ? 0.0 : Math.max(0.0, base);
     result.ticks = ticks;
     return result;
   }
