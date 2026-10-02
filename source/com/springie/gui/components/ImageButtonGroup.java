@@ -35,7 +35,7 @@ public class ImageButtonGroup {
    * @param button
    *          the current ImageButton choice
    */
-  public synchronized void setCurrent(ImageButton button) {
+  public void setCurrent(ImageButton button) {
     if (button == null) {
       return;
     }

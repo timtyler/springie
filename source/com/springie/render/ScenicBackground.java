@@ -57,7 +57,7 @@ public final class ScenicBackground {
    * Returns the scenic background for a canvas of the given size,
    * generating and caching it on first use or when the size changes.
    */
-  public static synchronized BufferedImage imageFor(int width, int height) {
+  public static BufferedImage imageFor(int width, int height) {
     if (width <= 0 || height <= 0) {
       throw new IllegalArgumentException(
           "width and height must be positive: " + width + "x" + height);
