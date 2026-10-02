@@ -44,8 +44,8 @@ public final class WheelbarrowDemo {
   private WheelbarrowDemo() {
   }
 
-  /** Nodes per rim: heptagonal prism (Tim, 2026-10-01: f=7). */
-  public static final int RIM_COUNT = 6;
+  /** Nodes per rim: octagonal prism (Tim, 2026-10-01: f=8). */
+  public static final int RIM_COUNT = 8;
 
   /** Rim radius, in pixels. */
   public static int rim_radius_px = 160;
@@ -110,8 +110,8 @@ public final class WheelbarrowDemo {
    * Element indices of one node on each end of the axle (hub0, hub1).
    * Their heights must stay within the max difference for the whole run.
    */
-  public static final int posture_axle_left_index = 12;
-  public static final int posture_axle_right_index = 13;
+  public static final int posture_axle_left_index = 16;
+  public static final int posture_axle_right_index = 17;
   /** Max allowed axle-end height difference (px) for the tip-over rule. */
   public static final int posture_axle_max_diff_px = 20;
 
@@ -155,7 +155,7 @@ public final class WheelbarrowDemo {
    * oscillator; phase 0 = in-phase, phase period/2 = alternating.
    */
   public static int muscle_amplitude_pct = 30;
-  public static int muscle_period_ticks = 510;
+  public static int muscle_period_ticks = 200;
   /** Phase offset for the second handle muscle, in ticks. */
   public static int muscle_phase2_ticks = 64;
 

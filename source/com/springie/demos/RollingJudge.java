@@ -171,21 +171,34 @@ public final class RollingJudge extends HeadlessJudge {
     boolean tipped_over = false;
     boolean shattered = false;
     boolean reversed_direction = false;
-    int prev_x = start_x;
+    // Windowed reversal detection (Tim): the hub's average velocity over
+    // a 60-tick window must stay positive. A hexagonal wheel jitters
+    // backward 2-3px at each face transition -- that's polygonal gait,
+    // not a reversal. A real direction flip drags the windowed average
+    // negative. 60 ticks is ~1/8 of a 510-tick muscle period.
+    final int REV_WINDOW = 60;
+    final int[] x_history = new int[REV_WINDOW];
+    int hist_idx = 0;
+    int hist_filled = 0;
 
     final int measured = ticks - SETTLE_TICKS;
     for (int i = 0; i < measured; i++) {
       node_manager.nodeAndLinkUpdate();
 
-      // Direction reversal (Tim): the hub must always move in the same
-      // direction (+X). If it ever moves backwards more than 2px in a
-      // tick (allowing for numerical jitter), it's a reversal -- no
-      // marathon bonus.
+      // Direction reversal (Tim): 60-tick windowed average velocity
+      // must stay positive. Polygonal gait jitter averages out; a real
+      // flip drags the window negative.
       final int cur_x = hub.pos.x >> com.springie.render.Coords.shift;
-      if (cur_x < prev_x - 2) {
-        reversed_direction = true;
+      x_history[hist_idx] = cur_x;
+      hist_idx = (hist_idx + 1) % REV_WINDOW;
+      if (hist_filled < REV_WINDOW) {
+        hist_filled++;
+      } else {
+        final int oldest = x_history[hist_idx];
+        if (cur_x < oldest) {
+          reversed_direction = true;
+        }
       }
-      prev_x = cur_x;
 
       final boolean ok;
       if (use_crawler) {
