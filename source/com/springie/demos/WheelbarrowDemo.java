@@ -18,7 +18,7 @@ import com.springie.world.Grounding;
 import com.springie.world.World;
 
 /**
- * A minimal rolling wheel: nonagonal prism (7 nodes per rim, radius
+ * A minimal rolling wheel: hexagonal prism (6 nodes per rim, radius
  * 160px), two parallel rims, each with its own single central hub node
  * -- two hubs total, joined by a stiff passive axle in the middle.
  *
@@ -44,8 +44,8 @@ public final class WheelbarrowDemo {
   private WheelbarrowDemo() {
   }
 
-  /** Nodes per rim: octagonal prism (Tim, 2026-10-01: f=8). */
-  public static final int RIM_COUNT = 7;
+  /** Nodes per rim: hexagonal prism. */
+  public static final int RIM_COUNT = 6;
 
   /** Rim radius, in pixels. */
   public static int rim_radius_px = 160;
@@ -110,8 +110,8 @@ public final class WheelbarrowDemo {
    * Element indices of one node on each end of the axle (hub0, hub1).
    * Their heights must stay within the max difference for the whole run.
    */
-  public static final int posture_axle_left_index = 14;
-  public static final int posture_axle_right_index = 15;
+  public static final int posture_axle_left_index = 12;
+  public static final int posture_axle_right_index = 13;
   /** Max allowed axle-end height difference (px) for the tip-over rule. */
   public static final int posture_axle_max_diff_px = 20;
 
