@@ -159,6 +159,10 @@ public final class RollingJudge extends HeadlessJudge {
     settle(node_manager, SETTLE_TICKS);
     final int start_x = hub.pos.x;
     final int start_z = hub.pos.z;
+    // Initial extents for the collapse detector (post-settle baseline).
+    final long[] init_extents = extentsPx(node_manager);
+    final long init_y_px = init_extents[0];
+    final long init_z_px = init_extents[1];
 
     double theta_prev = angleOf(marker, hub);
     double theta_total = 0.0;
@@ -229,9 +233,9 @@ public final class RollingJudge extends HeadlessJudge {
         shattered = true;
       }
       // Structural collapse (Tim): the wheel flattened into a puddle.
-      // Check Y-extent (diameter) and Z-extent (rim separation); a
-      // healthy wheel spans ~300px+ in both, a puddle is flat.
-      if (!collapsed && i % 60 == 0 && collapsed(node_manager)) {
+      // Relative to post-settle initial size, not a hardcoded pixel value.
+      if (!collapsed && i % 60 == 0
+          && collapsed(node_manager, init_y_px, init_z_px)) {
         collapsed = true;
       }
 

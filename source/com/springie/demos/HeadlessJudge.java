@@ -149,12 +149,13 @@ public abstract class HeadlessJudge {
 
   /**
    * Structural collapse check (Tim, 2026-10-01): has the model flattened
-   * into a puddle? A healthy wheel spans ~300px+ in Y (diameter) and Z
-   * (rim separation); a collapsed one is flat. The shattered() check
-   * (node flung far) misses this -- all nodes stay near the hub, just
-   * flat on the floor.
+   * into a puddle? Compares current Y/Z extents against the initial
+   * (post-settle) extents -- collapsed if either drops below 30% of
+   * initial. The shattered() check (node flung far) misses this; all
+   * nodes stay near the hub, just flat on the floor.
    */
-  protected static boolean collapsed(NodeManager node_manager) {
+  protected static boolean collapsed(NodeManager node_manager,
+      long init_y_px, long init_z_px) {
     final int n = node_manager.element.size();
     if (n == 0) {
       return true;
@@ -180,9 +181,37 @@ public abstract class HeadlessJudge {
     }
     final long y_extent_px = (max_y - min_y) >> Coords.shift;
     final long z_extent_px = (max_z - min_z) >> Coords.shift;
-    // Wheel diameter ~320px, rim separation ~324px. Collapsed if either
-    // drops below 100px -- the 3D structure is gone.
-    return y_extent_px < 100 || z_extent_px < 100;
+    // Collapsed if either extent drops below 30% of its initial size.
+    return y_extent_px < init_y_px * 3 / 10
+        || z_extent_px < init_z_px * 3 / 10;
+  }
+
+  /** Y and Z extents of the model in pixels, as {y_extent, z_extent}. */
+  protected static long[] extentsPx(NodeManager node_manager) {
+    final int n = node_manager.element.size();
+    long min_y = Long.MAX_VALUE;
+    long max_y = Long.MIN_VALUE;
+    long min_z = Long.MAX_VALUE;
+    long max_z = Long.MIN_VALUE;
+    for (int i = 0; i < n; i++) {
+      final Node node = (Node) node_manager.element.get(i);
+      if (node.pos.y < min_y) {
+        min_y = node.pos.y;
+      }
+      if (node.pos.y > max_y) {
+        max_y = node.pos.y;
+      }
+      if (node.pos.z < min_z) {
+        min_z = node.pos.z;
+      }
+      if (node.pos.z > max_z) {
+        max_z = node.pos.z;
+      }
+    }
+    return new long[] {
+        (max_y - min_y) >> Coords.shift,
+        (max_z - min_z) >> Coords.shift,
+    };
   }
 
   /** Mean node height (centre-of-mass height), in pixels. */
