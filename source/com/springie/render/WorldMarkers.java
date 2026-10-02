@@ -118,12 +118,14 @@ public final class WorldMarkers {
    * getDamage). The EDT is the sole mutator of the markers list.
    */
   private static void drainPending() {
+    if (!olympicsActive()) {
+      // Inactive: drop stale deltas, clear markers.
+      pending_deltas.clear();
+      markers.clear();
+      return;
+    }
     Vector3D delta;
     while ((delta = pending_deltas.poll()) != null) {
-      if (!olympicsActive()) {
-        markers.clear();
-        continue;
-      }
       translate((int) delta.x, (int) delta.y, (int) delta.z);
       cullOffscreen();
       while (markers.size() < TARGET_COUNT) {
