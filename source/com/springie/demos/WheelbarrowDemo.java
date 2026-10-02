@@ -116,7 +116,7 @@ public final class WheelbarrowDemo {
   public static final int posture_axle_max_diff_px = 20;
 
   /** Elasticity for the rim links (all tetrahedron edges). */
-  public static int rim_elasticity = 120;
+  public static int rim_elasticity = 40;
 
   /**
    * Elasticity for the inter-rim bracing (cross links and mirror
@@ -124,10 +124,10 @@ public final class WheelbarrowDemo {
    * against differential (rolling/rocking) motion, while the softer rings
    * keep ground impacts gentle.
    */
-  public static int bracing_elasticity = 150;
+  public static int bracing_elasticity = 40;
 
   /** Elasticity for the hub-to-rim spokes (passive cables). */
-  public static int spoke_elasticity = 120;
+  public static int spoke_elasticity = 40;
 
   /**
    * Spoke rest-length scale, percent. 100 = rest length equals the built
@@ -144,8 +144,8 @@ public final class WheelbarrowDemo {
   public static int handle_back_px = 240;
 
   /** Elasticity for the handle shafts and cross-brace. */
-  public static int handle_elasticity = 150;
-  public static int xbrace_elasticity = 80;
+  public static int handle_elasticity = 40;
+  public static int xbrace_elasticity = 40;
 
   /**
    * Handle muscle drive (Tim, 2026-10-01): the two handle shafts
