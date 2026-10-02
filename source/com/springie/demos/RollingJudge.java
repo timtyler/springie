@@ -58,6 +58,14 @@ public final class RollingJudge extends HeadlessJudge {
     public boolean tipped_over;
     /** True when any node flew >400px from the hub (fell apart). */
     public boolean shattered;
+    /**
+     * True when the wheel collapsed into a puddle (Tim, 2026-10-01):
+     * the 3D structure flattened. A healthy wheel spans ~320px in Y
+     * (diameter) and ~324px in Z (rim separation); a puddle is flat.
+     * The old shattered check (node >400px from hub) misses this --
+     * all nodes stay near the hub, just flat on the floor.
+     */
+    public boolean collapsed;
     /** True when disqualified (tipped over). Score is 0 when set. */
     public boolean disqualified;
     /**
@@ -94,6 +102,7 @@ public final class RollingJudge extends HeadlessJudge {
           + "\nUPRIGHT_FRAC " + String.format("%.3f", this.upright_fraction)
           + "\nTIPPED_OVER " + this.tipped_over
           + "\nSHATTERED " + this.shattered
+          + "\nCOLLAPSED " + this.collapsed
           + "\nREVERSED " + this.reversed_direction
           + "\nSLIDING_PX " + String.format("%.1f", this.sliding_px)
           + "\nDISQUALIFIED " + this.disqualified
@@ -170,6 +179,7 @@ public final class RollingJudge extends HeadlessJudge {
             CrawlerDemo.posture_min_separation_px);
     boolean tipped_over = false;
     boolean shattered = false;
+    boolean collapsed = false;
     boolean reversed_direction = false;
     // Windowed reversal detection (Tim): the hub's average velocity over
     // a 60-tick window must stay positive. A hexagonal wheel jitters
@@ -217,6 +227,12 @@ public final class RollingJudge extends HeadlessJudge {
       if (!shattered && i % 60 == 0
           && shattered(node_manager, hub, 400)) {
         shattered = true;
+      }
+      // Structural collapse (Tim): the wheel flattened into a puddle.
+      // Check Y-extent (diameter) and Z-extent (rim separation); a
+      // healthy wheel spans ~300px+ in both, a puddle is flat.
+      if (!collapsed && i % 60 == 0 && collapsed(node_manager)) {
+        collapsed = true;
       }
 
       final double theta = angleOf(marker, hub);
@@ -266,10 +282,11 @@ public final class RollingJudge extends HeadlessJudge {
     result.upright_fraction = (double) upright_ticks / measured;
     result.tipped_over = tipped_over;
     result.shattered = shattered;
+    result.collapsed = collapsed;
     result.reversed_direction = reversed_direction;
     // Sliding: distance traveled without rolling. Penalize explicitly.
     result.sliding_px = Math.max(0.0, distance_px - spin_px);
-    result.disqualified = tipped_over || shoved || shattered;
+    result.disqualified = tipped_over || shoved || shattered || collapsed;
     result.initial_velocity_px_per_frame = initial_velocity;
     result.z_drift_px =
         (hub.pos.z - start_z) >> com.springie.render.Coords.shift;

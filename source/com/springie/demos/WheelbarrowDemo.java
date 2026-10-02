@@ -45,7 +45,7 @@ public final class WheelbarrowDemo {
   }
 
   /** Nodes per rim: octagonal prism (Tim, 2026-10-01: f=8). */
-  public static final int RIM_COUNT = 8;
+  public static final int RIM_COUNT = 7;
 
   /** Rim radius, in pixels. */
   public static int rim_radius_px = 160;
@@ -110,8 +110,8 @@ public final class WheelbarrowDemo {
    * Element indices of one node on each end of the axle (hub0, hub1).
    * Their heights must stay within the max difference for the whole run.
    */
-  public static final int posture_axle_left_index = 16;
-  public static final int posture_axle_right_index = 17;
+  public static final int posture_axle_left_index = 14;
+  public static final int posture_axle_right_index = 15;
   /** Max allowed axle-end height difference (px) for the tip-over rule. */
   public static final int posture_axle_max_diff_px = 20;
 
