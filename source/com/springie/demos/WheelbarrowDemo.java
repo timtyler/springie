@@ -45,7 +45,7 @@ public final class WheelbarrowDemo {
   }
 
   /** Nodes per rim: heptagonal prism (Tim, 2026-10-01: f=7). */
-  public static final int RIM_COUNT = 7;
+  public static final int RIM_COUNT = 6;
 
   /** Rim radius, in pixels. */
   public static int rim_radius_px = 160;
@@ -103,15 +103,15 @@ public final class WheelbarrowDemo {
   /**
    * Gravity strength for the wheel universe, in velocity units per frame.
    */
-  public static int gravity_strength = 10;
+  public static int gravity_strength = 5;
 
   /**
    * Tim's "not tipping over" rule for the wheel: the axle must stay level.
    * Element indices of one node on each end of the axle (hub0, hub1).
    * Their heights must stay within the max difference for the whole run.
    */
-  public static final int posture_axle_left_index = 14;
-  public static final int posture_axle_right_index = 15;
+  public static final int posture_axle_left_index = 12;
+  public static final int posture_axle_right_index = 13;
   /** Max allowed axle-end height difference (px) for the tip-over rule. */
   public static final int posture_axle_max_diff_px = 20;
 
@@ -154,7 +154,7 @@ public final class WheelbarrowDemo {
    * forward (+X, opposite the trailing handle). Both share one
    * oscillator; phase 0 = in-phase, phase period/2 = alternating.
    */
-  public static int muscle_amplitude_pct = 50;
+  public static int muscle_amplitude_pct = 30;
   public static int muscle_period_ticks = 510;
   /** Phase offset for the second handle muscle, in ticks. */
   public static int muscle_phase2_ticks = 64;
