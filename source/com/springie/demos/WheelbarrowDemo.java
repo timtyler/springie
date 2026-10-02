@@ -103,7 +103,7 @@ public final class WheelbarrowDemo {
   /**
    * Gravity strength for the wheel universe, in velocity units per frame.
    */
-  public static int gravity_strength = 1;
+  public static int gravity_strength = 10;
 
   /**
    * Tim's "not tipping over" rule for the wheel: the axle must stay level.
@@ -154,10 +154,10 @@ public final class WheelbarrowDemo {
    * forward (+X, opposite the trailing handle). Both share one
    * oscillator; phase 0 = in-phase, phase period/2 = alternating.
    */
-  public static int muscle_amplitude_pct = 20;
+  public static int muscle_amplitude_pct = 50;
   public static int muscle_period_ticks = 510;
   /** Phase offset for the second handle muscle, in ticks. */
-  public static int muscle_phase2_ticks = 0;
+  public static int muscle_phase2_ticks = 64;
 
   /**
    * Builds the wheel with its centre at (x_px, ground - radius).
