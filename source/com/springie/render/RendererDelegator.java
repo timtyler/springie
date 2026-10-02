@@ -243,7 +243,7 @@ public final class RendererDelegator {
    * comes first. The label itself is updated on the paint path, so
    * this stays headless-safe for unit tests.
    */
-  public static synchronized void countRenderedFrame() {
+  public static void countRenderedFrame() {
     final long now = System.currentTimeMillis();
     if (frame_count == 0) {
       // Start the window at the first frame, not at class load.
@@ -265,7 +265,7 @@ public final class RendererDelegator {
    * from the paint path, so the AWT label is always touched on a thread
    * that may touch AWT.
    */
-  static synchronized void refreshFpsLabel() {
+  static void refreshFpsLabel() {
     if (fps_dirty) {
       fps_dirty = false;
       FrEnd.panel_preferences_display.label_fps_value.setText(fps_string);
