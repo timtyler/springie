@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.springie.FrEnd;
 import com.springie.geometry.Point3D;
@@ -74,6 +75,15 @@ public final class WorldMarkers {
   private static final Random rnd = new Random();
 
   /**
+   * Pending world deltas from the physics thread. onFrame() (animation
+   * thread) enqueues instead of mutating; the EDT drains and applies
+   * before drawing. Message passing replaces the old synchronized
+   * blocks -- the markers list is now EDT-owned. (Tim, 2026-10-01.)
+   */
+  private static final ConcurrentLinkedQueue<Vector3D> pending_deltas =
+      new ConcurrentLinkedQueue<>();
+
+  /**
    * Snapshot of marker positions at drag start. The translation/
    * rotation is absolute from the drag start (like the nodes), not
    * incremental, so we restore from here before applying.
@@ -94,12 +104,25 @@ public final class WorldMarkers {
    * Advances the markers one tick by the world offset the centering
    * just applied. Called from the per-tick path, not the collision
    * path, so it runs for the demo models too.
+   *
+   * <p>Message passing: enqueues the delta for the EDT to apply.
+   * The markers list is EDT-owned; this never touches it directly.
    */
   public static void onFrame(Vector3D delta) {
-    synchronized (markers) {
+    pending_deltas.add(new Vector3D(delta));
+  }
+
+  /**
+   * Applies all pending physics-thread deltas. Called at the start of
+   * every EDT paint entry point (draw, drawUnder, addToTiles,
+   * getDamage). The EDT is the sole mutator of the markers list.
+   */
+  private static void drainPending() {
+    Vector3D delta;
+    while ((delta = pending_deltas.poll()) != null) {
       if (!olympicsActive()) {
         markers.clear();
-        return;
+        continue;
       }
       translate((int) delta.x, (int) delta.y, (int) delta.z);
       cullOffscreen();
@@ -115,13 +138,12 @@ public final class WorldMarkers {
    * user drags it.
    */
   public static void translate(int dx, int dy, int dz) {
-    synchronized (markers) {
-      for (Point3D p : markers) {
-        p.x += dx;
-        p.y += dy;
-        p.z += dz;
-      }
+    for (Point3D p : markers) {
+      p.x += dx;
+      p.y += dy;
+      p.z += dz;
     }
+
   }
 
   /**
@@ -130,12 +152,11 @@ public final class WorldMarkers {
    * (like the nodes) instead of incremental.
    */
   public static void snapshotForDrag() {
-    synchronized (markers) {
-      drag_snapshot.clear();
-      for (Point3D p : markers) {
-        drag_snapshot.add(new Point3D(p.x, p.y, p.z));
-      }
+    drag_snapshot.clear();
+    for (Point3D p : markers) {
+      drag_snapshot.add(new Point3D(p.x, p.y, p.z));
     }
+
   }
 
   /**
@@ -145,13 +166,12 @@ public final class WorldMarkers {
    * button enabled.
    */
   public static void translateFromSnapshot(int dx, int dy) {
-    synchronized (markers) {
-      // Restore from snapshot, then apply the absolute delta.
-      markers.clear();
-      for (Point3D p : drag_snapshot) {
-        markers.add(new Point3D(p.x + dx, p.y + dy, p.z));
-      }
+    // Restore from snapshot, then apply the absolute delta.
+    markers.clear();
+    for (Point3D p : drag_snapshot) {
+      markers.add(new Point3D(p.x + dx, p.y + dy, p.z));
     }
+
   }
 
   /**
@@ -163,62 +183,57 @@ public final class WorldMarkers {
    */
   public static void rotate(float theta1, float theta2, boolean cw_acw,
       Point3D centre) {
-    synchronized (markers) {
-      // Restore from snapshot, then apply the absolute rotation.
-      markers.clear();
-      for (Point3D p : drag_snapshot) {
-        final int rx = p.x - centre.x;
-        final int ry = p.y - centre.y;
-        final int rz = p.z - centre.z;
-        int dx;
-        int dy;
-        int dz;
-        if (cw_acw) {
-          // Rotate about Z axis (matches RotationManager.rotateAboutZAxis).
-          dx = (int) (rx * Math.cos(theta1) + ry * Math.sin(theta1));
-          dy = (int) (ry * Math.cos(theta1) - rx * Math.sin(theta1));
-          dz = rz;
-        } else {
-          // Rotate about Y axis by theta1, then X axis by theta2.
-          final int x1 = (int) (rx * Math.cos(theta1) - rz * Math.sin(theta1));
-          final int z1 = (int) (rz * Math.cos(theta1) + rx * Math.sin(theta1));
-          dx = x1;
-          dy = (int) (ry * Math.cos(theta2) - z1 * Math.sin(theta2));
-          dz = (int) (z1 * Math.cos(theta2) + ry * Math.sin(theta2));
-        }
-        markers.add(new Point3D(dx + centre.x, dy + centre.y, dz + centre.z));
+    // Restore from snapshot, then apply the absolute rotation.
+    markers.clear();
+    for (Point3D p : drag_snapshot) {
+      final int rx = p.x - centre.x;
+      final int ry = p.y - centre.y;
+      final int rz = p.z - centre.z;
+      int dx;
+      int dy;
+      int dz;
+      if (cw_acw) {
+        // Rotate about Z axis (matches RotationManager.rotateAboutZAxis).
+        dx = (int) (rx * Math.cos(theta1) + ry * Math.sin(theta1));
+        dy = (int) (ry * Math.cos(theta1) - rx * Math.sin(theta1));
+        dz = rz;
+      } else {
+        // Rotate about Y axis by theta1, then X axis by theta2.
+        final int x1 = (int) (rx * Math.cos(theta1) - rz * Math.sin(theta1));
+        final int z1 = (int) (rz * Math.cos(theta1) + rx * Math.sin(theta1));
+        dx = x1;
+        dy = (int) (ry * Math.cos(theta2) - z1 * Math.sin(theta2));
+        dz = (int) (z1 * Math.cos(theta2) + ry * Math.sin(theta2));
       }
+      markers.add(new Point3D(dx + centre.x, dy + centre.y, dz + centre.z));
     }
+
   }
 
   /** Clears all markers; tests and probes start from here. */
   static void clear() {
-    synchronized (markers) {
-      markers.clear();
-      last_damage = null;
-    }
+    drainPending();
+    markers.clear();
+    last_damage = null;
   }
 
   /** Adds one marker at the given internal coords; tests only. */
   static void addForTest(int x, int y, int z) {
-    synchronized (markers) {
-      markers.add(new Point3D(x, y, z));
-    }
+    drainPending();
+    markers.add(new Point3D(x, y, z));
   }
 
   /** Internal coords of one marker as {x, y, z}; tests only. */
   static int[] marker(int i) {
-    synchronized (markers) {
-      final Point3D p = markers.get(i);
-      return new int[] {(int) p.x, (int) p.y, (int) p.z};
-    }
+    drainPending();
+    final Point3D p = markers.get(i);
+    return new int[] {(int) p.x, (int) p.y, (int) p.z};
   }
 
   /** Number of markers in play; exposed for tests and probes. */
   static int size() {
-    synchronized (markers) {
-      return markers.size();
-    }
+    drainPending();
+    return markers.size();
   }
 
   /**
@@ -227,18 +242,18 @@ public final class WorldMarkers {
    * renderer). A no-op unless a demo model is showing markers.
    */
   public static void draw(Graphics graphics) {
+    drainPending();
     if (!olympicsActive()) {
       return;
     }
     graphics.setColor(new Color(MARKER_COLOUR));
-    synchronized (markers) {
-      for (Point3D p : markers) {
-        final int sx = Coords.getXCoords((int) p.x, (int) p.z);
-        final int sy = Coords.getYCoords((int) p.y, (int) p.z);
-        final int half = screenHalf((int) p.z);
-        graphics.fillRect(sx - half, sy - half, half * 2, half * 2);
-      }
+    for (Point3D p : markers) {
+      final int sx = Coords.getXCoords((int) p.x, (int) p.z);
+      final int sy = Coords.getYCoords((int) p.y, (int) p.z);
+      final int half = screenHalf((int) p.z);
+      graphics.fillRect(sx - half, sy - half, half * 2, half * 2);
     }
+
   }
 
   /**
@@ -250,6 +265,7 @@ public final class WorldMarkers {
   private static final List<RectangleInt> old_dots = new ArrayList<>();
 
   public static void drawUnder(Graphics graphics) {
+    drainPending();
     // Reset the clip: the last frame's renderer may have left a small
     // clip set, which would clip our clearRect and leave golden trails.
     graphics.setClip(0, 0, 9999, 9999);
@@ -272,37 +288,36 @@ public final class WorldMarkers {
     final int y_max = Coords.y_pixels << Coords.shift;
     final int z_max = Coords.z_pixels << Coords.shift;
     final List<RectangleInt> new_old_dots = new ArrayList<>();
-    synchronized (markers) {
-      final int count = markers.size();
-      for (int i = 0; i < count; i++) {
-        // Clear this marker's old spot (survivors keep their index;
-        // cullOffscreen preserves order, spawns append).
-        if (i < old_dots.size()) {
-          final RectangleInt old = old_dots.get(i);
-          graphics.clearRect(old.min_x, old.min_y,
-              old.max_x - old.min_x, old.max_y - old.min_y);
-        }
-        final Point3D p = markers.get(i);
-        final int px = (int) p.x;
-        final int py = (int) p.y;
-        final int pz = (int) p.z;
-        if (px < 0 || px > x_max || py < 0 || py > y_max || pz < 0 || pz > z_max) {
-          continue;
-        }
-        final int sx = Coords.getXCoords(px, pz);
-        final int sy = Coords.getYCoords(py, pz);
-        final int half = screenHalf(pz);
-        graphics.fillRect(sx - half, sy - half, half * 2, half * 2);
-        new_old_dots.add(new RectangleInt(sx - half, sy - half,
-            sx + half, sy + half));
-      }
-      // Clear old spots for markers that were culled (beyond the new count).
-      for (int i = count; i < old_dots.size(); i++) {
+    final int count = markers.size();
+    for (int i = 0; i < count; i++) {
+      // Clear this marker's old spot (survivors keep their index;
+      // cullOffscreen preserves order, spawns append).
+      if (i < old_dots.size()) {
         final RectangleInt old = old_dots.get(i);
         graphics.clearRect(old.min_x, old.min_y,
             old.max_x - old.min_x, old.max_y - old.min_y);
       }
+      final Point3D p = markers.get(i);
+      final int px = (int) p.x;
+      final int py = (int) p.y;
+      final int pz = (int) p.z;
+      if (px < 0 || px > x_max || py < 0 || py > y_max || pz < 0 || pz > z_max) {
+        continue;
+      }
+      final int sx = Coords.getXCoords(px, pz);
+      final int sy = Coords.getYCoords(py, pz);
+      final int half = screenHalf(pz);
+      graphics.fillRect(sx - half, sy - half, half * 2, half * 2);
+      new_old_dots.add(new RectangleInt(sx - half, sy - half,
+          sx + half, sy + half));
     }
+    // Clear old spots for markers that were culled (beyond the new count).
+    for (int i = count; i < old_dots.size(); i++) {
+      final RectangleInt old = old_dots.get(i);
+      graphics.clearRect(old.min_x, old.min_y,
+          old.max_x - old.min_x, old.max_y - old.min_y);
+    }
+
     old_dots.clear();
     old_dots.addAll(new_old_dots);
   }
@@ -313,19 +328,19 @@ public final class WorldMarkers {
    * marker images are scrubbed when the markers move -- no trails.
    */
   public static void addToTiles(ArrayList<PolygonComposite> all) {
+    drainPending();
     if (!olympicsActive()) {
       return;
     }
-    synchronized (markers) {
-      for (Point3D p : markers) {
-        final int sx = Coords.getXCoords((int) p.x, (int) p.z);
-        final int sy = Coords.getYCoords((int) p.y, (int) p.z);
-        final int half = screenHalf((int) p.z);
-        all.add(new PolygonComposite(new PolygonObject2D[] {
-            buildQuad(sx, sy, half),
-        }, MARKER_Z));
-      }
+    for (Point3D p : markers) {
+      final int sx = Coords.getXCoords((int) p.x, (int) p.z);
+      final int sy = Coords.getYCoords((int) p.y, (int) p.z);
+      final int half = screenHalf((int) p.z);
+      all.add(new PolygonComposite(new PolygonObject2D[] {
+          buildQuad(sx, sy, half),
+      }, MARKER_Z));
     }
+
   }
 
   /**
@@ -350,6 +365,7 @@ public final class WorldMarkers {
    * the old dots.
    */
   public static RectangleInt getDamage() {
+    drainPending();
     final RectangleInt current = currentBounds();
     final RectangleInt damage;
     if (current == null) {
@@ -377,25 +393,24 @@ public final class WorldMarkers {
 
   /** Screen bounds of the current markers, or null when there are none. */
   private static RectangleInt currentBounds() {
-    synchronized (markers) {
-      if (markers.isEmpty() || !olympicsActive()) {
-        return null;
-      }
-      int min_x = Integer.MAX_VALUE;
-      int min_y = Integer.MAX_VALUE;
-      int max_x = Integer.MIN_VALUE;
-      int max_y = Integer.MIN_VALUE;
-      for (Point3D p : markers) {
-        final int sx = Coords.getXCoords((int) p.x, (int) p.z);
-        final int sy = Coords.getYCoords((int) p.y, (int) p.z);
-        final int half = screenHalf((int) p.z);
-        min_x = Math.min(min_x, sx - half);
-        min_y = Math.min(min_y, sy - half);
-        max_x = Math.max(max_x, sx + half);
-        max_y = Math.max(max_y, sy + half);
-      }
-      return new RectangleInt(min_x, min_y, max_x, max_y);
+    if (markers.isEmpty() || !olympicsActive()) {
+      return null;
     }
+    int min_x = Integer.MAX_VALUE;
+    int min_y = Integer.MAX_VALUE;
+    int max_x = Integer.MIN_VALUE;
+    int max_y = Integer.MIN_VALUE;
+    for (Point3D p : markers) {
+      final int sx = Coords.getXCoords((int) p.x, (int) p.z);
+      final int sy = Coords.getYCoords((int) p.y, (int) p.z);
+      final int half = screenHalf((int) p.z);
+      min_x = Math.min(min_x, sx - half);
+      min_y = Math.min(min_y, sy - half);
+      max_x = Math.max(max_x, sx + half);
+      max_y = Math.max(max_y, sy + half);
+    }
+    return new RectangleInt(min_x, min_y, max_x, max_y);
+
   }
 
   private static boolean olympicsActive() {
