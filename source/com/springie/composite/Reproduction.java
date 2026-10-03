@@ -58,7 +58,7 @@ public final class Reproduction {
      }
   */
 
-  public static void handleReproduction(CompositeManager cm) {
+  public static void handleReproduction(final CompositeManager cm) {
     if ((RendererDelegator.generation & 15) == 5) { // rarely...
       for (temp = cm.number_of_creatures; --temp >= 0;) {
         temp_creature = cm.creature[temp];
@@ -70,7 +70,7 @@ public final class Reproduction {
     }
   }
 
-  static void debug(String o) {
+  static void debug(final String o) {
     System.out.println(o);
   }
 }

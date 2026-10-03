@@ -52,7 +52,7 @@ public class Genome {
     //initial_write_link = null;
   }
 
-  public final void add(int data) {
+  public final void add(final int data) {
     if (this.genome_size >= this.max_genome_size) {
       makeMoreGenome();
     }
@@ -60,7 +60,7 @@ public class Genome {
     this.genome[this.genome_size++] = data;
   }
 
-  final void copy(Genome g) {
+  final void copy(final Genome g) {
     reset();
 
     //initial_read_node = g.initial_read_node;
@@ -104,7 +104,7 @@ public class Genome {
      }
   */
 
-  final void debug(String o) {
+  final void debug(final String o) {
 
     System.out.println(o);
   }

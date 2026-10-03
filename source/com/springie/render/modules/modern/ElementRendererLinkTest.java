@@ -117,7 +117,7 @@ class ElementRendererLinkTest {
         0xFF0000FF);
   }
 
-  private static int quadCount(ArrayList<PolygonComposite> composites) {
+  private static int quadCount(final ArrayList<PolygonComposite> composites) {
     int quads = 0;
     for (final PolygonComposite composite : composites) {
       quads += composite.count;
@@ -130,7 +130,7 @@ class ElementRendererLinkTest {
    * reused backing array. Backface-culled quads are compacted out of
    * this prefix; the tail holds stale quads from previous frames.
    */
-  private static PolygonObject2D[] liveQuads(PolygonComposite composite) {
+  private static PolygonObject2D[] liveQuads(final PolygonComposite composite) {
     final PolygonObject2D[] live = new PolygonObject2D[composite.count];
     System.arraycopy(composite.array, 0, live, 0, composite.count);
     return live;

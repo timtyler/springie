@@ -145,7 +145,7 @@ public class RendererTileManager {
     v.add(triangle);
   }
 
-  void add(PolygonComposite composite) {
+  void add(final PolygonComposite composite) {
     final RectangleInt bb = composite.getBoundingBox();
     // final int min_x = getBMinimum(triangle.x);
     // final int max_x = getMaximum(triangle.x) + 1;

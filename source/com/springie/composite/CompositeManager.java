@@ -164,7 +164,7 @@ public class CompositeManager {
   // return current_creature;
   // }
 
-  final int getNumberOfCreature(Composite c) {
+  final int getNumberOfCreature(final Composite c) {
     for (int temp = this.number_of_creatures; --temp >= 0;) {
       if (this.creature[temp] == c) {
         return temp;
@@ -174,7 +174,7 @@ public class CompositeManager {
     return -1;
   }
 
-  final void killNumberedCreature(int n) {
+  final void killNumberedCreature(final int n) {
     if (n >= 0 && n < this.number_of_creatures) {
       temp_creature = this.creature[n];
       if ((temp_creature.status & Composite.DEAD) == 0) {
@@ -203,7 +203,7 @@ public class CompositeManager {
   // this.number_of_creatures);
   // }
 
-  public final void killSpecifiedCreature(Composite l) {
+  public final void killSpecifiedCreature(final Composite l) {
     if (l != null) {
       if ((l.status & Composite.DEAD) == 0) {
         final int temp = getNumberOfCreature(l);
@@ -216,7 +216,7 @@ public class CompositeManager {
     }
   }
 
-  static final void moveCreaturesBetweenWorlds(World pw_from, World pw_to) {
+  static final void moveCreaturesBetweenWorlds(final World pw_from, final World pw_to) {
     for (int temp = pw_from.creature_manager.number_of_creatures; --temp >= 0;) {
       temp_creature = pw_to.creature_manager.add();
 

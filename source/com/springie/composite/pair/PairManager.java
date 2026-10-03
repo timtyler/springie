@@ -35,7 +35,7 @@ public class PairManager {
     this.number_of_pairs = 0;
   }
 
-  public final Pair add(Node e1, Node e2) {
+  public final Pair add(final Node e1, final Node e2) {
     if (this.number_of_pairs >= this.max_number_of_pairs) {
       makeMorePairs();
     }
@@ -52,7 +52,7 @@ public class PairManager {
   }
 
   // DANGER
-  final void add(Pair l) {
+  final void add(final Pair l) {
     if (this.number_of_pairs >= this.max_number_of_pairs) {
       makeMorePairs();
     }
@@ -73,7 +73,7 @@ public class PairManager {
     this.max_number_of_pairs += PAIR_NUMBER_INCREMENT;
   }
 
-  final boolean aPairLikeThisExists(Node e1, Node e2) {
+  final boolean aPairLikeThisExists(final Node e1, final Node e2) {
     for (int temp = this.number_of_pairs; --temp >= 0;) {
       if (this.node_pair[temp].node1 == e1 && this.node_pair[temp].node2 == e2) {
         return true;
@@ -89,7 +89,7 @@ public class PairManager {
 
   // need to re-write this so that it uses local list of Pairs stored with node...
   // doesn't quite work properly...
-  final void deleteAllPairsBetween(Node e1, Node e2) {
+  final void deleteAllPairsBetween(final Node e1, final Node e2) {
     for (int temp = this.number_of_pairs; --temp >= 0;) {
       if (this.node_pair[temp].node1 == e1 && this.node_pair[temp].node2 == e2) {
         killNumberedPair(temp);
@@ -102,7 +102,7 @@ public class PairManager {
   }
 
   // ?.
-  final boolean thereIsAPair(Node e1, Node e2) {
+  final boolean thereIsAPair(final Node e1, final Node e2) {
     for (int temp = this.number_of_pairs; --temp >= 0;) {
       if (this.node_pair[temp].node1 == e1 && this.node_pair[temp].node2 == e2) {
         return true;
@@ -112,7 +112,7 @@ public class PairManager {
     return false;
   }
 
-  public final Node findCorrespondingNode(Node e) {
+  public final Node findCorrespondingNode(final Node e) {
     for (int temp = this.number_of_pairs; --temp >= 0;) {
       if (this.node_pair[temp].node1 == e) {
         return this.node_pair[temp].node2;
@@ -123,7 +123,7 @@ public class PairManager {
   }
 
   // hmm...
-  final void killAllPairs(Node e) {
+  final void killAllPairs(final Node e) {
     for (int temp = this.number_of_pairs; --temp >= 0;) {
       if (this.node_pair[temp].node1 == e || this.node_pair[temp].node2 == e) {
         killNumberedPair(temp);
@@ -132,7 +132,7 @@ public class PairManager {
   }
 
   // hmm...
-  final boolean killLastPair(Node e) {
+  final boolean killLastPair(final Node e) {
     for (int temp = this.number_of_pairs; --temp >= 0;) {
       if (this.node_pair[temp].node1 == e || this.node_pair[temp].node2 == e) {
         killNumberedPair(temp);
@@ -143,7 +143,7 @@ public class PairManager {
     return false;
   }
 
-  final void killNumberedPair(int n) {
+  final void killNumberedPair(final int n) {
     temp_pair = this.node_pair[n];
 
     // need to tell the entities involved...
@@ -153,7 +153,7 @@ public class PairManager {
     this.node_pair[--this.number_of_pairs] = temp_pair;
   }
 
-  final int getNumberOfPair(Pair l) {
+  final int getNumberOfPair(final Pair l) {
     for (int temp = this.number_of_pairs; --temp >= 0;) {
       if (this.node_pair[temp] == l) {
         return temp;
@@ -163,12 +163,12 @@ public class PairManager {
     return -1; // not found...
   }
 
-  final void killSpecifiedPair(Pair l) {
+  final void killSpecifiedPair(final Pair l) {
     final int temp = getNumberOfPair(l);
     killNumberedPair(temp);
   }
 
-  static final void debug(String o) {
+  static final void debug(final String o) {
     System.out.println(o);
   }
 

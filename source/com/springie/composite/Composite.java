@@ -118,10 +118,10 @@ public class Composite {
     this.oscillator = new Oscillator();
   }
 
-  final void init(Composite c) {
+  final void init(final Composite c) {
   }
 
-  public final void add(Node e) {
+  public final void add(final Node e) {
     if (this.number_of_entities >= this.max_number_of_entities) {
       makeMoreEntities();
     }
@@ -143,7 +143,7 @@ public class Composite {
   }
 
   // returns number within this creature...
-  final int getNodeNumber(Node e) {
+  final int getNodeNumber(final Node e) {
     for (temp = 0; temp < this.number_of_entities; temp++) {
       if (this.node_list[temp] == e) {
         return temp;
@@ -156,7 +156,7 @@ public class Composite {
   }
 
   // returns number within this creature...
-  final boolean isAssociatedWithThisCreature(Node e) {
+  final boolean isAssociatedWithThisCreature(final Node e) {
     for (temp = 0; temp < this.number_of_entities; temp++) {
       if (this.node_list[temp] == e) {
         return true;
@@ -368,7 +368,7 @@ public class Composite {
   // this.write_link = (Link) this.write_node.list_of_links.get(0);
   // }
 
-  final void mostlyCopy(Composite c) {
+  final void mostlyCopy(final Composite c) {
     this.genome.copy(c.genome);
     this.private_world = c.private_world;
   }
