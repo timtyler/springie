@@ -147,7 +147,7 @@ public interface GUIStrings {
 
   String SHOW_TILES = "Show rendering tiles";
 
-  String SHOW_ACTIVE_TILES = "Show active tiles";
+  String SHOW_ACTIVE_TILES = "Show rendering details";
 
   String ONE_BIG_TILE = "One big tile";
 
