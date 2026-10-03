@@ -106,8 +106,6 @@ public class PanelPreferencesRendererModern {
 
     tab.add("Colours", FrEnd.panel_preferences_renderer_modern_colours.panel);
 
-    tab.add("Tiles", FrEnd.panel_preferences_shared_show.panel_tiles);
-
     tab.add("Fog", FrEnd.panel_preferences_shared_show.panel_fog);
 
     this.panel.add(tab);

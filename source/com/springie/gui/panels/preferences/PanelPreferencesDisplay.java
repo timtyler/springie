@@ -110,6 +110,15 @@ public class PanelPreferencesDisplay {
         FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first, 3);
     renderer_main.add(
         FrEnd.panel_preferences_renderer_modern.panel_labels_row, 4);
+    // Move the tile rows into the Renderer Main tab so the renderer
+    // selector, pixellation, and tile options are all visible at the
+    // same time (Tim, 2026-10-03). The Tiles tab is removed below.
+    final Panel tiles_panel = FrEnd.panel_preferences_shared_show.panel_tiles;
+    final java.awt.Component[] tile_rows = tiles_panel.getComponents();
+    tiles_panel.removeAll();
+    for (final java.awt.Component row : tile_rows) {
+      renderer_main.add(row);
+    }
     FrEnd.panel_preferences_renderer_original.panel_renderer_tab
         .add(makeDisplayTypePanel(), 0);
 
