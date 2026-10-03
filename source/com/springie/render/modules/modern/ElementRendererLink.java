@@ -264,8 +264,62 @@ public final class ElementRendererLink {
         min_z = z;
       }
 
-      final int new_colour = DeepObjectColourCalculator.getColourOfDeepObject(
+      final int new_colour_base = DeepObjectColourCalculator.getColourOfDeepObject(
           colour, z);
+
+      // RGB light shading (Tim, 2026-10-03): three colored lights affect
+      // the whole model, including links. Use the segment midpoint.
+      LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
+      final double midx = (point0n.x + point1n.x) / 2.0;
+      final double midy = (point0n.y + point1n.y) / 2.0;
+      final double midz = (point0n.z + point1n.z) / 2.0;
+      // Link axis (normalized).
+      double ax = point1n.x - point0n.x;
+      double ay = point1n.y - point0n.y;
+      double az = point1n.z - point0n.z;
+      final double alen = Math.sqrt(ax * ax + ay * ay + az * az);
+      double r_factor = 0.25;
+      double g_factor = 0.25;
+      double b_factor = 0.25;
+      if (alen > 1e-12) {
+        ax /= alen;
+        ay /= alen;
+        az /= alen;
+        // Red light.
+        final double rlx = LightSource.red_px - midx;
+        final double rly = LightSource.red_py - midy;
+        final double rlz = LightSource.red_pz - midz;
+        final double rd = Math.sqrt(rlx * rlx + rly * rly + rlz * rlz);
+        if (rd > 1e-12) {
+          final double r_dot = (rlx * ax + rly * ay + rlz * az) / rd;
+          r_factor = 0.25 + 0.75 * Math.sqrt(Math.max(0.0, 1.0 - r_dot * r_dot));
+        }
+        // Green light.
+        final double glx = LightSource.green_px - midx;
+        final double gly = LightSource.green_py - midy;
+        final double glz = LightSource.green_pz - midz;
+        final double gd = Math.sqrt(glx * glx + gly * gly + glz * glz);
+        if (gd > 1e-12) {
+          final double g_dot = (glx * ax + gly * ay + glz * az) / gd;
+          g_factor = 0.25 + 0.75 * Math.sqrt(Math.max(0.0, 1.0 - g_dot * g_dot));
+        }
+        // Blue light.
+        final double blx = LightSource.blue_px - midx;
+        final double bly = LightSource.blue_py - midy;
+        final double blz = LightSource.blue_pz - midz;
+        final double bd = Math.sqrt(blx * blx + bly * bly + blz * blz);
+        if (bd > 1e-12) {
+          final double b_dot = (blx * ax + bly * ay + blz * az) / bd;
+          b_factor = 0.25 + 0.75 * Math.sqrt(Math.max(0.0, 1.0 - b_dot * b_dot));
+        }
+      }
+      final int cr = (new_colour_base >> 16) & 0xFF;
+      final int cg = (new_colour_base >> 8) & 0xFF;
+      final int cb = new_colour_base & 0xFF;
+      final int or = Math.min(255, (int) (cr * r_factor));
+      final int og = Math.min(255, (int) (cg * g_factor));
+      final int ob = Math.min(255, (int) (cb * b_factor));
+      final int new_colour = (new_colour_base & 0xFF000000) | (or << 16) | (og << 8) | ob;
 
       final PolygonObject2D[] quads = pair_cache.quads[segment];
       for (int side = 0; side < sides; side++) {
