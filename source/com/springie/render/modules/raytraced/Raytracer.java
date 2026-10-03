@@ -397,13 +397,21 @@ final class Raytracer {
       HitStats stats, BufferedImage scenic, int background_rgb, Ray ray,
       Hit hit, int[] stack, Ray shadow_ray, Hit shadow_hit,
       JitterRandom jitter, int aa) {
-    // Blank the tile with the background.
+    // Blank the tile with the background. When "Show rendering details"
+    // is on, blank with red instead: red marks pixels where no ray was
+    // traced (the savings). (Tim, 2026-10-03)
+    final boolean debug = RendererTileManager.show_active_tiles;
+    final int blank_rgb = debug ? 0xFFFF0000 : 0;
     int i = 0;
     for (int y = 0; y < height; y++) {
       for (int x = 0; x < width; x++) {
-        camera.makeRay(x0 + x, y0 + y, ray);
-        pixels[i++] = backgroundAt(scenic, background_rgb, ray,
-            x0 + x, y0 + y);
+        if (debug) {
+          pixels[i++] = blank_rgb;
+        } else {
+          camera.makeRay(x0 + x, y0 + y, ray);
+          pixels[i++] = backgroundAt(scenic, background_rgb, ray,
+              x0 + x, y0 + y);
+        }
       }
     }
     final int cs = 4; // coarse block size
@@ -540,9 +548,16 @@ final class Raytracer {
             if (aa <= 1) {
               camera.makeRay(x0 + x, y0 + y, ray);
               hit.reset();
-              rgb = intersectScene(ray, hit, bvh, rings, stack)
-                  ? shade(ray, hit, bvh, stack, shadow_ray, shadow_hit)
-                  : pixels[idx]; // background, already filled
+              if (intersectScene(ray, hit, bvh, rings, stack)) {
+                rgb = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
+              } else if (debug) {
+                // A ray was traced but missed: show the real background,
+                // not the red "no ray" marker.
+                rgb = backgroundAt(scenic, background_rgb, ray,
+                    x0 + x, y0 + y);
+              } else {
+                rgb = pixels[idx]; // background, already filled
+              }
             } else {
               long r = 0, g = 0, b = 0;
               boolean hit_any = false;
@@ -574,10 +589,18 @@ final class Raytracer {
                 }
               }
               final int samples = aa * aa;
-              rgb = hit_any
-                  ? 0xFF000000 | (int) (r / samples) << 16
-                      | (int) (g / samples) << 8 | (int) (b / samples)
-                  : pixels[idx];
+              if (hit_any) {
+                rgb = 0xFF000000 | (int) (r / samples) << 16
+                    | (int) (g / samples) << 8 | (int) (b / samples);
+              } else if (debug) {
+                // Rays were traced but all missed: show the real
+                // background, not the red "no ray" marker.
+                camera.makeRay(x0 + x, y0 + y, ray);
+                rgb = backgroundAt(scenic, background_rgb, ray,
+                    x0 + x, y0 + y);
+              } else {
+                rgb = pixels[idx];
+              }
             }
             pixels[idx] = rgb;
             if (stats != null) {
