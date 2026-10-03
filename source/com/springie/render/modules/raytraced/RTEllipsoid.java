@@ -18,7 +18,7 @@ final class RTEllipsoid implements Primitive {
 
   private final int colour;
 
-  RTEllipsoid(double ax, double ay, double az, double bx, double by, double bz,
+  RTEllipsoid(final double ax, final double ay, final double az, final double bx, final double by, final double bz,
       double radius, int colour) {
     this.cx = (ax + bx) / 2.0;
     this.cy = (ay + by) / 2.0;
@@ -51,7 +51,7 @@ final class RTEllipsoid implements Primitive {
     return false;
   }
 
-  public void writeBounds(AABB out) {
+  public void writeBounds(final AABB out) {
     if (this.halfLength < 1e-9) {
       // Degenerate: a zero-length link contributes its point only, so no
       // NaN from the axis normalization can poison the BVH bounds.
@@ -71,7 +71,7 @@ final class RTEllipsoid implements Primitive {
         Math.max(this.cz - ez, this.cz + ez) + this.radius);
   }
 
-  public boolean intersect(Ray ray, Hit hit) {
+  public boolean intersect(final Ray ray, final Hit hit) {
     if (this.halfLength < 1e-9) {
       return false;
     }
@@ -137,7 +137,7 @@ final class RTEllipsoid implements Primitive {
    * Returns the nearest root in front of the ray origin and nearer than the
    * recorded hit, or a negative value if neither root qualifies.
    */
-  private static double closestValidT(double t0, double t1, double maxT) {
+  private static double closestValidT(final double t0, final double t1, final double maxT) {
     if (t0 > 1e-9 && t0 < maxT) {
       return t0;
     }

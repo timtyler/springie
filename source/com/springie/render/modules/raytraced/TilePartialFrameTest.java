@@ -75,11 +75,11 @@ public class TilePartialFrameTest {
 
   private Tile[] tiles;
 
-  private static int internalX(int sx) {
+  private static int internalX(final int sx) {
     return (200 << Coords.shift) + (sx - 200) * 192;
   }
 
-  private static Node node(int sx, int sy) {
+  private static Node node(final int sx, final int sy) {
     final Node node = new Node(
         new Point3D(internalX(sx), internalX(sy), 0), 42,
         new NodeTypeFactory());
@@ -171,7 +171,7 @@ public class TilePartialFrameTest {
    * tile traces its whole area here (staged rectangle = whole tile),
    * like a render-all frame.
    */
-  private void renderTiles(boolean[] skip) {
+  private void renderTiles(final boolean[] skip) {
     final RayCamera camera = new RayCamera();
     final Primitive[] primitives = RayScene.build(this.manager);
     final BVH bvh = new BVH(primitives);
@@ -200,7 +200,7 @@ public class TilePartialFrameTest {
     ModularRendererRaytraced.publishFrame(this.tiles);
   }
 
-  private static boolean[] skipFromRects(RectangleInt[] rects,
+  private static boolean[] skipFromRects(final RectangleInt[] rects,
       boolean[] last_empty) {
     final boolean[] skip = new boolean[rects.length];
     for (int i = 0; i < skip.length; i++) {
@@ -209,7 +209,7 @@ public class TilePartialFrameTest {
     return skip;
   }
 
-  private static boolean[] emptiness(RectangleInt[] rects) {
+  private static boolean[] emptiness(final RectangleInt[] rects) {
     final boolean[] empty = new boolean[rects.length];
     for (int i = 0; i < empty.length; i++) {
       empty[i] = rects[i].isEmpty();
@@ -279,7 +279,7 @@ public class TilePartialFrameTest {
    * union of this frame's and last frame's dirty rectangles, exactly
    * like startFrame -- instead of the whole tile.
    */
-  private void renderStagedRects(boolean[] skip, RectangleInt[] rects,
+  private void renderStagedRects(final boolean[] skip, final RectangleInt[] rects,
       RectangleInt[] last_dirty) {
     final RayCamera camera = new RayCamera();
     final Primitive[] primitives = RayScene.build(this.manager);
@@ -313,7 +313,7 @@ public class TilePartialFrameTest {
     ModularRendererRaytraced.publishFrame(this.tiles);
   }
 
-  private static RectangleInt[] copyRects(RectangleInt[] rects) {
+  private static RectangleInt[] copyRects(final RectangleInt[] rects) {
     final RectangleInt[] copy = new RectangleInt[rects.length];
     for (int i = 0; i < rects.length; i++) {
       final RectangleInt r = rects[i];
@@ -345,7 +345,7 @@ public class TilePartialFrameTest {
     pixellatedPartialFrameMatchesFullFrame(5, 323, -1);
   }
 
-  private void pixellatedPartialFrameMatchesFullFrame(int px, int sx,
+  private void pixellatedPartialFrameMatchesFullFrame(final int px, final int sx,
       int dxScreen) {
     RendererDelegator.pixellation = px;
     final Node big = node(sx, 320);

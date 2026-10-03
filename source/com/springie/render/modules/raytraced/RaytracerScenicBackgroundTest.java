@@ -86,7 +86,7 @@ public class RaytracerScenicBackgroundTest {
   }
 
   /** Renders a tile against an empty scene: every ray misses. */
-  private int[] renderAllMiss(boolean scenic) {
+  private int[] renderAllMiss(final boolean scenic) {
     RendererDelegator.scenic_background = scenic;
     final BVH bvh = new BVH(new Primitive[0]);
     final int[] pixels = new int[200 * 200];

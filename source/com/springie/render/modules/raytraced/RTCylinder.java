@@ -17,7 +17,7 @@ final class RTCylinder implements Primitive {
 
   private final int colour;
 
-  RTCylinder(double ax, double ay, double az, double bx, double by, double bz,
+  RTCylinder(double ax, double ay, double az, final double bx, final double by, final double bz,
       double radius, int colour) {
     this.ax = ax;
     this.ay = ay;
@@ -50,7 +50,7 @@ final class RTCylinder implements Primitive {
     return false;
   }
 
-  public void writeBounds(AABB out) {
+  public void writeBounds(final AABB out) {
     if (this.length < 1e-9) {
       // Degenerate: a zero-length link contributes its point only, so no
       // NaN from the axis normalization can poison the BVH bounds.
@@ -68,7 +68,7 @@ final class RTCylinder implements Primitive {
         Math.max(this.az, bz) + this.radius);
   }
 
-  public boolean intersect(Ray ray, Hit hit) {
+  public boolean intersect(final Ray ray, final Hit hit) {
     if (this.length < 1e-9) {
       return false;
     }
@@ -133,7 +133,7 @@ final class RTCylinder implements Primitive {
    * Returns the nearest root whose hit point lies on the finite segment,
    * or a negative value if neither does.
    */
-  private double closestValidT(Ray ray, double t0, double t1) {
+  private double closestValidT(final Ray ray, final double t0, final double t1) {
     if (t0 > 1e-9 && onSegment(ray, t0)) {
       return t0;
     }
@@ -143,7 +143,7 @@ final class RTCylinder implements Primitive {
     return -1.0;
   }
 
-  private boolean onSegment(Ray ray, double t) {
+  private boolean onSegment(final Ray ray, final double t) {
     final double s = ((ray.ox + t * ray.dx - this.ax) * this.nx
         + (ray.oy + t * ray.dy - this.ay) * this.ny
         + (ray.oz + t * ray.dz - this.az) * this.nz)

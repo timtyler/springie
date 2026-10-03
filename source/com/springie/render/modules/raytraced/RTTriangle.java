@@ -19,8 +19,8 @@ final class RTTriangle implements Primitive {
 
   private final int colour;
 
-  RTTriangle(double ax, double ay, double az, double bx, double by, double bz,
-      double cx, double cy, double cz, int colour) {
+  RTTriangle(double ax, double ay, double az, final double bx, final double by, final double bz,
+      double cx, final double cy, final double cz, int colour) {
     this.ax = ax;
     this.ay = ay;
     this.az = az;
@@ -52,13 +52,13 @@ final class RTTriangle implements Primitive {
     return false;
   }
 
-  public void writeBounds(AABB out) {
+  public void writeBounds(final AABB out) {
     out.addPoint(this.ax, this.ay, this.az);
     out.addPoint(this.ax + this.e1x, this.ay + this.e1y, this.az + this.e1z);
     out.addPoint(this.ax + this.e2x, this.ay + this.e2y, this.az + this.e2z);
   }
 
-  public boolean intersect(Ray ray, Hit hit) {
+  public boolean intersect(final Ray ray, final Hit hit) {
     if (this.degenerate) {
       return false;
     }

@@ -15,7 +15,7 @@ final class Fog {
     // ...
   }
 
-  static int applyFog(int colour, int z) {
+  static int applyFog(final int colour, final int z) {
     if (ContextManager.getNodeManager() == null) {
       return colour;
     }

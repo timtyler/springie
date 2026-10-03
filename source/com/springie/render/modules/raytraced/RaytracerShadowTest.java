@@ -100,7 +100,7 @@ public class RaytracerShadowTest {
     RendererDelegator.specular = this.saved_specular;
   }
 
-  private int centrePixel(Primitive[] primitives) {
+  private int centrePixel(final Primitive[] primitives) {
     final BVH bvh = new BVH(primitives);
     final RayCamera camera = new RayCamera();
     final int[] pixels = new int[200 * 200];

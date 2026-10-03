@@ -49,8 +49,8 @@ public class RayCameraTest {
     Coords.shift_constant_z = this.saved_shift_constant_z;
   }
 
-  private void setUpView(int x_pixels, int y_pixels, int shift_x,
-      int shift_y, int shift_z) {
+  private void setUpView(int x_pixels, int y_pixels, final int shift_x,
+      int shift_y, final int shift_z) {
     Coords.x_pixels = x_pixels;
     Coords.y_pixels = y_pixels;
     Coords.x_pixelso2 = x_pixels >> 1;
@@ -61,19 +61,19 @@ public class RayCameraTest {
   }
 
   /** Continuous (untruncated) version of Coords.getXCoords/getYCoords. */
-  private static double projectX(double x, double z) {
+  private static double projectX(final double x, final double z) {
     final double a = Coords.shift_constant_x - (Coords.x_pixelso2 << 8);
     return Coords.x_pixelso2
         + (x + a) / (Coords.shift_constant_z + z / 1024.0);
   }
 
-  private static double projectY(double y, double z) {
+  private static double projectY(final double y, final double z) {
     final double b = Coords.shift_constant_y - (Coords.y_pixelso2 << 8);
     return Coords.y_pixelso2
         + (y + b) / (Coords.shift_constant_z + z / 1024.0);
   }
 
-  private static double distancePointToRay(double px, double py, double pz,
+  private static double distancePointToRay(final double px, final double py, final double pz,
       Ray ray) {
     final double vx = px - ray.ox;
     final double vy = py - ray.oy;

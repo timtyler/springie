@@ -42,7 +42,7 @@ class RaySceneSelectionTest {
     this.manager.element.add(node(0, 0, 0, false));
   }
 
-  private static Node node(int x, int y, int z, boolean selected) {
+  private static Node node(final int x, final int y, final int z, boolean selected) {
     final Node node = new Node(new Point3D(x, y, z), 42,
         new NodeTypeFactory());
     node.clazz = new Clazz(NODE_COLOUR);

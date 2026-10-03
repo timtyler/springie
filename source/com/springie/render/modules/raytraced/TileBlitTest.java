@@ -84,11 +84,11 @@ public class TileBlitTest {
 
   private ModularRendererRaytraced renderer;
 
-  private static int internal(int screen) {
+  private static int internal(final int screen) {
     return (200 << Coords.shift) + (screen - 200) * 192;
   }
 
-  private static Node nodeAt(int sx, int sy) {
+  private static Node nodeAt(final int sx, final int sy) {
     final Node node = new Node(new Point3D(internal(sx), internal(sy), 0),
         42, new NodeTypeFactory());
     node.clazz = new Clazz(0x123456);
@@ -180,12 +180,12 @@ public class TileBlitTest {
     }
   }
 
-  private void repaintAndWait(BufferedImage dest) throws Exception {
+  private void repaintAndWait(final BufferedImage dest) throws Exception {
     this.renderer.repaint(dest.getGraphics(), this.manager);
     waitForDone();
   }
 
-  private static void fill(BufferedImage image, int rgb) {
+  private static void fill(final BufferedImage image, final int rgb) {
     for (int y = 0; y < image.getHeight(); y++) {
       for (int x = 0; x < image.getWidth(); x++) {
         image.setRGB(x, y, rgb);

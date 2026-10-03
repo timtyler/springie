@@ -66,7 +66,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   private static final ExecutorService POOL = Executors.newFixedThreadPool(
       Math.max(2, Runtime.getRuntime().availableProcessors()),
       new ThreadFactory() {
-        public Thread newThread(Runnable job) {
+        public Thread newThread(final Runnable job) {
           final Thread thread = new Thread(job, "raytraced-tile");
           thread.setDaemon(true);
           return thread;
@@ -197,7 +197,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   // composite paints only the tiles the frame actually re-traced.
   private volatile boolean[] staged_skip;
 
-  public void resize(int x, int y) {
+  public void resize(final int x, final int y) {
     this.tiles = null;
   }
 
@@ -230,7 +230,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     return this.frame_staged;
   }
 
-  public void repaint(Graphics graphics, NodeManager manager) {
+  public void repaint(final Graphics graphics, final NodeManager manager) {
     final int width = Coords.x_pixels;
     final int height = Coords.y_pixels;
     final boolean show_tiles = RendererTileManager.show_tiles;
@@ -392,7 +392,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
    * published snapshot yet contribute nothing, so a frame in progress
    * never shows half-rendered tiles.
    */
-  static BufferedImage compositeFrame(Tile[] tiles, int width, int height) {
+  static BufferedImage compositeFrame(final Tile[] tiles, final int width, final int height) {
     final BufferedImage frame =
         new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     final Graphics g = frame.getGraphics();
@@ -434,7 +434,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
    * shrunk by the same margin the default renderer leaves, so the
    * background shows through as black grid lines between the tiles.
    */
-  static Tile[] buildTileGrid(int width, int height) {
+  static Tile[] buildTileGrid(final int width, final int height) {
     if (RendererTileManager.one_big_tile) {
       // Tim: one big tile instead of the grid. The tile covers the
       // canvas; the content rectangle crops to the model during render.
@@ -466,7 +466,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     return result;
   }
 
-  void buildTiles(int width, int height, boolean show_tiles) {
+  void buildTiles(final int width, final int height, final boolean show_tiles) {
     this.tiles = buildTileGrid(width, height);
     this.canvas_width = width;
     this.canvas_height = height;
@@ -498,8 +498,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
    * tile to finish publishes the frame, mixing fresh and retained
    * snapshots, exactly like a full frame.
    */
-  private void startFrame(NodeManager manager, boolean[] skip,
-      RectangleInt[] dirty, boolean global) {
+  private void startFrame(final NodeManager manager, final boolean[] skip,
+      RectangleInt[] dirty, final boolean global) {
     final long id = ++this.frame_id;
     this.frame_done = false;
 
@@ -581,8 +581,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     }
   }
 
-  private void renderTile(long id, Tile[] tiles, Tile tile, RayCamera camera,
-      BVH bvh, RTRing[] rings) {
+  private void renderTile(final long id, final Tile[] tiles, final Tile tile, final RayCamera camera,
+      BVH bvh, final RTRing[] rings) {
     if (RendererDelegator.renderer != this) {
       // The user switched to another renderer mid-frame: drop the tile
       // instead of burning CPU on an image nobody will display. Best
@@ -650,7 +650,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
    * each worker wrote its tile's image and stats before its (volatile)
    * done flag, so they are visible here.
    */
-  static void publishFrame(Tile[] tiles) {
+  static void publishFrame(final Tile[] tiles) {
     for (int i = 0; i < tiles.length; i++) {
       final Tile t = tiles[i];
       final Raytracer.HitStats s = t.stats;
@@ -676,7 +676,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
    * degenerate (behind the camera); the caller then re-traces
    * everything.
    */
-  RectangleInt[] computeDirtyRects(NodeManager manager) {
+  RectangleInt[] computeDirtyRects(final NodeManager manager) {
     final Tile[] tiles = this.tiles;
     final int divisor = RendererTileManager.divisor;
     final int width = this.canvas_width;
@@ -889,7 +889,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
    * show_tiles gaps (which are never re-traced, so a box drawn there
    * would leave a permanent trail).
    */
-  private static void drawDragBox(Graphics g) {
+  private static void drawDragBox(final Graphics g) {
     final DragBoxManager dbm = FrEnd.perform_actions.drag_box_manager;
     final int x0 = Coords.getPixelFromInternalCoords(
         Math.min(dbm.drag_box_start.x, dbm.drag_box_end.x));
@@ -912,7 +912,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
    * Draws the drag box into the frame, clipped to each tile's
    * rectangle. Used for the full-frame composite path.
    */
-  private static void drawDragBoxClippedToTiles(Graphics g, Tile[] tiles) {
+  private static void drawDragBoxClippedToTiles(final Graphics g, final Tile[] tiles) {
     for (int i = 0; i < tiles.length; i++) {
       final ShownTile shown = tiles[i].shown;
       if (shown != null) {
@@ -935,8 +935,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
    * sits on or behind the eye plane (a degenerate view: the caller
    * re-traces everything).
    */
-  private static boolean markLinkSpanDirty(RectangleInt[] rects, Tile[] tiles,
-      int nx, int divisor, int width, int height, Node a, Node b,
+  private static boolean markLinkSpanDirty(final RectangleInt[] rects, final Tile[] tiles,
+      int nx, final int divisor, final int width, final int height, final Node a, final Node b,
       double radius) {
     final int ax = a.pos.x;
     final int ay = a.pos.y;
@@ -982,8 +982,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
    * with the link's pixel radius there. Returns {sx, sy, r}, or null
    * when the point sits on or behind the eye plane.
    */
-  private static long[] projectLinkPoint(int ax, int ay, int az, int bx,
-      int by, int bz, double t, double radius) {
+  private static long[] projectLinkPoint(final int ax, final int ay, final int az, final int bx,
+      int by, final int bz, double t, final double radius) {
     final int x = (int) (ax + (bx - ax) * t);
     final int y = (int) (ay + (by - ay) * t);
     final int z = (int) (az + (bz - az) * t);
@@ -1018,8 +1018,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
    * through here too: it is screen-space and already padded, so the
    * extra margin just re-traces a few more pixels while dragging.
    */
-  static void markTilesDirty(RectangleInt[] rects, Tile[] tiles, int nx,
-      int divisor, int width, int height,
+  static void markTilesDirty(final RectangleInt[] rects, final Tile[] tiles, final int nx,
+      int divisor, final int width, final int height,
       long x0, long y0, long x1, long y1) {
     final int px = RendererDelegator.pixellation;
     if (px > 1) {

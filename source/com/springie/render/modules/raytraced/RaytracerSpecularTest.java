@@ -103,7 +103,7 @@ public class RaytracerSpecularTest {
     RendererDelegator.specular_enabled = this.saved_specular_enabled;
   }
 
-  private int centrePixel(Primitive[] primitives) {
+  private int centrePixel(final Primitive[] primitives) {
     final BVH bvh = new BVH(primitives);
     final RayCamera camera = new RayCamera();
     final int[] pixels = new int[200 * 200];

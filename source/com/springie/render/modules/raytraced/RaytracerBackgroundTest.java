@@ -71,7 +71,7 @@ public class RaytracerBackgroundTest {
     return pixels;
   }
 
-  private static void assertAllPixels(int expected, int[] pixels,
+  private static void assertAllPixels(final int expected, final int[] pixels,
       String what) {
     for (int i = 0; i < pixels.length; i++) {
       assertEquals(expected, pixels[i], what + " at pixel " + i);

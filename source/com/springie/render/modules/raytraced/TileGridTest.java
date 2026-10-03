@@ -40,7 +40,7 @@ public class TileGridTest {
     RendererTileManager.one_big_tile = this.saved_one_big_tile;
   }
 
-  private void checkGrid(int width, int height, int divisor) {
+  private void checkGrid(final int width, final int height, int divisor) {
     RendererTileManager.divisor = divisor;
     final Tile[] tiles = ModularRendererRaytraced
         .buildTileGrid(width, height);

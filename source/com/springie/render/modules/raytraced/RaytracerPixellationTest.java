@@ -125,7 +125,7 @@ public class RaytracerPixellationTest {
     return new BVH(primitives);
   }
 
-  private int[] render(int px, int aa) {
+  private int[] render(final int px, final int aa) {
     RendererDelegator.pixellation = px;
     RendererDelegator.antialiasing = aa;
     final int[] pixels = new int[SIZE * SIZE];
@@ -138,7 +138,7 @@ public class RaytracerPixellationTest {
     return 0xFF000000 | RendererDelegator.color_background_number;
   }
 
-  private static int channel(int rgb, int shift) {
+  private static int channel(final int rgb, final int shift) {
     return (rgb >> shift) & 0xFF;
   }
 
@@ -271,7 +271,7 @@ public class RaytracerPixellationTest {
         "2x2 pixellated + 2x2 AA: no block blended past its top-left ray");
   }
 
-  private static boolean isBetween(int rgb, int lo, int hi) {
+  private static boolean isBetween(final int rgb, final int lo, final int hi) {
     for (final int shift : new int[] { 16, 8, 0 }) {
       final int c = channel(rgb, shift);
       if (c <= channel(lo, shift) || c >= channel(hi, shift)) {

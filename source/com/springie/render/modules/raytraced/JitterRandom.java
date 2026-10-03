@@ -24,7 +24,7 @@ final class JitterRandom {
     this.seed = (seed ^ MULTIPLIER) & MASK;
   }
 
-  private int next(int bits) {
+  private int next(final int bits) {
     this.seed = (this.seed * MULTIPLIER + ADDEND) & MASK;
     return (int) (this.seed >>> (48 - bits));
   }

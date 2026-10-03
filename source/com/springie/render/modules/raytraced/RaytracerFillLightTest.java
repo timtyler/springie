@@ -120,7 +120,7 @@ public class RaytracerFillLightTest {
     RendererDelegator.antialiasing = this.saved_antialiasing;
   }
 
-  private int nearPole(int fill) {
+  private int nearPole(final int fill) {
     RendererDelegator.fill_light = fill;
     final Primitive[] primitives = new Primitive[] { new RTSphere(EX, EY,
         0.0, 20000.0, 0xFFFFFF) };
@@ -130,7 +130,7 @@ public class RaytracerFillLightTest {
     return pixels[100 * 200 + 100];
   }
 
-  private static int channel(int rgb, int shift) {
+  private static int channel(final int rgb, final int shift) {
     return (rgb >> shift) & 0xFF;
   }
 

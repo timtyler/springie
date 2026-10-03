@@ -45,7 +45,7 @@ class RaytracedDragBoxTrailTest {
     GuiTestSupport.disposeFrames();
   }
 
-  private static void setDrag(int x0, int y0, int x1, int y1)
+  private static void setDrag(final int x0, final int y0, final int x1, final int y1)
       throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       FrEnd.paused = true;
@@ -93,8 +93,8 @@ class RaytracedDragBoxTrailTest {
     return new Robot().createScreenCapture(area[0]);
   }
 
-  private static int countSelected(BufferedImage img, int x0, int y0,
-      int x1, int y1) {
+  private static int countSelected(final BufferedImage img, final int x0, final int y0,
+      int x1, final int y1) {
     final int sel_rgb = RendererDelegator.colour_selected.getRGB();
     int count = 0;
     for (int y = y0; y < y1; y++) {
@@ -113,7 +113,7 @@ class RaytracedDragBoxTrailTest {
    * box is redrawn at the end of every paint but erased by the next
    * paint's blit, so it flickers.
    */
-  private static void waitForSelected(int x0, int y0, int x1, int y1,
+  private static void waitForSelected(final int x0, final int y0, final int x1, final int y1,
       String what) throws Exception {
     final long deadline = System.currentTimeMillis() + 8000;
     while (System.currentTimeMillis() < deadline) {

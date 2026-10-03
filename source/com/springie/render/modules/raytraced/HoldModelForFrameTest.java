@@ -21,7 +21,7 @@ import com.springie.render.modules.modern.ModularRendererNew;
  */
 public class HoldModelForFrameTest {
 
-  private void setFrameDone(ModularRendererRaytraced renderer, boolean done)
+  private void setFrameDone(final ModularRendererRaytraced renderer, final boolean done)
       throws Exception {
     final Field field =
         ModularRendererRaytraced.class.getDeclaredField("frame_done");

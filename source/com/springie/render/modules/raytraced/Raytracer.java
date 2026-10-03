@@ -61,8 +61,8 @@ final class Raytracer {
     // ...
   }
 
-  static void renderTile(int x0, int y0, int width, int height,
-      RayCamera camera, BVH bvh, int[] pixels) {
+  static void renderTile(final int x0, final int y0, final int width, final int height,
+      RayCamera camera, final BVH bvh, final int[] pixels) {
     renderTile(x0, y0, width, height, camera, bvh, pixels, null);
   }
 
@@ -83,7 +83,7 @@ final class Raytracer {
 
     int max_y = Integer.MIN_VALUE;
 
-    void add(int x, int y) {
+    void add(final int x, final int y) {
       this.hits++;
       if (x < this.min_x) {
         this.min_x = x;
@@ -100,8 +100,8 @@ final class Raytracer {
     }
   }
 
-  static void renderTile(int x0, int y0, int width, int height,
-      RayCamera camera, BVH bvh, int[] pixels, HitStats stats) {
+  static void renderTile(final int x0, final int y0, final int width, final int height,
+      RayCamera camera, final BVH bvh, final int[] pixels, final HitStats stats) {
     renderTile(x0, y0, width, height, camera, bvh, NO_RINGS, pixels,
         stats);
   }
@@ -118,8 +118,8 @@ final class Raytracer {
    * rings live outside the BVH so they can never cast shadows; the
    * shared Hit keeps whichever is closer.
    */
-  private static boolean intersectScene(Ray ray, Hit hit, BVH bvh,
-      RTRing[] rings, int[] stack) {
+  private static boolean intersectScene(final Ray ray, final Hit hit, final BVH bvh,
+      RTRing[] rings, final int[] stack) {
     boolean struck = bvh.intersect(ray, hit, stack);
     for (int i = 0; i < rings.length; i++) {
       if (rings[i].intersect(ray, hit)) {
@@ -129,8 +129,8 @@ final class Raytracer {
     return struck;
   }
 
-  static void renderTile(int x0, int y0, int width, int height,
-      RayCamera camera, BVH bvh, RTRing[] rings, int[] pixels,
+  static void renderTile(final int x0, final int y0, final int width, final int height,
+      RayCamera camera, final BVH bvh, final RTRing[] rings, final int[] pixels,
       HitStats stats) {
     final Ray ray = new Ray();
     final Hit hit = new Hit();
@@ -189,11 +189,11 @@ final class Raytracer {
    * background (the model's edge). Pixels never reached cost no rays.
    * The fill stays inside the tile; 4-connectivity.
    */
-  private static void renderTileFloodFill(int x0, int y0, int width,
-      int height, RayCamera camera, BVH bvh, RTRing[] rings, int[] pixels,
-      HitStats stats, BufferedImage scenic, int background_rgb, Ray ray,
-      Hit hit, int[] stack, Ray shadow_ray, Hit shadow_hit,
-      JitterRandom jitter, int aa) {
+  private static void renderTileFloodFill(final int x0, final int y0, final int width,
+      int height, final RayCamera camera, final BVH bvh, final RTRing[] rings, final int[] pixels,
+      HitStats stats, final BufferedImage scenic, final int background_rgb, final Ray ray,
+      Hit hit, final int[] stack, final Ray shadow_ray, final Hit shadow_hit,
+      JitterRandom jitter, final int aa) {
     if (RendererDelegator.simple_lighting) {
       // Coarse-to-fine: only trace edges, fill interiors. (Tim, 2026-10-03)
       renderTileCoarseToFine(x0, y0, width, height, camera, bvh, rings,
@@ -392,11 +392,11 @@ final class Raytracer {
    * faces get the centre colour (a 4px-step approximation, acceptable
    * for the fast low-quality path).
    */
-  private static void renderTileCoarseToFine(int x0, int y0, int width,
-      int height, RayCamera camera, BVH bvh, RTRing[] rings, int[] pixels,
-      HitStats stats, BufferedImage scenic, int background_rgb, Ray ray,
-      Hit hit, int[] stack, Ray shadow_ray, Hit shadow_hit,
-      JitterRandom jitter, int aa) {
+  private static void renderTileCoarseToFine(final int x0, final int y0, final int width,
+      int height, final RayCamera camera, final BVH bvh, final RTRing[] rings, final int[] pixels,
+      HitStats stats, final BufferedImage scenic, final int background_rgb, final Ray ray,
+      Hit hit, final int[] stack, final Ray shadow_ray, final Hit shadow_hit,
+      JitterRandom jitter, final int aa) {
     // Blank the tile with the background. When "Show rendering details"
     // is on, blank with red instead: red marks pixels where no ray was
     // traced (the savings). (Tim, 2026-10-03)
@@ -619,9 +619,9 @@ final class Raytracer {
    * anti-aliasing off the block's top-left pixel is shaded; with it on,
    * the aa-by-aa stratified samples spread across the whole block.
    */
-  private static void renderTilePixellated(int x0, int y0, int width,
-      int height, RayCamera camera, BVH bvh, RTRing[] rings, int[] pixels,
-      HitStats stats, BufferedImage scenic, int background_rgb, int px,
+  private static void renderTilePixellated(final int x0, final int y0, final int width,
+      int height, final RayCamera camera, final BVH bvh, final RTRing[] rings, final int[] pixels,
+      HitStats stats, final BufferedImage scenic, final int background_rgb, final int px,
       int aa) {
     final Ray ray = new Ray();
     final Hit hit = new Hit();
@@ -714,8 +714,8 @@ final class Raytracer {
    * screen. Rays through the upper half of the screen (dy &lt; 0) take
    * the distant-sky parallax rate; the rest take the near-grass rate.
    */
-  private static int backgroundAt(BufferedImage scenic, int background_rgb,
-      Ray ray, int sx, int sy) {
+  private static int backgroundAt(final BufferedImage scenic, final int background_rgb,
+      Ray ray, final int sx, final int sy) {
     if (scenic == null) {
       return background_rgb;
     }
@@ -738,8 +738,8 @@ final class Raytracer {
    * default renderer's colour code; byte positions are preserved all the
    * way to new Color(packed), so they are preserved here too).
    */
-  private static int shade(Ray ray, Hit hit, BVH bvh, int[] stack,
-      Ray shadow_ray, Hit shadow_hit) {
+  private static int shade(final Ray ray, final Hit hit, final BVH bvh, final int[] stack,
+      Ray shadow_ray, final Hit shadow_hit) {
     if (hit.primitive.isUnlit()) {
       // Overlay indicators like the selection ring: flat colour at
       // full strength from any angle, fogged for depth like the
@@ -866,7 +866,7 @@ final class Raytracer {
    * 255: small adds behave linearly, large ones asymptote to 255, so
    * hot spots keep their detail instead of blowing out to flat white.
    */
-  private static int softAdd(int base, int add) {
+  private static int softAdd(final int base, final int add) {
     if (add <= 0) {
       return base;
     }
@@ -884,7 +884,7 @@ final class Raytracer {
    * The fill runs at half the key light's strength: 100% fill adds at
    * most ~127, so it models the dark side without flattening it.
    */
-  private static int fillLight(Hit hit) {
+  private static int fillLight(final Hit hit) {
     if (!RendererDelegator.fill_light_enabled) {
       return 0;
     }
@@ -907,8 +907,8 @@ final class Raytracer {
    * nudged off the surface towards the light so it does not shadow
    * itself.
    */
-  private static boolean inShadow(Ray ray, Hit hit, BVH bvh,
-      int[] stack, Ray shadow_ray, Hit shadow_hit) {
+  private static boolean inShadow(final Ray ray, final Hit hit, final BVH bvh,
+      int[] stack, final Ray shadow_ray, final Hit shadow_hit) {
     final double px = ray.ox + ray.dx * hit.t;
     final double py = ray.oy + ray.dy * hit.t;
     final double pz = ray.oz + ray.dz * hit.t;
@@ -934,7 +934,7 @@ final class Raytracer {
    * Returns 0 when the surface faces away or the vector degenerates,
    * exactly the cases the old per-effect code returned 0 for.
    */
-  private static double lobeCosine(Ray ray, Hit hit) {
+  private static double lobeCosine(final Ray ray, final Hit hit) {
     // Halfway between the light direction and the view direction.
     final double hx = LIGHT_X - ray.dx;
     final double hy = LIGHT_Y - ray.dy;
@@ -954,7 +954,7 @@ final class Raytracer {
    * broad satin sheen, a large one a tight sparkle. Pure shading -- no
    * rays, so the result is always smooth.
    */
-  private static int lobeValue(double cosine, int strength,
+  private static int lobeValue(final double cosine, final int strength,
       double exponent) {
     if (cosine <= 0.0 || strength <= 0) {
       return 0;
@@ -970,7 +970,7 @@ final class Raytracer {
    * white to add, or 0 when fresnel is off. Pure shading -- no rays, so the
    * result is always smooth.
    */
-  private static int fresnelRim(Ray ray, Hit hit) {
+  private static int fresnelRim(final Ray ray, final Hit hit) {
     if (!RendererDelegator.fresnel_enabled) {
       return 0;
     }

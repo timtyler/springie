@@ -53,7 +53,7 @@ final class RTRing implements Primitive {
     return true;
   }
 
-  public void writeBounds(AABB out) {
+  public void writeBounds(final AABB out) {
     // Conservative cube around the ring; the ring never enters the BVH,
     // so this is only here to satisfy the interface.
     out.addPoint(this.cx - this.outer, this.cy - this.outer,
@@ -62,7 +62,7 @@ final class RTRing implements Primitive {
         this.cz + this.outer);
   }
 
-  public boolean intersect(Ray ray, Hit hit) {
+  public boolean intersect(final Ray ray, final Hit hit) {
     final double denom = ray.dx * this.nx + ray.dy * this.ny + ray.dz * this.nz;
     if (denom > -1e-9 && denom < 1e-9) {
       return false;

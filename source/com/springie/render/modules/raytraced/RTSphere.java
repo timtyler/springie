@@ -26,14 +26,14 @@ final class RTSphere implements Primitive {
     return false;
   }
 
-  public void writeBounds(AABB out) {
+  public void writeBounds(final AABB out) {
     out.addPoint(this.cx - this.radius, this.cy - this.radius,
         this.cz - this.radius);
     out.addPoint(this.cx + this.radius, this.cy + this.radius,
         this.cz + this.radius);
   }
 
-  public boolean intersect(Ray ray, Hit hit) {
+  public boolean intersect(final Ray ray, final Hit hit) {
     if (this.radius <= 0.0) {
       return false;
     }

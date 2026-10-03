@@ -48,11 +48,11 @@ final class RayCamera {
     return this.ez;
   }
 
-  void makeRay(int sx, int sy, Ray ray) {
+  void makeRay(final int sx, final int sy, final Ray ray) {
     makeRay((double) sx, (double) sy, ray);
   }
 
-  void makeRay(double sx, double sy, Ray ray) {
+  void makeRay(final double sx, final double sy, final Ray ray) {
     final double dx = (sx - this.x_pixelso2) / 1024.0;
     final double dy = (sy - this.y_pixelso2) / 1024.0;
     final double inverse_length = 1.0 / Math.sqrt(dx * dx + dy * dy + 1.0);

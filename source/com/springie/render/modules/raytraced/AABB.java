@@ -19,7 +19,7 @@ final class AABB {
 
   double max_z = Double.NEGATIVE_INFINITY;
 
-  void addPoint(double x, double y, double z) {
+  void addPoint(final double x, final double y, final double z) {
     if (x < this.min_x) {
       this.min_x = x;
     }
@@ -40,7 +40,7 @@ final class AABB {
     }
   }
 
-  void add(AABB other) {
+  void add(final AABB other) {
     addPoint(other.min_x, other.min_y, other.min_z);
     addPoint(other.max_x, other.max_y, other.max_z);
   }
@@ -57,7 +57,7 @@ final class AABB {
     return 0.5 * (this.min_z + this.max_z);
   }
 
-  boolean intersect(Ray ray, double t_max) {
+  boolean intersect(final Ray ray, final double t_max) {
     double t0 = 0.0;
     double t1 = t_max;
 

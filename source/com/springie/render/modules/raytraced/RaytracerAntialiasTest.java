@@ -118,7 +118,7 @@ public class RaytracerAntialiasTest {
     return new BVH(primitives);
   }
 
-  private int[] render(int aa) {
+  private int[] render(final int aa) {
     RendererDelegator.antialiasing = aa;
     final int[] pixels = new int[SIZE * SIZE];
     Raytracer.renderTile(0, 0, SIZE, SIZE, new RayCamera(), sphereScene(),
@@ -130,7 +130,7 @@ public class RaytracerAntialiasTest {
     return 0xFF000000 | RendererDelegator.color_background_number;
   }
 
-  private static int channel(int rgb, int shift) {
+  private static int channel(final int rgb, final int shift) {
     return (rgb >> shift) & 0xFF;
   }
 

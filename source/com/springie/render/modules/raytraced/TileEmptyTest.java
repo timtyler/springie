@@ -70,11 +70,11 @@ public class TileEmptyTest {
 
   private ModularRendererRaytraced renderer;
 
-  private static int internal(int screen) {
+  private static int internal(final int screen) {
     return (200 << Coords.shift) + (screen - 200) * 192;
   }
 
-  private static Node nodeAt(int sx, int sy) {
+  private static Node nodeAt(final int sx, final int sy) {
     final Node node = new Node(new Point3D(internal(sx), internal(sy), 0),
         42, new NodeTypeFactory());
     node.clazz = new Clazz(0x123456);
@@ -135,7 +135,7 @@ public class TileEmptyTest {
     FrEnd.render_links = this.saved_render_links;
   }
 
-  private static int tileContaining(Tile[] grid, int sx, int sy) {
+  private static int tileContaining(final Tile[] grid, final int sx, final int sy) {
     for (int i = 0; i < grid.length; i++) {
       final Tile t = grid[i];
       if (sx >= t.x0 && sx < t.x0 + t.width

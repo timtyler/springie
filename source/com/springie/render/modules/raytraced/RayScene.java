@@ -31,7 +31,7 @@ final class RayScene {
     // ...
   }
 
-  static Primitive[] build(NodeManager manager) {
+  static Primitive[] build(final NodeManager manager) {
     final List<Primitive> primitives = new ArrayList<Primitive>();
     addNodes(manager, primitives);
     addLinks(manager, primitives);
@@ -39,7 +39,7 @@ final class RayScene {
     return primitives.toArray(new Primitive[primitives.size()]);
   }
 
-  private static void addNodes(NodeManager manager,
+  private static void addNodes(final NodeManager manager,
       List<Primitive> primitives) {
     if (!FrEnd.render_nodes) {
       return;
@@ -75,7 +75,7 @@ final class RayScene {
    *
    * @param ex ey ez the camera eye position, in world units
    */
-  static RTRing[] selectionRings(NodeManager manager, double ex, double ey,
+  static RTRing[] selectionRings(final NodeManager manager, final double ex, final double ey,
       double ez) {
     if (!FrEnd.render_nodes) {
       return new RTRing[0];
@@ -116,7 +116,7 @@ final class RayScene {
     return rings.toArray(new RTRing[rings.size()]);
   }
 
-  private static void addLinks(NodeManager manager,
+  private static void addLinks(final NodeManager manager,
       List<Primitive> primitives) {
     if (!FrEnd.render_links) {
       return;
@@ -151,7 +151,7 @@ final class RayScene {
     }
   }
 
-  private static void addFaces(NodeManager manager,
+  private static void addFaces(final NodeManager manager,
       List<Primitive> primitives) {
     if (!FrEnd.render_faces) {
       return;
@@ -180,7 +180,7 @@ final class RayScene {
     }
   }
 
-  private static int colourOf(boolean selected, int colour) {
+  private static int colourOf(final boolean selected, final int colour) {
     return selected ? RendererDelegator.colour_selected_number : colour;
   }
 }

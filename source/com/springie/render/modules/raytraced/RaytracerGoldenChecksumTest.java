@@ -168,7 +168,7 @@ public class RaytracerGoldenChecksumTest {
     return new BVH(primitives);
   }
 
-  private static long checksum(int[] pixels) {
+  private static long checksum(final int[] pixels) {
     long hash = 0xCBF29CE484222325L;
     for (int i = 0; i < pixels.length; i++) {
       hash ^= pixels[i] & 0xFFFFFFFFL;

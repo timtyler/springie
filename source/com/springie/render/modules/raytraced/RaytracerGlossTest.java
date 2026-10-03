@@ -107,7 +107,7 @@ public class RaytracerGlossTest {
     RendererDelegator.specular = this.saved_specular;
   }
 
-  private int[] renderTile(Primitive[] primitives) {
+  private int[] renderTile(final Primitive[] primitives) {
     final BVH bvh = new BVH(primitives);
     final RayCamera camera = new RayCamera();
     final int[] pixels = new int[200 * 200];
@@ -195,7 +195,7 @@ public class RaytracerGlossTest {
             + " channel, but differed by " + worst);
   }
 
-  private static int channelDiff(int a, int b) {
+  private static int channelDiff(final int a, final int b) {
     int worst = 0;
     for (int shift = 0; shift < 24; shift += 8) {
       final int diff = Math.abs(((a >> shift) & 0xFF)

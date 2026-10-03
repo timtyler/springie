@@ -24,7 +24,7 @@ import com.springie.render.modules.raytraced.ModularRendererRaytraced.Tile;
  */
 public class FramePublishTest {
 
-  private Tile tileWithHits(int x0, int y0) {
+  private Tile tileWithHits(final int x0, final int y0) {
     final Tile tile = new Tile(x0, y0, 64, 64);
     // The worker staged a whole-tile rectangle.
     tile.rx0 = x0;
@@ -85,7 +85,7 @@ public class FramePublishTest {
     assertFalse(tile.shown.active);
   }
 
-  private Tile solidTile(int x0, int y0, int rgb) {
+  private Tile solidTile(final int x0, final int y0, final int rgb) {
     final Tile tile = new Tile(x0, y0, 64, 64);
     tile.rx0 = x0;
     tile.ry0 = y0;

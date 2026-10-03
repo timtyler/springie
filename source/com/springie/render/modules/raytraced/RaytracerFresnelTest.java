@@ -134,7 +134,7 @@ public class RaytracerFresnelTest {
    * The last hit pixel on the middle row, walking right from the
    * centre: the silhouette, hit at a grazing angle.
    */
-  private static int silhouetteIndex(int[] pixels) {
+  private static int silhouetteIndex(final int[] pixels) {
     for (int x = CENTRE; x < SIZE; x++) {
       if (pixels[CENTRE * SIZE + x] == backgroundRgb()) {
         return CENTRE * SIZE + x - 1;
@@ -143,7 +143,7 @@ public class RaytracerFresnelTest {
     throw new AssertionError("no silhouette found on the middle row");
   }
 
-  private static int channel(int rgb, int shift) {
+  private static int channel(final int rgb, final int shift) {
     return (rgb >> shift) & 0xFF;
   }
 
@@ -210,7 +210,7 @@ public class RaytracerFresnelTest {
    * The first pixel walking in from the silhouette whose full-strength
    * rim does not saturate to white on any channel.
    */
-  private static int unclampedIndex(int[] plain, int[] full) {
+  private static int unclampedIndex(final int[] plain, final int[] full) {
     final int sil = silhouetteIndex(plain);
     for (int i = sil; i >= CENTRE * SIZE + CENTRE; i--) {
       final int p = full[i];

@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
  * The BVH must agree with brute force on the nearest hit for every ray.
  */
 public class BVHTest {
-  private static boolean bruteForce(Primitive[] primitives, Ray ray,
+  private static boolean bruteForce(final Primitive[] primitives, final Ray ray,
       Hit hit) {
     boolean found = false;
     for (final Primitive p : primitives) {

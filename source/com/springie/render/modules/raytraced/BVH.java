@@ -46,7 +46,7 @@ final class BVH {
     return this.primitives.length == 0;
   }
 
-  private int build(int start, int end) {
+  private int build(final int start, final int end) {
     final int node = this.nodes_used++;
     final AABB node_bounds = new AABB();
     final AABB centroid_bounds = new AABB();
@@ -80,7 +80,7 @@ final class BVH {
     final AABB sort_scratch_a = new AABB();
     final AABB sort_scratch_b = new AABB();
     Arrays.sort(this.primitives, start, end, new Comparator<Primitive>() {
-      public int compare(Primitive p1, Primitive p2) {
+      public int compare(final Primitive p1, final Primitive p2) {
         resetScratch(sort_scratch_a);
         resetScratch(sort_scratch_b);
         p1.writeBounds(sort_scratch_a);
@@ -101,7 +101,7 @@ final class BVH {
     return node;
   }
 
-  private static void resetScratch(AABB box) {
+  private static void resetScratch(final AABB box) {
     box.min_x = Double.POSITIVE_INFINITY;
     box.min_y = Double.POSITIVE_INFINITY;
     box.min_z = Double.POSITIVE_INFINITY;
@@ -114,7 +114,7 @@ final class BVH {
    * Finds the closest hit along the ray. The stack is caller-provided so
    * the traversal allocates nothing.
    */
-  boolean intersect(Ray ray, Hit hit, int[] stack) {
+  boolean intersect(final Ray ray, final Hit hit, final int[] stack) {
     if (this.primitives.length == 0) {
       return false;
     }
