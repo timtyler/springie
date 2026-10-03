@@ -77,8 +77,6 @@ class PreferencesResetTest {
         RendererDelegator.specular_enabled = false;
         RendererDelegator.fresnel = 70;
         RendererDelegator.fresnel_enabled = true;
-        RendererDelegator.fill_light = 60;
-        RendererDelegator.fill_light_enabled = true;
         RendererDelegator.antialiasing = 3;
         RendererDelegator.pixellation = 4;
         RendererDelegator.color_background_number = 0xFFFF0000;
@@ -164,8 +162,8 @@ class PreferencesResetTest {
       assertEquals(true, RendererDelegator.specular_enabled);
       assertEquals(50, RendererDelegator.fresnel);
       assertEquals(false, RendererDelegator.fresnel_enabled);
-      assertEquals(50, RendererDelegator.fill_light);
-      assertEquals(false, RendererDelegator.fill_light_enabled);
+      // Fill light moved to Universe tab (Tim, 2026-10-03); no longer
+      // reset by Preferences reset.
       assertEquals(1, RendererDelegator.antialiasing);
       assertEquals(1, RendererDelegator.pixellation);
       assertEquals(0xFF000000, RendererDelegator.color_background_number);

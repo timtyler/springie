@@ -152,14 +152,18 @@ final class RTCylinder implements Primitive {
     final double my = py - this.ay;
     final double mz = pz - this.az;
     final double m_dot_n = mx * this.nx + my * this.ny + mz * this.nz;
-    double nx = mx - m_dot_n * this.nx;
-    double ny = my - m_dot_n * this.ny;
-    double nz = mz - m_dot_n * this.nz;
-    final double inv = 1.0
-        / Math.sqrt(nx * nx + ny * ny + nz * nz);
-    hit.nx = nx * inv;
-    hit.ny = ny * inv;
-    hit.nz = nz * inv;
+    // Skip normal computation in fast mode (Tim, 2026-10-03): the flat
+    // shader never uses hit normals, so the sqrt is pure overhead.
+    if (!com.springie.render.RendererDelegator.simple_lighting) {
+      double nx = mx - m_dot_n * this.nx;
+      double ny = my - m_dot_n * this.ny;
+      double nz = mz - m_dot_n * this.nz;
+      final double inv = 1.0
+          / Math.sqrt(nx * nx + ny * ny + nz * nz);
+      hit.nx = nx * inv;
+      hit.ny = ny * inv;
+      hit.nz = nz * inv;
+    }
     hit.primitive = this;
     return true;
   }

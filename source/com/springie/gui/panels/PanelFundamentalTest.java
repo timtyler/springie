@@ -318,10 +318,11 @@ public class PanelFundamentalTest {
         "Sidewinder", "Crawler", "Spider Tank", "Wheelbarrow", "Slinky"};
     // Node counts the demo builders produce (their own tests pin these).
     // The crawler rebuild is still open, so its count may move again.
+    // Wheelbarrow: f=6 hexagonal (Tim, 2026-10-02): 12 rim + 2 hub + 2 handle = 16.
     final int[] nodes = {
-        SidewinderDemo.SEGMENTS + 3, 13, 16, 18, 27};
+        SidewinderDemo.SEGMENTS + 3, 13, 16, 16, 27};
     final int[] links = {
-        3 * SidewinderDemo.SEGMENTS + 3, -1, -1, 49, 92};
+        3 * SidewinderDemo.SEGMENTS + 3, -1, -1, 48, 92};
 
     try {
       for (int d = 0; d < names.length; d++) {
@@ -370,7 +371,7 @@ public class PanelFundamentalTest {
         demos.dispatchEvent(new ItemEvent(demos, ItemEvent.ITEM_STATE_CHANGED,
             "Wheelbarrow", ItemEvent.SELECTED));
       });
-      waitForBuild(14, 43);
+      waitForBuild(16, 48);
       final Object first_node_before =
           ContextManager.getNodeManager().element.get(0);
 
@@ -391,10 +392,11 @@ public class PanelFundamentalTest {
       }
       assertTrue(rebuilt,
           "the launch button must rebuild the chosen demo");
-      assertEquals(18,
+      // Wheelbarrow f=6 (Tim, 2026-10-02): 16 nodes, 48 links.
+      assertEquals(16,
           ContextManager.getNodeManager().element.size(),
           "the rebuilt demo must have the wheel's node count");
-      assertEquals(49,
+      assertEquals(48,
           ContextManager.getNodeManager().getLinkManager().element.size(),
           "the rebuilt demo must have the wheel's link count");
     } finally {

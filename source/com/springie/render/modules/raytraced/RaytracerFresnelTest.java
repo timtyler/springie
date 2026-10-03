@@ -147,9 +147,9 @@ public class RaytracerFresnelTest {
 
   @Test
   public void zeroFresnelIsPureDiffuse() {
-    // |normal . light| at the near pole is 0.85092: scaled = 236,
-    // (255 * 236) >> 8 = 235. The rim must add nothing when off.
-    assertEquals(0xFF838383, render(0)[CENTRE * SIZE + CENTRE],
+    // RGB lights at brightness 4.0 (Tim, 2026-10-03): the near pole
+    // saturates to near-white. The rim must add nothing when off.
+    assertEquals(0xFFFEFEFE, render(0)[CENTRE * SIZE + CENTRE],
         "fresnel 0% must leave the diffuse picture untouched");
   }
 

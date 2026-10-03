@@ -89,6 +89,25 @@ public final class RendererDelegator {
   public static boolean shadows = false;
 
   /**
+   * Soft shadows for the ray tracer (Tim, 2026-10-03): when on (and shadows
+   * are on), each light casts multiple jittered shadow rays, giving
+   * penumbras instead of hard edges. Costs ~4x the shadow rays.
+   */
+  public static boolean soft_shadows = false;
+
+  /**
+   * Single-bounce reflections on nodes (Tim, 2026-10-03): shiny nodes
+   * reflect the scene. Quality mode only.
+   */
+  public static boolean reflections_enabled = false;
+
+  /**
+   * Ambient occlusion (Tim, 2026-10-03): short hemisphere rays darken
+   * crevices and contact areas. Quality mode only.
+   */
+  public static boolean ambient_occlusion = false;
+
+  /**
    * Simple lighting for the ray tracer (Tim, 2026-10-03): the model is
    * illuminated from the front (as if the light is at the viewer). Nodes
    * are flat (base colour with depth fog); links and faces are shaded

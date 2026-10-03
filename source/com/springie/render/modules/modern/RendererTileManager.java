@@ -22,7 +22,9 @@ public class RendererTileManager {
   // Deliberately prime: no pixellation factor (2, 3, 4, 5) divides it
   // evenly, so every pixellation mode exercises the inexact
   // render/upscale path instead of only 3x3.
-  public static int divisor = 337;
+  // (Tim, 2026-10-03: halved from 337 -- one big tile is no longer
+  // optimal for typical models.)
+  public static int divisor = 167;
 
   int number_of_tiles_x;
 
@@ -48,9 +50,10 @@ public class RendererTileManager {
   /**
    * Tim: when true, use a single tile cropped to the model's bounds
    * instead of the grid. Works for polygon and ray-traced renderers.
-   * On by default (Tim, 2026-09-25).
+   * Off by default (Tim, 2026-10-03): the grid is faster for typical
+   * models now.
    */
-  public static boolean one_big_tile = true;
+  public static boolean one_big_tile = false;
 
   public static int colour_modifier_filled = ColourModifier.natural;
 

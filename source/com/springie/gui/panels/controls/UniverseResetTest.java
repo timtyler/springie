@@ -144,7 +144,9 @@ class UniverseResetTest {
         assertEquals(5, World.gravity_strength);
         assertTrue(World.gravity_active);
         assertEquals(50, World.ground_friction);
-        assertEquals(95, World.bounding_box_bounciness);
+        // Caterpillar sets bounciness to 0 (Tim, 2026-10-01: no wall bounce
+        // for demos).
+        assertEquals(0, World.bounding_box_bounciness);
         assertEquals(0, World.global_temperature);
         assertEquals(2, Node.viscocity);
         assertFalse(FrEnd.check_collisions);

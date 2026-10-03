@@ -120,8 +120,10 @@ public class RaytracerFillLightTest {
 
   private int nearPole(final int fill) {
     RendererDelegator.fill_light = fill;
+    // Dark gray sphere (Tim, 2026-10-03: was white, but the new RGB lights
+    // at brightness 4.0 saturate white, leaving no room for fill to grow).
     final Primitive[] primitives = new Primitive[] { new RTSphere(EX, EY,
-        0.0, 20000.0, 0xFFFFFF) };
+        0.0, 20000.0, 0x404040) };
     final BVH bvh = new BVH(primitives);
     final int[] pixels = new int[200 * 200];
     Raytracer.renderTile(0, 0, 200, 200, new RayCamera(), bvh, pixels);
@@ -134,9 +136,9 @@ public class RaytracerFillLightTest {
 
   @Test
   public void zeroFillIsPureDiffuse() {
-    // Diffuse only: |normal . light| = 0.85092 at the near pole,
-    // scaled = 236, (255 * 236) >> 8 = 235.
-    assertEquals(0xFF858585, nearPole(0),
+    // Diffuse only on the dark gray sphere with the RGB lights
+    // (Tim, 2026-10-03): (64 * 254) >> 8 = 63.
+    assertEquals(0xFF3F3F3F, nearPole(0),
         "fill 0% must leave the diffuse picture untouched");
   }
 

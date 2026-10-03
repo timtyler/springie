@@ -157,13 +157,16 @@ final class RTEllipsoid implements Primitive {
     final double qx = pwx + t * pdx;
     final double qy = pwy + t * pdy;
     final double qz = pwz + t * pdz;
-    final double gx = 2.0 * s * invL2 * this.nx + 2.0 * qx * invR2;
-    final double gy = 2.0 * s * invL2 * this.ny + 2.0 * qy * invR2;
-    final double gz = 2.0 * s * invL2 * this.nz + 2.0 * qz * invR2;
-    final double inv = 1.0 / Math.sqrt(gx * gx + gy * gy + gz * gz);
-    hit.nx = gx * inv;
-    hit.ny = gy * inv;
-    hit.nz = gz * inv;
+    // Skip normal computation in fast mode (Tim, 2026-10-03).
+    if (!com.springie.render.RendererDelegator.simple_lighting) {
+      final double gx = 2.0 * s * invL2 * this.nx + 2.0 * qx * invR2;
+      final double gy = 2.0 * s * invL2 * this.ny + 2.0 * qy * invR2;
+      final double gz = 2.0 * s * invL2 * this.nz + 2.0 * qz * invR2;
+      final double inv = 1.0 / Math.sqrt(gx * gx + gy * gy + gz * gz);
+      hit.nx = gx * inv;
+      hit.ny = gy * inv;
+      hit.nz = gz * inv;
+    }
     hit.primitive = this;
     return true;
   }

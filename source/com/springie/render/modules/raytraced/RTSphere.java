@@ -63,10 +63,13 @@ final class RTSphere implements Primitive {
     }
 
     hit.t = t;
-    final double inv_r = 1.0 / this.radius;
-    hit.nx = (ox + t * ray.dx) * inv_r;
-    hit.ny = (oy + t * ray.dy) * inv_r;
-    hit.nz = (oz + t * ray.dz) * inv_r;
+    // Skip normal computation in fast mode (Tim, 2026-10-03).
+    if (!com.springie.render.RendererDelegator.simple_lighting) {
+      final double inv_r = 1.0 / this.radius;
+      hit.nx = (ox + t * ray.dx) * inv_r;
+      hit.ny = (oy + t * ray.dy) * inv_r;
+      hit.nz = (oz + t * ray.dz) * inv_r;
+    }
     hit.primitive = this;
     return true;
   }

@@ -5,7 +5,6 @@ package com.springie.render.modules.raytraced;
 import com.springie.context.ContextManager;
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.geometry.Vector3D;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.LightSource;
@@ -49,6 +48,18 @@ public class RaytracerShadowTest {
 
   private int saved_specular;
 
+  private double saved_red_px;
+
+  private double saved_red_py;
+
+  private double saved_red_pz;
+
+  private int saved_green_pct;
+
+  private int saved_blue_pct;
+
+  private boolean saved_freeze;
+
   @BeforeEach
   public void setUp() {
     this.saved_x_pixels = Coords.x_pixels;
@@ -76,8 +87,17 @@ public class RaytracerShadowTest {
     this.saved_glossiness = RendererDelegator.glossiness;
     this.saved_shadows = RendererDelegator.shadows;
     this.saved_specular = RendererDelegator.specular;
+    this.saved_red_px = Raytracer.RED_PX;
+    this.saved_red_py = Raytracer.RED_PY;
+    this.saved_red_pz = Raytracer.RED_PZ;
+    this.saved_green_pct = RendererDelegator.green_light_pct;
+    this.saved_blue_pct = RendererDelegator.blue_light_pct;
+    this.saved_freeze = Raytracer.freeze_lights;
 
     RendererDelegator.glossiness = 0;
+    // Only the red light matters for this test; turn off green/blue.
+    RendererDelegator.green_light_pct = 0;
+    RendererDelegator.blue_light_pct = 0;
     RendererDelegator.specular = 0;
   }
 
@@ -96,6 +116,12 @@ public class RaytracerShadowTest {
     RendererDelegator.glossiness = this.saved_glossiness;
     RendererDelegator.shadows = this.saved_shadows;
     RendererDelegator.specular = this.saved_specular;
+    Raytracer.RED_PX = this.saved_red_px;
+    Raytracer.RED_PY = this.saved_red_py;
+    Raytracer.RED_PZ = this.saved_red_pz;
+    RendererDelegator.green_light_pct = this.saved_green_pct;
+    RendererDelegator.blue_light_pct = this.saved_blue_pct;
+    Raytracer.freeze_lights = this.saved_freeze;
   }
 
   private int centrePixel(final Primitive[] primitives) {
@@ -107,34 +133,50 @@ public class RaytracerShadowTest {
   }
 
   /**
-   * The white sphere plus an occluder on the light axis above the hit
+   * The white sphere plus an occluder on the red light axis above the hit
    * pole. The occluder is well clear of the primary ray, so it can only
-   * affect the picture through the shadow ray.
+   * affect the picture through the shadow ray. (Tim, 2026-10-03: shadows
+   * now come from the RGB point lights, not the old white source_1.)
    */
   private Primitive[] whiteSphereWithOccluder() {
-    final Vector3D source = LightSource.source_1;
-    final double length = Math.sqrt(source.x * source.x + source.y * source.y
-        + source.z * source.z);
-    final double lx = source.x / length;
-    final double ly = source.y / length;
-    final double lz = source.z / length;
+    // Freeze the lights and position red in front of the surface.
+    // (Production lights sit behind the camera, which would put the
+    // occluder in the primary ray.)
+    Raytracer.freeze_lights = true;
+    Raytracer.RED_PX = EX - 30000.0;
+    Raytracer.RED_PY = EY - 30000.0;
+    Raytracer.RED_PZ = 100000.0;
+    // Green and blue stay where they are (behind camera); they don't
+    // affect this test's pole pixel which faces the red light.
+    final double lx = Raytracer.RED_PX;
+    final double ly = Raytracer.RED_PY;
+    final double lz = Raytracer.RED_PZ;
     final double pole_x = EX;
     final double pole_y = EY;
     final double pole_z = -20000.0;
+    // Direction from pole to light.
+    double dx = lx - pole_x;
+    double dy = ly - pole_y;
+    double dz = lz - pole_z;
+    final double length = Math.sqrt(dx * dx + dy * dy + dz * dz);
+    dx /= length;
+    dy /= length;
+    dz /= length;
     final double distance = 50000.0;
     final double radius = 20000.0;
     return new Primitive[] {
         new RTSphere(EX, EY, 0.0, 20000.0, 0xFFFFFF),
-        new RTSphere(pole_x + lx * distance, pole_y + ly * distance,
-            pole_z + lz * distance, radius, 0xFF0000), };
+        new RTSphere(pole_x + dx * distance, pole_y + dy * distance,
+            pole_z + dz * distance, radius, 0xFF0000), };
   }
 
   @Test
   public void occluderDarkensThePoleToAmbientOnly() {
     RendererDelegator.shadows = true;
     final int shadowed = centrePixel(whiteSphereWithOccluder());
-    // Ambient only: scaled = 128, (255 * 128) >> 8 = 127.
-    assertEquals(0xFF7F7F7F, shadowed,
+    // Ambient only: (255 * 96) >> 8 = 95 (Tim, 2026-10-03: ambient 128->96,
+    // and the scale is applied as (base * scaled) >> 8).
+    assertEquals(0xFF5F5F5F, shadowed,
         "a shadowed white surface must get ambient light only");
   }
 

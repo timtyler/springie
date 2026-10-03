@@ -8,6 +8,7 @@ import com.springie.elements.faces.FaceTypeFactory;
 import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;
 import com.springie.render.Coords;
+import com.springie.render.RendererDelegator;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,6 +30,11 @@ class ElementRendererFaceTest {
 
   private boolean saved_depth_is_relative;
   private int saved_render_divisions;
+  private int saved_red_pct;
+  private int saved_green_pct;
+  private int saved_blue_pct;
+  private int saved_x_pixels;
+  private int saved_y_pixels;
 
   @BeforeEach
   void isolateStatics() {
@@ -39,12 +45,34 @@ class ElementRendererFaceTest {
     DeepObjectColourCalculator.depth_is_relative = false;
     this.saved_render_divisions = Face.number_of_render_divisions;
     Face.number_of_render_divisions = 4;
+    // RGB light percentages affect the face shading (Tim, 2026-10-03).
+    this.saved_red_pct = RendererDelegator.red_light_pct;
+    this.saved_green_pct = RendererDelegator.green_light_pct;
+    this.saved_blue_pct = RendererDelegator.blue_light_pct;
+    RendererDelegator.red_light_pct = 50;
+    RendererDelegator.green_light_pct = 50;
+    RendererDelegator.blue_light_pct = 50;
+    // The face renderer positions lights from Coords (Tim, 2026-10-03):
+    // fix the viewport for deterministic results.
+    this.saved_x_pixels = Coords.x_pixels;
+    this.saved_y_pixels = Coords.y_pixels;
+    Coords.x_pixels = 800;
+    Coords.y_pixels = 600;
+    Coords.x_pixelso2 = 400;
+    Coords.y_pixelso2 = 300;
   }
 
   @AfterEach
   void restoreStatics() {
     DeepObjectColourCalculator.depth_is_relative = this.saved_depth_is_relative;
     Face.number_of_render_divisions = this.saved_render_divisions;
+    RendererDelegator.red_light_pct = this.saved_red_pct;
+    RendererDelegator.green_light_pct = this.saved_green_pct;
+    RendererDelegator.blue_light_pct = this.saved_blue_pct;
+    Coords.x_pixels = this.saved_x_pixels;
+    Coords.y_pixels = this.saved_y_pixels;
+    Coords.x_pixelso2 = this.saved_x_pixels >> 1;
+    Coords.y_pixelso2 = this.saved_y_pixels >> 1;
   }
 
   private static Face squareFace(final int argb) {
@@ -155,8 +183,8 @@ class ElementRendererFaceTest {
         ElementRendererFace.getPolygon(squareFace(0xFF000000));
     assertTrue(composite.array.length > 0);
     for (final PolygonObject2D quad : composite.array) {
-      // RGB lights add a specular highlight (Tim, 2026-10-03).
-      assertEquals(0xFF103B10, quad.colour);
+      // RGB lights add diffuse + specular (Tim, 2026-10-03).
+      assertEquals(-12749507, quad.colour);
     }
   }
 

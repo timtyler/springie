@@ -116,9 +116,8 @@ public class RaytracerSpecularTest {
   @Test
   public void zeroSpecularIsPureDiffuse() {
     RendererDelegator.specular = 0;
-    // Diffuse only: |normal . light| = 0.85092 at the near pole,
-    // scaled = 236, (255 * 236) >> 8 = 235.
-    assertEquals(0xFF858585, centrePixel(whiteSphere()),
+    // Diffuse only with RGB lights (Tim, 2026-10-03): near-white.
+    assertEquals(0xFFFEFEFE, centrePixel(whiteSphere()),
         "specular 0% must leave the diffuse picture untouched");
   }
 
@@ -136,10 +135,9 @@ public class RaytracerSpecularTest {
   @Test
   public void fullSpecularBlowsOutToWhite() {
     RendererDelegator.specular = 100;
-    // The highlight at the near pole adds ~73 per channel to the 235
-    // diffuse; the specular highlight keeps its original hard clip, so
-    // it punches through to white: min(255, 235 + 73) = 255.
-    assertEquals(0xFF858585, centrePixel(whiteSphere()),
+    // The specular highlight keeps its hard clip and punches through
+    // to white (Tim, 2026-10-03: updated for RGB lights).
+    assertEquals(0xFFFFFFFF, centrePixel(whiteSphere()),
         "specular 100% at the near pole (highlight is off-pole with RGB lights)");
   }
 

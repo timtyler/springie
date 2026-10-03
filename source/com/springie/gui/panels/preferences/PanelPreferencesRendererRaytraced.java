@@ -27,6 +27,12 @@ public class PanelPreferencesRendererRaytraced {
 
   private Checkbox checkbox_shadows;
 
+  private Checkbox checkbox_soft_shadows;
+
+  private Checkbox checkbox_reflections;
+
+  private Checkbox checkbox_ambient_occlusion;
+
   private Panel shadows_row;
 
   private Effect effect_specular;
@@ -204,6 +210,36 @@ public class PanelPreferencesRendererRaytraced {
       }
     });
     panel.add(this.checkbox_shadows);
+
+    this.checkbox_soft_shadows = new Checkbox("Soft shadows",
+        RendererDelegator.soft_shadows);
+    this.checkbox_soft_shadows.addItemListener(new ItemListener() {
+      public void itemStateChanged(final ItemEvent e) {
+        RendererDelegator.soft_shadows = PanelPreferencesRendererRaytraced.this.checkbox_soft_shadows
+            .getState();
+      }
+    });
+    panel.add(this.checkbox_soft_shadows);
+
+    this.checkbox_reflections = new Checkbox("Reflections",
+        RendererDelegator.reflections_enabled);
+    this.checkbox_reflections.addItemListener(new ItemListener() {
+      public void itemStateChanged(final ItemEvent e) {
+        RendererDelegator.reflections_enabled = PanelPreferencesRendererRaytraced.this.checkbox_reflections
+            .getState();
+      }
+    });
+    panel.add(this.checkbox_reflections);
+
+    this.checkbox_ambient_occlusion = new Checkbox("Ambient occlusion",
+        RendererDelegator.ambient_occlusion);
+    this.checkbox_ambient_occlusion.addItemListener(new ItemListener() {
+      public void itemStateChanged(final ItemEvent e) {
+        RendererDelegator.ambient_occlusion = PanelPreferencesRendererRaytraced.this.checkbox_ambient_occlusion
+            .getState();
+      }
+    });
+    panel.add(this.checkbox_ambient_occlusion);
 
     this.shadows_row = panel;
     return panel;

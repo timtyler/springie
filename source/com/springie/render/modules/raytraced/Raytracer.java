@@ -32,9 +32,15 @@ final class Raytracer {
   private static final double BLUE_X, BLUE_Y, BLUE_Z;
 
   /** RGB point light positions (Tim, 2026-10-03): viewport-dependent. */
-  private static double RED_PX, RED_PY, RED_PZ;
-  private static double GREEN_PX, GREEN_PY, GREEN_PZ;
-  private static double BLUE_PX, BLUE_PY, BLUE_PZ;
+  static double RED_PX, RED_PY, RED_PZ;
+  static double GREEN_PX, GREEN_PY, GREEN_PZ;
+  static double BLUE_PX, BLUE_PY, BLUE_PZ;
+
+  /**
+   * Test hook: when true, updateLightPositions() does not overwrite the
+   * cached light positions, letting tests position lights manually.
+   */
+  static boolean freeze_lights = false;
 
   /** Distance falloff constant: intensity = 1/(1+(d/K)^2). */
   private static final double LIGHT_FALLOFF_K = 5120000.0;
@@ -102,6 +108,9 @@ final class Raytracer {
    * across the width. Called at the start of each tile render.
    */
   private static void updateLightPositions() {
+    if (freeze_lights) {
+      return;
+    }
     LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
     RED_PX = LightSource.red_px;
     RED_PY = LightSource.red_py;
@@ -288,7 +297,7 @@ final class Raytracer {
         hit.reset();
         struck = intersectScene(ray, hit, bvh, rings, stack);
         rgb = struck
-            ? shade(ray, hit, bvh, stack, shadow_ray, shadow_hit)
+            ? shade(ray, hit, bvh, stack, shadow_ray, shadow_hit, jitter)
             : pixels[idx];
       } else {
         long r = 0, g = 0, b = 0;
@@ -305,7 +314,7 @@ final class Raytracer {
             hit.reset();
             if (intersectScene(ray, hit, bvh, rings, stack)) {
               final int sm =
-                  shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
+                  shade(ray, hit, bvh, stack, shadow_ray, shadow_hit, jitter);
               r += (sm >> 16) & 0xFF;
               g += (sm >> 8) & 0xFF;
               b += sm & 0xFF;
@@ -424,7 +433,7 @@ final class Raytracer {
         hit.reset();
         struck = intersectScene(ray, hit, bvh, rings, stack);
         rgb = struck
-            ? shade(ray, hit, bvh, stack, shadow_ray, shadow_hit)
+            ? shade(ray, hit, bvh, stack, shadow_ray, shadow_hit, jitter)
             : pixels[idx]; // background, already filled
       } else {
         long r = 0;
@@ -442,7 +451,7 @@ final class Raytracer {
             final int sample_rgb;
             if (intersectScene(ray, hit, bvh, rings, stack)) {
               sample_rgb =
-                  shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
+                  shade(ray, hit, bvh, stack, shadow_ray, shadow_hit, jitter);
               hit_any = true;
             } else {
               sample_rgb = backgroundAt(scenic, background_rgb, ray,
@@ -501,7 +510,8 @@ final class Raytracer {
       final int width, final int height, final int cs, final int cw,
       final int ch, final RayCamera camera, final BVH bvh,
       final RTRing[] rings, final Ray ray, final Hit hit, final int[] stack,
-      final Ray shadow_ray, final Hit shadow_hit, final boolean[] c_hit,
+      final Ray shadow_ray, final Hit shadow_hit, final JitterRandom jitter,
+      final boolean[] c_hit,
       final Primitive[] c_prim, final int[] c_rgb,
       final boolean[] c_visited, final int[] c_flood, int c_top,
       final int[] grid_x, final int[] grid_y, final int grid_w,
@@ -531,7 +541,7 @@ final class Raytracer {
       if (intersectScene(ray, hit, bvh, rings, stack)) {
         c_hit[bidx] = true;
         c_prim[bidx] = hit.primitive;
-        c_rgb[bidx] = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
+        c_rgb[bidx] = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit, jitter);
         if (bx > 0 && !c_visited[bidx - 1]) {
           c_visited[bidx - 1] = true;
           c_flood[c_top++] = bidx - 1;
@@ -555,12 +565,12 @@ final class Raytracer {
 
   /**
    * Coarse-to-fine tile rendering (Tim, 2026-10-03): only active when
-   * Simple lighting is on. Traces a coarse 4x4-block grid via flood
+   * Simple lighting is on. Traces a coarse 8x8-block grid via flood
    * fill, then for each hit block decides edge vs interior. Edge blocks
    * (a neighbour is background or a different primitive) are traced at
    * full resolution; interior blocks are filled with the block's colour.
    * For Simple lighting nodes are flat, so the fill is exact; links and
-   * faces get the centre colour (a 4px-step approximation, acceptable
+   * faces get the centre colour (a 8px-step approximation, acceptable
    * for the fast low-quality path).
    */
   private static void renderTileCoarseToFine(final int x0, final int y0, final int width,
@@ -583,7 +593,7 @@ final class Raytracer {
         }
       }
     }
-    final int cs = 4; // coarse block size
+    final int cs = 8; // coarse block size (Tim, 2026-10-03: was 4)
     final int cw = (width + cs - 1) / cs;
     final int ch = (height + cs - 1) / cs;
     final boolean[] c_hit = new boolean[cw * ch];
@@ -596,14 +606,14 @@ final class Raytracer {
     // 8 uniform, then 4 corners + center if nothing hit.
     // Phase 1: 8 uniform seeds (4x2 grid, cell centres).
     c_top = coarseSeedPhase(x0, y0, width, height, cs, cw, ch, camera,
-        bvh, rings, ray, hit, stack, shadow_ray, shadow_hit, c_hit,
+        bvh, rings, ray, hit, stack, shadow_ray, shadow_hit, jitter, c_hit,
         c_prim, c_rgb, c_visited, c_flood, c_top,
         new int[]{0, 1, 2, 3, 0, 1, 2, 3},
         new int[]{0, 0, 0, 0, 1, 1, 1, 1}, 4, 2);
     if (c_top == 0) {
       // Phase 2: 4 corners + center.
       c_top = coarseSeedPhase(x0, y0, width, height, cs, cw, ch, camera,
-          bvh, rings, ray, hit, stack, shadow_ray, shadow_hit, c_hit,
+          bvh, rings, ray, hit, stack, shadow_ray, shadow_hit, jitter, c_hit,
           c_prim, c_rgb, c_visited, c_flood, c_top,
           new int[]{0, 0, 1, 1, 2}, new int[]{0, 1, 0, 1, 2}, 2, 2);
     }
@@ -620,7 +630,7 @@ final class Raytracer {
       if (intersectScene(ray, hit, bvh, rings, stack)) {
         c_hit[bidx] = true;
         c_prim[bidx] = hit.primitive;
-        c_rgb[bidx] = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
+        c_rgb[bidx] = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit, jitter);
         if (bx > 0 && !c_visited[bidx - 1]) {
           c_visited[bidx - 1] = true;
           c_flood[c_top++] = bidx - 1;
@@ -692,7 +702,7 @@ final class Raytracer {
               camera.makeRay(x0 + x, y0 + y, ray);
               hit.reset();
               rgb = intersectScene(ray, hit, bvh, rings, stack)
-                  ? shade(ray, hit, bvh, stack, shadow_ray, shadow_hit)
+                  ? shade(ray, hit, bvh, stack, shadow_ray, shadow_hit, jitter)
                   : pixels[idx]; // background, already filled
             } else {
               long r = 0, g = 0, b = 0;
@@ -709,7 +719,7 @@ final class Raytracer {
                   hit.reset();
                   if (intersectScene(ray, hit, bvh, rings, stack)) {
                     final int s = shade(ray, hit, bvh, stack,
-                        shadow_ray, shadow_hit);
+                        shadow_ray, shadow_hit, jitter);
                     r += (s >> 16) & 0xFF;
                     g += (s >> 8) & 0xFF;
                     b += s & 0xFF;
@@ -779,7 +789,7 @@ final class Raytracer {
           camera.makeRay(bx, by, ray);
           hit.reset();
           if (intersectScene(ray, hit, bvh, rings, stack)) {
-            rgb = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
+            rgb = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit, jitter);
             struck = true;
           } else {
             rgb = backgroundAt(scenic, background_rgb, ray, bx, by);
@@ -801,7 +811,7 @@ final class Raytracer {
               hit.reset();
               final int sample_rgb;
               if (intersectScene(ray, hit, bvh, rings, stack)) {
-                sample_rgb = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
+                sample_rgb = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit, jitter);
                 hit_any = true;
               } else {
                 sample_rgb = backgroundAt(scenic, background_rgb, ray,
@@ -869,7 +879,7 @@ final class Raytracer {
    * way to new Color(packed), so they are preserved here too).
    */
   private static int shade(final Ray ray, final Hit hit, final BVH bvh, final int[] stack,
-      Ray shadow_ray, final Hit shadow_hit) {
+      Ray shadow_ray, final Hit shadow_hit, final JitterRandom jitter) {
     if (hit.primitive.isUnlit()) {
       // Overlay indicators like the selection ring: flat colour at
       // full strength from any angle, fogged for depth like the
@@ -1069,13 +1079,62 @@ final class Raytracer {
     }
     final double b_fall = 1.0 / (1.0 + (bd / LIGHT_FALLOFF_K) * (bd / LIGHT_FALLOFF_K));
 
-    final boolean shadowed = RendererDelegator.shadows
-        && inShadow(ray, hit, bvh, stack, shadow_ray, shadow_hit);
-    if (shadowed) {
-      // Ambient light only.
-      r_dot = 0.0;
-      g_dot = 0.0;
-      b_dot = 0.0;
+    // Per-light shadows from the RGB point lights (Tim, 2026-10-03).
+    // Each light gets its own shadow factor (1.0 = lit, 0.0 = shadowed);
+    // soft shadows give fractional penumbras.
+    double r_shadow = 1.0;
+    double g_shadow = 1.0;
+    double b_shadow = 1.0;
+    if (RendererDelegator.shadows) {
+      r_shadow = shadowFactor(ray, hit, bvh, stack, shadow_ray, shadow_hit,
+          RED_PX, RED_PY, RED_PZ, jitter, px, py, pz_light);
+      g_shadow = shadowFactor(ray, hit, bvh, stack, shadow_ray, shadow_hit,
+          GREEN_PX, GREEN_PY, GREEN_PZ, jitter, px, py, pz_light);
+      b_shadow = shadowFactor(ray, hit, bvh, stack, shadow_ray, shadow_hit,
+          BLUE_PX, BLUE_PY, BLUE_PZ, jitter, px, py, pz_light);
+      r_dot *= r_shadow;
+      g_dot *= g_shadow;
+      b_dot *= b_shadow;
+    }
+    // Ambient occlusion (Tim, 2026-10-03): short hemisphere rays darken
+    // crevices. Scales the diffuse; specular and fill are unaffected.
+    if (RendererDelegator.ambient_occlusion) {
+      final int ao_rays = 8;
+      int ao_hits = 0;
+      for (int i = 0; i < ao_rays; i++) {
+        double dx = jitter.nextDouble() * 2.0 - 1.0;
+        double dy = jitter.nextDouble() * 2.0 - 1.0;
+        double dz = jitter.nextDouble() * 2.0 - 1.0;
+        final double len = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        if (len < 1e-12) {
+          continue;
+        }
+        dx /= len;
+        dy /= len;
+        dz /= len;
+        // Flip into the hemisphere around the normal.
+        if (dx * hit.nx + dy * hit.ny + dz * hit.nz < 0.0) {
+          dx = -dx;
+          dy = -dy;
+          dz = -dz;
+        }
+        shadow_ray.ox = px + hit.nx;
+        shadow_ray.oy = py + hit.ny;
+        shadow_ray.oz = pz_light + hit.nz;
+        shadow_ray.dx = dx;
+        shadow_ray.dy = dy;
+        shadow_ray.dz = dz;
+        shadow_hit.reset();
+        // Only nearby geometry occludes (50000 fixed-point units).
+        if (bvh.intersect(shadow_ray, shadow_hit, stack)
+            && shadow_hit.t < 50000.0) {
+          ao_hits++;
+        }
+      }
+      final double ao = 1.0 - 0.5 * ((double) ao_hits / ao_rays);
+      r_dot *= ao;
+      g_dot *= ao;
+      b_dot *= ao;
     }
     final int r_scaled = 96
         + (int) (159.0 * Math.min(1.0, r_dot * r_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0));
@@ -1101,10 +1160,11 @@ final class Raytracer {
     og = softAdd(og, fill);
     ob = softAdd(ob, fill);
 
-    if (!shadowed) {
-      // RGB specular reflections (Tim, 2026-10-03): the glossy sheen
-      // and specular highlight are computed per light, so they show
-      // the light's color. Quality mode only.
+    // RGB specular reflections (Tim, 2026-10-03): the glossy sheen
+    // and specular highlight are computed per light, so they show
+    // the light's color. Each is scaled by its light's shadow factor.
+    // Quality mode only.
+    {
       final int r_sheen;
       final int g_sheen;
       final int b_sheen;
@@ -1122,27 +1182,33 @@ final class Raytracer {
             blx / bd, bly / bd, blz / bd);
         r_sheen = RendererDelegator.glossiness_enabled
             ? (int) (lobeValue(r_lobe, RendererDelegator.glossiness, 8.0)
-                * r_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0)
+                * r_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0
+                * r_shadow)
             : 0;
         g_sheen = RendererDelegator.glossiness_enabled
             ? (int) (lobeValue(g_lobe, RendererDelegator.glossiness, 8.0)
-                * g_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0)
+                * g_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0
+                * g_shadow)
             : 0;
         b_sheen = RendererDelegator.glossiness_enabled
             ? (int) (lobeValue(b_lobe, RendererDelegator.glossiness, 8.0)
-                * b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0)
+                * b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0
+                * b_shadow)
             : 0;
         r_highlight = RendererDelegator.specular_enabled
             ? (int) (lobeValue(r_lobe, RendererDelegator.specular, 32.0)
-                * r_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0)
+                * r_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0
+                * r_shadow)
             : 0;
         g_highlight = RendererDelegator.specular_enabled
             ? (int) (lobeValue(g_lobe, RendererDelegator.specular, 32.0)
-                * g_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0)
+                * g_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0
+                * g_shadow)
             : 0;
         b_highlight = RendererDelegator.specular_enabled
             ? (int) (lobeValue(b_lobe, RendererDelegator.specular, 32.0)
-                * b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0)
+                * b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0
+                * b_shadow)
             : 0;
       } else {
         r_sheen = 0;
@@ -1161,6 +1227,38 @@ final class Raytracer {
       or = Math.min(255, or + r_highlight);
       og = Math.min(255, og + g_highlight);
       ob = Math.min(255, ob + b_highlight);
+    }
+
+    // Single-bounce reflections on nodes only (Tim, 2026-10-03).
+    if (RendererDelegator.reflections_enabled
+        && hit.primitive instanceof RTSphere) {
+      // Reflection direction: R = D - 2*(D·N)*N.
+      final double d_dot_n = ray.dx * hit.nx + ray.dy * hit.ny + ray.dz * hit.nz;
+      final double rx = ray.dx - 2.0 * d_dot_n * hit.nx;
+      final double ry = ray.dy - 2.0 * d_dot_n * hit.ny;
+      final double rz = ray.dz - 2.0 * d_dot_n * hit.nz;
+      // Reuse the shadow scratch ray (shadows are done by now).
+      shadow_ray.ox = px + hit.nx;
+      shadow_ray.oy = py + hit.ny;
+      shadow_ray.oz = pz_light + hit.nz;
+      shadow_ray.dx = rx;
+      shadow_ray.dy = ry;
+      shadow_ray.dz = rz;
+      shadow_hit.reset();
+      if (bvh.intersect(shadow_ray, shadow_hit, stack) && shadow_hit.primitive != null) {
+        // Single bounce: flat base color of what we hit, fogged.
+        final double rpx = shadow_ray.ox + shadow_ray.dx * shadow_hit.t;
+        final double rpy = shadow_ray.oy + shadow_ray.dy * shadow_hit.t;
+        final double rpz = shadow_ray.oz + shadow_ray.dz * shadow_hit.t;
+        final int refl_fogged = Fog.applyFog(shadow_hit.primitive.getColour(), (int) rpz);
+        final int rr = (refl_fogged >> 16) & 0xFF;
+        final int rg = (refl_fogged >> 8) & 0xFF;
+        final int rb = refl_fogged & 0xFF;
+        // 30% reflection, 70% base.
+        or = (int) (or * 0.7 + rr * 0.3);
+        og = (int) (og * 0.7 + rg * 0.3);
+        ob = (int) (ob * 0.7 + rb * 0.3);
+      }
     }
 
     return 0xFF000000 | (or << 16) | (og << 8) | ob;
@@ -1212,6 +1310,63 @@ final class Raytracer {
    * nudged off the surface towards the light so it does not shadow
    * itself.
    */
+  /**
+   * Shadow factor for one point light (Tim, 2026-10-03): 1.0 = fully lit,
+   * 0.0 = fully shadowed. For hard shadows a single ray gives a binary
+   * result; for soft shadows multiple jittered rays give a fractional
+   * penumbra. The ray is only blocked by occluders closer than the light.
+   */
+  private static double shadowFactor(final Ray ray, final Hit hit, final BVH bvh,
+      final int[] stack, final Ray shadow_ray, final Hit shadow_hit,
+      final double lightX, final double lightY, final double lightZ,
+      final JitterRandom jitter, final double px, final double py, final double pz) {
+    final int rays = RendererDelegator.soft_shadows ? 4 : 1;
+    int unblocked = 0;
+    for (int i = 0; i < rays; i++) {
+      // Jitter the light position for soft shadows (area light approx).
+      double jx = lightX;
+      double jy = lightY;
+      double jz = lightZ;
+      if (RendererDelegator.soft_shadows) {
+        // Radius in fixed-point units (~78 pixels): the penumbra size.
+        final double radius = 20000.0;
+        jx += (jitter.nextDouble() * 2.0 - 1.0) * radius;
+        jy += (jitter.nextDouble() * 2.0 - 1.0) * radius;
+        jz += (jitter.nextDouble() * 2.0 - 1.0) * radius;
+      }
+      double dx = jx - px;
+      double dy = jy - py;
+      double dz = jz - pz;
+      final double dist_to_light = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      if (dist_to_light < 1e-12) {
+        unblocked++;
+        continue;
+      }
+      dx /= dist_to_light;
+      dy /= dist_to_light;
+      dz /= dist_to_light;
+      // Offset along the normal to avoid self-intersection.
+      final double toward_light = hit.nx * dx + hit.ny * dy + hit.nz * dz;
+      final double side = toward_light > 0.0 ? 1.0 : -1.0;
+      shadow_ray.ox = px + side * hit.nx;
+      shadow_ray.oy = py + side * hit.ny;
+      shadow_ray.oz = pz + side * hit.nz;
+      shadow_ray.dx = dx;
+      shadow_ray.dy = dy;
+      shadow_ray.dz = dz;
+      shadow_hit.reset();
+      if (bvh.intersect(shadow_ray, shadow_hit, stack)) {
+        // Blocked only if the occluder is closer than the light.
+        if (shadow_hit.t >= dist_to_light) {
+          unblocked++;
+        }
+      } else {
+        unblocked++;
+      }
+    }
+    return (double) unblocked / rays;
+  }
+
   private static boolean inShadow(final Ray ray, final Hit hit, final BVH bvh,
       int[] stack, final Ray shadow_ray, final Hit shadow_hit) {
     final double px = ray.ox + ray.dx * hit.t;

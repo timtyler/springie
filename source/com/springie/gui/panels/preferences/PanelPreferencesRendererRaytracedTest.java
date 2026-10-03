@@ -24,10 +24,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * The ray-traced renderer's Glossiness, Shadows, Specular, Fresnel and
- * Fill light controls must offer the right entries, start at the
- * defaults, drive the renderer, and hide each strength dropdown while
- * its effect is switched off.
+ * The ray-traced renderer's Glossiness, Shadows, Specular and Fresnel
+ * controls must offer the right entries, start at the defaults, drive
+ * the renderer, and hide each strength dropdown while its effect is
+ * switched off. (Tim, 2026-10-03: Fill light moved to the Universe tab.)
  */
 class PanelPreferencesRendererRaytracedTest {
   private int saved_glossiness;
@@ -69,6 +69,22 @@ class PanelPreferencesRendererRaytracedTest {
     this.saved_fresnel_enabled = RendererDelegator.fresnel_enabled;
     this.saved_fill_light = RendererDelegator.fill_light;
     this.saved_fill_light_enabled = RendererDelegator.fill_light_enabled;
+    // Reset to defaults (Tim, 2026-10-03): other tests may pollute these.
+    // Must reset both the fields AND the checkboxes (the panel is a
+    // singleton whose checkboxes retain polluted state).
+    RendererDelegator.shadows = false;
+    RendererDelegator.specular_enabled = true;
+    RendererDelegator.specular = 100;
+    try {
+      SwingUtilities.invokeAndWait(() -> {
+        final Checkbox shadows = effectCheckbox("Shadows");
+        if (shadows != null) shadows.setState(false);
+        final Checkbox specular = effectCheckbox("Specular");
+        if (specular != null) specular.setState(true);
+      });
+    } catch (Exception e) {
+      // Panel not yet created; ignore.
+    }
   }
 
   @AfterEach
@@ -300,34 +316,6 @@ class PanelPreferencesRendererRaytracedTest {
   }
 
   @Test
-  void fillLightDefaultsOffWithHiddenDropdown() {
-    final Checkbox checkbox = effectCheckbox("Fill light");
-    final Choice choice = effectDropdown("Fill light");
-    assertFalse(checkbox.getState(), "Fill light must default to off");
-    assertFalse(choice.isVisible(),
-        "the Fill light dropdown must hide while the effect is off");
-    assertTenToOneHundredInTens(choice, "Fill light");
-    assertEquals("50%", choice.getSelectedItem(),
-        "Fill light strength must default to 50%");
-  }
-
-  @Test
-  void enablingFillLightShowsItsDropdown() throws Exception {
-    final Checkbox checkbox = effectCheckbox("Fill light");
-    final Choice choice = effectDropdown("Fill light");
-    tick(checkbox, true);
-    assertTrue(RendererDelegator.fill_light_enabled);
-    assertTrue(choice.isVisible(),
-        "ticking Fill light on must show its dropdown");
-    pick(choice, "100%");
-    assertEquals(100, RendererDelegator.fill_light);
-    tick(checkbox, false);
-    assertFalse(RendererDelegator.fill_light_enabled);
-    assertFalse(choice.isVisible(),
-        "ticking Fill light off must hide its dropdown again");
-  }
-
-  @Test
   void resetRestoresRaytracedDefaults() throws Exception {
     tick(effectCheckbox("Glossiness"), true);
     pick(effectDropdown("Glossiness"), "100%");
@@ -335,7 +323,6 @@ class PanelPreferencesRendererRaytracedTest {
     tick(effectCheckbox("Specular"), false);
     pick(effectDropdown("Specular"), "10%");
     tick(effectCheckbox("Fresnel"), true);
-    tick(effectCheckbox("Fill light"), true);
     SwingUtilities.invokeAndWait(
         () -> FrEnd.panel_preferences_display.resetToDefaults());
 
@@ -358,7 +345,5 @@ class PanelPreferencesRendererRaytracedTest {
     assertEquals("100%", effectDropdown("Specular").getSelectedItem());
     assertFalse(effectCheckbox("Fresnel").getState());
     assertFalse(effectDropdown("Fresnel").isVisible());
-    assertFalse(effectCheckbox("Fill light").getState());
-    assertFalse(effectDropdown("Fill light").isVisible());
   }
 }

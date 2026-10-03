@@ -80,14 +80,17 @@ final class RTRing implements Primitive {
       return false;
     }
     hit.t = t;
-    if (denom > 0.0) {
-      hit.nx = -this.nx;
-      hit.ny = -this.ny;
-      hit.nz = -this.nz;
-    } else {
-      hit.nx = this.nx;
-      hit.ny = this.ny;
-      hit.nz = this.nz;
+    // Skip normal computation in fast mode (Tim, 2026-10-03).
+    if (!com.springie.render.RendererDelegator.simple_lighting) {
+      if (denom > 0.0) {
+        hit.nx = -this.nx;
+        hit.ny = -this.ny;
+        hit.nz = -this.nz;
+      } else {
+        hit.nx = this.nx;
+        hit.ny = this.ny;
+        hit.nz = this.nz;
+      }
     }
     hit.primitive = this;
     return true;

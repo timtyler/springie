@@ -137,13 +137,14 @@ public class PanelPreferencesRendererModernTest {
     assertEquals(0, shared_misc_panel.getComponentCount(),
         "the old Misc tab panel must be empty after its rows move");
 
-    // No Options tab anymore, and Filtering moved under Colours: the
-    // top-level bar is Renderer | Colours | Tiles | Fog.
+    // No Options tab anymore, Filtering moved under Colours, and Tiles
+    // moved into the Renderer Main tab (Tim, 2026-10-03): the top-level
+    // bar is Renderer | Colours | Fog.
     final TabbedPanel top_tabs = findTabbedPanel(
         FrEnd.panel_preferences_renderer_modern.panel);
     assertNotNull(top_tabs, "expected the top-level tab bar");
-    assertEquals(4, top_tabs.getComponentCount(),
-        "the top-level tab bar must be Renderer, Colours, Tiles and Fog");
+    assertEquals(3, top_tabs.getComponentCount(),
+        "the top-level tab bar must be Renderer, Colours and Fog");
     assertTrue(
         top_tabs.getComponent(0) == FrEnd.panel_preferences_shared_show.panel,
         "the Renderer card must hold the shared-show panel");
@@ -151,12 +152,10 @@ public class PanelPreferencesRendererModernTest {
         top_tabs.getComponent(1)
             == FrEnd.panel_preferences_renderer_modern_colours.panel,
         "the Colours card must hold the colours panel");
+    // Tiles moved into the Renderer Main tab (Tim, 2026-10-03); Fog is
+    // now at index 2.
     assertTrue(
         top_tabs.getComponent(2)
-            == FrEnd.panel_preferences_shared_show.panel_tiles,
-        "the Tiles card must hold the tiles panel");
-    assertTrue(
-        top_tabs.getComponent(3)
             == FrEnd.panel_preferences_shared_show.panel_fog,
         "the Fog card must hold the fog panel");
 
@@ -176,9 +175,9 @@ public class PanelPreferencesRendererModernTest {
     // A modern row...
     assertNotNull(polyhedronDropdown(),
         "the Node polyhedron dropdown must move to the Main sub-tab");
-    // ...the Tiles rows...
-    assertNotNull(findCheckbox(tiles_tab, "Show rendering tiles"),
-        "the Show-tiles checkbox must move to the Tiles sub-tab");
+    // ...the Tiles rows (moved into Main, Tim, 2026-10-03)...
+    assertNotNull(findCheckbox(main_tab, "Show rendering tiles"),
+        "the Show-tiles checkbox must move to the Main sub-tab");
     // ...and the fog rows.
     assertNotNull(findCheckbox(fog_tab, "Fog depth is relative"),
         "the shared fog checkbox must move to the Fog sub-tab");
@@ -288,15 +287,15 @@ public class PanelPreferencesRendererModernTest {
         FrEnd.panel_preferences_renderer_modern;
     final int main_rows = main_tab.getComponentCount();
 
-    // Switch to ray-traced: the five rows appear at the bottom of Main.
+    // Switch to ray-traced: the four rows appear at the bottom of Main.
+    // (Tim, 2026-10-03: was five; Fill light moved to the Universe tab.)
     javax.swing.SwingUtilities.invokeAndWait(() ->
         modern.setRaytracedRowsVisible(true));
-    assertEquals(main_rows + 5, main_tab.getComponentCount(),
-        "ray-traced must add its five rows to the Main sub-tab");
+    assertEquals(main_rows + 4, main_tab.getComponentCount(),
+        "ray-traced must add its four rows to the Main sub-tab");
     assertNotNull(findCheckbox(main_tab, "Glossiness"),
         "the Glossiness row must be on the Main sub-tab");
-    assertNotNull(findCheckbox(main_tab, "Fill light"),
-        "the Fill light row must be on the Main sub-tab");
+    // Fill light moved to Universe tab (Tim, 2026-10-03); not here.
 
     // Uniform spacing: one GridLayout gives every row the same height.
     main_tab.doLayout();
@@ -320,7 +319,7 @@ public class PanelPreferencesRendererModernTest {
       modern.setRaytracedRowsVisible(true);
       modern.setRaytracedRowsVisible(true);
     });
-    assertEquals(main_rows + 5, main_tab.getComponentCount(),
+    assertEquals(main_rows + 4, main_tab.getComponentCount(),
         "repeated switches must not duplicate the rows");
     javax.swing.SwingUtilities.invokeAndWait(() ->
         modern.setRaytracedRowsVisible(false));
