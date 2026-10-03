@@ -249,7 +249,8 @@ public final class WorldMarkers {
       return;
     }
     graphics.setColor(new Color(MARKER_COLOUR));
-    for (Point3D p : markers) {
+    // Snapshot: see drawUnder.
+    for (Point3D p : new ArrayList<>(markers)) {
       final int sx = Coords.getXCoords((int) p.x, (int) p.z);
       final int sy = Coords.getYCoords((int) p.y, (int) p.z);
       final int half = screenHalf((int) p.z);
@@ -290,7 +291,12 @@ public final class WorldMarkers {
     final int y_max = Coords.y_pixels << Coords.shift;
     final int z_max = Coords.z_pixels << Coords.shift;
     final List<RectangleInt> new_old_dots = new ArrayList<>();
-    final int count = markers.size();
+    // Snapshot: iterate a private copy so a concurrent mutation of
+    // markers (physics thread, gesture handler) can't shrink the list
+    // mid-loop and throw IndexOutOfBounds. Order is preserved, so the
+    // old_dots index correlation still holds.
+    final List<Point3D> snapshot = new ArrayList<>(markers);
+    final int count = snapshot.size();
     for (int i = 0; i < count; i++) {
       // Clear this marker's old spot (survivors keep their index;
       // cullOffscreen preserves order, spawns append).
@@ -299,7 +305,7 @@ public final class WorldMarkers {
         graphics.clearRect(old.min_x, old.min_y,
             old.max_x - old.min_x, old.max_y - old.min_y);
       }
-      final Point3D p = markers.get(i);
+      final Point3D p = snapshot.get(i);
       final int px = (int) p.x;
       final int py = (int) p.y;
       final int pz = (int) p.z;
