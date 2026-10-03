@@ -80,9 +80,12 @@ public class GpuRenderer implements ModularRendererBase {
 
   /**
    * The JFXPanel covers the canvas, so the panel's own mouse listeners
-   * (selection, gestures, drag box) would go deaf. Re-dispatch every
-   * mouse event to the canvas panel with translated coordinates, so all
-   * existing interaction keeps working unchanged.
+   * (selection, gestures, drag box) would go deaf. The panel's listeners
+   * are invoked directly with translated coordinates, so all existing
+   * interaction keeps working unchanged. Note: the event must NOT be
+   * re-dispatched to the panel with dispatchEvent -- the
+   * LightweightDispatcher retargets it back down to the JFXPanel child,
+   * which forwards it again, recursing until StackOverflowError.
    */
   private void forwardMouseEvents() {
     final Panel target = FrEnd.main_canvas.panel;
@@ -113,25 +116,59 @@ public class GpuRenderer implements ModularRendererBase {
       }
 
       private void forward(MouseEvent e) {
-        target.dispatchEvent(new MouseEvent(target, e.getID(),
-            e.getWhen(), e.getModifiers(), e.getX(), e.getY(),
-            e.getClickCount(), e.isPopupTrigger(), e.getButton()));
+        final MouseEvent translated = translatedTo(e, target);
+        for (final java.awt.event.MouseListener listener
+            : target.getMouseListeners()) {
+          switch (translated.getID()) {
+            case MouseEvent.MOUSE_PRESSED:
+              listener.mousePressed(translated);
+              break;
+            case MouseEvent.MOUSE_RELEASED:
+              listener.mouseReleased(translated);
+              break;
+            case MouseEvent.MOUSE_CLICKED:
+              listener.mouseClicked(translated);
+              break;
+            case MouseEvent.MOUSE_ENTERED:
+              listener.mouseEntered(translated);
+              break;
+            case MouseEvent.MOUSE_EXITED:
+              listener.mouseExited(translated);
+              break;
+            default:
+              break;
+          }
+        }
       }
     });
     this.jfx_panel.addMouseMotionListener(new MouseMotionAdapter() {
       @Override
       public void mouseMoved(MouseEvent e) {
-        target.dispatchEvent(new MouseEvent(target, e.getID(),
-            e.getWhen(), e.getModifiers(), e.getX(), e.getY(),
-            e.getClickCount(), e.isPopupTrigger(), e.getButton()));
+        final MouseEvent translated = translatedTo(e, target);
+        for (final java.awt.event.MouseMotionListener listener
+            : target.getMouseMotionListeners()) {
+          listener.mouseMoved(translated);
+        }
       }
 
       @Override
       public void mouseDragged(MouseEvent e) {
-        target.dispatchEvent(new MouseEvent(target, e.getID(),
-            e.getWhen(), e.getModifiers(), e.getX(), e.getY(),
-            e.getClickCount(), e.isPopupTrigger(), e.getButton()));
+        final MouseEvent translated = translatedTo(e, target);
+        for (final java.awt.event.MouseMotionListener listener
+            : target.getMouseMotionListeners()) {
+          listener.mouseDragged(translated);
+        }
       }
     });
+  }
+
+  /**
+   * The JFXPanel fills the canvas panel at (0, 0), so JFXPanel-relative
+   * coordinates are already panel-relative; only the source changes.
+   */
+  private static MouseEvent translatedTo(MouseEvent e, Panel target) {
+    return new MouseEvent(target, e.getID(), e.getWhen(), e.getModifiers(),
+        e.getX(), e.getY(), e.getClickCount(), e.isPopupTrigger(),
+        e.getButton());
   }
 }
