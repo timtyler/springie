@@ -200,14 +200,18 @@ final class Raytracer {
           shadow_ray, shadow_hit, jitter, aa);
       return;
     }
-    // Blank the tile with the background: no rays, just the colour
-    // (or scenic texture) lookup.
-    int i = 0;
-    for (int y = 0; y < height; y++) {
-      for (int x = 0; x < width; x++) {
-        camera.makeRay(x0 + x, y0 + y, ray);
-        pixels[i++] = backgroundAt(scenic, background_rgb, ray,
-            x0 + x, y0 + y);
+    // Blank the tile with the background. If there's no scenic texture,
+    // a single fill is enough (no per-pixel rays). (Tim, 2026-10-03)
+    if (scenic == null) {
+      java.util.Arrays.fill(pixels, 0xFF000000 | background_rgb);
+    } else {
+      int i = 0;
+      for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+          camera.makeRay(x0 + x, y0 + y, ray);
+          pixels[i++] = backgroundAt(scenic, background_rgb, ray,
+              x0 + x, y0 + y);
+        }
       }
     }
     final boolean[] visited = new boolean[width * height];
@@ -400,13 +404,15 @@ final class Raytracer {
     // is on, blank with red instead: red marks pixels where no ray was
     // traced (the savings). (Tim, 2026-10-03)
     final boolean debug = RendererTileManager.show_active_tiles;
-    final int blank_rgb = debug ? 0xFFFF0000 : 0;
-    int i = 0;
-    for (int y = 0; y < height; y++) {
-      for (int x = 0; x < width; x++) {
-        if (debug) {
-          pixels[i++] = blank_rgb;
-        } else {
+    if (debug) {
+      java.util.Arrays.fill(pixels, 0xFFFF0000);
+    } else if (scenic == null) {
+      // Flat background: single fill, no per-pixel rays. (Tim, 2026-10-03)
+      java.util.Arrays.fill(pixels, 0xFF000000 | background_rgb);
+    } else {
+      int i = 0;
+      for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
           camera.makeRay(x0 + x, y0 + y, ray);
           pixels[i++] = backgroundAt(scenic, background_rgb, ray,
               x0 + x, y0 + y);
