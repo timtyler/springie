@@ -44,10 +44,6 @@ class PanelPreferencesRendererRaytracedTest {
 
   private boolean saved_fresnel_enabled;
 
-  private int saved_fill_light;
-
-  private boolean saved_fill_light_enabled;
-
   @BeforeAll
   static void boot() throws Exception {
     GuiTestSupport.bootApp();
@@ -67,8 +63,6 @@ class PanelPreferencesRendererRaytracedTest {
     this.saved_specular_enabled = RendererDelegator.specular_enabled;
     this.saved_fresnel = RendererDelegator.fresnel;
     this.saved_fresnel_enabled = RendererDelegator.fresnel_enabled;
-    this.saved_fill_light = RendererDelegator.fill_light;
-    this.saved_fill_light_enabled = RendererDelegator.fill_light_enabled;
     // Reset to defaults (Tim, 2026-10-03): other tests may pollute these.
     // Must reset both the fields AND the checkboxes (the panel is a
     // singleton whose checkboxes retain polluted state).
@@ -96,8 +90,6 @@ class PanelPreferencesRendererRaytracedTest {
     RendererDelegator.specular_enabled = this.saved_specular_enabled;
     RendererDelegator.fresnel = this.saved_fresnel;
     RendererDelegator.fresnel_enabled = this.saved_fresnel_enabled;
-    RendererDelegator.fill_light = this.saved_fill_light;
-    RendererDelegator.fill_light_enabled = this.saved_fill_light_enabled;
   }
 
   /** The row panel holding the checkbox with the given label. */
@@ -333,8 +325,6 @@ class PanelPreferencesRendererRaytracedTest {
     assertEquals(100, RendererDelegator.specular);
     assertFalse(RendererDelegator.fresnel_enabled);
     assertEquals(50, RendererDelegator.fresnel);
-    assertFalse(RendererDelegator.fill_light_enabled);
-    assertEquals(50, RendererDelegator.fill_light);
 
     assertFalse(effectCheckbox("Glossiness").getState());
     assertFalse(effectDropdown("Glossiness").isVisible());

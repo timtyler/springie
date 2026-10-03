@@ -58,10 +58,6 @@ public class RaytracerGoldenChecksumTest {
 
   private int saved_fresnel;
 
-  private boolean saved_fill_light_enabled;
-
-  private int saved_fill_light;
-
   private int saved_antialiasing;
 
   private int saved_pixellation;
@@ -111,8 +107,6 @@ public class RaytracerGoldenChecksumTest {
     this.saved_specular = RendererDelegator.specular;
     this.saved_fresnel_enabled = RendererDelegator.fresnel_enabled;
     this.saved_fresnel = RendererDelegator.fresnel;
-    this.saved_fill_light_enabled = RendererDelegator.fill_light_enabled;
-    this.saved_fill_light = RendererDelegator.fill_light;
     this.saved_antialiasing = RendererDelegator.antialiasing;
     this.saved_pixellation = RendererDelegator.pixellation;
 
@@ -124,8 +118,6 @@ public class RaytracerGoldenChecksumTest {
     RendererDelegator.specular = 100;
     RendererDelegator.fresnel_enabled = true;
     RendererDelegator.fresnel = 50;
-    RendererDelegator.fill_light_enabled = true;
-    RendererDelegator.fill_light = 50;
   }
 
   @AfterEach
@@ -147,8 +139,6 @@ public class RaytracerGoldenChecksumTest {
     RendererDelegator.specular = this.saved_specular;
     RendererDelegator.fresnel_enabled = this.saved_fresnel_enabled;
     RendererDelegator.fresnel = this.saved_fresnel;
-    RendererDelegator.fill_light_enabled = this.saved_fill_light_enabled;
-    RendererDelegator.fill_light = this.saved_fill_light;
     RendererDelegator.antialiasing = this.saved_antialiasing;
     RendererDelegator.pixellation = this.saved_pixellation;
   }

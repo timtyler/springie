@@ -66,8 +66,6 @@ public class RaytracerSelectionRingTest {
 
   private boolean saved_fresnel_enabled;
 
-  private boolean saved_fill_light_enabled;
-
   private int saved_antialiasing;
 
   private boolean saved_scenic_background;
@@ -102,7 +100,6 @@ public class RaytracerSelectionRingTest {
     this.saved_specular = RendererDelegator.specular;
     this.saved_specular_enabled = RendererDelegator.specular_enabled;
     this.saved_fresnel_enabled = RendererDelegator.fresnel_enabled;
-    this.saved_fill_light_enabled = RendererDelegator.fill_light_enabled;
     this.saved_antialiasing = RendererDelegator.antialiasing;
     this.saved_scenic_background = RendererDelegator.scenic_background;
 
@@ -110,7 +107,6 @@ public class RaytracerSelectionRingTest {
     RendererDelegator.shadows = false;
     RendererDelegator.specular_enabled = false;
     RendererDelegator.fresnel_enabled = false;
-    RendererDelegator.fill_light_enabled = false;
     RendererDelegator.antialiasing = 1;
     RendererDelegator.scenic_background = false;
   }
@@ -133,7 +129,6 @@ public class RaytracerSelectionRingTest {
     RendererDelegator.specular = this.saved_specular;
     RendererDelegator.specular_enabled = this.saved_specular_enabled;
     RendererDelegator.fresnel_enabled = this.saved_fresnel_enabled;
-    RendererDelegator.fill_light_enabled = this.saved_fill_light_enabled;
     RendererDelegator.antialiasing = this.saved_antialiasing;
     RendererDelegator.scenic_background = this.saved_scenic_background;
   }
