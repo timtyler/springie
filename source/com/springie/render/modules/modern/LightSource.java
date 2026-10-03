@@ -34,16 +34,17 @@ public class LightSource {
     final double scale = (double) (1 << com.springie.render.Coords.shift);
     final double half_w = (double) hw * scale;
     final double half_h = (double) hh * scale;
-    final double light_y = -half_h * 0.8;
+    final double light_y_top = -half_h * 0.8;
+    final double light_y_bottom = half_h * 0.8;
     final double light_z = -800.0 * scale;
     red_px = -half_w * 0.6;
-    red_py = light_y;
+    red_py = light_y_top;
     red_pz = light_z;
     green_px = 0.0;
-    green_py = light_y;
+    green_py = light_y_bottom;
     green_pz = light_z;
     blue_px = half_w * 0.6;
-    blue_py = light_y;
+    blue_py = light_y_top;
     blue_pz = light_z;
   }
 }

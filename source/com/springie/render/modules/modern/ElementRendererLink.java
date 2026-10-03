@@ -312,13 +312,88 @@ public final class ElementRendererLink {
           final double b_dot = (blx * ax + bly * ay + blz * az) / bd;
           b_factor = 0.25 + 0.75 * Math.sqrt(Math.max(0.0, 1.0 - b_dot * b_dot));
         }
+        // Specular highlights from the 3 lights (Tim, 2026-10-03).
+        // For a cylinder, use the normal at the brightest point:
+        // N = normalize(L - (L·A)*A). View V = (0, 0, -1).
+        double r_spec = 0.0;
+        double g_spec = 0.0;
+        double b_spec = 0.0;
+        if (rd > 1e-12) {
+          final double lx = rlx / rd;
+          final double ly = rly / rd;
+          final double lz = rlz / rd;
+          final double ldotA = lx * ax + ly * ay + lz * az;
+          double nnx = lx - ldotA * ax;
+          double nny = ly - ldotA * ay;
+          double nnz = lz - ldotA * az;
+          final double nlen = Math.sqrt(nnx * nnx + nny * nny + nnz * nnz);
+          if (nlen > 1e-12) {
+            nnx /= nlen;
+            nny /= nlen;
+            nnz /= nlen;
+            final double ndotl = nnx * lx + nny * ly + nnz * lz;
+            final double rx = 2.0 * ndotl * nnx - lx;
+            final double ry = 2.0 * ndotl * nny - ly;
+            final double rz = 2.0 * ndotl * nnz - lz;
+            final double rdotv = -rz;
+            if (rdotv > 0.0) {
+              r_spec = Math.pow(rdotv, 32.0);
+            }
+          }
+        }
+        if (gd > 1e-12) {
+          final double lx = glx / gd;
+          final double ly = gly / gd;
+          final double lz = glz / gd;
+          final double ldotA = lx * ax + ly * ay + lz * az;
+          double nnx = lx - ldotA * ax;
+          double nny = ly - ldotA * ay;
+          double nnz = lz - ldotA * az;
+          final double nlen = Math.sqrt(nnx * nnx + nny * nny + nnz * nnz);
+          if (nlen > 1e-12) {
+            nnx /= nlen;
+            nny /= nlen;
+            nnz /= nlen;
+            final double ndotl = nnx * lx + nny * ly + nnz * lz;
+            final double rx = 2.0 * ndotl * nnx - lx;
+            final double ry = 2.0 * ndotl * nny - ly;
+            final double rz = 2.0 * ndotl * nnz - lz;
+            final double rdotv = -rz;
+            if (rdotv > 0.0) {
+              g_spec = Math.pow(rdotv, 32.0);
+            }
+          }
+        }
+        if (bd > 1e-12) {
+          final double lx = blx / bd;
+          final double ly = bly / bd;
+          final double lz = blz / bd;
+          final double ldotA = lx * ax + ly * ay + lz * az;
+          double nnx = lx - ldotA * ax;
+          double nny = ly - ldotA * ay;
+          double nnz = lz - ldotA * az;
+          final double nlen = Math.sqrt(nnx * nnx + nny * nny + nnz * nnz);
+          if (nlen > 1e-12) {
+            nnx /= nlen;
+            nny /= nlen;
+            nnz /= nlen;
+            final double ndotl = nnx * lx + nny * ly + nnz * lz;
+            final double rx = 2.0 * ndotl * nnx - lx;
+            final double ry = 2.0 * ndotl * nny - ly;
+            final double rz = 2.0 * ndotl * nnz - lz;
+            final double rdotv = -rz;
+            if (rdotv > 0.0) {
+              b_spec = Math.pow(rdotv, 32.0);
+            }
+          }
+        }
       }
       final int cr = (new_colour_base >> 16) & 0xFF;
       final int cg = (new_colour_base >> 8) & 0xFF;
       final int cb = new_colour_base & 0xFF;
-      final int or = Math.min(255, (int) (cr * r_factor));
-      final int og = Math.min(255, (int) (cg * g_factor));
-      final int ob = Math.min(255, (int) (cb * b_factor));
+      final int or = Math.min(255, (int) (cr * r_factor + 255.0 * r_spec));
+      final int og = Math.min(255, (int) (cg * g_factor + 255.0 * g_spec));
+      final int ob = Math.min(255, (int) (cb * b_factor + 255.0 * b_spec));
       final int new_colour = (new_colour_base & 0xFF000000) | (or << 16) | (og << 8) | ob;
 
       final PolygonObject2D[] quads = pair_cache.quads[segment];

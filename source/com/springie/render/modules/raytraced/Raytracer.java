@@ -37,13 +37,13 @@ final class Raytracer {
   private static double BLUE_PX, BLUE_PY, BLUE_PZ;
 
   /** Distance falloff constant: intensity = 1/(1+(d/K)^2). */
-  private static final double LIGHT_FALLOFF_K = 2560000.0;
+  private static final double LIGHT_FALLOFF_K = 5120000.0;
 
   /**
    * RGB light brightness boost (Tim, 2026-10-03): the three colored
    * lights together should match the old white light's punch.
    */
-  private static final double LIGHT_BRIGHTNESS = 2.0;
+  private static final double LIGHT_BRIGHTNESS = 4.0;
 
   /**
    * The fill light: front-right, mirroring the key light's front-left

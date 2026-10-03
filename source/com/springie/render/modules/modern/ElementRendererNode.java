@@ -89,13 +89,57 @@ public final class ElementRendererNode {
             final double b_dot = Math.abs((nnx * blx + nny * bly + nnz * blz) / bd);
             b_factor = 0.25 + 0.75 * b_dot;
           }
+          // Specular highlights from the 3 lights (Tim, 2026-10-03).
+          double r_spec = 0.0;
+          double g_spec = 0.0;
+          double b_spec = 0.0;
+          // View vector V = (0, 0, -1).
+          if (rd > 1e-12) {
+            final double lx = rlx / rd;
+            final double ly = rly / rd;
+            final double lz = rlz / rd;
+            final double ndotl = nnx * lx + nny * ly + nnz * lz;
+            final double rx = 2.0 * ndotl * nnx - lx;
+            final double ry = 2.0 * ndotl * nny - ly;
+            final double rz = 2.0 * ndotl * nnz - lz;
+            final double rdotv = -rz;
+            if (rdotv > 0.0) {
+              r_spec = Math.pow(rdotv, 32.0);
+            }
+          }
+          if (gd > 1e-12) {
+            final double lx = glx / gd;
+            final double ly = gly / gd;
+            final double lz = glz / gd;
+            final double ndotl = nnx * lx + nny * ly + nnz * lz;
+            final double rx = 2.0 * ndotl * nnx - lx;
+            final double ry = 2.0 * ndotl * nny - ly;
+            final double rz = 2.0 * ndotl * nnz - lz;
+            final double rdotv = -rz;
+            if (rdotv > 0.0) {
+              g_spec = Math.pow(rdotv, 32.0);
+            }
+          }
+          if (bd > 1e-12) {
+            final double lx = blx / bd;
+            final double ly = bly / bd;
+            final double lz = blz / bd;
+            final double ndotl = nnx * lx + nny * ly + nnz * lz;
+            final double rx = 2.0 * ndotl * nnx - lx;
+            final double ry = 2.0 * ndotl * nny - ly;
+            final double rz = 2.0 * ndotl * nnz - lz;
+            final double rdotv = -rz;
+            if (rdotv > 0.0) {
+              b_spec = Math.pow(rdotv, 32.0);
+            }
+          }
         }
         final int r = (colour >> 16) & 0xFF;
         final int g = (colour >> 8) & 0xFF;
         final int b = colour & 0xFF;
-        final int or = Math.min(255, (int) (r * r_factor));
-        final int og = Math.min(255, (int) (g * g_factor));
-        final int ob = Math.min(255, (int) (b * b_factor));
+        final int or = Math.min(255, (int) (r * r_factor + 255.0 * r_spec));
+        final int og = Math.min(255, (int) (g * g_factor + 255.0 * g_spec));
+        final int ob = Math.min(255, (int) (b * b_factor + 255.0 * b_spec));
         final int act_colour = (colour & 0xFF000000) | (or << 16) | (og << 8) | ob;
 
         PolygonObject2D polygon = new PolygonObject2D(array_x, array_y,
