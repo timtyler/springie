@@ -101,7 +101,8 @@ final class Raytracer {
 
   static void renderTile(int x0, int y0, int width, int height,
       RayCamera camera, BVH bvh, int[] pixels, HitStats stats) {
-    renderTile(x0, y0, width, height, camera, bvh, NO_RINGS, pixels, stats);
+    renderTile(x0, y0, width, height, camera, bvh, NO_RINGS, pixels,
+        stats);
   }
 
   /**
@@ -169,35 +170,148 @@ final class Raytracer {
       return;
     }
     if (aa <= 1) {
-      int i = 0;
-      for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-          camera.makeRay(x0 + x, y0 + y, ray);
-          hit.reset();
-          final boolean struck = intersectScene(ray, hit, bvh, rings, stack);
-          final int rgb = struck ? shade(ray, hit, bvh, stack, shadow_ray, shadow_hit)
-              : backgroundAt(scenic, background_rgb, ray, x0 + x, y0 + y);
-          pixels[i++] = rgb;
-          if (struck && stats != null) {
-            stats.add(x, y);
-          }
-        }
-      }
+      renderTileFloodFill(x0, y0, width, height, camera, bvh, rings,
+          pixels, stats, scenic, background_rgb, ray, hit, stack,
+          shadow_ray, shadow_hit, jitter, aa);
       return;
     }
-    final int samples = aa * aa;
+    renderTileFloodFill(x0, y0, width, height, camera, bvh, rings,
+        pixels, stats, scenic, background_rgb, ray, hit, stack,
+        shadow_ray, shadow_hit, jitter, aa);
+  }
+
+  /**
+   * Flood-fill tile rendering (Tim, 2026-10-03): the tile is blanked
+   * with the background first, then 8 random seed pixels are
+   * ray-traced. A seed that hits the model pushes its 4-neighbours
+   * onto a stack; the fill spreads through hits until it reaches
+   * background (the model's edge). Pixels never reached cost no rays.
+   * The fill stays inside the tile; 4-connectivity.
+   */
+  private static void renderTileFloodFill(int x0, int y0, int width,
+      int height, RayCamera camera, BVH bvh, RTRing[] rings, int[] pixels,
+      HitStats stats, BufferedImage scenic, int background_rgb, Ray ray,
+      Hit hit, int[] stack, Ray shadow_ray, Hit shadow_hit,
+      JitterRandom jitter, int aa) {
+    // Blank the tile with the background: no rays, just the colour
+    // (or scenic texture) lookup.
     int i = 0;
     for (int y = 0; y < height; y++) {
       for (int x = 0; x < width; x++) {
+        camera.makeRay(x0 + x, y0 + y, ray);
+        pixels[i++] = backgroundAt(scenic, background_rgb, ray,
+            x0 + x, y0 + y);
+      }
+    }
+    final boolean[] visited = new boolean[width * height];
+    final int[] flood = new int[width * height];
+    int top = 0;
+    // 8 uniform seeds per tile (4x2 grid, cell centres). Deterministic,
+    // so renders are reproducible. (Tim, 2026-10-03: the small chance
+    // of missing a tiny isolated component is acceptable.)
+    for (int cy = 0; cy < 2; cy++) {
+      for (int cx = 0; cx < 4; cx++) {
+        final int sx = Math.min((cx * width + width / 2) / 4, width - 1);
+        final int sy = Math.min((cy * height + height / 2) / 2, height - 1);
+        final int idx = sy * width + sx;
+        if (visited[idx]) {
+          continue;
+        }
+        visited[idx] = true;
+        final int rgb;
+        final boolean struck;
+        if (aa <= 1) {
+          camera.makeRay(x0 + sx, y0 + sy, ray);
+          hit.reset();
+          struck = intersectScene(ray, hit, bvh, rings, stack);
+          rgb = struck
+              ? shade(ray, hit, bvh, stack, shadow_ray, shadow_hit)
+              : pixels[idx];
+        } else {
+          long r = 0, g = 0, b = 0;
+          boolean hit_any = false;
+          jitter.setSeed((x0 + sx) * 73856093L ^ (y0 + sy) * 19349663L
+              ^ 0x9E3779B9L);
+          for (int sy2 = 0; sy2 < aa; sy2++) {
+            for (int sx2 = 0; sx2 < aa; sx2++) {
+              final double sub_x =
+                  x0 + sx + (sx2 + jitter.nextDouble()) / aa;
+              final double sub_y =
+                  y0 + sy + (sy2 + jitter.nextDouble()) / aa;
+              camera.makeRay(sub_x, sub_y, ray);
+              hit.reset();
+              if (intersectScene(ray, hit, bvh, rings, stack)) {
+                final int s =
+                    shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
+                r += (s >> 16) & 0xFF;
+                g += (s >> 8) & 0xFF;
+                b += s & 0xFF;
+                hit_any = true;
+              } else {
+                final int s = backgroundAt(scenic, background_rgb, ray,
+                    (int) Math.round(sub_x), (int) Math.round(sub_y));
+                r += (s >> 16) & 0xFF;
+                g += (s >> 8) & 0xFF;
+                b += s & 0xFF;
+              }
+            }
+          }
+          struck = hit_any;
+          final int samples = aa * aa;
+          rgb = struck
+              ? 0xFF000000 | (int) (r / samples) << 16
+                  | (int) (g / samples) << 8 | (int) (b / samples)
+              : pixels[idx];
+        }
+        if (struck) {
+          pixels[idx] = rgb;
+          if (stats != null) {
+            stats.add(sx, sy);
+          }
+          // Seed hit: push its 4-neighbours for the flood fill.
+          // (The seed itself is already traced and marked visited.)
+          if (sx > 0) {
+            flood[top++] = idx - 1;
+          }
+          if (sx + 1 < width) {
+            flood[top++] = idx + 1;
+          }
+          if (sy > 0) {
+            flood[top++] = idx - width;
+          }
+          if (sy + 1 < height) {
+            flood[top++] = idx + width;
+          }
+        }
+      }
+    }
+    if (top == 0) {
+      // No seed hit: tile is empty, background stands.
+      return;
+    }
+    final int samples = aa * aa;
+    while (top > 0) {
+      final int idx = flood[--top];
+      if (visited[idx]) {
+        continue;
+      }
+      visited[idx] = true;
+      final int x = idx % width;
+      final int y = idx / width;
+      final int rgb;
+      final boolean struck;
+      if (aa <= 1) {
+        camera.makeRay(x0 + x, y0 + y, ray);
+        hit.reset();
+        struck = intersectScene(ray, hit, bvh, rings, stack);
+        rgb = struck
+            ? shade(ray, hit, bvh, stack, shadow_ray, shadow_hit)
+            : pixels[idx]; // background, already filled
+      } else {
         long r = 0;
         long g = 0;
         long b = 0;
-        boolean struck = false;
-        // Stratified jitter: one sample per stratum, randomly placed
-        // inside it. Same ray count as the regular grid, but edges near
-        // the pixel axes no longer alias in lockstep. Seeded per pixel
-        // so a render is deterministic run to run and independent of
-        // tile boundaries.
+        boolean hit_any = false;
         jitter.setSeed(
             (x0 + x) * 73856093L ^ (y0 + y) * 19349663L ^ 0x9E3779B9L);
         for (int sy = 0; sy < aa; sy++) {
@@ -206,23 +320,55 @@ final class Raytracer {
             final double sub_y = y0 + y + (sy + jitter.nextDouble()) / aa;
             camera.makeRay(sub_x, sub_y, ray);
             hit.reset();
-            final int rgb;
+            final int sample_rgb;
             if (intersectScene(ray, hit, bvh, rings, stack)) {
-              rgb = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
-              struck = true;
+              sample_rgb =
+                  shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
+              hit_any = true;
             } else {
-              rgb = backgroundAt(scenic, background_rgb, ray,
+              sample_rgb = backgroundAt(scenic, background_rgb, ray,
                   (int) Math.round(sub_x), (int) Math.round(sub_y));
             }
-            r += (rgb >> 16) & 0xFF;
-            g += (rgb >> 8) & 0xFF;
-            b += rgb & 0xFF;
+            r += (sample_rgb >> 16) & 0xFF;
+            g += (sample_rgb >> 8) & 0xFF;
+            b += sample_rgb & 0xFF;
           }
         }
-        pixels[i++] = 0xFF000000 | (int) (r / samples) << 16
-            | (int) (g / samples) << 8 | (int) (b / samples);
-        if (struck && stats != null) {
+        struck = hit_any;
+        rgb = struck
+            ? 0xFF000000 | (int) (r / samples) << 16
+                | (int) (g / samples) << 8 | (int) (b / samples)
+            : pixels[idx]; // background, already filled
+      }
+      if (struck) {
+        pixels[idx] = rgb;
+        if (stats != null) {
           stats.add(x, y);
+        }
+        // 4-neighbours, inside the tile.
+        if (x > 0) {
+          final int n = idx - 1;
+          if (!visited[n]) {
+            flood[top++] = n;
+          }
+        }
+        if (x + 1 < width) {
+          final int n = idx + 1;
+          if (!visited[n]) {
+            flood[top++] = n;
+          }
+        }
+        if (y > 0) {
+          final int n = idx - width;
+          if (!visited[n]) {
+            flood[top++] = n;
+          }
+        }
+        if (y + 1 < height) {
+          final int n = idx + width;
+          if (!visited[n]) {
+            flood[top++] = n;
+          }
         }
       }
     }

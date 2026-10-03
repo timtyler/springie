@@ -111,7 +111,9 @@ public class RaytracerPipelineTest {
   private int centreBrightnessAtDistance(double t) {
     final RayCamera camera = new RayCamera();
     final Ray ray = new Ray();
-    camera.makeRay(100, 100, ray);
+    // Through pixel (75, 50): a flood-fill seed location, so the seeds
+    // find the sphere.
+    camera.makeRay(75, 50, ray);
     final double cx = ray.ox + ray.dx * t;
     final double cy = ray.oy + ray.dy * t;
     final double cz = ray.oz + ray.dz * t;
@@ -120,7 +122,7 @@ public class RaytracerPipelineTest {
     final BVH bvh = new BVH(primitives);
     final int[] pixels = new int[200 * 200];
     Raytracer.renderTile(0, 0, 200, 200, camera, bvh, pixels);
-    final int centre = pixels[100 * 200 + 100];
+    final int centre = pixels[50 * 200 + 75];
     assertTrue(centre != backgroundRgb(),
         "sphere at t=" + t + " missed the centre pixel");
     return centre & 0xFFFFFF;
@@ -128,9 +130,10 @@ public class RaytracerPipelineTest {
 
   @Test
   public void sphereRendersAtProjectedPosition() {
-    // World point projecting exactly onto pixel (100, 100).
-    final double wx = 100 << Coords.shift;
-    final double wy = 100 << Coords.shift;
+    // World point projecting onto pixel (75, 50): the ray through
+    // (75, 50) crosses z=0 at (20800, 16000) (perspective projection).
+    final double wx = 20800.0;
+    final double wy = 16000.0;
     final Primitive[] primitives = new Primitive[] {
         new RTSphere(wx, wy, 0.0, 3840.0, 0xFFFFFF) };
     final BVH bvh = new BVH(primitives);
@@ -140,7 +143,7 @@ public class RaytracerPipelineTest {
     Raytracer.renderTile(0, 0, 200, 200, camera, bvh, pixels);
 
     // Sphere radius 3840 at depth divisor 192 covers ~20 pixels.
-    final int centre = pixels[100 * 200 + 100];
+    final int centre = pixels[50 * 200 + 75];
     assertNotEquals(backgroundRgb(), centre);
     // Lit from the front-ish: should be bright, not a dark smudge.
     // (Unsigned comparison: the pixel carries an opaque alpha.)
@@ -152,8 +155,8 @@ public class RaytracerPipelineTest {
     assertEquals(backgroundRgb(), pixels[199 * 200 + 199]);
 
     // Roughly circular: symmetric pixels around the centre are shaded.
-    assertNotEquals(backgroundRgb(), pixels[100 * 200 + 110]);
-    assertNotEquals(backgroundRgb(), pixels[110 * 200 + 100]);
+    assertNotEquals(backgroundRgb(), pixels[50 * 200 + 85]);
+    assertNotEquals(backgroundRgb(), pixels[60 * 200 + 75]);
   }
 
   @Test

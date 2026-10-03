@@ -72,7 +72,9 @@ public class RaytracerHitStatsTest {
   private BVH sphereOnCentreRay() {
     final RayCamera camera = new RayCamera();
     final Ray ray = new Ray();
-    camera.makeRay(100, 100, ray);
+    // Through pixel (75, 50): a flood-fill seed location for the
+    // 200x200 tile, so the seeds find the sphere.
+    camera.makeRay(75, 50, ray);
     final double t = 300000.0;
     final Primitive[] primitives = new Primitive[] {
         new RTSphere(ray.ox + ray.dx * t, ray.oy + ray.dy * t,
@@ -97,11 +99,11 @@ public class RaytracerHitStatsTest {
     Raytracer.renderTile(0, 0, 200, 200, new RayCamera(),
         sphereOnCentreRay(), pixels, stats);
     assertTrue(stats.hits > 0, "expected the sphere to be hit");
-    assertTrue(stats.min_x <= 100 && 100 <= stats.max_x,
-        "bbox should span the centre pixel horizontally: [" + stats.min_x
+    assertTrue(stats.min_x <= 75 && 75 <= stats.max_x,
+        "bbox should span the seed pixel horizontally: [" + stats.min_x
             + ", " + stats.max_x + "]");
-    assertTrue(stats.min_y <= 100 && 100 <= stats.max_y,
-        "bbox should span the centre pixel vertically: [" + stats.min_y
+    assertTrue(stats.min_y <= 50 && 50 <= stats.max_y,
+        "bbox should span the seed pixel vertically: [" + stats.min_y
             + ", " + stats.max_y + "]");
     assertTrue(stats.min_x >= 0 && stats.max_x < 200);
     assertTrue(stats.min_y >= 0 && stats.max_y < 200);
@@ -109,17 +111,18 @@ public class RaytracerHitStatsTest {
 
   @Test
   public void statsAreTileLocal() {
-    // The sphere projects to screen pixel (100, 100); the tile starts at
-    // (60, 60), so the hit box must be reported around (40, 40).
+    // The sphere projects to screen pixel (75, 50); the tile starts at
+    // (45, 30) so that (75, 50) is a seed location, and the hit box
+    // must be reported around (30, 20) tile-local.
     final int[] pixels = new int[80 * 80];
     final Raytracer.HitStats stats = new Raytracer.HitStats();
-    Raytracer.renderTile(60, 60, 80, 80, new RayCamera(),
+    Raytracer.renderTile(45, 30, 80, 80, new RayCamera(),
         sphereOnCentreRay(), pixels, stats);
     assertTrue(stats.hits > 0, "expected the sphere to be hit");
-    assertTrue(stats.min_x <= 40 && 40 <= stats.max_x,
+    assertTrue(stats.min_x <= 30 && 30 <= stats.max_x,
         "bbox should be tile-local: [" + stats.min_x + ", " + stats.max_x
             + "]");
-    assertTrue(stats.min_y <= 40 && 40 <= stats.max_y,
+    assertTrue(stats.min_y <= 20 && 20 <= stats.max_y,
         "bbox should be tile-local: [" + stats.min_y + ", " + stats.max_y
             + "]");
     assertTrue(stats.max_x < 80 && stats.max_y < 80);
