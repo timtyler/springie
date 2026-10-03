@@ -5,13 +5,13 @@ package com.springie.render.modules.gpu;
 import java.awt.Graphics;
 import java.awt.Panel;
 import java.awt.image.BufferedImage;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 
 import com.springie.FrEnd;
 import com.springie.elements.nodes.NodeManager;
+import com.springie.render.RendererDelegator;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.scene.ModelScene;
 import com.springie.render.scene.SceneExtractor;
@@ -31,8 +31,6 @@ public class GpuRenderer implements ModularRendererBase {
   private final GpuView view = new GpuView();
   private volatile javafx.scene.Scene fx_scene;
   private volatile BufferedImage latest_frame;
-  /** At most one FX update queued; stale frames are skipped, not queued. */
-  private final AtomicBoolean update_pending = new AtomicBoolean();
   private int scene_width;
   private int scene_height;
 
@@ -91,23 +89,22 @@ public class GpuRenderer implements ModularRendererBase {
       graphics.drawImage(frame, 0, 0, null);
     }
     final javafx.scene.Scene fx_scene = this.fx_scene;
-    if (fx_scene == null
-        || !this.update_pending.compareAndSet(false, true)) {
+    if (fx_scene == null) {
       return;
     }
     // The extract runs under the caller's ContextManager lock (reentrant).
     final ModelScene scene = SceneExtractor.extract(manager,
         FrEnd.render_nodes, FrEnd.render_links, FrEnd.render_faces);
     final GpuView view = this.view;
+    // No throttling: every frame is queued so the true renderer
+    // throughput is visible.
     Platform.runLater(() -> {
-      try {
-        view.update(scene);
-        final javafx.scene.image.WritableImage snapshot =
-            fx_scene.snapshot(null);
-        this.latest_frame = SwingFXUtils.fromFXImage(snapshot, null);
-      } finally {
-        this.update_pending.set(false);
-      }
+      view.update(scene);
+      final javafx.scene.image.WritableImage snapshot =
+          fx_scene.snapshot(null);
+      this.latest_frame = SwingFXUtils.fromFXImage(snapshot, null);
+      // One completed 3D frame for the Statistics tab FPS readout.
+      RendererDelegator.countRenderedFrame();
     });
   }
 
