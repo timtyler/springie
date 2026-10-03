@@ -18,10 +18,12 @@ import com.springie.render.Coords;
 /**
  * Builds an immutable {@link ModelScene} snapshot of the model: nodes,
  * links and faces as plain data in world units (pixels), with no AWT
- * types. The walk mirrors RayScene.build's filters -- hidden types and
- * zero-radius elements are skipped, faces are fan-triangulated, and
- * selection is reported as a flag with the base colour kept (rather than
- * baked in, so consumers can highlight their own way).
+ * types. The walk mirrors the default polygon renderer's visibility:
+ * hidden types and zero-radius elements are skipped, faces are
+ * fan-triangulated, and selection is reported as a flag with the base
+ * colour kept (rather than baked in, so consumers can highlight their
+ * own way). Note RayScene (ray tracer) differs: it draws hidden nodes
+ * and faces, checking hidden only for links.
  *
  * <p>Takes synchronized (ContextManager.class) internally -- the same
  * lock the AWT render path holds while walking the model -- so it is
@@ -112,6 +114,9 @@ public final class SceneExtractor {
     final int size = elements.size();
     for (int i = 0; i < size; i++) {
       final Face face = (Face) elements.get(i);
+      if (face.type.hidden) {
+        continue;
+      }
       final List<Node> face_nodes = face.nodes;
       final int points = face_nodes.size();
       if (points < 3) {
