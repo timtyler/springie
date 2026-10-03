@@ -168,6 +168,15 @@ public final class ElementRendererFace {
     final double r_factor = 0.25 + 0.75 * view_dot * r_dot * RendererDelegator.red_light_pct / 50.0;
     final double g_factor = 0.25 + 0.75 * view_dot * g_dot * RendererDelegator.green_light_pct / 50.0;
     final double b_factor = 0.25 + 0.75 * view_dot * b_dot * RendererDelegator.blue_light_pct / 50.0;
+    // White directional light (Tim, 2026-10-03): the old white light,
+    // restored. Adds equally to all channels.
+    final com.springie.geometry.Vector3D white_dir = LightSource.source_1;
+    final double w_len = Math.sqrt(white_dir.x * white_dir.x
+        + white_dir.y * white_dir.y + white_dir.z * white_dir.z);
+    final double w_dot = Math.abs((nx * white_dir.x + ny * white_dir.y
+        + nz * white_dir.z) / w_len);
+    final double w_factor = 0.75 * view_dot * w_dot
+        * RendererDelegator.white_light_pct / 50.0;
     // Specular highlight (Tim, 2026-10-03, extra credit): where the
     // polygon reflects the light directly at the viewer, add extra
     // highlighting. R = 2*dot(N,L)*N - L; spec = pow(max(0, dot(R,V)), 32).
@@ -216,9 +225,10 @@ public final class ElementRendererFace {
     final int r = (colour >> 16) & 0xFF;
     final int g = (colour >> 8) & 0xFF;
     final int b = colour & 0xFF;
-    final int or = Math.min(255, (int) (r * r_factor + 255.0 * r_spec));
-    final int og = Math.min(255, (int) (g * g_factor + 255.0 * g_spec));
-    final int ob = Math.min(255, (int) (b * b_factor + 255.0 * b_spec));
+    // White light adds equally to all channels (Tim, 2026-10-03).
+    final int or = Math.min(255, (int) (r * (r_factor + w_factor) + 255.0 * r_spec));
+    final int og = Math.min(255, (int) (g * (g_factor + w_factor) + 255.0 * g_spec));
+    final int ob = Math.min(255, (int) (b * (b_factor + w_factor) + 255.0 * b_spec));
     return (colour & 0xFF000000) | (or << 16) | (og << 8) | ob;
   }
 }

@@ -315,6 +315,20 @@ public final class ElementRendererLink {
           final double b_dot = (blx * ax + bly * ay + blz * az) / bd;
           b_factor = 0.25 + 0.75 * Math.sqrt(Math.max(0.0, 1.0 - b_dot * b_dot)) * RendererDelegator.blue_light_pct / 50.0;
         }
+        // White directional light (Tim, 2026-10-03).
+        final com.springie.geometry.Vector3D white_dir = LightSource.source_1;
+        final double w_len = Math.sqrt(white_dir.x * white_dir.x
+            + white_dir.y * white_dir.y + white_dir.z * white_dir.z);
+        if (w_len > 1e-12) {
+          final double w_dot = (white_dir.x * ax + white_dir.y * ay
+              + white_dir.z * az) / w_len;
+          final double w_factor = 0.75
+              * Math.sqrt(Math.max(0.0, 1.0 - w_dot * w_dot))
+              * RendererDelegator.white_light_pct / 50.0;
+          r_factor += w_factor;
+          g_factor += w_factor;
+          b_factor += w_factor;
+        }
         // Specular highlights from the 3 lights (Tim, 2026-10-03).
         // For a cylinder, use the normal at the brightest point:
         // N = normalize(L - (L·A)*A). View V = (0, 0, -1).

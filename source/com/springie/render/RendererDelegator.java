@@ -142,18 +142,6 @@ public final class RendererDelegator {
   public static int fresnel = 50;
 
   /**
-   * Fill light as a percentage (10-100): a weak second light from the
-   * front-right, mirroring the key light's front-left azimuth, so
-   * surfaces turned away from the key still model instead of sitting
-   * at the flat diffuse floor. Shadow-independent, so it lifts
-   * shadowed areas too. The fill_light_enabled checkbox is the off
-   * switch; the dropdown only shows while it is on. Defaults to off.
-   */
-  public static boolean fill_light_enabled = false;
-
-  public static int fill_light = 50;
-
-  /**
    * RGB light intensities as percentages (0-100). 100% is the full
    * brightness; 0% turns the light off. Defaults to 50% each.
    * Controlled by the Lights tab in the Universe panel (Tim, 2026-10-03).
@@ -163,6 +151,12 @@ public final class RendererDelegator {
   public static int green_light_pct = 50;
 
   public static int blue_light_pct = 50;
+
+  /**
+   * White directional light (Tim, 2026-10-03): the old white light,
+   * restored as a slider alongside the RGB lights. 0-100%.
+   */
+  public static int white_light_pct = 50;
 
   /**
    * Anti-aliasing supersampling factor (1 to 5): 1x1 is off, 2x2, 3x3,

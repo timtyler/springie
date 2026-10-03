@@ -51,19 +51,6 @@ final class Raytracer {
    */
   private static final double LIGHT_BRIGHTNESS = 4.0;
 
-  /**
-   * The fill light: front-right, mirroring the key light's front-left
-   * azimuth, so surfaces turned away from the key still model instead
-   * of sitting at the flat diffuse floor. Weaker by convention -- the
-   * Fill light percentage scales it -- and shadow-independent, the way
-   * a photographer's fill lifts the shadows.
-   */
-  private static final double FILL_X;
-
-  private static final double FILL_Y;
-
-  private static final double FILL_Z;
-
   static {
     final Vector3D source = LightSource.source_1;
     final double length = Math.sqrt(source.x * source.x + source.y * source.y
@@ -92,14 +79,6 @@ final class Raytracer {
     // Point light positions are viewport-dependent; set by
     // updateLightPositions() at the start of each tile render.
     // (Tim, 2026-10-03)
-
-    final double fx = -source.x;
-    final double fy = -source.y;
-    final double fz = source.z;
-    final double fill_length = Math.sqrt(fx * fx + fy * fy + fz * fz);
-    FILL_X = fx / fill_length;
-    FILL_Y = fy / fill_length;
-    FILL_Z = fz / fill_length;
   }
 
   /**
@@ -916,9 +895,11 @@ final class Raytracer {
         final double nbdz = BLUE_PZ - ncz;
         final double nbd = Math.sqrt(nbdx * nbdx + nbdy * nbdy + nbdz * nbdz);
         final double nb_fall = 1.0 / (1.0 + (nbd / LIGHT_FALLOFF_K) * (nbd / LIGHT_FALLOFF_K));
-        final int nr_scaled = 96 + (int) (159.0 * Math.min(1.0, nr_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0 * RendererDelegator.red_light_pct / 100.0));
-        final int ng_scaled = 96 + (int) (159.0 * Math.min(1.0, ng_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0 * RendererDelegator.green_light_pct / 100.0));
-        final int nb_scaled = 96 + (int) (159.0 * Math.min(1.0, nb_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0 * RendererDelegator.blue_light_pct / 100.0));
+        // White light (Tim, 2026-10-03): flat ambient boost in fast mode.
+        final int w_fast = (int) (64.0 * RendererDelegator.white_light_pct / 100.0);
+        final int nr_scaled = 96 + w_fast + (int) (159.0 * Math.min(1.0, nr_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0 * RendererDelegator.red_light_pct / 100.0));
+        final int ng_scaled = 96 + w_fast + (int) (159.0 * Math.min(1.0, ng_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0 * RendererDelegator.green_light_pct / 100.0));
+        final int nb_scaled = 96 + w_fast + (int) (159.0 * Math.min(1.0, nb_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0 * RendererDelegator.blue_light_pct / 100.0));
         final int nr = (fogged >> 16) & 0xFF;
         final int ng = (fogged >> 8) & 0xFF;
         final int nb = fogged & 0xFF;
@@ -1022,9 +1003,11 @@ final class Raytracer {
             * Math.min(1.0, b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0);
       }
       // Half-to-full brightness per channel.
-      final int r_scaled = 96 + (int) (159.0 * r_factor);
-      final int g_scaled = 96 + (int) (159.0 * g_factor);
-      final int b_scaled = 96 + (int) (159.0 * b_factor);
+      // White light (Tim, 2026-10-03): flat ambient boost in fast mode.
+      final int w_fast2 = (int) (64.0 * RendererDelegator.white_light_pct / 100.0);
+      final int r_scaled = 96 + w_fast2 + (int) (159.0 * r_factor);
+      final int g_scaled = 96 + w_fast2 + (int) (159.0 * g_factor);
+      final int b_scaled = 96 + w_fast2 + (int) (159.0 * b_factor);
       final int r = (fogged >> 16) & 0xFF;
       final int g = (fogged >> 8) & 0xFF;
       final int b = fogged & 0xFF;
@@ -1142,6 +1125,15 @@ final class Raytracer {
         + (int) (159.0 * Math.min(1.0, g_dot * g_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0));
     final int b_scaled = 96
         + (int) (159.0 * Math.min(1.0, b_dot * b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0));
+    // White directional light (Tim, 2026-10-03): the old white light,
+    // restored. Adds equally to all channels.
+    final double w_dot = Math.max(0.0,
+        hit.nx * LIGHT_X + hit.ny * LIGHT_Y + hit.nz * LIGHT_Z);
+    final int w_add = (int) (159.0 * w_dot
+        * RendererDelegator.white_light_pct / 100.0);
+    final int r_white = Math.min(255, r_scaled + w_add);
+    final int g_white = Math.min(255, g_scaled + w_add);
+    final int b_white = Math.min(255, b_scaled + w_add);
 
     final double pz = ray.oz + ray.dz * hit.t;
     final int fogged = Fog.applyFog(hit.primitive.getColour(), (int) pz);
@@ -1149,16 +1141,9 @@ final class Raytracer {
     final int r = (fogged >> 16) & 0xFF;
     final int g = (fogged >> 8) & 0xFF;
     final int b = fogged & 0xFF;
-    int or = (r * r_scaled) >> 8;
-    int og = (g * g_scaled) >> 8;
-    int ob = (b * b_scaled) >> 8;
-
-    // The fill light is shadow-independent: it lifts the shadowed
-    // areas too, the way a photographer's fill does.
-    final int fill = fillLight(hit);
-    or = softAdd(or, fill);
-    og = softAdd(og, fill);
-    ob = softAdd(ob, fill);
+    int or = (r * r_white) >> 8;
+    int og = (g * g_white) >> 8;
+    int ob = (b * b_white) >> 8;
 
     // RGB specular reflections (Tim, 2026-10-03): the glossy sheen
     // and specular highlight are computed per light, so they show
@@ -1277,32 +1262,6 @@ final class Raytracer {
       return 255;
     }
     return 255 - (255 - base) * 255 / (255 + add);
-  }
-
-  /**
-   * The fill light: |normal . fill| scaled by the Fill light
-   * percentage. Returns the 0-255 white to add, or 0 when the setting
-   * is 0. Shadow-independent, so it lifts shadowed areas too.
-   *
-   * The fill runs at half the key light's strength: 100% fill adds at
-   * most ~127, so it models the dark side without flattening it.
-   */
-  private static int fillLight(final Hit hit) {
-    if (!RendererDelegator.fill_light_enabled) {
-      return 0;
-    }
-    final int strength = RendererDelegator.fill_light;
-    if (strength <= 0) {
-      return 0;
-    }
-    double dot = hit.nx * FILL_X + hit.ny * FILL_Y + hit.nz * FILL_Z;
-    if (dot < 0.0) {
-      dot = -dot;
-    }
-    if (dot > 1.0) {
-      dot = 1.0;
-    }
-    return (int) (strength * 1.275 * dot);
   }
 
   /**

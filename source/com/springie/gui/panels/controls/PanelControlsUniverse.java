@@ -494,34 +494,23 @@ public class PanelControlsUniverse {
     panel_light_blue.add("East", label_light_blue);
     panel_lights.add(panel_light_blue);
 
-    // Fill light (Tim, 2026-10-03): moved from the ray-traced panel.
-    final Panel panel_fill_light_enable = new Panel();
-    final Checkbox checkbox_fill_light = new Checkbox("Fill light",
-        RendererDelegator.fill_light_enabled);
-    checkbox_fill_light.addItemListener(new ItemListener() {
-      public void itemStateChanged(final ItemEvent e) {
-        RendererDelegator.fill_light_enabled = ((Checkbox) e.getSource()).getState();
-      }
-    });
-    panel_fill_light_enable.add(checkbox_fill_light);
-    panel_lights.add(panel_fill_light_enable);
-
-    final Panel panel_fill_light = new Panel();
-    panel_fill_light.setLayout(new BorderLayout(0, 8));
-    panel_fill_light.add("West", new Label("Fill light %:", Label.RIGHT));
-    final Scrollbar scrollbar_fill_light = new Scrollbar(Scrollbar.HORIZONTAL,
-        RendererDelegator.fill_light, 1, 10, 101);
-    final Label label_fill_light = new Label("" + RendererDelegator.fill_light, Label.LEFT);
-    scrollbar_fill_light.addAdjustmentListener(new AdjustmentListener() {
+    // White light (Tim, 2026-10-03): the old white directional light,
+    // restored as a slider.
+    final Panel panel_light_white = new Panel();
+    panel_light_white.setLayout(new BorderLayout(0, 8));
+    panel_light_white.add("West", new Label("White light %:", Label.RIGHT));
+    final Scrollbar scrollbar_light_white = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
+    final Label label_light_white = new Label("50", Label.LEFT);
+    scrollbar_light_white.addAdjustmentListener(new AdjustmentListener() {
       public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int val = e.getValue();
-        RendererDelegator.fill_light = val;
-        label_fill_light.setText("" + val);
+        RendererDelegator.white_light_pct = val;
+        label_light_white.setText("" + val);
       }
     });
-    panel_fill_light.add("Center", scrollbar_fill_light);
-    panel_fill_light.add("East", label_fill_light);
-    panel_lights.add(panel_fill_light);
+    panel_light_white.add("Center", scrollbar_light_white);
+    panel_light_white.add("East", label_light_white);
+    panel_lights.add(panel_light_white);
 
     final TabbedPanel universe_tabs = new TabbedPanel();
     universe_tabs.add("Main", panel_main);
