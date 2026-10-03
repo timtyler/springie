@@ -37,9 +37,9 @@ public final class PairedSpokeController implements Controller {
   private final int ground_y;
   private final int direction;
 
-  public PairedSpokeController(Node hub, Node rim_a, Node rim_b,
-      Link link_a, Link link_b, int base_a, int base_b,
-      int push_pct, int pull_pct, int ground_y, int direction,
+  public PairedSpokeController(final Node hub, final Node rim_a, final Node rim_b,
+      Link link_a, final Link link_b, final int base_a, final int base_b,
+      int push_pct, final int pull_pct, final int ground_y, final int direction,
       int stance_threshold_px) {
     this(hub, rim_a, rim_b, link_a, link_b, base_a, base_b, push_pct,
         pull_pct, ground_y, direction, stance_threshold_px, false, 60, 0);
@@ -61,8 +61,8 @@ public final class PairedSpokeController implements Controller {
    */
   public PairedSpokeController(Node hub, Node rim_a, Node rim_b,
       Link link_a, Link link_b, int base_a, int base_b,
-      int push_pct, int pull_pct, int ground_y, int direction,
-      int stance_threshold_px, boolean proportional, int radius_px,
+      int push_pct, final int pull_pct, int ground_y, int direction,
+      int stance_threshold_px, boolean proportional, final int radius_px,
       int roll_gain) {
     this.hub = hub;
     this.rim_a = rim_a;
@@ -89,7 +89,7 @@ public final class PairedSpokeController implements Controller {
   private final int roll_gain;
 
   @Override
-  public void update(Link link, long tick) {
+  public void update(final Link link, final long tick) {
     // Pair midpoint geometry -- symmetric by construction.
     final int mid_x = (rim_a.pos.x + rim_b.pos.x) / 2;
     final int mid_y = (rim_a.pos.y + rim_b.pos.y) / 2;

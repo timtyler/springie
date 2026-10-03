@@ -163,7 +163,7 @@ public final class WheelbarrowDemo {
    * Builds the wheel with its centre at (x_px, ground - radius).
    * Returns the hub node.
    */
-  public static Node buildAt(int x_px) {
+  public static Node buildAt(final int x_px) {
     final NodeManager node_manager = ContextManager.getNodeManager();
     node_manager.initial_reset();
     final LinkManager link_manager = node_manager.getLinkManager();
@@ -299,8 +299,8 @@ public final class WheelbarrowDemo {
     return hub0;
   }
 
-  private static Node addNode(NodeManager nm, Clazz clazz, NodeType nt,
-      int x, int y, int z) {
+  private static Node addNode(final NodeManager nm, final Clazz clazz, final NodeType nt,
+      int x, final int y, final int z) {
     return nm.addNewAgent(new Point3D(x, y, z), clazz, nt);
   }
 
@@ -308,7 +308,7 @@ public final class WheelbarrowDemo {
    * Passive link with its own type so the rest length matches its actual
    * geometry exactly.
    */
-  private static Link passive(LinkManager lm, Clazz clazz, Node a, Node b,
+  private static Link passive(final LinkManager lm, final Clazz clazz, final Node a, final Node b,
       int elasticity) {
     final LinkType type =
         thin(lm.link_type_factory.getNew(distance(a, b), elasticity));
@@ -322,7 +322,7 @@ public final class WheelbarrowDemo {
    * with moderate give -- checks lateral yaw without over-constraining
    * the handle (Tim, 2026-10-01).
    */
-  private static void xBraceCable(LinkManager lm, Clazz clazz,
+  private static void xBraceCable(final LinkManager lm, final Clazz clazz,
       Node hub, Node handle) {
     final LinkType type = thin(lm.link_type_factory.getNew(
         distance(hub, handle), xbrace_elasticity));
@@ -336,7 +336,7 @@ public final class WheelbarrowDemo {
    * Thins a link type for rendering: radius = length / link_radius_divisor.
    * Visual only -- link radius never enters the physics.
    */
-  private static LinkType thin(LinkType type) {
+  private static LinkType thin(final LinkType type) {
     type.radius = type.length / link_radius_divisor;
     return type;
   }
@@ -345,8 +345,8 @@ public final class WheelbarrowDemo {
    * Structural hub-to-rim spoke: passive cable. Tension-only
    * (compression=false).
    */
-  private static void structuralSpoke(LinkManager lm, Clazz clazz,
-      Node hub, Node rim) {
+  private static void structuralSpoke(final LinkManager lm, final Clazz clazz,
+      Node hub, final Node rim) {
     final LinkType type = thin(lm.link_type_factory.getNew(
         scaledSpokeLength(distance(hub, rim)), spoke_elasticity));
     type.compression = false;
@@ -359,8 +359,8 @@ public final class WheelbarrowDemo {
    * from hub to handle node, driven by the shared oscillator.
    * Returns the link so callers can set the handle flag.
    */
-  private static Link handleMuscle(LinkManager lm, Clazz clazz,
-      Node hub, Node handle, GlobalOscillatorController muscle, int phase) {
+  private static Link handleMuscle(final LinkManager lm, final Clazz clazz,
+      Node hub, final Node handle, final GlobalOscillatorController muscle, int phase) {
     final LinkType type = thin(lm.link_type_factory.getNew(
         distance(hub, handle), handle_elasticity));
     type.compression = false;
@@ -371,11 +371,11 @@ public final class WheelbarrowDemo {
     return link;
   }
 
-  private static int scaledSpokeLength(int geometric) {
+  private static int scaledSpokeLength(final int geometric) {
     return (int) ((long) geometric * spoke_rest_scale_pct / 100);
   }
 
-  private static int distance(Node a, Node b) {
+  private static int distance(final Node a, final Node b) {
     final int dx = a.pos.x - b.pos.x;
     final int dy = a.pos.y - b.pos.y;
     final int dz = a.pos.z - b.pos.z;

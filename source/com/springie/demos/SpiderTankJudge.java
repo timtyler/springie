@@ -15,7 +15,7 @@ public final class SpiderTankJudge {
   private SpiderTankJudge() {
   }
 
-  public static void main(String[] args) throws Exception {
+  public static void main(final String[] args) throws Exception {
     final int ticks = args.length > 0 ? Integer.parseInt(args[0]) : 600;
 
     // Headless: just create a NodeManager, no FrEnd.

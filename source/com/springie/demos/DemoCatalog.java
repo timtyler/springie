@@ -59,7 +59,7 @@ public final class DemoCatalog {
    * Finds the demo with the given name, or null when there is none. The
    * placeholder in the demos dropdown maps to no demo.
    */
-  public static Demo forName(String name) {
+  public static Demo forName(final String name) {
     if (name == null) {
       return null;
     }

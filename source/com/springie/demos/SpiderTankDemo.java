@@ -99,7 +99,7 @@ public final class SpiderTankDemo {
    * Builds the spider tank centred at (x_px, 0) with feet on the ground.
    * Returns a body node for tracking.
    */
-  public static Node buildAt(int x_px) {
+  public static Node buildAt(final int x_px) {
     final NodeManager node_manager = ContextManager.getNodeManager();
     node_manager.initial_reset();
     final LinkManager link_manager = node_manager.getLinkManager();
@@ -247,7 +247,7 @@ public final class SpiderTankDemo {
     return b0;
   }
 
-  private static Node addNode(NodeManager nm, Clazz clazz, NodeType nt, int x, int y, int z) {
+  private static Node addNode(final NodeManager nm, final Clazz clazz, final NodeType nt, final int x, final int y, final int z) {
     return nm.addNewAgent(new Point3D(x, y, z), clazz, nt);
   }
 
@@ -255,7 +255,7 @@ public final class SpiderTankDemo {
    * Passive strut (compression member): resists both stretch and squash.
    * Rest length = actual distance, so the frame starts unstressed.
    */
-  private static void strut(LinkManager lm, LinkType template, Clazz clazz, Node a, Node b) {
+  private static void strut(final LinkManager lm, final LinkType template, final Clazz clazz, final Node a, final Node b) {
     // Each link gets its own type so the rest length matches this link's
     // actual geometry exactly.
     final int dist = distance(a, b);
@@ -270,8 +270,8 @@ public final class SpiderTankDemo {
    * oscillator lengthens its rest length past the actual length it
    * simply goes slack.
    */
-  private static void cableMuscle(LinkManager lm, LinkType template, Clazz clazz,
-      Node a, Node b, int phase) {
+  private static void cableMuscle(final LinkManager lm, final LinkType template, final Clazz clazz,
+      Node a, final Node b, int phase) {
     final int dist = distance(a, b);
     final LinkType type = lm.link_type_factory.getNew(dist, template.elasticity);
     type.damping = template.damping;
@@ -283,7 +283,7 @@ public final class SpiderTankDemo {
     link.controller = new GlobalOscillatorController(Muscles.active_oscillator);
   }
 
-  private static int distance(Node a, Node b) {
+  private static int distance(final Node a, final Node b) {
     final int dx = a.pos.x - b.pos.x;
     final int dy = a.pos.y - b.pos.y;
     final int dz = a.pos.z - b.pos.z;

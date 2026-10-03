@@ -20,7 +20,7 @@ public final class CompassBalance {
    *
    * @return a violation description, or null when the slate is balanced.
    */
-  public static String checkBalanced(Map<String, CompassPoint> slate) {
+  public static String checkBalanced(final Map<String, CompassPoint> slate) {
     int n = 0;
     int s = 0;
     int e = 0;

@@ -131,7 +131,7 @@ public final class HopperJudge {
    * two calls give identical results, even in a JVM where a GUI test has
    * left the animation thread running.
    */
-  public static Result score(int ticks) {
+  public static Result score(final int ticks) {
     // Hold the model lock for the whole run (see SidewinderJudge for why:
     // a GUI test's animation thread never stops and would otherwise step
     // physics on this run's NodeManager concurrently).
@@ -302,7 +302,7 @@ public final class HopperJudge {
    * least feet_first_slack above the lowest foot (in y-down pixels,
    * non-foot nodes must have smaller y).
    */
-  private static boolean feetFirst(Node[] nodes, boolean[] is_foot, int feet_first_slack) {
+  private static boolean feetFirst(final Node[] nodes, final boolean[] is_foot, final int feet_first_slack) {
     int max_foot_y = Integer.MIN_VALUE;
     for (int i = 0; i < nodes.length; i++) {
       if (is_foot[i] && nodes[i].pos.y > max_foot_y) {
@@ -317,7 +317,7 @@ public final class HopperJudge {
     return true;
   }
 
-  private static int distance(Node a, Node b) {
+  private static int distance(final Node a, final Node b) {
     final int dx = a.pos.x - b.pos.x;
     final int dy = a.pos.y - b.pos.y;
     final int dz = a.pos.z - b.pos.z;
@@ -376,7 +376,7 @@ public final class HopperJudge {
     }
   }
 
-  public static void main(String[] args) throws Exception {
+  public static void main(final String[] args) throws Exception {
     final int ticks = args.length > 0 ? Integer.parseInt(args[0]) : 600;
     final Result result = score(ticks);
     System.out.println(result);

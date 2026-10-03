@@ -98,7 +98,7 @@ public final class CrawlerJudge {
    * two calls give identical results, even in a JVM where a GUI test
    * has left the animation thread running.
    */
-  public static Result score(int ticks) {
+  public static Result score(final int ticks) {
     // Hold the model lock for the whole run (see RollingJudge for why).
     synchronized (ContextManager.class) {
       return scoreWithLockHeld(ticks);
@@ -223,7 +223,7 @@ public final class CrawlerJudge {
    * pixels. The body nodes are element indices 0-5 (the leg nodes are
    * excluded: feet touch the ground by design).
    */
-  private static int bodyClearancePx(NodeManager node_manager,
+  private static int bodyClearancePx(final NodeManager node_manager,
       int floor_internal) {
     long sum_y = 0;
     final int body_nodes = 6;
@@ -253,7 +253,7 @@ public final class CrawlerJudge {
     }
   }
 
-  public static void main(String[] args) throws Exception {
+  public static void main(final String[] args) throws Exception {
     final int ticks = args.length > 0 ? Integer.parseInt(args[0]) : 600;
     System.out.println(score(ticks));
     System.exit(0);

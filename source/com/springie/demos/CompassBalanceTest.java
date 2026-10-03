@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
  */
 public class CompassBalanceTest {
 
-  private static Map<String, CompassPoint> slate(Object... pairs) {
+  private static Map<String, CompassPoint> slate(final Object... pairs) {
     final Map<String, CompassPoint> map = new HashMap<>();
     for (int i = 0; i < pairs.length; i += 2) {
       map.put((String) pairs[i], (CompassPoint) pairs[i + 1]);

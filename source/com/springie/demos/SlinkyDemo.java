@@ -66,7 +66,7 @@ public final class SlinkyDemo {
   public static Node[] coil_nodes = new Node[0];
   public static Node reference_node = null;
 
-  public static void buildAt(int x_px) {
+  public static void buildAt(final int x_px) {
     final NodeManager node_manager = ContextManager.getNodeManager();
     node_manager.initial_reset();
     final LinkManager link_manager = node_manager.getLinkManager();
@@ -179,21 +179,21 @@ public final class SlinkyDemo {
     buildAt(400);
   }
 
-  private static Node addNode(NodeManager node_manager, Clazz clazz,
-      NodeType node_type, int x, int y, int z) {
+  private static Node addNode(final NodeManager node_manager, final Clazz clazz,
+      NodeType node_type, final int x, final int y, final int z) {
     return node_manager.addNewAgent(new Point3D(x, y, z), clazz, node_type);
   }
 
-  private static void passive(LinkManager link_manager, Clazz clazz,
-      Node n1, Node n2, int elasticity) {
+  private static void passive(final LinkManager link_manager, final Clazz clazz,
+      Node n1, final Node n2, final int elasticity) {
     final LinkType type = link_manager.link_type_factory.getNew(
         distance(n1, n2), elasticity);
     final Link link = link_manager.setLink(n1, n2, type, clazz);
     link.adjusted_rest_length = type.length;
   }
 
-  private static void pullSpoke(LinkManager link_manager, Clazz clazz,
-      Node hub, Node rim, int ground_y) {
+  private static void pullSpoke(final LinkManager link_manager, final Clazz clazz,
+      Node hub, final Node rim, final int ground_y) {
     final int base = distance(hub, rim);
     final LinkType type = link_manager.link_type_factory.getNew(
         base, spoke_elasticity);
@@ -206,7 +206,7 @@ public final class SlinkyDemo {
         new SlinkyPullController(hub, rim, base, reflex_pull_pct, ground_y, 1);
   }
 
-  private static int distance(Node a, Node b) {
+  private static int distance(final Node a, final Node b) {
     final int dx = a.pos.x - b.pos.x;
     final int dy = a.pos.y - b.pos.y;
     final int dz = a.pos.z - b.pos.z;
@@ -250,7 +250,7 @@ public final class SlinkyDemo {
     }
 
     @Override
-    public void update(Link link, long tick) {
+    public void update(final Link link, final long tick) {
       // Near the ground? (within 8px above it)
       final boolean on_ground =
           rim.pos.y >= ground_y - (8 << Coords.shift);

@@ -144,7 +144,7 @@ public final class HopperDemo {
    * Builds the hopper with its body starting at x_px, feet on the
    * ground. Returns the crown marker node.
    */
-  public static Node buildAt(int x_px) {
+  public static Node buildAt(final int x_px) {
     FrEnd.check_collisions = false;
     final NodeManager node_manager = ContextManager.getNodeManager();
     node_manager.initial_reset();
@@ -288,14 +288,14 @@ public final class HopperDemo {
     return t0;
   }
 
-  private static Node addNode(NodeManager nm, Clazz clazz, NodeType nt,
-      int x, int y, int z) {
+  private static Node addNode(final NodeManager nm, final Clazz clazz, final NodeType nt,
+      int x, final int y, final int z) {
     return nm.addNewAgent(new Point3D(x, y, z), clazz, nt);
   }
 
   /** Passive link. Rest length = actual distance. */
-  private static void link(LinkManager lm, LinkType template, Clazz clazz,
-      Node a, Node b, int phase) {
+  private static void link(final LinkManager lm, final LinkType template, final Clazz clazz,
+      Node a, final Node b, int phase) {
     // Each link gets its own type so the muscle controller's base length
     // (link.type.length) matches this link's actual geometry.
     final int dx = a.pos.x - b.pos.x;
@@ -310,8 +310,8 @@ public final class HopperDemo {
     link.phase = phase;
   }
 
-  private static void muscle(LinkManager lm, LinkType type, Clazz clazz,
-      Node a, Node b, Controller controller) {
+  private static void muscle(final LinkManager lm, final LinkType type, final Clazz clazz,
+      Node a, final Node b, Controller controller) {
     final int n_o_l = lm.element.size();
     link(lm, type, clazz, a, b, -1);
     if (lm.element.size() != n_o_l + 1) {

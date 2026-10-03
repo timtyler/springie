@@ -101,7 +101,7 @@ public final class Caterpillar2Judge {
    * two calls give identical results, even in a JVM where a GUI test has
    * left the animation thread running.
    */
-  public static Result score(int ticks) {
+  public static Result score(final int ticks) {
     // Hold the model lock for the whole run (see SidewinderJudge for why).
     synchronized (ContextManager.class) {
       return scoreWithLockHeld(ticks);
@@ -221,7 +221,7 @@ public final class Caterpillar2Judge {
   }
 
   /** Centroid of all nodes, in internal units. */
-  private static double[] centroid(Node[] nodes) {
+  private static double[] centroid(final Node[] nodes) {
     double x = 0.0;
     double y = 0.0;
     double z = 0.0;
@@ -234,7 +234,7 @@ public final class Caterpillar2Judge {
     return new double[] {x / count, y / count, z / count};
   }
 
-  private static int distance(Node a, Node b) {
+  private static int distance(final Node a, final Node b) {
     final int dx = a.pos.x - b.pos.x;
     final int dy = a.pos.y - b.pos.y;
     final int dz = a.pos.z - b.pos.z;
@@ -294,7 +294,7 @@ public final class Caterpillar2Judge {
     }
   }
 
-  public static void main(String[] args) throws Exception {
+  public static void main(final String[] args) throws Exception {
     final int ticks = args.length > 0 ? Integer.parseInt(args[0]) : 600;
     final Result result = score(ticks);
     System.out.println(result);

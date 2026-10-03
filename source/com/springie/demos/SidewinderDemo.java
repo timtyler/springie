@@ -91,7 +91,7 @@ public final class SidewinderDemo {
    * Builds the sidewinder, replacing whatever is there. The body is centred at
    * x = x_px pixels and rests on the ground.
    */
-  public static void buildAt(int x_px) {
+  public static void buildAt(final int x_px) {
     final NodeManager node_manager = ContextManager.getNodeManager();
     node_manager.initial_reset();
     final LinkManager link_manager = node_manager.getLinkManager();
@@ -180,8 +180,8 @@ public final class SidewinderDemo {
     buildAt(400);
   }
 
-  private static Node addNode(NodeManager node_manager, Clazz clazz,
-      NodeType node_type, int x, int y, int z) {
+  private static Node addNode(final NodeManager node_manager, final Clazz clazz,
+      NodeType node_type, final int x, final int y, final int z) {
     return node_manager.addNewAgent(new Point3D(x, y, z), clazz, node_type);
   }
 
@@ -190,8 +190,8 @@ public final class SidewinderDemo {
    * its own link type whose rest length matches the actual geometry, so
    * the frame carries no pre-stress.
    */
-  private static void linkTetrahedron(LinkManager link_manager, Clazz clazz,
-      Node p0, Node p1, Node p2, Node p3) {
+  private static void linkTetrahedron(final LinkManager link_manager, final Clazz clazz,
+      Node p0, final Node p1, final Node p2, final Node p3) {
     strut(link_manager, clazz, p0, p1);
     strut(link_manager, clazz, p0, p2);
     strut(link_manager, clazz, p0, p3);
@@ -200,8 +200,8 @@ public final class SidewinderDemo {
     strut(link_manager, clazz, p2, p3);
   }
 
-  private static void strut(LinkManager link_manager, Clazz clazz,
-      Node n1, Node n2) {
+  private static void strut(final LinkManager link_manager, final Clazz clazz,
+      Node n1, final Node n2) {
     // Skip if these nodes are already linked (shared faces reuse edges).
     final int n_o_l = link_manager.element.size();
     for (int i = n_o_l; --i >= 0;) {
@@ -221,7 +221,7 @@ public final class SidewinderDemo {
    * Rotates the body so its head-to-tail axis is horizontal, centres it at
    * (x_px, ground) with the lowest node just above the ground.
    */
-  private static void levelBody(Node[] nodes, int x_px) {
+  private static void levelBody(final Node[] nodes, final int x_px) {
     final int n = nodes.length;
     final double[] c1 = centroid(nodes, 0, 4);
     final double[] c2 = centroid(nodes, n - 4, n);
@@ -329,7 +329,7 @@ public final class SidewinderDemo {
    * carries a travelling phase wave along the body, the -side the same
    * wave shifted by half a period, so the two flanks work in antiphase.
    */
-  private static void addFlankMuscles(LinkManager link_manager, Clazz clazz,
+  private static void addFlankMuscles(final LinkManager link_manager, final Clazz clazz,
       Node[] nodes) {
     final int n = nodes.length;
     final double[] c1 = centroid(nodes, 0, 4);
@@ -412,15 +412,15 @@ public final class SidewinderDemo {
   }
 
   /** Phase in ticks for the given axial station (pixels along the axis). */
-  private static int phaseFor(double station_internal, int period,
-      double lambda_px, int offset) {
+  private static int phaseFor(final double station_internal, final int period,
+      double lambda_px, final int offset) {
     final double s_px = station_internal / (1 << Coords.shift);
     final int phase = (int) (s_px * period / lambda_px) + offset;
     return ((phase % period) + period) % period;
   }
 
   /** Converts an existing strut link into a flank muscle. */
-  private static void makeMuscle(LinkManager link_manager, Clazz clazz,
+  private static void makeMuscle(final LinkManager link_manager, final Clazz clazz,
       Link link, GlobalOscillatorController controller, int phase) {
     final LinkType type = link_manager.link_type_factory.getNew(
         distance(link.nodes[0], link.nodes[1]), muscle_elasticity);
@@ -436,7 +436,7 @@ public final class SidewinderDemo {
         (int) (((long) type.length * scale) >> Coords.shift);
   }
 
-  private static double[] centroid(Node[] nodes, int from, int to) {
+  private static double[] centroid(final Node[] nodes, final int from, final int to) {
     double x = 0.0;
     double y = 0.0;
     double z = 0.0;
@@ -449,7 +449,7 @@ public final class SidewinderDemo {
     return new double[] {x / count, y / count, z / count};
   }
 
-  private static int distance(Node a, Node b) {
+  private static int distance(final Node a, final Node b) {
     final int dx = a.pos.x - b.pos.x;
     final int dy = a.pos.y - b.pos.y;
     final int dz = a.pos.z - b.pos.z;
@@ -460,8 +460,8 @@ public final class SidewinderDemo {
    * Returns a new node positioned so that (b, c, d, next) is a regular
    * tetrahedron: the reflection of 'a' across the plane of face (b, c, d).
    */
-  private static Node reflectAcrossFace(NodeManager node_manager, Clazz clazz,
-      NodeType node_type, Node a, Node b, Node c, Node d) {
+  private static Node reflectAcrossFace(final NodeManager node_manager, final Clazz clazz,
+      NodeType node_type, final Node a, final Node b, final Node c, final Node d) {
     final Point3D pa = a.pos;
     final Point3D pb = b.pos;
     final Point3D pc = c.pos;

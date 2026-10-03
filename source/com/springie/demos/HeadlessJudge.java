@@ -31,7 +31,7 @@ public abstract class HeadlessJudge {
    * RendererDelegator.redrawChanged); the physics path never needs the
    * AWT tree lock, so this cannot deadlock.
    */
-  protected static <T> T withModelLock(java.util.function.Supplier<T> run) {
+  protected static <T> T withModelLock(final java.util.function.Supplier<T> run) {
     synchronized (ContextManager.class) {
       return run.get();
     }
@@ -108,7 +108,7 @@ public abstract class HeadlessJudge {
   }
 
   /** Runs the given number of physics ticks without measuring. */
-  protected static void settle(NodeManager node_manager, int ticks) {
+  protected static void settle(final NodeManager node_manager, final int ticks) {
     for (int i = 0; i < ticks; i++) {
       node_manager.nodeAndLinkUpdate();
     }
@@ -118,7 +118,7 @@ public abstract class HeadlessJudge {
    * 2D travel on the floor between two positions, in pixels. Vertical
    * motion (hops, bobs, falls) does not count -- Tim's 2D judging rule.
    */
-  protected static int distance2DPx(int x0, int z0, int x1, int z1) {
+  protected static int distance2DPx(final int x0, final int z0, final int x1, final int z1) {
     final long dx = (long) x1 - x0;
     final long dz = (long) z1 - z0;
     return (int) (Math.sqrt(dx * dx + dz * dz) / (1 << Coords.shift));
@@ -130,7 +130,7 @@ public abstract class HeadlessJudge {
    * teleported). Without this, a shattered model whose tracked node
    * happens to stay put can score a bogus clean run.
    */
-  protected static boolean shattered(NodeManager node_manager, Node ref,
+  protected static boolean shattered(final NodeManager node_manager, final Node ref,
       int limit_px) {
     final int n = node_manager.element.size();
     final long limit = (long) limit_px << Coords.shift;
@@ -154,8 +154,8 @@ public abstract class HeadlessJudge {
    * initial. The shattered() check (node flung far) misses this; all
    * nodes stay near the hub, just flat on the floor.
    */
-  protected static boolean collapsed(NodeManager node_manager,
-      long init_y_px, long init_z_px) {
+  protected static boolean collapsed(final NodeManager node_manager,
+      long init_y_px, final long init_z_px) {
     final int n = node_manager.element.size();
     if (n == 0) {
       return true;
@@ -187,7 +187,7 @@ public abstract class HeadlessJudge {
   }
 
   /** Y and Z extents of the model in pixels, as {y_extent, z_extent}. */
-  protected static long[] extentsPx(NodeManager node_manager) {
+  protected static long[] extentsPx(final NodeManager node_manager) {
     final int n = node_manager.element.size();
     long min_y = Long.MAX_VALUE;
     long max_y = Long.MIN_VALUE;
@@ -215,7 +215,7 @@ public abstract class HeadlessJudge {
   }
 
   /** Mean node height (centre-of-mass height), in pixels. */
-  protected static double comHeightPx(NodeManager node_manager) {
+  protected static double comHeightPx(final NodeManager node_manager) {
     final int n = node_manager.element.size();
     long sum = 0;
     for (int i = 0; i < n; i++) {

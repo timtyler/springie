@@ -112,7 +112,7 @@ public final class SlinkyJudge {
    * two calls give identical results, even in a JVM where a GUI test has
    * left the animation thread running.
    */
-  public static Result score(int ticks) {
+  public static Result score(final int ticks) {
     // Hold the model lock for the whole run (see SidewinderJudge for why).
     synchronized (ContextManager.class) {
       return scoreWithLockHeld(ticks);
@@ -228,7 +228,7 @@ public final class SlinkyJudge {
     return result;
   }
 
-  private static double centreX(Node[] nodes) {
+  private static double centreX(final Node[] nodes) {
     double x = 0.0;
     for (final Node node : nodes) {
       x += node.pos.x;
@@ -236,7 +236,7 @@ public final class SlinkyJudge {
     return x / nodes.length;
   }
 
-  private static double centreZ(Node[] nodes) {
+  private static double centreZ(final Node[] nodes) {
     double z = 0.0;
     for (final Node node : nodes) {
       z += node.pos.z;
@@ -249,7 +249,7 @@ public final class SlinkyJudge {
    * plane. Forward flips (top of the coil moving toward +x) increase
    * this angle.
    */
-  private static double refAngle(Node ref, Node[] nodes) {
+  private static double refAngle(final Node ref, final Node[] nodes) {
     double cx = 0.0;
     double cy = 0.0;
     for (final Node node : nodes) {
@@ -261,7 +261,7 @@ public final class SlinkyJudge {
     return Math.atan2(ref.pos.y - cy, ref.pos.x - cx);
   }
 
-  private static int distance(Node a, Node b) {
+  private static int distance(final Node a, final Node b) {
     final int dx = a.pos.x - b.pos.x;
     final int dy = a.pos.y - b.pos.y;
     final int dz = a.pos.z - b.pos.z;
@@ -320,7 +320,7 @@ public final class SlinkyJudge {
     }
   }
 
-  public static void main(String[] args) throws Exception {
+  public static void main(final String[] args) throws Exception {
     final int ticks = args.length > 0 ? Integer.parseInt(args[0]) : 600;
     final Result result = score(ticks);
     System.out.println(result);

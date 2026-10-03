@@ -103,7 +103,7 @@ public final class CaterpillarDemo {
    * Builds the caterpillar, replacing whatever is there. The row starts
    * at x = x_px pixels, facing +x, bases resting just above the ground.
    */
-  public static void buildAt(int x_px) {
+  public static void buildAt(final int x_px) {
     final NodeManager node_manager = ContextManager.getNodeManager();
     node_manager.initial_reset();
     final LinkManager link_manager = node_manager.getLinkManager();
@@ -221,14 +221,14 @@ public final class CaterpillarDemo {
     buildAt(100);
   }
 
-  private static Node addNode(NodeManager node_manager, Clazz clazz,
-      NodeType node_type, int x, int y, int z) {
+  private static Node addNode(final NodeManager node_manager, final Clazz clazz,
+      NodeType node_type, final int x, final int y, final int z) {
     return node_manager.addNewAgent(new Point3D(x, y, z), clazz, node_type);
   }
 
   /** Passive strut with rest length matched to the geometry (no pre-stress). */
-  private static void strut(LinkManager link_manager, Clazz clazz,
-      Node n1, Node n2) {
+  private static void strut(final LinkManager link_manager, final Clazz clazz,
+      Node n1, final Node n2) {
     if (isLinked(link_manager, n1, n2)) {
       return;
     }
@@ -243,8 +243,8 @@ public final class CaterpillarDemo {
    * brace the square against collapse but let it shear, so the travelling
    * bending wave comes through cleanly.
    */
-  private static void diagonalCable(LinkManager link_manager, Clazz clazz,
-      Node n1, Node n2) {
+  private static void diagonalCable(final LinkManager link_manager, final Clazz clazz,
+      Node n1, final Node n2) {
     if (isLinked(link_manager, n1, n2)) {
       return;
     }
@@ -257,8 +257,8 @@ public final class CaterpillarDemo {
     link.adjusted_rest_length = type.length;
   }
 
-  private static void makeStrut(LinkManager link_manager, Clazz clazz,
-      Node n1, Node n2) {
+  private static void makeStrut(final LinkManager link_manager, final Clazz clazz,
+      Node n1, final Node n2) {
     final LinkType type = link_manager.link_type_factory.getNew(
         distance(n1, n2), skeleton_elasticity);
     final Link link = link_manager.setLink(n1, n2, type, clazz);
@@ -275,8 +275,8 @@ public final class CaterpillarDemo {
    * length: otherwise every muscle snaps to its driven length on the
    * first tick and the row kicks violently.
    */
-  private static void sideRailMuscle(LinkManager link_manager, Clazz clazz,
-      Node n1, Node n2, GlobalOscillatorController controller, int phase,
+  private static void sideRailMuscle(final LinkManager link_manager, final Clazz clazz,
+      Node n1, final Node n2, GlobalOscillatorController controller, int phase,
       Oscillator oscillator) {
     final LinkType type = link_manager.link_type_factory.getNew(
         distance(n1, n2), muscle_elasticity);
@@ -299,11 +299,11 @@ public final class CaterpillarDemo {
    * cables permanently slack (no shear stiffness). Snapping removes the
    * systematic bias; the remaining +/-1px quantization is symmetric.
    */
-  private static void snapRestLength(Link link) {
+  private static void snapRestLength(final Link link) {
     link.type.length = link.getActualLength();
   }
 
-  private static boolean isLinked(LinkManager link_manager, Node n1, Node n2) {
+  private static boolean isLinked(final LinkManager link_manager, final Node n1, final Node n2) {
     final int n_o_l = link_manager.element.size();
     for (int i = n_o_l; --i >= 0;) {
       final Link existing = (Link) link_manager.element.get(i);
@@ -315,7 +315,7 @@ public final class CaterpillarDemo {
     return false;
   }
 
-  private static int distance(Node a, Node b) {
+  private static int distance(final Node a, final Node b) {
     final int dx = a.pos.x - b.pos.x;
     final int dy = a.pos.y - b.pos.y;
     final int dz = a.pos.z - b.pos.z;

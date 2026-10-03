@@ -154,7 +154,7 @@ public final class CaterpillarTrackDemo {
   public static int muscle_period_ticks = 480;
 
   /** Returns true if the node at index i in the given ring is kept. */
-  private static boolean keep(int ring, int i) {
+  private static boolean keep(final int ring, final int i) {
     final int mod = i % 3;
     // Ring 0: XXO, Ring 1: XOX, Ring 2: OXX (X=delete, O=keep).
     return (ring == 0 && mod == 2)
@@ -163,7 +163,7 @@ public final class CaterpillarTrackDemo {
   }
 
   /** Squared 3D distance between two nodes (descaled, for comparisons). */
-  private static long dist2(Node a, Node b) {
+  private static long dist2(final Node a, final Node b) {
     final long dx = (long) (a.pos.x - b.pos.x) >> Coords.shift;
     final long dy = (long) (a.pos.y - b.pos.y) >> Coords.shift;
     final long dz = (long) (a.pos.z - b.pos.z) >> Coords.shift;
@@ -174,7 +174,7 @@ public final class CaterpillarTrackDemo {
    * Exact link length in fixed-point units, matching the actual distance
    * between the nodes (no integer-pixel truncation).
    */
-  private static int exactLength(Node a, Node b) {
+  private static int exactLength(final Node a, final Node b) {
     final double scale = 1 << Coords.shift;
     final double dx = (a.pos.x - b.pos.x) / scale;
     final double dy = (a.pos.y - b.pos.y) / scale;
@@ -188,8 +188,8 @@ public final class CaterpillarTrackDemo {
    * rest length and the axle's radius (the axle is excepted from the
    * doubling, Tim). Struts everywhere for this model (Tim).
    */
-  private static void addStrut(LinkManager link_manager, Clazz clazz,
-      Set<String> linked, Node a, Node b) {
+  private static void addStrut(final LinkManager link_manager, final Clazz clazz,
+      Set<String> linked, final Node a, final Node b) {
     final int h1 = System.identityHashCode(a);
     final int h2 = System.identityHashCode(b);
     final String key = Math.min(h1, h2) + "-" + Math.max(h1, h2);
@@ -207,7 +207,7 @@ public final class CaterpillarTrackDemo {
    * Builds the rings centred at the given x (pixels), resting on the
    * ground. Returns the first kept inner-ring node.
    */
-  public static Node buildAt(int x_px) {
+  public static Node buildAt(final int x_px) {
     final NodeManager node_manager = ContextManager.getNodeManager();
     node_manager.initial_reset();
     final LinkManager link_manager = node_manager.getLinkManager();

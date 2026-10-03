@@ -31,14 +31,14 @@ public final class TipOverRule implements PostureRule {
    * @param min_separation_px how far above (in px) the top must stay;
    *   small tolerance so normal rocking doesn't trip it
    */
-  public TipOverRule(int top_index, int bottom_index, int min_separation_px) {
+  public TipOverRule(int top_index, int bottom_index, final int min_separation_px) {
     this.top_index = top_index;
     this.bottom_index = bottom_index;
     this.min_separation = min_separation_px << Coords.shift;
   }
 
   /** True when the top node has dropped to/below the bottom node's level. */
-  public boolean violated(NodeManager node_manager) {
+  public boolean violated(final NodeManager node_manager) {
     final Node top = (Node) node_manager.element.get(top_index);
     final Node bottom = (Node) node_manager.element.get(bottom_index);
     return top.pos.y > bottom.pos.y - min_separation;

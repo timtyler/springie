@@ -122,11 +122,11 @@ public final class RollingJudge extends HeadlessJudge {
    * given number of ticks. Deterministic: two calls give identical results,
    * even in a JVM where a GUI test has left the animation thread running.
    */
-  public static Result score(int ticks, boolean use_crawler) {
+  public static Result score(final int ticks, final boolean use_crawler) {
     return withModelLock(() -> scoreWithLockHeld(ticks, use_crawler));
   }
 
-  private static Result scoreWithLockHeld(int ticks, boolean use_crawler) {
+  private static Result scoreWithLockHeld(int ticks, final boolean use_crawler) {
     final NodeManager node_manager = newJudgedRun();
 
     final Node hub;
@@ -307,12 +307,12 @@ public final class RollingJudge extends HeadlessJudge {
   }
 
   /** Marker angle about the hub in the XY (rolling) plane, radians. */
-  private static double angleOf(Node marker, Node hub) {
+  private static double angleOf(final Node marker, final Node hub) {
     return Math.atan2((double) (marker.pos.y - hub.pos.y),
         (double) (marker.pos.x - hub.pos.x));
   }
 
-  public static void main(String[] args) throws Exception {
+  public static void main(final String[] args) throws Exception {
     final int ticks = args.length > 0 ? Integer.parseInt(args[0]) : 600;
     final boolean use_crawler = args.length > 1 && "crawler".equals(args[1]);
     final Result result = score(ticks, use_crawler);

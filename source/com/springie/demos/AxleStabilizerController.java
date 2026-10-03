@@ -56,7 +56,7 @@ public final class AxleStabilizerController implements Controller {
   }
 
   @Override
-  public void update(Link link, long tick) {
+  public void update(final Link link, final long tick) {
     // N bias on the north end, S bias on the south end: each end is
     // pulled outward along the axle. Compass mapping: N = -z, S = +z.
     // (The swapped assignment was tried and destabilizes the wheel --

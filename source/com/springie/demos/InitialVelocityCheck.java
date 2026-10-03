@@ -36,7 +36,7 @@ public final class InitialVelocityCheck {
    * Mean node velocity along the given compass heading, in pixels per
    * frame. Positive means toward the heading; negative means away.
    */
-  public static double meanAlong(NodeManager node_manager,
+  public static double meanAlong(final NodeManager node_manager,
       CompassPoint heading) {
     long sum_vx = 0;
     long sum_vz = 0;
@@ -58,7 +58,7 @@ public final class InitialVelocityCheck {
    * For judges like the sidewinder's that score unsigned 2D travel, a
    * shove in any floor direction cheats, so there is no single heading.
    */
-  public static double meanFloorSpeed(NodeManager node_manager) {
+  public static double meanFloorSpeed(final NodeManager node_manager) {
     long sum_vx = 0;
     long sum_vz = 0;
     final int n = node_manager.element.size();
@@ -81,7 +81,7 @@ public final class InitialVelocityCheck {
    * Positive is downward (screen coordinates); negative is upward.
    * For the hopper, whose target direction is up, not a compass point.
    */
-  public static double meanVertical(NodeManager node_manager) {
+  public static double meanVertical(final NodeManager node_manager) {
     long sum_vy = 0;
     final int n = node_manager.element.size();
     for (int i = 0; i < n; i++) {
@@ -94,19 +94,19 @@ public final class InitialVelocityCheck {
   }
 
   /** True when the model starts at rest along the heading. */
-  public static boolean atRestAlong(NodeManager node_manager,
+  public static boolean atRestAlong(final NodeManager node_manager,
       CompassPoint heading) {
     return Math.abs(meanAlong(node_manager, heading))
         <= TOLERANCE_PX_PER_FRAME;
   }
 
   /** True when the model starts at rest in the floor plane. */
-  public static boolean atRestOnFloor(NodeManager node_manager) {
+  public static boolean atRestOnFloor(final NodeManager node_manager) {
     return meanFloorSpeed(node_manager) <= TOLERANCE_PX_PER_FRAME;
   }
 
   /** True when the model starts at rest on the vertical axis. */
-  public static boolean atRestVertically(NodeManager node_manager) {
+  public static boolean atRestVertically(final NodeManager node_manager) {
     return Math.abs(meanVertical(node_manager)) <= TOLERANCE_PX_PER_FRAME;
   }
 }

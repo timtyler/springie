@@ -23,14 +23,14 @@ public final class AxleLevelRule implements PostureRule {
    * @param right_index element index of a node on the other end
    * @param max_difference_px max allowed height difference in px
    */
-  public AxleLevelRule(int left_index, int right_index, int max_difference_px) {
+  public AxleLevelRule(int left_index, int right_index, final int max_difference_px) {
     this.left_index = left_index;
     this.right_index = right_index;
     this.max_difference = max_difference_px << Coords.shift;
   }
 
   /** True when one end of the axle has dropped too far below the other. */
-  public boolean violated(NodeManager node_manager) {
+  public boolean violated(final NodeManager node_manager) {
     final Node left = (Node) node_manager.element.get(left_index);
     final Node right = (Node) node_manager.element.get(right_index);
     final int dy = left.pos.y - right.pos.y;

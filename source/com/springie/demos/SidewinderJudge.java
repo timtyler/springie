@@ -92,7 +92,7 @@ public final class SidewinderJudge {
    * calls give identical results, even in a JVM where a GUI test has left
    * the animation thread running.
    */
-  public static Result score(int ticks) {
+  public static Result score(final int ticks) {
     // Hold the model lock for the whole run. A GUI test's animation thread
     // never stops: it keeps repainting, and the AWT thread would otherwise
     // step physics on this run's NodeManager concurrently with the loop
@@ -186,7 +186,7 @@ public final class SidewinderJudge {
   }
 
   /** Head-to-tail length and mean cross-section radius about the axis. */
-  private static Shape measureShape(Node[] nodes) {
+  private static Shape measureShape(final Node[] nodes) {
     final int n = nodes.length;
     final double[] c1 = centroid(nodes, 0, 4);
     final double[] c2 = centroid(nodes, n - 4, n);
@@ -218,7 +218,7 @@ public final class SidewinderJudge {
     return shape;
   }
 
-  private static double[] centroid(Node[] nodes, int from, int to) {
+  private static double[] centroid(final Node[] nodes, final int from, final int to) {
     double x = 0.0;
     double y = 0.0;
     double z = 0.0;
@@ -231,7 +231,7 @@ public final class SidewinderJudge {
     return new double[] {x / count, y / count, z / count};
   }
 
-  private static int distance(Node a, Node b) {
+  private static int distance(final Node a, final Node b) {
     final int dx = a.pos.x - b.pos.x;
     final int dy = a.pos.y - b.pos.y;
     final int dz = a.pos.z - b.pos.z;
@@ -288,7 +288,7 @@ public final class SidewinderJudge {
     }
   }
 
-  public static void main(String[] args) throws Exception {
+  public static void main(final String[] args) throws Exception {
     final int ticks = args.length > 0 ? Integer.parseInt(args[0]) : 600;
     final Result result = score(ticks);
     System.out.println(result);

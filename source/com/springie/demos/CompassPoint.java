@@ -29,7 +29,7 @@ public enum CompassPoint {
    * (dx, dz) in internal units. Positive means travel toward the heading;
    * negative means travel away from it.
    */
-  public long progress(long dx, long dz) {
+  public long progress(final long dx, final long dz) {
     switch (this) {
       case E:
         return dx;
@@ -48,7 +48,7 @@ public enum CompassPoint {
    * Absolute drift perpendicular to this heading from a floor-plane
    * displacement (dx, dz) in internal units.
    */
-  public long lateral(long dx, long dz) {
+  public long lateral(final long dx, final long dz) {
     switch (this) {
       case E:
       case W:

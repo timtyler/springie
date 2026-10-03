@@ -38,7 +38,7 @@ public final class WheelPushController implements Controller {
    * @param direction +1 to roll toward +X, -1 toward -X
    */
   public WheelPushController(Node hub, Node rim, int base_length,
-      int push_pct, int pull_pct, int ground_y, int direction) {
+      int push_pct, final int pull_pct, int ground_y, int direction) {
     this.hub = hub;
     this.rim = rim;
     this.base_length = base_length;
@@ -49,7 +49,7 @@ public final class WheelPushController implements Controller {
   }
 
   @Override
-  public void update(Link link, long tick) {
+  public void update(final Link link, final long tick) {
     // Near the ground? (within 8px above it)
     final boolean on_ground =
         rim.pos.y >= ground_y - (8 << Coords.shift);

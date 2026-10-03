@@ -168,7 +168,7 @@ public final class CrawlerDemo {
    * Builds the crawler with its rear at x_px and its feet on the
    * ground. Returns the ridge node for tracking.
    */
-  public static Node buildAt(int x_px) {
+  public static Node buildAt(final int x_px) {
     final NodeManager node_manager = ContextManager.getNodeManager();
     node_manager.initial_reset();
     final LinkManager link_manager = node_manager.getLinkManager();
@@ -353,13 +353,13 @@ public final class CrawlerDemo {
     return T;
   }
 
-  private static Node[] trim(Node[] nodes, int count) {
+  private static Node[] trim(final Node[] nodes, final int count) {
     final Node[] trimmed = new Node[count];
     System.arraycopy(nodes, 0, trimmed, 0, count);
     return trimmed;
   }
 
-  private static Node addNode(NodeManager nm, Clazz clazz, NodeType nt, int x, int y, int z) {
+  private static Node addNode(final NodeManager nm, final Clazz clazz, final NodeType nt, final int x, final int y, final int z) {
     return nm.addNewAgent(new Point3D(x, y, z), clazz, nt);
   }
 
@@ -367,7 +367,7 @@ public final class CrawlerDemo {
    * Passive strut (compression member): resists both stretch and squash.
    * Rest length = actual distance, so the frame starts unstressed.
    */
-  private static Link strut(LinkManager lm, LinkType template, Clazz clazz, Node a, Node b) {
+  private static Link strut(final LinkManager lm, final LinkType template, final Clazz clazz, final Node a, final Node b) {
     // Each link gets its own type so the rest length matches this link's
     // actual geometry exactly.
     final int dist = distance(a, b);
@@ -388,8 +388,8 @@ public final class CrawlerDemo {
    * equally fore and aft, so the net force on the foot is zero.
    */
   public static int cable_pretension_pct = 100;
-  private static void cableMuscle(LinkManager lm, LinkType template, Clazz clazz,
-      Node a, Node b, int phase) {
+  private static void cableMuscle(final LinkManager lm, final LinkType template, final Clazz clazz,
+      Node a, final Node b, int phase) {
     final int dist = distance(a, b);
     final int rest = (dist * cable_pretension_pct) / 100;
     final LinkType type = lm.link_type_factory.getNew(rest, template.elasticity);
@@ -402,7 +402,7 @@ public final class CrawlerDemo {
     link.controller = new GlobalOscillatorController(Muscles.active_oscillator);
   }
 
-  private static int distance(Node a, Node b) {
+  private static int distance(final Node a, final Node b) {
     final int dx = a.pos.x - b.pos.x;
     final int dy = a.pos.y - b.pos.y;
     final int dz = a.pos.z - b.pos.z;
@@ -455,7 +455,7 @@ public final class CrawlerDemo {
     }
 
     @Override
-    public void update(Link link, long tick) {
+    public void update(final Link link, final long tick) {
       // N bias on the north side, S bias on the south side: each side
       // is pulled outward laterally. Compass mapping: N = -z, S = +z.
       for (int i = 0; i < this.north_nodes.length; i++) {
