@@ -12,9 +12,9 @@ public class LightSource {
    * near the top of the frame, equally spaced. Updated by
    * updateForViewport() before each render.
    */
-  public static final Vector3D source_red_pos = new Vector3D();
-  public static final Vector3D source_green_pos = new Vector3D();
-  public static final Vector3D source_blue_pos = new Vector3D();
+  public static double red_px, red_py, red_pz;
+  public static double green_px, green_py, green_pz;
+  public static double blue_px, blue_py, blue_pz;
 
   /** Directional versions (for compatibility). */
   public static final Vector3D source_red = new Vector3D(-100, -100, -100);
@@ -25,12 +25,23 @@ public class LightSource {
    * Positions the RGB lights based on viewport dimensions (Tim, 2026-10-03).
    */
   public static void updateForViewport(final int half_w_pixels, final int half_h_pixels) {
-    final double half_w = (double) (half_w_pixels << com.springie.render.Coords.shift);
-    final double half_h = (double) (half_h_pixels << com.springie.render.Coords.shift);
+    // Default to 800x600 viewport if not initialized (e.g., in unit tests).
+    final int hw = half_w_pixels == 0 ? 400 : half_w_pixels;
+    final int hh = half_h_pixels == 0 ? 300 : half_h_pixels;
+    // Lights in pixel-scale world units (not shifted): near the top,
+    // equally spaced. The z=-800 puts them in front of the model.
+    final double half_w = (double) hw;
+    final double half_h = (double) hh;
     final double light_y = -half_h * 0.8;
     final double light_z = -800.0;
-    source_red_pos.set(-half_w * 0.6, light_y, light_z);
-    source_green_pos.set(0.0, light_y, light_z);
-    source_blue_pos.set(half_w * 0.6, light_y, light_z);
+    red_px = -half_w * 0.6;
+    red_py = light_y;
+    red_pz = light_z;
+    green_px = 0.0;
+    green_py = light_y;
+    green_pz = light_z;
+    blue_px = half_w * 0.6;
+    blue_py = light_y;
+    blue_pz = light_z;
   }
 }

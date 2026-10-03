@@ -103,15 +103,15 @@ final class Raytracer {
    */
   private static void updateLightPositions() {
     LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
-    RED_PX = LightSource.source_red_pos.x;
-    RED_PY = LightSource.source_red_pos.y;
-    RED_PZ = LightSource.source_red_pos.z;
-    GREEN_PX = LightSource.source_green_pos.x;
-    GREEN_PY = LightSource.source_green_pos.y;
-    GREEN_PZ = LightSource.source_green_pos.z;
-    BLUE_PX = LightSource.source_blue_pos.x;
-    BLUE_PY = LightSource.source_blue_pos.y;
-    BLUE_PZ = LightSource.source_blue_pos.z;
+    RED_PX = LightSource.red_px;
+    RED_PY = LightSource.red_py;
+    RED_PZ = LightSource.red_pz;
+    GREEN_PX = LightSource.green_px;
+    GREEN_PY = LightSource.green_py;
+    GREEN_PZ = LightSource.green_pz;
+    BLUE_PX = LightSource.blue_px;
+    BLUE_PY = LightSource.blue_py;
+    BLUE_PZ = LightSource.blue_pz;
   }
 
   private Raytracer() {

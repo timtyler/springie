@@ -146,33 +146,78 @@ public final class ElementRendererFace {
     LightSource.updateForViewport(com.springie.render.Coords.x_pixelso2,
         com.springie.render.Coords.y_pixelso2);
     // Red light.
-    final double rlx = LightSource.source_red_pos.x - center.x;
-    final double rly = LightSource.source_red_pos.y - center.y;
-    final double rlz = LightSource.source_red_pos.z - center.z;
+    final double rlx = LightSource.red_px - center.x;
+    final double rly = LightSource.red_py - center.y;
+    final double rlz = LightSource.red_pz - center.z;
     final double rd = Math.sqrt(rlx * rlx + rly * rly + rlz * rlz);
     final double r_dot = Math.abs((nx * rlx + ny * rly + nz * rlz) / rd);
     // Green light.
-    final double glx = LightSource.source_green_pos.x - center.x;
-    final double gly = LightSource.source_green_pos.y - center.y;
-    final double glz = LightSource.source_green_pos.z - center.z;
+    final double glx = LightSource.green_px - center.x;
+    final double gly = LightSource.green_py - center.y;
+    final double glz = LightSource.green_pz - center.z;
     final double gd = Math.sqrt(glx * glx + gly * gly + glz * glz);
     final double g_dot = Math.abs((nx * glx + ny * gly + nz * glz) / gd);
     // Blue light.
-    final double blx = LightSource.source_blue_pos.x - center.x;
-    final double bly = LightSource.source_blue_pos.y - center.y;
-    final double blz = LightSource.source_blue_pos.z - center.z;
+    final double blx = LightSource.blue_px - center.x;
+    final double bly = LightSource.blue_py - center.y;
+    final double blz = LightSource.blue_pz - center.z;
     final double bd = Math.sqrt(blx * blx + bly * bly + blz * blz);
     final double b_dot = Math.abs((nx * blx + ny * bly + nz * blz) / bd);
     // Combine: 50% ambient + 50% diffuse (view * light).
     final double r_factor = 0.5 + 0.5 * view_dot * r_dot;
     final double g_factor = 0.5 + 0.5 * view_dot * g_dot;
     final double b_factor = 0.5 + 0.5 * view_dot * b_dot;
+    // Specular highlight (Tim, 2026-10-03, extra credit): where the
+    // polygon reflects the light directly at the viewer, add extra
+    // highlighting. R = 2*dot(N,L)*N - L; spec = pow(max(0, dot(R,V)), 32).
+    // View vector V = (0, 0, -1).
+    double r_spec = 0.0;
+    double g_spec = 0.0;
+    double b_spec = 0.0;
+    {
+      // Red light specular.
+      final double lx = rlx / rd;
+      final double ly = rly / rd;
+      final double lz = rlz / rd;
+      final double ndotl = nx * lx + ny * ly + nz * lz;
+      final double rx = 2.0 * ndotl * nx - lx;
+      final double ry = 2.0 * ndotl * ny - ly;
+      final double rz = 2.0 * ndotl * nz - lz;
+      final double rdotv = -(rz); // dot(R, (0,0,-1)) = -Rz
+      if (rdotv > 0.0) {
+        r_spec = Math.pow(rdotv, 32.0);
+      }
+      // Green light specular.
+      final double glxn = glx / gd;
+      final double glyn = gly / gd;
+      final double glzn = glz / gd;
+      final double gndotl = nx * glxn + ny * glyn + nz * glzn;
+      final double grx = 2.0 * gndotl * nx - glxn;
+      final double gry = 2.0 * gndotl * ny - glyn;
+      final double grz = 2.0 * gndotl * nz - glzn;
+      final double grdotv = -(grz);
+      if (grdotv > 0.0) {
+        g_spec = Math.pow(grdotv, 32.0);
+      }
+      // Blue light specular.
+      final double blxn = blx / bd;
+      final double blyn = bly / bd;
+      final double blzn = blz / bd;
+      final double bndotl = nx * blxn + ny * blyn + nz * blzn;
+      final double brx = 2.0 * bndotl * nx - blxn;
+      final double bry = 2.0 * bndotl * ny - blyn;
+      final double brz = 2.0 * bndotl * nz - blzn;
+      final double brdotv = -(brz);
+      if (brdotv > 0.0) {
+        b_spec = Math.pow(brdotv, 32.0);
+      }
+    }
     final int r = (colour >> 16) & 0xFF;
     final int g = (colour >> 8) & 0xFF;
     final int b = colour & 0xFF;
-    final int or = Math.min(255, (int) (r * r_factor));
-    final int og = Math.min(255, (int) (g * g_factor));
-    final int ob = Math.min(255, (int) (b * b_factor));
+    final int or = Math.min(255, (int) (r * r_factor + 255.0 * r_spec));
+    final int og = Math.min(255, (int) (g * g_factor + 255.0 * g_spec));
+    final int ob = Math.min(255, (int) (b * b_factor + 255.0 * b_spec));
     return (colour & 0xFF000000) | (or << 16) | (og << 8) | ob;
   }
 }

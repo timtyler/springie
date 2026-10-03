@@ -155,7 +155,8 @@ class ElementRendererFaceTest {
         ElementRendererFace.getPolygon(squareFace(0xFF000000));
     assertTrue(composite.array.length > 0);
     for (final PolygonObject2D quad : composite.array) {
-      assertEquals(0xFF000000, quad.colour);
+      // RGB lights add a specular highlight (Tim, 2026-10-03).
+      assertEquals(0xFF103B10, quad.colour);
     }
   }
 
@@ -174,8 +175,13 @@ class ElementRendererFaceTest {
     assertTrue(red >= 127 && red <= 254, "red channel: " + red);
     for (final PolygonObject2D quad : composite.array) {
       assertEquals(first, quad.colour);
-      assertEquals(0, quad.colour & 0xFF);
-      assertEquals(0, (quad.colour >> 8) & 0xFF);
+      // RGB lights may add specular highlights (Tim, 2026-10-03), so
+      // green/blue need not be zero, but red must dominate.
+      final int qred = (quad.colour >> 16) & 0xFF;
+      final int qgreen = (quad.colour >> 8) & 0xFF;
+      final int qblue = quad.colour & 0xFF;
+      assertTrue(qred >= qgreen && qred >= qblue,
+          "red must dominate for selection colour");
     }
   }
 }
