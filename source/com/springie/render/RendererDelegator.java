@@ -78,7 +78,7 @@ public final class RendererDelegator {
    * checkbox is the off switch; the dropdown only shows while it is
    * on. Defaults to off.
    */
-  public static volatile boolean glossiness_enabled = false;
+  public static boolean glossiness_enabled = false;
 
   public static int glossiness = 50;
 
@@ -86,7 +86,7 @@ public final class RendererDelegator {
    * Ray-traced shadows. Each surface point casts a ray at the light; when
    * something blocks it, the point gets ambient light only.
    */
-  public static volatile boolean shadows = false;
+  public static boolean shadows = false;
 
   /**
    * Simple lighting for the ray tracer (Tim, 2026-10-03): the model is
@@ -96,7 +96,7 @@ public final class RendererDelegator {
    * light source model, no shadows, no specular/gloss/Fresnel/fill. A
    * stepping stone to a faster, lower-quality ray tracer.
    */
-  public static volatile boolean simple_lighting = false;
+  public static boolean simple_lighting = false;
 
   /**
    * Ray-traced specular highlights as a percentage (10-100): the
@@ -104,7 +104,7 @@ public final class RendererDelegator {
    * the viewer. The specular_enabled checkbox is the off switch; the
    * dropdown only shows while it is on. Defaults to on at 100%.
    */
-  public static volatile boolean specular_enabled = true;
+  public static boolean specular_enabled = true;
 
   public static int specular = 100;
 
@@ -118,7 +118,7 @@ public final class RendererDelegator {
    * shows while it is on. Like the specular highlight it needs direct
    * light, so shadowed points get none. Defaults to off.
    */
-  public static volatile boolean fresnel_enabled = false;
+  public static boolean fresnel_enabled = false;
 
   public static int fresnel = 50;
 
@@ -130,7 +130,7 @@ public final class RendererDelegator {
    * shadowed areas too. The fill_light_enabled checkbox is the off
    * switch; the dropdown only shows while it is on. Defaults to off.
    */
-  public static volatile boolean fill_light_enabled = false;
+  public static boolean fill_light_enabled = false;
 
   public static int fill_light = 50;
 
