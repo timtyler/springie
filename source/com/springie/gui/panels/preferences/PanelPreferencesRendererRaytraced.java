@@ -28,6 +28,8 @@ public class PanelPreferencesRendererRaytraced {
 
   private Checkbox checkbox_shadows;
 
+  private Panel shadows_row;
+
   private Effect effect_specular;
 
   private Effect effect_fresnel;
@@ -219,21 +221,28 @@ public class PanelPreferencesRendererRaytraced {
     });
     panel.add(this.checkbox_shadows);
 
+    this.shadows_row = panel;
     return panel;
   }
 
   /**
    * When Simple lighting is on (the "Ray traced (fast)" renderer), the
    * phong/specular/gloss/Fresnel/fill/shadow controls are irrelevant
-   * (shade() bypasses them), so disable them in the UI.
+   * (shade() bypasses them), so remove them from the UI.
    */
   public void syncSimpleLighting() {
     final boolean simple = RendererDelegator.simple_lighting;
-    this.effect_glossiness.panel.setEnabled(!simple);
-    this.effect_specular.panel.setEnabled(!simple);
-    this.effect_fresnel.panel.setEnabled(!simple);
-    this.effect_fill_light.panel.setEnabled(!simple);
-    this.checkbox_shadows.setEnabled(!simple);
+    this.effect_glossiness.panel.setVisible(!simple);
+    this.effect_specular.panel.setVisible(!simple);
+    this.effect_fresnel.panel.setVisible(!simple);
+    this.effect_fill_light.panel.setVisible(!simple);
+    this.shadows_row.setVisible(!simple);
+    // The rows live in the shared tab (see takeEffectRows); re-layout.
+    final java.awt.Container parent =
+        this.effect_glossiness.panel.getParent();
+    if (parent != null) {
+      parent.validate();
+    }
   }
 
   public void resetToDefaults() {
