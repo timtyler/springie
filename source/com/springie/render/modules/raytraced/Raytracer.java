@@ -906,9 +906,9 @@ final class Raytracer {
         final double nbdz = BLUE_PZ - ncz;
         final double nbd = Math.sqrt(nbdx * nbdx + nbdy * nbdy + nbdz * nbdz);
         final double nb_fall = 1.0 / (1.0 + (nbd / LIGHT_FALLOFF_K) * (nbd / LIGHT_FALLOFF_K));
-        final int nr_scaled = 96 + (int) (159.0 * Math.min(1.0, nr_fall * LIGHT_BRIGHTNESS));
-        final int ng_scaled = 96 + (int) (159.0 * Math.min(1.0, ng_fall * LIGHT_BRIGHTNESS));
-        final int nb_scaled = 96 + (int) (159.0 * Math.min(1.0, nb_fall * LIGHT_BRIGHTNESS));
+        final int nr_scaled = 96 + (int) (159.0 * Math.min(1.0, nr_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0 * RendererDelegator.red_light_pct / 100.0));
+        final int ng_scaled = 96 + (int) (159.0 * Math.min(1.0, ng_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0 * RendererDelegator.green_light_pct / 100.0));
+        final int nb_scaled = 96 + (int) (159.0 * Math.min(1.0, nb_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0 * RendererDelegator.blue_light_pct / 100.0));
         final int nr = (fogged >> 16) & 0xFF;
         final int ng = (fogged >> 8) & 0xFF;
         final int nb = fogged & 0xFF;
@@ -966,7 +966,7 @@ final class Raytracer {
         double r_dot = (rlx * ax + rly * ay + rlz * az) / rd;
         double r_fall = 1.0 / (1.0 + (rd / LIGHT_FALLOFF_K) * (rd / LIGHT_FALLOFF_K));
         r_factor = Math.sqrt(Math.max(0.0, 1.0 - r_dot * r_dot))
-            * Math.min(1.0, r_fall * LIGHT_BRIGHTNESS);
+            * Math.min(1.0, r_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0);
         double glx = GREEN_PX - pcx;
         double gly = GREEN_PY - pcy;
         double glz = GREEN_PZ - pcz;
@@ -974,7 +974,7 @@ final class Raytracer {
         double g_dot = (glx * ax + gly * ay + glz * az) / gd;
         double g_fall = 1.0 / (1.0 + (gd / LIGHT_FALLOFF_K) * (gd / LIGHT_FALLOFF_K));
         g_factor = Math.sqrt(Math.max(0.0, 1.0 - g_dot * g_dot))
-            * Math.min(1.0, g_fall * LIGHT_BRIGHTNESS);
+            * Math.min(1.0, g_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0);
         double blx = BLUE_PX - pcx;
         double bly = BLUE_PY - pcy;
         double blz = BLUE_PZ - pcz;
@@ -982,7 +982,7 @@ final class Raytracer {
         double b_dot = (blx * ax + bly * ay + blz * az) / bd;
         double b_fall = 1.0 / (1.0 + (bd / LIGHT_FALLOFF_K) * (bd / LIGHT_FALLOFF_K));
         b_factor = Math.sqrt(Math.max(0.0, 1.0 - b_dot * b_dot))
-            * Math.min(1.0, b_fall * LIGHT_BRIGHTNESS);
+            * Math.min(1.0, b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0);
       } else {
         // Face (triangle): geometric normal is constant; dot with each
         // light direction from the face center.
@@ -993,7 +993,7 @@ final class Raytracer {
         double r_fall = 1.0 / (1.0 + (rd / LIGHT_FALLOFF_K) * (rd / LIGHT_FALLOFF_K));
         r_factor = Math.max(0.0, Math.min(1.0,
             (ax * rlx + ay * rly + az * rlz) / rd))
-            * Math.min(1.0, r_fall * LIGHT_BRIGHTNESS);
+            * Math.min(1.0, r_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0);
         double glx = GREEN_PX - pcx;
         double gly = GREEN_PY - pcy;
         double glz = GREEN_PZ - pcz;
@@ -1001,7 +1001,7 @@ final class Raytracer {
         double g_fall = 1.0 / (1.0 + (gd / LIGHT_FALLOFF_K) * (gd / LIGHT_FALLOFF_K));
         g_factor = Math.max(0.0, Math.min(1.0,
             (ax * glx + ay * gly + az * glz) / gd))
-            * Math.min(1.0, g_fall * LIGHT_BRIGHTNESS);
+            * Math.min(1.0, g_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0);
         double blx = BLUE_PX - pcx;
         double bly = BLUE_PY - pcy;
         double blz = BLUE_PZ - pcz;
@@ -1009,7 +1009,7 @@ final class Raytracer {
         double b_fall = 1.0 / (1.0 + (bd / LIGHT_FALLOFF_K) * (bd / LIGHT_FALLOFF_K));
         b_factor = Math.max(0.0, Math.min(1.0,
             (ax * blx + ay * bly + az * blz) / bd))
-            * Math.min(1.0, b_fall * LIGHT_BRIGHTNESS);
+            * Math.min(1.0, b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0);
       }
       // Half-to-full brightness per channel.
       final int r_scaled = 96 + (int) (159.0 * r_factor);
@@ -1078,11 +1078,11 @@ final class Raytracer {
       b_dot = 0.0;
     }
     final int r_scaled = 96
-        + (int) (159.0 * Math.min(1.0, r_dot * r_fall * LIGHT_BRIGHTNESS));
+        + (int) (159.0 * Math.min(1.0, r_dot * r_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0));
     final int g_scaled = 96
-        + (int) (159.0 * Math.min(1.0, g_dot * g_fall * LIGHT_BRIGHTNESS));
+        + (int) (159.0 * Math.min(1.0, g_dot * g_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0));
     final int b_scaled = 96
-        + (int) (159.0 * Math.min(1.0, b_dot * b_fall * LIGHT_BRIGHTNESS));
+        + (int) (159.0 * Math.min(1.0, b_dot * b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0));
 
     final double pz = ray.oz + ray.dz * hit.t;
     final int fogged = Fog.applyFog(hit.primitive.getColour(), (int) pz);
@@ -1122,27 +1122,27 @@ final class Raytracer {
             blx / bd, bly / bd, blz / bd);
         r_sheen = RendererDelegator.glossiness_enabled
             ? (int) (lobeValue(r_lobe, RendererDelegator.glossiness, 8.0)
-                * r_fall * LIGHT_BRIGHTNESS)
+                * r_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0)
             : 0;
         g_sheen = RendererDelegator.glossiness_enabled
             ? (int) (lobeValue(g_lobe, RendererDelegator.glossiness, 8.0)
-                * g_fall * LIGHT_BRIGHTNESS)
+                * g_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0)
             : 0;
         b_sheen = RendererDelegator.glossiness_enabled
             ? (int) (lobeValue(b_lobe, RendererDelegator.glossiness, 8.0)
-                * b_fall * LIGHT_BRIGHTNESS)
+                * b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0)
             : 0;
         r_highlight = RendererDelegator.specular_enabled
             ? (int) (lobeValue(r_lobe, RendererDelegator.specular, 32.0)
-                * r_fall * LIGHT_BRIGHTNESS)
+                * r_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0)
             : 0;
         g_highlight = RendererDelegator.specular_enabled
             ? (int) (lobeValue(g_lobe, RendererDelegator.specular, 32.0)
-                * g_fall * LIGHT_BRIGHTNESS)
+                * g_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0)
             : 0;
         b_highlight = RendererDelegator.specular_enabled
             ? (int) (lobeValue(b_lobe, RendererDelegator.specular, 32.0)
-                * b_fall * LIGHT_BRIGHTNESS)
+                * b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0)
             : 0;
       } else {
         r_sheen = 0;

@@ -295,7 +295,7 @@ public final class ElementRendererLink {
         final double rd = Math.sqrt(rlx * rlx + rly * rly + rlz * rlz);
         if (rd > 1e-12) {
           final double r_dot = (rlx * ax + rly * ay + rlz * az) / rd;
-          r_factor = 0.25 + 0.75 * Math.sqrt(Math.max(0.0, 1.0 - r_dot * r_dot));
+          r_factor = 0.25 + 0.75 * Math.sqrt(Math.max(0.0, 1.0 - r_dot * r_dot)) * RendererDelegator.red_light_pct / 50.0;
         }
         // Green light.
         final double glx = LightSource.green_px - midx;
@@ -304,7 +304,7 @@ public final class ElementRendererLink {
         final double gd = Math.sqrt(glx * glx + gly * gly + glz * glz);
         if (gd > 1e-12) {
           final double g_dot = (glx * ax + gly * ay + glz * az) / gd;
-          g_factor = 0.25 + 0.75 * Math.sqrt(Math.max(0.0, 1.0 - g_dot * g_dot));
+          g_factor = 0.25 + 0.75 * Math.sqrt(Math.max(0.0, 1.0 - g_dot * g_dot)) * RendererDelegator.green_light_pct / 50.0;
         }
         // Blue light.
         final double blx = LightSource.blue_px - midx;
@@ -313,7 +313,7 @@ public final class ElementRendererLink {
         final double bd = Math.sqrt(blx * blx + bly * bly + blz * blz);
         if (bd > 1e-12) {
           final double b_dot = (blx * ax + bly * ay + blz * az) / bd;
-          b_factor = 0.25 + 0.75 * Math.sqrt(Math.max(0.0, 1.0 - b_dot * b_dot));
+          b_factor = 0.25 + 0.75 * Math.sqrt(Math.max(0.0, 1.0 - b_dot * b_dot)) * RendererDelegator.blue_light_pct / 50.0;
         }
         // Specular highlights from the 3 lights (Tim, 2026-10-03).
         // For a cylinder, use the normal at the brightest point:

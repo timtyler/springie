@@ -72,7 +72,7 @@ public final class ElementRendererNode {
           final double rd = Math.sqrt(rlx * rlx + rly * rly + rlz * rlz);
           if (rd > 1e-12) {
             final double r_dot = Math.abs((nnx * rlx + nny * rly + nnz * rlz) / rd);
-            r_factor = 0.25 + 0.75 * r_dot;
+            r_factor = 0.25 + 0.75 * r_dot * RendererDelegator.red_light_pct / 50.0;
           }
           // Green light.
           final double glx = LightSource.green_px - node.pos.x;
@@ -81,7 +81,7 @@ public final class ElementRendererNode {
           final double gd = Math.sqrt(glx * glx + gly * gly + glz * glz);
           if (gd > 1e-12) {
             final double g_dot = Math.abs((nnx * glx + nny * gly + nnz * glz) / gd);
-            g_factor = 0.25 + 0.75 * g_dot;
+            g_factor = 0.25 + 0.75 * g_dot * RendererDelegator.green_light_pct / 50.0;
           }
           // Blue light.
           final double blx = LightSource.blue_px - node.pos.x;
@@ -90,7 +90,7 @@ public final class ElementRendererNode {
           final double bd = Math.sqrt(blx * blx + bly * bly + blz * blz);
           if (bd > 1e-12) {
             final double b_dot = Math.abs((nnx * blx + nny * bly + nnz * blz) / bd);
-            b_factor = 0.25 + 0.75 * b_dot;
+            b_factor = 0.25 + 0.75 * b_dot * RendererDelegator.blue_light_pct / 50.0;
           }
           // Specular highlights from the 3 lights (Tim, 2026-10-03).
           // View vector V = (0, 0, -1).

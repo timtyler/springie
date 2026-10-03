@@ -424,10 +424,6 @@ public class PanelControlsUniverse {
     panel_main.add(panel_compass_bias);
     panel_main.add(panel_bounciness);
 
-    panel_main.add(panel_muscles_switch);
-    panel_main.add(panel_muscles_amplitude);
-    panel_main.add(panel_muscles_period);
-
     panel_main.add(panel_collision_check);
     panel_main.add(panel_charge_switch);
 
@@ -441,9 +437,68 @@ public class PanelControlsUniverse {
 
     panel_main.add(getResetUniversePanel());
 
+    // Muscles section (Tim, 2026-10-03).
+    final Panel panel_muscles = FrEnd.setUpPanelForFrame2();
+    panel_muscles.add(panel_muscles_switch);
+    panel_muscles.add(panel_muscles_amplitude);
+    panel_muscles.add(panel_muscles_period);
+
+    // Lights section (Tim, 2026-10-03): RGB sliders, 0-100%, default 50%.
+    final Panel panel_lights = FrEnd.setUpPanelForFrame2();
+
+    final Panel panel_light_red = new Panel();
+    panel_light_red.setLayout(new BorderLayout(0, 8));
+    panel_light_red.add("West", new Label("Red light %:", Label.RIGHT));
+    final Scrollbar scrollbar_light_red = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
+    final Label label_light_red = new Label("50", Label.LEFT);
+    scrollbar_light_red.addAdjustmentListener(new AdjustmentListener() {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
+        final int val = e.getValue();
+        RendererDelegator.red_light_pct = val;
+        label_light_red.setText("" + val);
+      }
+    });
+    panel_light_red.add("Center", scrollbar_light_red);
+    panel_light_red.add("East", label_light_red);
+    panel_lights.add(panel_light_red);
+
+    final Panel panel_light_green = new Panel();
+    panel_light_green.setLayout(new BorderLayout(0, 8));
+    panel_light_green.add("West", new Label("Green light %:", Label.RIGHT));
+    final Scrollbar scrollbar_light_green = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
+    final Label label_light_green = new Label("50", Label.LEFT);
+    scrollbar_light_green.addAdjustmentListener(new AdjustmentListener() {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
+        final int val = e.getValue();
+        RendererDelegator.green_light_pct = val;
+        label_light_green.setText("" + val);
+      }
+    });
+    panel_light_green.add("Center", scrollbar_light_green);
+    panel_light_green.add("East", label_light_green);
+    panel_lights.add(panel_light_green);
+
+    final Panel panel_light_blue = new Panel();
+    panel_light_blue.setLayout(new BorderLayout(0, 8));
+    panel_light_blue.add("West", new Label("Blue light %:", Label.RIGHT));
+    final Scrollbar scrollbar_light_blue = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
+    final Label label_light_blue = new Label("50", Label.LEFT);
+    scrollbar_light_blue.addAdjustmentListener(new AdjustmentListener() {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
+        final int val = e.getValue();
+        RendererDelegator.blue_light_pct = val;
+        label_light_blue.setText("" + val);
+      }
+    });
+    panel_light_blue.add("Center", scrollbar_light_blue);
+    panel_light_blue.add("East", label_light_blue);
+    panel_lights.add(panel_light_blue);
+
     final TabbedPanel universe_tabs = new TabbedPanel();
     universe_tabs.add("Main", panel_main);
     universe_tabs.add("Centering", panel_centering);
+    universe_tabs.add("Muscles", panel_muscles);
+    universe_tabs.add("Lights", panel_lights);
     this.panel.add(universe_tabs);
   }
 

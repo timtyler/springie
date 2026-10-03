@@ -135,6 +135,17 @@ public final class RendererDelegator {
   public static int fill_light = 50;
 
   /**
+   * RGB light intensities as percentages (0-100). 100% is the full
+   * brightness; 0% turns the light off. Defaults to 50% each.
+   * Controlled by the Lights tab in the Universe panel (Tim, 2026-10-03).
+   */
+  public static int red_light_pct = 50;
+
+  public static int green_light_pct = 50;
+
+  public static int blue_light_pct = 50;
+
+  /**
    * Anti-aliasing supersampling factor (1 to 5): 1x1 is off, 2x2, 3x3,
    * 4x4 and 5x5 render that many sub-samples per pixel and average them
    * with a box filter. Affects the modern tiled renderer (tiles are
