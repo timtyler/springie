@@ -90,6 +90,16 @@ public final class RendererDelegator {
   public static boolean shadows = false;
 
   /**
+   * Simple lighting for the ray tracer (Tim, 2026-10-03): the model is
+   * illuminated from the front (as if the light is at the viewer). Nodes
+   * are flat (base colour with depth fog); links and faces are shaded
+   * by the angle between the surface normal and the view direction. No
+   * light source model, no shadows, no specular/gloss/Fresnel/fill. A
+   * stepping stone to a faster, lower-quality ray tracer.
+   */
+  public static boolean simple_lighting = false;
+
+  /**
    * Ray-traced specular highlights as a percentage (10-100): the
    * Blinn-Phong sparkle where a surface reflects the light straight at
    * the viewer. The specular_enabled checkbox is the off switch; the

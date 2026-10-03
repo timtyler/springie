@@ -509,6 +509,36 @@ final class Raytracer {
       final double pz = ray.oz + ray.dz * hit.t;
       return 0xFF000000 | Fog.applyFog(hit.primitive.getColour(), (int) pz);
     }
+    if (RendererDelegator.simple_lighting) {
+      // Simple lighting (Tim, 2026-10-03): front-lit, as if the light
+      // is at the viewer. Nodes are flat; links and faces are shaded
+      // by the angle between the surface normal and the view direction.
+      final double pz = ray.oz + ray.dz * hit.t;
+      final int fogged =
+          Fog.applyFog(hit.primitive.getColour(), (int) pz);
+      if (hit.primitive instanceof RTSphere) {
+        // Node: flat base colour with depth fog.
+        return 0xFF000000 | fogged;
+      }
+      // Link/face: diffuse from the front. The view direction is the
+      // negative ray direction (ray goes from camera into the scene).
+      double dot = -(hit.nx * ray.dx + hit.ny * ray.dy + hit.nz * ray.dz);
+      if (dot < 0.0) {
+        dot = 0.0;
+      }
+      if (dot > 1.0) {
+        dot = 1.0;
+      }
+      // Same half-to-full brightness range as the default renderer.
+      final int scaled = 128 + (int) (127.0 * dot);
+      final int r = (fogged >> 16) & 0xFF;
+      final int g = (fogged >> 8) & 0xFF;
+      final int b = fogged & 0xFF;
+      final int or = (r * scaled) >> 8;
+      final int og = (g * scaled) >> 8;
+      final int ob = (b * scaled) >> 8;
+      return 0xFF000000 | (or << 16) | (og << 8) | ob;
+    }
 
     double dot = hit.nx * LIGHT_X + hit.ny * LIGHT_Y + hit.nz * LIGHT_Z;
     if (dot < 0.0) {
