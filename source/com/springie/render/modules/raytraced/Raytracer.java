@@ -9,6 +9,7 @@ import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.render.ScenicBackground;
 import com.springie.render.modules.modern.LightSource;
+import com.springie.render.modules.modern.RendererTileManager;
 
 /**
  * Renders one bin tile, pixel by pixel. One primary ray per pixel, plus
@@ -518,8 +519,12 @@ final class Raytracer {
         final int x_end = Math.min(x_start + cs, width);
         final int y_end = Math.min(y_start + cs, height);
         if (!edge) {
-          // Interior: fill with the block's colour.
-          final int rgb = c_rgb[bidx];
+          // Interior: fill with the block's colour (no rays). When
+          // "Show active tiles" is on, paint these ray-saving fills red
+          // so the savings are visible. (Tim, 2026-10-03)
+          final int rgb = RendererTileManager.show_active_tiles
+              ? 0xFFFF0000
+              : c_rgb[bidx];
           for (int y = y_start; y < y_end; y++) {
             for (int x = x_start; x < x_end; x++) {
               pixels[y * width + x] = rgb;
