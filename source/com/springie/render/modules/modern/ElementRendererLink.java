@@ -281,6 +281,9 @@ public final class ElementRendererLink {
       double r_factor = 0.25;
       double g_factor = 0.25;
       double b_factor = 0.25;
+      double r_spec = 0.0;
+      double g_spec = 0.0;
+      double b_spec = 0.0;
       if (alen > 1e-12) {
         ax /= alen;
         ay /= alen;
@@ -315,9 +318,6 @@ public final class ElementRendererLink {
         // Specular highlights from the 3 lights (Tim, 2026-10-03).
         // For a cylinder, use the normal at the brightest point:
         // N = normalize(L - (L·A)*A). View V = (0, 0, -1).
-        double r_spec = 0.0;
-        double g_spec = 0.0;
-        double b_spec = 0.0;
         if (rd > 1e-12) {
           final double lx = rlx / rd;
           final double ly = rly / rd;
