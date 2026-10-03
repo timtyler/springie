@@ -9,8 +9,7 @@ import java.util.List;
 /**
  * Immutable snapshot of everything the renderers draw: nodes, links and
  * faces as plain data in world units. Built by {@link SceneExtractor}
- * under the model lock; safe to hand to any thread, including a future
- * JavaFX render thread.
+ * under the model lock; safe to hand to any thread.
  */
 public final class ModelScene {
   public final List<SceneNode> nodes;

@@ -32,12 +32,9 @@ public class PerformSelection {
 
   public void performSelection(final int x, final int y, final boolean drag_is_possible) {
     if (RendererDelegator.renderer instanceof ModularRendererNew
-        || RendererDelegator.renderer instanceof ModularRendererRaytraced
-        || RendererDelegator.renderer
-            instanceof com.springie.render.modules.gpu.GpuRenderer) {
+        || RendererDelegator.renderer instanceof ModularRendererRaytraced) {
       // Link/face picking reads the projected caches this builds; the
-      // tiled renderers and the GPU renderer do not maintain them while
-      // drawing.
+      // tiled renderers do not maintain them while drawing.
       ContextManager.getNodeManager().nodeAndLinkRenderDummy();
     }
 

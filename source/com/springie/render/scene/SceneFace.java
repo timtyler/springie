@@ -6,7 +6,7 @@ package com.springie.render.scene;
  * One face triangle as plain render data: vertices in world units
  * (pixels), colour as opaque ARGB. Faces with more than three nodes are
  * fan-triangulated, like the ray tracer does. No AWT types: this is the
- * seam a JavaFX renderer will consume.
+ * seam a future renderer can consume.
  */
 public final class SceneFace {
   public final double x1;

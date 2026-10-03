@@ -13,9 +13,9 @@ public class NewMessageManager {
   private static final Logger logger = LoggerFactory.getLogger(NewMessageManager.class);
 
   // Lock-free multi-producer queue: add() is called from the AWT event
-  // thread (menu clicks), the JavaFX thread (viewer commands), and the
-  // physics thread itself (deferred node create/delete); process() drains
-  // from the animation thread. (Tim, 2026-10-01: modernised from a
+  // thread (menu clicks) and the physics thread itself (deferred node
+  // create/delete); process() drains from the animation thread.
+  // (Tim, 2026-10-01: modernised from a
   // hand-rolled synchronized ArrayList.)
   final ConcurrentLinkedQueue<NewMessage> messages = new ConcurrentLinkedQueue<>();
 

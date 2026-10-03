@@ -4,7 +4,7 @@ package com.springie.render.scene;
 
 /**
  * One node as plain render data: position and radius in world units
- * (pixels), colour as ARGB. No AWT types: this is the seam a JavaFX
+ * (pixels), colour as ARGB. No AWT types: this is the seam a future
  * renderer will consume.
  */
 public final class SceneNode {
