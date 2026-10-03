@@ -145,14 +145,14 @@ class DeepestFirstRowVisibilityTest {
 
   @Test
   void rowIsHiddenUnderTheRaytracedRenderer() throws Exception {
-    selectRenderer("Ray-traced");
+    selectRenderer("(quality)");
     assertFalse(rowShownOnTab(),
         "the deepest-first row must leave the Renderer tab while ray-tracing");
   }
 
   @Test
   void rowComesBackWhenSwitchingBackToThePolygonRenderer() throws Exception {
-    selectRenderer("Ray-traced");
+    selectRenderer("(quality)");
     assertFalse(rowShownOnTab());
     selectRenderer("Polygon");
     assertTrue(rowShownOnTab(),
@@ -163,7 +163,7 @@ class DeepestFirstRowVisibilityTest {
 
   @Test
   void repeatedSwitchesNeverDuplicateTheRow() throws Exception {
-    selectRenderer("Ray-traced");
+    selectRenderer("(quality)");
     selectRenderer("Polygon");
     selectRenderer("Polygon");
     final int[] count = new int[1];

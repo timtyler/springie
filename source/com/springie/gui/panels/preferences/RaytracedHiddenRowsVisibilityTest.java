@@ -163,7 +163,7 @@ class RaytracedHiddenRowsVisibilityTest {
 
   @Test
   void geometryRowsAreHiddenUnderTheRaytracedRenderer() throws Exception {
-    selectRenderer("Ray-traced");
+    selectRenderer("(quality)");
     for (final String label : LABELS) {
       assertNull(findRowByLabel(label),
           "the '" + label + "' row must leave the Renderer tab");
@@ -172,7 +172,7 @@ class RaytracedHiddenRowsVisibilityTest {
 
   @Test
   void geometryRowsComeBackInOrderWhenSwitchingBack() throws Exception {
-    selectRenderer("Ray-traced");
+    selectRenderer("(quality)");
     selectRenderer("Polygon");
     final Panel explosions_row = (Panel) FrEnd.panel_preferences_shared_misc.checkbox_explosions
         .getParent();
@@ -189,7 +189,7 @@ class RaytracedHiddenRowsVisibilityTest {
 
   @Test
   void repeatedSwitchesNeverDuplicateTheRows() throws Exception {
-    selectRenderer("Ray-traced");
+    selectRenderer("(quality)");
     selectRenderer("Polygon");
     selectRenderer("Polygon");
     SwingUtilities.invokeAndWait(() -> {
