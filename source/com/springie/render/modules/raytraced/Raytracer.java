@@ -43,7 +43,7 @@ final class Raytracer {
    * RGB light brightness boost (Tim, 2026-10-03): the three colored
    * lights together should match the old white light's punch.
    */
-  private static final double LIGHT_BRIGHTNESS = 2.0;
+  private static final double LIGHT_BRIGHTNESS = 1.0;
 
   /**
    * The fill light: front-right, mirroring the key light's front-left
