@@ -6,7 +6,8 @@ package com.springie.render.modules.raytraced;
  * A node, rendered as a sphere.
  */
 final class RTSphere implements Primitive {
-  private final double cx, cy, cz, radius;
+  final double cx, cy, cz;
+  private final double radius;
 
   private final int colour;
 

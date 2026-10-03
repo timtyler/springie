@@ -48,21 +48,55 @@ public final class ElementRendererNode {
             node.pos.z);
 
         final Vector3D normal = getNormal(base, poly_count);
-        final Vector3D light_source = LightSource.source_1;
-        final int dot_product = normal.dot(light_source);
-        int scaled = dot_product >> (Coords.shift + 1);
-
-        if (scaled < 0) {
-          scaled = -scaled;
+        // RGB light shading (Tim, 2026-10-03): three colored lights.
+        // Update positions for current viewport.
+        LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
+        final double nx = normal.x / (double) (1 << Coords.shift);
+        final double ny = normal.y / (double) (1 << Coords.shift);
+        final double nz = normal.z / (double) (1 << Coords.shift);
+        final double nlen = Math.sqrt(nx * nx + ny * ny + nz * nz);
+        double r_factor = 0.25;
+        double g_factor = 0.25;
+        double b_factor = 0.25;
+        if (nlen > 1e-12) {
+          final double nnx = nx / nlen;
+          final double nny = ny / nlen;
+          final double nnz = nz / nlen;
+          // Red light.
+          final double rlx = LightSource.red_px - node.pos.x;
+          final double rly = LightSource.red_py - node.pos.y;
+          final double rlz = LightSource.red_pz - node.pos.z;
+          final double rd = Math.sqrt(rlx * rlx + rly * rly + rlz * rlz);
+          if (rd > 1e-12) {
+            final double r_dot = Math.abs((nnx * rlx + nny * rly + nnz * rlz) / rd);
+            r_factor = 0.25 + 0.75 * r_dot;
+          }
+          // Green light.
+          final double glx = LightSource.green_px - node.pos.x;
+          final double gly = LightSource.green_py - node.pos.y;
+          final double glz = LightSource.green_pz - node.pos.z;
+          final double gd = Math.sqrt(glx * glx + gly * gly + glz * glz);
+          if (gd > 1e-12) {
+            final double g_dot = Math.abs((nnx * glx + nny * gly + nnz * glz) / gd);
+            g_factor = 0.25 + 0.75 * g_dot;
+          }
+          // Blue light.
+          final double blx = LightSource.blue_px - node.pos.x;
+          final double bly = LightSource.blue_py - node.pos.y;
+          final double blz = LightSource.blue_pz - node.pos.z;
+          final double bd = Math.sqrt(blx * blx + bly * bly + blz * blz);
+          if (bd > 1e-12) {
+            final double b_dot = Math.abs((nnx * blx + nny * bly + nnz * blz) / bd);
+            b_factor = 0.25 + 0.75 * b_dot;
+          }
         }
-
-        if (scaled > 127) {
-          scaled = 127;
-        }
-
-        scaled += 128;
-
-        final int act_colour = getColour(colour, scaled);
+        final int r = (colour >> 16) & 0xFF;
+        final int g = (colour >> 8) & 0xFF;
+        final int b = colour & 0xFF;
+        final int or = Math.min(255, (int) (r * r_factor));
+        final int og = Math.min(255, (int) (g * g_factor));
+        final int ob = Math.min(255, (int) (b * b_factor));
+        final int act_colour = (colour & 0xFF000000) | (or << 16) | (og << 8) | ob;
 
         PolygonObject2D polygon = new PolygonObject2D(array_x, array_y,
             act_colour);

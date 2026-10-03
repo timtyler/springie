@@ -886,8 +886,36 @@ final class Raytracer {
       final int fogged =
           Fog.applyFog(hit.primitive.getColour(), (int) pz);
       if (hit.primitive instanceof RTSphere) {
-        // Node: flat base colour with depth fog.
-        return 0xFF000000 | fogged;
+        // Node: RGB flat shading by distance to lights (Tim, 2026-10-03).
+        // Use the sphere center for the light distance.
+        final double ncx = ((RTSphere) hit.primitive).cx;
+        final double ncy = ((RTSphere) hit.primitive).cy;
+        final double ncz = ((RTSphere) hit.primitive).cz;
+        final double nrdx = RED_PX - ncx;
+        final double nrdy = RED_PY - ncy;
+        final double nrdz = RED_PZ - ncz;
+        final double nrd = Math.sqrt(nrdx * nrdx + nrdy * nrdy + nrdz * nrdz);
+        final double nr_fall = 1.0 / (1.0 + (nrd / LIGHT_FALLOFF_K) * (nrd / LIGHT_FALLOFF_K));
+        final double ngdx = GREEN_PX - ncx;
+        final double ngdy = GREEN_PY - ncy;
+        final double ngdz = GREEN_PZ - ncz;
+        final double ngd = Math.sqrt(ngdx * ngdx + ngdy * ngdy + ngdz * ngdz);
+        final double ng_fall = 1.0 / (1.0 + (ngd / LIGHT_FALLOFF_K) * (ngd / LIGHT_FALLOFF_K));
+        final double nbdx = BLUE_PX - ncx;
+        final double nbdy = BLUE_PY - ncy;
+        final double nbdz = BLUE_PZ - ncz;
+        final double nbd = Math.sqrt(nbdx * nbdx + nbdy * nbdy + nbdz * nbdz);
+        final double nb_fall = 1.0 / (1.0 + (nbd / LIGHT_FALLOFF_K) * (nbd / LIGHT_FALLOFF_K));
+        final int nr_scaled = 96 + (int) (159.0 * Math.min(1.0, nr_fall * LIGHT_BRIGHTNESS));
+        final int ng_scaled = 96 + (int) (159.0 * Math.min(1.0, ng_fall * LIGHT_BRIGHTNESS));
+        final int nb_scaled = 96 + (int) (159.0 * Math.min(1.0, nb_fall * LIGHT_BRIGHTNESS));
+        final int nr = (fogged >> 16) & 0xFF;
+        final int ng = (fogged >> 8) & 0xFF;
+        final int nb = fogged & 0xFF;
+        final int nor = (nr * nr_scaled) >> 8;
+        final int nog = (ng * ng_scaled) >> 8;
+        final int nob = (nb * nb_scaled) >> 8;
+        return 0xFF000000 | (nor << 16) | (nog << 8) | nob;
       }
       // Primitive center for the light distance/direction.
       final double pcx;
