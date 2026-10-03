@@ -6,7 +6,7 @@ public class FaceType extends BaseType {
     // nothing yet...
   }
   
-  public boolean equals(Object o) {
+  public boolean equals(final Object o) {
     final FaceType t = (FaceType) o;
    
     if (this.hidden != t.hidden) {
@@ -24,7 +24,7 @@ public class FaceType extends BaseType {
     return 0;
   }
   
-  public void makeEqualTo(FaceType t) {
+  public void makeEqualTo(final FaceType t) {
     this.hidden = t.hidden;
     this.selected = t.selected;
   }

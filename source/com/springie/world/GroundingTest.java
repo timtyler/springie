@@ -43,7 +43,7 @@ public class GroundingTest {
     World.global_temperature = this.old_temperature;
   }
 
-  private static int lowestExtent(NodeManager node_manager) {
+  private static int lowestExtent(final NodeManager node_manager) {
     int lowest = Integer.MIN_VALUE;
     final int n = node_manager.element.size();
     for (int i = 0; i < n; i++) {
@@ -56,7 +56,7 @@ public class GroundingTest {
     return lowest;
   }
 
-  private static void shiftAllY(NodeManager node_manager, int dy) {
+  private static void shiftAllY(final NodeManager node_manager, final int dy) {
     final int n = node_manager.element.size();
     for (int i = 0; i < n; i++) {
       ((Node) node_manager.element.get(i)).pos.y += dy;

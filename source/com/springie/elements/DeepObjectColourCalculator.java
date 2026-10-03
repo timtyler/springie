@@ -12,7 +12,7 @@ public final class DeepObjectColourCalculator {
     // ...
   }
 
-  public static int getColourOfDeepObject(int colour, int z) {
+  public static int getColourOfDeepObject(final int colour, final int z) {
     if (depth_is_relative) {
       final Range depth_range = ContextManager.getNodeManager().getDepthRange();
 
@@ -31,7 +31,7 @@ public final class DeepObjectColourCalculator {
     return getColourForDepth(colour, depth);
   }
 
-  private static int getColourForDepth(int colour, final int depth) {
+  private static int getColourForDepth(final int colour, final int depth) {
     int r = (colour >> 16) & 0xFF;
     int g = (colour >> 8) & 0xFF;
     int b = (colour >> 0) & 0xFF;

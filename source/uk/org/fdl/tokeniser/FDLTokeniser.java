@@ -22,7 +22,7 @@ public class FDLTokeniser {
     // ...
   }
 
-  public void setSource(String in) {
+  public void setSource(final String in) {
     this.source = in;
   }
 
@@ -159,7 +159,7 @@ public class FDLTokeniser {
         token_text.toString(), start_line, start_column);
   }
 
-  private boolean isNumberContinuation(char c) {
+  private boolean isNumberContinuation(final char c) {
     if (c == '.') {
       return true;
     } else if (c == '_') {
@@ -177,7 +177,7 @@ public class FDLTokeniser {
     return false;
   }
 
-  private boolean isNumberStart(char c) {
+  private boolean isNumberStart(final char c) {
     if (c == '-') {
       return true;
     } else if (c < '0') {

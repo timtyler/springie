@@ -72,7 +72,7 @@ class ReaderDXFPoint {
    *          The source 3D point.
    * @return Reference to this 3D point.
    */
-  ReaderDXFPoint set(ReaderDXFPoint PntW) {
+  ReaderDXFPoint set(final ReaderDXFPoint PntW) {
     this.x = PntW.x;
     this.y = PntW.y;
     this.z = PntW.z;
@@ -92,7 +92,7 @@ class ReaderDXFPoint {
   // * @param a A 3D point.
   // * @param b A 3D point.
   // */
-  private void crossProduct(ReaderDXFPoint a, ReaderDXFPoint b) {
+  private void crossProduct(final ReaderDXFPoint a, final ReaderDXFPoint b) {
     // System.out.println("PointW:a=" + a + ",dist=" + a.distance());
     // System.out.println("PointW:b=" + b + ",dist=" + b.distance());
     this.x = a.y * b.z - a.z * b.y;
@@ -113,7 +113,7 @@ class ReaderDXFPoint {
    * @param Az_in
    *          TODO
    */
-  static void calcAAA(ReaderDXFPoint Ax_out, ReaderDXFPoint Ay_out,
+  static void calcAAA(final ReaderDXFPoint Ax_out, final ReaderDXFPoint Ay_out,
       ReaderDXFPoint Az_in) {
     final ReaderDXFPoint Wy = new ReaderDXFPoint(0, 1, 0);
 

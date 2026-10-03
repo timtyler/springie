@@ -31,7 +31,7 @@ public class DuplicateLinkRemover {
     }
   }
 
-  private boolean linkHasTheSameNodesInASimilarOrder(Link l1, Link l2) {
+  private boolean linkHasTheSameNodesInASimilarOrder(final Link l1, final Link l2) {
     if (linkHasTheSameNodesInTheSameOrder(l1, l2)) {
       return true;
     }
@@ -43,7 +43,7 @@ public class DuplicateLinkRemover {
     return false;
   }
 
-  private boolean linkHasTheSameNodesInTheSameOrder(Link l1, Link l2) {
+  private boolean linkHasTheSameNodesInTheSameOrder(final Link l1, final Link l2) {
     final int total = l1.nodes.length;
 
     if (total != l2.nodes.length) {
@@ -61,7 +61,7 @@ public class DuplicateLinkRemover {
     return true;
   }
 
-  private boolean linkHasTheSameNodesInTheReverseOrder(Link l1, Link l2) {
+  private boolean linkHasTheSameNodesInTheReverseOrder(final Link l1, final Link l2) {
     final int total = l1.nodes.length;
 
     if (total != l2.nodes.length) {

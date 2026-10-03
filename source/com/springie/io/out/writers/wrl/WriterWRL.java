@@ -50,7 +50,7 @@ public class WriterWRL {
     }
   }
 
-  public void write(String filename) {
+  public void write(final String filename) {
     new GarbageCollection(ContextManager.getNodeManager()).cleanUp();
     new RedundancyRemover(ContextManager.getNodeManager()).removeRedundancy();
 
@@ -232,7 +232,7 @@ public class WriterWRL {
     }
   }
 
-  private void outputNodeTypes(Clazz clazz) {
+  private void outputNodeTypes(final Clazz clazz) {
     final int node_type_number = ContextManager.getNodeManager().node_type_factory.array
       .size();
 
@@ -247,7 +247,7 @@ public class WriterWRL {
     }
   }
 
-  private void outputLinkTypes(Clazz clazz) {
+  private void outputLinkTypes(final Clazz clazz) {
     final LinkManager link_manager = ContextManager.getLinkManager();
     final int link_type_number = link_manager.link_type_factory.array.size();
 
@@ -265,7 +265,7 @@ public class WriterWRL {
     }
   }
 
-  private void outputLinks(Clazz clazz, LinkManager link_manager, int number,
+  private void outputLinks(final Clazz clazz, final LinkManager link_manager, final int number,
     LinkType link_type) {
     final float r = (((clazz.colour >> 16) & 0xFF)) / 255f;
     final float g = (((clazz.colour >> 8) & 0xFF)) / 255f;
@@ -307,7 +307,7 @@ public class WriterWRL {
     writeLine("");
   }
 
-  private void outputFacesTypes(Clazz clazz) {
+  private void outputFacesTypes(final Clazz clazz) {
     final FaceManager polygon_manager = ContextManager.getFaceManager();
     final int type_number = polygon_manager.face_type_factory.array.size();
     if (!new AreThereAny().polygons(clazz)) {
@@ -324,7 +324,7 @@ public class WriterWRL {
     }
   }
 
-  private void outputFaceType(Clazz clazz, int number) {
+  private void outputFaceType(final Clazz clazz, final int number) {
 
     final float r = (((clazz.colour >> 16) & 0xFF)) / 255f;
     final float g = (((clazz.colour >> 8) & 0xFF)) / 255f;
@@ -345,7 +345,7 @@ public class WriterWRL {
     this.nodes.clear();
   }
 
-  private void outputFaces(FaceManager face_manager, Clazz clazz, int number) {
+  private void outputFaces(final FaceManager face_manager, final Clazz clazz, final int number) {
     final FaceType type = (FaceType) face_manager.face_type_factory.array
       .get(number);
 
@@ -421,7 +421,7 @@ public class WriterWRL {
     writeLine(pline + "-1");
   }
 
-  private boolean processNode(final Node node, int cnt) {
+  private boolean processNode(final Node node, final int cnt) {
     if (this.nodes.indexOf(node) >= 0) {
       return false;
     }
@@ -431,14 +431,14 @@ public class WriterWRL {
     return true;
   }
 
-  private void outputFaceVertex(final Node node, int n) {
+  private void outputFaceVertex(final Node node, final int n) {
     final float x = toVRMLCoords(node.pos.x - this.middle.x);
     final float y = toVRMLCoords(node.pos.y - this.middle.y);
     final float z = toVRMLCoords(node.pos.z - this.middle.z);
     writeLine("    " + emit(x) + " " + emit(y) + " " + emit(z) + " #" + n);
   }
 
-  private void outputNodeType(Clazz clazz, int number) {
+  private void outputNodeType(final Clazz clazz, final int number) {
     final NodeType type = (NodeType) ContextManager.getNodeManager().node_type_factory.array
       .get(number);
 
@@ -478,7 +478,7 @@ public class WriterWRL {
     writeLine("");
   }
 
-  private void outputNodes(final NodeManager node_manager, Clazz clazz,
+  private void outputNodes(final NodeManager node_manager, final Clazz clazz,
     int number) {
     final NodeType node_type = (NodeType) ContextManager.getNodeManager().node_type_factory.array
       .get(number);
@@ -496,7 +496,7 @@ public class WriterWRL {
     }
   }
 
-  private void outputNode(int type_idx, final Node node) {
+  private void outputNode(final int type_idx, final Node node) {
     final float x = toVRMLCoords(node.pos.x - this.middle.x);
     final float y = toVRMLCoords(node.pos.y - this.middle.y);
     final float z = toVRMLCoords(node.pos.z - this.middle.z);
@@ -505,7 +505,7 @@ public class WriterWRL {
       + emit(z) + " }");
   }
 
-  private void outputLinks(LinkManager link_manager, Clazz clazz, int number) {
+  private void outputLinks(final LinkManager link_manager, final Clazz clazz, final int number) {
     final LinkType type = (LinkType) link_manager.link_type_factory.array
       .get(number);
 
@@ -522,7 +522,7 @@ public class WriterWRL {
     }
   }
 
-  private void outputLink(Link link, int number) {
+  private void outputLink(final Link link, final int number) {
     final int total = link.nodes.length;
     for (int i = 0; i < total - 1; i++) {
       final Point3D pos_1 = link.nodes[i].pos;
@@ -556,15 +556,15 @@ public class WriterWRL {
     }
   }
 
-  float toVRMLCoords(int v) {
+  float toVRMLCoords(final int v) {
     return v * this.scale_factor;
   }
 
-  public String emit(double f) {
+  public String emit(final double f) {
     return WriteFloatingPoint.emit(f, 5, false);
   }
 
-  void writeLine(String s) {
+  void writeLine(final String s) {
     try {
       this.out.write(s + "\n");
     } catch (IOException e) {

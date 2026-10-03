@@ -42,7 +42,7 @@ public class WriterOFF {
     this.face_manager = node_manager.getFaceManager();
   }
 
-  public void write(String filename) {
+  public void write(final String filename) {
     new GarbageCollection(this.node_manager).cleanUp();
     new RedundancyRemover(this.node_manager).removeRedundancy();
 
@@ -123,7 +123,7 @@ public class WriterOFF {
     }
   }
 
-  private void outputLink(Link link) {
+  private void outputLink(final Link link) {
     final Node node1 = link.nodes[0];
     final Node node2 = link.nodes[1];
 
@@ -142,7 +142,7 @@ public class WriterOFF {
     }
   }
 
-  private void outputFace(Face face) {
+  private void outputFace(final Face face) {
     final int n = face.nodes.size();
     final StringBuilder out = new StringBuilder();
     out.append("" + n);
@@ -156,15 +156,15 @@ public class WriterOFF {
     writeLine(out.toString());
   }
 
-  float toVRMLCoords(int v) {
+  float toVRMLCoords(final int v) {
     return v * this.scale_factor;
   }
 
-  public String emit(float f) {
+  public String emit(final float f) {
     return WriteFloatingPoint.emit(f, 5, false);
   }
 
-  void writeLine(String s) {
+  void writeLine(final String s) {
     try {
       this.out.write(s + "\n");
     } catch (IOException e) {

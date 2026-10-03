@@ -26,7 +26,7 @@ public class ReaderM {
 
   boolean first_node = true;
 
-  public String translate(String in) {
+  public String translate(final String in) {
     final byte[] ba = {10, 13 };
     final String c_r = new String(ba);
 
@@ -47,7 +47,7 @@ public class ReaderM {
     return out;
   }
 
-  private void outputFaces(StringBuilder out) {
+  private void outputFaces(final StringBuilder out) {
     final int n = this.faces.size();
     out.append("PG C:0xFFB0FFFF ");
 
@@ -161,7 +161,7 @@ public class ReaderM {
     } while (true);
   }
 
-  private int findNumberOfNode(Point3D node) {
+  private int findNumberOfNode(final Point3D node) {
     final int n = this.nodes.size();
     for (int i = 0; i < n; i++) {
       final Point3D p = (Point3D) this.nodes.get(i);
@@ -172,7 +172,7 @@ public class ReaderM {
     return -1;
   }
 
-  static String getNextValidToken(StringTokenizer st) {
+  static String getNextValidToken(final StringTokenizer st) {
     boolean found;
     String tok;
     do {

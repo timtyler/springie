@@ -91,7 +91,7 @@ public class Link extends BaseElement {
   
   public static int link_display_length = SHORT;
 
-  public Link(Node e1, Node e2, LinkType type, Clazz clazz) {
+  public Link(final Node e1, final Node e2, LinkType type, Clazz clazz) {
     this.nodes = new Node[2];
     this.nodes[0] = e1;
     this.nodes[1] = e2;
@@ -102,13 +102,13 @@ public class Link extends BaseElement {
     this.adjusted_rest_length = type == null ? 0 : type.length;
   }
 
-  Link(Node e1, Node e2, Link l) {
+  Link(final Node e1, final Node e2, final Link l) {
     set(l);
     this.nodes[0] = e1;
     this.nodes[1] = e2;
   }
 
-  public void addNode(Node temp_node, int idx) {
+  public void addNode(final Node temp_node, final int idx) {
     final int size = this.nodes.length;
     if (idx >= size) {
       // if (size > 2) throw new RuntimeException("PROGRAMING ERROR");
@@ -120,7 +120,7 @@ public class Link extends BaseElement {
     this.nodes[idx] = temp_node;
   }
 
-  void set(Node e1, Node e2, int l, int e) {
+  void set(final Node e1, final Node e2, final int l, final int e) {
     this.nodes = new Node[2];
     this.nodes[0] = e1;
     this.nodes[1] = e2;
@@ -128,7 +128,7 @@ public class Link extends BaseElement {
     this.adjusted_rest_length = this.type.length;
   }
 
-  void set(Node e1, Node e2, LinkType type, Clazz clazz) {
+  void set(final Node e1, final Node e2, LinkType type, Clazz clazz) {
     this.nodes = new Node[2];
     this.nodes[0] = e1;
     this.nodes[1] = e2;
@@ -138,7 +138,7 @@ public class Link extends BaseElement {
   }
 
   // DANGER
-  void set(Link l) {
+  void set(final Link l) {
     this.type = l.type;
     this.clazz = l.clazz;
     this.controller = l.controller;
@@ -150,7 +150,7 @@ public class Link extends BaseElement {
     this.nodes[1] = l.nodes[1];
   }
 
-  void set(Node e1, Node e2, Link l) {
+  void set(final Node e1, final Node e2, final Link l) {
     set(l);
     // override the defaults...
     this.nodes = new Node[2];
@@ -580,7 +580,7 @@ public class Link extends BaseElement {
    * Given an this.node (which is assumed to be at one end of this link) return
    * the this.node at the other end
    */
-  public final Node theOtherEnd(Node e) {
+  public final Node theOtherEnd(final Node e) {
     if (this.nodes[0] == e) {
       return this.nodes[this.nodes.length - 1];
     }
@@ -588,7 +588,7 @@ public class Link extends BaseElement {
     return this.nodes[0];
   }
 
-  public boolean hasNode(Node candidate) {
+  public boolean hasNode(final Node candidate) {
     final int total = this.nodes.length;
     for (int section = 0; section < total; section++) {
       if (this.nodes[section] == candidate) {

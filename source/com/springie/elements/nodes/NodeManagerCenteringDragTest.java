@@ -114,7 +114,7 @@ class NodeManagerCenteringDragTest {
         "node 1 x centred with collisions off");
   }
 
-  private Node node(int index) {
+  private Node node(final int index) {
     return (Node) this.manager.element.get(index);
   }
 }

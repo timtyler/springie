@@ -18,16 +18,16 @@ public final class FDLWriter {
     //...
   }
   
-  public static String toString(FDLObject object) {
+  public static String toString(final FDLObject object) {
     recent_end_tag = false;
     return makeString(object, 0);
   }
   
-  public static String makeString(FDLObject object) {
+  public static String makeString(final FDLObject object) {
     return makeString(object, 0);
   }
 
-  public static String makeString(FDLObject object, int indent) {
+  public static String makeString(final FDLObject object, final int indent) {
     if (object instanceof FDLObjectIdentifier) {
       return ((FDLObjectIdentifier) object).identifier;
     } else if (object instanceof FDLObjectNumber) {
@@ -48,7 +48,7 @@ public final class FDLWriter {
     }
   }
 
-  private static String renderList(FDLObjectBraceList list, int indent) {
+  private static String renderList(final FDLObjectBraceList list, final int indent) {
     final StringBuilder sb = new StringBuilder();
 
     outputListStartTagAndAttributes(list, indent, sb);
@@ -60,7 +60,7 @@ public final class FDLWriter {
     return sb.toString();
   }
   
-  public static String renderChain(FDLObjectChain chain, int indent) {
+  public static String renderChain(final FDLObjectChain chain, final int indent) {
     final StringBuilder sb = new StringBuilder();
     FDLWriterStringUtilities.repeat(' ', indent);
     outputChainChildren(chain, sb, indent);
@@ -68,7 +68,7 @@ public final class FDLWriter {
     return sb.toString();
   }
 
-  private static void outputChainChildren(FDLObjectChain chain, final StringBuilder sb, int indent) {
+  private static void outputChainChildren(final FDLObjectChain chain, final StringBuilder sb, final int indent) {
     if (chain.children != null) {
       final int children_size = chain.children.size();
       for (int i = 0; i < children_size; i++) {
@@ -83,7 +83,7 @@ public final class FDLWriter {
     }
   }
 
-  private static void outputListStartTagAndAttributes(FDLObjectBraceList list, final int indent,
+  private static void outputListStartTagAndAttributes(final FDLObjectBraceList list, final int indent,
       final StringBuilder sb) {
     sb.append(list.open);
     if (list.newlines) {
@@ -92,7 +92,7 @@ public final class FDLWriter {
     }
   }
 
-  private static void outputListChildren(FDLObjectBraceList list, int indent, final StringBuilder sb) {
+  private static void outputListChildren(final FDLObjectBraceList list, final int indent, final StringBuilder sb) {
     if (list.children != null) {
       final int children_size = list.children.size();
       for (int i = 0; i < children_size; i++) {
@@ -115,7 +115,7 @@ public final class FDLWriter {
     recent_end_tag = false;
   }
 
-  private static void outputListEndTag(FDLObjectBraceList list, int indent, final StringBuilder sb) {
+  private static void outputListEndTag(final FDLObjectBraceList list, final int indent, final StringBuilder sb) {
     if (list.newlines) {
       FDLWriterStringUtilities.indent(sb, indent);
     }

@@ -11,7 +11,7 @@ public class LinkTypeFactory {
     return type;
   }
 
-  public LinkType getNew(int length, int elasticity) {
+  public LinkType getNew(final int length, final int elasticity) {
     final LinkType type = new LinkType(length, elasticity);
     this.array.add(type);
     return type;

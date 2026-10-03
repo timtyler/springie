@@ -41,7 +41,7 @@ class DataInputModelLoadTest {
 
   @ParameterizedTest
   @ValueSource(strings = {"asm_32a", "cube", "icosahedron", "moscow", "soccer", "t_sphere_32"})
-  void bundledModelLoadsWithoutException(String name) {
+  void bundledModelLoadsWithoutException(final String name) {
     final DataInput input = new DataInput(this.manager);
     assertDoesNotThrow(() -> input.loadFile("resource://models/" + name + ".spr"),
         name + " should load without throwing");
@@ -51,7 +51,7 @@ class DataInputModelLoadTest {
 
   @ParameterizedTest
   @ValueSource(strings = {"icosahedron", "soccer"})
-  void modelsWithFacesLoadTheirFaces(String name) {
+  void modelsWithFacesLoadTheirFaces(final String name) {
     new DataInput(this.manager).loadFile("resource://models/" + name + ".spr");
 
     assertTrue(this.manager.getFaceManager().element.size() > 0,
@@ -98,7 +98,7 @@ class DataInputModelLoadTest {
   @ValueSource(strings = {
       "file:///nonexistent-springie-model.spr",
       "resource://models/does-not-exist.spr"})
-  void missingModelLoadDoesNotThrow(String location) {
+  void missingModelLoadDoesNotThrow(final String location) {
     // Dead model links (e.g. the defunct springie.com index entries) must
     // fail gracefully instead of throwing NullPointerException.
     final DataInput input = new DataInput(this.manager);

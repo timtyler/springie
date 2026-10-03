@@ -72,7 +72,7 @@ public class Node extends BaseElement {
     //...
   }
 
-  public Node(Point3D pos, int seed, NodeTypeFactory node_type_factory) {
+  public Node(Point3D pos, final int seed, final NodeTypeFactory node_type_factory) {
     this.pos = pos;
     this.type = node_type_factory.getNew();
 
@@ -84,7 +84,7 @@ public class Node extends BaseElement {
     this.type.log_mass = NodeType.REFERENCE_LOG_MASS;
   }
 
-  public Node(Node e, NodeTypeFactory node_type_factory, ClazzFactory clazz_factory) {
+  public Node(final Node e, final NodeTypeFactory node_type_factory, final ClazzFactory clazz_factory) {
     set(e, node_type_factory, clazz_factory);
   }
 
@@ -100,7 +100,7 @@ public class Node extends BaseElement {
 //    this.type.log_mass = 16;
 //  }
 
-  public void set(Node e, NodeTypeFactory node_type_factory, ClazzFactory clazz_factory) {
+  public void set(final Node e, final NodeTypeFactory node_type_factory, final ClazzFactory clazz_factory) {
     this.pos.x = e.pos.x;
     this.pos.y = e.pos.y;
     this.pos.z = e.pos.z;
@@ -339,7 +339,7 @@ public class Node extends BaseElement {
     //}
   }
 
-  public final void findNewBin(GridOfBinsForCachedNodes bg) {
+  public final void findNewBin(final GridOfBinsForCachedNodes bg) {
     if (!FrEnd.oscd) {
       final int new_bin_x = this.pos.x >>> bg.log2binsize;
       final int new_bin_y = this.pos.y >>> bg.log2binsize;
@@ -359,7 +359,7 @@ public class Node extends BaseElement {
     }
   }
 
-  final void removeFromBin(GridOfBinsForCachedNodes bg) {
+  final void removeFromBin(final GridOfBinsForCachedNodes bg) {
     if (!FrEnd.oscd) { //!?
       bg.removeFromList(this.current_bin.x,
         this.current_bin.y, this.current_bin.z, this);

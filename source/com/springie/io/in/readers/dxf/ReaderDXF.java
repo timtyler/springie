@@ -17,7 +17,7 @@ public class ReaderDXF {
 
   boolean first_node = true;
 
-  public String translate(String in) {
+  public String translate(final String in) {
     final byte[] ba = {10, 13 };
     final String c_r = new String(ba);
 
@@ -216,7 +216,7 @@ public class ReaderDXF {
     } while (true);
   }
 
-  static String getNextValidToken(StringTokenizer st) {
+  static String getNextValidToken(final StringTokenizer st) {
     boolean found;
     String tok;
     do {

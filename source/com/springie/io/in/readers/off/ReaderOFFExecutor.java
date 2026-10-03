@@ -16,7 +16,7 @@ import com.springie.modification.translation.CentreOnScreen;
 import com.tifsoft.utilities.execute.Executor;
 
 public class ReaderOFFExecutor implements Executor {
-  public Object execute(Object o) {
+  public Object execute(final Object o) {
     final NodeManager node_manager = (NodeManager) o;
 
     ScaleToFitScreen.scale(node_manager);
@@ -33,7 +33,7 @@ public class ReaderOFFExecutor implements Executor {
     return null;
   }
 
-  private void makeStrutsFromFaces(NodeManager node_manager) {
+  private void makeStrutsFromFaces(final NodeManager node_manager) {
     final LinkManager link_manager = node_manager.getLinkManager();
     final FaceManager face_manager = node_manager.getFaceManager();
 
@@ -52,7 +52,7 @@ public class ReaderOFFExecutor implements Executor {
     }
   }
 
-  private void deleteFacesWithTwoNodes(NodeManager node_manager) {
+  private void deleteFacesWithTwoNodes(final NodeManager node_manager) {
     final FaceManager face_manager = node_manager.getFaceManager();
 
     final int n_faces = face_manager.element.size();
@@ -66,7 +66,7 @@ public class ReaderOFFExecutor implements Executor {
     }
   }
 
-  private void joinNodes(NodeManager node_manager, Node node_1, Node node_2) {
+  private void joinNodes(final NodeManager node_manager, final Node node_1, final Node node_2) {
     final LinkManager link_manager = node_manager.getLinkManager();
 
     final int length = node_manager.distanceBetween(node_1, node_2);

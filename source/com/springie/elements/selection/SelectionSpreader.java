@@ -46,7 +46,7 @@ public class SelectionSpreader {
     }
   }
 
-  private void selectAllNodes(Link link) {
+  private void selectAllNodes(final Link link) {
     final Node[] nodes = link.nodes;
     final int total = nodes.length;
     for (int i = 0; i < total; i++) {
@@ -56,7 +56,7 @@ public class SelectionSpreader {
     }
   }
 
-  private void selectAllLinks(Node node) {
+  private void selectAllLinks(final Node node) {
     final ListOfIntegers list_of_links = node.list_of_links;
     final int n_o_l = list_of_links.size();
     for (int temp = n_o_l; --temp >= 0;) {

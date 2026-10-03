@@ -17,7 +17,7 @@ public class LinkType extends BaseType {
 
   public int damping = default_damping;
 
-  protected LinkType(int l, int e) {
+  protected LinkType(final int l, final int e) {
     setLength(l);
     this.radius = l >> 3;
     this.elasticity = e;
@@ -30,7 +30,7 @@ public class LinkType extends BaseType {
   /**
    * Creates a link between e1 and e1, with length l and elasticity e
    */
-  void set(int l, int e) {
+  void set(final int l, final int e) {
     setLength(l);
     this.elasticity = e;
   }
@@ -45,14 +45,14 @@ public class LinkType extends BaseType {
   /**
    * Changes the elasticity of a link
    */
-  public void setElasticity(int e) {
+  public void setElasticity(final int e) {
     this.elasticity = e;
   }
 
   /**
    * Changes the amplitude of any oscillations in a link
    */
-  public boolean equals(Object o) {
+  public boolean equals(final Object o) {
     final LinkType lt = (LinkType) o;
 
     if (this.length != lt.length) {
@@ -90,7 +90,7 @@ public class LinkType extends BaseType {
     return this.elasticity ^ this.length;
   }
 
-  public void makeEqualTo(LinkType lt) {
+  public void makeEqualTo(final LinkType lt) {
     this.length = lt.length;
     //this.cable = lt.cable;
     this.compression = lt.compression;

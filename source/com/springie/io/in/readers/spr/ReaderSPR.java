@@ -67,7 +67,7 @@ public class ReaderSPR extends DefaultHandler {
 
   TypeFace type_face;
   
-  public String translate(String filename) throws IOException, SAXException {
+  public String translate(final String filename) throws IOException, SAXException {
     final XMLReader xr = new com.tifsoft.xml.driver.Driver();
 
     final ReaderSPR handler = new ReaderSPR();
@@ -85,7 +85,7 @@ public class ReaderSPR extends DefaultHandler {
     return handler.out.toString();
   }
 
-  public String translateString(String source_data) throws IOException,
+  public String translateString(final String source_data) throws IOException,
     SAXException {
     final XMLReader xr = new com.tifsoft.xml.driver.Driver();
 
@@ -113,7 +113,7 @@ public class ReaderSPR extends DefaultHandler {
     //...
   }
 
-  public void startElement(String uri, String name, String qName,
+  public void startElement(final String uri, final String name, final String qName,
     Attributes atts) {
     boolean is_nodes = false;
     boolean is_links = false;
@@ -417,7 +417,7 @@ public class ReaderSPR extends DefaultHandler {
     return r;
   }
 
-  public void endElement(String uri, String name, String tag) {
+  public void endElement(final String uri, final String name, final String tag) {
     if ("".equals(uri)) {
       if ("nodes".equals(tag)) {
         this.in_nodes_section = false;
@@ -435,13 +435,13 @@ public class ReaderSPR extends DefaultHandler {
     }
   }
 
-  public void ignorableWhitespace(char[] ch, int start, int length) {
+  public void ignorableWhitespace(final char[] ch, final int start, final int length) {
     characters(ch, start, length);
   }
 
-  public void skippedEntity(String name) {
+  public void skippedEntity(final String name) {
   }
 
-  public void characters(char[] ch, int start, int length) {
+  public void characters(final char[] ch, final int start, final int length) {
   }
 }

@@ -14,7 +14,7 @@ class FDLObjectCollection extends FDLObject {
     this.children = children;
   }
 
-  public void add(ArrayList<FDLObject> children) {
+  public void add(final ArrayList<FDLObject> children) {
     ensureChildrenExist();
     
     final int children_size = this.children.size();
@@ -24,7 +24,7 @@ class FDLObjectCollection extends FDLObject {
     }
   }
 
-  public void add(FDLObject child) {
+  public void add(final FDLObject child) {
     ensureChildrenExist();
 
     this.children.add(child);
@@ -36,7 +36,7 @@ class FDLObjectCollection extends FDLObject {
     }
   }
 
-  public void addContentsOf(FDLObjectCollection child) {
+  public void addContentsOf(final FDLObjectCollection child) {
     ensureChildrenExist();
 
     for (int i = 0; i < child.children.size(); i++) {

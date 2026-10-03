@@ -81,7 +81,7 @@ public class ReaderCrudeClay {
 
   final int scale_factor = 10000;
 
-  public String translate(String in) {
+  public String translate(final String in) {
     final byte[] ba = {10 };
     final String c_r = new String(ba);
 
@@ -113,7 +113,7 @@ public class ReaderCrudeClay {
     return out;
   }
 
-  private void execute(final StringTokenizer st2, String command,
+  private void execute(final StringTokenizer st2, final String command,
       StringBuilder out) {
     if ("node".equals(command)) {
       commandNode(st2, out);
@@ -164,7 +164,7 @@ public class ReaderCrudeClay {
     }
   }
 
-  private void commandReset(StringTokenizer s_t, StringBuilder out) {
+  private void commandReset(final StringTokenizer s_t, final StringBuilder out) {
     final String t = getNextCommand(s_t);
     if (t.equals("link")) {
       final String t2 = getNextCommand(s_t);
@@ -174,7 +174,7 @@ public class ReaderCrudeClay {
     }
   }
 
-  private void commandSelect(StringTokenizer s_t, StringBuilder out) {
+  private void commandSelect(final StringTokenizer s_t, final StringBuilder out) {
     final String t = getNextCommand(s_t);
     if (t.equals("all")) {
       final String t2 = getNextCommand(s_t);
@@ -184,7 +184,7 @@ public class ReaderCrudeClay {
     }
   }
 
-  private void commandDeselect(StringTokenizer s_t, StringBuilder out) {
+  private void commandDeselect(final StringTokenizer s_t, final StringBuilder out) {
     final String t = getNextCommand(s_t);
     if (t.equals("all")) {
       final String t2 = getNextCommand(s_t);
@@ -194,11 +194,11 @@ public class ReaderCrudeClay {
     }
   }
 
-  private String getNextCommand(StringTokenizer s_t) {
+  private String getNextCommand(final StringTokenizer s_t) {
     return s_t.nextToken().toLowerCase();
   }
 
-  private void commandNode(StringTokenizer s_t, StringBuilder out) {
+  private void commandNode(final StringTokenizer s_t, final StringBuilder out) {
     boolean need_group = this.type != this.type_node;
     need_group |= needsNewGroup();
     need_group |= this.current_radius != this.last_radius;
@@ -237,7 +237,7 @@ public class ReaderCrudeClay {
     out.append("Z:" + z + " ");
   }
 
-  private void commandLink(StringTokenizer s_t, StringBuilder out) {
+  private void commandLink(final StringTokenizer s_t, final StringBuilder out) {
     boolean need_group = this.type != this.type_link;
     need_group |= needsNewGroup();
     need_group |= this.current_radius != this.last_radius;
@@ -268,7 +268,7 @@ public class ReaderCrudeClay {
     }
   }
 
-  private void commandFace(StringTokenizer s_t, StringBuilder out) {
+  private void commandFace(final StringTokenizer s_t, final StringBuilder out) {
     boolean need_group = this.type != this.type_face;
     need_group |= needsNewGroup();
 
@@ -287,7 +287,7 @@ public class ReaderCrudeClay {
     }
   }
 
-  private void commandBrightness(StringTokenizer s_t) {
+  private void commandBrightness(final StringTokenizer s_t) {
     final String argument = s_t.nextToken();
     final float value = Float.valueOf(argument).floatValue();
     final float[] hsb = new float[3];
@@ -296,7 +296,7 @@ public class ReaderCrudeClay {
     setCurrentColour(n_col);
   }
 
-  private void commandSaturation(StringTokenizer s_t) {
+  private void commandSaturation(final StringTokenizer s_t) {
     final String argument = s_t.nextToken();
     final float value = Float.valueOf(argument).floatValue();
     final float[] hsb = new float[3];
@@ -305,7 +305,7 @@ public class ReaderCrudeClay {
     setCurrentColour(n_col);
   }
 
-  private void commandHue(StringTokenizer s_t) {
+  private void commandHue(final StringTokenizer s_t) {
     final String argument = s_t.nextToken();
     final float value = Float.valueOf(argument).floatValue();
     final float[] hsb = new float[3];
@@ -314,7 +314,7 @@ public class ReaderCrudeClay {
     setCurrentColour(n_col);
   }
 
-  private void setCurrentColour(int n_col) {
+  private void setCurrentColour(final int n_col) {
     this.current_r = (n_col >> 16) & 0xFF;
     this.current_g = (n_col >> 8) & 0xFF;
     this.current_b = (n_col >> 0) & 0xFF;
@@ -350,37 +350,37 @@ public class ReaderCrudeClay {
     this.current_radius = (int) (Double.valueOf(argument).doubleValue() * this.scale_factor);
   }
 
-  private void commandCable(StringTokenizer s_t) {
+  private void commandCable(final StringTokenizer s_t) {
     final String argument = (s_t.nextToken()).toLowerCase();
     this.current_cable = "true".equals(argument);
   }
 
-  private void commandFixed(StringTokenizer s_t) {
+  private void commandFixed(final StringTokenizer s_t) {
     final String argument = (s_t.nextToken()).toLowerCase();
     this.current_fixed = "true".equals(argument);
   }
 
-  private void commandDisabled(StringTokenizer s_t) {
+  private void commandDisabled(final StringTokenizer s_t) {
     final String argument = (s_t.nextToken()).toLowerCase();
     this.current_disabled = "true".equals(argument);
   }
 
-  private void commandHidden(StringTokenizer s_t) {
+  private void commandHidden(final StringTokenizer s_t) {
     final String argument = (s_t.nextToken()).toLowerCase();
     this.current_hidden = "true".equals(argument);
   }
 
-  private void commandDamping(StringTokenizer s_t) {
+  private void commandDamping(final StringTokenizer s_t) {
     final String argument = s_t.nextToken();
     this.current_damping = Integer.parseInt(argument);
   }
 
-  private void commandElasticity(StringTokenizer s_t) {
+  private void commandElasticity(final StringTokenizer s_t) {
     final String argument = s_t.nextToken();
     this.current_elasticity = Integer.parseInt(argument);
   }
 
-  private void commandCharge(StringTokenizer s_t) {
+  private void commandCharge(final StringTokenizer s_t) {
     final String argument = s_t.nextToken();
     this.current_charge = Integer.parseInt(argument);
   }
@@ -428,68 +428,68 @@ public class ReaderCrudeClay {
     this.last_radius = this.current_radius;
   }
 
-  private void outputNewRadius(StringBuilder out) {
+  private void outputNewRadius(final StringBuilder out) {
     out.append("R:" + (int) this.current_radius + " ");
     this.last_radius = this.current_radius;
   }
 
-  private void outputNewHidden(StringBuilder out) {
+  private void outputNewHidden(final StringBuilder out) {
     if (this.current_hidden) {
       out.append("H:1 ");
       this.last_hidden = this.current_hidden;
     }
   }
 
-  private void outputNewFixed(StringBuilder out) {
+  private void outputNewFixed(final StringBuilder out) {
     if (this.current_fixed) {
       out.append("FX:1 ");
       this.last_fixed = this.current_fixed;
     }
   }
 
-  private void outputNewCable(StringBuilder out) {
+  private void outputNewCable(final StringBuilder out) {
     if (this.current_cable) {
       out.append("CA:1 ");
       this.last_cable = this.current_cable;
     }
   }
 
-  private void outputNewDisabled(StringBuilder out) {
+  private void outputNewDisabled(final StringBuilder out) {
     if (this.current_disabled) {
       out.append("D:1 ");
       this.last_disabled = this.current_disabled;
     }
   }
 
-  private void outputNewLength(StringBuilder out) {
+  private void outputNewLength(final StringBuilder out) {
     // if (this.current_length != this.last_length) {
     out.append("L:" + (int) this.current_length + " ");
     this.last_length = this.current_length;
     // }
   }
 
-  private void outputNewElasticity(StringBuilder out) {
+  private void outputNewElasticity(final StringBuilder out) {
     // if (this.current_elasticity != this.last_elasticity) {
     out.append("E:" + this.current_elasticity + " ");
     this.last_elasticity = this.current_elasticity;
     // }
   }
 
-  private void outputNewDamping(StringBuilder out) {
+  private void outputNewDamping(final StringBuilder out) {
     if (this.current_damping != this.last_damping) {
       out.append("DA:" + this.current_damping + " ");
       this.last_damping = this.current_damping;
     }
   }
 
-  private void outputNewCharge(StringBuilder out) {
+  private void outputNewCharge(final StringBuilder out) {
     if (this.current_charge != this.last_charge) {
       out.append("CH:" + this.current_charge + " ");
       this.last_charge = this.current_charge;
     }
   }
 
-  private void outputNewColour(StringBuilder out) {
+  private void outputNewColour(final StringBuilder out) {
     this.current_colour = getCurrentColour();
     if (this.current_colour != this.last_colour) {
       final long c = this.current_colour & 0xFFFFFFFFL;
@@ -503,7 +503,7 @@ public class ReaderCrudeClay {
         | (this.current_g << 8) | this.current_b;
   }
 
-  String getNextValidLine(StringTokenizer st) {
+  String getNextValidLine(final StringTokenizer st) {
     boolean found;
     String tok;
     do {

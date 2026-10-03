@@ -15,7 +15,7 @@ public class FDLWriterExampleProgram {
 
   Writer out;
 
-  public void test(String filename) {
+  public void test(final String filename) {
     try {
       this.out = new FileWriter(filename);
       final ZFDLWriterNamedBraceList uni = new ZFDLWriterNamedBraceList("test_tag_1");

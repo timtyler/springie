@@ -94,7 +94,7 @@ public class NodeManager extends World {
     }
   }
 
-  public final void initialWithPreset(ArgumentList preset_type) {
+  public final void initialWithPreset(final ArgumentList preset_type) {
     initialSetUp();
 
     addCreatureFromPresetObject(preset_type);
@@ -121,13 +121,13 @@ public class NodeManager extends World {
     addCreatureFromLocation(location);
   }
 
-  void addCreatureFromPresetObject(ArgumentList preset_type) {
+  void addCreatureFromPresetObject(final ArgumentList preset_type) {
     String d = null;
     d = PresetObjects.getCreatureDescription(preset_type);
     FrEnd.data_input.addFromString(d, ContextManager.getNodeManager());
   }
 
-  public void addCreatureFromLocation(String location) {
+  public void addCreatureFromLocation(final String location) {
     String d = null;
     if (FrEnd.archive != null) {
       if (!"".equals(FrEnd.archive)) {
@@ -155,7 +155,7 @@ public class NodeManager extends World {
     FrEnd.data_input.addFromString(d, ContextManager.getNodeManager());
   }
 
-  private void reportProblem(String location) {
+  private void reportProblem(final String location) {
     logger.debug("Problem getting information from location:" + location);
   }
 
@@ -240,7 +240,7 @@ public class NodeManager extends World {
     return true;
   }
 
-  private void updateLinks(LinkManager link_manager) {
+  private void updateLinks(final LinkManager link_manager) {
     if (needToMoveNodes()) {
       if (!FrEnd.paused) {
         final int n_o_l = this.getLinkManager().element.size();
@@ -515,7 +515,7 @@ public class NodeManager extends World {
     }
   }
 
-  boolean sameSign(int a, int b) {
+  boolean sameSign(final int a, final int b) {
     return ((a ^ b) & 0x80000000) == 0;
   }
 
@@ -566,7 +566,7 @@ public class NodeManager extends World {
     }
   }
 
-  private void sendDeleteNodeMessage(Node node) {
+  private void sendDeleteNodeMessage(final Node node) {
     FrEnd.new_message_manager.add(new NewMessage(null) {
 
       @Override
@@ -577,7 +577,7 @@ public class NodeManager extends World {
     });
   }
 
-  private void releaseVirus(Node agent) {
+  private void releaseVirus(final Node agent) {
     int radius = 0x400;
     int delta = radius + agent.type.radius;
     createViralNode(agent, radius, delta, 0);
@@ -586,7 +586,7 @@ public class NodeManager extends World {
     createViralNode(agent, radius, 0, -delta);
   }
 
-  private void createViralNode(Node agent, int radius, int delta_x, int delta_y) {
+  private void createViralNode(final Node agent, int radius, final int delta_x, final int delta_y) {
     Node node = new Node(agent, this.node_type_factory, this.clazz_factory);
     node.clazz = this.clazz_factory.getNew(virus_color);
     node.type.radius = radius;
@@ -644,7 +644,7 @@ public class NodeManager extends World {
   }
 
   // z ??
-  public final byte arcTangent(int dx, int dy) {
+  public final byte arcTangent(final int dx, final int dy) {
     final int temp_x0 = World.rnd.nextInt();
 
     if (dx < 0 && dy < 0) {
@@ -808,7 +808,7 @@ public class NodeManager extends World {
     }
   }
 
-  private void spreadUsingVirus(Node node1, Node node2, final int counter) {
+  private void spreadUsingVirus(final Node node1, final Node node2, final int counter) {
     if (counter == 0) {
       if (node2.clazz.colour == virus_color) {
         node1.type.counter = PerformSelection.INFECTION_START;
@@ -816,7 +816,7 @@ public class NodeManager extends World {
     }
   }
 
-  private void spreadInfectionOneWay(Node uninfectedNode, int counter1, int counter2) {
+  private void spreadInfectionOneWay(final Node uninfectedNode, final int counter1, final int counter2) {
     if (counter1 > PerformSelection.IMMUNITY_START) {
       if (counter2 == 0) {
         uninfectedNode.type.counter = PerformSelection.INFECTION_START;
@@ -825,7 +825,7 @@ public class NodeManager extends World {
   }
 
   // picker algorithm - simple - and slow...
-  final Node isThereOneHelper(int _x, int _y) {
+  final Node isThereOneHelper(final int _x, final int _y) {
     // Log.log("isThereOne:" + _x + "," + _y);
     int tadx;
     int tady;
@@ -867,7 +867,7 @@ public class NodeManager extends World {
   }
 
   // picker algorithm choice...
-  public final Node isThereOne(int x, int y) {
+  public final Node isThereOne(final int x, final int y) {
     return isThereOneHelper(x, y);
   }
 
@@ -881,7 +881,7 @@ public class NodeManager extends World {
     }
   }
 
-  public final void setCompassOfSelected(CompassPoint heading) {
+  public final void setCompassOfSelected(final CompassPoint heading) {
     final int n_o_n = this.element.size();
     for (int temp = n_o_n; --temp >= 0;) {
       final Node node = (Node) this.element.get(temp);
@@ -915,7 +915,7 @@ public class NodeManager extends World {
     }
   }
 
-  public void setGlobalSize(int d) {
+  public void setGlobalSize(final int d) {
     NodeManager.general_size = d;
 
     final int number_of_nodes = this.element.size();
@@ -924,7 +924,7 @@ public class NodeManager extends World {
     }
   }
 
-  public final boolean killThisNode(Node e) {
+  public final boolean killThisNode(final Node e) {
     final int number_of_nodes = this.element.size();
     for (int temp = 0; temp < number_of_nodes; temp++) {
       if (this.element.get(temp) == e) {
@@ -936,7 +936,7 @@ public class NodeManager extends World {
     return false;
   }
 
-  public void killNumberedAgent(int n) {
+  public void killNumberedAgent(final int n) {
     final Node node = (Node) this.element.get(n);
     this.getLinkManager().killAllLinks(node);
     this.getFaceManager().killAllPolygons(node);
@@ -974,7 +974,7 @@ public class NodeManager extends World {
     FrEnd.updateGUIToReflectSelectionChange();
   }
 
-  public void deselectAll(int colour) {
+  public void deselectAll(final int colour) {
     final int number_of_nodes = this.element.size();
     for (int temp = 0; temp < number_of_nodes; temp++) {
       final Node n = (Node) this.element.get(temp);
@@ -1012,7 +1012,7 @@ public class NodeManager extends World {
     FrEnd.updateGUIToReflectSelectionChange();
   }
 
-  public void selectAll(int colour) {
+  public void selectAll(final int colour) {
     final int number_of_nodes = this.element.size();
     for (int temp = 0; temp < number_of_nodes; temp++) {
       final Node node = (Node) this.element.get(temp);
@@ -1036,7 +1036,7 @@ public class NodeManager extends World {
     FrEnd.updateGUIToReflectSelectionChange();
   }
 
-  public final void setColourOfSelected(int c) {
+  public final void setColourOfSelected(final int c) {
     boolean clean_up = false;
     final int number_of_nodes = this.element.size();
     for (int temp2 = 0; temp2 < number_of_nodes; temp2++) {
@@ -1051,7 +1051,7 @@ public class NodeManager extends World {
     }
   }
 
-  public void setSizeOfSelected(int s) {
+  public void setSizeOfSelected(final int s) {
     boolean clean_up = false;
     final int number_of_nodes = this.element.size();
     for (int temp2 = 0; temp2 < number_of_nodes; temp2++) {
@@ -1121,7 +1121,7 @@ public class NodeManager extends World {
     return number;
   }
 
-  public int getNodeNumberFromName(String name) {
+  public int getNodeNumberFromName(final String name) {
     final int number_of_nodes = this.element.size();
     for (int temp = 0; temp < number_of_nodes; temp++) {
       final Node n = (Node) this.element.get(temp);
@@ -1133,7 +1133,7 @@ public class NodeManager extends World {
     return -1;
   }
 
-  public void selectAllWithNLinks(int n_links) {
+  public void selectAllWithNLinks(final int n_links) {
     final int number_of_nodes = this.element.size();
     for (int temp = 0; temp < number_of_nodes; temp++) {
       final Node n = (Node) this.element.get(temp);
@@ -1181,7 +1181,7 @@ public class NodeManager extends World {
     return list_of_nodes;
   }
 
-  public void moveSelection(int _dx, int _dy) {
+  public void moveSelection(final int _dx, final int _dy) {
     final int number_of_nodes = this.element.size();
     for (int temp2 = 0; temp2 < number_of_nodes; temp2++) {
       final Node n = this.element.get(temp2);
@@ -1199,7 +1199,7 @@ public class NodeManager extends World {
     }
   }
 
-  public void moveNodesInList(List<Node> list_of_nodes, int d_x, int d_y) {
+  public void moveNodesInList(final List<Node> list_of_nodes, final int d_x, final int d_y) {
     final int number_of_nodes = list_of_nodes.size();
     for (int temp2 = 0; temp2 < number_of_nodes; temp2++) {
       final Node n = list_of_nodes.get(temp2);

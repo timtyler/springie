@@ -7,15 +7,15 @@ public class Clazz {
     this.colour = colour;
   }
 
-  public Clazz(Clazz clazz) {
+  public Clazz(final Clazz clazz) {
     makeEqualTo(clazz);
   }
 
-  private void makeEqualTo(Clazz clazz) {
+  private void makeEqualTo(final Clazz clazz) {
     this.colour = clazz.colour;
   }
 
-  public boolean equals(Object o) {
+  public boolean equals(final Object o) {
     final Clazz c = (Clazz) o;
     if (this.colour != c.colour) {
       return false;

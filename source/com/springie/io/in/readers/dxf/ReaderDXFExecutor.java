@@ -10,7 +10,7 @@ import com.springie.modification.translation.CentreOnScreen;
 import com.tifsoft.utilities.execute.Executor;
 
 public class ReaderDXFExecutor implements Executor {
-  public Object execute(Object o) {
+  public Object execute(final Object o) {
     final NodeManager node_manager = (NodeManager) o;
 
     ScaleToFitScreen.scale(node_manager);

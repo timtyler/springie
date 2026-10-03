@@ -30,7 +30,7 @@ public class ElectrostaticRepulsion {
     }
   }
 
-  private void applyForceToNodes(Node node1, Node node2) {
+  private void applyForceToNodes(final Node node1, final Node node2) {
     final long charge_strength_factor = 200;
 
     final int d_x = (node1.pos.x - node2.pos.x) >> Coords.shift;

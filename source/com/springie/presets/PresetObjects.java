@@ -22,7 +22,7 @@ public final class PresetObjects {
     // ...
   }
 
-  public static String getCreatureDescription(ArgumentList arguments) {
+  public static String getCreatureDescription(final ArgumentList arguments) {
     final ProceduralObjectInstance type = (ProceduralObjectInstance) arguments
         .getArguments(0);
 
@@ -50,7 +50,7 @@ public final class PresetObjects {
     return null;
   }
 
-  public static String getCreatureDescription(String location)
+  public static String getCreatureDescription(final String location)
       throws IOException, SAXException {
     // if (FrEnd.archive != null) {
     // if (!"".equals(FrEnd.archive)) {
@@ -64,7 +64,7 @@ public final class PresetObjects {
     return new ReaderSPR().translate(location);
   }
 
-  static String getPathFromXMLFile(String leaf, String file) {
+  static String getPathFromXMLFile(final String leaf, final String file) {
     try {
       final String out = new ReadXMLModelIndexFile().translate(leaf, file);
       // Log.log("getPathFromXMLFile out:" + out);
@@ -78,7 +78,7 @@ public final class PresetObjects {
     return "";
   }
 
-  static String boundNodes(int nodes) {
+  static String boundNodes(final int nodes) {
     // 4, 6, 12, 32, 42, 72, 92, 162, ?(252), 362
     final int number_of_spheres = nodes;
     final int scale_factor = 3;
@@ -111,7 +111,7 @@ public final class PresetObjects {
     return dome;
   }
 
-  static String freeNodes(int nodes) {
+  static String freeNodes(final int nodes) {
     // 4, 6, 12, 32, 42, 72, 92, 162, ?(252), 362
     final int number_of_spheres = nodes;
     final int scale_factor = 3;
@@ -139,7 +139,7 @@ public final class PresetObjects {
     return desc;
   }
 
-  static String makeMatrix(int n1, int n2, int n3) {
+  static String makeMatrix(final int n1, final int n2, final int n3) {
     String dome = "CR ";
     final int scale_factor = 3;
 
@@ -221,7 +221,7 @@ public final class PresetObjects {
     return dome;
   }
 
-  static String makeTube(int circum, int nodes) {
+  static String makeTube(final int circum, final int nodes) {
     final int[] colours = new ColourFactory(65418).getColourArray(circum * 3);
     final int scale_factor = 1;
     String dome = "CR ";
@@ -279,7 +279,7 @@ public final class PresetObjects {
     return dome;
   }
 
-  static String makeString(int nodes, int number) {
+  static String makeString(final int nodes, final int number) {
     final int[] colours = new ColourFactory(65418).getColourArray(3);
     final int scale_factor = 1;
     String dome = "CR ";
@@ -291,7 +291,7 @@ public final class PresetObjects {
     return dome;
   }
 
-  private static String getSubtring(int nodes, final int[] colours, final int scale_factor, String dome_in) {
+  private static String getSubtring(final int nodes, final int[] colours, final int scale_factor, final String dome_in) {
     String dome = dome_in;
     final int ix = 8000 + rnd.nextInt(1999);
     final int iy = 8000 + rnd.nextInt(1999);

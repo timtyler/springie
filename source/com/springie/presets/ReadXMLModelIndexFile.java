@@ -26,7 +26,7 @@ public class ReadXMLModelIndexFile extends DefaultHandler {
 
   ArrayList<String> directories = new ArrayList<>();
 
-  public String translate(String leaf, String source) throws IOException,
+  public String translate(String leaf, final String source) throws IOException,
     SAXException {
 
     final XMLReader xr = new com.tifsoft.xml.driver.Driver();
@@ -55,7 +55,7 @@ public class ReadXMLModelIndexFile extends DefaultHandler {
     //Log.log("End document");
   }
 
-  public void startElement(String uri, String name, String element_name,
+  public void startElement(final String uri, final String name, final String element_name,
     Attributes atts) {
     boolean node = false;
     boolean leaf = false;
@@ -89,20 +89,20 @@ public class ReadXMLModelIndexFile extends DefaultHandler {
     }
   }
 
-  public void endElement(String uri, String name, String element_name) {
+  public void endElement(final String uri, final String name, final String element_name) {
 
     if ("node".equals(element_name)) {
       this.directories.remove(this.directories.size() - 1);
     }
   }
 
-  public void ignorableWhitespace(char[] ch, int start, int length) {
+  public void ignorableWhitespace(final char[] ch, final int start, final int length) {
     characters(ch, start, length);
   }
 
-  public void skippedEntity(String name) {
+  public void skippedEntity(final String name) {
   }
 
-  public void characters(char[] ch, int start, int length) {
+  public void characters(final char[] ch, final int start, final int length) {
   }
 }

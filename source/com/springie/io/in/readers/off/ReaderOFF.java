@@ -17,7 +17,7 @@ public final class ReaderOFF {
     // ...
   }
 
-  public static String translate(String in) {
+  public static String translate(final String in) {
     final byte[] ba = {10 };
     final String c_r = new String(ba);
 
@@ -103,7 +103,7 @@ public final class ReaderOFF {
     }
   }
 
-  static String getNextValidLine(StringTokenizer st) {
+  static String getNextValidLine(final StringTokenizer st) {
     boolean found;
     String tok;
     do {

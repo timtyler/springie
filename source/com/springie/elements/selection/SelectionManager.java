@@ -33,34 +33,34 @@ public final class SelectionManager {
   // return (String) ex.output;
   // }
 
-  public static void applyToEachSelectedObject(Executor ex) {
+  public static void applyToEachSelectedObject(final Executor ex) {
     applyToEachSelectedNode(ex);
     applyToEachSelectedLink(ex);
     applyToEachSelectedFace(ex);
   }
 
-  public static void applyToEachSelectedNode(Executor ex) {
+  public static void applyToEachSelectedNode(final Executor ex) {
     final Executor ex2 = getSelectionExectorWrapper(ex);
 
     applyToEachNode(ex2);
   }
 
-  public static void applyToEachSelectedLink(Executor ex) {
+  public static void applyToEachSelectedLink(final Executor ex) {
     final Executor ex2 = getSelectionExectorWrapper(ex);
 
     applyToEachLink(ex2);
   }
 
-  public static void applyToEachSelectedFace(Executor ex) {
+  public static void applyToEachSelectedFace(final Executor ex) {
     final Executor ex2 = getSelectionExectorWrapper(ex);
 
     applyToEachFace(ex2);
   }
 
-  private static Executor getSelectionExectorWrapper(Executor ex) {
+  private static Executor getSelectionExectorWrapper(final Executor ex) {
     final Executor ex_copy = ex;
     final Executor ex2 = new Executor(ex.input) {
-      public Object execute(Object parameter) {
+      public Object execute(final Object parameter) {
         final BaseElement base = (BaseElement) parameter;
         if (base.isSelected()) {
           ex_copy.execute(base);
@@ -71,13 +71,13 @@ public final class SelectionManager {
     return ex2;
   }
 
-  public static void applyToEachObject(Executor ex) {
+  public static void applyToEachObject(final Executor ex) {
     applyToEachNode(ex);
     applyToEachLink(ex);
     applyToEachFace(ex);
   }
 
-  private static void applyToEachFace(Executor ex) {
+  private static void applyToEachFace(final Executor ex) {
     final NodeManager node_manager = ContextManager.getNodeManager();
     if (node_manager == null) {
       return;
@@ -90,7 +90,7 @@ public final class SelectionManager {
     }
   }
 
-  private static void applyToEachLink(Executor ex) {
+  private static void applyToEachLink(final Executor ex) {
     final NodeManager node_manager = ContextManager.getNodeManager();
     if (node_manager == null) {
       return;
@@ -103,7 +103,7 @@ public final class SelectionManager {
     }
   }
 
-  private static void applyToEachNode(Executor ex) {
+  private static void applyToEachNode(final Executor ex) {
     final NodeManager node_manager = ContextManager.getNodeManager();
     if (node_manager == null) {
       return;
@@ -117,7 +117,7 @@ public final class SelectionManager {
 
   public static String combineSelection(final StringMatcher matcher) {
     final Executor ex = new Executor() {
-      public Object execute(Object parameter) {
+      public Object execute(final Object parameter) {
         final String name = ((BaseElement) parameter).name;
         if (name != null) {
           final String current = (String) this.output;

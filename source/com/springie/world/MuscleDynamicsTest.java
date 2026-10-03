@@ -61,7 +61,7 @@ class MuscleDynamicsTest {
   }
 
   /** A horizontal chain of links; muscled when asked. */
-  private static NodeManager buildChain(boolean muscled) {
+  private static NodeManager buildChain(final boolean muscled) {
     final NodeManager nodes_world = new NodeManager();
     final World world = nodes_world;
 
@@ -92,7 +92,7 @@ class MuscleDynamicsTest {
     return nodes_world;
   }
 
-  private static int[] xsOf(World world) {
+  private static int[] xsOf(final World world) {
     final int n = world.element.size();
     final int[] xs = new int[n];
     for (int i = 0; i < n; i++) {

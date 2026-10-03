@@ -5,15 +5,15 @@ public final class WriteFloatingPoint {
     //...
   }
 
-  public static String emit(float f) {
+  public static String emit(final float f) {
     return emit(f, 5, false);
   }
 
-  public static String emit(double f) {
+  public static String emit(final double f) {
     return emit(f, 5, false);
   }
 
-  public static String emit(double f, int sf, boolean fixed_dp) {
+  public static String emit(final double f, final int sf, final boolean fixed_dp) {
     String o = "" + f;
     if (o.indexOf("E") >= 0) {
       return "0";

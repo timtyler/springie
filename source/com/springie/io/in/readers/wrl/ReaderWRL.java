@@ -21,7 +21,7 @@ public final class ReaderWRL {
     // ...
   }
 
-  public static String translate(String in) {
+  public static String translate(final String in) {
     groups.clear();
 
     final byte[] ba = {10, 13 };
@@ -302,18 +302,18 @@ public final class ReaderWRL {
     }
   }
 
-  private static double getDouble(String temp) {
+  private static double getDouble(final String temp) {
     return Double.valueOf(temp).doubleValue();
   }
 
-  static String getHexColour(int colour) {
+  static String getHexColour(final int colour) {
     final int v = 0x1000000 | colour;
     final String rv = Integer.toString(v, 16);
 
     return "FF" + rv.substring(1);
   }
 
-  private static int getIndexOfNearest(Double3D point, ArrayList<Double3D> final_node_list) {
+  private static int getIndexOfNearest(final Double3D point, final ArrayList<Double3D> final_node_list) {
     final int final_node_list_size = final_node_list.size();
     int nearest_index = 0;
     double min_distance = 99999;
@@ -331,8 +331,8 @@ public final class ReaderWRL {
     return nearest_index;
   }
 
-  private static boolean noLargerNodesIntersect(ReaderWRLNode target,
-      ArrayList<ReaderWRLNode> node_list, int start) {
+  private static boolean noLargerNodesIntersect(final ReaderWRLNode target,
+      ArrayList<ReaderWRLNode> node_list, final int start) {
     final int node_list_size = node_list.size();
     for (int idx = start; idx < node_list_size; idx++) {
       final ReaderWRLNode node = node_list.get(idx);
@@ -344,7 +344,7 @@ public final class ReaderWRL {
     return true;
   }
 
-  private static ArrayList<Integer> foundAlready(Integer value, ArrayList<ArrayList<Integer>> lists) {
+  private static ArrayList<Integer> foundAlready(final Integer value, final ArrayList<ArrayList<Integer>> lists) {
     final int lists_size = lists.size();
     for (int i = 0; i < lists_size; i++) {
       final ArrayList<Integer> list = lists.get(i);
@@ -370,7 +370,7 @@ public final class ReaderWRL {
   // return temp;
   // }
   //
-  static String getNextValidToken(StringTokenizer st) {
+  static String getNextValidToken(final StringTokenizer st) {
     boolean found;
     String tok;
     do {

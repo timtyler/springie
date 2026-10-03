@@ -53,7 +53,7 @@ class CompassBiasTest {
     FrEnd.forces_disabled_during_gesture = this.saved_gesture;
   }
 
-  private Node headingNode(CompassPoint heading) {
+  private Node headingNode(final CompassPoint heading) {
     final Node node = new Node(new Point3D(0, 0, 0), 0,
         new NodeTypeFactory());
     node.compass = heading;

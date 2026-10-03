@@ -34,7 +34,7 @@ public class ReaderFabric extends DefaultHandler {
   static int y_max = 640 << 20;
   static int z_max = 640 << 20;
 
-  public static String translate(String source) throws IOException, SAXException {
+  public static String translate(final String source) throws IOException, SAXException {
     final XMLReader xr = new com.tifsoft.xml.driver.Driver();
 
     final ReaderFabric handler = new ReaderFabric();
@@ -64,7 +64,7 @@ public class ReaderFabric extends DefaultHandler {
     //Log.log("End document");
   }
 
-  public void startElement(String uri, String name, String desc,
+  public void startElement(final String uri, final String name, final String desc,
     Attributes atts) {
     boolean is_joint = false;
     boolean is_locus = false;
@@ -144,16 +144,16 @@ public class ReaderFabric extends DefaultHandler {
     }
   }
 
-  public void endElement(String uri, String name, String desc) {
+  public void endElement(final String uri, final String name, final String desc) {
   }
 
-  public void ignorableWhitespace(char[] ch, int start, int length) {
+  public void ignorableWhitespace(final char[] ch, final int start, final int length) {
     characters(ch, start, length);
   }
 
-  public void skippedEntity(String name) {
+  public void skippedEntity(final String name) {
   }
 
-  public void characters(char[] ch, int start, int length) {
+  public void characters(final char[] ch, final int start, final int length) {
   }
 }

@@ -17,7 +17,7 @@ public final class ReaderRBF {
     //...
   }
   
-  public static String translate(String in) {
+  public static String translate(final String in) {
     final StringTokenizer st = new StringTokenizer(in);
 
     final StringBuilder out = parseTheFile(st);
@@ -141,7 +141,7 @@ public final class ReaderRBF {
     return length;
   }
 
-  static boolean isANumber(String s) {
+  static boolean isANumber(final String s) {
     for (int i = 0; i < s.length(); i++) {
       final char c = s.charAt(i);
       if (!couldBeInANumber(c)) {
@@ -151,7 +151,7 @@ public final class ReaderRBF {
     return true;
   }
 
-  static boolean couldBeInANumber(char c) {
+  static boolean couldBeInANumber(final char c) {
     if (c == '-') {
       return true;
     }

@@ -58,7 +58,7 @@ public class WriterFDL {
     this.link_manager = node_manager.getLinkManager();
   }
 
-  public void write(String filename) {
+  public void write(final String filename) {
     final String s = generateString();
 
     try {
@@ -149,7 +149,7 @@ public class WriterFDL {
     return FDLWriter.toString(chain); // .makeString();
   }
 
-  private void recursivelyOutputAllLinks(FDLObjectBraceList uni) {
+  private void recursivelyOutputAllLinks(final FDLObjectBraceList uni) {
     final FDLObjectChain chain = new FDLObjectChain("=");
     chain.add(new FDLObjectIdentifier("links"));
 
@@ -162,7 +162,7 @@ public class WriterFDL {
     }
   }
 
-  private void recursivelyOutputAllFaces(FDLObjectBraceList uni) {
+  private void recursivelyOutputAllFaces(final FDLObjectBraceList uni) {
     final FDLObjectChain chain = new FDLObjectChain("=");
     chain.add(new FDLObjectIdentifier("polygons"));
 
@@ -175,7 +175,7 @@ public class WriterFDL {
     }
   }
 
-  private void recursivelyOutputAllNodes(FDLObjectBraceList uni) {
+  private void recursivelyOutputAllNodes(final FDLObjectBraceList uni) {
     final FDLObjectChain chain = new FDLObjectChain("=");
     chain.add(new FDLObjectIdentifier("nodes"));
 
@@ -188,7 +188,7 @@ public class WriterFDL {
     }
   }
 
-  private boolean outputNodeClasses(FDLObjectBraceList uni) {
+  private boolean outputNodeClasses(final FDLObjectBraceList uni) {
     final int clazz_number = this.node_manager.clazz_factory.array.size();
     boolean some = false;
     for (int c = 0; c < clazz_number; c++) {
@@ -216,7 +216,7 @@ public class WriterFDL {
     return some;
   }
 
-  private void outputColour(final Clazz clazz, FDLObjectBraceList tag_type) {
+  private void outputColour(final Clazz clazz, final FDLObjectBraceList tag_type) {
     // final WriterWRL writer = new WriterWRL(this.node_manager);
 
     final float t = (clazz.colour >>> 24) / 255f;
@@ -252,7 +252,7 @@ public class WriterFDL {
     }
   }
 
-  private boolean outputNodeTypes(final FDLObjectBraceList uni, Clazz clazz) {
+  private boolean outputNodeTypes(final FDLObjectBraceList uni, final Clazz clazz) {
     final int node_type_number = ContextManager.getNodeManager().node_type_factory.array.size();
 
     boolean some = false;
@@ -305,7 +305,7 @@ public class WriterFDL {
     return some;
   }
 
-  private boolean outputLinkClasses(FDLObjectBraceList links) {
+  private boolean outputLinkClasses(final FDLObjectBraceList links) {
     final int clazz_number = this.node_manager.clazz_factory.array.size();
     boolean some = false;
     for (int c = 0; c < clazz_number; c++) {
@@ -333,7 +333,7 @@ public class WriterFDL {
     return some;
   }
 
-  private boolean outputLinkTypes(final FDLObjectBraceList uni, Clazz clazz) {
+  private boolean outputLinkTypes(final FDLObjectBraceList uni, final Clazz clazz) {
     final LinkManager link_manager = ContextManager.getLinkManager();
     final int link_type_number = link_manager.link_type_factory.array.size();
     boolean some = false;
@@ -413,7 +413,7 @@ public class WriterFDL {
     return some;
   }
 
-  private boolean outputFaceClasses(FDLObjectBraceList polygons) {
+  private boolean outputFaceClasses(final FDLObjectBraceList polygons) {
     final int clazz_number = this.node_manager.clazz_factory.array.size();
     boolean some = false;
     for (int c = 0; c < clazz_number; c++) {
@@ -441,7 +441,7 @@ public class WriterFDL {
     return some;
   }
 
-  private boolean outputFaceTypes(FDLObjectBraceList uni, Clazz clazz) {
+  private boolean outputFaceTypes(final FDLObjectBraceList uni, final Clazz clazz) {
     boolean some = false;
     final FaceManager face_manager = ContextManager.getFaceManager();
     final int type_number = face_manager.face_type_factory.array.size();
@@ -479,7 +479,7 @@ public class WriterFDL {
     return some;
   }
 
-  private boolean outputFace(FaceManager face_manager, Clazz clazz, FaceType face_type, FDLObjectBracketList faces) {
+  private boolean outputFace(final FaceManager face_manager, final Clazz clazz, final FaceType face_type, final FDLObjectBracketList faces) {
     boolean some = false;
     final int n_o_l = face_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
@@ -496,7 +496,7 @@ public class WriterFDL {
     return some;
   }
 
-  private FDLObjectChain outputFace(Face face) {
+  private FDLObjectChain outputFace(final Face face) {
     // final FDLWriterSinglet tag_face = new FDLWriterSinglet("face");
 
     final FDLObjectChain chain = new FDLObjectChain("=");
@@ -519,7 +519,7 @@ public class WriterFDL {
     return chain;
   }
 
-  private boolean outputLinks(LinkManager link_manager, Clazz clazz, LinkType link_type,
+  private boolean outputLinks(final LinkManager link_manager, final Clazz clazz, final LinkType link_type,
       FDLObjectBraceList list_links) {
     boolean some = false;
     final int n_o_l = link_manager.element.size();
@@ -537,7 +537,7 @@ public class WriterFDL {
     return some;
   }
 
-  private FDLObjectChain outputLink(Link link) {
+  private FDLObjectChain outputLink(final Link link) {
     final FDLObjectChain chain = new FDLObjectChain("=");
     chain.add(new FDLObjectIdentifier("link"));
 
@@ -555,7 +555,7 @@ public class WriterFDL {
     return chain;
   }
 
-  private boolean outputNodes(NodeManager node_manager, Clazz clazz, NodeType node_type,
+  private boolean outputNodes(final NodeManager node_manager, final Clazz clazz, final NodeType node_type,
       FDLObjectBraceList list_nodes) {
     boolean some = false;
     final int number_of_nodes = node_manager.element.size();
@@ -622,7 +622,7 @@ public class WriterFDL {
     return null;
   }
 
-  int scale(int v) {
+  int scale(final int v) {
     if (v >= 0) {
       return (v + (scale_factor >> 1)) / scale_factor;
     }
@@ -630,7 +630,7 @@ public class WriterFDL {
     return (v - (scale_factor >> 1)) / scale_factor;
   }
 
-  void writeOut(String s) {
+  void writeOut(final String s) {
     try {
       if (s.equals("")) {
         if (FrEnd.output_linefeeds) {

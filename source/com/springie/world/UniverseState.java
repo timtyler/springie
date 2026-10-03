@@ -42,7 +42,7 @@ public final class UniverseState {
   }
 
   /** Reads the current universe settings into a new snapshot. */
-  public static UniverseState capture(NodeManager manager) {
+  public static UniverseState capture(final NodeManager manager) {
     final UniverseState state = new UniverseState();
 
     state.gravity_strength = World.gravity_strength;
@@ -73,7 +73,7 @@ public final class UniverseState {
   }
 
   /** Writes this snapshot back, becoming the current universe. */
-  public void restore(NodeManager manager) {
+  public void restore(final NodeManager manager) {
     World.gravity_strength = this.gravity_strength;
     World.gravity_active = this.gravity_active;
     World.global_temperature = this.global_temperature;

@@ -45,7 +45,7 @@ class NodeBoundaryCheckTest {
     FrEnd.continuously_centre_z = this.saved_z;
   }
 
-  private static Node node(int x, int y, int z) {
+  private static Node node(final int x, final int y, final int z) {
     final Node node = new Node(new Point3D(x, y, z), 42,
         new NodeTypeFactory());
     node.type.radius = RADIUS;

@@ -17,11 +17,11 @@ import com.springie.render.Coords;
  */
 class LinkTest {
 
-  private static Node nodeAt(int x, int y, int z) {
+  private static Node nodeAt(final int x, final int y, final int z) {
     return new Node(new Point3D(x, y, z), 42, new NodeTypeFactory());
   }
 
-  private static Link linkBetween(Node a, Node b) {
+  private static Link linkBetween(final Node a, final Node b) {
     // Accessible because this test lives in the same package.
     final LinkType type = new LinkType(100 << Coords.shift, 50);
     return new Link(a, b, type, new Clazz(0));

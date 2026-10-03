@@ -26,7 +26,7 @@ public final class Grounding {
    * Shifts every node in the manager vertically so the model's lowest point
    * rests exactly on the ground plane. Relative geometry is unchanged.
    */
-  public static void restOnGround(NodeManager node_manager) {
+  public static void restOnGround(final NodeManager node_manager) {
     final int n = node_manager.element.size();
     if (n == 0) {
       return;

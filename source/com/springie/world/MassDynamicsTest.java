@@ -80,7 +80,7 @@ class MassDynamicsTest {
    * Runs 20 force ticks and returns node A's spring-induced x velocity
    * (its velocity minus the constructor's initial velocity).
    */
-  private static int springPullVelocity(int logMass) {
+  private static int springPullVelocity(final int logMass) {
     final NodeManager manager = new NodeManager();
     final World world = manager;
 

@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 public class ResourceLoader {
   private static final Logger logger = LoggerFactory.getLogger(ResourceLoader.class);
 
-  public String getResourceAsString(Class<?> base, String name) throws IOException {
+  public String getResourceAsString(final Class<?> base, final String name) throws IOException {
     String output;
 
     //Log.log("Starting to load " + name + ".");
@@ -57,7 +57,7 @@ public class ResourceLoader {
     return output;
   }
 
-  String getStringFromReader(Reader r) {
+  String getStringFromReader(final Reader r) {
     final StringBuilder output = new StringBuilder();
 
     final int array_size = 1024; // choose a size...
@@ -78,7 +78,7 @@ public class ResourceLoader {
     return output.toString();
   }
 
-  private InputStream getInputStream(Class<?> base, String location) {
+  private InputStream getInputStream(final Class<?> base, final String location) {
     if (isURL(location)) {
       try {
         return getResourceFromURL(location);
@@ -92,13 +92,13 @@ public class ResourceLoader {
     return base.getResourceAsStream(location);
   }
 
-  private InputStream getResourceFromURL(String location) throws IOException {
+  private InputStream getResourceFromURL(final String location) throws IOException {
     final URL url = new URL(location);
 
     return url.openStream();
   }
 
-  private String getResourceAsStringHelper(Class<?> base, String location)
+  private String getResourceAsStringHelper(final Class<?> base, final String location)
       throws IOException {
     if (isResource(location)) {
       return getResourceAsString(base, location.substring(11));
@@ -111,7 +111,7 @@ public class ResourceLoader {
     return getResourceAsString(base, location);
   }
 
-  public Reader getReader(String location) throws IOException {
+  public Reader getReader(final String location) throws IOException {
     if (isFile(location)) {
       if (isArchive(location)) {
         final String s = new ZipLoader().getZIPFileAsString(location.substring(7));
@@ -142,24 +142,24 @@ public class ResourceLoader {
     throw new IOException("Cannot handle location: <" + location + ">");
   }
 
-  private String getURLAsString(String url) throws IOException {
+  private String getURLAsString(final String url) throws IOException {
     final InputStream is = getResourceFromURL(url);
     return getStringFromInputStream(is);
   }
 
-  boolean isURL(String location) {
+  boolean isURL(final String location) {
     return location.startsWith("http://");
   }
 
-  boolean isArchive(String location) {
+  boolean isArchive(final String location) {
     return location.endsWith(".zip");
   }
 
-  boolean isFile(String location) {
+  boolean isFile(final String location) {
     return location.startsWith("file://");
   }
 
-  boolean isResource(String location) {
+  boolean isResource(final String location) {
     return location.startsWith("resource://");
   }
 }

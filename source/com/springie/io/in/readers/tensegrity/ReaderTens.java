@@ -38,8 +38,8 @@ public final class ReaderTens {
     // ...
   }
 
-  public static void interpretBuffer(NodeManager node_manager, char[] buf,
-      int x, int y, int z, int scale_factor) {
+  public static void interpretBuffer(final NodeManager node_manager, final char[] buf,
+      int x, int y, int z, final int scale_factor) {
     final int index = buf.length;
     Composite current_creature = null;
 
@@ -610,7 +610,7 @@ public final class ReaderTens {
    * Parses a node compass heading value token (e.g. "N"). Unknown values
    * read as null (no heading) rather than failing the load.
    */
-  private static CompassPoint parseCompass(String token) {
+  private static CompassPoint parseCompass(final String token) {
     for (CompassPoint heading : CompassPoint.values()) {
       if (heading.name().equals(token)) {
         return heading;
@@ -620,7 +620,7 @@ public final class ReaderTens {
   }
 
   //?
-  private static void setUpUniverseProperties(NodeManager node_manager) {    FrEnd.three_d = true;
+  private static void setUpUniverseProperties(final NodeManager node_manager) {    FrEnd.three_d = true;
     node_manager.electrostatic.charge_active = true;
     World.gravity_active = false;
     World.gravity_strength = 10;

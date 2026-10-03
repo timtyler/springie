@@ -5,11 +5,11 @@ import com.springie.utilities.random.JUR;
 public class ColourFactory {
   final JUR rnd;
 
-  public ColourFactory(int seed) {
+  public ColourFactory(final int seed) {
     this.rnd = new JUR(seed);
   }
 
-  public int[] getColourArray(int n) {
+  public int[] getColourArray(final int n) {
 
     final int[] colours = new int[n];
     for (int i = n; --i >= 0;) {

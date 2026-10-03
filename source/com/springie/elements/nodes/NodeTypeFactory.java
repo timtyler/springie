@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class NodeTypeFactory {
   public ArrayList<NodeType> array = new ArrayList<>();
 
-  public NodeType getNew(NodeType current) {
+  public NodeType getNew(final NodeType current) {
     final NodeType type = new NodeType(current);
     this.array.add(type);
     type.makeEqualTo(current);

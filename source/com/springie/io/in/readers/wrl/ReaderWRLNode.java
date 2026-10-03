@@ -22,7 +22,7 @@ public class ReaderWRLNode {
     this.average = average;
   }
 
-  public boolean intersects(ReaderWRLNode target) {
+  public boolean intersects(final ReaderWRLNode target) {
     final double this_delta_x = this.max.x - this.min.x;
     final double this_delta_y = this.max.y - this.min.y;
     final double this_delta_z = this.max.z - this.min.z;
@@ -41,7 +41,7 @@ public class ReaderWRLNode {
     return intersect_x && intersect_y && intersect_z;
   }
 
-  private boolean intersect(double min_x_1, double max_x_1, double min_x_2,
+  private boolean intersect(final double min_x_1, final double max_x_1, final double min_x_2,
       double max_x_2) {
     if (min_x_1 >= min_x_2) {
       if (min_x_1 <= max_x_2) {

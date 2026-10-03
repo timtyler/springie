@@ -20,7 +20,7 @@ public final class GridOfBinsForCachedNodes {
 
   NodeList[][][] node_list;
 
-  public void reset(int l) {
+  public void reset(final int l) {
     this.log2binsize = l;
 
     this.nx = ((Coords.x_pixels << Coords.shift) >> this.log2binsize) + 1;
@@ -43,13 +43,13 @@ public final class GridOfBinsForCachedNodes {
   }
 
   // bin = (x,y)
-  public void addToList(int x, int y, int z, Node agent) {
+  public void addToList(final int x, final int y, final int z, final Node agent) {
     //if (node_list == null) Log.log("NL!!!");
     //if (agent == null) Log.log("agent!!!");
     this.node_list[x][y][z].add(agent);
   }
 
-  public void removeFromList(int x, int y, int z, Node agent) {
+  public void removeFromList(final int x, final int y, final int z, final Node agent) {
     if (x < this.nx && x >= 0) {
       if (y < this.ny && y >= 0) {
         if (z < this.nz && z >= 0) {

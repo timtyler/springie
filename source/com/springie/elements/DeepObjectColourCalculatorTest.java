@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
  */
 class DeepObjectColourCalculatorTest {
 
-  private static int colourForDepth(int colour, int depth) throws Exception {
+  private static int colourForDepth(final int colour, final int depth) throws Exception {
     final Method m = DeepObjectColourCalculator.class.getDeclaredMethod(
         "getColourForDepth", int.class, int.class);
     m.setAccessible(true);

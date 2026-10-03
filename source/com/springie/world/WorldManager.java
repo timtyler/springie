@@ -63,7 +63,7 @@ public final class WorldManager {
     }
   }
 
-  static World getWorldAssociatedWith(Node e) {
+  static World getWorldAssociatedWith(final Node e) {
     for (int temp = 0; temp < number_of_private_worlds; temp++) {
       temp_private_world = private_world[temp];
       // if (temp_private_world.contains(e)) {
@@ -78,7 +78,7 @@ public final class WorldManager {
   }
 
   // EXPERIMENT FURTHER WITH THIS - USE A SWAP...
-  public static void copyEverythingOut(Node e, World pw_to) {
+  public static void copyEverythingOut(final Node e, final World pw_to) {
     pw_from = getWorldAssociatedWith(e);
     if (pw_from == null) {
       return;
@@ -110,7 +110,7 @@ public final class WorldManager {
     killSpecifiedWorld(pw_from);
   }
 
-  static void moveCreaturesBetweenWorlds(World _pw_from, World _pw_to) {
+  static void moveCreaturesBetweenWorlds(final World _pw_from, final World _pw_to) {
     for (int temp = _pw_from.creature_manager.number_of_creatures; --temp >= 0;) {
       temp_creature = _pw_to.creature_manager.add();
 
@@ -122,13 +122,13 @@ public final class WorldManager {
     }
   }
 
-  static void killNumberedWorld(int n) {
+  static void killNumberedWorld(final int n) {
     temp_private_world = private_world[n];
     private_world[n] = private_world[number_of_private_worlds - 1];
     private_world[--number_of_private_worlds] = temp_private_world;
   }
 
-  static int getNumberOfWorld(World pw) {
+  static int getNumberOfWorld(final World pw) {
     for (int temp = number_of_private_worlds; --temp >= 0;) {
       if (private_world[temp] == pw) {
         return temp;
@@ -140,7 +140,7 @@ public final class WorldManager {
     return -1;
   }
 
-  static void killSpecifiedWorld(World pw) {
+  static void killSpecifiedWorld(final World pw) {
     final int temp = getNumberOfWorld(pw);
     killNumberedWorld(temp);
   }

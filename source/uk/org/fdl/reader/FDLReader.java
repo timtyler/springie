@@ -14,7 +14,7 @@ public final class FDLReader {
   private static final Logger logger = LoggerFactory.getLogger(FDLReader.class);
 
 
-  public static void main(String[] args) {
+  public static void main(final String[] args) {
     logger.debug(test("foo bar() {  0 10 1.9 -3 <Comment> 'aoe' \"aseo\" }"));
   }
 
@@ -22,7 +22,7 @@ public final class FDLReader {
     // ...
   }
 
-  public static String test(String in) {
+  public static String test(final String in) {
     final StringBuilder out = new StringBuilder();
 
     final ArrayList<FDLElement> tokens = new ArrayList<>();
@@ -40,7 +40,7 @@ public final class FDLReader {
     return out.toString();
   }
 
-  private static void dumpOutTokens(StringBuilder out, ArrayList<FDLElement> tokens) {
+  private static void dumpOutTokens(final StringBuilder out, final ArrayList<FDLElement> tokens) {
     final int size = tokens.size();
     for (int i = 0; i < size; i++) {
       final FDLElement array_element = tokens.get(i);

@@ -50,7 +50,7 @@ public class WriterPOV {
     this.face_manager = node_manager.getFaceManager();
   }
 
-  public void write(String filename) {
+  public void write(final String filename) {
     new GarbageCollection(this.node_manager).cleanUp();
     new RedundancyRemover(this.node_manager).removeRedundancy();
 
@@ -133,7 +133,7 @@ public class WriterPOV {
     return "wood".equals(output_pov_ground);
   }
 
-  private void writeHeader(float height_above_water, float immersion_level) {
+  private void writeHeader(final float height_above_water, final float immersion_level) {
     final float h = -1 + height_above_water + immersion_level;
 
     final double x = Math.sqrt((2.25 * 2.25) - (h * h));
@@ -361,7 +361,7 @@ public class WriterPOV {
     writeLine("");
   }
 
-  private void writeGroundRock(float immersion_level) {
+  private void writeGroundRock(final float immersion_level) {
     writeLine("plane {");
     writeLine(" y, " + (-1 + immersion_level));
     writeLine(" hollow on");
@@ -383,7 +383,7 @@ public class WriterPOV {
     writeLine("");
   }
 
-  private void writeGroundWood(float immersion_level, int wood_number) {
+  private void writeGroundWood(final float immersion_level, final int wood_number) {
     writeLine("plane {");
     writeLine(" y, " + (-1 + immersion_level));
     writeLine(" hollow on");
@@ -402,7 +402,7 @@ public class WriterPOV {
     writeLine("");
   }
 
-  private void writeGroundWater(float immersion_level) {
+  private void writeGroundWater(final float immersion_level) {
     writeLine("plane {");
     writeLine(" y, " + (-1.01 + immersion_level));
     writeLine(" hollow on");
@@ -499,7 +499,7 @@ public class WriterPOV {
     }
   }
 
-  private void outputNodeTypes(int n_clazz, Clazz clazz) {
+  private void outputNodeTypes(final int n_clazz, final Clazz clazz) {
     final int node_type_number = this.node_manager.node_type_factory.array.size();
 
     if (!new AreThereAny().nodes(clazz)) {
@@ -513,7 +513,7 @@ public class WriterPOV {
     }
   }
 
-  private void outputLinkTypes(Clazz clazz, int n_clazz) {
+  private void outputLinkTypes(final Clazz clazz, final int n_clazz) {
     final int link_type_number = this.link_manager.link_type_factory.array.size();
 
     if (!new AreThereAny().links(clazz)) {
@@ -529,13 +529,13 @@ public class WriterPOV {
     }
   }
 
-  private void outputLinks(Clazz clazz, LinkType link_type, int n_clazz, int n_type) {
+  private void outputLinks(final Clazz clazz, final LinkType link_type, final int n_clazz, final int n_type) {
 
     outputLinks(clazz, n_clazz, n_type);
     writeLine("");
   }
 
-  private void outputPolygonTypes(Clazz clazz, int n_clazz) {
+  private void outputPolygonTypes(final Clazz clazz, final int n_clazz) {
     // final int type_number = this.face_manager.face_type_factory.array.size();
     if (!new AreThereAny().polygons(clazz)) {
       return;
@@ -544,7 +544,7 @@ public class WriterPOV {
     outputFaces(clazz, n_clazz);
   }
 
-  private void outputFaces(Clazz clazz, int n_clazz) {
+  private void outputFaces(final Clazz clazz, final int n_clazz) {
 
     // final FaceType type = (FaceType)
     // this.face_manager.face_type_factory.array
@@ -560,7 +560,7 @@ public class WriterPOV {
     }
   }
 
-  private void writeFaceClockwise(final Face polygon, int n_clazz) {
+  private void writeFaceClockwise(final Face polygon, final int n_clazz) {
     final int npolygon = polygon.nodes.size();
 
     final Point3D p3 = polygon.getCoordinatessOfCentre();
@@ -592,7 +592,7 @@ public class WriterPOV {
     }
   }
 
-  private void outputCoordinates(Point3D pos, String appended) {
+  private void outputCoordinates(final Point3D pos, final String appended) {
     final double x = toVRMLCoords(pos.x - this.middle.x);
     final double y = toVRMLCoords(this.middle.y - pos.y);
     final double z = toVRMLCoords(pos.z - this.middle.z);
@@ -600,7 +600,7 @@ public class WriterPOV {
     writeLine(" <" + emit(x) + ", " + emit(y) + ", " + emit(z) + ">" + appended);
   }
 
-  private void outputNodes(Clazz clazz, int n_clazz, int n_type) {
+  private void outputNodes(final Clazz clazz, final int n_clazz, final int n_type) {
     final NodeType node_type = (NodeType) ContextManager.getNodeManager().node_type_factory.array
         .get(n_type);
     final int number_of_nodes = this.node_manager.element.size();
@@ -616,7 +616,7 @@ public class WriterPOV {
     }
   }
 
-  private void outputNode(final Node node, int n_clazz, int n_type) {
+  private void outputNode(final Node node, final int n_clazz, final int n_type) {
 
     final double x = toVRMLCoords(node.pos.x - this.middle.x);
     // final float y = toVRMLCoords(node.pos.y - this.middle.y);
@@ -631,7 +631,7 @@ public class WriterPOV {
     writeLine("}");
   }
 
-  private void outputLinks(Clazz clazz, int n_clazz, int n_type) {
+  private void outputLinks(final Clazz clazz, final int n_clazz, final int n_type) {
     final LinkType type = (LinkType) this.link_manager.link_type_factory.array.get(n_type);
 
     final int n_o_l = this.link_manager.element.size();
@@ -647,7 +647,7 @@ public class WriterPOV {
     }
   }
 
-  private void outputLink(Link link, int n_clazz, int n_type) {
+  private void outputLink(final Link link, final int n_clazz, final int n_type) {
     final int total = link.nodes.length;
     for (int i = 0; i < total - 1; i++) {
       final Point3D pos_A = link.nodes[i].pos;
@@ -657,7 +657,7 @@ public class WriterPOV {
     }
   }
 
-  private void outputLinkSection(Link link, int n_clazz, final Point3D pos_A, final Point3D pos_B) {
+  private void outputLinkSection(final Link link, final int n_clazz, final Point3D pos_A, final Point3D pos_B) {
     final boolean one = pos_A.x < pos_B.x;
 
     final Point3D pos_1 = one ? pos_A : pos_B;
@@ -706,7 +706,7 @@ public class WriterPOV {
     writeLinkObject(link, n_clazz, x, y, z, theta1, theta2);
   }
 
-  private void writeLinkObject(Link link, int n_clazz, final double x, final double y, final double z,
+  private void writeLinkObject(final Link link, final int n_clazz, final double x, final double y, final double z,
       final double theta1, final double theta2) {
     int a_len = link.getActualLength();
     if (a_len < 1) {
@@ -764,28 +764,28 @@ public class WriterPOV {
     writeLine("}");
   }
 
-  double toVRMLCoords(int v) {
+  double toVRMLCoords(final int v) {
     return v * this.scale_factor;
   }
 
-  public String emit(double f) {
+  public String emit(final double f) {
     return WriteFloatingPoint.emit(f, 5, false);
   }
 
-  public String emit(float f) {
+  public String emit(final float f) {
     return WriteFloatingPoint.emit(f, 5, false);
   }
 
-  public String emit10(float f) {
+  public String emit10(final float f) {
     return WriteFloatingPoint.emit(f, 10, false);
   }
 
-  public String emit12(float f) {
+  public String emit12(final float f) {
     return WriteFloatingPoint.emit(f, 12, false);
   }
 
   // ouch! TODO: fix this.
-  public String emit12(double f) {
+  public String emit12(final double f) {
     float temp = (float) f;
     if ("NaN".equals("" + temp)) {
       temp = 90F;
@@ -794,7 +794,7 @@ public class WriterPOV {
     return WriteFloatingPoint.emit(temp, 12, false);
   }
 
-  void writeLine(String s) {
+  void writeLine(final String s) {
     try {
       this.out.write(s + "\n");
     } catch (IOException e) {

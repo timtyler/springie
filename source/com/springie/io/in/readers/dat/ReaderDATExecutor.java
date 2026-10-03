@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class ReaderDATExecutor implements Executor {
   private static final Logger logger = LoggerFactory.getLogger(ReaderDATExecutor.class);
 
-  public Object execute(Object o) {
+  public Object execute(final Object o) {
     final NodeManager node_manager = (NodeManager) o;
 
     ScaleToFitScreen.scale(node_manager);
@@ -41,7 +41,7 @@ public class ReaderDATExecutor implements Executor {
     return null;
   }
 
-  private void eliminateAnyDuplicateNodes(NodeManager node_manager) {
+  private void eliminateAnyDuplicateNodes(final NodeManager node_manager) {
     prepare(node_manager);
     final int n_o_n = node_manager.element.size();
     boolean finished;
@@ -54,7 +54,7 @@ public class ReaderDATExecutor implements Executor {
     new PostModification(node_manager).cleanup();
   }
 
-  private boolean processDuplicateNodes(NodeManager node_manager) {
+  private boolean processDuplicateNodes(final NodeManager node_manager) {
     new PostModification(node_manager).generateListOfLinks();
     final int n_o_n = node_manager.element.size();
     final boolean finished = true;
@@ -75,7 +75,7 @@ public class ReaderDATExecutor implements Executor {
     return true;
   }
   
-  void prepare(NodeManager node_manager) {
+  void prepare(final NodeManager node_manager) {
     final PrepareToModifyLinkTypes prepare_l = new PrepareToModifyLinkTypes(
         node_manager.getLinkManager());
     prepare_l.prepare();

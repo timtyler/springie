@@ -15,15 +15,15 @@ public class ListOfIntegers extends BaseType {
     return this.list.size();
   }
 
-  public final void add(int i) {
+  public final void add(final int i) {
     this.list.add(Integer.valueOf(i));
   }
 
-  public int retreive(int i) {
+  public int retreive(final int i) {
     return this.list.get(i).intValue();
   }
 
-  public void remove(int n) {
+  public void remove(final int n) {
     for (int i = this.list.size(); --i >= 0;) {
       final int value = retreive(i);
       if (value == n) {

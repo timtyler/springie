@@ -17,7 +17,7 @@ public class NodeType extends BaseType {
     setSize(18);
   }
 
-  protected NodeType(NodeType current) {
+  protected NodeType(final NodeType current) {
     makeEqualTo(current);
   }
 
@@ -67,11 +67,11 @@ public class NodeType extends BaseType {
     return (int) scaled;
   }
 
-  public void setSize(int r) {
+  public void setSize(final int r) {
     this.radius = r;
   }
 
-  public void makeEqualTo(NodeType t) {
+  public void makeEqualTo(final NodeType t) {
     this.log_mass = t.log_mass;
     this.charge = t.charge;
     this.hidden = t.hidden;
@@ -92,7 +92,7 @@ public class NodeType extends BaseType {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(final Object obj) {
     if (this == obj) {
       return true;
     }

@@ -82,7 +82,7 @@ public class ReaderDXFMatrix {
   private double m33 = 1;
 
   // Set the matrix to rotate a point to match the A axes
-  void mtxRotateAxes_World_to_Local(ReaderDXFPoint Ax, ReaderDXFPoint Ay,
+  void mtxRotateAxes_World_to_Local(final ReaderDXFPoint Ax, final ReaderDXFPoint Ay,
       ReaderDXFPoint Az) {
     final double mr00 = Ax.x;
     final double mr01 = Ay.x;
@@ -162,7 +162,7 @@ public class ReaderDXFMatrix {
    *          The 3D point TODO
    * @return The transformed point.
    */
-  ReaderDXFPoint mtxTransformPoint(ReaderDXFPoint p1, ReaderDXFPoint p2) {
+  ReaderDXFPoint mtxTransformPoint(final ReaderDXFPoint p1, final ReaderDXFPoint p2) {
     p2.x = this.m00 * p1.x + this.m01 * p1.y + this.m02 * p1.z + this.m03;
     p2.y = this.m10 * p1.x + this.m11 * p1.y + this.m12 * p1.z + this.m13;
     p2.z = this.m20 * p1.x + this.m21 * p1.y + this.m22 * p1.z + this.m23;

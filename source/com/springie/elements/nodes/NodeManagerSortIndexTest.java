@@ -73,7 +73,7 @@ class NodeManagerSortIndexTest {
     makeNode(nodes, 500);
   }
 
-  private static Node makeNode(NodeManager nodes, int z) {
+  private static Node makeNode(final NodeManager nodes, final int z) {
     final NodeType type = nodes.node_type_factory.getNew();
     type.hidden = false;
     final Clazz clazz = nodes.clazz_factory.getNew(0xFFFFFFFF);
@@ -88,7 +88,7 @@ class NodeManagerSortIndexTest {
     return copy;
   }
 
-  private static int zAt(int elementIndex) {
+  private static int zAt(final int elementIndex) {
     final Node node = (Node) ContextManager.getNodeManager()
         .element.get(elementIndex);
     return node.pos.z;

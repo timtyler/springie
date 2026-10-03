@@ -57,7 +57,7 @@ public class WriterSpr {
     this.link_manager = node_manager.getLinkManager();
   }
 
-  public void write(String filename) {
+  public void write(final String filename) {
     final String s = generateString();
 
     try {
@@ -186,7 +186,7 @@ public class WriterSpr {
     }
   }
 
-  private boolean outputNodeTypes(final XMLWriterTagPair uni, Clazz clazz) {
+  private boolean outputNodeTypes(final XMLWriterTagPair uni, final Clazz clazz) {
     final int node_type_number = ContextManager.getNodeManager().node_type_factory.array.size();
     boolean some = false;
     for (int nt = 0; nt < node_type_number; nt++) {
@@ -233,7 +233,7 @@ public class WriterSpr {
     return some;
   }
 
-  private boolean outputLinkTypes(final XMLWriterTagPair uni, Clazz clazz) {
+  private boolean outputLinkTypes(final XMLWriterTagPair uni, final Clazz clazz) {
     final LinkManager link_manager = ContextManager.getLinkManager();
     final int link_type_number = link_manager.link_type_factory.array.size();
     boolean some = false;
@@ -289,7 +289,7 @@ public class WriterSpr {
     return some;
   }
 
-  private boolean outputFaceTypes(final XMLWriterTagPair uni, Clazz clazz) {
+  private boolean outputFaceTypes(final XMLWriterTagPair uni, final Clazz clazz) {
     boolean some = false;
     final FaceManager face_manager = ContextManager.getFaceManager();
     final int type_number = face_manager.face_type_factory.array.size();
@@ -311,7 +311,7 @@ public class WriterSpr {
     return some;
   }
 
-  private boolean outputFace(FaceManager face_manager, Clazz clazz, FaceType face_type, XMLWriterTagPair tag_type) {
+  private boolean outputFace(final FaceManager face_manager, final Clazz clazz, final FaceType face_type, final XMLWriterTagPair tag_type) {
     boolean some = false;
     final int n_o_l = face_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
@@ -331,7 +331,7 @@ public class WriterSpr {
     return some;
   }
 
-  private XMLWriterSinglet outputFace(Face face) {
+  private XMLWriterSinglet outputFace(final Face face) {
     final XMLWriterSinglet tag_face = new XMLWriterSinglet("face");
 
     final StringBuilder nodelist = new StringBuilder();
@@ -371,7 +371,7 @@ public class WriterSpr {
   // return tag;
   // }
 
-  private boolean outputLinks(LinkManager link_manager, Clazz clazz, LinkType link_type, XMLWriterTagPair tag_type) {
+  private boolean outputLinks(final LinkManager link_manager, final Clazz clazz, final LinkType link_type, final XMLWriterTagPair tag_type) {
     boolean some = false;
     final int n_o_l = link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
@@ -388,7 +388,7 @@ public class WriterSpr {
     return some;
   }
 
-  private XMLWriterSinglet outputLink(Link link) {
+  private XMLWriterSinglet outputLink(final Link link) {
     final XMLWriterSinglet tag_link = new XMLWriterSinglet("link");
 
     String nodes = "";
@@ -415,7 +415,7 @@ public class WriterSpr {
     return tag_link;
   }
 
-  private boolean outputNodes(NodeManager node_manager, Clazz clazz, NodeType node_type, XMLWriterTagPair tag_type) {
+  private boolean outputNodes(final NodeManager node_manager, final Clazz clazz, final NodeType node_type, final XMLWriterTagPair tag_type) {
     boolean some = false;
     final int number_of_nodes = node_manager.element.size();
     for (int n = 0; n < number_of_nodes; n++) {
@@ -448,7 +448,7 @@ public class WriterSpr {
     return tag_node;
   }
 
-  private XMLWriterAttribute getName(BaseElement element) {
+  private XMLWriterAttribute getName(final BaseElement element) {
     return new XMLWriterAttribute("name", "" + element.name);
   }
 
@@ -504,7 +504,7 @@ public class WriterSpr {
   // tag_node.add(new XMLWriterAttribute("z", "" + scale(node.pos.y)));
   // }
 
-  int scale(int v) {
+  int scale(final int v) {
     if (v >= 0) {
       return (v + (scale_factor >> 1)) / scale_factor;
     }
@@ -512,7 +512,7 @@ public class WriterSpr {
     return (v - (scale_factor >> 1)) / scale_factor;
   }
 
-  void writeOut(String s) {
+  void writeOut(final String s) {
     try {
       if (s.equals("")) {
         if (FrEnd.output_linefeeds) {

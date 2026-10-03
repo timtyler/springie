@@ -28,7 +28,7 @@ class GroundFrictionTest {
     World.ground_friction = this.old_friction;
   }
 
-  private Node groundNodeWithVelocity(int vx, int vz) {
+  private Node groundNodeWithVelocity(final int vx, final int vz) {
     final int c = 100 << com.springie.render.Coords.shift;
     final int ground_y = com.springie.render.Coords.y_pixels << com.springie.render.Coords.shift;
     final Node node = new Node(new com.springie.geometry.Point3D(c, ground_y, c),

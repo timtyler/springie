@@ -19,7 +19,7 @@ public class ZipLoader {
 
   private final String zip_file_name = "index.spr";
   
-  public String getZIPURLAsString(String location) {
+  public String getZIPURLAsString(final String location) {
     final InputStream in = getResourceFromURL(location);
     if (in == null) {
       throwFileNotFoundException(location);
@@ -30,7 +30,7 @@ public class ZipLoader {
     return getZipContents(zip_contents, this.zip_file_name);
   }
 
-  public String getZIPFileAsString(String location) {
+  public String getZIPFileAsString(final String location) {
     final InputStream in = getInputStreamFromFilename(location);
     if (in == null) {
       throwFileNotFoundException(location);
@@ -41,11 +41,11 @@ public class ZipLoader {
     return getZipContents(zip_contents, this.zip_file_name);
   }
 
-  private void throwFileNotFoundException(String location) {
+  private void throwFileNotFoundException(final String location) {
     throw new RuntimeException("File not found: <" + location + ">");
   }
 
-  InputStream getInputStreamFromFilename(String location) {
+  InputStream getInputStreamFromFilename(final String location) {
     try {
       return new FileInputStream(location);
     } catch (FileNotFoundException e) {
@@ -55,7 +55,7 @@ public class ZipLoader {
     return null;
   }
 
-  private InputStream getResourceFromURL(String location) {
+  private InputStream getResourceFromURL(final String location) {
     logger.debug("ZipLoader:getResourceFromURL:" + location);
 
     URL url = null;
@@ -102,7 +102,7 @@ public class ZipLoader {
     return output;
   }
 
-  String getZipContents(byte[] zip_contents, String name) {
+  String getZipContents(final byte[] zip_contents, final String name) {
     byte[] _array2;
     int _array2_size;
 

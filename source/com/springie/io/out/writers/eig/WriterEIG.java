@@ -68,7 +68,7 @@ public class WriterEIG {
     this.face_manager = node_manager.getFaceManager();
   }
 
-  public void write(String filename) {
+  public void write(final String filename) {
     new GarbageCollection(this.node_manager).cleanUp();
     new RedundancyRemover(ContextManager.getNodeManager()).removeRedundancy();
 
@@ -193,7 +193,7 @@ public class WriterEIG {
     }
   }
 
-  private boolean outputNodeTypes(final XMLWriterTagPair uni, Clazz clazz) {
+  private boolean outputNodeTypes(final XMLWriterTagPair uni, final Clazz clazz) {
     final int node_type_number = ContextManager.getNodeManager().node_type_factory.array
         .size();
     boolean some = false;
@@ -238,7 +238,7 @@ public class WriterEIG {
     return some;
   }
 
-  private boolean outputLinkTypes(final XMLWriterTagPair uni, Clazz clazz) {
+  private boolean outputLinkTypes(final XMLWriterTagPair uni, final Clazz clazz) {
     final int link_type_number = this.link_manager.link_type_factory.array
         .size();
     boolean some = false;
@@ -294,7 +294,7 @@ public class WriterEIG {
     return some;
   }
 
-  private boolean outputFaceTypes(final XMLWriterTagPair uni, Clazz clazz) {
+  private boolean outputFaceTypes(final XMLWriterTagPair uni, final Clazz clazz) {
     boolean some = false;
     final int type_number = this.face_manager.face_type_factory.array.size();
 
@@ -316,7 +316,7 @@ public class WriterEIG {
     return some;
   }
 
-  private boolean outputFace(Clazz clazz, FaceType face_type,
+  private boolean outputFace(final Clazz clazz, final FaceType face_type,
       XMLWriterTagPair tag_type) {
     boolean some = false;
     final int n_o_l = this.face_manager.element.size();
@@ -333,7 +333,7 @@ public class WriterEIG {
     return some;
   }
 
-  private XMLWriterTagPair outputFace(Face face) {
+  private XMLWriterTagPair outputFace(final Face face) {
     final XMLWriterTagPair tag_face = new XMLWriterTagPair("SKIN");
 
     final StringBuilder nodelist = new StringBuilder();
@@ -358,7 +358,7 @@ public class WriterEIG {
     return tag_face;
   }
 
-  private boolean outputLinks(Clazz clazz, LinkType link_type,
+  private boolean outputLinks(final Clazz clazz, final LinkType link_type,
       XMLWriterTagPair tag_type) {
     boolean some = false;
     final int n_o_l = this.link_manager.element.size();
@@ -376,7 +376,7 @@ public class WriterEIG {
     return some;
   }
 
-  private XMLWriterTagPair outputLink(Link link) {
+  private XMLWriterTagPair outputLink(final Link link) {
     final XMLWriterTagPair tag_link = new XMLWriterTagPair("SPRING");
     tag_link.newlines = false;
 
@@ -393,8 +393,8 @@ public class WriterEIG {
     return tag_link;
   }
 
-  private boolean outputNodes(NodeManager node_manager, Clazz clazz,
-      NodeType node_type, XMLWriterTagPair tag_type) {
+  private boolean outputNodes(final NodeManager node_manager, final Clazz clazz,
+      NodeType node_type, final XMLWriterTagPair tag_type) {
     boolean some = false;
     final int number_of_nodes = node_manager.element.size();
     for (int n = 0; n < number_of_nodes; n++) {
@@ -449,15 +449,15 @@ public class WriterEIG {
   // return (v - (scale_factor >> 1)) / scale_factor;
   // }
 
-  float toFloatingPointCoords(int v) {
+  float toFloatingPointCoords(final int v) {
     return v * this.scale_factor;
   }
 
-  public String emit(float f) {
+  public String emit(final float f) {
     return emit(f, 5, false);
   }
 
-  public String emit(float f, int sf, boolean fixed_dp) {
+  public String emit(final float f, final int sf, final boolean fixed_dp) {
     String o = "" + f;
     if (o.indexOf("E") >= 0) {
       return "0";
@@ -487,7 +487,7 @@ public class WriterEIG {
     return o;
   }
 
-  void writeOut(String s) {
+  void writeOut(final String s) {
     try {
       if (s.equals("")) {
         if (FrEnd.output_linefeeds) {

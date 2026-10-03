@@ -45,7 +45,7 @@ public class ReaderEIG extends DefaultHandler {
 
   //private int link_group_count;
 
-  public String translate(String source) throws IOException, SAXException {
+  public String translate(final String source) throws IOException, SAXException {
     final XMLReader xr = new com.tifsoft.xml.driver.Driver();
 
     final ReaderEIG handler = new ReaderEIG();
@@ -71,7 +71,7 @@ public class ReaderEIG extends DefaultHandler {
     //Log.log("End document");
   }
 
-  public void startElement(String uri, String name, String qName,
+  public void startElement(final String uri, final String name, final String qName,
     Attributes atts) {
     int node_group_count = 0;
     int link_group_count = 0;
@@ -180,7 +180,7 @@ public class ReaderEIG extends DefaultHandler {
     }
   }
 
-  public void endElement(String uri, String name, String qName) {
+  public void endElement(final String uri, final String name, final String qName) {
 
     //if ("SPRINGSET".equals(qName)) {
     //link_group = false;
@@ -196,16 +196,16 @@ public class ReaderEIG extends DefaultHandler {
     //}
   }
 
-  public void ignorableWhitespace(char[] ch, int start, int length) {
+  public void ignorableWhitespace(final char[] ch, final int start, final int length) {
     //Log.put("ignorableWhitespace:");
     characters(ch, start, length);
   }
 
-  public void skippedEntity(String name) {
+  public void skippedEntity(final String name) {
     //Log.put("skippedEntity:" + name);
   }
 
-  public void characters(char[] ch, int start, int length) {
+  public void characters(final char[] ch, final int start, final int length) {
     final String chars = new String(ch, start, length);
     if ("JOINT".equals(this.last_element)) {
       addNode(chars);
@@ -216,7 +216,7 @@ public class ReaderEIG extends DefaultHandler {
     }
   }
 
-  private void addLink(String chars) {
+  private void addLink(final String chars) {
     if (SomeStringUtilities.isWhiteSpace(chars)) {
       return;
     }
@@ -234,7 +234,7 @@ public class ReaderEIG extends DefaultHandler {
     this.value += type + " V:" + a + " V:" + z + " ";
   }
 
-  private void addPolygon(String chars) {
+  private void addPolygon(final String chars) {
     if (SomeStringUtilities.isWhiteSpace(chars)) {
       return;
     }
@@ -254,7 +254,7 @@ public class ReaderEIG extends DefaultHandler {
     this.value += type + " V:" + v1 + " V:" + v2 + " V:" + v3 + " ";
   }
 
-  private void addNode(String chars) {
+  private void addNode(final String chars) {
     final StringTokenizer st = new StringTokenizer(chars, " ");
 
     st.nextToken();

@@ -96,7 +96,7 @@ public class World extends BaseElementManager<Node> {
     set(null);
   }
 
-  World(Node e) {
+  World(final Node e) {
     init();
     set(e);
   }
@@ -115,7 +115,7 @@ public class World extends BaseElementManager<Node> {
     resetAll();
   }
 
-  protected void set(Node e) {
+  protected void set(final Node e) {
     this.associated_node = e;
     resetAll();
   }
@@ -131,7 +131,7 @@ public class World extends BaseElementManager<Node> {
     this.creature_manager.reset();
   }
 
-  public Node copy(Node e) {
+  public Node copy(final Node e) {
     temp_agent = new Node(e, this.node_type_factory, this.clazz_factory);
     this.element.add(temp_agent);
 
@@ -187,7 +187,7 @@ public class World extends BaseElementManager<Node> {
     }
   }
 
-  public void wrappedLinkExerciser(LinkManager link_manager) {
+  public void wrappedLinkExerciser(final LinkManager link_manager) {
     zeroDeltaVelocity();
 
     this.tick++;
@@ -251,7 +251,7 @@ public class World extends BaseElementManager<Node> {
     }
   }
 
-  public void setGlobalSize(int d) {
+  public void setGlobalSize(final int d) {
     final int number_of_nodes = this.element.size();
 
     for (int temp = 0; temp < number_of_nodes; temp++) {
@@ -271,7 +271,7 @@ public class World extends BaseElementManager<Node> {
     return temp_agent;
   }
 
-  public Node addNewAgent(Point3D pos, Clazz clazz, NodeType type) {
+  public Node addNewAgent(final Point3D pos, Clazz clazz, NodeType type) {
     temp_agent = new Node(new Point3D(pos), rnd.nextInt(), this.node_type_factory);
     this.element.add(temp_agent);
     temp_agent.clazz = clazz;
@@ -284,7 +284,7 @@ public class World extends BaseElementManager<Node> {
    * Adds a new Node to this world. The node is a clone of node e (though it
    * inherits no links from it).
    */
-  public Node addNewAgent(Node e) {
+  public Node addNewAgent(final Node e) {
     temp_agent = new Node(e, this.node_type_factory, this.clazz_factory);
     this.element.add(temp_agent);
 
@@ -294,7 +294,7 @@ public class World extends BaseElementManager<Node> {
   /**
    * Destroys a specified agent within this world
    */
-  public boolean killThisNode(Node e) {
+  public boolean killThisNode(final Node e) {
     final int number_of_nodes = this.element.size();
     for (int temp = number_of_nodes; --temp >= 0;) {
       if (this.element.get(temp) == e) {
@@ -308,7 +308,7 @@ public class World extends BaseElementManager<Node> {
     return false;
   }
 
-  public void killNumberedAgent(int n) {
+  public void killNumberedAgent(final int n) {
     RendererDelegator.colourZero();
     final Node nod = (Node) this.element.get(n);
     // nod.scrub();
@@ -319,11 +319,11 @@ public class World extends BaseElementManager<Node> {
   /**
    * calculates the distance between e1 and e2...
    */
-  public int distanceBetween(Node e1, Node e2) {
+  public int distanceBetween(final Node e1, final Node e2) {
     return SquareRoot.fastSqrt(distanceSquaredBetween(e1, e2)) << Coords.shift;
   }
 
-  int distanceSquaredBetween(Node e1, Node e2) {
+  int distanceSquaredBetween(final Node e1, final Node e2) {
     final int temp_x0 = (e1.pos.x - e2.pos.x) >> Coords.shift;
     final int temp_y0 = (e1.pos.y - e2.pos.y) >> Coords.shift;
     final int temp_z0 = (e1.pos.z - e2.pos.z) >> Coords.shift;
@@ -331,7 +331,7 @@ public class World extends BaseElementManager<Node> {
     return temp_x0 * temp_x0 + temp_y0 * temp_y0 + temp_z0 * temp_z0;
   }
 
-  public int getAgentNumber(Node e) {
+  public int getAgentNumber(final Node e) {
     return this.element.indexOf(e);
   }
 
@@ -367,7 +367,7 @@ public class World extends BaseElementManager<Node> {
     }
   }
 
-  public void setColourOfSelected(char c) {
+  public void setColourOfSelected(final char c) {
     final int number_of_nodes = this.element.size();
     for (int temp = number_of_nodes; --temp >= 0;) {
       final Node n = (Node) this.element.get(temp);
@@ -378,7 +378,7 @@ public class World extends BaseElementManager<Node> {
     }
   }
 
-  public void setSizeOfSelected(int s) {
+  public void setSizeOfSelected(final int s) {
     final int number_of_nodes = this.element.size();
     for (int temp = number_of_nodes; --temp >= 0;) {
       final Node n = (Node) this.element.get(temp);
@@ -389,7 +389,7 @@ public class World extends BaseElementManager<Node> {
     }
   }
 
-  public void moveSelection(int _dx, int _dy) {
+  public void moveSelection(final int _dx, final int _dy) {
     final int number_of_nodes = this.element.size();
     for (int temp = number_of_nodes; --temp >= 0;) {
       final Node n = (Node) this.element.get(temp);
@@ -559,7 +559,7 @@ public class World extends BaseElementManager<Node> {
     this.associated_node.velocity.z = ((this.associated_node.velocity.z * 14) + average_dz) >> 4;
   }
 
-  public boolean contains(Node e) {
+  public boolean contains(final Node e) {
     final int number_of_nodes = this.element.size();
     for (int temp = number_of_nodes; --temp >= 0;) {
       final Node n = (Node) this.element.get(temp);
@@ -571,7 +571,7 @@ public class World extends BaseElementManager<Node> {
     return false;
   }
 
-  final int getNodeNumber(Node e) {
+  final int getNodeNumber(final Node e) {
     final int number_of_nodes = this.element.size();
     for (int temp = number_of_nodes; --temp >= 0;) {
       final Node n = (Node) this.element.get(temp);
@@ -583,7 +583,7 @@ public class World extends BaseElementManager<Node> {
     return -1;
   }
 
-  public final void merge(World source) {
+  public final void merge(final World source) {
     transferNodes(source);
 
     transferLinks(source);
@@ -593,7 +593,7 @@ public class World extends BaseElementManager<Node> {
     transferClazzes(source);
   }
 
-  private void transferClazzes(World source) {
+  private void transferClazzes(final World source) {
     final int n = source.clazz_factory.array.size();
 
     for (int temp = 0; temp < n; temp++) {
@@ -603,7 +603,7 @@ public class World extends BaseElementManager<Node> {
     }
   }
 
-  private void changeValuesOfOldClazzesToNewClazzes(World source, final Clazz clazz_from, Clazz clazz_to) {
+  private void changeValuesOfOldClazzesToNewClazzes(final World source, final Clazz clazz_from, final Clazz clazz_to) {
 
     final int n_l = source.link_manager.element.size();
     for (int temp = 0; temp < n_l; temp++) {
@@ -630,7 +630,7 @@ public class World extends BaseElementManager<Node> {
     }
   }
 
-  private void transferLinks(World source) {
+  private void transferLinks(final World source) {
     final int n = source.link_manager.element.size();
 
     for (int temp = 0; temp < n; temp++) {
@@ -642,7 +642,7 @@ public class World extends BaseElementManager<Node> {
     }
   }
 
-  private void transferFaces(World source) {
+  private void transferFaces(final World source) {
     final int number_of_faces = source.face_manager.element.size();
 
     for (int temp = 0; temp < number_of_faces; temp++) {
@@ -654,7 +654,7 @@ public class World extends BaseElementManager<Node> {
     }
   }
 
-  private void transferNodes(World source) {
+  private void transferNodes(final World source) {
     final int number_of_nodes_from = source.element.size();
 
     for (int temp = 0; temp < number_of_nodes_from; temp++) {

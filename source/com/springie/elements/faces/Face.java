@@ -18,17 +18,17 @@ public class Face extends BaseElement {
 
   public static int number_of_render_divisions = 4;
 
-  public Face(ArrayList<Node> v, FaceType type, Clazz clazz) {
+  public Face(final ArrayList<Node> v, FaceType type, Clazz clazz) {
     this.nodes = v;
     this.type = type;
     this.clazz = clazz;
   }
 
-  public Face(ArrayList<Node> v) {
+  public Face(final ArrayList<Node> v) {
     this.nodes = v;
   }
 
-  public boolean hasExactlyTheseNodes(ArrayList<Node> node_list) {
+  public boolean hasExactlyTheseNodes(final ArrayList<Node> node_list) {
     final int n_points = this.nodes.size();
     final int l_points = node_list.size();
     if (n_points != l_points) {
@@ -55,7 +55,7 @@ public class Face extends BaseElement {
     return false;
   }
 
-  public boolean containsNodes(Node e) {
+  public boolean containsNodes(final Node e) {
     final int n_points = this.nodes.size();
 
     for (int i = n_points; --i >= 0;) {

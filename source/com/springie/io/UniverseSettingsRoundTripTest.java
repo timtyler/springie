@@ -97,11 +97,11 @@ class UniverseSettingsRoundTripTest {
   }
 
   private static void setUniverse(int gravity_strength,
-      boolean gravity_active, int temperature, int minimum_magnitude,
+      boolean gravity_active, final int temperature, int minimum_magnitude,
       int viscocity, int max_speed, boolean three_d,
       boolean check_collisions, boolean continuously_centre_x,
       boolean continuously_centre_y, boolean continuously_centre_z,
-      boolean charge_active, int compass_bias_size) {
+      boolean charge_active, final int compass_bias_size) {
     World.gravity_strength = gravity_strength;
     World.gravity_active = gravity_active;
     World.global_temperature = temperature;
@@ -118,12 +118,12 @@ class UniverseSettingsRoundTripTest {
     CompassPoint.bias_size = compass_bias_size;
   }
 
-  private static void assertUniverse(int gravity_strength,
-      boolean gravity_active, int temperature, int minimum_magnitude,
-      int viscocity, int max_speed, boolean three_d,
-      boolean check_collisions, boolean continuously_centre_x,
-      boolean continuously_centre_y, boolean continuously_centre_z,
-      boolean charge_active, int compass_bias_size) {
+  private static void assertUniverse(final int gravity_strength,
+      boolean gravity_active, final int temperature, final int minimum_magnitude,
+      int viscocity, final int max_speed, final boolean three_d,
+      boolean check_collisions, final boolean continuously_centre_x,
+      boolean continuously_centre_y, final boolean continuously_centre_z,
+      boolean charge_active, final int compass_bias_size) {
     assertEquals(gravity_strength, World.gravity_strength, "gravity_strength");
     assertEquals(gravity_active, World.gravity_active, "gravity_active");
     assertEquals(temperature, World.global_temperature, "temperature");
@@ -145,14 +145,14 @@ class UniverseSettingsRoundTripTest {
     assertEquals(compass_bias_size, CompassPoint.bias_size, "compass bias");
   }
 
-  private static void setMuscles(boolean enabled, int amplitude,
+  private static void setMuscles(boolean enabled, final int amplitude,
       int period_ticks) {
     Muscles.enabled = enabled;
     Muscles.activeOscillator().setAmplitude(amplitude);
     Muscles.activeOscillator().setPeriodTicks(period_ticks);
   }
 
-  private static void assertMuscles(boolean enabled, int amplitude,
+  private static void assertMuscles(final boolean enabled, final int amplitude,
       int period_ticks) {
     assertEquals(enabled, Muscles.enabled, "muscles enabled");
     assertEquals(amplitude, Muscles.activeOscillator().getAmplitude(),

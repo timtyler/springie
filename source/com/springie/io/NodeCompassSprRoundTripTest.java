@@ -39,7 +39,7 @@ class NodeCompassSprRoundTripTest {
     this.manager.initialSetUp();
   }
 
-  private Node addNode(CompassPoint heading) {
+  private Node addNode(final CompassPoint heading) {
     final NodeType type = this.manager.node_type_factory.getNew();
     final Clazz clazz = this.manager.clazz_factory.getNew(0xFFFFFFFF);
     final Node node = this.manager.addNewAgent(new Point3D(0, 0, 0), clazz,

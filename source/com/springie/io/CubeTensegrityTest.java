@@ -64,7 +64,7 @@ class CubeTensegrityTest {
     }
   }
 
-  private static double linkLength(Link link) {
+  private static double linkLength(final Link link) {
     final Node a = link.nodes[0];
     final Node b = link.nodes[1];
     final double dx = a.pos.x - b.pos.x;

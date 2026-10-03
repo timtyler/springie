@@ -5,11 +5,11 @@ public final class FDLWriterStringUtilities {
     // ...
   }
 
-  public static void indent(StringBuilder sb, int indent) {
+  public static void indent(final StringBuilder sb, int indent) {
     sb.append(repeat(' ', indent));
   }
 
-  public static String repeat(char character, int count) {
+  public static String repeat(final char character, final int count) {
     final StringBuilder stringBuffer = new StringBuilder(count);
     for (int i = 0; i < count; i++) {
       stringBuffer.append(character);

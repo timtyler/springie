@@ -13,7 +13,7 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
 
 public class AreThereAny {
-  public boolean nodes(Clazz clazz) {
+  public boolean nodes(final Clazz clazz) {
     final NodeManager manager = ContextManager.getNodeManager();
     final int number = manager.element.size();
 
@@ -26,7 +26,7 @@ public class AreThereAny {
     return false;
   }
 
-  public boolean links(Clazz clazz) {
+  public boolean links(final Clazz clazz) {
     final LinkManager manager = ContextManager.getLinkManager();
     final int number = manager.element.size();
 
@@ -39,7 +39,7 @@ public class AreThereAny {
     return false;
   }
 
-  public boolean polygons(Clazz clazz) {
+  public boolean polygons(final Clazz clazz) {
     final FaceManager manager = ContextManager.getFaceManager();
     final int number = manager.element.size();
 
@@ -52,7 +52,7 @@ public class AreThereAny {
     return false;
   }
 
-  public boolean nodes(Clazz clazz, NodeType type) {
+  public boolean nodes(final Clazz clazz, final NodeType type) {
     final NodeManager manager = ContextManager.getNodeManager();
     final int number = manager.element.size();
 
@@ -67,7 +67,7 @@ public class AreThereAny {
     return false;
   }
 
-  public boolean links(Clazz clazz, LinkType type) {
+  public boolean links(final Clazz clazz, final LinkType type) {
     final LinkManager manager = ContextManager.getLinkManager();
     final int number = manager.element.size();
 
@@ -82,7 +82,7 @@ public class AreThereAny {
     return false;
   }
 
-  public boolean polygons(Clazz clazz, FaceType type) {
+  public boolean polygons(final Clazz clazz, final FaceType type) {
     final FaceManager manager = ContextManager.getFaceManager();
     final int number = manager.element.size();
 

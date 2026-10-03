@@ -58,7 +58,7 @@ public class GarbageCollection {
     }
   }
 
-  private boolean findLinks(LinkManager link_manager, LinkType link_type) {
+  private boolean findLinks(final LinkManager link_manager, final LinkType link_type) {
     final int n_o_l = link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final Link link = (Link) link_manager.element.get(temp);
@@ -69,7 +69,7 @@ public class GarbageCollection {
     return false;
   }
 
-  private void removeNodeTypes(NodeManager node_manager) {
+  private void removeNodeTypes(final NodeManager node_manager) {
     final NodeTypeFactory node_type_factory = node_manager.node_type_factory;
     final int node_type_number = node_type_factory.array.size();
     for (int nt = node_type_number; --nt >= 0;) {

@@ -36,7 +36,7 @@ public class AddXMLModelIndexLeaves extends DefaultHandler {
    * touching AWT: the instance addLeaves populates a ChoiceWithDescription,
    * which cannot be created headless.
    */
-  public static Map<String, String> getLeaves(String source)
+  public static Map<String, String> getLeaves(final String source)
     throws IOException, SAXException {
 
     final XMLReader xr = new com.tifsoft.xml.driver.Driver();
@@ -53,7 +53,7 @@ public class AddXMLModelIndexLeaves extends DefaultHandler {
     return leaves;
   }
 
-  public String addLeaves(ChoiceWithDescription choice, String source)
+  public String addLeaves(ChoiceWithDescription choice, final String source)
     throws IOException, SAXException {
 
     final XMLReader xr = new com.tifsoft.xml.driver.Driver();
@@ -77,7 +77,7 @@ public class AddXMLModelIndexLeaves extends DefaultHandler {
     //Log.log("End document");
   }
 
-  public void startElement(String uri, String name, String element_name,
+  public void startElement(final String uri, final String name, final String element_name,
     Attributes atts) {
     boolean node = false;
     boolean leaf = false;
@@ -127,21 +127,21 @@ public class AddXMLModelIndexLeaves extends DefaultHandler {
     }
   }
 
-  public void endElement(String uri, String name, String element_name) {
+  public void endElement(final String uri, final String name, final String element_name) {
 
     if ("node".equals(element_name)) {
       this.directories.remove(this.directories.size() - 1);
     }
   }
 
-  public void ignorableWhitespace(char[] ch, int start, int length) {
+  public void ignorableWhitespace(final char[] ch, final int start, final int length) {
     characters(ch, start, length);
   }
 
-  public void skippedEntity(String name) {
+  public void skippedEntity(final String name) {
   }
 
-  public void characters(char[] ch, int start, int length) {
+  public void characters(final char[] ch, final int start, final int length) {
     //...
   }
 }

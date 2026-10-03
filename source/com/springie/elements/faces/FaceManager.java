@@ -31,7 +31,7 @@ public class FaceManager extends BaseElementManager<Face> {
    * Sets a polygon between e1 and e2, with target length lenth, elasticity,
    * colour and status flags specified
    */
-  public final Face setPolygon(ArrayList<Node> v, FaceType type, Clazz clazz) {
+  public final Face setPolygon(final ArrayList<Node> v, final FaceType type, final Clazz clazz) {
     final Face p = new Face(v, type, clazz);
     this.element.add(p);
 
@@ -44,7 +44,7 @@ public class FaceManager extends BaseElementManager<Face> {
     return p;
   }
 
-  public final Face setPolygon(FaceType type, Clazz clazz) {
+  public final Face setPolygon(final FaceType type, final Clazz clazz) {
     final Face p = new Face(new ArrayList<>(), type, clazz);
     this.element.add(p);
 
@@ -55,7 +55,7 @@ public class FaceManager extends BaseElementManager<Face> {
   /**
    * Destroys all polygons to Node e
    */
-  public final void killAllPolygons(Node node) {
+  public final void killAllPolygons(final Node node) {
     final int number = this.element.size();
     for (int temp = number; --temp >= 0;) {
       final Face face = (Face) this.element.get(temp);
@@ -65,11 +65,11 @@ public class FaceManager extends BaseElementManager<Face> {
     }
   }
 
-  final void killNumberedPolygon(int n) {
+  final void killNumberedPolygon(final int n) {
     this.element.remove(n);
   }
 
-  final int getNumberOfPolygon(Face lk) {
+  final int getNumberOfPolygon(final Face lk) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final Face l = (Face) this.element.get(temp);
@@ -107,7 +107,7 @@ public class FaceManager extends BaseElementManager<Face> {
   //    }
   //  }
 
-  public boolean isThereAPolygonWithNodes(ArrayList<Node> node_list) {
+  public boolean isThereAPolygonWithNodes(final ArrayList<Node> node_list) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final Face poly = (Face) this.element.get(temp);
@@ -150,7 +150,7 @@ public class FaceManager extends BaseElementManager<Face> {
     FrEnd.updateGUIToReflectSelectionChange();
   }
 
-  public final Face isThereOne(int x, int y) {
+  public final Face isThereOne(final int x, final int y) {
     Face best = null;
     int best_z = Integer.MAX_VALUE;
 
@@ -216,7 +216,7 @@ public class FaceManager extends BaseElementManager<Face> {
     return null;
   }
 
-  public final void selectAll(int colour) {
+  public final void selectAll(final int colour) {
     final int number = this.element.size();
     for (int temp = number; --temp >= 0;) {
       final Face face = (Face) this.element.get(temp);
@@ -229,7 +229,7 @@ public class FaceManager extends BaseElementManager<Face> {
     FrEnd.updateGUIToReflectSelectionChange();
   }
 
-  public final void selectAllWithNSides(int n) {
+  public final void selectAllWithNSides(final int n) {
     final int number = this.element.size();
     for (int temp = number; --temp >= 0;) {
       final Face p = (Face) this.element.get(temp);
@@ -251,7 +251,7 @@ public class FaceManager extends BaseElementManager<Face> {
     FrEnd.updateGUIToReflectSelectionChange();
   }
 
-  final void killNumbered(int n) {
+  final void killNumbered(final int n) {
     //final Face p = (Face) this.element.get(n);
     //final int npoints = p.node.size();
     this.element.remove(n);
@@ -263,7 +263,7 @@ public class FaceManager extends BaseElementManager<Face> {
     //}
   }
 
-  final int getNumberOf(Face polygon) {
+  final int getNumberOf(final Face polygon) {
     final int number = this.element.size();
     for (int temp = number; --temp >= 0;) {
       final Face p = (Face) this.element.get(temp);
@@ -288,7 +288,7 @@ public class FaceManager extends BaseElementManager<Face> {
     return number;
   }
 
-  public final void kill(Face face) {
+  public final void kill(final Face face) {
     final int temp = getNumberOf(face);
     killNumbered(temp);
   }
