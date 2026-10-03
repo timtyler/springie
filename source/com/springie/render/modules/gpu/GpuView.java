@@ -29,6 +29,12 @@ final class GpuView {
   Scene createScene(double width, double height) {
     this.model_group = new Group();
     final Group root = new Group();
+    // The FX scene is display-only: all mouse interaction is forwarded
+    // to the AWT canvas panel. Mouse-transparent skips JavaFX's 3D
+    // ray-picking on every mouse event, which would otherwise pick
+    // against hundreds of shapes per event and stall the EDT/FX thread
+    // during drags.
+    root.setMouseTransparent(true);
     final AmbientLight ambient = new AmbientLight(Color.rgb(110, 110, 130));
     this.point_light = new PointLight(Color.WHITE);
     root.getChildren().addAll(this.model_group, ambient, this.point_light);
