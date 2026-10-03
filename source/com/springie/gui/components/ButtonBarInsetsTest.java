@@ -2,11 +2,9 @@
 
 package com.springie.gui.components;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.awt.Insets;
-
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * The button bar at the bottom of the main window carries two pixels of

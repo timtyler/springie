@@ -2,11 +2,9 @@
 
 package com.springie.render.modules.raytraced;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.Random;
-
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * JitterRandom must replicate java.util.Random's sequence bit-for-bit for

@@ -1,17 +1,6 @@
 // This program has been placed into the public domain by its author.
 package com.springie.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
-import java.awt.GraphicsEnvironment;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.demos.CompassPoint;
@@ -21,6 +10,14 @@ import com.springie.io.in.DataInput;
 import com.springie.io.out.Serialiser;
 import com.springie.muscles.Muscles;
 import com.springie.world.World;
+import java.awt.GraphicsEnvironment;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Universe settings travel with the model: every Universe-tab control must

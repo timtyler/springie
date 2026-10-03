@@ -1,14 +1,5 @@
 package com.springie.io;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
-import java.awt.GraphicsEnvironment;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
@@ -18,6 +9,12 @@ import com.springie.geometry.Point3D;
 import com.springie.io.in.readers.spr.ReaderSPR;
 import com.springie.io.out.writers.spr.WriterSpr;
 import com.springie.render.Coords;
+import java.awt.GraphicsEnvironment;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Link phase must survive an SPR save/load round trip:

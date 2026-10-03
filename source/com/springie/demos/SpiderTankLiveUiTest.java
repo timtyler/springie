@@ -1,9 +1,6 @@
 // This code has been placed into the public domain by its author.
 package com.springie.demos;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
@@ -15,6 +12,8 @@ import com.springie.messages.commands.SpiderTankDemoMessage;
 import com.springie.muscles.Sensors;
 import com.springie.render.RendererDelegator;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * UI-path regression test for the spider tank.

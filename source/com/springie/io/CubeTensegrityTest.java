@@ -3,14 +3,6 @@
 
 package com.springie.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
-import java.awt.GraphicsEnvironment;
-
-import org.junit.jupiter.api.Test;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
@@ -20,8 +12,13 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.io.in.DataInput;
 import com.springie.utilities.random.Hortensius32Fast;
 import com.springie.world.World;
+import java.awt.GraphicsEnvironment;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 class CubeTensegrityTest {
 

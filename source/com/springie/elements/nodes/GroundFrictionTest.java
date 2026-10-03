@@ -2,13 +2,11 @@
 
 package com.springie.elements.nodes;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import com.springie.world.World;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import com.springie.world.World;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Ground friction damps a node's horizontal velocity while it touches

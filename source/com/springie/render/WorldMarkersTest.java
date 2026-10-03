@@ -1,25 +1,22 @@
 // This program has been placed into the public domain by its author.
 package com.springie.render;
 
+import com.springie.FrEnd;
+import com.springie.geometry.Vector3D;
+import com.springie.render.modules.modern.PolygonComposite;
+import com.springie.render.modules.modern.PolygonObject2D;
+import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
-import java.awt.Graphics;
-import java.awt.GraphicsEnvironment;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import com.springie.FrEnd;
-import com.springie.geometry.Vector3D;
-import com.springie.render.modules.modern.PolygonComposite;
-import com.springie.render.modules.modern.PolygonObject2D;
 
 /**
  * The Olympics location markers appear whenever 'Show world markers' is

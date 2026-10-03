@@ -2,27 +2,6 @@
 
 package com.springie.gui.panels;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.awt.Button;
-import java.awt.Choice;
-import java.awt.Component;
-import java.awt.Label;
-import java.awt.event.ItemEvent;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
-import javax.swing.SwingUtilities;
-
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.demos.DemoCatalog;
@@ -33,6 +12,23 @@ import com.springie.messages.commands.CrawlerDemoMessage;
 import com.springie.messages.commands.SidewinderDemoMessage;
 import com.springie.messages.commands.SpiderTankDemoMessage;
 import com.springie.messages.commands.WheelbarrowDemoMessage;
+import java.awt.Button;
+import java.awt.Choice;
+import java.awt.Component;
+import java.awt.Label;
+import java.awt.event.ItemEvent;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import javax.swing.SwingUtilities;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for the floppy-disc toggle in the bottom button bar: pressed in

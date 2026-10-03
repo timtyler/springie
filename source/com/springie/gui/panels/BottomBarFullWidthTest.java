@@ -2,19 +2,15 @@
 
 package com.springie.gui.panels;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import com.springie.FrEnd;
+import com.springie.gui.GuiTestSupport;
 import java.awt.Container;
-
 import javax.swing.SwingUtilities;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import com.springie.FrEnd;
-import com.springie.gui.GuiTestSupport;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The bottom button bar must span the entire width of the main window in

@@ -2,17 +2,14 @@
 
 package com.springie.render.modules.modern;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import com.springie.render.RendererDelegator;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-
 import org.junit.jupiter.api.Test;
-
-import com.springie.render.RendererDelegator;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * The tiled polygon renderer's blit loop sets the graphics clip to each

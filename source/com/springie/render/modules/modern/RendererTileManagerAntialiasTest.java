@@ -2,11 +2,9 @@
 
 package com.springie.render.modules.modern;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.awt.image.BufferedImage;
-
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * The anti-aliased blit path box-filters each aa-by-aa block of the

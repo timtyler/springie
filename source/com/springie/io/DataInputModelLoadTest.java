@@ -1,19 +1,16 @@
 package com.springie.io;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
+import com.springie.context.ContextManager;
+import com.springie.elements.nodes.NodeManager;
+import com.springie.io.in.DataInput;
 import java.awt.GraphicsEnvironment;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-
-import com.springie.context.ContextManager;
-import com.springie.elements.nodes.NodeManager;
-import com.springie.io.in.DataInput;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Regression tests for loading the bundled .spr preset models.

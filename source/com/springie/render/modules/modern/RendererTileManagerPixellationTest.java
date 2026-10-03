@@ -3,15 +3,12 @@
 package com.springie.render.modules.modern;
 
 import com.springie.render.RectangleInt;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * The pixellated blit path scales the coarse (1/px resolution) tile up to

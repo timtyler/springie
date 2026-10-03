@@ -2,15 +2,13 @@
 
 package com.springie.gui.components;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.awt.Canvas;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Panel;
-
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for WrapLayout: the wrapping layout that reports its wrapped

@@ -2,20 +2,16 @@
 
 package com.springie.render;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import com.springie.FrEnd;
+import com.springie.gui.GuiTestSupport;
 import java.awt.Panel;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-
 import javax.swing.SwingUtilities;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import com.springie.FrEnd;
-import com.springie.gui.GuiTestSupport;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * A moved drag-box selection must not leave a trail. The drag rectangle

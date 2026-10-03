@@ -2,10 +2,9 @@
 
 package com.springie.gui.panels.preferences;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.springie.FrEnd;
+import com.springie.gui.GUIStrings;
+import com.springie.gui.GuiTestSupport;
 import java.awt.AWTEvent;
 import java.awt.Choice;
 import java.awt.Component;
@@ -15,17 +14,15 @@ import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
-
 import javax.swing.SwingUtilities;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import com.springie.FrEnd;
-import com.springie.gui.GUIStrings;
-import com.springie.gui.GuiTestSupport;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The controls-window mode on the Preferences tab: a three-way choice

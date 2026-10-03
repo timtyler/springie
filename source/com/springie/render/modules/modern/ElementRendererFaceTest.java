@@ -1,16 +1,5 @@
 package com.springie.render.modules.modern;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.faces.Face;
@@ -19,6 +8,14 @@ import com.springie.elements.faces.FaceTypeFactory;
 import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;
 import com.springie.render.Coords;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The modern renderer draws faces as filled quads fanning from each edge

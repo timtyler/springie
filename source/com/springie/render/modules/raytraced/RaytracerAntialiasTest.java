@@ -2,19 +2,17 @@
 
 package com.springie.render.modules.raytraced;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import com.springie.context.ContextManager;
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Anti-aliasing (RendererDelegator.antialiasing): a 2x2, 3x3 or 4x4 grid

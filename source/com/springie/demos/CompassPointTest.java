@@ -2,10 +2,9 @@
 
 package com.springie.demos;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * The compass mapping Tim approved: E = +x, W = -x, S = +z, N = -z

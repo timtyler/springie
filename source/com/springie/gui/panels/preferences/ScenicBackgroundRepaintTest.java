@@ -2,22 +2,18 @@
 
 package com.springie.gui.panels.preferences;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import com.springie.FrEnd;
+import com.springie.gui.GuiTestSupport;
+import com.springie.render.RendererDelegator;
 import java.awt.Checkbox;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-
 import javax.swing.SwingUtilities;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import com.springie.FrEnd;
-import com.springie.gui.GuiTestSupport;
-import com.springie.render.RendererDelegator;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Toggling the Grass/sky checkbox must repaint the background. The

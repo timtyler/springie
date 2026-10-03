@@ -1,16 +1,13 @@
 package com.springie.gui.panels.controls;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import com.springie.FrEnd;
+import com.springie.gui.GuiTestSupport;
 import javax.swing.SwingUtilities;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import com.springie.FrEnd;
-import com.springie.gui.GuiTestSupport;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Hitting a select button must not flip the Select: checkboxes back on.

@@ -2,23 +2,6 @@
 
 package com.springie.gui.panels.preferences;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.awt.Choice;
-import java.awt.Checkbox;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Label;
-import java.awt.Panel;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
 import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
 import com.springie.gui.components.TabbedPanel;
@@ -30,6 +13,20 @@ import com.springie.render.modules.modern.SimpleHexagon;
 import com.springie.render.modules.modern.SimpleIcosahedron;
 import com.springie.render.modules.modern.SimpleOctahedron;
 import com.springie.render.modules.modern.SimpleSquare;
+import java.awt.Checkbox;
+import java.awt.Choice;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The "Node polyhedron" dropdown on the modern renderer tab must offer

@@ -2,16 +2,6 @@
 
 package com.springie.gui.panels.controls;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import javax.swing.SwingUtilities;
-
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.demos.CaterpillarDemo;
@@ -20,6 +10,13 @@ import com.springie.gui.GuiTestSupport;
 import com.springie.muscles.Muscles;
 import com.springie.world.UniverseDefaults;
 import com.springie.world.World;
+import javax.swing.SwingUtilities;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The Universe tab's Reset button must restore every universe setting to its

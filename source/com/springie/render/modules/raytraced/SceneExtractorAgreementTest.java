@@ -2,16 +2,6 @@
 
 package com.springie.render.modules.raytraced;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
-import java.awt.GraphicsEnvironment;
-import java.util.ArrayList;
-
-import org.junit.jupiter.api.Test;
-
 import com.springie.FrEnd;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.faces.Face;
@@ -28,6 +18,13 @@ import com.springie.render.scene.SceneExtractor;
 import com.springie.render.scene.SceneFace;
 import com.springie.render.scene.SceneLink;
 import com.springie.render.scene.SceneNode;
+import java.awt.GraphicsEnvironment;
+import java.util.ArrayList;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Agreement test: the extractor must see exactly what the renderers see.

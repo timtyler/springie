@@ -2,29 +2,25 @@
 
 package com.springie.gui.panels.preferences;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import com.springie.FrEnd;
+import com.springie.gui.GuiTestSupport;
+import com.springie.render.RendererDelegator;
+import com.springie.render.modules.modern.ModularRendererNew;
+import com.springie.render.modules.original.ModularRendererOld;
 import java.awt.Choice;
 import java.awt.Component;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-
 import javax.swing.SwingUtilities;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import com.springie.FrEnd;
-import com.springie.gui.GuiTestSupport;
-import com.springie.render.RendererDelegator;
-import com.springie.render.modules.modern.ModularRendererNew;
-import com.springie.render.modules.original.ModularRendererOld;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The Renderer: dropdown (the three renderer options) lives under the

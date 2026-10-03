@@ -2,25 +2,21 @@
 
 package com.springie.gui.panels.preferences;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
+import com.springie.FrEnd;
+import com.springie.gui.GuiTestSupport;
+import com.springie.render.RendererDelegator;
 import java.awt.Choice;
 import java.awt.Component;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-
 import javax.swing.SwingUtilities;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import com.springie.FrEnd;
-import com.springie.gui.GuiTestSupport;
-import com.springie.render.RendererDelegator;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * The Pixellated dropdown (1x1 to 5x5 blocky display) sits in the shared

@@ -2,15 +2,13 @@
 
 package com.springie.render.modules.raytraced;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import com.springie.render.modules.modern.RendererTileManager;
+import com.springie.render.modules.raytraced.ModularRendererRaytraced.Tile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import com.springie.render.modules.raytraced.ModularRendererRaytraced.Tile;
-import com.springie.render.modules.modern.RendererTileManager;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The ray-traced renderer must tile the canvas with the same tiles as the

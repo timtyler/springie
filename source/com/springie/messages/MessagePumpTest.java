@@ -2,15 +2,12 @@
 
 package com.springie.messages;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import javax.swing.SwingUtilities;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
 import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
+import javax.swing.SwingUtilities;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * While the mouse button is held down the pump must not synthesize its own

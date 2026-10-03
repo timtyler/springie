@@ -2,8 +2,11 @@
 
 package com.springie.render;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import com.springie.FrEnd;
+import com.springie.gui.GuiTestSupport;
+import com.springie.render.modules.ModularRendererBase;
+import com.springie.render.modules.modern.ModularRendererNew;
+import com.springie.render.modules.original.ModularRendererOld;
 import java.awt.Panel;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -11,18 +14,11 @@ import java.awt.Robot;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-
 import javax.swing.SwingUtilities;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import com.springie.FrEnd;
-import com.springie.gui.GuiTestSupport;
-import com.springie.render.modules.ModularRendererBase;
-import com.springie.render.modules.modern.ModularRendererNew;
-import com.springie.render.modules.original.ModularRendererOld;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * A single click must not leave a drag-box rectangle behind on the

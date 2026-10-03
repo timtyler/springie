@@ -2,14 +2,6 @@
 
 package com.springie.gui.panels.preferences;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import javax.swing.SwingUtilities;
-
-import org.junit.jupiter.api.Test;
-
 import com.springie.FrEnd;
 import com.springie.constants.Actions;
 import com.springie.constants.Delay;
@@ -29,6 +21,11 @@ import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.modern.RendererTileManager;
 import com.springie.render.modules.modern.SimpleC60;
 import com.springie.render.modules.modern.SimpleDodecahedron;
+import javax.swing.SwingUtilities;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The Preferences panel's Reset button must restore every preference to its

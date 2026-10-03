@@ -1,10 +1,8 @@
 package com.springie.elements;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.lang.reflect.Method;
-
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Regression test for the depth-fog wrap bug: a negative depth (an object

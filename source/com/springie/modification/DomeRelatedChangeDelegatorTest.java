@@ -1,17 +1,5 @@
 package com.springie.modification;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
-import java.awt.Frame;
-import java.awt.GraphicsEnvironment;
-
-import javax.swing.SwingUtilities;
-
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.metrics.AverageChargeGetter;
@@ -20,6 +8,14 @@ import com.springie.metrics.AverageLengthGetter;
 import com.springie.metrics.AverageRadiusGetter;
 import com.springie.metrics.AverageStiffnessGetter;
 import com.springie.render.Coords;
+import java.awt.Frame;
+import java.awt.GraphicsEnvironment;
+import javax.swing.SwingUtilities;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * The +/- buttons on the Properties > Scalars panel must nudge the selected

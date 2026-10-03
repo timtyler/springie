@@ -2,18 +2,22 @@
 
 package com.springie.render.modules.gpu;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
+import com.springie.elements.clazz.Clazz;
+import com.springie.elements.faces.Face;
+import com.springie.elements.links.Link;
+import com.springie.elements.links.LinkType;
+import com.springie.elements.links.LinkTypeFactory;
+import com.springie.elements.nodes.Node;
+import com.springie.elements.nodes.NodeManager;
+import com.springie.geometry.Point3D;
+import com.springie.render.Coords;
+import com.springie.render.RendererDelegator;
+import com.springie.render.scene.ModelScene;
+import com.springie.render.scene.SceneExtractor;
 import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Group;
@@ -23,21 +27,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.MeshView;
-import javafx.scene.shape.TriangleMesh;
 import javafx.scene.shape.Sphere;
-
-import com.springie.elements.clazz.Clazz;
-import com.springie.elements.links.Link;
-import com.springie.elements.links.LinkType;
-import com.springie.elements.links.LinkTypeFactory;
-import com.springie.elements.faces.Face;
-import com.springie.elements.nodes.Node;
-import com.springie.elements.nodes.NodeManager;
-import com.springie.geometry.Point3D;
-import com.springie.render.Coords;
-import com.springie.render.RendererDelegator;
-import com.springie.render.scene.ModelScene;
-import com.springie.render.scene.SceneExtractor;
+import javafx.scene.shape.TriangleMesh;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * The GPU scene-graph builder maps the extracted scene 1:1: one sphere

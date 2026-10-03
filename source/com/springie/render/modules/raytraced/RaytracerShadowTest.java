@@ -2,13 +2,6 @@
 
 package com.springie.render.modules.raytraced;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import com.springie.context.ContextManager;
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.nodes.NodeManager;
@@ -16,6 +9,11 @@ import com.springie.geometry.Vector3D;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.LightSource;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Shadows through the full tile pipeline.

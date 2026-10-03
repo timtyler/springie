@@ -2,16 +2,7 @@
 
 package com.springie.demos;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
+import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
@@ -23,7 +14,13 @@ import com.springie.muscles.Sensors;
 import com.springie.render.Coords;
 import com.springie.utilities.random.Hortensius32Fast;
 import com.springie.world.World;
-import com.springie.FrEnd;
+import java.util.HashSet;
+import java.util.Set;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for the spider tank demo: a 4-legged walker (front and back pairs)

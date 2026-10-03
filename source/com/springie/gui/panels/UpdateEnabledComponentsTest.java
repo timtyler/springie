@@ -1,17 +1,13 @@
 package com.springie.gui.panels;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
-import java.awt.Frame;
-import java.awt.GraphicsEnvironment;
-
-import javax.swing.SwingUtilities;
-
-import org.junit.jupiter.api.Test;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
+import java.awt.Frame;
+import java.awt.GraphicsEnvironment;
+import javax.swing.SwingUtilities;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Regression test: toggling one of the Nodes/Links/Faces checkboxes in the

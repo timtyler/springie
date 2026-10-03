@@ -2,16 +2,13 @@
 
 package com.springie.render.modules.raytraced;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import com.springie.render.Coords;
+import com.springie.render.RendererDelegator;
 import java.awt.Color;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import com.springie.render.Coords;
-import com.springie.render.RendererDelegator;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Miss rays must use the live background colour (Colours &gt; General &gt;

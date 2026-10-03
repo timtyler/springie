@@ -2,19 +2,16 @@
 
 package com.springie.render.modules.raytraced;
 
+import com.springie.render.RendererDelegator;
+import com.springie.render.modules.raytraced.ModularRendererRaytraced.ShownTile;
+import com.springie.render.modules.raytraced.ModularRendererRaytraced.Tile;
+import java.awt.image.BufferedImage;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.awt.image.BufferedImage;
-
-import org.junit.jupiter.api.Test;
-
-import com.springie.render.RendererDelegator;
-import com.springie.render.modules.raytraced.ModularRendererRaytraced.ShownTile;
-import com.springie.render.modules.raytraced.ModularRendererRaytraced.Tile;
 
 /**
  * Frames must appear all at once: a tile's snapshot is published only by

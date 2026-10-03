@@ -2,18 +2,15 @@
 
 package com.springie.render;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import com.springie.gui.gestures.DragBoxManager;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import com.springie.gui.gestures.DragBoxManager;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * The drag-selection rectangle must be draw-only. It used to erase its

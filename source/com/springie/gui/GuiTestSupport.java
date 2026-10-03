@@ -2,16 +2,13 @@
 
 package com.springie.gui;
 
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
-import java.awt.Frame;
-import java.awt.GraphicsEnvironment;
-
-import javax.swing.SwingUtilities;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.world.World;
+import java.awt.Frame;
+import java.awt.GraphicsEnvironment;
+import javax.swing.SwingUtilities;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Shared scaffolding for the GUI tests: booting the application, waiting

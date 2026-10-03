@@ -2,9 +2,6 @@
 
 package com.springie.world;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import com.springie.context.ContextManager;
 import com.springie.demos.WheelbarrowDemo;
 import com.springie.elements.nodes.Node;
@@ -14,6 +11,8 @@ import com.springie.render.Coords;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The general no-mid-air-starts mechanism: {@link Grounding#restOnGround}

@@ -1,14 +1,11 @@
 package com.springie.render;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.awt.Graphics;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
-
 import com.springie.elements.nodes.NodeManager;
 import com.springie.render.modules.ModularRendererBase;
+import java.awt.Graphics;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * While the ray-traced renderer holds the model for an in-flight frame,

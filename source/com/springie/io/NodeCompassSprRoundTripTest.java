@@ -1,16 +1,5 @@
 package com.springie.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
-import java.awt.GraphicsEnvironment;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import com.springie.context.ContextManager;
 import com.springie.demos.CompassPoint;
 import com.springie.elements.clazz.Clazz;
@@ -21,6 +10,14 @@ import com.springie.geometry.Point3D;
 import com.springie.io.in.readers.spr.ReaderSPR;
 import com.springie.io.in.readers.tensegrity.ReaderTens;
 import com.springie.io.out.writers.spr.WriterSpr;
+import java.awt.GraphicsEnvironment;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * A node's compass heading must survive an SPR save/load round trip:

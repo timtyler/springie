@@ -2,20 +2,17 @@
 
 package com.springie.context;
 
+import com.springie.elements.nodes.NodeManager;
+import com.springie.world.UniverseState;
+import com.springie.world.World;
+import java.awt.GraphicsEnvironment;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
-import java.awt.GraphicsEnvironment;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import com.springie.elements.nodes.NodeManager;
-import com.springie.world.UniverseState;
-import com.springie.world.World;
 
 class ModelManagerTest {
 
