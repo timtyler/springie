@@ -331,7 +331,11 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       // whole tiles; the per-tile memory of what was dirty then holds
       // the whole tile for exactly one frame, and tracing converges
       // back to the tight rectangles on the frame after.
-      final boolean global = RendererDelegator.shadows
+      // Simple lighting bypasses shadows, so they don't make the frame
+      // global in fast mode. (The scenic background and background
+      // colour changes still do.) (Tim, 2026-10-03)
+      final boolean global = (RendererDelegator.shadows
+              && !RendererDelegator.simple_lighting)
           || RendererDelegator.scenic_background || background_changed;
       final boolean render_all =
           dirty == null || last_empty == null || global;
