@@ -47,6 +47,20 @@ final class RTEllipsoid implements Primitive {
     return this.nz;
   }
 
+  /**
+   * The unit axis direction X (for RGB simple lighting).
+   */
+  public double getAxisX() {
+    return this.nx;
+  }
+
+  /**
+   * The unit axis direction Y (for RGB simple lighting).
+   */
+  public double getAxisY() {
+    return this.ny;
+  }
+
   public boolean isUnlit() {
     return false;
   }

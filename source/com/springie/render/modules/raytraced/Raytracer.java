@@ -26,6 +26,19 @@ final class Raytracer {
 
   private static final double LIGHT_Z;
 
+  /** RGB lights (Tim, 2026-10-03): normalized directions. */
+  private static final double RED_X, RED_Y, RED_Z;
+  private static final double GREEN_X, GREEN_Y, GREEN_Z;
+  private static final double BLUE_X, BLUE_Y, BLUE_Z;
+
+  /** RGB point light positions (Tim, 2026-10-03). */
+  private static final double RED_PX, RED_PY, RED_PZ;
+  private static final double GREEN_PX, GREEN_PY, GREEN_PZ;
+  private static final double BLUE_PX, BLUE_PY, BLUE_PZ;
+
+  /** Distance falloff constant: intensity = 1/(1+(d/K)^2). */
+  private static final double LIGHT_FALLOFF_K = 800.0;
+
   /**
    * The fill light: front-right, mirroring the key light's front-left
    * azimuth, so surfaces turned away from the key still model instead
@@ -46,6 +59,37 @@ final class Raytracer {
     LIGHT_X = source.x / length;
     LIGHT_Y = source.y / length;
     LIGHT_Z = source.z / length;
+
+    // RGB lights: normalize each.
+    final Vector3D red = LightSource.source_red;
+    final double red_len = Math.sqrt(red.x * red.x + red.y * red.y + red.z * red.z);
+    RED_X = red.x / red_len;
+    RED_Y = red.y / red_len;
+    RED_Z = red.z / red_len;
+    final Vector3D green = LightSource.source_green;
+    final double green_len = Math.sqrt(green.x * green.x + green.y * green.y + green.z * green.z);
+    GREEN_X = green.x / green_len;
+    GREEN_Y = green.y / green_len;
+    GREEN_Z = green.z / green_len;
+    final Vector3D blue = LightSource.source_blue;
+    final double blue_len = Math.sqrt(blue.x * blue.x + blue.y * blue.y + blue.z * blue.z);
+    BLUE_X = blue.x / blue_len;
+    BLUE_Y = blue.y / blue_len;
+    BLUE_Z = blue.z / blue_len;
+
+    // Point light positions.
+    final Vector3D red_p = LightSource.source_red_pos;
+    RED_PX = red_p.x;
+    RED_PY = red_p.y;
+    RED_PZ = red_p.z;
+    final Vector3D green_p = LightSource.source_green_pos;
+    GREEN_PX = green_p.x;
+    GREEN_PY = green_p.y;
+    GREEN_PZ = green_p.z;
+    final Vector3D blue_p = LightSource.source_blue_pos;
+    BLUE_PX = blue_p.x;
+    BLUE_PY = blue_p.y;
+    BLUE_PZ = blue_p.z;
 
     final double fx = -source.x;
     final double fy = -source.y;
@@ -818,11 +862,9 @@ final class Raytracer {
       return 0xFF000000 | Fog.applyFog(hit.primitive.getColour(), (int) pz);
     }
     if (RendererDelegator.simple_lighting) {
-      // Simple lighting (Tim, 2026-10-03): front-lit, as if the light
-      // is at the viewer. Nodes are flat; links and faces get one flat
-      // shade level per primitive, from a single dot product. The shade
-      // is computed from the primitive's geometry (deterministic), not
-      // from the hit order (which flickers as the model animates).
+      // Simple lighting (Tim, 2026-10-03): RGB lights near the top.
+      // Nodes are flat; links and faces get one flat RGB shade per
+      // primitive, from three dot products (deterministic, no flicker).
       final double pz = ray.oz + ray.dz * hit.t;
       final int fogged =
           Fog.applyFog(hit.primitive.getColour(), (int) pz);
@@ -830,56 +872,115 @@ final class Raytracer {
         // Node: flat base colour with depth fog.
         return 0xFF000000 | fogged;
       }
-      final double factor;
+      final double r_factor;
+      final double g_factor;
+      final double b_factor;
       if (hit.primitive instanceof RTCylinder) {
-        // Cable: brightness from the axis angle to the fixed view
-        // direction (0,0,-1). Side-on (axis in XY plane) is brightest;
-        // end-on (axis along Z) is darkest.
-        final double nz = ((RTCylinder) hit.primitive).getAxisZ();
-        factor = Math.sqrt(Math.max(0.0, 1.0 - nz * nz));
+        // Cable: per-light brightness from the axis angle.
+        final RTCylinder cyl = (RTCylinder) hit.primitive;
+        final double ax = cyl.getAxisX();
+        final double ay = cyl.getAxisY();
+        final double az = cyl.getAxisZ();
+        final double r_dot = RED_X * ax + RED_Y * ay + RED_Z * az;
+        final double g_dot = GREEN_X * ax + GREEN_Y * ay + GREEN_Z * az;
+        final double b_dot = BLUE_X * ax + BLUE_Y * ay + BLUE_Z * az;
+        r_factor = Math.sqrt(Math.max(0.0, 1.0 - r_dot * r_dot));
+        g_factor = Math.sqrt(Math.max(0.0, 1.0 - g_dot * g_dot));
+        b_factor = Math.sqrt(Math.max(0.0, 1.0 - b_dot * b_dot));
       } else if (hit.primitive instanceof RTEllipsoid) {
         // Strut: same as cable.
-        final double nz = ((RTEllipsoid) hit.primitive).getAxisZ();
-        factor = Math.sqrt(Math.max(0.0, 1.0 - nz * nz));
+        final RTEllipsoid ell = (RTEllipsoid) hit.primitive;
+        final double ax = ell.getAxisX();
+        final double ay = ell.getAxisY();
+        final double az = ell.getAxisZ();
+        final double r_dot = RED_X * ax + RED_Y * ay + RED_Z * az;
+        final double g_dot = GREEN_X * ax + GREEN_Y * ay + GREEN_Z * az;
+        final double b_dot = BLUE_X * ax + BLUE_Y * ay + BLUE_Z * az;
+        r_factor = Math.sqrt(Math.max(0.0, 1.0 - r_dot * r_dot));
+        g_factor = Math.sqrt(Math.max(0.0, 1.0 - g_dot * g_dot));
+        b_factor = Math.sqrt(Math.max(0.0, 1.0 - b_dot * b_dot));
       } else {
-        // Face (triangle): the geometric normal is constant across the
-        // face, so the dot with the fixed view direction is stable.
-        double dot = -hit.nz;
-        if (dot < 0.0) {
-          dot = 0.0;
-        }
-        if (dot > 1.0) {
-          dot = 1.0;
-        }
-        factor = dot;
+        // Face (triangle): geometric normal is constant; dot with each
+        // light direction.
+        final double nx = hit.nx;
+        final double ny = hit.ny;
+        final double nz = hit.nz;
+        r_factor = Math.max(0.0, Math.min(1.0,
+            nx * RED_X + ny * RED_Y + nz * RED_Z));
+        g_factor = Math.max(0.0, Math.min(1.0,
+            nx * GREEN_X + ny * GREEN_Y + nz * GREEN_Z));
+        b_factor = Math.max(0.0, Math.min(1.0,
+            nx * BLUE_X + ny * BLUE_Y + nz * BLUE_Z));
       }
-      // Same half-to-full brightness range as the default renderer.
-      final int scaled = 128 + (int) (127.0 * factor);
+      // Half-to-full brightness per channel.
+      final int r_scaled = 128 + (int) (127.0 * r_factor);
+      final int g_scaled = 128 + (int) (127.0 * g_factor);
+      final int b_scaled = 128 + (int) (127.0 * b_factor);
       final int r = (fogged >> 16) & 0xFF;
       final int g = (fogged >> 8) & 0xFF;
       final int b = fogged & 0xFF;
-      final int or = (r * scaled) >> 8;
-      final int og = (g * scaled) >> 8;
-      final int ob = (b * scaled) >> 8;
+      final int or = (r * r_scaled) >> 8;
+      final int og = (g * g_scaled) >> 8;
+      final int ob = (b * b_scaled) >> 8;
       return 0xFF000000 | (or << 16) | (og << 8) | ob;
     }
 
-    double dot = hit.nx * LIGHT_X + hit.ny * LIGHT_Y + hit.nz * LIGHT_Z;
-    if (dot < 0.0) {
-      dot = -dot;
+    // RGB point-light diffuse (Tim, 2026-10-03): three colored lights
+    // near the top, intensity falls off with distance.
+    final double px = ray.ox + ray.dx * hit.t;
+    final double py = ray.oy + ray.dy * hit.t;
+    final double pz_light = ray.oz + ray.dz * hit.t;
+    // Red light.
+    final double rlx = RED_PX - px;
+    final double rly = RED_PY - py;
+    final double rlz = RED_PZ - pz_light;
+    final double rd = Math.sqrt(rlx * rlx + rly * rly + rlz * rlz);
+    double r_dot = (hit.nx * rlx + hit.ny * rly + hit.nz * rlz) / rd;
+    if (r_dot < 0.0) {
+      r_dot = -r_dot;
     }
-    if (dot > 1.0) {
-      dot = 1.0;
+    if (r_dot > 1.0) {
+      r_dot = 1.0;
     }
+    final double r_fall = 1.0 / (1.0 + (rd / LIGHT_FALLOFF_K) * (rd / LIGHT_FALLOFF_K));
+    // Green light.
+    final double glx = GREEN_PX - px;
+    final double gly = GREEN_PY - py;
+    final double glz = GREEN_PZ - pz_light;
+    final double gd = Math.sqrt(glx * glx + gly * gly + glz * glz);
+    double g_dot = (hit.nx * glx + hit.ny * gly + hit.nz * glz) / gd;
+    if (g_dot < 0.0) {
+      g_dot = -g_dot;
+    }
+    if (g_dot > 1.0) {
+      g_dot = 1.0;
+    }
+    final double g_fall = 1.0 / (1.0 + (gd / LIGHT_FALLOFF_K) * (gd / LIGHT_FALLOFF_K));
+    // Blue light.
+    final double blx = BLUE_PX - px;
+    final double bly = BLUE_PY - py;
+    final double blz = BLUE_PZ - pz_light;
+    final double bd = Math.sqrt(blx * blx + bly * bly + blz * blz);
+    double b_dot = (hit.nx * blx + hit.ny * bly + hit.nz * blz) / bd;
+    if (b_dot < 0.0) {
+      b_dot = -b_dot;
+    }
+    if (b_dot > 1.0) {
+      b_dot = 1.0;
+    }
+    final double b_fall = 1.0 / (1.0 + (bd / LIGHT_FALLOFF_K) * (bd / LIGHT_FALLOFF_K));
 
     final boolean shadowed = RendererDelegator.shadows
         && inShadow(ray, hit, bvh, stack, shadow_ray, shadow_hit);
     if (shadowed) {
-      // Ambient light only: the diffuse boost, the glossy sheen and
-      // the specular highlight all need direct light.
-      dot = 0.0;
+      // Ambient light only.
+      r_dot = 0.0;
+      g_dot = 0.0;
+      b_dot = 0.0;
     }
-    final int scaled = 128 + (int) (127.0 * dot);
+    final int r_scaled = 128 + (int) (127.0 * r_dot * r_fall);
+    final int g_scaled = 128 + (int) (127.0 * g_dot * g_fall);
+    final int b_scaled = 128 + (int) (127.0 * b_dot * b_fall);
 
     final double pz = ray.oz + ray.dz * hit.t;
     final int fogged = Fog.applyFog(hit.primitive.getColour(), (int) pz);
@@ -887,9 +988,9 @@ final class Raytracer {
     final int r = (fogged >> 16) & 0xFF;
     final int g = (fogged >> 8) & 0xFF;
     final int b = fogged & 0xFF;
-    int or = (r * scaled) >> 8;
-    int og = (g * scaled) >> 8;
-    int ob = (b * scaled) >> 8;
+    int or = (r * r_scaled) >> 8;
+    int og = (g * g_scaled) >> 8;
+    int ob = (b * b_scaled) >> 8;
 
     // The fill light is shadow-independent: it lifts the shadowed
     // areas too, the way a photographer's fill does.
@@ -1004,6 +1105,25 @@ final class Raytracer {
    * Returns 0 when the surface faces away or the vector degenerates,
    * exactly the cases the old per-effect code returned 0 for.
    */
+  /**
+   * Halfway-vector cosine for a given light direction (not the fixed
+   * white light), shared by the glossy sheen and the specular highlight.
+   */
+  private static double lobeCosineFor(final Ray ray, final Hit hit,
+      final double lx, final double ly, final double lz) {
+    // Halfway between the light direction and the view direction.
+    final double hx = lx - ray.dx;
+    final double hy = ly - ray.dy;
+    final double hz = lz - ray.dz;
+    final double length = Math.sqrt(hx * hx + hy * hy + hz * hz);
+    if (length < 1e-12) {
+      return 0.0;
+    }
+    final double cosine = (hit.nx * hx + hit.ny * hy + hit.nz * hz)
+        / length;
+    return cosine > 0.0 ? cosine : 0.0;
+  }
+
   private static double lobeCosine(final Ray ray, final Hit hit) {
     // Halfway between the light direction and the view direction.
     final double hx = LIGHT_X - ray.dx;

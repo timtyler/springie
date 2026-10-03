@@ -67,15 +67,15 @@ public class RaytracerGoldenChecksumTest {
   private int saved_pixellation;
 
   // Golden FNV-1a checksums, printed by a first run and baked in.
-  private static final long EXPECTED_AA1_PX1 = -7248020313100740681L;
+  private static final long EXPECTED_AA1_PX1 = -9087743623455074649L;
 
-  private static final long EXPECTED_AA2_PX1 = -4896130642889498386L;
+  private static final long EXPECTED_AA2_PX1 = 443479046405807203L;
 
-  private static final long EXPECTED_AA4_PX1 = 7513621168941819091L;
+  private static final long EXPECTED_AA4_PX1 = -4625109107217908719L;
 
-  private static final long EXPECTED_AA1_PX2 = 8394894569135578073L;
+  private static final long EXPECTED_AA1_PX2 = -5219367212786057627L;
 
-  private static final long EXPECTED_AA2_PX2 = -3565213677650432699L;
+  private static final long EXPECTED_AA2_PX2 = 6479883504599150973L;
 
   @BeforeEach
   public void setUp() {

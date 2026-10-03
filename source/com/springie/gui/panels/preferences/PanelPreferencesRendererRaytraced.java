@@ -225,7 +225,7 @@ public class PanelPreferencesRendererRaytraced {
   }
 
   /**
-   * When Simple lighting is on (the "Ray traced (fast)" renderer), the
+   * When Simple lighting is on (the "Ray-traced (fast)" renderer), the
    * phong/specular/gloss/Fresnel/fill/shadow controls are irrelevant
    * (shade() bypasses them), so remove them from the UI.
    */

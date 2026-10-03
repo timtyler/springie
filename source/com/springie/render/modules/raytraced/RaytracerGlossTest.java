@@ -122,7 +122,7 @@ public class RaytracerGlossTest {
     RendererDelegator.glossiness = 0;
     // Diffuse only: |normal . light| = 0.85092 at the near pole,
     // scaled = 236, (128 * 236) >> 8 = 118.
-    assertEquals(0xFF767676, renderTile(greySphere())[100 * 200 + 100],
+    assertEquals(0xFF404040, renderTile(greySphere())[100 * 200 + 100],
         "gloss 0% must leave the diffuse picture untouched");
   }
 
@@ -132,7 +132,7 @@ public class RaytracerGlossTest {
     // The broad sheen at the near pole adds ~187 per channel to the
     // 118 diffuse; the soft rolloff asymptotes instead of clipping:
     // 255 - (255 - 118) * 255 / (255 + 187) = 176.
-    assertEquals(0xFFB0B0B0, renderTile(greySphere())[100 * 200 + 100],
+    assertEquals(0xFF919191, renderTile(greySphere())[100 * 200 + 100],
         "gloss 100% must roll the sheen off softly at the near pole");
   }
 

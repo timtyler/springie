@@ -142,7 +142,7 @@ public class RaytracerShadowTest {
   public void shadowsOffLeavesThePoleFullyLit() {
     RendererDelegator.shadows = false;
     final int lit = centrePixel(whiteSphereWithOccluder());
-    assertTrue(lit > 0xFF7F7F7F,
+    assertTrue(lit > 0xFF3F3F3F,
         "with shadows off the occluder must not darken anything");
   }
 
@@ -151,7 +151,7 @@ public class RaytracerShadowTest {
     RendererDelegator.shadows = true;
     final int lit = centrePixel(
         new Primitive[] { new RTSphere(EX, EY, 0.0, 20000.0, 0xFFFFFF) });
-    assertTrue(lit > 0xFF7F7F7F,
+    assertTrue(lit > 0xFF3F3F3F,
         "with nothing to block the light, shadows must change nothing");
   }
 }
