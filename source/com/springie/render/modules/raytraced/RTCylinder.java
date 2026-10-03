@@ -38,6 +38,14 @@ final class RTCylinder implements Primitive {
     return this.colour;
   }
 
+  /**
+   * The unit axis direction Z (for Simple lighting: one deterministic
+   * shade per primitive, no flicker).
+   */
+  public double getAxisZ() {
+    return this.nz;
+  }
+
   public boolean isUnlit() {
     return false;
   }

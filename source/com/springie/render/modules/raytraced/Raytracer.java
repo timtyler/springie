@@ -39,13 +39,6 @@ final class Raytracer {
 
   private static final double FILL_Z;
 
-  /**
-   * Simple lighting shade cache (Tim, 2026-10-03): one flat shade level
-   * per link/face primitive, from a single dot product. Cleared per tile.
-   */
-  private static final java.util.Map<Primitive, Integer>
-      simple_shade_cache = new java.util.HashMap<>();
-
   static {
     final Vector3D source = LightSource.source_1;
     final double length = Math.sqrt(source.x * source.x + source.y * source.y
@@ -141,8 +134,6 @@ final class Raytracer {
     final Ray ray = new Ray();
     final Hit hit = new Hit();
     final int[] stack = new int[64];
-    // Simple lighting: one flat shade per primitive, fresh each tile.
-    simple_shade_cache.clear();
     // One reusable jitter source per tile: reseeded per pixel with the
     // same seed the per-pixel Random used, so the sub-pixel rays are
     // bit-identical with none of the allocation.
@@ -443,17 +434,22 @@ final class Raytracer {
           c_prim[bidx] = hit.primitive;
           c_rgb[bidx] =
               shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
-          // Push 4-neighbour blocks.
-          if (bx > 0) {
+          // Push 4-neighbour blocks (mark visited at push time so the
+          // stack can't overflow with duplicates).
+          if (bx > 0 && !c_visited[bidx - 1]) {
+            c_visited[bidx - 1] = true;
             c_flood[c_top++] = bidx - 1;
           }
-          if (bx + 1 < cw) {
+          if (bx + 1 < cw && !c_visited[bidx + 1]) {
+            c_visited[bidx + 1] = true;
             c_flood[c_top++] = bidx + 1;
           }
-          if (by > 0) {
+          if (by > 0 && !c_visited[bidx - cw]) {
+            c_visited[bidx - cw] = true;
             c_flood[c_top++] = bidx - cw;
           }
-          if (by + 1 < ch) {
+          if (by + 1 < ch && !c_visited[bidx + cw]) {
+            c_visited[bidx + cw] = true;
             c_flood[c_top++] = bidx + cw;
           }
         }
@@ -462,10 +458,7 @@ final class Raytracer {
     // Coarse flood fill.
     while (c_top > 0) {
       final int bidx = c_flood[--c_top];
-      if (c_visited[bidx]) {
-        continue;
-      }
-      c_visited[bidx] = true;
+      // (Visited was marked at push time, so no check needed here.)
       final int bx = bidx % cw;
       final int by = bidx / cw;
       final int px = Math.min(bx * cs + cs / 2, width - 1);
@@ -476,16 +469,20 @@ final class Raytracer {
         c_hit[bidx] = true;
         c_prim[bidx] = hit.primitive;
         c_rgb[bidx] = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
-        if (bx > 0) {
+        if (bx > 0 && !c_visited[bidx - 1]) {
+          c_visited[bidx - 1] = true;
           c_flood[c_top++] = bidx - 1;
         }
-        if (bx + 1 < cw) {
+        if (bx + 1 < cw && !c_visited[bidx + 1]) {
+          c_visited[bidx + 1] = true;
           c_flood[c_top++] = bidx + 1;
         }
-        if (by > 0) {
+        if (by > 0 && !c_visited[bidx - cw]) {
+          c_visited[bidx - cw] = true;
           c_flood[c_top++] = bidx - cw;
         }
-        if (by + 1 < ch) {
+        if (by + 1 < ch && !c_visited[bidx + cw]) {
+          c_visited[bidx + cw] = true;
           c_flood[c_top++] = bidx + cw;
         }
       }
@@ -725,7 +722,9 @@ final class Raytracer {
     if (RendererDelegator.simple_lighting) {
       // Simple lighting (Tim, 2026-10-03): front-lit, as if the light
       // is at the viewer. Nodes are flat; links and faces get one flat
-      // shade level per primitive, from a single dot product.
+      // shade level per primitive, from a single dot product. The shade
+      // is computed from the primitive's geometry (deterministic), not
+      // from the hit order (which flickers as the model animates).
       final double pz = ray.oz + ray.dz * hit.t;
       final int fogged =
           Fog.applyFog(hit.primitive.getColour(), (int) pz);
@@ -733,24 +732,31 @@ final class Raytracer {
         // Node: flat base colour with depth fog.
         return 0xFF000000 | fogged;
       }
-      // Link/face: one dot product per primitive (cached), not per pixel.
-      // The view direction is the negative ray direction.
-      Integer cached = simple_shade_cache.get(hit.primitive);
-      final int scaled;
-      if (cached != null) {
-        scaled = cached.intValue();
+      final double factor;
+      if (hit.primitive instanceof RTCylinder) {
+        // Cable: brightness from the axis angle to the fixed view
+        // direction (0,0,-1). Side-on (axis in XY plane) is brightest;
+        // end-on (axis along Z) is darkest.
+        final double nz = ((RTCylinder) hit.primitive).getAxisZ();
+        factor = Math.sqrt(Math.max(0.0, 1.0 - nz * nz));
+      } else if (hit.primitive instanceof RTEllipsoid) {
+        // Strut: same as cable.
+        final double nz = ((RTEllipsoid) hit.primitive).getAxisZ();
+        factor = Math.sqrt(Math.max(0.0, 1.0 - nz * nz));
       } else {
-        double dot = -(hit.nx * ray.dx + hit.ny * ray.dy + hit.nz * ray.dz);
+        // Face (triangle): the geometric normal is constant across the
+        // face, so the dot with the fixed view direction is stable.
+        double dot = -hit.nz;
         if (dot < 0.0) {
           dot = 0.0;
         }
         if (dot > 1.0) {
           dot = 1.0;
         }
-        // Same half-to-full brightness range as the default renderer.
-        scaled = 128 + (int) (127.0 * dot);
-        simple_shade_cache.put(hit.primitive, Integer.valueOf(scaled));
+        factor = dot;
       }
+      // Same half-to-full brightness range as the default renderer.
+      final int scaled = 128 + (int) (127.0 * factor);
       final int r = (fogged >> 16) & 0xFF;
       final int g = (fogged >> 8) & 0xFF;
       final int b = fogged & 0xFF;
