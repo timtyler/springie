@@ -25,7 +25,7 @@ class WrapLayoutTest {
     static final long serialVersionUID = 1L;
     private final Dimension size;
 
-    Fixed(int w, int h) {
+    Fixed(final int w, final int h) {
       this.size = new Dimension(w, h);
     }
 
@@ -40,7 +40,7 @@ class WrapLayoutTest {
     }
   }
 
-  private static Panel panelWith(int width, Component... children) {
+  private static Panel panelWith(final int width, final Component... children) {
     final Panel panel = new Panel();
     panel.setLayout(new WrapLayout());
     for (final Component c : children) {

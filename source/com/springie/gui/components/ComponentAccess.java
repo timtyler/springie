@@ -9,7 +9,7 @@ public final class ComponentAccess {
     // ...
   }
 
-  public static void setAccess(Component c, boolean v) {
+  public static void setAccess(final Component c, final boolean v) {
     if (c.isEnabled() != v) {
       c.setEnabled(v);
     }

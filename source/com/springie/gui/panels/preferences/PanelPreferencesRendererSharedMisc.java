@@ -75,7 +75,7 @@ public class PanelPreferencesRendererSharedMisc {
     final Panel panel_visible_explosions = new Panel();
     this.checkbox_explosions = new Checkbox(GUIStrings.EXPLOSIONS);
     this.checkbox_explosions.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         FrEnd.explosions = ((Checkbox) e.getSource()).getState();
       }
     });
@@ -87,7 +87,7 @@ public class PanelPreferencesRendererSharedMisc {
     this.checkbox_redraw_deepest_first = new Checkbox(
         "Render deepest objects first");
     this.checkbox_redraw_deepest_first.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         FrEnd.redraw_deepest_first = ((Checkbox) e.getSource()).getState();
       }
     });
@@ -98,7 +98,7 @@ public class PanelPreferencesRendererSharedMisc {
     this.panel_relative_fog_row = panel_relative_fog;
     this.checkbox_relative_fog = new Checkbox("Fog depth is relative");
     this.checkbox_relative_fog.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         DeepObjectColourCalculator.depth_is_relative = ((Checkbox) e.getSource()).getState();
       }
     });
@@ -125,7 +125,7 @@ public class PanelPreferencesRendererSharedMisc {
         DeepObjectColourCalculator.factor / 10, 10, 0, 110);
     this.scroll_bar_fog = scroll_bar_fog;
     scroll_bar_fog.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int temp = e.getValue();
         DeepObjectColourCalculator.factor = temp * 10;
         reflectLabelFog();
@@ -151,7 +151,7 @@ public class PanelPreferencesRendererSharedMisc {
     this.scroll_bar_face_render_number = scroll_bar_face_render_number;
     scroll_bar_face_render_number
         .addAdjustmentListener(new AdjustmentListener() {
-          public void adjustmentValueChanged(AdjustmentEvent e) {
+          public void adjustmentValueChanged(final AdjustmentEvent e) {
             final int temp = e.getValue();
             Face.number_of_render_divisions = temp;
             reflectLabelFaceRenderNumber();
@@ -191,7 +191,7 @@ public class PanelPreferencesRendererSharedMisc {
    * while ray-tracing stay contiguous. This panel is left empty
    * afterwards.
    */
-  void moveRowsInto(Panel main_target, Panel fog_target) {
+  void moveRowsInto(final Panel main_target, final Panel fog_target) {
     fog_target.add(this.panel_relative_fog_row);
     fog_target.add(this.panel_fog_row);
     main_target.add(this.panel_face_lines);

@@ -79,7 +79,7 @@ class SingleClickNearestSelectionTest {
     FrEnd.perform_actions.drag_box_manager.drag_box_end = null;
   }
 
-  private static Node makeNode(int screenX, int screenY, int z,
+  private static Node makeNode(final int screenX, final int screenY, final int z,
       int radiusPixels) {
     final NodeManager nodes = ContextManager.getNodeManager();
     final int mx = Coords.inverseXCoords(screenX << Coords.shift, z);
@@ -92,7 +92,7 @@ class SingleClickNearestSelectionTest {
     return nodes.addNewAgent(new Point3D(mx, my, z), clazz, type);
   }
 
-  private static Face makeFace(Node... quad) {
+  private static Face makeFace(final Node... quad) {
     final FaceManager faces = ContextManager.getFaceManager();
     final ArrayList<Node> list = new ArrayList<>();
     for (final Node n : quad) {
@@ -106,7 +106,7 @@ class SingleClickNearestSelectionTest {
     return face;
   }
 
-  private static Link makeLink(Node a, Node b) {
+  private static Link makeLink(final Node a, final Node b) {
     final LinkManager links = ContextManager.getLinkManager();
     final Link link = links.setLink(a, b,
         links.link_type_factory.getNew(10 << Coords.shift, 30),
@@ -124,13 +124,13 @@ class SingleClickNearestSelectionTest {
     };
   }
 
-  private static void setBoxes(boolean nodes, boolean links, boolean faces) {
+  private static void setBoxes(final boolean nodes, final boolean links, final boolean faces) {
     FrEnd.panel_edit_select_main.checkbox_select_nodes.setState(nodes);
     FrEnd.panel_edit_select_main.checkbox_select_links.setState(links);
     FrEnd.panel_edit_select_main.checkbox_select_faces.setState(faces);
   }
 
-  private static void restoreBoxes(boolean[] boxes) {
+  private static void restoreBoxes(final boolean[] boxes) {
     setBoxes(boxes[0], boxes[1], boxes[2]);
   }
 
@@ -156,7 +156,7 @@ class SingleClickNearestSelectionTest {
 
   // The selection routines clone element types before flagging them, so
   // selected-ness must be re-read by element identity.
-  private static boolean isSelected(Node node) {
+  private static boolean isSelected(final Node node) {
     for (final Node n : ContextManager.getNodeManager().element) {
       if (n == node) {
         return n.type.selected;
@@ -165,7 +165,7 @@ class SingleClickNearestSelectionTest {
     return false;
   }
 
-  private static boolean isSelected(Link link) {
+  private static boolean isSelected(final Link link) {
     for (final Link l : ContextManager.getLinkManager().element) {
       if (l == link) {
         return l.type.selected;
@@ -174,7 +174,7 @@ class SingleClickNearestSelectionTest {
     return false;
   }
 
-  private static boolean isSelected(Face face) {
+  private static boolean isSelected(final Face face) {
     for (final Face f : ContextManager.getFaceManager().element) {
       if (f == face) {
         return f.type.selected;
@@ -183,11 +183,11 @@ class SingleClickNearestSelectionTest {
     return false;
   }
 
-  private static int projectedX(Node n) {
+  private static int projectedX(final Node n) {
     return Coords.getXCoordsInternal(n.pos.x, n.pos.z);
   }
 
-  private static int projectedY(Node n) {
+  private static int projectedY(final Node n) {
     return Coords.getYCoordsInternal(n.pos.y, n.pos.z);
   }
 

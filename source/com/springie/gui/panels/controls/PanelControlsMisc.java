@@ -120,7 +120,7 @@ public class PanelControlsMisc {
     final Button button_add_nodes_inner_eden = new Button(
         GUIStrings.EDIT_ADD_NODES_INNER_EDEN);
     button_add_nodes_inner_eden.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new AddInnerEdenNodesMessage());
       }
     });
@@ -131,7 +131,7 @@ public class PanelControlsMisc {
 
     this.button_split_links = new Button(GUIStrings.EDIT_SPLIT_LINKS);
     this.button_split_links.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new SplitLinksMessage());
       }
     });
@@ -144,7 +144,7 @@ public class PanelControlsMisc {
 
     this.button_add_stellations = new Button(GUIStrings.EDIT_ADD_STELLATIONS);
     this.button_add_stellations.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new AddStellationsMessage());
       }
     });
@@ -157,7 +157,7 @@ public class PanelControlsMisc {
     final Button button_prismatic_projection = new Button(
         GUIStrings.EDIT_PRISMATIC_PROJECTION);
     button_prismatic_projection.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             final PrismaticProjection prismatic_projection = new PrismaticProjection(
@@ -175,7 +175,7 @@ public class PanelControlsMisc {
 
     this.button_extend_links = new Button(GUIStrings.EDIT_EXTEND_LINKS);
     this.button_extend_links.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             final ExtendLinks extend_links = new ExtendLinks(ContextManager.getNodeManager());
@@ -192,7 +192,7 @@ public class PanelControlsMisc {
 
     this.button_dimple = new Button(GUIStrings.EDIT_DIMPLE);
     this.button_dimple.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             final DimpleMaker dimple_maker = new DimpleMaker(ContextManager.getNodeManager());
@@ -208,7 +208,7 @@ public class PanelControlsMisc {
 
     this.button_face_reverse = new Button(GUIStrings.FACE_REVERSE);
     this.button_face_reverse.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             final FaceReverser face_reverser = new FaceReverser(
@@ -234,7 +234,7 @@ public class PanelControlsMisc {
 
     this.button_hex_triaxial = new Button(GUIStrings.EDIT_ADD_NODES_TRIAXIAL);
     this.button_hex_triaxial.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new AddTriaxialNodesMessage());
       }
     });
@@ -247,7 +247,7 @@ public class PanelControlsMisc {
         GUIStrings.EDIT_ADD_LINKS_TO_NEAREST);
     this.button_connect_nodes_to_nearest_nodes
         .addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
+          public void actionPerformed(final ActionEvent e) {
             getNewMessageManager().add(new ConnectNodesToNearestNodesMessage());
           }
         });
@@ -260,7 +260,7 @@ public class PanelControlsMisc {
 
     this.button_add_faces = new Button(GUIStrings.EDIT_ADD_POLYGONS);
     this.button_add_faces.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new AddPolygonsMessage());
       }
     });
@@ -279,7 +279,7 @@ public class PanelControlsMisc {
     panel_tool.add(new Label("Use", Label.RIGHT));
 
     FrEnd.choose_tool = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         if (e == null) {
           return;
         }
@@ -396,7 +396,7 @@ public class PanelControlsMisc {
     this.button_edit_reset_link_lengths = new Button(
         GUIStrings.DOME_LINKS_RESET_LENGTHS);
     this.button_edit_reset_link_lengths.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new ResetLinkLengthsMessage());
       }
     });
@@ -410,7 +410,7 @@ public class PanelControlsMisc {
         GUIStrings.DOME_LINKS_EQUALISE_LINK_LENGTHS);
     this.button_edit_equalise_link_lengths
         .addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
+          public void actionPerformed(final ActionEvent e) {
             getNewMessageManager().add(new EqualiseLinkLengthsMessage());
           }
         });
@@ -424,7 +424,7 @@ public class PanelControlsMisc {
   private Panel makeFacesFromSelectionGUI() {
     final Button button = new Button(GUIStrings.GENERATE_FACES_FROM_SELECTION);
     button.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new GenerateFacesFromSelectionMessage());
       }
     });
@@ -439,7 +439,7 @@ public class PanelControlsMisc {
         GUIStrings.MUSCLES_ADD_SELECTED);
     this.button_muscles_add_selected
         .addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
+          public void actionPerformed(final ActionEvent e) {
             getNewMessageManager().add(new MusclesAddSelectedMessage());
           }
         });
@@ -455,7 +455,7 @@ public class PanelControlsMisc {
         GUIStrings.MUSCLES_ADD_ALL);
     this.button_muscles_add_all
         .addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
+          public void actionPerformed(final ActionEvent e) {
             getNewMessageManager().add(new MusclesAddAllMessage());
           }
         });
@@ -471,7 +471,7 @@ public class PanelControlsMisc {
         GUIStrings.MUSCLES_REMOVE);
     this.button_muscles_remove
         .addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
+          public void actionPerformed(final ActionEvent e) {
             getNewMessageManager().add(new MusclesRemoveMessage());
           }
         });
@@ -486,7 +486,7 @@ public class PanelControlsMisc {
     this.button_automatic_link_radius = new Button(
         GUIStrings.EDIT_AUTOMATIC_LINK_RADIUS);
     this.button_automatic_link_radius.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new AutomaticLinkRadiusMessage());
       }
     });
@@ -503,7 +503,7 @@ public class PanelControlsMisc {
     this.button_automatic_node_radius = new Button(
         GUIStrings.EDIT_AUTOMATIC_NODE_RADIUS);
     this.button_automatic_node_radius.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new AutomaticNodeRadiusMessage());
       }
     });
@@ -519,7 +519,7 @@ public class PanelControlsMisc {
   private Panel getAddCentralHubPanel() {
     this.button_add_central_hub = new Button(GUIStrings.EDIT_ADD_CENTRAL_HUB);
     this.button_add_central_hub.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new AddCentralHubMessage());
       }
     });
@@ -659,7 +659,7 @@ public class PanelControlsMisc {
 
     this.button_cartesian_colourer = new Button("Cartesian colourer");
     this.button_cartesian_colourer.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new ColourCartesianMessage());
       }
     });

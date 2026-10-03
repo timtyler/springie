@@ -27,7 +27,7 @@ public class ColourPickerGetAndPut extends Panel {
   public ColourPickerGetAndPut() {
     this.button_get = new Button("Get");
     this.button_get.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         setColour();
       }
     });
@@ -36,7 +36,7 @@ public class ColourPickerGetAndPut extends Panel {
 
     this.button_put = new Button("Put");
     this.button_put.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getColourPicker().setCurrentColour(getColour());
       }
     });
@@ -63,7 +63,7 @@ public class ColourPickerGetAndPut extends Panel {
     return this;
   }
 
-  public void greyGetAndSetColourButtons(int colour) {
+  public void greyGetAndSetColourButtons(final int colour) {
     final boolean same = getColour() == colour;
     //this.cp_gas.greyGetAndSetColourButtons(getColour());
     ComponentAccess.setAccess(this.button_get, !same);

@@ -40,7 +40,7 @@ public class PanelControlsVelocities {
   private Panel makePanelVelocityReduce() {
     this.button_edit_make_motionless = new Button(GUIStrings.VELOCITY_REDUCE);
     this.button_edit_make_motionless.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             new MotionlessMaker().reduce(ContextManager.getNodeManager(), 0.5f);
@@ -57,7 +57,7 @@ public class PanelControlsVelocities {
   private Panel makePanelVelocityIncrease() {
     this.button_edit_make_motionless = new Button(GUIStrings.VELOCITY_INCREASE);
     this.button_edit_make_motionless.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             new MotionlessMaker().reduce(ContextManager.getNodeManager(), 2.0f);
@@ -74,7 +74,7 @@ public class PanelControlsVelocities {
   private Panel makePanelVelocityFreeze() {
     this.button_edit_freeze = new Button(GUIStrings.VELOCITY_FREEZE);
     this.button_edit_freeze.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             new MotionlessMaker().reduce(ContextManager.getNodeManager(), 0.0f);
@@ -92,7 +92,7 @@ public class PanelControlsVelocities {
     // MAKE_MOTIONLESS
     this.button_edit_reverse = new Button(GUIStrings.VELOCITY_REVERSE);
     this.button_edit_reverse.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             new MotionlessMaker().reduce(ContextManager.getNodeManager(), -1.0f);

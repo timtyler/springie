@@ -56,7 +56,7 @@ class ModelsMenuTest {
    * it mid-rebuild and see a half-empty menu, so all reads go through here
    * to serialize with the rebuild.
    */
-  private static void onEdt(EdtCheck check) throws Exception {
+  private static void onEdt(final EdtCheck check) throws Exception {
     final Throwable[] failure = new Throwable[1];
     SwingUtilities.invokeAndWait(() -> {
       try {

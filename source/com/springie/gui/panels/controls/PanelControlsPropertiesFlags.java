@@ -43,11 +43,11 @@ public class PanelControlsPropertiesFlags {
     resetPanel(false, false, false);
   }
 
-  public void resetPanel(boolean nodes, boolean links, boolean faces) {
+  public void resetPanel(final boolean nodes, final boolean links, final boolean faces) {
     final Panel panel_edit_checkboxes_1 = new Panel();
     this.checkbox_hidden = new Checkbox("Hidden", anySelectedThingHidden());
     this.checkbox_hidden.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         getNewMessageManager().add(new HideFlagMessage());
       }
     });
@@ -57,7 +57,7 @@ public class PanelControlsPropertiesFlags {
 
     this.checkbox_pinned = new Checkbox("Pinned", anySelectedNodesPinned());
     this.checkbox_pinned.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         getNewMessageManager().add(new FixFlagMessage());
       }
     });
@@ -68,7 +68,7 @@ public class PanelControlsPropertiesFlags {
     this.checkbox_disabled = new Checkbox("Disabled",
         anySelectedLinksDisabled());
     this.checkbox_disabled.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         getNewMessageManager().add(new DisableFlagMessage());
       }
     });
@@ -85,7 +85,7 @@ public class PanelControlsPropertiesFlags {
     this.checkbox_compression = new Checkbox("Compression",
         anySelectedLinksSustainCompression());
     this.checkbox_compression.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         getNewMessageManager().add(new RopeFlagMessage());
       }
     });
@@ -97,7 +97,7 @@ public class PanelControlsPropertiesFlags {
     this.checkbox_tension = new Checkbox("Tension",
         anySelectedLinksSustainTension());
     this.checkbox_tension.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         getNewMessageManager().add(new RopeFlagMessage());
       }
     });
@@ -196,7 +196,7 @@ public class PanelControlsPropertiesFlags {
         || anySelectedThingHidden(face_manager.element);
   }
 
-  private boolean anySelectedThingHidden(List<? extends BaseElement> v) {
+  private boolean anySelectedThingHidden(final List<? extends BaseElement> v) {
     // final NodeManager node_manager = ContextManager.getNodeManager();
     final int size = v.size();
     for (int i = 0; i < size; i++) {

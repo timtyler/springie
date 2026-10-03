@@ -39,7 +39,7 @@ public class ColourPickerPreview extends Panel {
     this.informer = informer;
 
     final ActionListener action_listener_set = new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         final int color = getColour();
         ColourPickerPreview.this.last_colour = color;
         ColourPickerPreview.this.original_colour = color;
@@ -53,7 +53,7 @@ public class ColourPickerPreview extends Panel {
     this.panel_proposed.add(this.button_set);
 
     final ActionListener action_listener_put_original = new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         final int colour = ColourPickerPreview.this.original_colour;
         ColourPickerPreview.this.colour_picker.setColour(colour);
       }
@@ -64,7 +64,7 @@ public class ColourPickerPreview extends Panel {
     this.panel_original.add(this.button_reset);
 
     final ActionListener action_listener_put_last = new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         final int colour = ColourPickerPreview.this.last_colour;
         ColourPickerPreview.this.colour_picker.setColour(colour);
       }
@@ -101,7 +101,7 @@ public class ColourPickerPreview extends Panel {
     return this.colour;
   }
 
-  public void setOriginalColour(int colour) {
+  public void setOriginalColour(final int colour) {
     this.original_colour = colour;
   }
 

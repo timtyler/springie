@@ -51,7 +51,7 @@ public class ButtonBar extends Panel implements ItemSelectable {
     this.add(ib);
   }
 
-  private ImageButton getImageButton(String iname, String name) {
+  private ImageButton getImageButton(final String iname, String name) {
     final ImageWrapper image_o = ImageLoader.getImage(GraphicsDirectory.directory + iname
         + "_o.png");
     final ImageWrapper image_i = ImageLoader.getImage(GraphicsDirectory.directory + iname
@@ -59,7 +59,7 @@ public class ButtonBar extends Panel implements ItemSelectable {
     final ImageButton ib = new ImageButton(image_o, image_i,
         this.image_button_group, name, this.first);
     final ActionListener action_listener = new ActionListener() {
-      public void actionPerformed(ActionEvent event) {
+      public void actionPerformed(final ActionEvent event) {
         if (ButtonBar.this.listener != null) {
           final String action_string = event.getActionCommand();
           //Log.log("Button found:" + action_string);
@@ -93,7 +93,7 @@ public class ButtonBar extends Panel implements ItemSelectable {
     this.listener = null;
   }
 
-  public void select(String action) {
+  public void select(final String action) {
     final int size = this.buttons.size();
     for (int i = 0; i < size; i++) {
       final ImageButton button = this.buttons.get(i);

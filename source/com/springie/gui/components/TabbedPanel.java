@@ -101,7 +101,7 @@ public class TabbedPanel extends Panel implements MouseListener,
    */
 
   // find index of a given component
-  int findComponent(Component c) {
+  int findComponent(final Component c) {
     for (int i = 0; i < this.nCards; i++) {
       if (getComponent(i) == c) {
         return i;
@@ -115,7 +115,7 @@ public class TabbedPanel extends Panel implements MouseListener,
    */
 
   /** Add a card, component, to the TabPanel with a given name. */
-  public Component add(String name, Component component) {
+  public Component add(final String name, final Component component) {
     final String name_interned = name.intern();
     // Let layout manager do its job
     super.add(name_interned, component);
@@ -132,7 +132,7 @@ public class TabbedPanel extends Panel implements MouseListener,
   }
 
   /** remove the card, component, from the TabPanel. */
-  public void remove(Component component) {
+  public void remove(final Component component) {
     final int i = findComponent(component);
     // Let layout manager do its job
     super.remove(component);
@@ -153,7 +153,7 @@ public class TabbedPanel extends Panel implements MouseListener,
   }
 
   /** remove the card having the given name from the TabPanel. */
-  public void remove(String name) {
+  public void remove(final String name) {
     final int i = this.names.indexOf(name.intern());
     if (i != -1) {
       remove(getComponent(i));
@@ -171,7 +171,7 @@ public class TabbedPanel extends Panel implements MouseListener,
    * Component Selection
    */
 
-  void setSelected(int i, boolean force) {
+  void setSelected(final int i, final boolean force) {
     if (force || i != this.selected && i >= 0 && i < this.nCards) {
       if (this.nCards > 0) {
         this.selected = i % this.nCards;
@@ -204,16 +204,16 @@ public class TabbedPanel extends Panel implements MouseListener,
   }
 
   /** Select the named card in the Panel. */
-  public void show(String name) {
+  public void show(final String name) {
     setSelected(this.names.indexOf(name.intern()), false);
   }
 
   /** Select the card component in the Panel. */
-  public void show(Component component) {
+  public void show(final Component component) {
     setSelected(findComponent(component), false);
   }
 
-  int cardAt(int x, int y) {
+  int cardAt(final int x, final int y) {
     // inside tab section?
     int xx = x;
     if (y <= this.tabH) {
@@ -233,7 +233,7 @@ public class TabbedPanel extends Panel implements MouseListener,
    * mouse is over the tab). This may be overridden by a subclass, if desired. The default is to
    * use the "Select tab card " + name.
    */
-  public String documentCard(String name) {
+  public String documentCard(final String name) {
     return "Select tab card " + name;
   }
 
@@ -252,7 +252,7 @@ public class TabbedPanel extends Panel implements MouseListener,
    * Specify the Font to be used for labeling the Tabs. This avoids getting in
    * the way of cards inheriting default fonts from the TabPanel's container.
    */
-  public void setTabFont(Font font) {
+  public void setTabFont(final Font font) {
     this.tabFont = font;
     this.metric = getFontMetrics(font);
     final int r = (this.metric.getHeight() + 1) / 2;
@@ -322,7 +322,7 @@ public class TabbedPanel extends Panel implements MouseListener,
    * @param selected2
    */
 
-  void paintTabEdge(Graphics g, int x, int[][] edges, boolean selected) {
+  void paintTabEdge(final Graphics g, final int x, final int[][] edges, final boolean selected) {
     g.translate(x, this.margin_top);
     final Color bg = selected ? getBackground() : this.colour_inactive_tab_background;
     g.setColor(bg);
@@ -334,7 +334,7 @@ public class TabbedPanel extends Panel implements MouseListener,
     g.translate(-x, -this.margin_top);
   }
 
-  void paintTab(Graphics g, int x, int p, boolean selected) {
+  void paintTab(final Graphics g, final int x, final int p, final boolean selected) {
     final int r = this.tabH / 2;
     final int w = this.width[p];
     paintTabEdge(g, x - r, this.tabLeft, selected);
@@ -360,12 +360,12 @@ public class TabbedPanel extends Panel implements MouseListener,
    * Update (repaint) the TabPanel. Since paint handles the background, we just
    * call paint directly.
    */
-  public void update(Graphics g) {
+  public void update(final Graphics g) {
     paint(g);
   }
 
   /** Paint the tabs in a row atop the cards. */
-  public void paint(Graphics gg) {
+  public void paint(final Graphics gg) {
     // Dimension sz = size();
     final Graphics g = this.offscreen.getGraphics();
     final Dimension dim = getSize();
@@ -447,28 +447,28 @@ public class TabbedPanel extends Panel implements MouseListener,
     gg.drawLine(0, h, 0, this.margin_top + this.tabH);
   }
 
-  public void mouseClicked(MouseEvent e) {
+  public void mouseClicked(final MouseEvent e) {
     final int i = cardAt(e.getX(), e.getY());
     if (i != -1) {
       setSelected(i, false);
     }
   }
 
-  public void mousePressed(MouseEvent e) {
+  public void mousePressed(final MouseEvent e) {
   }
 
-  public void mouseReleased(MouseEvent e) {
+  public void mouseReleased(final MouseEvent e) {
   }
 
-  public void mouseEntered(MouseEvent e) {
+  public void mouseEntered(final MouseEvent e) {
   }
 
-  public void mouseExited(MouseEvent e) {
+  public void mouseExited(final MouseEvent e) {
   }
 
-  public void mouseDragged(MouseEvent e) {
+  public void mouseDragged(final MouseEvent e) {
   }
 
-  public void mouseMoved(MouseEvent e) {
+  public void mouseMoved(final MouseEvent e) {
   }
 }

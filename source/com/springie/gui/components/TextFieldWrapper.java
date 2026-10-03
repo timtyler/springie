@@ -16,17 +16,17 @@ public class TextFieldWrapper extends TextField {
     setColours();
   }
 
-  public TextFieldWrapper(int arg0) {
+  public TextFieldWrapper(final int arg0) {
     super(arg0);
     setColours();
   }
 
-  public TextFieldWrapper(String arg0, int arg1) {
+  public TextFieldWrapper(final String arg0, final int arg1) {
     super(arg0, arg1);
     setColours();
   }
 
-  public TextFieldWrapper(String arg0) {
+  public TextFieldWrapper(final String arg0) {
     super(arg0);
     setColours();
   }

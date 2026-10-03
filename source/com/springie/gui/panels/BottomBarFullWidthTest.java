@@ -81,7 +81,7 @@ class BottomBarFullWidthTest {
    * width. Everything happens on the EDT with a validate so the
    * BorderLayout widths are settled before the assertions read them.
    */
-  private static void applyModeAndResize(int mode) throws Exception {
+  private static void applyModeAndResize(final int mode) throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       FrEnd.controls_window_mode = mode;
       FrEnd.applyControlsWindowOptions();

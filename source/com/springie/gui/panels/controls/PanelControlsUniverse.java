@@ -118,7 +118,7 @@ public class PanelControlsUniverse {
     this.checkbox_3D.setState(FrEnd.three_d);
 
     this.checkbox_3D.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         FrEnd.three_d = getCheckbox3D().getState();
 
         RendererDelegator.repaintAll();
@@ -132,7 +132,7 @@ public class PanelControlsUniverse {
     panel_gravity.setLayout(new BorderLayout(0, 8));
     this.checkbox_gravity_switch = new Checkbox(GUIStrings.GRAVITY);
     this.checkbox_gravity_switch.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final boolean active = ((Checkbox) e.getSource()).getState();
         World.gravity_active = active;
         scroll_bar_gravity.setEnabled(active);
@@ -142,7 +142,7 @@ public class PanelControlsUniverse {
 
     this.scroll_bar_gravity = new Scrollbar(Scrollbar.HORIZONTAL, 10, 80, 0, 580);
     this.scroll_bar_gravity.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int temp = e.getValue();
         World.gravity_strength = temp;
         getLabelGravity().setText("" + temp);
@@ -162,7 +162,7 @@ public class PanelControlsUniverse {
 
     this.scroll_bar_friction = new Scrollbar(Scrollbar.HORIZONTAL, 0, 10, 0, 110);
     this.scroll_bar_friction.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int temp = e.getValue();
         World.ground_friction = temp;
         getLabelFriction().setText("" + temp);
@@ -183,7 +183,7 @@ public class PanelControlsUniverse {
 
     this.scroll_bar_compass_bias = new Scrollbar(Scrollbar.HORIZONTAL, 0, 10, 0, 110);
     this.scroll_bar_compass_bias.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         CompassPoint.bias_size = e.getValue();
         reflectCompassBias();
       }
@@ -203,7 +203,7 @@ public class PanelControlsUniverse {
 
     this.scroll_bar_bounciness = new Scrollbar(Scrollbar.HORIZONTAL, 95, 10, 0, 110);
     this.scroll_bar_bounciness.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int temp = e.getValue();
         World.bounding_box_bounciness = temp;
         getLabelBounciness().setText("" + temp);
@@ -224,7 +224,7 @@ public class PanelControlsUniverse {
 
     this.scroll_bar_temperature = new Scrollbar(Scrollbar.HORIZONTAL, 10, 80, 0, 1080);
     this.scroll_bar_temperature.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int temp = e.getValue();
         World.global_temperature = temp;
         getLabelTemperature().setText("" + temp);
@@ -239,7 +239,7 @@ public class PanelControlsUniverse {
     final Panel panel_charge_switch = new Panel();
     this.checkbox_charge_switch = new Checkbox(GUIStrings.CHARGE, true);
     this.checkbox_charge_switch.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         ContextManager.getNodeManager().electrostatic.charge_active = ((Checkbox) e.getSource()).getState();
       }
     });
@@ -249,7 +249,7 @@ public class PanelControlsUniverse {
     final Panel panel_muscles_switch = new Panel();
     this.checkbox_muscles = new Checkbox(GUIStrings.MUSCLES);
     this.checkbox_muscles.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         Muscles.enabled = ((Checkbox) e.getSource()).getState();
       }
     });
@@ -261,7 +261,7 @@ public class PanelControlsUniverse {
 
     this.scroll_bar_muscles_amplitude = new Scrollbar(Scrollbar.HORIZONTAL, 85, 1, 0, 201);
     this.scroll_bar_muscles_amplitude.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         Muscles.activeOscillator().setAmplitude(e.getValue() * Muscles.UNITY / 100);
         reflectMuscles();
       }
@@ -278,7 +278,7 @@ public class PanelControlsUniverse {
 
     this.scroll_bar_muscles_period = new Scrollbar(Scrollbar.HORIZONTAL, 12, 10, 2, 610);
     this.scroll_bar_muscles_period.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         Muscles.activeOscillator().setPeriodTicks(e.getValue());
         reflectMuscles();
       }
@@ -292,7 +292,7 @@ public class PanelControlsUniverse {
     final Panel panel_centering = FrEnd.setUpPanelForFrame2();
     this.checkbox_continuously_centre_x = new Checkbox(GUIStrings.CONTINUOUSLY_CENTRE_X);
     this.checkbox_continuously_centre_x.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         getNewMessageManager().add(new ContinuouslyCentreMessage(0));
       }
     });
@@ -300,7 +300,7 @@ public class PanelControlsUniverse {
 
     this.checkbox_continuously_centre_y = new Checkbox(GUIStrings.CONTINUOUSLY_CENTRE_Y);
     this.checkbox_continuously_centre_y.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         getNewMessageManager().add(new ContinuouslyCentreMessage(1));
       }
     });
@@ -308,7 +308,7 @@ public class PanelControlsUniverse {
 
     this.checkbox_continuously_centre_z = new Checkbox(GUIStrings.CONTINUOUSLY_CENTRE_Z);
     this.checkbox_continuously_centre_z.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         getNewMessageManager().add(new ContinuouslyCentreMessage(2));
       }
     });
@@ -318,7 +318,7 @@ public class PanelControlsUniverse {
       GUIStrings.SHOW_WORLD_MARKERS);
     this.checkbox_show_world_markers.setState(FrEnd.show_world_markers);
     this.checkbox_show_world_markers.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         FrEnd.show_world_markers =
             getCheckboxShowWorldMarkers().getState();
         // Screen-space dots: turning them off must clear them from
@@ -337,7 +337,7 @@ public class PanelControlsUniverse {
 
     this.scroll_bar_viscocity = new Scrollbar(Scrollbar.HORIZONTAL, 0, 10, 0, 110);
     this.scroll_bar_viscocity.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         Node.viscocity = e.getValue();
         reflectViscocity();
       }
@@ -352,7 +352,7 @@ public class PanelControlsUniverse {
     this.checkbox_collision_check = new Checkbox(GUIStrings.collision_check);
     this.checkbox_collision_check.setState(true);
     this.checkbox_collision_check.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         // Set from the checkbox state, never toggle: the static can be
         // changed from under the UI (model files carry their own
         // collision_check), and a toggle would then flip it the wrong way.
@@ -369,7 +369,7 @@ public class PanelControlsUniverse {
 
     this.scroll_bar_bias = new Scrollbar(Scrollbar.HORIZONTAL, 0, 90, -180, 270);
     this.scroll_bar_bias.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int temp = e.getValue();
         // Node.direction_bias = (byte) ((temp * 16) / 180);
         getLabelBias().setText("" + temp);
@@ -387,7 +387,7 @@ public class PanelControlsUniverse {
 
     this.scroll_bar_limit = new Scrollbar(Scrollbar.HORIZONTAL, Node.max_speed >> 5, 50, 0, 450);
     this.scroll_bar_limit.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         Node.max_speed = e.getValue() << 5;
         reflectMaxSpeed();
       }
@@ -404,7 +404,7 @@ public class PanelControlsUniverse {
 
     this.scroll_bar_impact = new Scrollbar(Scrollbar.HORIZONTAL, World.minimum_magnitude >> 6, 10, 0, 109);
     this.scroll_bar_impact.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int temp = e.getValue();
         World.minimum_magnitude = temp << 6;
         getLabelImpact().setText("" + temp);
@@ -451,7 +451,7 @@ public class PanelControlsUniverse {
   private Panel getResetUniversePanel() {
     final Button button_reset_universe = new Button(GUIStrings.RESET_UNIVERSE);
     button_reset_universe.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         resetUniverse();
       }
     });
@@ -498,7 +498,7 @@ public class PanelControlsUniverse {
    * checkboxes queue toggle messages when clicked, which must not happen
    * during a reset).
    */
-  private static void setCheckboxSilently(Checkbox checkbox, boolean state) {
+  private static void setCheckboxSilently(final Checkbox checkbox, final boolean state) {
     final ItemListener[] listeners = checkbox.getItemListeners();
     for (final ItemListener listener : listeners) {
       checkbox.removeItemListener(listener);

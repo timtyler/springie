@@ -150,7 +150,7 @@ public class PanelFundamental {
         .setTooltipText("Toggle between model presets and file load/save");
 
     this.button_file_presets.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent arg0) {
+      public void actionPerformed(final ActionEvent arg0) {
         showPresetsCard(button_file_presets.getState());
       }
     });
@@ -191,7 +191,7 @@ public class PanelFundamental {
 
     final Button button_load = new Button("Load");
     button_load.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent arg0) {
+      public void actionPerformed(final ActionEvent arg0) {
         chooseLoadFile();
       }
     });
@@ -199,7 +199,7 @@ public class PanelFundamental {
 
     final Button button_save = new Button("Save");
     button_save.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent arg0) {
+      public void actionPerformed(final ActionEvent arg0) {
         chooseSaveFile();
       }
     });
@@ -208,7 +208,7 @@ public class PanelFundamental {
     return panel;
   }
 
-  void showPresetsCard(boolean show_presets) {
+  void showPresetsCard(final boolean show_presets) {
     if (show_presets) {
       this.card_layout.show(this.card_panel, CARD_PRESETS);
     } else {
@@ -265,16 +265,16 @@ public class PanelFundamental {
     }
   }
 
-  private static void writeSprFile(String file_path) {
+  private static void writeSprFile(final String file_path) {
     new WriterSpr(ContextManager.getNodeManager()).write(file_path);
   }
 
-  private static boolean isLocalFile(String path) {
+  private static boolean isLocalFile(final String path) {
     return !(path.startsWith("http:") || path.startsWith("https:")
         || path.startsWith("ftp:"));
   }
 
-  private static String stripFilePrefix(String path) {
+  private static String stripFilePrefix(final String path) {
     if (path.startsWith("file://")) {
       return path.substring("file://".length());
     }
@@ -282,12 +282,12 @@ public class PanelFundamental {
     return path;
   }
 
-  private static String leafOf(String path) {
+  private static String leafOf(final String path) {
     final int slash = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'));
     return path.substring(slash + 1);
   }
 
-  private static String ensureExtension(String leaf, String extension) {
+  private static String ensureExtension(final String leaf, final String extension) {
     final int len = leaf.length();
     final int idx = leaf.lastIndexOf(".");
     if (idx > len - 6) {
@@ -307,7 +307,7 @@ public class PanelFundamental {
     this.button_controls.setTooltipText("Show/hide the controls");
 
     this.button_controls.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent arg0) {
+      public void actionPerformed(final ActionEvent arg0) {
         if (FrEnd.controls_window_mode == FrEnd.CONTROLS_DOCKED) {
           // The controls live docked in the main window: toggle the
           // docked panel, so the button still operates -- hiding them
@@ -371,7 +371,7 @@ public class PanelFundamental {
    */
   private void setUpDemosChoice() {
     this.choose_demo = new ChoiceWithDescription(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         if (e == null) {
           return;
         }
@@ -402,7 +402,7 @@ public class PanelFundamental {
     this.button_paused.setTooltipText("Pause / resume the simulation");
 
     this.button_paused.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent arg0) {
+      public void actionPerformed(final ActionEvent arg0) {
         getNewMessageManager().add(FrEnd.system_messages.getPauseMessage());
       }
     });
@@ -422,7 +422,7 @@ public class PanelFundamental {
     // this.button_paused.setRadio(true);
     // FrEnd.button_step = new Button(GUIStrings.STEP);
     FrEnd.button_step.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             // FrEnd.new_message_manager.add(getRestartMessage());
@@ -459,7 +459,7 @@ public class PanelFundamental {
         .setTooltipText("Restart the simulation from the initial state");
 
     FrEnd.button_restart.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent arg0) {
+      public void actionPerformed(final ActionEvent arg0) {
         launchSelected();
       }
     });
@@ -477,7 +477,7 @@ public class PanelFundamental {
         "Zoom in", false);
 
     button_zoom_in.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent arg0) {
+      public void actionPerformed(final ActionEvent arg0) {
 
         Coords.shift_constant_z -= 20;
         if (Coords.shift_constant_z < 1) {
@@ -503,7 +503,7 @@ public class PanelFundamental {
         false);
 
     button.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent arg0) {
+      public void actionPerformed(final ActionEvent arg0) {
 
         Coords.shift_constant_z += 20;
         RendererDelegator.repaintAll();
@@ -515,7 +515,7 @@ public class PanelFundamental {
     return panel;
   }
 
-  private Panel makePanelMouseActions(Panel panel) {
+  private Panel makePanelMouseActions(final Panel panel) {
 
     final ButtonBar bb = new ButtonBar();
 
@@ -527,7 +527,7 @@ public class PanelFundamental {
     bb.add("kill", ButtonMouseActionStrings.action_kill);
 
     ItemListener il = new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final String str = (String) (e.getItem());
         FrEnd.action_left_type = ButtonMouseActionStrings
             .stringToActionNumber(str);
@@ -550,7 +550,7 @@ public class PanelFundamental {
     this.button_delete.setTooltipText("Delete the selected elements");
 
     this.button_delete.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent arg0) {
+      public void actionPerformed(final ActionEvent arg0) {
         getNewMessageManager().add(new DeleteSelectedMessage());
       }
     });
@@ -570,7 +570,7 @@ public class PanelFundamental {
         .setTooltipText("Select all elements of the same class");
 
     this.button_select_all_of_class.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent arg0) {
+      public void actionPerformed(final ActionEvent arg0) {
         getNewMessageManager().add(new SelectClazzMessage());
       }
     });
@@ -603,7 +603,7 @@ public class PanelFundamental {
 
   private void setUpInitialChoice() {
     FrEnd.choose_initial = new ChoiceWithDescription(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         if (e == null) {
           return;
         }
@@ -640,23 +640,23 @@ public class PanelFundamental {
     setUpLeafIndex(index_name);
 
     FrEnd.choose_initial.choice.addKeyListener(new KeyListener() {
-      public void keyTyped(KeyEvent arg0) {
+      public void keyTyped(final KeyEvent arg0) {
       }
 
-      public void keyPressed(KeyEvent arg0) {
+      public void keyPressed(final KeyEvent arg0) {
         if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
           launchSelected();
         }
       }
 
-      public void keyReleased(KeyEvent arg0) {
+      public void keyReleased(final KeyEvent arg0) {
       }
     });
   }
 
   private void setUpPresetIndex() {
     FrEnd.choose_preset_index = new ChoiceWithDescription(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         if (e == null) {
           return;
         }
@@ -716,7 +716,7 @@ public class PanelFundamental {
    * that index, selects the leaf, and points next_file_path at it. Used by
    * the Models menu's Presets submenu so the two stay in agreement.
    */
-  public void selectPreset(String index_name, String leaf_description) {
+  public void selectPreset(final String index_name, final String leaf_description) {
     if (FrEnd.choose_preset_index == null || FrEnd.choose_initial == null) {
       return;
     }
@@ -743,7 +743,7 @@ public class PanelFundamental {
    * stay in agreement; Choice.select fires no item event, so the menu's own
    * launch message is the only one enqueued.
    */
-  public void selectDemo(String name) {
+  public void selectDemo(final String name) {
     // Sync the hidden demos dropdown (for launchSelected).
     if (this.choose_demo != null) {
       final java.awt.Choice choice = this.choose_demo.choice;

@@ -30,7 +30,7 @@ public class PerformSelection {
   private static final int PICK_LINK = 2;
   private static final int PICK_FACE = 3;
 
-  public void performSelection(int x, int y, boolean drag_is_possible) {
+  public void performSelection(final int x, final int y, final boolean drag_is_possible) {
     if (RendererDelegator.renderer instanceof ModularRendererNew
         || RendererDelegator.renderer instanceof ModularRendererRaytraced
         || RendererDelegator.renderer
@@ -114,7 +114,7 @@ public class PerformSelection {
   // Chooses the click candidate nearest to the viewer. Every picker
   // already defines "nearest" as the smallest z, so the same depth is
   // used here; ties keep the historical node > link > face precedence.
-  private static int nearestPick(Node node, Link link, Face face) {
+  private static int nearestPick(final Node node, final Link link, final Face face) {
     int pick = PICK_NONE;
     int best_z = Integer.MAX_VALUE;
 
@@ -135,7 +135,7 @@ public class PerformSelection {
     return pick;
   }
 
-  private static int averageZ(Face face) {
+  private static int averageZ(final Face face) {
     final int npoints = face.nodes.size();
     if (npoints == 0) {
       return Integer.MAX_VALUE;
@@ -148,14 +148,14 @@ public class PerformSelection {
   }
 
   // performInfection
-  public void performInfection(int x, int y) {
+  public void performInfection(final int x, final int y) {
     final Node node = ContextManager.getNodeManager().isThereOne(x, y);
     if (node != null) {
       node.type.counter = INFECTION_START;
     }
   }
 
-  private void dealWithDrag(int x, int y, final BaseElement selected_element) {
+  private void dealWithDrag(final int x, final int y, final BaseElement selected_element) {
     if (FrEnd.button_virginity) {
       if (selected_element != null) {
         if (selected_element.isSelected()) {
@@ -174,7 +174,7 @@ public class PerformSelection {
     }
   }
 
-  public boolean doSelectNodes(int x, int y, boolean drag_is_possible) {
+  public boolean doSelectNodes(final int x, final int y, final boolean drag_is_possible) {
     // Log.log("GETS");
     final Node selected_node = ContextManager.getNodeManager().isThereOne(x, y);
 
@@ -210,7 +210,7 @@ public class PerformSelection {
     return selected_node != null;
   }
 
-  public boolean doSelectLinks(int x, int y, boolean drag_is_possible) {
+  public boolean doSelectLinks(final int x, final int y, final boolean drag_is_possible) {
     final Link selected_link = ContextManager.getLinkManager().isThereOne(x, y);
     boolean selection_changed = false;
 
@@ -283,7 +283,7 @@ public class PerformSelection {
     }
   }
 
-  public boolean doSelectPolygons(int x, int y) {
+  public boolean doSelectPolygons(final int x, final int y) {
     final Face selected_face = ContextManager.getFaceManager().isThereOne(x, y);
     if (selected_face != null) {
       final FaceType type = selected_face.type;

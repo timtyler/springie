@@ -40,7 +40,7 @@ public class ColourPickerGettersAndPutters extends Panel {
     return this.colour_picker;
   }
 
-  public void greyGetAndSetColourButtons(int colour) {
+  public void greyGetAndSetColourButtons(final int colour) {
     this.one.greyGetAndSetColourButtons(colour);
     this.two.greyGetAndSetColourButtons(colour);
     this.three.greyGetAndSetColourButtons(colour);

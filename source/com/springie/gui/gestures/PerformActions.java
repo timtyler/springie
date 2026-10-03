@@ -21,7 +21,7 @@ public class PerformActions {
 
   public DragBoxManager drag_box_manager = new DragBoxManager();
 
-  public void actionSwitch(int x, int y, int type) {
+  public void actionSwitch(final int x, final int y, final int type) {
     switch (type) {
     case Actions.VISIBLE:
       doSetHidden(x, y, false);
@@ -115,41 +115,41 @@ public class PerformActions {
     }
   }
 
-  void doRotation(int x, int y) {
+  void doRotation(final int x, final int y) {
     FrEnd.rotation_manager.initialise(x, y, false);
   }
 
-  void doRotation2(int x, int y) {
+  void doRotation2(final int x, final int y) {
     FrEnd.rotation_manager.initialise(x, y, true);
   }
 
-  void doTranslation(int x, int y) {
+  void doTranslation(final int x, final int y) {
     FrEnd.translation_manager.initialise(x, y);
   }
 
-  void doScale(int x, int y) {
+  void doScale(final int x, final int y) {
     FrEnd.scale_manager.initialise(ContextManager.getNodeManager(), x, y);
   }
 
-  void doDiet(int x, int y) {
+  void doDiet(final int x, final int y) {
     FrEnd.diet_manager.initialise(x, y);
   }
 
-  void doFreeze(int x, int y) {
+  void doFreeze(final int x, final int y) {
     final Node dragged_node = ContextManager.getNodeManager().isThereOne(x, y);
     if (dragged_node != null) {
       dragged_node.type.pinned = true;
     }
   }
 
-  void doMelt(int x, int y) {
+  void doMelt(final int x, final int y) {
     final Node dragged_node = ContextManager.getNodeManager().isThereOne(x, y);
     if (dragged_node != null) {
       dragged_node.type.pinned = false;
     }
   }
 
-  void doSetHidden(int x, int y, boolean hidden) {
+  void doSetHidden(final int x, final int y, boolean hidden) {
     final Node dragged_node = ContextManager.getNodeManager().isThereOne(x, y);
     if (dragged_node != null) {
       NodeType new_type = ContextManager.getNodeManager().node_type_factory.getNew();
@@ -160,7 +160,7 @@ public class PerformActions {
     }
   }
 
-  void doUnlink(int x, int y) {
+  void doUnlink(final int x, final int y) {
     Node dragged_node = ContextManager.getNodeManager().isThereOne(x, y);
     dragged_node = ContextManager.getNodeManager().isThereOne(x, y);
     if (dragged_node != null) {
@@ -170,7 +170,7 @@ public class PerformActions {
     FrEnd.postCleanup();
   }
 
-  void doUnlinkAll(int x, int y) {
+  void doUnlinkAll(final int x, final int y) {
     Node dragged_node = ContextManager.getNodeManager().isThereOne(x, y);
     dragged_node = ContextManager.getNodeManager().isThereOne(x, y);
     if (dragged_node != null) {
@@ -180,7 +180,7 @@ public class PerformActions {
     FrEnd.postCleanup();
   }
 
-  void doClone(int x, int y) {
+  void doClone(final int x, final int y) {
     Node selected_node;
     if (FrEnd.button_virginity) {
       selected_node = ContextManager.getNodeManager().getSelectedNode();
@@ -199,7 +199,7 @@ public class PerformActions {
     FrEnd.postCleanup();
   }
 
-  void doMakeCircle(int x, int y) {
+  void doMakeCircle(final int x, final int y) {
     int circle_radius = 0x4000;
     int nodeCount = 28;
     int radius = (int) (circle_radius * Math.PI / nodeCount);
@@ -225,7 +225,7 @@ public class PerformActions {
     FrEnd.postCleanup();
   }
 
-  public void doKill(int x, int y) {
+  public void doKill(final int x, final int y) {
     FrEnd.killtype = Actions.KILL;
 
     if (FrEnd.button_virginity) {
@@ -235,7 +235,7 @@ public class PerformActions {
     }
   }
 
-  void single_killing(int x, int y) {
+  void single_killing(final int x, final int y) {
     switch (FrEnd.weapon_type) {
     case ToolTypes._PENCIL:
       kill_a_cell(x, y);
@@ -262,7 +262,7 @@ public class PerformActions {
     }
   }
 
-  void octagon_fill(int x, int y, int r, int f) {
+  void octagon_fill(final int x, final int y, final int r, final int f) {
     for (int cx = -r; cx < r; cx = cx + 0x800) {
       for (int cy = -r; cy < r; cy = cy + 0x800) {
         if ((this.rnd.nextInt() & f) == 0) {
@@ -275,7 +275,7 @@ public class PerformActions {
     }
   }
 
-  void circle_fill(int x, int y, int r, int f) {
+  void circle_fill(final int x, final int y, final int r, final int f) {
     for (int cx = -r; cx < r; cx = cx + 0x800) {
       for (int cy = -r; cy < r; cy = cy + 0x800) {
         if ((this.rnd.nextInt() & f) == 0) {
@@ -287,7 +287,7 @@ public class PerformActions {
     }
   }
 
-  private void kill_a_cell(int x, int y) {
+  private void kill_a_cell(final int x, final int y) {
     final Node temp_node = ContextManager.getNodeManager().isThereOne(x, y);
     if (temp_node != null) {
       switch (FrEnd.killtype) {
@@ -307,7 +307,7 @@ public class PerformActions {
     }
   }
 
-  private void kill_a_line(int x, int y, int ox, int oy) {
+  private void kill_a_line(final int x, final int y, final int ox, final int oy) {
     float _x = x;
     float _y = y;
     float dx;

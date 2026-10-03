@@ -146,7 +146,7 @@ public class PanelControlsPropertiesScalars {
     resetPanel(false, false, false);
   }
 
-  public void resetPanel(boolean nodes, boolean links, boolean faces) {
+  public void resetPanel(final boolean nodes, final boolean links, final boolean faces) {
 
     final Panel panel_length = setUpLengthSlider();
 
@@ -196,7 +196,7 @@ public class PanelControlsPropertiesScalars {
     this.scroll_bar_length = new Scrollbar(Scrollbar.HORIZONTAL, 0, 100, 0,
         9899);
     this.scroll_bar_length.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int length = e.getValue();
         getNewMessageManager().add(new AlterLengthMessage(length << Coords.shift));
         reflectLength();
@@ -210,14 +210,14 @@ public class PanelControlsPropertiesScalars {
 
     this.button_scale_lengths_up = new Button(GUIStrings.EDIT_CHANGE_UP);
     this.button_scale_lengths_up.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new LengthenLinksMessage());
       }
     });
 
     this.button_scale_lengths_down = new Button(GUIStrings.EDIT_CHANGE_DOWN);
     this.button_scale_lengths_down.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new ShortenLinksMessage());
       }
     });
@@ -239,7 +239,7 @@ public class PanelControlsPropertiesScalars {
 
     this.scroll_bar_phase = new Scrollbar(Scrollbar.HORIZONTAL, 0, 10, 0, 610);
     this.scroll_bar_phase.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int phase = e.getValue();
         getNewMessageManager().add(new AlterPhaseMessage(phase));
         reflectPhase();
@@ -262,7 +262,7 @@ public class PanelControlsPropertiesScalars {
     this.scroll_bar_radius = new Scrollbar(Scrollbar.HORIZONTAL, 0, 100, 0,
         899);
     this.scroll_bar_radius.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int radius = e.getValue();
         getNewMessageManager().add(new AlterRadiusMessage(radius << PanelControlsPropertiesScalars.this.radius_shift));
       }
@@ -274,14 +274,14 @@ public class PanelControlsPropertiesScalars {
 
     this.button_scale_radius_up = new Button(GUIStrings.EDIT_CHANGE_UP);
     this.button_scale_radius_up.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new ExpandNodesMessage());
       }
     });
 
     this.button_scale_radius_down = new Button(GUIStrings.EDIT_CHANGE_DOWN);
     this.button_scale_radius_down.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new ContractNodesMessage());
       }
     });
@@ -304,7 +304,7 @@ public class PanelControlsPropertiesScalars {
     this.scroll_bar_charge = new Scrollbar(Scrollbar.HORIZONTAL, -100, 10,
         -100, 110);
     this.scroll_bar_charge.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int charge = e.getValue();
         getNewMessageManager().add(new AlterChargeMessage(charge));
       }
@@ -316,14 +316,14 @@ public class PanelControlsPropertiesScalars {
 
     this.button_scale_charge_up = new Button(GUIStrings.EDIT_CHANGE_UP);
     this.button_scale_charge_up.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new ChargeUpMessage());
       }
     });
 
     this.button_scale_charge_down = new Button(GUIStrings.EDIT_CHANGE_DOWN);
     this.button_scale_charge_down.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new ChargeDownMessage());
       }
     });
@@ -350,7 +350,7 @@ public class PanelControlsPropertiesScalars {
     this.choice_compass.add("E");
     this.choice_compass.add("W");
     this.choice_compass.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         if (e.getStateChange() != ItemEvent.SELECTED) {
           return;
         }
@@ -374,7 +374,7 @@ public class PanelControlsPropertiesScalars {
     this.scroll_bar_elasticity = new Scrollbar(Scrollbar.HORIZONTAL, 0, 10, 0,
         360);
     this.scroll_bar_elasticity.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int elasticity = e.getValue();
         getNewMessageManager().add(new AlterElasticityMessage(elasticity));
         reflectElasticity();
@@ -385,14 +385,14 @@ public class PanelControlsPropertiesScalars {
 
     this.button_scale_elasticity_up = new Button(GUIStrings.EDIT_CHANGE_UP);
     this.button_scale_elasticity_up.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new ElasticityUpMessage());
       }
     });
 
     this.button_scale_elasticity_down = new Button(GUIStrings.EDIT_CHANGE_DOWN);
     this.button_scale_elasticity_down.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new ElasticityDownMessage());
       }
     });
@@ -414,7 +414,7 @@ public class PanelControlsPropertiesScalars {
 
     this.scroll_bar_damping = new Scrollbar(Scrollbar.HORIZONTAL, 0, 10, 0, 210);
     this.scroll_bar_damping.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int damping = e.getValue();
         getNewMessageManager().add(new AlterStiffnessMessage(damping));
         reflectStiffness();
@@ -425,14 +425,14 @@ public class PanelControlsPropertiesScalars {
 
     this.button_scale_damping_up = new Button(GUIStrings.EDIT_CHANGE_UP);
     this.button_scale_damping_up.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new StiffnessUpMessage());
       }
     });
 
     this.button_scale_damping_down = new Button(GUIStrings.EDIT_CHANGE_DOWN);
     this.button_scale_damping_down.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new StiffnessDownMessage());
       }
     });
@@ -530,15 +530,15 @@ public class PanelControlsPropertiesScalars {
         : heading == null ? "-" : heading.name());
   }
 
-  public void setElasticityLabel(int e) {
+  public void setElasticityLabel(final int e) {
     this.label_elasticity.setText("" + e);
   }
 
-  public void setLengthLabel(int l) {
+  public void setLengthLabel(final int l) {
     this.label_length.setText("" + l);
   }
 
-  public void setRadiusLabel(int r) {
+  public void setRadiusLabel(final int r) {
     this.label_radius.setText("" + r);
   }
 

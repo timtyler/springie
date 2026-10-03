@@ -36,7 +36,7 @@ public class PanelPreferencesEdit {
     // panel_right_button_config.setBackground(colour_grey1);
     panel.add(new Label("Right-click to", Label.RIGHT));
     this.choose_right_action = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         FrEnd.action_right_type = getChooseRightAction().str_to_num(
             (String) (e.getItem()));
       }
@@ -55,7 +55,7 @@ public class PanelPreferencesEdit {
 
     panel.add(new Label("Middle-click to", Label.RIGHT));
     this.choose_middle_action = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         FrEnd.action_middle_type = getChooseMiddleAction().str_to_num(
             (String) (e.getItem()));
       }
@@ -74,7 +74,7 @@ public class PanelPreferencesEdit {
 
     panel.add(new Label("Left-click to", Label.RIGHT));
     this.choose_left_action = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         FrEnd.action_left_type = getChooseLeftAction().str_to_num(
             (String) (e.getItem()));
       }
@@ -87,7 +87,7 @@ public class PanelPreferencesEdit {
     return panel;
   }
 
-  private void addActionTypes(TTChoice action_choice) {
+  private void addActionTypes(final TTChoice action_choice) {
     // action_choice.add("infect", _ACT_KILLALL);
 
     action_choice.add("select", Actions.SELECT);

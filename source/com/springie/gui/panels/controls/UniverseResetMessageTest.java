@@ -111,7 +111,7 @@ class UniverseResetMessageTest {
    * deliberately fires no listeners -- the event only comes from the peer
    * on a genuine click.)
    */
-  private static void clickCheckbox(Checkbox checkbox, int state_change) {
+  private static void clickCheckbox(final Checkbox checkbox, final int state_change) {
     checkbox.setState(state_change == ItemEvent.SELECTED);
     final ItemEvent event = new ItemEvent((ItemSelectable) checkbox,
         ItemEvent.ITEM_STATE_CHANGED, checkbox, state_change);

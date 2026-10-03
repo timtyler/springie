@@ -16,7 +16,7 @@ public class TranslationManager {
 
   Point3D[] pos;
 
-  public void initialise(int x, int y) {
+  public void initialise(final int x, final int y) {
     if (FrEnd.button_virginity) {
       this.start_x = x;
       this.start_y = y;
@@ -49,7 +49,7 @@ public class TranslationManager {
 //    FrEnd.postCleanup();
   }
 
-  public void terminate(int x, int y) {
+  public void terminate(final int x, final int y) {
     if (this.pos != null) {
       performTranslation(x, y);
       this.pos = null;

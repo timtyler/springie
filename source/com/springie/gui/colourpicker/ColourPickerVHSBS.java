@@ -9,7 +9,7 @@ import com.springie.io.out.WriteFloatingPoint;
 
 public class ColourPickerVHSBS extends ColourPickerBase {
   static final long serialVersionUID = 1250; 
-  public void update(Graphics g) {
+  public void update(final Graphics g) {
     paintHelper();
 
     for (int j = this.margin; j < this.range; j++) {
@@ -30,7 +30,7 @@ public class ColourPickerVHSBS extends ColourPickerBase {
     paintMarkers(g, this.colour_picker.value_saturation);
   }
 
-  public void mouseClicked(MouseEvent e) {
+  public void mouseClicked(final MouseEvent e) {
     clickHelper(e);
 
     this.colour_picker.value_saturation = this.x / (float) this.range;

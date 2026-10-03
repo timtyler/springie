@@ -68,7 +68,7 @@ public class PanelControlsGenerate {
   private Panel makeTubeGUI() {
     final Button button = new Button(GUIStrings.GENERATE_TUBE);
     button.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new GenerateTubeMessage());
       }
     });
@@ -90,7 +90,7 @@ public class PanelControlsGenerate {
   private Panel makeStringGUI() {
     final Button button = new Button(GUIStrings.GENERATE_STRING);
     button.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new GenerateStringMessage());
       }
     });
@@ -108,7 +108,7 @@ public class PanelControlsGenerate {
   private Panel makeMatrixGUI() {
     final Button button = new Button(GUIStrings.GENERATE_MATRIX);
     button.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new GenerateMatrixMessage());
       }
     });
@@ -135,7 +135,7 @@ public class PanelControlsGenerate {
     final Button button = new Button(
       GUIStrings.GENERATE_FREE_NODES);
     button.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new GenerateFreeNodesMessage());
       }
     });
@@ -155,7 +155,7 @@ public class PanelControlsGenerate {
     final Button button = new Button(
       GUIStrings.GENERATE_SPHERE_PACK);
     button.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new GenerateSpherePackMessage());
       }
     });

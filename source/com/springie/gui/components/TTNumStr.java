@@ -7,7 +7,7 @@ class TTNumStr {
 
   String string;
 
-  TTNumStr(int n, String s) {
+  TTNumStr(final int n, final String s) {
     this.number = n;
     this.string = s;
   }

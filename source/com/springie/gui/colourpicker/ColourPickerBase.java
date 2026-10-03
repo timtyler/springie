@@ -42,7 +42,7 @@ public class ColourPickerBase extends Component implements MouseListener,
     addMouseListener(this);
   }
 
-  public void inform(ColourPickerController cp) {
+  public void inform(final ColourPickerController cp) {
     this.colour_picker = cp;
   }
 
@@ -68,11 +68,11 @@ public class ColourPickerBase extends Component implements MouseListener,
         .fillRect(0, this.height - this.margin * 2, this.width, this.margin);
   }
 
-  void paintMarkers(Graphics g, int x) {
+  void paintMarkers(final Graphics g, final int x) {
     paintMarkers(g, x / 255.0F);
   }
 
-  void paintMarkers(Graphics g, float v) {
+  void paintMarkers(final Graphics g, final float v) {
     final int size = 8;
     int xv = (int) (this.range * v);
 
@@ -96,7 +96,7 @@ public class ColourPickerBase extends Component implements MouseListener,
     drawThisPolygon(g, polygon_x, polygon_y);
   }
 
-  private void drawThisPolygon(Graphics g, final int[] polygon_x,
+  private void drawThisPolygon(final Graphics g, final int[] polygon_x,
       final int[] polygon_y) {
     g.setColor(Color.yellow);
     g.fillPolygon(polygon_x, polygon_y, 3);
@@ -104,7 +104,7 @@ public class ColourPickerBase extends Component implements MouseListener,
     g.drawPolygon(polygon_x, polygon_y, 3);
   }
 
-  void clickHelper(MouseEvent e) {
+  void clickHelper(final MouseEvent e) {
     this.x = e.getX() - this.margin;
 
     if (this.x < 0) {
@@ -116,36 +116,36 @@ public class ColourPickerBase extends Component implements MouseListener,
     }
   }
 
-  public void mouseClicked(MouseEvent e) {
+  public void mouseClicked(final MouseEvent e) {
 
     throw new RuntimeException("mouseClicked bug");
   }
 
-  public void mouseDragged(MouseEvent e) {
+  public void mouseDragged(final MouseEvent e) {
     mouseClicked(e);
   }
 
   // motion...
-  public void mouseReleased(MouseEvent e) {
+  public void mouseReleased(final MouseEvent e) {
   }
 
-  public void mousePressed(MouseEvent e) {
+  public void mousePressed(final MouseEvent e) {
   }
 
-  public void mouseEntered(MouseEvent e) {
+  public void mouseEntered(final MouseEvent e) {
   }
 
-  public void mouseExited(MouseEvent e) {
+  public void mouseExited(final MouseEvent e) {
   }
 
-  public void mouseMoved(MouseEvent e) {
+  public void mouseMoved(final MouseEvent e) {
   }
 
-  public void paint(Graphics g) {
+  public void paint(final Graphics g) {
     update(g);
   }
 
-  protected void paintString(Graphics g, ColourPickerBase base, String string,
+  protected void paintString(final Graphics g, final ColourPickerBase base, final String string,
       int colour) {
     final Font font = new Font("sansserif", Font.BOLD, 14);
     g.setFont(font);
@@ -162,14 +162,14 @@ public class ColourPickerBase extends Component implements MouseListener,
     g.drawString(string, bottom_x, bottom_y);
   }
 
-  protected void paintString(Graphics g, ColourPickerBase base, String string) {
+  protected void paintString(final Graphics g, final ColourPickerBase base, final String string) {
     final int colour = this.colour_picker.getColour();
     final int contrasting = blackOrWhite(colour);
 
     paintString(g, base, string, contrasting);
   }
 
-  private int blackOrWhite(int rgb) {
+  private int blackOrWhite(final int rgb) {
     final int red = (rgb >> 16) & 0xFF;
     final int green = (rgb >> 8) & 0xFF;
     final int blue = rgb & 0xFF;

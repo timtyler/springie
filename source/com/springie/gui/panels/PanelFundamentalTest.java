@@ -413,7 +413,7 @@ public class PanelFundamentalTest {
    * Waits for the animation thread to land a build with the given node
    * count (and link count, when non-negative).
    */
-  private void waitForBuild(int nodes, int links) throws Exception {
+  private void waitForBuild(final int nodes, final int links) throws Exception {
     // The demo's launch message runs on the animation thread; wait for
     // the build to land.
     final long deadline = System.currentTimeMillis() + 60000;

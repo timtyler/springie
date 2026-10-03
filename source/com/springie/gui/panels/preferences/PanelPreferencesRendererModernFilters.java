@@ -39,7 +39,7 @@ public class PanelPreferencesRendererModernFilters {
   void makePanel() {
     this.panel_colour_filter_a = new ColorPicker(
         new ColorPickerInformer() {
-          public void inform(int colour) {
+          public void inform(final int colour) {
             ColourModifier.colour_a_number = colour;
             RendererDelegator.repaintAll();
           }
@@ -48,7 +48,7 @@ public class PanelPreferencesRendererModernFilters {
 
     this.panel_colour_filter_b = new ColorPicker(
         new ColorPickerInformer() {
-          public void inform(int colour) {
+          public void inform(final int colour) {
             ColourModifier.colour_b_number = colour;
             RendererDelegator.repaintAll();
           }
@@ -83,7 +83,7 @@ public class PanelPreferencesRendererModernFilters {
     panel.add(new Label("Wireframe:", Label.RIGHT));
 
     this.choose_colour_modifier_wireframe = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final String scs = (String) e.getItem();
         final int val = PanelPreferencesRendererModernFilters.this.choose_colour_modifier_wireframe
             .str_to_num(scs);
@@ -107,7 +107,7 @@ public class PanelPreferencesRendererModernFilters {
     panel.add(new Label("Filled:", Label.RIGHT));
 
     this.choose_colour_modifier_filled = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final String scs = (String) e.getItem();
         final int val = PanelPreferencesRendererModernFilters.this.choose_colour_modifier_filled
             .str_to_num(scs);
@@ -126,7 +126,7 @@ public class PanelPreferencesRendererModernFilters {
     return panel;
   }
 
-  private void addColourOptions(TTChoice choice) {
+  private void addColourOptions(final TTChoice choice) {
     choice.add("Disabled", ColourModifier.disabled);
     choice.add("Natural", ColourModifier.natural);
     choice.add("Lighter", ColourModifier.lighter);

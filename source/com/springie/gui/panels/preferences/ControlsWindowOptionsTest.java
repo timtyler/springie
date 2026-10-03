@@ -345,14 +345,14 @@ class ControlsWindowOptionsTest {
    * Delivers a synthetic event to every toolkit-level event listener, the
    * way the event queue would.
    */
-  private static void dispatchToStayOnTopListeners(AWTEvent e) {
+  private static void dispatchToStayOnTopListeners(final AWTEvent e) {
     for (final AWTEventListener listener
         : Toolkit.getDefaultToolkit().getAWTEventListeners()) {
       listener.eventDispatched(e);
     }
   }
 
-  private static MouseEvent mousePress(Component source) {
+  private static MouseEvent mousePress(final Component source) {
     return new MouseEvent(source, MouseEvent.MOUSE_PRESSED,
         System.currentTimeMillis(), 0, 10, 10, 1, false);
   }
@@ -427,7 +427,7 @@ class ControlsWindowOptionsTest {
    * Finds a Choice containing the given item text, searching the
    * container hierarchy.
    */
-  private static Choice findChoice(Container container, String item_text) {
+  private static Choice findChoice(final Container container, final String item_text) {
     for (Component c : container.getComponents()) {
       if (c instanceof Choice) {
         final Choice ch = (Choice) c;

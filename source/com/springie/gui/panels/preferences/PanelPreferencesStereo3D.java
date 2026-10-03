@@ -42,7 +42,7 @@ public class PanelPreferencesStereo3D {
     final Panel panel_anaglyph = new Panel();
     this.checkbox_anaglyph = new Checkbox("Stereo3D", FrEnd.render_anaglyph);
     this.checkbox_anaglyph.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         FrEnd.render_anaglyph = ((Checkbox) e.getSource()).getState();
         RendererDelegator.repaintAll();
       }
@@ -62,7 +62,7 @@ public class PanelPreferencesStereo3D {
 
   private Panel getEyeLeftPanel() {
     this.choice_eye_left = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final String string = (String) e.getItem();
         NodeManager.mask_left = getChoiceEyeLeft().str_to_num(string);
       }
@@ -78,7 +78,7 @@ public class PanelPreferencesStereo3D {
 
   private Panel getEyeRightPanel() {
     this.choice_eye_right = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final String string = (String) e.getItem();
         NodeManager.mask_right = getChoiceEyeRight().str_to_num(string);
       }
@@ -92,7 +92,7 @@ public class PanelPreferencesStereo3D {
     return panel;
   }
 
-  private void addColourOptions(TTChoice choice) {
+  private void addColourOptions(final TTChoice choice) {
     choice.add("red", 0xFF0000);
     choice.add("green", 0x00FF00);
     choice.add("blue", 0x0000FF);
@@ -110,7 +110,7 @@ public class PanelPreferencesStereo3D {
       NodeManager.eye_distance / this.eye_distance_scale_factor, 10, -100, 110);
     this.scroll_bar_eye_distance
       .addAdjustmentListener(new AdjustmentListener() {
-        public void adjustmentValueChanged(AdjustmentEvent e) {
+        public void adjustmentValueChanged(final AdjustmentEvent e) {
           final int temp = e.getValue();
           NodeManager.eye_distance = temp * getEyeDistanceScaleFactor();
           reflectLabelEyeDistance();

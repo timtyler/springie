@@ -77,7 +77,7 @@ public class PanelPreferences {
     this.choice_controls_window_mode.add(GUIStrings.CONTROL_WINDOW_DOCKED);
     this.choice_controls_window_mode.select(FrEnd.controls_window_mode);
     this.choice_controls_window_mode.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         FrEnd.controls_window_mode =
             ((Choice) e.getSource()).getSelectedIndex();
         FrEnd.applyControlsWindowOptions();
@@ -89,7 +89,7 @@ public class PanelPreferences {
     this.checkbox_display_bottom_toolbar = new Checkbox(
         "Display bottom toolbar", FrEnd.viewer);
     this.checkbox_display_bottom_toolbar.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final RendererInfoButton infoButton = FrEnd.main_canvas
             .getInfoButton();
         if (((Checkbox) e.getSource()).getState()) {
@@ -105,7 +105,7 @@ public class PanelPreferences {
 
     final Button button_reset = new Button(GUIStrings.RESET_PREFERENCES);
     button_reset.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         resetPreferences();
       }
     });

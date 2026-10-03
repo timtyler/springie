@@ -50,7 +50,7 @@ public class ColourPickerController {
     //add(l);
   }
 
-  public void setColour(int x) {
+  public void setColour(final int x) {
     setColourHelper(x);
 
     this.cp_preview.setOriginalColour(getColour());
@@ -58,13 +58,13 @@ public class ColourPickerController {
     repaintChildren();
   }
 
-  public void setCurrentColour(int x) {
+  public void setCurrentColour(final int x) {
     setColourHelper(x);
     
     repaintChildren();
   }
 
-  private void setColourHelper(int x) {
+  private void setColourHelper(final int x) {
     final int o = (x >> 24) & 0xFF;
     final int r = (x >> 16) & 0xFF;
     final int g = (x >> 8) & 0xFF;
@@ -79,7 +79,7 @@ public class ColourPickerController {
     setRGB();
   }
 
-  public void inform(ColourPickerPreview cpfc) {
+  public void inform(final ColourPickerPreview cpfc) {
     this.cp_preview = cpfc;
   }
 
@@ -202,14 +202,14 @@ public class ColourPickerController {
     //this.cpfcv.setRGB();
   }
 
-  public int getColourUsingHSBColourModel(float h, float s, float b, float o) {
+  public int getColourUsingHSBColourModel(final float h, final float s, final float b, final float o) {
     final int opacity = (int) (o * 255) & 0xFF;
     final int rgb = Color.HSBtoRGB(h, s, b) & 0xFFFFFF;
 
     return rgb | (opacity << 24);
   }
 
-  public int getColourUsingRGBColourModel(int red, int green, int blue, float o) {
+  public int getColourUsingRGBColourModel(final int red, final int green, final int blue, final float o) {
     final int opacity = (int) (o * 255) & 0xFF;
     final int rgb = red << 16 | green << 8 | blue;
 

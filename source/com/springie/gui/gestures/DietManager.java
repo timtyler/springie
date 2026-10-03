@@ -20,7 +20,7 @@ public class DietManager {
   
   Point3D centre;
 
-  public void initialise(int x, int y) {
+  public void initialise(final int x, final int y) {
     if (FrEnd.button_virginity) {
       this.start_x = x;
 
@@ -35,7 +35,7 @@ public class DietManager {
     }
   }
 
-  public void performScale(int x, int y) {
+  public void performScale(final int x, final int y) {
     final float scale_factor = 1F + (x - this.start_x)
       / (float) (1 << (Coords.shift + 7));
 
@@ -65,14 +65,14 @@ public class DietManager {
     }
   }
 
-  private void rescaleLink(final float scale_factor, final LinkManager link_manager, int i) {
+  private void rescaleLink(final float scale_factor, final LinkManager link_manager, final int i) {
     final Link link = (Link) link_manager.element.get(i);
     
     //link.type.length = (int)(this.link_length[i] * scale_factor);
     link.type.radius = (int) (this.link_radius[i] * scale_factor);
   }
 
-  public void terminate(int x, int y) {
+  public void terminate(final int x, final int y) {
     if (this.node_radius != null) {
       performScale(x, y);
       this.node_radius = null;

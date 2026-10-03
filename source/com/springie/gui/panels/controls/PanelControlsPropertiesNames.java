@@ -37,14 +37,14 @@ public class PanelControlsPropertiesNames {
   private TTChoice choose_action;
 
   public StringMatcher matcher_equals = new StringMatcher() {
-    public boolean matches(String a, String b) {
+    public boolean matches(final String a, final String b) {
       if (a == null) {
         return false;
       }
       return a.equals(b);
     }
 
-    public String combine(String a, String b) {
+    public String combine(final String a, final String b) {
       if (a == null) {
         return b;
       }
@@ -55,24 +55,24 @@ public class PanelControlsPropertiesNames {
       return null;
     }
 
-    public String set(String from, String to, String current) {
+    public String set(final String from, final String to, final String current) {
       return to;
     }
   };
 
   public StringMatcher matcher_starts_with = new StringMatcher() {
-    public boolean matches(String a, String b) {
+    public boolean matches(final String a, final String b) {
       if (a == null) {
         return false;
       }
       return a.startsWith(b);
     }
 
-    public String combine(String current, String name) {
+    public String combine(final String current, final String name) {
       return extractSharedPrefix(current, name);
     }
 
-    public String set(String from, String to, String current) {
+    public String set(final String from, final String to, final String current) {
       if (current == null) {
         return to;
       } else if (matches(current, from)) {
@@ -83,18 +83,18 @@ public class PanelControlsPropertiesNames {
   };
 
   public StringMatcher matcher_ends_with = new StringMatcher() {
-    public boolean matches(String a, String b) {
+    public boolean matches(final String a, final String b) {
       if (a == null) {
         return false;
       }
       return a.endsWith(b);
     }
 
-    public String combine(String current, String name) {
+    public String combine(final String current, final String name) {
       return extractSharedSuffix(current, name);
     }
 
-    public String set(String from, String to, String current) {
+    public String set(final String from, final String to, final String current) {
       return to;
     }
   };
@@ -102,7 +102,7 @@ public class PanelControlsPropertiesNames {
   public StringMatcher matcher = this.matcher_equals;
 
   public Executor action_select = new Executor() {
-    public Object execute(Object parameter) {
+    public Object execute(final Object parameter) {
       final BaseElement be = (BaseElement) parameter;
       be.setSelected(true);
       return null;
@@ -110,7 +110,7 @@ public class PanelControlsPropertiesNames {
   };
 
   public Executor action_deselect = new Executor() {
-    public Object execute(Object parameter) {
+    public Object execute(final Object parameter) {
       final BaseElement be = (BaseElement) parameter;
       be.setSelected(false);
       return null;
@@ -118,7 +118,7 @@ public class PanelControlsPropertiesNames {
   };
 
   public Executor action_invert = new Executor() {
-    public Object execute(Object parameter) {
+    public Object execute(final Object parameter) {
       final BaseElement be = (BaseElement) parameter;
       be.setSelected(!be.isSelected());
       return null;
@@ -138,7 +138,7 @@ public class PanelControlsPropertiesNames {
     prefix.add(new Label("Name"));
 
     this.choose_matcher = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final String scs = (String) e.getItem();
         final int value = PanelControlsPropertiesNames.this.choose_matcher
             .str_to_num(scs);
@@ -162,7 +162,7 @@ public class PanelControlsPropertiesNames {
     prefix.add(this.textfield);
 
     this.button_set_prefix.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         final String proposed = PanelControlsPropertiesNames.this.textfield.getText();
         final String sanitised = sanitise(proposed);
         getNewMessageManager().add(new NewMessage(sanitised) {
@@ -172,7 +172,7 @@ public class PanelControlsPropertiesNames {
                 .combineSelection(PanelControlsPropertiesNames.this.matcher);
             final StringPair pair = new StringPair(from, to);
             final Executor ex = new Executor(pair) {
-              public Object execute(Object parameter) {
+              public Object execute(final Object parameter) {
                 final StringPair pair = (StringPair) this.input;
                 final String from = pair.a;
                 final String to = pair.b;
@@ -201,7 +201,7 @@ public class PanelControlsPropertiesNames {
     bottom.add(this.button_set_prefix);
 
     this.choose_action = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final String scs = (String) e.getItem();
         final int value = PanelControlsPropertiesNames.this.choose_action
             .str_to_num(scs);
@@ -223,7 +223,7 @@ public class PanelControlsPropertiesNames {
     bottom.add(this.choose_action.choice);
 
     this.button_select_prefix.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(
             new NewMessage(PanelControlsPropertiesNames.this.textfield
                 .getText()) {
@@ -232,7 +232,7 @@ public class PanelControlsPropertiesNames {
                 // final String from = SelectionManager.getPrefixOfSelection();
                 // final StringPair pair = new StringPair(from, to);
                 final Executor ex = new Executor(pfx) {
-                  public Object execute(Object parameter) {
+                  public Object execute(final Object parameter) {
                     final String pfx = (String) this.input;
                     final BaseElement be = (BaseElement) parameter;
                     if (be.name != null) {
@@ -262,7 +262,7 @@ public class PanelControlsPropertiesNames {
     this.textfield.setText(combined);
   }
 
-  private String extractSharedPrefix(String current, String name) {
+  private String extractSharedPrefix(final String current, final String name) {
     if (current == null) {
       return name;
     }
@@ -285,7 +285,7 @@ public class PanelControlsPropertiesNames {
     return name.substring(0, same_up_to);
   }
 
-  private String extractSharedSuffix(String current, String name) {
+  private String extractSharedSuffix(final String current, final String name) {
     if (current == null) {
       return name;
     }
@@ -308,7 +308,7 @@ public class PanelControlsPropertiesNames {
     return name.substring(name.length() - same_up_to);
   }
 
-  public String sanitise(String name) {
+  public String sanitise(final String name) {
     if ("".equals(name)) {
       return null;
     }

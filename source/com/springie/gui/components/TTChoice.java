@@ -14,7 +14,7 @@ public class TTChoice {
 
   public Choice choice;
 
-  public TTChoice(ItemListener il) {
+  public TTChoice(final ItemListener il) {
     this.choice = new Choice();
     this.choice.addItemListener(il);
     this.choice.setBackground(Color.white);
@@ -23,7 +23,7 @@ public class TTChoice {
     this.vector = new ArrayList<>();
   }
 
-  public void add(String s, int n) {
+  public void add(final String s, int n) {
     this.choice.addItem(s);
 
     this.vector.add(new TTNumStr(n, s)); //  = s;
@@ -35,7 +35,7 @@ public class TTChoice {
     this.vector.clear(); //  = s;
   }
 
-  public int str_to_num(String s) {
+  public int str_to_num(final String s) {
     // int i = 0;
     final Iterator<TTNumStr> enumeration = this.vector.iterator();
 
@@ -50,7 +50,7 @@ public class TTChoice {
     return -99; // -99 = not found...
   }
 
-  public String num_to_str(int j) {
+  public String num_to_str(final int j) {
     //int i = 0;
     final Iterator<TTNumStr> enumeration = this.vector.iterator();
 

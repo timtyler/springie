@@ -63,7 +63,7 @@ class DeepestFirstRowVisibilityTest {
     return found[0];
   }
 
-  private static Choice findChoice(Component component) {
+  private static Choice findChoice(final Component component) {
     if (component instanceof Choice) {
       return (Choice) component;
     }
@@ -83,7 +83,7 @@ class DeepestFirstRowVisibilityTest {
    * Drives the real item listener the way a user picking from the
    * dropdown would (Choice.select() alone fires no event).
    */
-  private static void selectRenderer(String namePart) throws Exception {
+  private static void selectRenderer(final String namePart) throws Exception {
     final Choice dropdown = sharedDropdown();
     SwingUtilities.invokeAndWait(() -> {
       String target = null;

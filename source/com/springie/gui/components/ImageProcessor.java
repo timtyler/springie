@@ -17,8 +17,8 @@ public final class ImageProcessor {
   /**
    * Mask Given an image apply a mask to it. Returns a new image.
    */
-  public static ImageWrapper hsbFilter(ImageWrapper _i, float weight_h_float,
-      float weight_s_float, float weight_b_float) {
+  public static ImageWrapper hsbFilter(final ImageWrapper _i, final float weight_h_float,
+      float weight_s_float, final float weight_b_float) {
     final float[] hsb = new float[3];
 
     final int w = _i.getWidth(null);
@@ -65,7 +65,7 @@ public final class ImageProcessor {
 
   // has side effects...
   // grab pixels into an array...
-  public static int[] imageToArray(ImageWrapper i) {
+  public static int[] imageToArray(final ImageWrapper i) {
     if (i == null) {
       return null;
     }

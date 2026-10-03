@@ -52,11 +52,11 @@ public class PanelPreferencesRendererRaytraced {
     this.effect_glossiness = effectPanel("Glossiness",
         RendererDelegator.glossiness_enabled, RendererDelegator.glossiness,
         new EffectSetter() {
-          public void setEnabled(boolean on) {
+          public void setEnabled(final boolean on) {
             RendererDelegator.glossiness_enabled = on;
           }
 
-          public void setStrength(int percent) {
+          public void setStrength(final int percent) {
             RendererDelegator.glossiness = percent;
           }
         }, false, 50);
@@ -67,11 +67,11 @@ public class PanelPreferencesRendererRaytraced {
     this.effect_specular = effectPanel("Specular",
         RendererDelegator.specular_enabled, RendererDelegator.specular,
         new EffectSetter() {
-          public void setEnabled(boolean on) {
+          public void setEnabled(final boolean on) {
             RendererDelegator.specular_enabled = on;
           }
 
-          public void setStrength(int percent) {
+          public void setStrength(final int percent) {
             RendererDelegator.specular = percent;
           }
         }, true, 100);
@@ -80,11 +80,11 @@ public class PanelPreferencesRendererRaytraced {
     this.effect_fresnel = effectPanel("Fresnel",
         RendererDelegator.fresnel_enabled, RendererDelegator.fresnel,
         new EffectSetter() {
-          public void setEnabled(boolean on) {
+          public void setEnabled(final boolean on) {
             RendererDelegator.fresnel_enabled = on;
           }
 
-          public void setStrength(int percent) {
+          public void setStrength(final int percent) {
             RendererDelegator.fresnel = percent;
           }
         }, false, 50);
@@ -93,11 +93,11 @@ public class PanelPreferencesRendererRaytraced {
     this.effect_fill_light = effectPanel("Fill light",
         RendererDelegator.fill_light_enabled, RendererDelegator.fill_light,
         new EffectSetter() {
-          public void setEnabled(boolean on) {
+          public void setEnabled(final boolean on) {
             RendererDelegator.fill_light_enabled = on;
           }
 
-          public void setStrength(int percent) {
+          public void setStrength(final int percent) {
             RendererDelegator.fill_light = percent;
           }
         }, false, 50);
@@ -171,8 +171,8 @@ public class PanelPreferencesRendererRaytraced {
    * One effect row: a checkbox (the off switch) and a 10-100% strength
    * dropdown that only shows while the effect is enabled.
    */
-  private Effect effectPanel(String name, boolean enabled, int strength,
-      final EffectSetter setter, boolean default_on,
+  private Effect effectPanel(final String name, final boolean enabled, final int strength,
+      final EffectSetter setter, final boolean default_on,
       int default_strength) {
     final Panel panel = new Panel();
 
@@ -180,7 +180,7 @@ public class PanelPreferencesRendererRaytraced {
     // Holder so the listener can use the TTChoice's own mapping.
     final TTChoice[] holder = new TTChoice[1];
     final TTChoice tt_choice = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final String scs = (String) e.getItem();
         setter.setStrength(holder[0].str_to_num(scs));
       }
@@ -192,7 +192,7 @@ public class PanelPreferencesRendererRaytraced {
     tt_choice.choice.select(tt_choice.num_to_str(strength));
 
     checkbox.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final boolean on = ((Checkbox) e.getSource()).getState();
         setter.setEnabled(on);
         tt_choice.choice.setVisible(on);
@@ -214,7 +214,7 @@ public class PanelPreferencesRendererRaytraced {
     this.checkbox_shadows = new Checkbox("Shadows",
         RendererDelegator.shadows);
     this.checkbox_shadows.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         RendererDelegator.shadows = PanelPreferencesRendererRaytraced.this.checkbox_shadows
             .getState();
       }

@@ -52,7 +52,7 @@ class DisplayTypeDropdownTest {
   }
 
   /** The Renderer: row: a "Renderer:" label plus the dropdown. */
-  private static Choice displayTypeChoice(Panel holder) throws Exception {
+  private static Choice displayTypeChoice(final Panel holder) throws Exception {
     final Choice[] found = new Choice[1];
     SwingUtilities.invokeAndWait(() -> {
       for (int i = 0; i < holder.getComponentCount() && found[0] == null; i++) {
@@ -62,7 +62,7 @@ class DisplayTypeDropdownTest {
     return found[0];
   }
 
-  private static Choice findChoice(Component component) {
+  private static Choice findChoice(final Component component) {
     if (component instanceof Choice) {
       return (Choice) component;
     }
@@ -87,7 +87,7 @@ class DisplayTypeDropdownTest {
         FrEnd.panel_preferences_renderer_original.panel_renderer_tab);
   }
 
-  private static boolean hasDisplayTypeLabel(Panel holder) throws Exception {
+  private static boolean hasDisplayTypeLabel(final Panel holder) throws Exception {
     final boolean[] found = new boolean[1];
     SwingUtilities.invokeAndWait(() -> {
       found[0] = findLabel(holder, "Renderer:");
@@ -95,7 +95,7 @@ class DisplayTypeDropdownTest {
     return found[0];
   }
 
-  private static boolean findLabel(Component component, String text) {
+  private static boolean findLabel(final Component component, final String text) {
     if (component instanceof Label) {
       return text.equals(((Label) component).getText());
     }
@@ -114,7 +114,7 @@ class DisplayTypeDropdownTest {
    * Drives the real item listener the way a user picking from the
    * dropdown would.
    */
-  private static void selectRenderer(Choice dropdown, String namePart)
+  private static void selectRenderer(final Choice dropdown, final String namePart)
       throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       String target = null;
@@ -132,7 +132,7 @@ class DisplayTypeDropdownTest {
     });
   }
 
-  private static String selectedItem(Choice dropdown) throws Exception {
+  private static String selectedItem(final Choice dropdown) throws Exception {
     final String[] selected = new String[1];
     SwingUtilities.invokeAndWait(() -> {
       selected[0] = dropdown.getSelectedItem();

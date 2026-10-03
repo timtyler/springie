@@ -55,26 +55,26 @@ public class WrapLayout extends FlowLayout {
     super();
   }
 
-  public WrapLayout(int align) {
+  public WrapLayout(final int align) {
     super(align);
   }
 
-  public WrapLayout(int align, int hgap, int vgap) {
+  public WrapLayout(final int align, final int hgap, final int vgap) {
     super(align, hgap, vgap);
   }
 
   @Override
-  public Dimension preferredLayoutSize(Container target) {
+  public Dimension preferredLayoutSize(final Container target) {
     return wrapSizeAt(target, effectiveWidth(target), true);
   }
 
   @Override
-  public Dimension minimumLayoutSize(Container target) {
+  public Dimension minimumLayoutSize(final Container target) {
     return wrapSizeAt(target, effectiveWidth(target), false);
   }
 
   @Override
-  public void layoutContainer(Container target) {
+  public void layoutContainer(final Container target) {
     synchronized (target.getTreeLock()) {
       final Insets insets = target.getInsets();
       final int max_width = Math.max(0,
@@ -132,7 +132,7 @@ public class WrapLayout extends FlowLayout {
    * children squeezed narrower than their natural width are assigned the
    * available width and a height recomputed for it.
    */
-  private ArrayList<Row> buildRows(Container target, int max_width,
+  private ArrayList<Row> buildRows(final Container target, final int max_width,
       boolean preferred) {
     final ArrayList<Row> rows = new ArrayList<>();
     Row row = new Row();
@@ -179,7 +179,7 @@ public class WrapLayout extends FlowLayout {
    * (or minimum) width, or the natural single-row width for a nested
    * wrapping container.
    */
-  private int naturalWidth(Component c, boolean preferred) {
+  private int naturalWidth(final Component c, final boolean preferred) {
     final WrapLayout nested = nestedLayout(c);
     if (nested != null) {
       return nested.wrapSizeAt((Container) c, Integer.MAX_VALUE,
@@ -194,7 +194,7 @@ public class WrapLayout extends FlowLayout {
    * get (capped at its natural width); every other child keeps its
    * preferred/minimum size, as with FlowLayout.
    */
-  private int[] assignedSize(Component c, int available, boolean preferred) {
+  private int[] assignedSize(final Component c, final int available, final boolean preferred) {
     final WrapLayout nested = nestedLayout(c);
     if (nested == null) {
       final Dimension d = preferred ? c.getPreferredSize()
@@ -207,7 +207,7 @@ public class WrapLayout extends FlowLayout {
     return new int[] { w, h };
   }
 
-  private static WrapLayout nestedLayout(Component c) {
+  private static WrapLayout nestedLayout(final Component c) {
     if (c instanceof Container) {
       final java.awt.LayoutManager layout = ((Container) c).getLayout();
       if (layout instanceof WrapLayout) {
@@ -222,7 +222,7 @@ public class WrapLayout extends FlowLayout {
    * container needs: the wrapped height, and the width it was asked about
    * (or the natural single-row width when unbounded).
    */
-  private Dimension wrapSizeAt(Container target, int width,
+  private Dimension wrapSizeAt(final Container target, final int width,
       boolean preferred) {
     synchronized (target.getTreeLock()) {
       final Insets insets = target.getInsets();
@@ -256,7 +256,7 @@ public class WrapLayout extends FlowLayout {
    * (during a resize the ancestors already have the new width while this
    * container is still at the old one), otherwise unbounded.
    */
-  private static int effectiveWidth(Container target) {
+  private static int effectiveWidth(final Container target) {
     int w = target.getWidth();
     if (w > 0) {
       return w;

@@ -54,7 +54,7 @@ class ControlsButtonDockTest {
     GuiTestSupport.disposeFrames();
   }
 
-  private static void collectImageButtons(Container container,
+  private static void collectImageButtons(final Container container,
       List<ImageButton> out) {
     for (final Component child : container.getComponents()) {
       if (child instanceof ImageButton) {

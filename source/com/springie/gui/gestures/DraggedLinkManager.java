@@ -17,7 +17,7 @@ public class DraggedLinkManager {
   public Node pointer_node;
   Node end_node;
 
-  void doLink(int x, int y) {
+  void doLink(final int x, final int y) {
     if (FrEnd.button_virginity) {
       final Node dragged_node = ContextManager.getNodeManager().isThereOne(x, y);
       if (dragged_node != null) {
@@ -47,7 +47,7 @@ public class DraggedLinkManager {
   }
 
   // TODO: this.pointer_node never gets deleted...?
-  public void terminateLink(int x, int y) {
+  public void terminateLink(final int x, final int y) {
     if (this.pointer_node != null) {
       final NodeManager node_manager = ContextManager.getNodeManager();
       final Node dragged_node = node_manager.getSelectedNode();

@@ -38,7 +38,7 @@ public class PanelPreferencesRendererModernColours {
   void makePanel() {
     this.panel_colors_background = new ColorPicker(
         new ColorPickerInformer() {
-          public void inform(int colour) {
+          public void inform(final int colour) {
             RendererDelegator.color_background_number = colour;
             RendererDelegator.color_background = new Color(colour);
             RendererDelegator.repaint_all_objects = true;
@@ -48,7 +48,7 @@ public class PanelPreferencesRendererModernColours {
         .setColour(RendererDelegator.color_background_number);
 
     this.panel_colours_selection = new ColorPicker(new ColorPickerInformer() {
-      public void inform(int colour) {
+      public void inform(final int colour) {
         RendererDelegator.colour_selected_number = colour;
         RendererDelegator.colour_selected = new Color(colour);
         RendererDelegator.repaint_all_objects = true;
@@ -58,7 +58,7 @@ public class PanelPreferencesRendererModernColours {
         .setColour(RendererDelegator.colour_selected_number);
 
     this.panel_colors_charges = new ColorPicker(new ColorPickerInformer() {
-      public void inform(int colour) {
+      public void inform(final int colour) {
         RendererDelegator.color_charge_number = colour;
         RendererDelegator.repaint_all_objects = true;
       }
@@ -67,7 +67,7 @@ public class PanelPreferencesRendererModernColours {
         .setColour(RendererDelegator.color_charge_number);
 
     this.panel_colors_label = new ColorPicker(new ColorPickerInformer() {
-      public void inform(int colour) {
+      public void inform(final int colour) {
         ElementRendererLink.colour_fg = colour;
         RendererDelegator.repaint_all_objects = true;
       }
@@ -77,7 +77,7 @@ public class PanelPreferencesRendererModernColours {
 
     this.panel_colours_label_background = new ColorPicker(
         new ColorPickerInformer() {
-          public void inform(int colour) {
+          public void inform(final int colour) {
             ElementRendererLink.colour_bg = colour;
             RendererDelegator.repaint_all_objects = true;
           }

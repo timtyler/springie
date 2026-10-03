@@ -32,7 +32,7 @@ public class PanelPreferencesUpdate {
 
   void makePanel() {
     final TTChoice choose_delay = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final String string = (String) e.getItem();
         FrEnd.delay = FrEnd.choose_delay.str_to_num(string);
       }
@@ -76,7 +76,7 @@ public class PanelPreferencesUpdate {
         "Stop animating when pointer exits", b);
     this.checkbox_animate_pointer_over = checkbox_animate_pointer_over;
     checkbox_animate_pointer_over.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         FrEnd.preferences.map.put(
             Preferences.key_update_animation_when_pointer_over,
             Boolean.valueOf(((Checkbox) e.getSource()).getState()));

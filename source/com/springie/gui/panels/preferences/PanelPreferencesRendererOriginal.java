@@ -71,7 +71,7 @@ public class PanelPreferencesRendererOriginal {
     final Panel panel_node_render_type = panelNodeRenderType();
     
     final TTChoice choose_display_struts = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final String scs = (String) e.getItem();
         Link.link_display_struts_type = FrEnd.choose_display_struts
             .str_to_num(scs);
@@ -89,7 +89,7 @@ public class PanelPreferencesRendererOriginal {
     panel_link_display_struts.add(choose_display_struts.choice);
 
     final TTChoice choose_display_cables = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final String scs = (String) e.getItem();
         Link.link_display_cables_type = FrEnd.choose_display_cables
             .str_to_num(scs);
@@ -121,14 +121,14 @@ public class PanelPreferencesRendererOriginal {
     panel_link_length.add(new Label("Struts and cables are:", Label.RIGHT));
     this.checkbox_shortlinks = new Checkbox("short", checkbox_linklength, true);
     this.checkbox_shortlinks.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         getNewMessageManager().add(new LinkLengthMessage(Link.SHORT));
       }
     });
 
     this.checkbox_longlinks = new Checkbox("long", checkbox_linklength, false);
     this.checkbox_longlinks.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         getNewMessageManager().add(new LinkLengthMessage(Link.LONG));
       }
     });
@@ -161,7 +161,7 @@ public class PanelPreferencesRendererOriginal {
 
     final Checkbox checkbox_xor = new Checkbox(GUIStrings.XOR, FrEnd.xor);
     checkbox_xor.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         FrEnd.xor = ((Checkbox) e.getSource()).getState();
         RendererDelegator.repaintAll();
       }
@@ -203,7 +203,7 @@ public class PanelPreferencesRendererOriginal {
     panel_node_render_type.add(new Label("Nodes are:", Label.RIGHT));
 
     FrEnd.choose_quality = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final String scs = (String) e.getItem();
         FrEnd.quality = FrEnd.choose_quality.str_to_num(scs);
         RendererDelegator.repaintAll();
@@ -330,7 +330,7 @@ public class PanelPreferencesRendererOriginal {
     panel_polygon_render_type.add(new Label("Polygon fill:", Label.RIGHT));
 
     this.choose_polygon_render_type = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final String scs = (String) e.getItem();
         Face.face_display_type = getChoosePolygonRenderType().str_to_num(scs);
         RendererDelegator.repaintAll();
@@ -434,7 +434,7 @@ public class PanelPreferencesRendererOriginal {
         Link.number_of_strut_render_divisions, 4, 0, 22);
     this.scroll_bar_link_render_struts
         .addAdjustmentListener(new AdjustmentListener() {
-          public void adjustmentValueChanged(AdjustmentEvent e) {
+          public void adjustmentValueChanged(final AdjustmentEvent e) {
             final int temp = e.getValue();
             Link.number_of_strut_render_divisions = temp;
             reflectLabelStrutRenderNumber();
@@ -460,7 +460,7 @@ public class PanelPreferencesRendererOriginal {
         Link.number_of_cable_render_divisions, 4, 0, 22);
     this.scroll_bar_link_render_cables
         .addAdjustmentListener(new AdjustmentListener() {
-          public void adjustmentValueChanged(AdjustmentEvent e) {
+          public void adjustmentValueChanged(final AdjustmentEvent e) {
             final int temp = e.getValue();
             Link.number_of_cable_render_divisions = temp;
             reflectLabelCableRenderNumber();
@@ -486,7 +486,7 @@ public class PanelPreferencesRendererOriginal {
         Scrollbar.HORIZONTAL, Node.number_of_render_divisions, 4, 0, 12);
     this.scroll_bar_render_nodes = scroll_bar_render_nodes;
     scroll_bar_render_nodes.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int temp = e.getValue();
         Node.number_of_render_divisions = temp;
         reflectLabelNodeRenderNumber();

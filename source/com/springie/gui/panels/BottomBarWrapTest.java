@@ -88,7 +88,7 @@ class BottomBarWrapTest {
    * settle (the wrap layout converges it with one async revalidate after
    * a row-count change). Returns the settled bar height.
    */
-  private static int resizeAndSettle(int width) throws Exception {
+  private static int resizeAndSettle(final int width) throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       FrEnd.paused = true;
       FrEnd.frame_main.setSize(width, 700);
@@ -131,7 +131,7 @@ class BottomBarWrapTest {
    * must sit fully inside every ancestor. A clipped child still reports
    * isShowing() == true, so containment is the check that matters.
    */
-  private static void assertAllChildrenFitInsideAncestors(String where)
+  private static void assertAllChildrenFitInsideAncestors(final String where)
       throws Exception {
     final Component[][] children = new Component[1][];
     final String[] names = new String[1];
@@ -152,7 +152,7 @@ class BottomBarWrapTest {
     }
   }
 
-  private static boolean containsButtonBar(Component[] children) {
+  private static boolean containsButtonBar(final Component[] children) {
     for (final Component c : children) {
       if (c instanceof ButtonBar) {
         return true;
@@ -161,7 +161,7 @@ class BottomBarWrapTest {
     return false;
   }
 
-  private static boolean containsCardPanel(Component[] children) {
+  private static boolean containsCardPanel(final Component[] children) {
     for (final Component c : children) {
       if (c instanceof Container
           && ((Container) c).getLayout() instanceof CardLayout) {
@@ -171,7 +171,7 @@ class BottomBarWrapTest {
     return false;
   }
 
-  private static String describe(Component[] children) {
+  private static String describe(final Component[] children) {
     final StringBuilder sb = new StringBuilder();
     for (final Component c : children) {
       if (sb.length() > 0) {
@@ -182,7 +182,7 @@ class BottomBarWrapTest {
     return sb.toString();
   }
 
-  private static void assertFitsInsideAncestors(Component child, String name)
+  private static void assertFitsInsideAncestors(final Component child, final String name)
       throws Exception {
     final boolean[] clipped = new boolean[1];
     final String[] details = new String[1];

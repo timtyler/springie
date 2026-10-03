@@ -34,7 +34,7 @@ public class PanelPreferencesImport {
     this.checkbox_merge = new Checkbox(
         "Merge new structures with the scene");
     this.checkbox_merge.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         FrEnd.merge = ((Checkbox) e.getSource()).getState();
       }
     });
@@ -53,7 +53,7 @@ public class PanelPreferencesImport {
         import_scale, 10, 0, 110);
     this.scroll_bar_import_scale
         .addAdjustmentListener(new AdjustmentListener() {
-          public void adjustmentValueChanged(AdjustmentEvent e) {
+          public void adjustmentValueChanged(final AdjustmentEvent e) {
             import_scale = e.getValue();
             reflectImportScale();
           }

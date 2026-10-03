@@ -18,7 +18,7 @@ public final class ButtonMouseActionStrings {
     //...
   }
   
-  public static int stringToActionNumber(String str) {
+  public static int stringToActionNumber(final String str) {
     if (str == ButtonMouseActionStrings.action_select) {
       return Actions.SELECT;
     } else    if (str == ButtonMouseActionStrings.action_rotate_xy) {

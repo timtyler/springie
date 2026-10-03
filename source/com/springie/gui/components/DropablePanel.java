@@ -48,11 +48,11 @@ public class DropablePanel extends Panel {
   }
 
   class DTListener implements DropTargetListener {
-    private boolean isDragFlavorSupported(DropTargetDragEvent e) {
+    private boolean isDragFlavorSupported(final DropTargetDragEvent e) {
       return true;
     }
 
-    private DataFlavor chooseDropFlavor(DropTargetDropEvent e) {
+    private DataFlavor chooseDropFlavor(final DropTargetDropEvent e) {
 
       DataFlavor chosen = null;
 
@@ -63,7 +63,7 @@ public class DropablePanel extends Panel {
       return chosen;
     }
 
-    private boolean isDragOk(DropTargetDragEvent e) {
+    private boolean isDragOk(final DropTargetDragEvent e) {
       if (!isDragFlavorSupported(e)) {
         logger.debug("isDragOk:no flavors chosen");
         return false;
@@ -79,7 +79,7 @@ public class DropablePanel extends Panel {
       return true;
     }
 
-    public void dragEnter(DropTargetDragEvent e) {
+    public void dragEnter(final DropTargetDragEvent e) {
       //Log.log("Drag: dragEnter");
       if (!isDragOk(e)) {
         logger.debug("Drag: enter not ok");
@@ -90,7 +90,7 @@ public class DropablePanel extends Panel {
       e.acceptDrag(e.getDropAction());
     }
 
-    public void dragOver(DropTargetDragEvent e) {
+    public void dragOver(final DropTargetDragEvent e) {
       if (!isDragOk(e)) {
         System.out.println("dtlistener dragOver not ok");
         e.rejectDrag();
@@ -100,7 +100,7 @@ public class DropablePanel extends Panel {
       e.acceptDrag(e.getDropAction());
     }
 
-    public void dropActionChanged(DropTargetDragEvent e) {
+    public void dropActionChanged(final DropTargetDragEvent e) {
       if (!isDragOk(e)) {
         logger.debug("dtlistener changed not ok");
         e.rejectDrag();
@@ -110,11 +110,11 @@ public class DropablePanel extends Panel {
       e.acceptDrag(e.getDropAction());
     }
 
-    public void dragExit(DropTargetEvent e) {
+    public void dragExit(final DropTargetEvent e) {
       //Log.log("dtlistener dragExit");
     }
 
-    public void drop(DropTargetDropEvent e) {
+    public void drop(final DropTargetDropEvent e) {
       //Log.log("dtlistener drop");
 
       final DataFlavor chosen = chooseDropFlavor(e);
@@ -213,7 +213,7 @@ public class DropablePanel extends Panel {
       e.dropComplete(true);
     }
 
-    private void reportException(DropTargetDropEvent e, Exception t) {
+    private void reportException(final DropTargetDropEvent e, final Exception t) {
       logger.debug("Couldn't get transfer data: " + t.getMessage());
       logger.error("Unexpected exception", t);
       e.dropComplete(false);

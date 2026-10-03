@@ -17,11 +17,11 @@ public class ColorPicker {
 
   ColourPickerPreview cp_fc;
 
-  public ColorPicker(ColorPickerInformer informer) {
+  public ColorPicker(final ColorPickerInformer informer) {
     makePanel(informer);
   }
 
-  void makePanel(ColorPickerInformer informer) {
+  void makePanel(final ColorPickerInformer informer) {
     this.color_picker_controller = new ColourPickerController();
 
     final ColourPickerVRGBR cp_red = new ColourPickerVRGBR();

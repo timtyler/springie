@@ -63,7 +63,7 @@ public class PanelPreferencesViewpoint {
         new Checkbox(GUIStrings.SHOW_BOUNDARY_BOX);
     this.checkbox_show_boundary_box.setState(FrEnd.show_boundary_box);
     this.checkbox_show_boundary_box.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         FrEnd.show_boundary_box =
             getCheckboxShowBoundaryBox().getState();
         // A full redraw: the dots are painted in screen space, so turning
@@ -88,7 +88,7 @@ public class PanelPreferencesViewpoint {
     this.scroll_bar_translate_x = new Scrollbar(Scrollbar.HORIZONTAL, 0, 10,
       -110, 110);
     this.scroll_bar_translate_x.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         RendererDelegator.repaintAll();
         Coords.shift_constant_x = e.getValue() << 11;
         reflectTranslateX();
@@ -110,7 +110,7 @@ public class PanelPreferencesViewpoint {
     this.scroll_bar_translate_y = new Scrollbar(Scrollbar.HORIZONTAL, 0, 10,
       -110, 110);
     this.scroll_bar_translate_y.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         Coords.shift_constant_y = e.getValue() << 11;
         RendererDelegator.repaint_some_objects = true;
         reflectTranslateY();
@@ -133,7 +133,7 @@ public class PanelPreferencesViewpoint {
     this.scroll_bar_translate_z = new Scrollbar(Scrollbar.HORIZONTAL, 32, 10,
       0, 110);
     this.scroll_bar_translate_z.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         Coords.shift_constant_z = e.getValue() << 3;
         RendererDelegator.repaintAll();
         reflectTranslateZ();

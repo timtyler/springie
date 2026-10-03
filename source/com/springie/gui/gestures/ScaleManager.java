@@ -27,7 +27,7 @@ public class ScaleManager {
 
   LinkManager link_manager;
 
-  public void initialise(NodeManager node_manager, int x, int y) {
+  public void initialise(NodeManager node_manager, final int x, final int y) {
     this.node_manager = node_manager;
     this.link_manager = node_manager.getLinkManager();
 
@@ -49,7 +49,7 @@ public class ScaleManager {
     //FrEnd.forces_disabled_during_gesture = true;
   }
 
-  public void performScale(int x, int y) {
+  public void performScale(final int x, final int y) {
     final float scale_factor = 1F + (x - this.start_x)
       / (float) (1 << (Coords.shift + 7));
 
@@ -83,7 +83,7 @@ public class ScaleManager {
     }
   }
 
-  private void rescaleLink(final float scale_factor, int i) {
+  private void rescaleLink(final float scale_factor, final int i) {
     final LinkManager link_manager = this.link_manager;
     final Link link = (Link) link_manager.element.get(i);
 
@@ -91,7 +91,7 @@ public class ScaleManager {
     link.type.radius = (int) (this.link_radius[i] * scale_factor);
   }
 
-  public void terminate(int x, int y) {
+  public void terminate(final int x, final int y) {
     if (this.link_length != null) {
       performScale(x, y);
       this.link_length = null;

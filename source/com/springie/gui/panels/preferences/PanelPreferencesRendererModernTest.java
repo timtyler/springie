@@ -58,7 +58,7 @@ public class PanelPreferencesRendererModernTest {
     return choice;
   }
 
-  private static Choice findChoice(Container container) {
+  private static Choice findChoice(final Container container) {
     for (final Component c : container.getComponents()) {
       if (c instanceof Choice) {
         final Choice choice = (Choice) c;
@@ -78,7 +78,7 @@ public class PanelPreferencesRendererModernTest {
     return null;
   }
 
-  private static void pickPolyhedron(Choice choice, String item) {
+  private static void pickPolyhedron(final Choice choice, final String item) {
     // AWT's programmatic select() fires no event, so deliver the ItemEvent
     // the native peer would have delivered straight to the listeners.
     final ItemEvent event = new ItemEvent(choice,
@@ -207,7 +207,7 @@ public class PanelPreferencesRendererModernTest {
   /**
    * Finds the index of the given row component. Returns -1 when absent.
    */
-  private static int indexOf(Panel tab, Component row) {
+  private static int indexOf(final Panel tab, final Component row) {
     final Component[] rows = tab.getComponents();
     for (int i = 0; i < rows.length; i++) {
       if (rows[i] == row) {
@@ -221,7 +221,7 @@ public class PanelPreferencesRendererModernTest {
    * Finds the row of a sub-tab whose first Label reads the given text.
    * Returns -1 when no row carries that label.
    */
-  private static int indexOfRowWithLabel(Panel tab, String text) {
+  private static int indexOfRowWithLabel(final Panel tab, final String text) {
     final Component[] rows = tab.getComponents();
     for (int i = 0; i < rows.length; i++) {
       if (rows[i] instanceof Container) {
@@ -235,7 +235,7 @@ public class PanelPreferencesRendererModernTest {
     return -1;
   }
 
-  private static TabbedPanel findTabbedPanel(Container container) {
+  private static TabbedPanel findTabbedPanel(final Container container) {
     for (final Component c : container.getComponents()) {
       if (c instanceof TabbedPanel) {
         return (TabbedPanel) c;
@@ -250,7 +250,7 @@ public class PanelPreferencesRendererModernTest {
     return null;
   }
 
-  private static Checkbox findCheckbox(Container container, String label) {
+  private static Checkbox findCheckbox(final Container container, final String label) {
     for (final Component c : container.getComponents()) {
       if (c instanceof Checkbox
           && label.equals(((Checkbox) c).getLabel())) {

@@ -20,7 +20,7 @@ public class FrameMaker {
   public Frame setUpFrameControls() {
     final Frame frame = new Frame();
     frame.addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {
+      public void windowClosing(final WindowEvent e) {
         FrEnd.frame_controls.setVisible(false);
       }
     });
@@ -41,7 +41,7 @@ public class FrameMaker {
   public Frame setUpFrameAbout() {
     final Frame frame = new Frame();
     frame.addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {
+      public void windowClosing(final WindowEvent e) {
         FrEnd.frame_panel_about.setVisible(false);
       }
     });
@@ -56,7 +56,7 @@ public class FrameMaker {
   public Frame setUpFrameHelp() {
     final Frame frame = new Frame();
     frame.addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {
+      public void windowClosing(final WindowEvent e) {
         FrEnd.frame_panel_help.setVisible(false);
       }
     });
@@ -69,7 +69,7 @@ public class FrameMaker {
     return frame;
   }
 
-  public static void centreOnScreen(Frame frame, int percentage_x,
+  public static void centreOnScreen(final Frame frame, final int percentage_x,
       int percentage_y) {
     final Toolkit toolkit = java.awt.Toolkit.getDefaultToolkit();
     final Dimension r_in = toolkit.getScreenSize();

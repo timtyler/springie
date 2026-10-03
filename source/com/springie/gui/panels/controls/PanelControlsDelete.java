@@ -44,7 +44,7 @@ public class PanelControlsDelete {
     final Panel panel_delete = new Panel();
     this.button_delete_selection = new Button("Delete selection");
     this.button_delete_selection.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new DeleteSelectedMessage());
       }
     });
@@ -62,7 +62,7 @@ public class PanelControlsDelete {
     this.button_edit_remove_polygons = new Button(
       GUIStrings.DOME_REMOVE_POLYGONS);
     this.button_edit_remove_polygons.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new RemovePolygonsMessage());
       }
     });
@@ -74,7 +74,7 @@ public class PanelControlsDelete {
   private Panel getRemoveLinksPanel() {
     this.button_edit_remove_links = new Button(GUIStrings.DOME_REMOVE_LINKS);
     this.button_edit_remove_links.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new RemoveLinksMessage());
       }
     });
@@ -86,7 +86,7 @@ public class PanelControlsDelete {
   private Panel getDeleteAllPanel() {
   this.button_delete_all = new Button(GUIStrings.BUTTON_CLEAR);
     button_delete_all.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             ContextManager.getNodeManager().initialSetUp();
@@ -109,7 +109,7 @@ public class PanelControlsDelete {
         GUIStrings.EDIT_REMOVE_LINK_AND_FUSE_ENDS);
     this.button_edit_remove_link_and_fuse_ends
         .addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
+          public void actionPerformed(final ActionEvent e) {
             getNewMessageManager().add(new RemoveLinkAndFuseEndsMessage());
           }
         });
@@ -124,7 +124,7 @@ public class PanelControlsDelete {
         GUIStrings.EDIT_FUSE_SELECTED_NODES);
     this.button_edit_fuse_nodes
         .addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
+          public void actionPerformed(final ActionEvent e) {
             getNewMessageManager().add(new NewMessage(null) {
               public Object execute() {
                 //Log.log("EXEXC!");

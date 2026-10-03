@@ -87,7 +87,7 @@ public class MenuBarTop extends MenuBar {
     file.add(MenuBarTop.LOAD_DATA);
 
     file.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         final String arg = e.getActionCommand();
 
         if (LOAD_DATA.equals(arg)) {
@@ -138,7 +138,7 @@ public class MenuBarTop extends MenuBar {
           i == active);
       final int index = i;
       item.addItemListener(new java.awt.event.ItemListener() {
-        public void itemStateChanged(java.awt.event.ItemEvent e) {
+        public void itemStateChanged(final java.awt.event.ItemEvent e) {
           ModelManager.switchTo(index);
         }
       });
@@ -149,7 +149,7 @@ public class MenuBarTop extends MenuBar {
     final MenuItem close = new MenuItem(CLOSE_MODEL);
     close.setEnabled(slots.size() > 1);
     close.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         ModelManager.closeActiveSlot();
       }
     });
@@ -179,7 +179,7 @@ public class MenuBarTop extends MenuBar {
           final String leaf_name = leaf.getKey();
           final String path = leaf.getValue();
           item.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(final ActionEvent e) {
               // Keep the bottom-bar preset dropdowns showing the same
               // preset that was just chosen here.
               FrEnd.panel_fundamental.selectPreset(index_name, leaf_name);
@@ -208,7 +208,7 @@ public class MenuBarTop extends MenuBar {
     for (final DemoCatalog.Demo demo : DemoCatalog.DEMOS) {
       final MenuItem item = new MenuItem(demo.name);
       item.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(final ActionEvent e) {
           // Keep the bottom-bar file card showing the same demo that was
           // just chosen here.
           FrEnd.panel_fundamental.selectDemo(demo.name);
@@ -230,7 +230,7 @@ public class MenuBarTop extends MenuBar {
     //file.add(MenuBarTop.PREFERENCES);
 
     file.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         final String arg = e.getActionCommand();
 
         if (MenuBarTop.CONTROLS.equals(arg)) {
@@ -257,7 +257,7 @@ public class MenuBarTop extends MenuBar {
     }
 
     export.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         final String arg = e.getActionCommand();
 
         if (SAVE_AS_FDL.equals(arg)) {
@@ -284,7 +284,7 @@ public class MenuBarTop extends MenuBar {
     menu.add(HELP);
     menu.add(ABOUT);
     menu.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         final String arg = e.getActionCommand();
         if (HELP.equals(arg)) {
           FrEnd.frame_panel_help.setVisible(true);
@@ -300,7 +300,7 @@ public class MenuBarTop extends MenuBar {
     final Menu menu = new Menu("Quit", true);
     menu.add(MenuBarTop.QUIT);
     menu.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         final String arg = e.getActionCommand();
         if (QUIT.equals(arg)) {
           chooseQuit();
@@ -335,7 +335,7 @@ public class MenuBarTop extends MenuBar {
     fd.setFile(ensureExtension(no_ext, "wrl"));
 
     fd.setFilenameFilter(new FilenameFilter() {
-      public boolean accept(File dir, String name) {
+      public boolean accept(final File dir, final String name) {
         return !(name.endsWith(".wrl"));
       }
     });
@@ -355,7 +355,7 @@ public class MenuBarTop extends MenuBar {
     fd.setFile(ensureExtension(leaf, "spr"));
 
     fd.setFilenameFilter(new FilenameFilter() {
-      public boolean accept(File dir, String name) {
+      public boolean accept(final File dir, final String name) {
         return !(name.endsWith(".spr"));
       }
     });
@@ -378,7 +378,7 @@ public class MenuBarTop extends MenuBar {
     fd.setFile(ensureExtension(leaf, "fdl"));
 
     fd.setFilenameFilter(new FilenameFilter() {
-      public boolean accept(File dir, String name) {
+      public boolean accept(final File dir, final String name) {
         return !(name.endsWith(".fdl"));
       }
     });
@@ -401,7 +401,7 @@ public class MenuBarTop extends MenuBar {
     fd.setFile(ensureExtension(leaf, "off"));
 
     fd.setFilenameFilter(new FilenameFilter() {
-      public boolean accept(File dir, String name) {
+      public boolean accept(final File dir, final String name) {
         return !(name.endsWith("off"));
       }
     });
@@ -424,7 +424,7 @@ public class MenuBarTop extends MenuBar {
     fd.setFile(ensureExtension(leaf, "eig"));
 
     fd.setFilenameFilter(new FilenameFilter() {
-      public boolean accept(File dir, String name) {
+      public boolean accept(final File dir, final String name) {
         return !(name.endsWith("eig"));
       }
     });
@@ -447,7 +447,7 @@ public class MenuBarTop extends MenuBar {
     fd.setFile(ensureExtension(leaf, "pov"));
 
     fd.setFilenameFilter(new FilenameFilter() {
-      public boolean accept(File dir, String name) {
+      public boolean accept(final File dir, final String name) {
         return !(name.endsWith("pov"));
       }
     });
@@ -461,7 +461,7 @@ public class MenuBarTop extends MenuBar {
     }
   }
 
-  private String ensureExtension(String leaf, String extension) {
+  private String ensureExtension(final String leaf, final String extension) {
     final int len = leaf.length();
     final int idx = leaf.lastIndexOf(".");
     if (idx > len - 6) {
@@ -471,7 +471,7 @@ public class MenuBarTop extends MenuBar {
     return leaf + "." + extension;
   }
 
-  private boolean isAcceptableFileName(String name) {
+  private boolean isAcceptableFileName(final String name) {
     if (name == null) {
       return false;
     }
@@ -487,7 +487,7 @@ public class MenuBarTop extends MenuBar {
     System.exit(0);
   }
 
-  private String getLeaf(String path) {
+  private String getLeaf(final String path) {
     final int i = path.lastIndexOf("/") + 1;
     return path.substring(i);
   }

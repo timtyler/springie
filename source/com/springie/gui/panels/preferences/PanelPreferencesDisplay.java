@@ -53,7 +53,7 @@ public class PanelPreferencesDisplay {
     panel.add(new Label("Renderer:"));
 
     final TTChoice choice = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         PanelPreferencesDisplay.this.onDisplayTypeChanged((String) e.getItem());
       }
     });
@@ -77,7 +77,7 @@ public class PanelPreferencesDisplay {
    * interaction, long after construction. Choice.select() does not
    * fire item events, so the sync cannot recurse.
    */
-  private void onDisplayTypeChanged(String selected) {
+  private void onDisplayTypeChanged(final String selected) {
     final TTChoice proto = this.display_type_choices.get(0);
     final int value = proto.str_to_num(selected);
     for (final TTChoice c : this.display_type_choices) {
@@ -159,7 +159,7 @@ public class PanelPreferencesDisplay {
     panel.add(new Label("Anti-aliasing:", Label.RIGHT));
 
     this.choose_antialiasing = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final String scs = (String) e.getItem();
         RendererDelegator.antialiasing =
             PanelPreferencesDisplay.this.choose_antialiasing.str_to_num(scs);
@@ -185,7 +185,7 @@ public class PanelPreferencesDisplay {
     panel.add(new Label("Pixellated:", Label.RIGHT));
 
     this.choose_pixellation = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final String scs = (String) e.getItem();
         RendererDelegator.pixellation =
             PanelPreferencesDisplay.this.choose_pixellation.str_to_num(scs);
@@ -219,7 +219,7 @@ public class PanelPreferencesDisplay {
     return panel_fps;
   }
 
-  private void applyRendererType(int value) {
+  private void applyRendererType(final int value) {
     this.panel_main.removeAll();
     final boolean raytraced = value == Quality.RAYTRACED
         || value == Quality.RAYTRACED_FAST;

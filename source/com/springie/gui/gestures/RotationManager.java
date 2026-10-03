@@ -21,7 +21,7 @@ public class RotationManager {
 
   Point3D centre;
 
-  public void initialise(int x, int y, boolean cw_acw) {
+  public void initialise(final int x, final int y, boolean cw_acw) {
     this.cw_acw = cw_acw;
     if (FrEnd.button_virginity) {
       this.start_x = x;
@@ -40,7 +40,7 @@ public class RotationManager {
     }
   }
 
-  public void performRotation(int x, int y) {
+  public void performRotation(final int x, final int y) {
     final int n = ContextManager.getNodeManager().element.size();
 
     final float theta1 = (x - this.start_x) / (float) (160 * Coords.x_pixelso2);
@@ -101,7 +101,7 @@ public class RotationManager {
     node.pos.addTuple3D(this.centre);
   }
 
-  public void terminate(int x, int y) {
+  public void terminate(final int x, final int y) {
     if (this.pos != null) {
       performRotation(x, y);
       this.pos = null;

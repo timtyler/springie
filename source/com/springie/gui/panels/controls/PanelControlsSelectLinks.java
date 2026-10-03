@@ -31,31 +31,31 @@ public class PanelControlsSelectLinks {
   static final int no_compression = 4;
 
   public static FilterSelectLinks filter_any_member = new FilterSelectLinks() {
-    public boolean qualifies(Link l) {
+    public boolean qualifies(final Link l) {
       return true;
     }
   };
 
   public static FilterSelectLinks filter_tension = new FilterSelectLinks() {
-    public boolean qualifies(Link l) {
+    public boolean qualifies(final Link l) {
       return l.type.tension;
     }
   };
 
   public static FilterSelectLinks filter_compression = new FilterSelectLinks() {
-    public boolean qualifies(Link l) {
+    public boolean qualifies(final Link l) {
       return l.type.compression;
     }
   };
 
   public static FilterSelectLinks filter_no_tension = new FilterSelectLinks() {
-    public boolean qualifies(Link l) {
+    public boolean qualifies(final Link l) {
       return !l.type.tension;
     }
   };
 
   public static FilterSelectLinks filter_no_compression = new FilterSelectLinks() {
-    public boolean qualifies(Link l) {
+    public boolean qualifies(final Link l) {
       return !l.type.compression;
     }
   };
@@ -73,7 +73,7 @@ public class PanelControlsSelectLinks {
   private Panel getSelectAllPanel() {
     this.choice_link_definition = new TTChoice(new ItemListener() {
 
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         if (e == null) {
           return;
         }

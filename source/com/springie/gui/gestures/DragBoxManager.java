@@ -26,7 +26,7 @@ public class DragBoxManager {
 
   ArrayList<Node> list_of_nodes;
 
-  public void drag(int x, int y) {
+  public void drag(final int x, final int y) {
     if (FrEnd.button_virginity) {
       this.drag_box_start = new Point(x, y);
     }
@@ -35,7 +35,7 @@ public class DragBoxManager {
     RendererDelegator.repaint_some_objects = true;
   }
 
-  public void terminate(int x, int y) {
+  public void terminate(final int x, final int y) {
     this.list_of_nodes = new ArrayList<>();
 
     if (this.drag_box_start != null) {
@@ -77,7 +77,7 @@ public class DragBoxManager {
     this.drag_box_end = null;
   }
 
-  private void selectNodesInBox(Point min, Point max) {
+  private void selectNodesInBox(final Point min, final Point max) {
     final NodeManager node_manager = ContextManager.getNodeManager();
 
     final int number_of_nodes = node_manager.element.size();
@@ -104,7 +104,7 @@ public class DragBoxManager {
     FrEnd.updateGUIToReflectSelectionChange();
   }
 
-  private void selectLinksWithNodesInList(ArrayList<Node> list_of_nodes) {
+  private void selectLinksWithNodesInList(final ArrayList<Node> list_of_nodes) {
     final LinkManager link_manager = ContextManager.getLinkManager();
 
     final int number = link_manager.element.size();
@@ -120,7 +120,7 @@ public class DragBoxManager {
     FrEnd.updateGUIToReflectSelectionChange();
   }
 
-  private boolean allNodesInArrayAreInVector(Node[] nodes, ArrayList<Node> list_of_nodes) {
+  private boolean allNodesInArrayAreInVector(final Node[] nodes, final ArrayList<Node> list_of_nodes) {
     final int total = nodes.length;
     for (int i = 0; i < total; i++) {
       if (!nodeIsInList(nodes[i], list_of_nodes)) {
@@ -131,7 +131,7 @@ public class DragBoxManager {
     return true;
   }
 
-  private void selectFacesWithNodesInList(ArrayList<Node> list_of_nodes) {
+  private void selectFacesWithNodesInList(final ArrayList<Node> list_of_nodes) {
     final FaceManager face_manager = ContextManager.getFaceManager();
 
     final int number = face_manager.element.size();
@@ -147,7 +147,7 @@ public class DragBoxManager {
     FrEnd.updateGUIToReflectSelectionChange();
   }
 
-  private boolean faceHasAllNodesInList(Face face, ArrayList<Node> vector) {
+  private boolean faceHasAllNodesInList(final Face face, final ArrayList<Node> vector) {
     final int n_of_nodes = face.nodes.size();
     for (int nn = n_of_nodes; --nn >= 0;) {
       if (!nodeIsInList(face.nodes.get(nn), vector)) {
@@ -158,7 +158,7 @@ public class DragBoxManager {
     return true;
   }
 
-  private boolean nodeIsInList(Node node, ArrayList<Node> vector) {
+  private boolean nodeIsInList(final Node node, final ArrayList<Node> vector) {
     final int number = vector.size();
     for (int temp = 0; temp < number; temp++) {
       final Node candidate = vector.get(temp);

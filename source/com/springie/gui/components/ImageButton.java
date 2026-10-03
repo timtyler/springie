@@ -69,8 +69,8 @@ public class ImageButton extends Canvas implements ActionListener {
   /**
    * Create a new button with the given images, group, and initial state.
    */
-  public ImageButton(ImageWrapper upImage, ImageWrapper downImage,
-      ImageButtonGroup group, String name, boolean state) {
+  public ImageButton(final ImageWrapper upImage, final ImageWrapper downImage,
+      ImageButtonGroup group, String name, final boolean state) {
 
     this.button_image_up = upImage;
     this.button_image_down = downImage;
@@ -84,12 +84,12 @@ public class ImageButton extends Canvas implements ActionListener {
    * Create a new button with the given images and group, and initially in its
    * "false" (up) state.
    */
-  public ImageButton(ImageWrapper upImage, ImageWrapper downImage,
-      ImageButtonGroup group, String name) {
+  public ImageButton(final ImageWrapper upImage, final ImageWrapper downImage,
+      ImageButtonGroup group, final String name) {
     this(upImage, downImage, group, name, false);
   }
 
-  public ImageButton(String iname, ImageButtonGroup group, String name, boolean state) {
+  public ImageButton(final String iname, final ImageButtonGroup group, final String name, final boolean state) {
     this(ImageLoader.getImage(GraphicsDirectory.directory + iname + "_o.png"),
         ImageLoader.getImage(GraphicsDirectory.directory + iname + "_i.png"),
         group, name, state);
@@ -148,7 +148,7 @@ public class ImageButton extends Canvas implements ActionListener {
     return preferredSize();
   }
 
-  public void paint(Graphics g) {
+  public void paint(final Graphics g) {
     ImageWrapper iw = getCurentImage();
     if (this.pointer_over) {
       iw = getHoverImage();
@@ -163,11 +163,11 @@ public class ImageButton extends Canvas implements ActionListener {
 
   
   
-  private ImageWrapper getLightenImage(ImageWrapper input) {
+  private ImageWrapper getLightenImage(final ImageWrapper input) {
     return ImageProcessor.hsbFilter(input, 0.9F, -0.9F, -0.5F);
   }
 
-  private ImageWrapper getGreyImage(ImageWrapper input) {
+  private ImageWrapper getGreyImage(final ImageWrapper input) {
     return ImageProcessor.hsbFilter(input, 1.0F, 0.1F, 0.6F);
   }
 
@@ -178,7 +178,7 @@ public class ImageButton extends Canvas implements ActionListener {
     return this.pressed;
   }
 
-  public void setEnabled(boolean b) {
+  public void setEnabled(final boolean b) {
     super.setEnabled(b);  
     repaint();
   }
@@ -186,7 +186,7 @@ public class ImageButton extends Canvas implements ActionListener {
   /**
    * Set the state of the button. True corresponds to down.
    */
-  public void setState(boolean state) {
+  public void setState(final boolean state) {
     if (this.group != null) {
       this.group.setCurrent(this);
     }
@@ -194,7 +194,7 @@ public class ImageButton extends Canvas implements ActionListener {
     setStateInternal(state);
   }
 
-  public void setStateInternal(boolean state) {
+  public void setStateInternal(final boolean state) {
     if (this.pressed != state) {
       this.pressed = state;
       sendActionEvent(state);
@@ -203,19 +203,19 @@ public class ImageButton extends Canvas implements ActionListener {
     repaint();
   }
 
-  private void sendActionEvent(boolean state) {
+  private void sendActionEvent(final boolean state) {
     final ActionEvent ie = new ActionEvent(this, state ? 1 : 0, this.name, 0);
     this.actionPerformed(ie);
   }
 
-  public boolean mouseDown(Event evt, int x, int y) {
+  public boolean mouseDown(final Event evt, final int x, final int y) {
     cancelTooltip();
     this.button_pressed = true;
     repaint();
     return true;
   }
 
-  public boolean mouseUp(Event evt, int x, int y) {
+  public boolean mouseUp(final Event evt, final int x, final int y) {
     if (this.button_pressed && this.pointer_over) {
       // //postEvent(new Event(this, evt.when, Event.ACTION_EVENT, evt.x, evt.y,
       // evt.key, evt.modifiers, evt.arg));
@@ -236,7 +236,7 @@ public class ImageButton extends Canvas implements ActionListener {
     return true;
   }
 
-  public boolean mouseEnter(Event evt, int x, int y) {
+  public boolean mouseEnter(final Event evt, final int x, final int y) {
 
     this.pointer_over = true;
     repaint();
@@ -244,7 +244,7 @@ public class ImageButton extends Canvas implements ActionListener {
     return true;
   }
 
-  public boolean mouseExit(Event evt, int x, int y) {
+  public boolean mouseExit(final Event evt, final int x, final int y) {
 
     this.pointer_over = false;
     cancelTooltip();
@@ -257,7 +257,7 @@ public class ImageButton extends Canvas implements ActionListener {
     this.listener = listener;
   }
 
-  public void actionPerformed(ActionEvent arg0) {
+  public void actionPerformed(final ActionEvent arg0) {
     if (this.listener != null) {
       this.listener.actionPerformed(arg0);
     }
@@ -275,7 +275,7 @@ public class ImageButton extends Canvas implements ActionListener {
    * Overrides the default tooltip (the button's name) with custom help
    * text, shown while the pointer hovers over the button.
    */
-  public void setTooltipText(String text) {
+  public void setTooltipText(final String text) {
     this.tooltip_text = text;
   }
 
@@ -283,7 +283,7 @@ public class ImageButton extends Canvas implements ActionListener {
     return this.tooltip_text;
   }
 
-  private void scheduleTooltip(int x, int y) {
+  private void scheduleTooltip(final int x, final int y) {
     cancelTooltip();
     if (this.tooltip_text == null || this.tooltip_text.isEmpty()) {
       return;
@@ -317,7 +317,7 @@ public class ImageButton extends Canvas implements ActionListener {
     }
   }
 
-  private static void showTooltip(ImageButton target) {
+  private static void showTooltip(final ImageButton target) {
     if (tooltip_target != target || !target.pointer_over
         || !target.isEnabled() || !target.isShowing()) {
       return;

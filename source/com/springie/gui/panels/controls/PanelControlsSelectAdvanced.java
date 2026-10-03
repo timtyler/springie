@@ -47,7 +47,7 @@ public class PanelControlsSelectAdvanced {
         GUIStrings.SPREAD_SELECTION_VIA_LINKS);
     this.button_edit_spread_selection_via_links
         .addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
+          public void actionPerformed(final ActionEvent e) {
             getNewMessageManager().add(new SpreadSelectionViaLinksMessage());
           }
         });
@@ -62,7 +62,7 @@ public class PanelControlsSelectAdvanced {
 
     button_select_faces = new Button("Select faces with");
     button_select_faces.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new SelectFacesWithNSidesMessage());
       }
     });
@@ -82,7 +82,7 @@ public class PanelControlsSelectAdvanced {
 
     this.button_select_nodes = new Button("Select nodes with");
     this.button_select_nodes.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+      public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
             FrEnd.prepareToModifyNodeTypes();

@@ -38,7 +38,7 @@ public class FrameMain extends Frame {
 
   //static final String ABOUT = "About...";
 //, int width, int height
-  public FrameMain(String title, FrEnd app) {
+  public FrameMain(final String title, final FrEnd app) {
     super(title);
     this.frontend = app;
 
@@ -60,15 +60,15 @@ public class FrameMain extends Frame {
     //Log.log("not here B");
 
     addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {
+      public void windowClosing(final WindowEvent e) {
         //Log.log("Exited vig window closing event");
         System.exit(0);
       }
 
-      public void windowDeiconified(WindowEvent e) {
+      public void windowDeiconified(final WindowEvent e) {
       }
 
-      public void windowIconified(WindowEvent e) {
+      public void windowIconified(final WindowEvent e) {
       }
     });
     

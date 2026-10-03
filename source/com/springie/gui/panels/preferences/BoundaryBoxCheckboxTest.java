@@ -43,7 +43,7 @@ class BoundaryBoxCheckboxTest {
     GuiTestSupport.disposeFrames();
   }
 
-  private static Checkbox findBoundaryBoxCheckbox(Container root) {
+  private static Checkbox findBoundaryBoxCheckbox(final Container root) {
     for (final Component c : root.getComponents()) {
       if (c instanceof Checkbox
           && GUIStrings.SHOW_BOUNDARY_BOX.equals(((Checkbox) c).getLabel())) {
@@ -59,7 +59,7 @@ class BoundaryBoxCheckboxTest {
     return null;
   }
 
-  private static boolean contains(Container root, Component target) {
+  private static boolean contains(final Container root, final Component target) {
     for (final Component c : root.getComponents()) {
       if (c == target) {
         return true;
@@ -71,7 +71,7 @@ class BoundaryBoxCheckboxTest {
     return false;
   }
 
-  private static void clickCheckbox(Checkbox checkbox, int state_change) {
+  private static void clickCheckbox(final Checkbox checkbox, final int state_change) {
     checkbox.setState(state_change == ItemEvent.SELECTED);
     final ItemEvent event = new ItemEvent((ItemSelectable) checkbox,
         ItemEvent.ITEM_STATE_CHANGED, checkbox, state_change);

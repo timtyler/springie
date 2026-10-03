@@ -89,7 +89,7 @@ class PanelPreferencesRendererRaytracedTest {
   }
 
   /** The row panel holding the checkbox with the given label. */
-  private static Container effectRow(String label) {
+  private static Container effectRow(final String label) {
     for (final Panel row : FrEnd.panel_preferences_renderer_raytraced.effect_rows) {
       if (findCheckbox(row, label) != null) {
         return row;
@@ -99,7 +99,7 @@ class PanelPreferencesRendererRaytracedTest {
     return null;
   }
 
-  private static Checkbox effectCheckbox(String label) {
+  private static Checkbox effectCheckbox(final String label) {
     for (final Panel row : FrEnd.panel_preferences_renderer_raytraced.effect_rows) {
       final Checkbox checkbox = findCheckbox(row, label);
       if (checkbox != null) {
@@ -110,13 +110,13 @@ class PanelPreferencesRendererRaytracedTest {
     return null;
   }
 
-  private static Choice effectDropdown(String label) {
+  private static Choice effectDropdown(final String label) {
     final Choice choice = findChoice(effectRow(label));
     assertNotNull(choice, "expected the " + label + " dropdown");
     return choice;
   }
 
-  private static Container findCheckboxRow(Container container,
+  private static Container findCheckboxRow(final Container container,
       String label) {
     for (final Component c : container.getComponents()) {
       if (c instanceof Container) {
@@ -133,7 +133,7 @@ class PanelPreferencesRendererRaytracedTest {
     return null;
   }
 
-  private static Checkbox findCheckbox(Container container, String label) {
+  private static Checkbox findCheckbox(final Container container, final String label) {
     for (final Component c : container.getComponents()) {
       if (c instanceof Checkbox
           && label.equals(((Checkbox) c).getLabel())) {
@@ -149,7 +149,7 @@ class PanelPreferencesRendererRaytracedTest {
     return null;
   }
 
-  private static Choice findChoice(Container container) {
+  private static Choice findChoice(final Container container) {
     for (final Component c : container.getComponents()) {
       if (c instanceof Choice) {
         return (Choice) c;
@@ -164,7 +164,7 @@ class PanelPreferencesRendererRaytracedTest {
     return null;
   }
 
-  private static void pick(Choice choice, String item) throws Exception {
+  private static void pick(final Choice choice, final String item) throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       // AWT's programmatic select() fires no event, so deliver the
       // ItemEvent the native peer would have delivered straight to the
@@ -177,7 +177,7 @@ class PanelPreferencesRendererRaytracedTest {
     });
   }
 
-  private static void tick(Checkbox checkbox, boolean state)
+  private static void tick(final Checkbox checkbox, final boolean state)
       throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       // The panel reads the checkbox state, so set it before
@@ -192,7 +192,7 @@ class PanelPreferencesRendererRaytracedTest {
     });
   }
 
-  private static void assertTenToOneHundredInTens(Choice choice,
+  private static void assertTenToOneHundredInTens(final Choice choice,
       String name) {
     assertEquals(10, choice.getItemCount(),
         name + " must offer 10% to 100% in 10% steps");

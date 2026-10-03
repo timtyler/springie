@@ -59,7 +59,7 @@ class PixellationDropdownTest {
     return found[0];
   }
 
-  private static boolean hasLabel(Panel panel, String text) {
+  private static boolean hasLabel(final Panel panel, final String text) {
     for (int i = 0; i < panel.getComponentCount(); i++) {
       final Component c = panel.getComponent(i);
       if (c instanceof Label && ((Label) c).getText().equals(text)) {
@@ -69,7 +69,7 @@ class PixellationDropdownTest {
     return false;
   }
 
-  private static Choice findChoice(Component component) {
+  private static Choice findChoice(final Component component) {
     if (component instanceof Choice) {
       return (Choice) component;
     }
@@ -85,7 +85,7 @@ class PixellationDropdownTest {
     return null;
   }
 
-  private static void fireChoice(Choice dropdown, String option)
+  private static void fireChoice(final Choice dropdown, final String option)
       throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       final ItemEvent event = new ItemEvent(dropdown,

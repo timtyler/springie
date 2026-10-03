@@ -79,7 +79,7 @@ class RaytracedHiddenRowsVisibilityTest {
     return found[0];
   }
 
-  private static Choice findChoice(Component component) {
+  private static Choice findChoice(final Component component) {
     if (component instanceof Choice) {
       return (Choice) component;
     }
@@ -99,7 +99,7 @@ class RaytracedHiddenRowsVisibilityTest {
    * Drives the real item listener the way a user picking from the
    * dropdown would (Choice.select() alone fires no event).
    */
-  private static void selectRenderer(String namePart) throws Exception {
+  private static void selectRenderer(final String namePart) throws Exception {
     final Choice dropdown = sharedDropdown();
     SwingUtilities.invokeAndWait(() -> {
       String target = null;
@@ -132,7 +132,7 @@ class RaytracedHiddenRowsVisibilityTest {
     return found[0];
   }
 
-  private static boolean hasLabel(Panel panel, String label) {
+  private static boolean hasLabel(final Panel panel, final String label) {
     for (int i = 0; i < panel.getComponentCount(); i++) {
       final Component component = panel.getComponent(i);
       if (component instanceof Label
@@ -143,7 +143,7 @@ class RaytracedHiddenRowsVisibilityTest {
     return false;
   }
 
-  private static int indexOfRow(Panel row) throws Exception {
+  private static int indexOfRow(final Panel row) throws Exception {
     final int[] index = new int[1];
     SwingUtilities.invokeAndWait(() -> {
       final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;

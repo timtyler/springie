@@ -113,7 +113,7 @@ class ShowActiveTilesTest {
     });
   }
 
-  private void setShowActiveTiles(boolean state) throws Exception {
+  private void setShowActiveTiles(final boolean state) throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       RendererTileManager.show_active_tiles = state;
     });
@@ -141,7 +141,7 @@ class ShowActiveTilesTest {
   }
 
   /** Polls until the outlines are visible, then returns. */
-  private void waitForRedPixels(int baseline_red, String what)
+  private void waitForRedPixels(final int baseline_red, final String what)
       throws Exception {
     final long deadline = System.currentTimeMillis() + POLL_DEADLINE_MS;
     int red = 0;
@@ -175,7 +175,7 @@ class ShowActiveTilesTest {
   }
 
   /** Polls until the capture matches the baseline exactly, then returns. */
-  private void waitForPixelCount(int expected_red, String what)
+  private void waitForPixelCount(final int expected_red, final String what)
       throws Exception {
     final long deadline = System.currentTimeMillis() + POLL_DEADLINE_MS;
     int red = -1;
@@ -247,7 +247,7 @@ class ShowActiveTilesTest {
   }
 
   /** Toggles the option without forcing a resize (no full-repaint rescue). */
-  private void setShowActiveTilesNoResize(boolean on) throws Exception {
+  private void setShowActiveTilesNoResize(final boolean on) throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       RendererTileManager.show_active_tiles = on;
       RendererDelegator.repaint_some_objects = true;
@@ -268,7 +268,7 @@ class ShowActiveTilesTest {
   }
 
   /** Polls plain (resize-free) frames until the capture matches baseline. */
-  private void waitForPixelCountNoResize(int expected_red, String what)
+  private void waitForPixelCountNoResize(final int expected_red, final String what)
       throws Exception {
     final long deadline = System.currentTimeMillis() + POLL_DEADLINE_MS;
     int red = -1;

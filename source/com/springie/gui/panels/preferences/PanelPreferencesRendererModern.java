@@ -152,7 +152,7 @@ public class PanelPreferencesRendererModern {
    * Moves every row from one panel into another, leaving the source
    * empty afterwards.
    */
-  private static void moveRowsInto(Panel target, Panel source) {
+  private static void moveRowsInto(final Panel target, final Panel source) {
     final Component[] rows = source.getComponents();
     source.removeAll();
     for (final Component row : rows) {
@@ -167,7 +167,7 @@ public class PanelPreferencesRendererModern {
    * components space. Idempotent: any rows already present are
    * removed first, so a repeated call cannot duplicate them.
    */
-  void setRaytracedRowsVisible(boolean visible) {
+  void setRaytracedRowsVisible(final boolean visible) {
     final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;
     for (final Panel row : this.raytraced_rows) {
       tab.remove(row);
@@ -191,7 +191,7 @@ public class PanelPreferencesRendererModern {
    * invisible components space. Idempotent: the row is removed first,
    * so a repeated call cannot duplicate it.
    */
-  void setDeepestFirstRowVisible(boolean visible) {
+  void setDeepestFirstRowVisible(final boolean visible) {
     final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;
     final Panel row =
       FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first;
@@ -217,7 +217,7 @@ public class PanelPreferencesRendererModern {
    * is found dynamically from the explosions row, which never moves,
    * so interleaved changes to the rows above cannot misplace them.
    */
-  void setRaytracedHiddenRowsVisible(boolean visible) {
+  void setRaytracedHiddenRowsVisible(final boolean visible) {
     final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;
     for (final Panel row : this.raytraced_hidden_rows) {
       tab.remove(row);
@@ -248,7 +248,7 @@ public class PanelPreferencesRendererModern {
    * Idempotent: the row is removed first, so a repeated call cannot
    * duplicate it.
    */
-  void setLabelsRowVisible(boolean visible) {
+  void setLabelsRowVisible(final boolean visible) {
     final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;
     tab.remove(this.panel_labels_row);
     if (visible) {
@@ -265,7 +265,7 @@ public class PanelPreferencesRendererModern {
     final Panel panel_show_tiles = new Panel();
     this.checkbox_show_tiles = new Checkbox(GUIStrings.SHOW_TILES, RendererTileManager.show_tiles);
     this.checkbox_show_tiles.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         RendererTileManager.show_tiles = ((Checkbox) e.getSource()).getState();
         FrEnd.main_canvas.forceResize();
       }
@@ -276,7 +276,7 @@ public class PanelPreferencesRendererModern {
     this.checkbox_show_active_tiles = new Checkbox(GUIStrings.SHOW_ACTIVE_TILES,
         RendererTileManager.show_active_tiles);
     this.checkbox_show_active_tiles.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         RendererTileManager.show_active_tiles = ((Checkbox) e.getSource()).getState();
         FrEnd.main_canvas.forceResize();
       }
@@ -287,7 +287,7 @@ public class PanelPreferencesRendererModern {
     this.checkbox_one_big_tile = new Checkbox(GUIStrings.ONE_BIG_TILE,
         RendererTileManager.one_big_tile);
     this.checkbox_one_big_tile.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         RendererTileManager.one_big_tile = ((Checkbox) e.getSource()).getState();
         FrEnd.main_canvas.forceResize();
       }
@@ -308,7 +308,7 @@ public class PanelPreferencesRendererModern {
     panel.add(new Label("Show labels on:", Label.RIGHT));
 
     this.choose_label_when = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final String scs = (String) e.getItem();
         final int val = PanelPreferencesRendererModern.this.choose_label_when.str_to_num(scs);
         PanelPreferencesRendererModern.render_label_when = val;
@@ -331,7 +331,7 @@ public class PanelPreferencesRendererModern {
     panel.add(label);
 
     this.choose_link_sides = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final String scs = (String) e.getItem();
         final int val = PanelPreferencesRendererModern.this.choose_link_sides.str_to_num(scs);
         RendererDelegator.link_sides = val;
@@ -355,7 +355,7 @@ public class PanelPreferencesRendererModern {
     panel.add(new Label("Node polyhedron:", Label.RIGHT));
 
     this.choose_polyhedron = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         final String scs = (String) e.getItem();
         final int val = PanelPreferencesRendererModern.this.choose_polyhedron.str_to_num(scs);
         if (val == 1) {
@@ -398,7 +398,7 @@ public class PanelPreferencesRendererModern {
     final Scrollbar scroll_bar = new Scrollbar(Scrollbar.HORIZONTAL, RendererTileManager.divisor, 50, 50, 550);
     this.scroll_bar_tile_size = scroll_bar;
     scroll_bar.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int temp = e.getValue();
         RendererTileManager.divisor = temp;
         reflectTileSizeNumber();
@@ -423,7 +423,7 @@ public class PanelPreferencesRendererModern {
     final Scrollbar scroll_bar = new Scrollbar(Scrollbar.HORIZONTAL, ElementRendererLink.strut_divisions, 1, 1, 8);
     this.scroll_bar_strut_divisions = scroll_bar;
     scroll_bar.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int temp = e.getValue();
         ElementRendererLink.strut_divisions = temp;
         reflectLabelStrutDivisions();
@@ -448,7 +448,7 @@ public class PanelPreferencesRendererModern {
     final Scrollbar scroll_bar = new Scrollbar(Scrollbar.HORIZONTAL, ElementRendererLink.cable_divisions, 1, 1, 8);
     this.scroll_bar_cable_divisions = scroll_bar;
     scroll_bar.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(AdjustmentEvent e) {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int temp = e.getValue();
         ElementRendererLink.cable_divisions = temp;
         reflectLabelCableDivisions();

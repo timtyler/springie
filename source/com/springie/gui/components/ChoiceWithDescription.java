@@ -15,7 +15,7 @@ public class ChoiceWithDescription {
 
   public Choice choice;
 
-  public ChoiceWithDescription(ItemListener il) {
+  public ChoiceWithDescription(final ItemListener il) {
     this.choice = new FixedWidthChoice();
     this.choice.addItemListener(il);
     this.choice.setBackground(Color.white);
@@ -24,7 +24,7 @@ public class ChoiceWithDescription {
     this.hashtable = new LinkedHashMap<>();
   }
 
-  public void add(String description, String name) {
+  public void add(final String description, final String name) {
     this.choice.addItem(description);
 
     this.hashtable.put(description, name);
@@ -36,7 +36,7 @@ public class ChoiceWithDescription {
     this.hashtable.clear();
   }
 
-  public String getName(String description) {
+  public String getName(final String description) {
     return this.hashtable.get(description);
   }
 
@@ -55,7 +55,7 @@ public class ChoiceWithDescription {
     private Dimension frozen;
 
     @Override
-    public void paint(Graphics g) {
+    public void paint(final Graphics g) {
       if (this.frozen == null) {
         final Dimension d = super.getPreferredSize();
         if (d.width > 0 && d.height > 0) {

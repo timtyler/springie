@@ -57,7 +57,7 @@ public class PanelPreferencesPOVExport {
         pov_immersion_depth, 10, 0, 110);
     this.scroll_bar_pov_immersion_depth
         .addAdjustmentListener(new AdjustmentListener() {
-          public void adjustmentValueChanged(AdjustmentEvent e) {
+          public void adjustmentValueChanged(final AdjustmentEvent e) {
             pov_immersion_depth = e.getValue();
             reflectPOVImmersionDepth();
           }
@@ -85,7 +85,7 @@ public class PanelPreferencesPOVExport {
         pov_view_height, 10, 0, 110);
     this.scroll_bar_pov_view_height
         .addAdjustmentListener(new AdjustmentListener() {
-          public void adjustmentValueChanged(AdjustmentEvent e) {
+          public void adjustmentValueChanged(final AdjustmentEvent e) {
             pov_view_height = e.getValue();
             reflectPOVViewHeight();
           }
@@ -107,7 +107,7 @@ public class PanelPreferencesPOVExport {
     final Panel panel = new Panel();
     panel.add(new Label("Render struts using:", Label.RIGHT));
     this.choose_pov_compression = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         FrEnd.preferences.map.put(Preferences.key_output_pov_compression, e
             .getItem());
       }
@@ -129,7 +129,7 @@ public class PanelPreferencesPOVExport {
     final Panel panel = new Panel();
     panel.add(new Label("POV: Ground:", Label.RIGHT));
     this.choose_pov_ground = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         FrEnd.preferences.map.put(Preferences.key_output_pov_ground, e
             .getItem());
       }
@@ -151,7 +151,7 @@ public class PanelPreferencesPOVExport {
     final Panel panel = new Panel();
     panel.add(new Label("POV: Sky:", Label.RIGHT));
     this.choose_pov_sky = new TTChoice(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+      public void itemStateChanged(final ItemEvent e) {
         FrEnd.preferences.map.put(Preferences.key_output_pov_sky, e.getItem());
       }
     });

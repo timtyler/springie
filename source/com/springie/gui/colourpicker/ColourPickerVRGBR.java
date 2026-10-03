@@ -8,7 +8,7 @@ import java.awt.event.MouseEvent;
 public class ColourPickerVRGBR extends ColourPickerBase {
   static final long serialVersionUID = 1250;
 
-  public void update(Graphics g) {
+  public void update(final Graphics g) {
     paintHelper();
 
     for (int j = this.margin; j < this.range; j++) {
@@ -30,7 +30,7 @@ public class ColourPickerVRGBR extends ColourPickerBase {
     paintMarkers(g, value);
   }
 
-  public void mouseClicked(MouseEvent e) {
+  public void mouseClicked(final MouseEvent e) {
     clickHelper(e);
 
     this.colour_picker.red = (this.x * 255) / this.range;
