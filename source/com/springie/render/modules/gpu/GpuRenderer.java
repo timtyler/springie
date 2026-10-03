@@ -30,6 +30,7 @@ public class GpuRenderer implements ModularRendererBase {
   private final JFXPanel jfx_panel;
   private final GpuView view;
   private final LayoutManager previous_layout;
+  private static boolean diagnostics_logged;
 
   public GpuRenderer() {
     Platform.setImplicitExit(false);
@@ -63,7 +64,25 @@ public class GpuRenderer implements ModularRendererBase {
     final ModelScene scene = SceneExtractor.extract(manager,
         FrEnd.render_nodes, FrEnd.render_links, FrEnd.render_faces);
     final GpuView view = this.view;
-    Platform.runLater(() -> view.update(scene));
+    final JFXPanel panel = this.jfx_panel;
+    if (!diagnostics_logged) {
+      diagnostics_logged = true;
+      System.out.println("[GPU] repaint: nodes=" + scene.nodes.size()
+          + " links=" + scene.links.size() + " faces="
+          + scene.faces.size() + " jfx=" + panel.getWidth() + "x"
+          + panel.getHeight());
+      Platform.runLater(() -> {
+        final javafx.scene.Scene fx_scene = panel.getScene();
+        System.out.println("[GPU] fx: scene=" + (fx_scene != null)
+            + " camera="
+            + (fx_scene == null ? null : fx_scene.getCamera()));
+        view.update(scene);
+        System.out.println("[GPU] fx: model children="
+            + view.getModelGroup().getChildren().size());
+      });
+    } else {
+      Platform.runLater(() -> view.update(scene));
+    }
   }
 
   @Override
