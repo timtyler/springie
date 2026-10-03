@@ -47,9 +47,24 @@ public class GpuRenderer implements ModularRendererBase {
     forwardMouseEvents();
     final GpuView view = this.view;
     final JFXPanel panel = this.jfx_panel;
-    Platform.runLater(() -> panel.setScene(view.createScene(
-        Math.max(1.0, panel.getWidth()),
-        Math.max(1.0, panel.getHeight()))));
+    Platform.runLater(() -> {
+      panel.setScene(view.createScene(
+          Math.max(1.0, panel.getWidth()),
+          Math.max(1.0, panel.getHeight())));
+      // Pulse check: if the FX render loop runs, this fires.
+      final javafx.animation.AnimationTimer pulse_check =
+          new javafx.animation.AnimationTimer() {
+            private boolean logged;
+            @Override
+            public void handle(long now) {
+              if (!this.logged) {
+                this.logged = true;
+                System.out.println("[GPU] fx: pulse running");
+              }
+            }
+          };
+      pulse_check.start();
+    });
   }
 
   /** Removes the JFXPanel when switching to another renderer. */
