@@ -173,6 +173,9 @@ public class PanelPreferencesRendererModern {
       for (final Panel row : this.raytraced_rows) {
         tab.add(row);
       }
+      // In fast mode the effect rows are irrelevant; syncSimpleLighting
+      // removes them (Tim, 2026-10-03).
+      FrEnd.panel_preferences_renderer_raytraced.syncSimpleLighting();
     }
     tab.validate();
   }

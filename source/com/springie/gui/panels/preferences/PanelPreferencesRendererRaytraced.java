@@ -247,21 +247,36 @@ public class PanelPreferencesRendererRaytraced {
 
   /**
    * When Simple lighting is on (the "Ray-traced (fast)" renderer), the
-   * phong/specular/gloss/Fresnel/fill/shadow controls are irrelevant
-   * (shade() bypasses them), so remove them from the UI.
+   * phong/specular/gloss/Fresnel/shadow controls are irrelevant
+   * (shade() bypasses them), so remove them from the UI. They are added
+   * and removed (never just hidden) because the tab's GridLayout gives
+   * invisible components space. (Tim, 2026-10-03: was setVisible, which
+   * left the space occupied.)
    */
   public void syncSimpleLighting() {
     final boolean simple = RendererDelegator.simple_lighting;
-    this.effect_glossiness.panel.setVisible(!simple);
-    this.effect_specular.panel.setVisible(!simple);
-    this.effect_fresnel.panel.setVisible(!simple);
-    this.shadows_row.setVisible(!simple);
-    // The rows live in the shared tab (see takeEffectRows); re-layout.
-    final java.awt.Container parent =
-        this.effect_glossiness.panel.getParent();
-    if (parent != null) {
-      parent.validate();
+    // The rows live in the shared tab (see takeEffectRows), not in
+    // this.panel. Remove/add them from their actual parent.
+    final java.awt.Container parent = this.effect_glossiness.panel.getParent();
+    if (parent == null) {
+      // Not yet attached to the tab; the tab will call this again.
+      return;
     }
+    final Panel[] rows = {
+        this.effect_glossiness.panel,
+        this.shadows_row,
+        this.effect_specular.panel,
+        this.effect_fresnel.panel,
+    };
+    for (final Panel row : rows) {
+      parent.remove(row);
+    }
+    if (!simple) {
+      for (final Panel row : rows) {
+        parent.add(row);
+      }
+    }
+    parent.validate();
   }
 
   public void resetToDefaults() {
