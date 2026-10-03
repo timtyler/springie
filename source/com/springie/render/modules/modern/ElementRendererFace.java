@@ -195,7 +195,7 @@ public final class ElementRendererFace {
       final double rz = 2.0 * ndotl * nz - lz;
       final double rdotv = -(rz); // dot(R, (0,0,-1)) = -Rz
       if (rdotv > 0.0) {
-        r_spec = Math.pow(rdotv, 16.0);
+        r_spec = Math.pow(rdotv, 16.0) * RendererDelegator.red_light_pct / 50.0;
       }
       // Green light specular.
       final double glxn = glx / gd;
@@ -207,7 +207,7 @@ public final class ElementRendererFace {
       final double grz = 2.0 * gndotl * nz - glzn;
       final double grdotv = -(grz);
       if (grdotv > 0.0) {
-        g_spec = Math.pow(grdotv, 16.0);
+        g_spec = Math.pow(grdotv, 16.0) * RendererDelegator.green_light_pct / 50.0;
       }
       // Blue light specular.
       final double blxn = blx / bd;
@@ -219,7 +219,7 @@ public final class ElementRendererFace {
       final double brz = 2.0 * bndotl * nz - blzn;
       final double brdotv = -(brz);
       if (brdotv > 0.0) {
-        b_spec = Math.pow(brdotv, 16.0);
+        b_spec = Math.pow(brdotv, 16.0) * RendererDelegator.blue_light_pct / 50.0;
       }
     }
     final int r = (colour >> 16) & 0xFF;
