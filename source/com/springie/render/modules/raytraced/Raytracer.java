@@ -37,7 +37,7 @@ final class Raytracer {
   private static double BLUE_PX, BLUE_PY, BLUE_PZ;
 
   /** Distance falloff constant: intensity = 1/(1+(d/K)^2). */
-  private static final double LIGHT_FALLOFF_K = 10000.0;
+  private static final double LIGHT_FALLOFF_K = 2560000.0;
 
   /**
    * RGB light brightness boost (Tim, 2026-10-03): the three colored
