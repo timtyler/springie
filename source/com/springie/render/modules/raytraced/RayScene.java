@@ -5,58 +5,54 @@ package com.springie.render.modules.raytraced;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.springie.FrEnd;
-import com.springie.elements.faces.Face;
-import com.springie.elements.faces.FaceManager;
-import com.springie.elements.links.Link;
-import com.springie.elements.links.LinkManager;
-import com.springie.elements.nodes.Node;
-import com.springie.elements.nodes.NodeManager;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
+import com.springie.render.scene.ModelScene;
+import com.springie.render.scene.SceneFace;
+import com.springie.render.scene.SceneLink;
+import com.springie.render.scene.SceneNode;
 
 /**
- * Builds an immutable ray-traceable snapshot of the model: nodes become
- * spheres, struts become stretched spheres (ellipsoids), cables become
- * open cylinders like the default renderer, faces become triangle fans.
- * Link and face selection is baked in as a colour change, exactly like
- * the default renderer. Node selection is a red billboard ring around
- * the node -- the ray-traced version of the default renderer's
- * screen-space selection circle -- built separately by
- * {@link #selectionRings} so it stays out of the BVH and can never cast
- * shadows.
+ * Converts a {@link ModelScene} snapshot into ray-traceable primitives:
+ * nodes become spheres, struts become stretched spheres (ellipsoids),
+ * cables become open cylinders like the default renderer, faces are
+ * already triangulated by the extractor. The model walk (and its
+ * filters) lives in the extractor; this class only maps scene entries
+ * to primitives, converting world units back to the fixed-point units
+ * the ray tracer works in (an exact round-trip). Link and face
+ * selection is baked in as a colour change, exactly like the default
+ * renderer. Node selection is a red billboard ring around the node --
+ * the ray-traced version of the default renderer's screen-space
+ * selection circle -- built separately by {@link #selectionRings} so it
+ * stays out of the BVH and can never cast shadows.
  */
 final class RayScene {
+  /** Fixed-point model units per world unit: inverts the extractor. */
+  private static final double FIXED_PER_WORLD = 1 << Coords.shift;
+
   private RayScene() {
     // ...
   }
 
-  static Primitive[] build(NodeManager manager) {
+  static Primitive[] build(ModelScene scene) {
     final List<Primitive> primitives = new ArrayList<Primitive>();
-    addNodes(manager, primitives);
-    addLinks(manager, primitives);
-    addFaces(manager, primitives);
+    addNodes(scene, primitives);
+    addLinks(scene, primitives);
+    addFaces(scene, primitives);
     return primitives.toArray(new Primitive[primitives.size()]);
   }
 
-  private static void addNodes(NodeManager manager,
+  /** World units back to the fixed-point units the tracer works in. */
+  private static double fixed(final double world) {
+    return world * FIXED_PER_WORLD;
+  }
+
+  private static void addNodes(ModelScene scene,
       List<Primitive> primitives) {
-    if (!FrEnd.render_nodes) {
-      return;
-    }
-    final List<?> elements = manager.element;
-    final int n = elements.size();
-    for (int i = 0; i < n; i++) {
-      final Node node = (Node) elements.get(i);
-      final double radius = node.type.radius;
-      if (radius <= 0.0) {
-        continue;
-      }
-      // Selected nodes keep their class colour, like the default
-      // renderer; the selection itself is the billboard ring from
-      // selectionRings().
-      primitives.add(new RTSphere(node.pos.x, node.pos.y, node.pos.z,
-          radius, node.clazz.colour));
+    for (final SceneNode node : scene.nodes) {
+      // The extractor already filtered hidden types and zero radii.
+      primitives.add(new RTSphere(fixed(node.x), fixed(node.y),
+          fixed(node.z), fixed(node.radius), node.colour));
     }
   }
 
@@ -75,26 +71,21 @@ final class RayScene {
    *
    * @param ex ey ez the camera eye position, in world units
    */
-  static RTRing[] selectionRings(NodeManager manager, double ex, double ey,
-      double ez) {
-    if (!FrEnd.render_nodes) {
-      return new RTRing[0];
-    }
+  static RTRing[] selectionRings(List<SceneNode> nodes, double ex,
+      double ey, double ez) {
     final List<RTRing> rings = new ArrayList<RTRing>();
-    final List<?> elements = manager.element;
-    final int n = elements.size();
-    for (int i = 0; i < n; i++) {
-      final Node node = (Node) elements.get(i);
-      if (!node.type.selected) {
+    for (final SceneNode node : nodes) {
+      if (!node.selected) {
         continue;
       }
-      final double radius = node.type.radius;
-      if (radius <= 0.0) {
-        continue;
-      }
-      final double nx = node.pos.x - ex;
-      final double ny = node.pos.y - ey;
-      final double nz = node.pos.z - ez;
+      // The extractor already filtered zero radii.
+      final double x = fixed(node.x);
+      final double y = fixed(node.y);
+      final double z = fixed(node.z);
+      final double radius = fixed(node.radius);
+      final double nx = x - ex;
+      final double ny = y - ey;
+      final double nz = z - ez;
       final double length = Math.sqrt(nx * nx + ny * ny + nz * nz);
       if (length <= 1e-9) {
         // Degenerate: the node sits on the eye; no well-defined plane.
@@ -104,79 +95,53 @@ final class RayScene {
       // projection the camera inverts (Coords.getRadius divides by
       // exactly this).
       final double world_per_pixel = Coords.shift_constant_z
-          + (node.pos.z >> Coords.shift_z);
+          + ((int) z >> Coords.shift_z);
       // Like the default renderer's selection ring: a prominent annulus
       // starting at 4/3 the node radius, several pixels thick, so the
       // selection reads as red at a glance.
       final double inner = radius * 4.0 / 3.0;
       final double outer = inner + 8.0 * world_per_pixel;
-      rings.add(new RTRing(node.pos.x, node.pos.y, node.pos.z, nx / length,
-          ny / length, nz / length, inner, outer, 0xFF4040));
+      rings.add(new RTRing(x, y, z, nx / length, ny / length, nz / length,
+          inner, outer, 0xFF4040));
     }
     return rings.toArray(new RTRing[rings.size()]);
   }
 
-  private static void addLinks(NodeManager manager,
+  private static void addLinks(ModelScene scene,
       List<Primitive> primitives) {
-    if (!FrEnd.render_links) {
-      return;
-    }
-    final LinkManager link_manager = manager.getLinkManager();
-    final List<?> elements = link_manager.element;
-    final int n = elements.size();
-    for (int i = 0; i < n; i++) {
-      final Link link = (Link) elements.get(i);
-      if (link.type.hidden) {
-        continue;
-      }
-      final double radius = link.type.radius;
-      if (radius <= 0.0) {
-        continue;
-      }
-      final int colour = colourOf(link.type.selected, link.clazz.colour);
-      final Node[] nodes = link.nodes;
-      for (int s = 0; s < nodes.length - 1; s++) {
-        final Node n1 = nodes[s];
-        final Node n2 = nodes[s + 1];
-        if (link.type.compression) {
-          // A strut: stretched sphere, bulging mid-span.
-          primitives.add(new RTEllipsoid(n1.pos.x, n1.pos.y, n1.pos.z,
-              n2.pos.x, n2.pos.y, n2.pos.z, radius, colour));
-        } else {
-          // A cable: a plain cylinder, like the default renderer.
-          primitives.add(new RTCylinder(n1.pos.x, n1.pos.y, n1.pos.z,
-              n2.pos.x, n2.pos.y, n2.pos.z, radius, colour));
-        }
+    for (final SceneLink link : scene.links) {
+      // The extractor already filtered hidden types and zero radii, and
+      // split multi-node links into segments.
+      final int colour = colourOf(link.selected, link.colour);
+      final double x1 = fixed(link.x1);
+      final double y1 = fixed(link.y1);
+      final double z1 = fixed(link.z1);
+      final double x2 = fixed(link.x2);
+      final double y2 = fixed(link.y2);
+      final double z2 = fixed(link.z2);
+      final double radius = fixed(link.radius);
+      if (link.strut) {
+        // A strut: stretched sphere, bulging mid-span.
+        primitives.add(
+            new RTEllipsoid(x1, y1, z1, x2, y2, z2, radius, colour));
+      } else {
+        // A cable: a plain cylinder, like the default renderer.
+        primitives.add(
+            new RTCylinder(x1, y1, z1, x2, y2, z2, radius, colour));
       }
     }
   }
 
-  private static void addFaces(NodeManager manager,
+  private static void addFaces(ModelScene scene,
       List<Primitive> primitives) {
-    if (!FrEnd.render_faces) {
-      return;
-    }
-    final FaceManager face_manager = manager.getFaceManager();
-    final List<?> elements = face_manager.element;
-    final int n = elements.size();
-    for (int i = 0; i < n; i++) {
-      final Face face = (Face) elements.get(i);
-      final ArrayList<Node> nodes = face.nodes;
-      final int points = nodes.size();
-      if (points < 3) {
-        continue;
-      }
-      // Faces are opaque: the translucency bits are ignored.
-      final int colour = colourOf(face.type.selected,
-          face.clazz.colour & 0xFFFFFF);
-      final Node n0 = nodes.get(0);
-      for (int s = 1; s < points - 1; s++) {
-        final Node n1 = nodes.get(s);
-        final Node n2 = nodes.get(s + 1);
-        primitives.add(new RTTriangle(n0.pos.x, n0.pos.y, n0.pos.z,
-            n1.pos.x, n1.pos.y, n1.pos.z, n2.pos.x, n2.pos.y, n2.pos.z,
-            colour));
-      }
+    for (final SceneFace face : scene.faces) {
+      // The extractor already fan-triangulated and filtered hidden
+      // types. Faces are opaque: the translucency bits are ignored.
+      final int colour = colourOf(face.selected,
+          face.colour & 0xFFFFFF);
+      primitives.add(new RTTriangle(fixed(face.x1), fixed(face.y1),
+          fixed(face.z1), fixed(face.x2), fixed(face.y2), fixed(face.z2),
+          fixed(face.x3), fixed(face.y3), fixed(face.z3), colour));
     }
   }
 

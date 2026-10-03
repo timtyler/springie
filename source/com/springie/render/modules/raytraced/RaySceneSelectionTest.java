@@ -17,6 +17,8 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeTypeFactory;
 import com.springie.geometry.Point3D;
 import com.springie.render.Coords;
+import com.springie.render.scene.ModelScene;
+import com.springie.render.scene.SceneExtractor;
 
 /**
  * Node selection in the ray-traced scene: like the default renderer,
@@ -53,7 +55,8 @@ class RaySceneSelectionTest {
 
   @Test
   void selectedNodeKeepsItsClassColour() {
-    final Primitive[] primitives = RayScene.build(this.manager);
+    final ModelScene scene = SceneExtractor.extract(this.manager, true, true, true);
+    final Primitive[] primitives = RayScene.build(scene);
     assertEquals(2, primitives.length);
     // The selected node is not recoloured; the ring marks it.
     assertEquals(NODE_COLOUR, primitives[0].getColour());
@@ -62,7 +65,8 @@ class RaySceneSelectionTest {
 
   @Test
   void oneRingPerSelectedNode() {
-    final RTRing[] rings = RayScene.selectionRings(this.manager, 25600,
+    final ModelScene ring_scene = SceneExtractor.extract(this.manager, true, true, true);
+    final RTRing[] rings = RayScene.selectionRings(ring_scene.nodes, 25600,
         25600, -196608);
     assertEquals(1, rings.length);
   }
@@ -79,7 +83,8 @@ class RaySceneSelectionTest {
     final double mid = inner + 4.0 * world_per_pixel;
     final double in_hole = RADIUS + 0.5 * world_per_pixel;
 
-    final RTRing[] rings = RayScene.selectionRings(this.manager, 25600,
+    final ModelScene ring_scene = SceneExtractor.extract(this.manager, true, true, true);
+    final RTRing[] rings = RayScene.selectionRings(ring_scene.nodes, 25600,
         25600, -196608);
     final Hit hit = new Hit();
     final Ray ray = new Ray();

@@ -3,7 +3,6 @@
 package com.springie.render.modules.raytraced;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -30,13 +29,12 @@ import com.springie.render.scene.SceneLink;
 import com.springie.render.scene.SceneNode;
 
 /**
- * Agreement test: the extractor must see exactly what the renderers see.
- * RayScene.build is the established snapshot of "what the renderers
- * draw" (same filters, same model walk); this test runs both on one
- * model and asserts they agree on counts, positions (fixed-point vs
- * world units), colours and the strut/cable distinction. Selection is
- * the one deliberate difference: RayScene bakes the selection colour
- * in, the extractor reports it as a flag with the base colour kept.
+ * Faithfulness test: RayScene must convert the extracted scene 1:1 --
+ * every scene entry becomes exactly one primitive with the same
+ * position (fixed-point vs world units), colour and strut/cable kind.
+ * Selection is the one deliberate mapping: the extractor reports it as
+ * a flag with the base colour kept, RayScene bakes the selection colour
+ * in, exactly like the default renderer.
  */
 public class SceneExtractorAgreementTest {
   private static final double DELTA = 1e-6;
@@ -116,9 +114,9 @@ public class SceneExtractorAgreementTest {
     FrEnd.render_faces = true;
 
     final NodeManager manager = buildModel();
-    final Primitive[] primitives = RayScene.build(manager);
     final ModelScene scene =
         SceneExtractor.extract(manager, true, true, true);
+    final Primitive[] primitives = RayScene.build(scene);
 
     int spheres = 0;
     int cylinders = 0;
@@ -136,11 +134,10 @@ public class SceneExtractorAgreementTest {
       }
     }
 
-    // Nodes: zero-radius filtered by both. Hidden is the deliberate
-    // difference: RayScene draws hidden nodes, the extractor follows
-    // the default polygon renderer and skips them.
-    assertEquals(3, spheres, "RayScene draws the hidden node too");
-    assertEquals(2, scene.nodes.size(), "extractor skips hidden nodes");
+    // Nodes: the extractor filtered hidden and zero-radius; the
+    // converter maps the rest 1:1.
+    assertEquals(scene.nodes.size(), spheres, "node count");
+    assertEquals(2, spheres, "visible + selected nodes");
 
     // Links: hidden and zero-radius filtered by both; struts become
     // ellipsoids, cables become cylinders.
@@ -180,23 +177,6 @@ public class SceneExtractorAgreementTest {
       }
       assertTrue(matched, "sphere for node at " + node.x + "," + node.y);
     }
-
-    // The hidden node's sphere exists in RayScene but has no SceneNode:
-    // pin the documented difference.
-    boolean hidden_sphere_found = false;
-    boolean hidden_node_extracted = false;
-    for (final Primitive p : primitives) {
-      if (p instanceof RTSphere && p.getColour() == 0xFF222222) {
-        hidden_sphere_found = true;
-      }
-    }
-    for (final SceneNode node : scene.nodes) {
-      if (node.colour == 0xFF222222) {
-        hidden_node_extracted = true;
-      }
-    }
-    assertTrue(hidden_sphere_found, "RayScene draws the hidden node");
-    assertFalse(hidden_node_extracted, "extractor skips the hidden node");
 
     // Every extracted link matches a cylinder/ellipsoid: the baked
     // colour (selection -> selection colour) and the strut/cable kind.

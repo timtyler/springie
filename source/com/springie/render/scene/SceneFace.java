@@ -19,11 +19,12 @@ public final class SceneFace {
   public final double y3;
   public final double z3;
   public final int colour;
+  public final boolean selected;
 
   public SceneFace(final double x1, final double y1, final double z1,
       final double x2, final double y2, final double z2,
       final double x3, final double y3, final double z3,
-      final int colour) {
+      final int colour, final boolean selected) {
     this.x1 = x1;
     this.y1 = y1;
     this.z1 = z1;
@@ -34,5 +35,6 @@ public final class SceneFace {
     this.y3 = y3;
     this.z3 = z3;
     this.colour = colour;
+    this.selected = selected;
   }
 }

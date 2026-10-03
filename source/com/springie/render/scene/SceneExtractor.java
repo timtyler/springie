@@ -134,7 +134,8 @@ public final class SceneExtractor {
         final Point3D p2 = n2.pos;
         out.add(new SceneFace(world(p0.x), world(p0.y), world(p0.z),
             world(p1.x), world(p1.y), world(p1.z),
-            world(p2.x), world(p2.y), world(p2.z), colour));
+            world(p2.x), world(p2.y), world(p2.z), colour,
+            face.type.selected));
       }
     }
   }
