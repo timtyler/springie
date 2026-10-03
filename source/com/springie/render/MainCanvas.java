@@ -57,11 +57,11 @@ public class MainCanvas {
   int current_mouse_y;
 
   // constructor
-  public MainCanvas(FrEnd mother) {
+  public MainCanvas(final FrEnd mother) {
     this.parent = mother;
 
     this.panel.addMouseMotionListener(new MouseMotionListener() {
-      public void mouseMoved(MouseEvent e) {
+      public void mouseMoved(final MouseEvent e) {
         FrEnd.mouse_pressed = false;
 
         final MainCanvas canvas = getCanvas();
@@ -70,7 +70,7 @@ public class MainCanvas {
         canvas.current_mouse_y = e.getY() << Coords.shift;
       }
 
-      public void mouseDragged(MouseEvent e) {
+      public void mouseDragged(final MouseEvent e) {
         final MainCanvas canvas = getCanvas();
         canvas.modifiers = e.getModifiers();
         canvas.current_mouse_x = e.getX() << Coords.shift;
@@ -87,7 +87,7 @@ public class MainCanvas {
     });
 
     this.panel.addMouseListener(new MouseListener() {
-      public void mouseReleased(MouseEvent e) {
+      public void mouseReleased(final MouseEvent e) {
         FrEnd.mouse_pressed = false;
         FrEnd.new_message_manager.add(new NewMessage(new Point(e.getX() << Coords.shift, e.getY() << Coords.shift)) {
           public Object execute() {
@@ -98,7 +98,7 @@ public class MainCanvas {
         });
       }
 
-      public void mousePressed(MouseEvent e) {
+      public void mousePressed(final MouseEvent e) {
         final MainCanvas canvas = getCanvas();
 
         canvas.modifiers = e.getModifiers();
@@ -113,7 +113,7 @@ public class MainCanvas {
         });
       }
 
-      public void mouseClicked(MouseEvent e) {
+      public void mouseClicked(final MouseEvent e) {
         final RendererInfoButton info_button = getInfoButton();
         info_button.mouseClicked(e);
 
@@ -129,7 +129,7 @@ public class MainCanvas {
         });
       }
 
-      public void mouseEntered(MouseEvent e) {
+      public void mouseEntered(final MouseEvent e) {
         FrEnd.new_message_manager.add(new NewMessage(new Point(e.getX() << Coords.shift, e.getY() << Coords.shift)) {
           public Object execute() {
             final Point p = (Point) this.context;
@@ -139,7 +139,7 @@ public class MainCanvas {
         });
       }
 
-      public void mouseExited(MouseEvent e) {
+      public void mouseExited(final MouseEvent e) {
         FrEnd.new_message_manager.add(new NewMessage(new Point(e.getX() << Coords.shift, e.getY() << Coords.shift)) {
           public Object execute() {
             final Point p = (Point) this.context;
@@ -151,7 +151,7 @@ public class MainCanvas {
     });
 
     this.panel.addKeyListener(new KeyListener() {
-      public void keyTyped(KeyEvent e) {
+      public void keyTyped(final KeyEvent e) {
         char c = e.getKeyChar();
         if (c > 'a') {
           c = (char) (c - 'a' + 'A');
@@ -192,7 +192,7 @@ public class MainCanvas {
         }
       }
 
-      public void keyPressed(KeyEvent e) {
+      public void keyPressed(final KeyEvent e) {
         //Log.log("Press: " + e.getKeyCode());
 
         switch (e.getKeyCode()) {
@@ -230,7 +230,7 @@ public class MainCanvas {
         }
       }
 
-      public void keyReleased(KeyEvent e) {
+      public void keyReleased(final KeyEvent e) {
         //Log.log("Release: " + e.getKeyCode());
 
         switch (e.getKeyCode()) {
@@ -281,7 +281,7 @@ public class MainCanvas {
     RendererDelegator.repaint_all_objects = true;
   }
 
-  public Image createImage(int x, int y) {
+  public Image createImage(final int x, final int y) {
     return this.panel.createImage(x, y);
   }
 
@@ -291,7 +291,7 @@ public class MainCanvas {
   }
 
   // draw
-  public final void update(Graphics g) {
+  public final void update(final Graphics g) {
     this.observer = this.panel;
 
     // Messages are processed on the animation thread (see FrEnd.run),
@@ -345,7 +345,7 @@ public class MainCanvas {
     }
   }
 
-  public final void paint(Graphics g) {
+  public final void paint(final Graphics g) {
     RendererDelegator.repaintAll();
 
     RendererDelegator.virgin_paint = 1; // not known why this hack is necessary :-(

@@ -48,7 +48,7 @@ public class PolygonObject2D {
 
   private static final boolean[] color_cache_valid = new boolean[1024];
 
-  static Color colorFor(int colour) {
+  static Color colorFor(final int colour) {
     final int slot = (colour ^ (colour >>> 16)) & COLOR_CACHE_MASK;
     if (color_cache_valid[slot] && color_cache_keys[slot] == colour) {
       return color_cache_values[slot];
@@ -72,13 +72,13 @@ public class PolygonObject2D {
    * fill it via set() before use -- for the link render cache, which
    * reuses its polygons across frames instead of allocating per frame.
    */
-  PolygonObject2D(int size) {
+  PolygonObject2D(final int size) {
     super();
     this.x = new int[size];
     this.y = new int[size];
   }
 
-  public PolygonObject2D(Point3D[] points, int colour) {
+  public PolygonObject2D(final Point3D[] points, final int colour) {
     super();
     this.x = new int[points.length];
     this.y = new int[points.length];
@@ -91,7 +91,7 @@ public class PolygonObject2D {
    * old constructor (which allocated three Double3Ds and a Vector3D per
    * call), so the result is bit-identical with no allocation.
    */
-  void set(Point3D[] points, int colour) {
+  void set(final Point3D[] points, int colour) {
     final int size = points.length;
     if (this.x.length != size) {
       this.x = new int[size];
@@ -179,12 +179,12 @@ public class PolygonObject2D {
     return this.bounding_box;
   }
 
-  public void fill(Graphics graphics, int colour) {
+  public void fill(final Graphics graphics, final int colour) {
     graphics.setColor(colorFor(colour));
     graphics.fillPolygon(this.x, this.y, this.x.length);
   }
 
-  public void draw(Graphics graphics, int colour) {
+  public void draw(final Graphics graphics, final int colour) {
     graphics.setColor(colorFor(colour));
     graphics.drawPolygon(this.x, this.y, this.x.length);
   }

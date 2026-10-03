@@ -110,26 +110,26 @@ public class SimpleC60 extends ObjectBase {
     this.faces = faces.toArray(new int[0][]);
   }
 
-  private static Double3D lerp(Double3D a, Double3D b, double t) {
+  private static Double3D lerp(final Double3D a, final Double3D b, final double t) {
     return new Double3D(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t,
         a.z + (b.z - a.z) * t);
   }
 
-  private static int truncNear(Map<Long, int[]> edge_cuts, int from, int to) {
+  private static int truncNear(final Map<Long, int[]> edge_cuts, final int from, final int to) {
     final int lo = Math.min(from, to);
     final int hi = Math.max(from, to);
     final int[] pair = edge_cuts.get(((long) lo << 32) | hi);
     return from == lo ? pair[0] : pair[1];
   }
 
-  private static double dot(Double3D a, Double3D b) {
+  private static double dot(final Double3D a, final Double3D b) {
     return a.x * b.x + a.y * b.y + a.z * b.z;
   }
 
   // Orders neighbours of a vertex by polar angle around it, so they form
   // a ring suitable for a polygon face.
-  private static List<Integer> orderByAngle(Double3D vertex,
-      List<Integer> neighbours, Double3D[] ico_points) {
+  private static List<Integer> orderByAngle(final Double3D vertex,
+      List<Integer> neighbours, final Double3D[] ico_points) {
     final Double3D axis = new Double3D(vertex);
     axis.normalize();
     final Double3D ref = Math.abs(axis.z) < 0.9 ? new Double3D(0, 0, 1)
@@ -147,15 +147,15 @@ public class SimpleC60 extends ObjectBase {
     return ordered;
   }
 
-  private static double angle(Double3D[] ico_points, Double3D vertex,
-      int neighbour, Double3D u, Double3D u2) {
+  private static double angle(final Double3D[] ico_points, final Double3D vertex,
+      int neighbour, final Double3D u, final Double3D u2) {
     final Double3D d = ico_points[neighbour].subtract(vertex);
     return Math.atan2(dot(d, u2), dot(d, u));
   }
 
   // Ensures the face vertices wind the outward-facing way (the polygon
   // renderer backface-culls on projected winding).
-  private static int[] fixWinding(List<Double3D> points, int[] face) {
+  private static int[] fixWinding(final List<Double3D> points, final int[] face) {
     // Newell's method for the face normal.
     double nx = 0;
     double ny = 0;

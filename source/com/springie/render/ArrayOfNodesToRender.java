@@ -4,7 +4,7 @@ package com.springie.render;
 public class ArrayOfNodesToRender {
   public CachedNode[] array;
 
-  public void ensureCapacity(int size) {
+  public void ensureCapacity(final int size) {
     if (this.array == null || this.array.length != size) {
       this.array = new CachedNode[size];
       for (int i = size; --i >= 0;) {

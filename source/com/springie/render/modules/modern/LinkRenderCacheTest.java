@@ -101,17 +101,17 @@ class LinkRenderCacheTest {
     Coords.shift_constant_z = this.saved_shift_constant_z;
   }
 
-  private static Node nodeAt(int x, int y, int z) {
+  private static Node nodeAt(final int x, final int y, final int z) {
     return new Node(new Point3D(x, y, z), 42, new NodeTypeFactory());
   }
 
-  private static Link linkBetween(Node a, Node b, boolean compression) {
+  private static Link linkBetween(final Node a, final Node b, boolean compression) {
     final LinkType type = new LinkTypeFactory().getNew(100 << Coords.shift, 50);
     type.compression = compression;
     return new Link(a, b, type, new Clazz(0));
   }
 
-  private static ArrayList<PolygonComposite> render(Link link, Node a, Node b) {
+  private static ArrayList<PolygonComposite> render(final Link link, final Node a, final Node b) {
     return ElementRendererLink.getPolygon(link, a, b, link.getThicknesss(),
         0xFF0000FF);
   }

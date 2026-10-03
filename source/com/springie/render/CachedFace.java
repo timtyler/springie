@@ -23,7 +23,7 @@ public class CachedFace {
 
   boolean selected;
 
-  public void draw(Face face) {
+  public void draw(final Face face) {
     if (!face.type.hidden || FrEnd.render_hidden_faces) {
       //final Node n1 = (Node) face.node.get(0);
 
@@ -38,7 +38,7 @@ public class CachedFace {
     }
   }
 
-  public void scrub(Face face) {
+  public void scrub(final Face face) {
     if (!FrEnd.render_hidden_links && face.type.hidden) {
       return;
     }
@@ -52,7 +52,7 @@ public class CachedFace {
     }
   }
 
-  private void renderFace(Face face, int type) {
+  private void renderFace(final Face face, final int type) {
     // "Face lines = 0" fills the face in a solid colour instead of
     // drawing the concentric/segmented line pattern.
     if (Face.number_of_render_divisions == 0) {
@@ -83,7 +83,7 @@ public class CachedFace {
     }
   }
 
-  void cache(Face face, int mask) {
+  void cache(final Face face, final int mask) {
     final Node n1 = (Node) face.nodes.get(0);
 
     this.colour = DeepObjectColourCalculator.getColourOfDeepObject(
@@ -110,7 +110,7 @@ public class CachedFace {
       & mask;
   }
 
-  private void getCoordsOfCentre(Face face) {
+  private void getCoordsOfCentre(final Face face) {
     final int npoints = face.nodes.size();
 
     int sum_x = 0;
@@ -135,7 +135,7 @@ public class CachedFace {
    * The points in {@link #render} are already projected screen coordinates,
    * refreshed by {@link #cache(Face, int)}.
    */
-  private void renderSolid(Face face) {
+  private void renderSolid(final Face face) {
     final int npoints = face.nodes.size();
     if (this.render.size() != npoints) {
       setUpRenderingScratchSpace(face);
@@ -152,7 +152,7 @@ public class CachedFace {
     RendererDelegator.graphics_handle.fillPolygon(xs, ys, npoints);
   }
 
-  private void renderThinConcentric(Face face, int num) {
+  private void renderThinConcentric(final Face face, final int num) {
     final int npoints = face.nodes.size();
     final int rpoints = this.render.size();
     if (rpoints != npoints) {
@@ -178,7 +178,7 @@ public class CachedFace {
     }
   }
 
-  private void renderThinSegmented(Face face, int num) {
+  private void renderThinSegmented(final Face face, final int num) {
     final int npoints = face.nodes.size();
     final int rpoints = this.render.size();
     if (rpoints != npoints) {
@@ -213,7 +213,7 @@ public class CachedFace {
     }
   }
 
-  private void renderThinClockwise(Face face, int num) {
+  private void renderThinClockwise(final Face face, final int num) {
     final int npoints = face.nodes.size();
     final int rpoints = this.render.size();
     if (rpoints != npoints) {
@@ -239,7 +239,7 @@ public class CachedFace {
     }
   }
 
-  private void renderThinAntiClockwise(Face face, int num) {
+  private void renderThinAntiClockwise(final Face face, final int num) {
     final int npoints = face.nodes.size();
     final int rpoints = this.render.size();
     if (rpoints != npoints) {
@@ -265,7 +265,7 @@ public class CachedFace {
     }
   }
 
-  private void setUpRenderingScratchSpace(Face face) {
+  private void setUpRenderingScratchSpace(final Face face) {
     if (face.nodes != null) {
       this.render = new ArrayList<>();
 
@@ -276,7 +276,7 @@ public class CachedFace {
     }
   }
 
-  void renderSelectedFace(Face face) {
+  void renderSelectedFace(final Face face) {
     renderFace(face, Face.face_display_type ^ 3);
   }
 }

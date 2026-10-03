@@ -61,7 +61,7 @@ public class RendererDragBoxTest {
     RendererDelegator.colour_selected = this.saved_selected;
   }
 
-  private static Point internal(int pixel) {
+  private static Point internal(final int pixel) {
     return new Point(pixel << Coords.shift, pixel << Coords.shift);
   }
 

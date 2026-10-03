@@ -85,8 +85,8 @@ public final class ElementRendererLink {
    * rebuilding them when the tessellation signature (divisions, sides)
    * changed since the last frame. Package-visible for the tests.
    */
-  static PairCache getPairCache(Link link, Node node_1, Node node_2,
-      int divisions, int sides) {
+  static PairCache getPairCache(final Link link, final Node node_1, final Node node_2,
+      int divisions, final int sides) {
     LinkCache link_cache = link_caches.get(link);
     if (link_cache == null) {
       link_cache = new LinkCache();
@@ -109,7 +109,7 @@ public final class ElementRendererLink {
     return pair;
   }
 
-  private static void buildPairCache(PairCache pair, int divisions,
+  private static void buildPairCache(final PairCache pair, int divisions,
       int sides) {
     pair.divisions = divisions;
     pair.sides = sides;
@@ -139,8 +139,8 @@ public final class ElementRendererLink {
     // ...
   }
 
-  public static ArrayList<PolygonComposite> getPolygon(Link link, Node node_1, Node node_2,
-      int thicknesss, int colour) {
+  public static ArrayList<PolygonComposite> getPolygon(final Link link, final Node node_1, final Node node_2,
+      int thicknesss, final int colour) {
     final Point3D point0 = scratch_point0;
     point0.set(node_1.pos);
     final Point3D point1 = scratch_point1;
@@ -321,8 +321,8 @@ public final class ElementRendererLink {
    *
    * Package-visible for the culling test.
    */
-  static boolean tubeSideFacesViewer(Double3D cross_1, Double3D cross_2,
-      int side, int sides) {
+  static boolean tubeSideFacesViewer(final Double3D cross_1, final Double3D cross_2,
+      int side, final int sides) {
     final double mid = 2.0 * Math.PI * (side + 0.5) / sides;
     return Math.cos(mid) * cross_1.z + Math.sin(mid) * cross_2.z < 0.0;
   }
@@ -335,8 +335,8 @@ public final class ElementRendererLink {
    *
    * Package-visible for the culling test.
    */
-  static int cullTubeBackFaces(PolygonObject2D[] quads, Double3D cross_1,
-      Double3D cross_2, int sides) {
+  static int cullTubeBackFaces(final PolygonObject2D[] quads, final Double3D cross_1,
+      Double3D cross_2, final int sides) {
     int front_count = 0;
     for (int side = 0; side < sides; side++) {
       if (tubeSideFacesViewer(cross_1, cross_2, side, sides)) {
@@ -351,19 +351,19 @@ public final class ElementRendererLink {
    * allocation. The corners land in the shared scratch array and are
    * consumed immediately by PolygonObject2D.set.
    */
-  static void writeTubeQuad(PolygonObject2D out, Point3D point0n,
-      Point3D point1n, Vector3D cross_1_int, Vector3D cross_2_int,
-      double cos_a, double sin_a, double cos_b, double sin_b,
-      double sf1, double sf2, int new_colour) {
+  static void writeTubeQuad(final PolygonObject2D out, final Point3D point0n,
+      Point3D point1n, final Vector3D cross_1_int, final Vector3D cross_2_int,
+      double cos_a, final double sin_a, final double cos_b, final double sin_b,
+      double sf1, final double sf2, final int new_colour) {
     writeTubeCorners(scratch_corners, point0n, point1n, cross_1_int,
         cross_2_int, cos_a, sin_a, cos_b, sin_b, sf1, sf2);
     out.set(scratch_corners, new_colour);
   }
 
-  private static void writeTubeCorners(Point3D[] corners, Point3D point0n,
-      Point3D point1n, Vector3D cross_1_int, Vector3D cross_2_int,
-      double cos_a, double sin_a, double cos_b, double sin_b,
-      double sf1, double sf2) {
+  private static void writeTubeCorners(final Point3D[] corners, final Point3D point0n,
+      Point3D point1n, final Vector3D cross_1_int, final Vector3D cross_2_int,
+      double cos_a, final double sin_a, final double cos_b, final double sin_b,
+      double sf1, final double sf2) {
     tubeCornerInto(corners[0], point0n, cross_1_int, cross_2_int,
         cos_a, sin_a, sf1);
     tubeCornerInto(corners[1], point1n, cross_1_int, cross_2_int,
@@ -386,10 +386,10 @@ public final class ElementRendererLink {
    *
    * Package-visible for the winding-direction test.
    */
-  static PolygonObject2D tubeQuad(Point3D point0n, Point3D point1n,
-      Vector3D cross_1_int, Vector3D cross_2_int,
-      double cos_a, double sin_a, double cos_b, double sin_b,
-      double sf1, double sf2, int new_colour) {
+  static PolygonObject2D tubeQuad(final Point3D point0n, final Point3D point1n,
+      Vector3D cross_1_int, final Vector3D cross_2_int,
+      double cos_a, final double sin_a, final double cos_b, final double sin_b,
+      double sf1, final double sf2, final int new_colour) {
     writeTubeCorners(scratch_corners, point0n, point1n, cross_1_int,
         cross_2_int, cos_a, sin_a, cos_b, sin_b, sf1, sf2);
     final Point3D[] quad_points = new Point3D[4];
@@ -403,9 +403,9 @@ public final class ElementRendererLink {
    * In-place tube corner: out = base + sf * (cos_a * cross_1 + sin_a *
    * cross_2). Same arithmetic as the old allocating tubeCorner.
    */
-  private static void tubeCornerInto(Point3D out, Point3D base,
-      Vector3D cross_1_int, Vector3D cross_2_int, double cos_a,
-      double sin_a, double sf) {
+  private static void tubeCornerInto(final Point3D out, final Point3D base,
+      Vector3D cross_1_int, final Vector3D cross_2_int, final double cos_a,
+      double sin_a, final double sf) {
     final Vector3D dir = scratch_tube_dir;
     dir.set(cross_1_int);
     dir.multiplyBy(cos_a);
@@ -418,7 +418,7 @@ public final class ElementRendererLink {
     out.addTuple3D(dir);
   }
 
-  private static PolygonComposite addRelevantText(Link link, int min_z) {
+  private static PolygonComposite addRelevantText(final Link link, final int min_z) {
     final int distance_fowards = 6000;
     final Point3D p_c = link.getCoordinatesOfCentrePoint();
 

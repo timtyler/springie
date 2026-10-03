@@ -48,7 +48,7 @@ class ViewportShadeTest {
     Coords.y_pixelso2 = Coords.y_pixels >> 1;
   }
 
-  private static BufferedImage shadeWith(int shift_x) {
+  private static BufferedImage shadeWith(final int shift_x) {
     Coords.shift_constant_x = shift_x;
     Coords.shift_constant_y = 0;
     final BufferedImage img =

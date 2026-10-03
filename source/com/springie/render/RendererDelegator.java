@@ -184,14 +184,14 @@ public final class RendererDelegator {
     }
   }
 
-  public static void setColour(int colour) {
+  public static void setColour(final int colour) {
     RendererDelegator.graphics_handle.setColor(new Color(colour));
     if (FrEnd.xor) {
       RendererDelegator.graphics_handle.setXORMode(color_background);
     }
   }
 
-  public static void redrawChanged(Graphics graphics) {
+  public static void redrawChanged(final Graphics graphics) {
     RendererDelegator.graphics_handle = graphics;
 
     possibleInitialClear(graphics);
@@ -232,7 +232,7 @@ public final class RendererDelegator {
    * of leaving the user with a silent failure and a stack trace in
    * the logs.
    */
-  private static void paintLoadError(Graphics graphics) {
+  private static void paintLoadError(final Graphics graphics) {
     final String error = DataInput.load_error;
     if (error == null) {
       return;
@@ -282,7 +282,7 @@ public final class RendererDelegator {
     }
   }
 
-  private static void possibleInitialClear(Graphics graphics) {
+  private static void possibleInitialClear(final Graphics graphics) {
     if (FrEnd.module) {
       FrEnd.extension.update();
     }
@@ -324,7 +324,7 @@ public final class RendererDelegator {
    * would never be erased.
    */
 
-  private static void renderDragBox(Graphics graphics) {
+  private static void renderDragBox(final Graphics graphics) {
     final DragBoxManager drag_box_manager = FrEnd.perform_actions.drag_box_manager;
     final boolean repaint = drag_box_manager.drag_box_end != null;
 
@@ -370,7 +370,7 @@ public final class RendererDelegator {
     }
   }
 
-  static void passOnToUpdateMethods(Graphics graphics) {
+  static void passOnToUpdateMethods(final Graphics graphics) {
     // A slow renderer (the ray-traced one) holds the model while its
     // frame renders, so every model state is rendered exactly once, in
     // order, and the animation runs at render speed rather than skipping
@@ -409,7 +409,7 @@ public final class RendererDelegator {
     RendererDelegator.setColour(color_background_number);
   }
 
-  public static void resize(int x_pixels, int y_pixels) {
+  public static void resize(final int x_pixels, final int y_pixels) {
     renderer.resize(x_pixels, y_pixels);
   }
 

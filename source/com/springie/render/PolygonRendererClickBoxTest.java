@@ -90,19 +90,19 @@ public class PolygonRendererClickBoxTest {
     GuiTestSupport.repaintAndWait();
   }
 
-  private static void dispatch(MouseEvent e) throws Exception {
+  private static void dispatch(final MouseEvent e) throws Exception {
     SwingUtilities.invokeAndWait(
         () -> FrEnd.main_canvas.panel.dispatchEvent(e));
   }
 
-  private static void press(int x, int y) throws Exception {
+  private static void press(final int x, final int y) throws Exception {
     final Panel panel = FrEnd.main_canvas.panel;
     dispatch(new MouseEvent(panel, MouseEvent.MOUSE_PRESSED,
         System.currentTimeMillis(), InputEvent.BUTTON1_DOWN_MASK,
         x, y, 1, false, MouseEvent.BUTTON1));
   }
 
-  private static void release(int x, int y) throws Exception {
+  private static void release(final int x, final int y) throws Exception {
     final Panel panel = FrEnd.main_canvas.panel;
     dispatch(new MouseEvent(panel, MouseEvent.MOUSE_RELEASED,
         System.currentTimeMillis(), InputEvent.BUTTON1_DOWN_MASK,
@@ -113,7 +113,7 @@ public class PolygonRendererClickBoxTest {
     boolean isTrue() throws Exception;
   }
 
-  private static void waitFor(Condition condition, String what)
+  private static void waitFor(final Condition condition, final String what)
       throws Exception {
     final long deadline = System.currentTimeMillis() + 20000;
     while (System.currentTimeMillis() < deadline) {
@@ -126,7 +126,7 @@ public class PolygonRendererClickBoxTest {
   }
 
   // Real screen pixels around the given panel coordinates.
-  private static BufferedImage captureScreen(int px, int py) throws Exception {
+  private static BufferedImage captureScreen(final int px, final int py) throws Exception {
     final Robot robot = new Robot();
     final Point[] loc = new Point[1];
     SwingUtilities.invokeAndWait(
@@ -135,7 +135,7 @@ public class PolygonRendererClickBoxTest {
         new Rectangle(loc[0].x + px - 12, loc[0].y + py - 12, 25, 25));
   }
 
-  private static int countBoxPixels(BufferedImage img) {
+  private static int countBoxPixels(final BufferedImage img) {
     int count = 0;
     for (int y = 0; y < img.getHeight(); y++) {
       for (int x = 0; x < img.getWidth(); x++) {

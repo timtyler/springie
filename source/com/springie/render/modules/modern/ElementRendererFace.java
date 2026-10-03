@@ -20,7 +20,7 @@ public final class ElementRendererFace {
     // ...
   }
 
-  public static PolygonComposite getPolygon(Face face) {
+  public static PolygonComposite getPolygon(final Face face) {
     int colour;
     if (face.type.selected) {
       colour = RendererDelegator.colour_selected_number;
@@ -30,7 +30,7 @@ public final class ElementRendererFace {
     return getPolygonSimple(face, colour);
   }
 
-  private static PolygonComposite getPolygonSimple(Face face, int colour) {
+  private static PolygonComposite getPolygonSimple(final Face face, final int colour) {
     final int npolygon = face.nodes.size();
 
     final Point3D center = scratch_center;
@@ -92,7 +92,7 @@ public final class ElementRendererFace {
     return new PolygonComposite(polygon_array, center.z);
   }
 
-  private static void getCoordsOfCentre(Face face, Point3D sum) {
+  private static void getCoordsOfCentre(final Face face, final Point3D sum) {
     final int npoints = face.nodes.size();
     sum.set(0, 0, 0);
 

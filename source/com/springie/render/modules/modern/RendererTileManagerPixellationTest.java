@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
  */
 public class RendererTileManagerPixellationTest {
 
-  private static BufferedImage image(int w, int h, int[] pixels) {
+  private static BufferedImage image(final int w, final int h, final int[] pixels) {
     final BufferedImage img =
         new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
     img.setRGB(0, 0, w, h, pixels, 0, w);
@@ -65,8 +65,8 @@ public class RendererTileManagerPixellationTest {
     g.dispose();
   }
 
-  private static RectangleInt snap(int min_x, int min_y, int max_x,
-      int max_y, int tile_min_x, int tile_min_y, int px) {
+  private static RectangleInt snap(final int min_x, final int min_y, final int max_x,
+      int max_y, final int tile_min_x, final int tile_min_y, final int px) {
     final RectangleInt out = new RectangleInt(0, 0, 0, 0);
     RendererTileManager.snapScrubToCoarseBlocks(
         new RectangleInt(min_x, min_y, max_x, max_y), tile_min_x, tile_min_y,

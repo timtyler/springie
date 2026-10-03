@@ -26,14 +26,14 @@ public class RectangleInt {
     this.max_y = max_y;
   }
 
-  public void setTo(RectangleInt other) {
+  public void setTo(final RectangleInt other) {
     this.min_x = other.min_x;
     this.min_y = other.min_y;
     this.max_x = other.max_x;
     this.max_y = other.max_y;
   }
 
-  public void setToUnion(RectangleInt r1, RectangleInt r2) {
+  public void setToUnion(final RectangleInt r1, final RectangleInt r2) {
     this.min_x = Math.min(r1.min_x, r2.min_x);
     this.max_x = Math.max(r1.max_x, r2.max_x);
     this.min_y = Math.min(r1.min_y, r2.min_y);
@@ -43,7 +43,7 @@ public class RectangleInt {
   /**
    * Unions the box (x0, y0)..(x1, y1) into this rectangle.
    */
-  public void unionBox(long x0, long y0, long x1, long y1) {
+  public void unionBox(final long x0, final long y0, final long x1, final long y1) {
     if (x0 < this.min_x) {
       this.min_x = (int) x0;
     }

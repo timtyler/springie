@@ -108,7 +108,7 @@ public final class WorldMarkers {
    * <p>Message passing: enqueues the delta for the EDT to apply.
    * The markers list is EDT-owned; this never touches it directly.
    */
-  public static void onFrame(Vector3D delta) {
+  public static void onFrame(final Vector3D delta) {
     pending_deltas.add(new Vector3D(delta));
   }
 
@@ -139,7 +139,7 @@ public final class WorldMarkers {
    * the drag handler, so the dots translate with the model when the
    * user drags it.
    */
-  public static void translate(int dx, int dy, int dz) {
+  public static void translate(final int dx, final int dy, final int dz) {
     for (Point3D p : markers) {
       p.x += dx;
       p.y += dy;
@@ -167,7 +167,7 @@ public final class WorldMarkers {
    * translate with the model when the user drags with the Translate
    * button enabled.
    */
-  public static void translateFromSnapshot(int dx, int dy) {
+  public static void translateFromSnapshot(final int dx, final int dy) {
     // Restore from snapshot, then apply the absolute delta.
     markers.clear();
     for (Point3D p : drag_snapshot) {
@@ -183,7 +183,7 @@ public final class WorldMarkers {
    * Restores from the drag snapshot first, so the rotation is
    * absolute from drag start, not incremental.
    */
-  public static void rotate(float theta1, float theta2, boolean cw_acw,
+  public static void rotate(final float theta1, final float theta2, final boolean cw_acw,
       Point3D centre) {
     // Restore from snapshot, then apply the absolute rotation.
     markers.clear();
@@ -220,13 +220,13 @@ public final class WorldMarkers {
   }
 
   /** Adds one marker at the given internal coords; tests only. */
-  static void addForTest(int x, int y, int z) {
+  static void addForTest(final int x, final int y, final int z) {
     drainPending();
     markers.add(new Point3D(x, y, z));
   }
 
   /** Internal coords of one marker as {x, y, z}; tests only. */
-  static int[] marker(int i) {
+  static int[] marker(final int i) {
     drainPending();
     final Point3D p = markers.get(i);
     return new int[] {(int) p.x, (int) p.y, (int) p.z};
@@ -243,7 +243,7 @@ public final class WorldMarkers {
    * straight onto the screen with no damage repair (the old polygon
    * renderer). A no-op unless a demo model is showing markers.
    */
-  public static void draw(Graphics graphics) {
+  public static void draw(final Graphics graphics) {
     drainPending();
     if (!olympicsActive()) {
       return;
@@ -267,7 +267,7 @@ public final class WorldMarkers {
    */
   private static final List<RectangleInt> old_dots = new ArrayList<>();
 
-  public static void drawUnder(Graphics graphics) {
+  public static void drawUnder(final Graphics graphics) {
     drainPending();
     // Reset the clip: the last frame's renderer may have left a small
     // clip set, which would clip our clearRect and leave golden trails.
@@ -335,7 +335,7 @@ public final class WorldMarkers {
    * list. The quads ride the normal tile damage repair, so the old
    * marker images are scrubbed when the markers move -- no trails.
    */
-  public static void addToTiles(ArrayList<PolygonComposite> all) {
+  public static void addToTiles(final ArrayList<PolygonComposite> all) {
     drainPending();
     if (!olympicsActive()) {
       return;
@@ -356,7 +356,7 @@ public final class WorldMarkers {
    * corner pairing is easy to get wrong (a swapped y pairing collapses
    * the quad into a diagonal line, caught by screenshot 2026-09-23).
    */
-  static PolygonObject2D buildQuad(int sx, int sy, int half) {
+  static PolygonObject2D buildQuad(final int sx, final int sy, final int half) {
     return new PolygonObject2D(
         new int[] {sx - half, sx + half,
             sx + half, sx - half, },
@@ -432,7 +432,7 @@ public final class WorldMarkers {
    * perspective divisor at mid depth over the divisor here, so nearer
    * markers draw bigger and farther ones smaller.
    */
-  static int screenHalf(int z) {
+  static int screenHalf(final int z) {
     final int divisor = Coords.shift_constant_z + (z >> Coords.shift_z);
     final int mid_z = (Coords.z_pixels << Coords.shift) >> 1;
     final int mid_divisor =

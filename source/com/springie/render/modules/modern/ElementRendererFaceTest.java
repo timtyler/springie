@@ -50,7 +50,7 @@ class ElementRendererFaceTest {
     Face.number_of_render_divisions = this.saved_render_divisions;
   }
 
-  private static Face squareFace(int argb) {
+  private static Face squareFace(final int argb) {
     final int s = 1 << 16;
     final ArrayList<Node> nodes = new ArrayList<>();
     final int[][] corners = {{-s, -s}, {s, -s}, {s, s}, {-s, s}};
@@ -63,7 +63,7 @@ class ElementRendererFaceTest {
     return new Face(nodes, type, new Clazz(argb));
   }
 
-  private static Face triangleFace(int argb) {
+  private static Face triangleFace(final int argb) {
     final int s = 1 << 16;
     final ArrayList<Node> nodes = new ArrayList<>();
     final int[][] corners = {{-s, -s}, {s, -s}, {0, s}};

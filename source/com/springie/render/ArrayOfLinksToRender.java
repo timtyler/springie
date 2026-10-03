@@ -4,7 +4,7 @@ package com.springie.render;
 public class ArrayOfLinksToRender {
   public CachedLink[] array;
 
-  public void ensureCapacity(int size) {
+  public void ensureCapacity(final int size) {
     if (this.array == null || this.array.length != size) {
       this.array = new CachedLink[size];
       for (int i = size; --i >= 0;) {

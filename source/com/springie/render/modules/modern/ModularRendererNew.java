@@ -33,7 +33,7 @@ public class ModularRendererNew implements ModularRendererBase {
   private final ArrayList<PolygonComposite> frame_composites =
       new ArrayList<>();
 
-  public void resize(int x, int y) {
+  public void resize(final int x, final int y) {
     this.tiles_current.resize(x, y);
     this.tiles_last.resize(x, y);
   }
@@ -43,7 +43,7 @@ public class ModularRendererNew implements ModularRendererBase {
     this.tiles_last.reset();
   }
 
-  public void repaint(Graphics graphics, NodeManager manager) {
+  public void repaint(final Graphics graphics, final NodeManager manager) {
     // clear tiles...
 
     this.tiles_current.clear();
@@ -84,7 +84,7 @@ public class ModularRendererNew implements ModularRendererBase {
    * so the tiled renderer's normal damage repair covers the old rectangle
    * when it moves -- no trails, even with show_tiles gaps.
    */
-  private void addDragBoxToTiles(ArrayList<PolygonComposite> all) {
+  private void addDragBoxToTiles(final ArrayList<PolygonComposite> all) {
     final DragBoxManager drag_box_manager =
         FrEnd.perform_actions.drag_box_manager;
     if (drag_box_manager == null
@@ -139,7 +139,7 @@ public class ModularRendererNew implements ModularRendererBase {
     }, z));
   }
 
-  private void addFacesToTiles(NodeManager manager, int mask,
+  private void addFacesToTiles(final NodeManager manager, final int mask,
       ArrayList<PolygonComposite> all) {
     if (FrEnd.render_faces) {
       final FaceManager face_manager = manager.getFaceManager();
@@ -157,7 +157,7 @@ public class ModularRendererNew implements ModularRendererBase {
     }
   }
 
-  private void addLinksToTiles(NodeManager manager, int mask,
+  private void addLinksToTiles(final NodeManager manager, final int mask,
       ArrayList<PolygonComposite> all) {
     if (FrEnd.render_links) {
       final LinkManager link_manager = manager.getLinkManager();
@@ -188,7 +188,7 @@ public class ModularRendererNew implements ModularRendererBase {
     }
   }
 
-  private void addNodesToTiles(NodeManager manager, int mask,
+  private void addNodesToTiles(final NodeManager manager, final int mask,
       ArrayList<PolygonComposite> all) {
 
     final int number_of_nodes = manager.element.size();

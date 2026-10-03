@@ -29,11 +29,11 @@ public class RendererDragBox {
    */
   public boolean cache_valid = false;
 
-  public void draw(Graphics g, DragBoxManager drag_box_manager) {
+  public void draw(final Graphics g, final DragBoxManager drag_box_manager) {
     drawDragBox(g, drag_box_manager);
   }
 
-  private void drawDragBox(Graphics g, DragBoxManager drag_box_manager) {
+  private void drawDragBox(final Graphics g, final DragBoxManager drag_box_manager) {
     g.setClip(0, 0, 9999, 9999);
     if (drag_box_manager.drag_box_end != null) {
       if (drag_box_manager.drag_box_start != null) {
@@ -60,7 +60,7 @@ public class RendererDragBox {
     this.cache_valid = false;
   }
 
-  private void cacheDragBoxCoordinates(DragBoxManager drag_box_manager) {
+  private void cacheDragBoxCoordinates(final DragBoxManager drag_box_manager) {
     final Point one = drag_box_manager.drag_box_start;
     final Point two = drag_box_manager.drag_box_end;
 
@@ -88,7 +88,7 @@ public class RendererDragBox {
     }
   }
 
-  private void drawTheCurrentDragBox(Graphics g) {
+  private void drawTheCurrentDragBox(final Graphics g) {
     final int min_x_s = Coords.getPixelFromInternalCoords(this.min.x);
     final int max_x_s = Coords.getPixelFromInternalCoords(this.max.x);
     
@@ -101,7 +101,7 @@ public class RendererDragBox {
     drawThickLine(g, max_x_s, min_y_s, max_x_s, max_y_s);
   }
 
-  private void drawThickLine(Graphics g, int min_x, int min_y, int max_x, int max_y) {
+  private void drawThickLine(final Graphics g, final int min_x, final int min_y, final int max_x, final int max_y) {
     final int x = 3;
     g.fillRect(min_x - x, min_y - x, max_x - min_x + x + x, max_y - min_y + x + x);
   }

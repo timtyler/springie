@@ -73,47 +73,47 @@ public final class Coords {
   }
 
   // int -> pixels
-  public static int getXCoords(int _x, int _z) {
+  public static int getXCoords(final int _x, final int _z) {
     return Coords.x_pixelso2
         + ((_x + shift_constant_x - (Coords.x_pixelso2 << Coords.shift)) / (Coords.shift_constant_z + (_z >> Coords.shift_z)));
   }
 
-  public static int getYCoords(int _y, int _z) {
+  public static int getYCoords(final int _y, final int _z) {
     return Coords.y_pixelso2
         + ((_y + shift_constant_y - (Coords.y_pixelso2 << Coords.shift)) / (Coords.shift_constant_z + (_z >> Coords.shift_z)));
   }
 
   // keeps it about the same size...
-  public static int getRadius(int _r, int _z) {
+  public static int getRadius(final int _r, final int _z) {
     return _r / (Coords.shift_constant_z + (_z >> Coords.shift_z));
   }
 
   // int -> Internal coordinates
-  public static int getXCoordsInternal(int _x, int _z) {
+  public static int getXCoordsInternal(final int _x, final int _z) {
     return Coords.getXCoords(_x, _z) << Coords.shift;
   }
 
-  public static int getYCoordsInternal(int _y, int _z) {
+  public static int getYCoordsInternal(final int _y, final int _z) {
     return Coords.getYCoords(_y, _z) << Coords.shift;
   }
 
-  public static int getRadiusInternal(int _r, int _z) {
+  public static int getRadiusInternal(final int _r, final int _z) {
     return Coords.getRadius(_r, _z) << Coords.shift;
   }
 
   // int -> int
-  public static int inverseXCoords(int _x, int _z) {
+  public static int inverseXCoords(final int _x, final int _z) {
     return (((_x >> Coords.shift) - Coords.x_pixelso2) * (Coords.shift_constant_z + (_z >> Coords.shift_z)))
         + (Coords.x_pixelso2 << Coords.shift);
   }
 
-  public static int inverseYCoords(int _y, int _z) {
+  public static int inverseYCoords(final int _y, final int _z) {
     return (((_y >> Coords.shift) - Coords.y_pixelso2) * (Coords.shift_constant_z + (_z >> Coords.shift_z)))
         + (Coords.y_pixelso2 << Coords.shift);
   }
 
-  static void drawLine2(Graphics g, int _x1, int _y1, int _z1, int _x2,
-      int _y2, int _z2) {
+  static void drawLine2(final Graphics g, final int _x1, final int _y1, final int _z1, final int _x2,
+      int _y2, final int _z2) {
     final int _x1a = Coords
         .getXCoords(_x1 << Coords.shift, _z1 << Coords.shift);
     final int _y1a = Coords
@@ -127,8 +127,8 @@ public final class Coords {
     g.drawLine(_x1a, _y1a, _x2a, _y2a);
   }
 
-  public static void drawLine(Graphics g, int _x1, int _y1, int _z1, int _x2,
-      int _y2, int _z2) {
+  public static void drawLine(final Graphics g, final int _x1, final int _y1, final int _z1, final int _x2,
+      int _y2, final int _z2) {
     final int _x1a = Coords.getXCoords(_x1, _z1);
     final int _y1a = Coords.getYCoords(_y1, _z1);
 
@@ -138,11 +138,11 @@ public final class Coords {
     g.drawLine(_x1a, _y1a, _x2a, _y2a);
   }
 
-  public static int getInternalFromPixelCoords(int x) {
+  public static int getInternalFromPixelCoords(final int x) {
     return x << Coords.shift;
   }
 
-  public static int getPixelFromInternalCoords(int x) {
+  public static int getPixelFromInternalCoords(final int x) {
     return x >> Coords.shift;
   }
 }

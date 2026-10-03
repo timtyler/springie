@@ -42,7 +42,7 @@ class RendererTileManagerSortTest {
     RendererTileManager.one_big_tile = this.saved_one_big_tile;
   }
 
-  private static PolygonComposite composite(int z, int x0, int y0, int x1,
+  private static PolygonComposite composite(final int z, final int x0, final int y0, final int x1,
       int y1) {
     return new PolygonComposite(new PolygonObject2D[] {
         new PolygonObject2D(new int[] {x0, x1, x1, x0, },
@@ -56,8 +56,8 @@ class RendererTileManagerSortTest {
   }
 
   /** Tile (x, y) holds pixels x*100..x*100+99, y*100..y*100+99. */
-  private static ArrayList<PolygonComposite> tile(RendererTileManager manager,
-      int x, int y) {
+  private static ArrayList<PolygonComposite> tile(final RendererTileManager manager,
+      int x, final int y) {
     try {
       final java.lang.reflect.Field field =
           RendererTileManager.class.getDeclaredField("array");
@@ -69,7 +69,7 @@ class RendererTileManagerSortTest {
     }
   }
 
-  private static int[] zs(List<PolygonComposite> list) {
+  private static int[] zs(final List<PolygonComposite> list) {
     final int[] result = new int[list.size()];
     for (int i = 0; i < result.length; i++) {
       result[i] = list.get(i).z;
@@ -195,7 +195,7 @@ class RendererTileManagerSortTest {
    * deepest-first was off), walked from the end backwards.
    */
   private static List<PolygonComposite> legacyDrawSequence(
-      List<PolygonComposite> vector, boolean deepest_first) {
+      List<PolygonComposite> vector, final boolean deepest_first) {
     final int size = vector.size();
     final Integer[] index = new Integer[size];
     for (int i = 0; i < size; i++) {

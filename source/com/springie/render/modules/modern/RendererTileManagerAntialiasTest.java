@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
  */
 public class RendererTileManagerAntialiasTest {
 
-  private static BufferedImage image(int size, int[] pixels) {
+  private static BufferedImage image(final int size, final int[] pixels) {
     final BufferedImage img =
         new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
     img.setRGB(0, 0, size, size, pixels, 0, size);

@@ -73,7 +73,7 @@ public final class BoundaryBoxDots {
    * Plots a single gray dot of the boundary-box outline. Call once per
    * frame; a no-op unless FrEnd.show_boundary_box is on.
    */
-  public static void drawOneDot(Graphics g) {
+  public static void drawOneDot(final Graphics g) {
     if (!FrEnd.show_boundary_box) {
       return;
     }
@@ -98,8 +98,8 @@ public final class BoundaryBoxDots {
    * exact for them. A zero projection divisor (the face sitting on the
    * eye plane) means there is nothing to plot.
    */
-  private static boolean edgeVisibleOnScreen(int ax, int ay, int az,
-      int bx, int by, int bz) {
+  private static boolean edgeVisibleOnScreen(final int ax, final int ay, final int az,
+      int bx, final int by, final int bz) {
     if (Coords.shift_constant_z + (az >> Coords.shift_z) == 0
         || Coords.shift_constant_z + (bz >> Coords.shift_z) == 0) {
       return false;

@@ -110,7 +110,7 @@ public final class ViewportShade {
    * nothing when the box covers the whole canvas (the normal centred
    * view), so the common case costs nothing.
    */
-  public static void shadeOutsideBox(Graphics g) {
+  public static void shadeOutsideBox(final Graphics g) {
     recomputeIfViewChanged();
     final int w = Coords.x_pixels;
     final int h = Coords.y_pixels;

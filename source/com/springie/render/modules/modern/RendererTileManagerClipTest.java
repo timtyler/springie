@@ -25,7 +25,7 @@ import com.springie.render.RendererDelegator;
  */
 public class RendererTileManagerClipTest {
 
-  private static RendererTile tileAt(RendererTileManager manager, int x,
+  private static RendererTile tileAt(final RendererTileManager manager, final int x,
       int y) {
     try {
       final Field field = RendererTileManager.class.getDeclaredField("array");
@@ -36,7 +36,7 @@ public class RendererTileManagerClipTest {
     }
   }
 
-  private static void setLastField(RendererTileManager manager, String name,
+  private static void setLastField(final RendererTileManager manager, final String name,
       int value) {
     try {
       final Field field = RendererTileManager.class.getDeclaredField(name);

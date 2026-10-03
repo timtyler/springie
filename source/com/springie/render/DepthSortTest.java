@@ -20,21 +20,21 @@ import org.junit.jupiter.api.Test;
  */
 class DepthSortTest {
 
-  private static int[] sortedByInts(int[] keys, int[] start) {
+  private static int[] sortedByInts(final int[] keys, final int[] start) {
     final int size = keys.length;
     final int[] index = start.clone();
     DepthSort.sort(index, keys.clone(), size, new int[size]);
     return index;
   }
 
-  private static int[] sortedByDoubles(double[] keys, int[] start) {
+  private static int[] sortedByDoubles(final double[] keys, final int[] start) {
     final int size = keys.length;
     final int[] index = start.clone();
     DepthSort.sort(index, keys.clone(), size, new int[size]);
     return index;
   }
 
-  private static int[] identity(int size) {
+  private static int[] identity(final int size) {
     final int[] index = new int[size];
     for (int i = 0; i < size; i++) {
       index[i] = i;
@@ -42,7 +42,7 @@ class DepthSortTest {
     return index;
   }
 
-  private static int[] shuffled(int size, Random random) {
+  private static int[] shuffled(final int size, final Random random) {
     final int[] index = identity(size);
     for (int i = size; --i > 0;) {
       final int j = random.nextInt(i + 1);
@@ -103,7 +103,7 @@ class DepthSortTest {
     }
   }
 
-  private static int positionIn(int[] array, int value) {
+  private static int positionIn(final int[] array, final int value) {
     for (int i = 0; i < array.length; i++) {
       if (array[i] == value) {
         return i;
@@ -152,7 +152,7 @@ class DepthSortTest {
    * from the given permutation (the real one re-sorted the previous
    * frame's order).
    */
-  private static int[] bubbleSort(double[] keys, int[] start) {
+  private static int[] bubbleSort(final double[] keys, final int[] start) {
     final int n = keys.length;
     final int[] index = start.clone();
     for (int i = n - 1; --i >= 0;) {

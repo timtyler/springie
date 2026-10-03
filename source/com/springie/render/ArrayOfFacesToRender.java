@@ -4,7 +4,7 @@ package com.springie.render;
 public class ArrayOfFacesToRender {
   public CachedFace[] array;
 
-  public void ensureCapacity(int size) {
+  public void ensureCapacity(final int size) {
     if (this.array == null || this.array.length != size) {
       this.array = new CachedFace[size];
       for (int i = size; --i >= 0;) {

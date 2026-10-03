@@ -21,7 +21,7 @@ public final class SetUpCode {
     //...
   }
 
-  public static void initialise(int resolutionx, int resolutiony) {
+  public static void initialise(final int resolutionx, final int resolutiony) {
 
     // Fresh boot: drop the previous boot's model slots (they are
     // JVM-static), so the new model loads into the new manager.
@@ -42,7 +42,7 @@ public final class SetUpCode {
     informModulesOfReset();
   }
 
-  public static void clearAndThenAddProceduralObjects(ArgumentList al) {
+  public static void clearAndThenAddProceduralObjects(final ArgumentList al) {
     ContextManager.getNodeManager().initialWithPreset(al);
     informModulesOfReset();
   }

@@ -18,7 +18,7 @@ public final class ElementRendererNode {
     // ...
   }
 
-  static PolygonComposite get(ObjectBase base, Node node) {
+  static PolygonComposite get(final ObjectBase base, final Node node) {
     final int actual_radius = node.type.radius;
     final int size = base.faces.length;
     final PolygonObject2D[] array_of_polygons = new PolygonObject2D[size];
@@ -92,7 +92,7 @@ public final class ElementRendererNode {
     return composite;
   }
 
-  private static PolygonObject2D[] unNull(PolygonObject2D[] array) {
+  private static PolygonObject2D[] unNull(final PolygonObject2D[] array) {
     // count nulls
     int nc = 0;
     for (int i = 0; i < array.length; i++) {
@@ -113,7 +113,7 @@ public final class ElementRendererNode {
     return unnulled;
   }
 
-  public static int getColour(int colour, int scaled) {
+  public static int getColour(final int colour, final int scaled) {
     final int r = colour & 0xFF;
     final int g = (colour >> 8) & 0xFF;
     final int b = (colour >> 16) & 0xFF;
@@ -130,14 +130,14 @@ public final class ElementRendererNode {
    * winds the way a front-facing (camera-facing) surface does. Also used
    * by ElementRendererLink to cull the far side of link tubes.
    */
-  static boolean isVisible(int[] array_x, int[] array_y) {
+  static boolean isVisible(final int[] array_x, final int[] array_y) {
     final Point p1 = new Point(array_x[1] - array_x[0], array_y[1] - array_y[0]);
     final Point p2 = new Point(array_x[1] - array_x[2], array_y[1] - array_y[2]);
 
     return p1.x * p2.y < p1.y * p2.x;
   }
 
-  static Vector3D getNormal(ObjectBase base, int poly_count) {
+  static Vector3D getNormal(final ObjectBase base, final int poly_count) {
     // NOT TRUE
     if (base.normals == null) {
       final int size = base.faces.length;
@@ -180,7 +180,7 @@ public final class ElementRendererNode {
     return normal;
   }
 
-  private static PolygonComposite addSelection(Node node,
+  private static PolygonComposite addSelection(final Node node,
       PolygonComposite composite) {
     final int width = 1200;
     final int colour = RendererDelegator.colour_selected_number;
@@ -239,7 +239,7 @@ public final class ElementRendererNode {
     return combine(polygon_vector, composite);
   }
 
-  private static PolygonComposite addPositiveCharge(Node node,
+  private static PolygonComposite addPositiveCharge(final Node node,
       PolygonComposite composite) {
     final int size = node.type.radius / 7;
 
@@ -281,7 +281,7 @@ public final class ElementRendererNode {
     return combine(polygon_vector, composite);
   }
 
-  private static PolygonComposite addNegativeCharge(Node node,
+  private static PolygonComposite addNegativeCharge(final Node node,
       PolygonComposite composite) {
     final int size = node.type.radius / 7;
 
@@ -311,7 +311,7 @@ public final class ElementRendererNode {
     return combine(polygon_vector, composite);
   }
 
-  private static PolygonComposite combine(ArrayList<PolygonObject2D> polygon_vector,
+  private static PolygonComposite combine(final ArrayList<PolygonObject2D> polygon_vector,
       PolygonComposite composite) {
     final int size_1 = polygon_vector.size();
     final int size_2 = composite.count;

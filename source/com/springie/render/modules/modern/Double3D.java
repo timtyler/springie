@@ -18,13 +18,13 @@ public class Double3D {
     this.z = z;
   }
 
-  public Double3D(Point3D point) {
+  public Double3D(final Point3D point) {
     this.x = point.x;
     this.y = point.y;
     this.z = point.z;
   }
 
-  public Double3D(Double3D point) {
+  public Double3D(final Double3D point) {
     this.x = point.x;
     this.y = point.y;
     this.z = point.z;
@@ -36,17 +36,17 @@ public class Double3D {
     this.z = z;
   }
 
-  public void setCrossProduct(Double3D a, Double3D b) {
+  public void setCrossProduct(final Double3D a, final Double3D b) {
     this.x = a.y * b.z - a.z * b.y;
     this.y = a.z * b.x - a.x * b.z;
     this.z = a.x * b.y - a.y * b.x;
   }
 
-  public Double3D subtract(Double3D d) {
+  public Double3D subtract(final Double3D d) {
     return new Double3D(this.x - d.x, this.y - d.y, this.z - d.z);
   }
 
-  public Double3D crossProduct(Double3D b) {
+  public Double3D crossProduct(final Double3D b) {
     final double nx = this.y * b.z - this.z * b.y;
     final double ny = this.z * b.x - this.x * b.z;
     final double nz = this.x * b.y - this.y * b.x;
@@ -64,19 +64,19 @@ public class Double3D {
     return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
   }
 
-  public void divideBy(int denominator) {
+  public void divideBy(final int denominator) {
     this.x /= denominator;
     this.y /= denominator;
     this.z /= denominator;
   }
 
-  public void add(Double3D value) {
+  public void add(final Double3D value) {
     this.x += value.x;
     this.y += value.y;
     this.z += value.z;
   }
 
-  public boolean allSmallerThan(Double3D target) {
+  public boolean allSmallerThan(final Double3D target) {
     if (this.x < target.x) {
       if (this.y < target.y) {
         if (this.z < target.z) {

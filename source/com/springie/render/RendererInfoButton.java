@@ -15,13 +15,13 @@ public class RendererInfoButton {
 
   final int margin = 2;
 
-  void drawInfoButton(Graphics g) {
+  void drawInfoButton(final Graphics g) {
     if (this.gui_is_iconised) {
       renderButton(g);
     }
   }
 
-  private void renderButton(Graphics g) {
+  private void renderButton(final Graphics g) {
     final int left = getLeft();
     final int top = getTop();
 
@@ -40,7 +40,7 @@ public class RendererInfoButton {
     return Coords.y_pixels - this.margin - this.size;
   }
 
-  public void mouseClicked(MouseEvent e) {
+  public void mouseClicked(final MouseEvent e) {
     final int left = getLeft();
     final int top = getTop();
     final int x = e.getX();

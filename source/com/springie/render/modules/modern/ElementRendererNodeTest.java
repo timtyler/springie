@@ -45,7 +45,7 @@ class ElementRendererNodeTest {
     return node;
   }
 
-  private static void assertRenders(String name, ObjectBase shape) {
+  private static void assertRenders(final String name, final ObjectBase shape) {
     final PolygonComposite composite = ElementRendererNode.get(shape,
         testNode());
     assertTrue(composite.array.length > 0,

@@ -24,7 +24,7 @@ public class CachedNode {
 
   boolean selected;
 
-  public void draw(Node node) {
+  public void draw(final Node node) {
     if (!FrEnd.render_hidden_nodes && node.type.hidden) {
       return;
     }
@@ -98,7 +98,7 @@ public class CachedNode {
   }
 
   // colour set up?
-  public void scrub(Node node) {
+  public void scrub(final Node node) {
     if (!FrEnd.render_hidden_nodes && node.type.hidden) {
       return;
     }
@@ -166,7 +166,7 @@ public class CachedNode {
       temp_diameter + 12, temp_diameter + 12);
   }
 
-  private void cache(Node node, int mask) {
+  private void cache(final Node node, final int mask) {
     if (!FrEnd.render_hidden_nodes && node.type.hidden) {
       return;
     }
@@ -210,21 +210,21 @@ public class CachedNode {
     }
   }
 
-  private void plotChargeSymbols(Node node, int colour) {
+  private void plotChargeSymbols(final Node node, final int colour) {
     if (node.type.charge != 0) {
       RendererDelegator.setColour(colour);
       renderTheChargeSymbol(node);
     }
   }
 
-  private void scrubChargeSymbols(Node node) {
+  private void scrubChargeSymbols(final Node node) {
     if (node.type.charge != 0) {
       RendererDelegator.setColour(0);
       renderTheChargeSymbol(node);
     }
   }
 
-  private void renderTheChargeSymbol(Node node) {
+  private void renderTheChargeSymbol(final Node node) {
     if (FrEnd.render_charges) {
       if (node.type.charge > 0) {
         plotPositiveChargeSign();
@@ -259,7 +259,7 @@ public class CachedNode {
     RendererDelegator.graphics_handle.drawRect(x1, y1, this.radius, this.radius >> 2);
   }
 
-  public void renderNodes(final Node node, int mask) {
+  public void renderNodes(final Node node, final int mask) {
     if (FrEnd.xor) {
       draw(node);
     } else {
@@ -270,8 +270,8 @@ public class CachedNode {
     draw(node);
   }
 
-  public void renderLinks(ArrayOfLinksToRender renderer_link, LinkManager link_manager,
-    final Node n, int mask) {
+  public void renderLinks(final ArrayOfLinksToRender renderer_link, final LinkManager link_manager,
+    final Node n, final int mask) {
     final ListOfIntegers list_of_links = n.list_of_links;
     final int number = list_of_links.size();
     final int total_number = link_manager.element.size();
@@ -295,8 +295,8 @@ public class CachedNode {
     }
   }
 
-  public void renderDummyLinks(ArrayOfLinksToRender renderer_link, LinkManager link_manager,
-      final Node n, int mask) {
+  public void renderDummyLinks(final ArrayOfLinksToRender renderer_link, final LinkManager link_manager,
+      final Node n, final int mask) {
       final ListOfIntegers list_of_links = n.list_of_links;
       final int number = list_of_links.size();
       final int total_number = link_manager.element.size();
@@ -320,8 +320,8 @@ public class CachedNode {
       }
     }
 
-  public void renderDummyPolygons(ArrayOfFacesToRender renderer_face,
-      FaceManager face_manager, final Node n, int mask) {
+  public void renderDummyPolygons(final ArrayOfFacesToRender renderer_face,
+      FaceManager face_manager, final Node n, final int mask) {
       final ListOfIntegers polygons = n.list_of_polygons;
 
       final int total_number = face_manager.element.size();
@@ -353,8 +353,8 @@ public class CachedNode {
       }
     }
   
-  public void renderPolygons(ArrayOfFacesToRender renderer_face,
-    FaceManager face_manager, final Node n, int mask) {
+  public void renderPolygons(final ArrayOfFacesToRender renderer_face,
+    FaceManager face_manager, final Node n, final int mask) {
     final ListOfIntegers polygons = n.list_of_polygons;
 
     final int total_number = face_manager.element.size();

@@ -15,7 +15,7 @@ public class RenderableText2D extends PolygonObject2D {
 
   private int colour_fg;
 
-  public RenderableText2D(Point3D[] points, int colour_bg, int colour_fg, String text,
+  public RenderableText2D(final Point3D[] points, final int colour_bg, int colour_fg, String text,
       int point_size) {
     super(points, colour_bg);
     this.text = text;
@@ -23,7 +23,7 @@ public class RenderableText2D extends PolygonObject2D {
     this.point_size = point_size;
   }
 
-  public void fill(Graphics graphics, int colour) {
+  public void fill(final Graphics graphics, final int colour) {
     graphics.setColor(PolygonObject2D.colorFor(colour));
     graphics.fillPolygon(this.x, this.y, this.x.length);
 
@@ -39,7 +39,7 @@ public class RenderableText2D extends PolygonObject2D {
     graphics.drawString(this.text, this.x[0] + margin_x, this.y[0] - dy - margin_y);
   }
 
-  public void draw(Graphics graphics, int colour) {
+  public void draw(final Graphics graphics, final int colour) {
     graphics.setColor(PolygonObject2D.colorFor(colour));
     graphics.drawPolygon(this.x, this.y, this.x.length);
   }

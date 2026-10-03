@@ -35,7 +35,7 @@ public class DragBoxTrailTest {
     GuiTestSupport.disposeFrames();
   }
 
-  private static void setDrag(int x0, int y0, int x1, int y1)
+  private static void setDrag(final int x0, final int y0, final int x1, final int y1)
       throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       FrEnd.paused = true;

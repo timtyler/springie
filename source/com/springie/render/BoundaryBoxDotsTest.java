@@ -67,7 +67,7 @@ class BoundaryBoxDotsTest {
     Coords.shift_constant_z = this.saved_shift_constant_z;
   }
 
-  private static int dotPixels(BufferedImage img) {
+  private static int dotPixels(final BufferedImage img) {
     // Bulk getRGB: per-pixel getRGB(x,y) is a synchronized method call,
     // ~10x slower than a single bulk read into an array. The test loops
     // calling this after each drawOneDot, so the speedup compounds.

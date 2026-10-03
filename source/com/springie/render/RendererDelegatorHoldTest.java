@@ -34,12 +34,12 @@ class RendererDelegatorHoldTest {
     }
 
     @Override
-    public void repaint(Graphics graphics, NodeManager manager) {
+    public void repaint(final Graphics graphics, final NodeManager manager) {
       this.repaint_calls++;
     }
 
     @Override
-    public void resize(int x, int y) {
+    public void resize(final int x, final int y) {
     }
 
     @Override
@@ -59,7 +59,7 @@ class RendererDelegatorHoldTest {
 
   private ModularRendererBase saved_renderer;
 
-  private int repaintCallsWhile(boolean hold, boolean staged) {
+  private int repaintCallsWhile(final boolean hold, final boolean staged) {
     this.saved_renderer = RendererDelegator.renderer;
     final StubRenderer stub = new StubRenderer(hold, staged);
     RendererDelegator.renderer = stub;

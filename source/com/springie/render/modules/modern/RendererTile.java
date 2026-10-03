@@ -22,7 +22,7 @@ public class RendererTile {
 
   RectangleInt union = new RectangleInt(0, 0, 0, 0);
 
-  void setUpActual(RectangleInt potential) {
+  void setUpActual(final RectangleInt potential) {
     final RectangleInt actual = this.actual;
     actual.min_x = Integer.MAX_VALUE;
     actual.min_y = Integer.MAX_VALUE;

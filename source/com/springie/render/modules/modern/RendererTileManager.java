@@ -83,11 +83,11 @@ public class RendererTileManager {
   // the tile size, so the tiles must be dropped when it changes.
   private int last_block_size = -1;
 
-  ArrayList<PolygonComposite> getVector(int x, int y) {
+  ArrayList<PolygonComposite> getVector(final int x, final int y) {
     return this.array[x][y].vector;
   }
 
-  void putVector(int x, int y, ArrayList<PolygonComposite> vector) {
+  void putVector(final int x, final int y, ArrayList<PolygonComposite> vector) {
     this.array[x][y].vector = vector;
   }
 
@@ -100,7 +100,7 @@ public class RendererTileManager {
     }
   }
 
-  void resize(int number_of_pixels_x, int number_of_pixels_y) {
+  void resize(final int number_of_pixels_x, final int number_of_pixels_y) {
     int x;
     int y;
     if (one_big_tile) {
@@ -140,7 +140,7 @@ public class RendererTileManager {
     // render; the direct path repaints everything every frame anyway.
   }
 
-  void add(int x, int y, PolygonComposite triangle) {
+  void add(final int x, final int y, final PolygonComposite triangle) {
     final ArrayList<PolygonComposite> v = getVector(x, y);
     v.add(triangle);
   }
@@ -180,7 +180,7 @@ public class RendererTileManager {
    * besides the sort itself is the distribution, which the old code did
    * anyway.
    */
-  void distribute(ArrayList<PolygonComposite> all, boolean deepest_first) {
+  void distribute(final ArrayList<PolygonComposite> all, final boolean deepest_first) {
     final int size = all.size();
     if (deepest_first) {
       if (this.node_depth_index.length < size) {
@@ -207,7 +207,7 @@ public class RendererTileManager {
     }
   }
 
-  public void render(RendererTileManager tiles_last, Graphics graphics) {
+  public void render(final RendererTileManager tiles_last, final Graphics graphics) {
     ContextManager.getNodeManager().depth_range = null;
 
     render_frame++;
@@ -234,7 +234,7 @@ public class RendererTileManager {
    * the outline lies inside the tile's paint union, the normal scrub/blit
    * erases it when content moves or the option is turned off.
    */
-  private void drawActiveTileOutlines(Graphics graphics) {
+  private void drawActiveTileOutlines(final Graphics graphics) {
     if (!show_active_tiles) {
       return;
     }
@@ -255,7 +255,7 @@ public class RendererTileManager {
     }
   }
 
-  private void renderTiled(RendererTileManager tiles_last, Graphics graphics,
+  private void renderTiled(final RendererTileManager tiles_last, final Graphics graphics,
       int block_size) {
 
     final int aa = RendererDelegator.antialiasing;
@@ -441,7 +441,7 @@ public class RendererTileManager {
    * tile into one destination pixel. Integer division truncates, so the
    * result can be at most one level darker per channel than the true mean.
    */
-  static void downsampleTile(BufferedImage src, BufferedImage dst, int aa) {
+  static void downsampleTile(final BufferedImage src, final BufferedImage dst, final int aa) {
     final int w = dst.getWidth();
     final int h = dst.getHeight();
     final int sw = w * aa;
@@ -478,8 +478,8 @@ public class RendererTileManager {
    * per frame here, the scaled blit ~0.1ms. Package-visible for the
    * tests.
    */
-  static void paintPixellated(Graphics graphics, BufferedImage coarse,
-      int dst_x, int dst_y, int dst_w, int dst_h) {
+  static void paintPixellated(final Graphics graphics, final BufferedImage coarse,
+      int dst_x, final int dst_y, final int dst_w, final int dst_h) {
     final Graphics2D g2d = (Graphics2D) graphics;
     final Object old_hint =
         g2d.getRenderingHint(RenderingHints.KEY_INTERPOLATION);
@@ -501,7 +501,7 @@ public class RendererTileManager {
    * union of last frame's and this frame's content is scrubbed before
    * repainting), while the tiles stay on this manager.
    */
-  void rotateFrameState(RendererTileManager tiles_last) {
+  void rotateFrameState(final RendererTileManager tiles_last) {
     for (int j = 0; j < this.number_of_tiles_y; j++) {
       for (int i = 0; i < this.number_of_tiles_x; i++) {
         final RendererTile tile = this.array[i][j];
@@ -522,7 +522,7 @@ public class RendererTileManager {
     }
   }
 
-  private void renderThePolygon(Graphics graphics,
+  private void renderThePolygon(final Graphics graphics,
       final PolygonComposite composite) {
     final int size = composite.count;
     final int frame = render_frame;
@@ -554,7 +554,7 @@ public class RendererTileManager {
    * colour is rewritten before each frame's render, so caching against
    * the frame counter is exact.
    */
-  private void cacheModifiedColours(PolygonObject2D polygon, int frame) {
+  private void cacheModifiedColours(final PolygonObject2D polygon, final int frame) {
     polygon.colour_cache_filled = getModifiedColour(polygon.colour,
         colour_modifier_filled);
     polygon.colour_cache_wireframe = getModifiedColour(polygon.colour,
@@ -562,7 +562,7 @@ public class RendererTileManager {
     polygon.colour_cache_frame = frame;
   }
 
-  int getModifiedColour(int colour, int modifier) {
+  int getModifiedColour(final int colour, final int modifier) {
     switch (modifier) {
       case ColourModifier.natural:
         return colour;
@@ -581,7 +581,7 @@ public class RendererTileManager {
     }
   }
 
-  int getScaledValue(int colour1, int colour2) {
+  int getScaledValue(final int colour1, final int colour2) {
     final int r1 = (colour1 >> 16) & 0xFF;
     final int g1 = (colour1 >> 8) & 0xFF;
     final int b1 = colour1 & 0xFF;
@@ -595,7 +595,7 @@ public class RendererTileManager {
     return rv;
   }
 
-  private int getGreyscaleValue(int colour) {
+  private int getGreyscaleValue(final int colour) {
     final int r = (colour >> 16) & 0xFF;
     final int g = (colour >> 8) & 0xFF;
     final int b = colour & 0xFF;
@@ -604,7 +604,7 @@ public class RendererTileManager {
     return rv;
   }
 
-  private void doScrubbing(Graphics graphics, RectangleInt potential,
+  private void doScrubbing(final Graphics graphics, final RectangleInt potential,
       RendererTile tile) {
     final RectangleInt union = tile.union;
     final int px = RendererDelegator.pixellation;
@@ -640,7 +640,7 @@ public class RendererTileManager {
    * scrub and the blit clip must cover that bleed or it survives as
    * trails. Package-visible for the tests.
    */
-  static void expandByBleed(RectangleInt rect, int px) {
+  static void expandByBleed(final RectangleInt rect, final int px) {
     if (rect.min_x < rect.max_x && rect.min_y < rect.max_y) {
       rect.min_x -= px;
       rect.min_y -= px;
@@ -657,15 +657,15 @@ public class RendererTileManager {
    * have touched is covered once the rect is run through the 1/px tile
    * transform. Package-visible for the tests.
    */
-  static void snapScrubToCoarseBlocks(RectangleInt rect, int tile_min_x,
-      int tile_min_y, int px, RectangleInt out) {
+  static void snapScrubToCoarseBlocks(final RectangleInt rect, final int tile_min_x,
+      int tile_min_y, final int px, final RectangleInt out) {
     out.min_x = tile_min_x + px * ((rect.min_x - tile_min_x) / px);
     out.min_y = tile_min_y + px * ((rect.min_y - tile_min_y) / px);
     out.max_x = tile_min_x + px * ((rect.max_x - tile_min_x + px - 1) / px);
     out.max_y = tile_min_y + px * ((rect.max_y - tile_min_y + px - 1) / px);
   }
 
-  void scrubTile(Graphics graphics, RectangleInt union) {
+  void scrubTile(final Graphics graphics, final RectangleInt union) {
     // Tim: blank the minimal content box (union), roughly the same size
     // as what was drawn -- not the whole tile or canvas.
     final int x = union.min_x;
@@ -690,32 +690,32 @@ public class RendererTileManager {
     return RendererTileManager.show_tiles ? 4 : 0;
   }
 
-  private static boolean rectsIntersect(RectangleInt a, RectangleInt b) {
+  private static boolean rectsIntersect(final RectangleInt a, final RectangleInt b) {
     return a.min_x < b.max_x && a.max_x > b.min_x && a.min_y < b.max_y
         && a.max_y > b.min_y;
   }
 
-  public int min4(int x1, int x2, int x3, int x4) {
+  public int min4(final int x1, final int x2, final int x3, final int x4) {
     return min(min(x1, x2), min(x3, x4));
   }
 
-  public int min3(int x1, int x2, int x3) {
+  public int min3(final int x1, final int x2, final int x3) {
     return min(min(x1, x2), x3);
   }
 
-  private int min(int x1, int x2) {
+  private int min(final int x1, final int x2) {
     return (x1 < x2) ? x1 : x2;
   }
 
-  public int max3(int x1, int x2, int x3) {
+  public int max3(final int x1, final int x2, final int x3) {
     return max(x1, max(x2, x3));
   }
 
-  private int max(int x1, int x2) {
+  private int max(final int x1, final int x2) {
     return (x1 > x2) ? x1 : x2;
   }
 
-  private int getTileX(int pixels) {
+  private int getTileX(final int pixels) {
     if (pixels < 0) {
       return 0;
     }
@@ -729,7 +729,7 @@ public class RendererTileManager {
     return proposed;
   }
 
-  private int getTileY(int pixels) {
+  private int getTileY(final int pixels) {
     if (pixels < 0) {
       return 0;
     }
@@ -743,7 +743,7 @@ public class RendererTileManager {
     return proposed;
   }
 
-  private int calcTileX(int pixels) {
+  private int calcTileX(final int pixels) {
     if (pixels < 0) {
       return 0;
     }
@@ -751,7 +751,7 @@ public class RendererTileManager {
     return proposed;
   }
 
-  private int calcTileY(int pixels) {
+  private int calcTileY(final int pixels) {
     if (pixels < 0) {
       return 0;
     }
@@ -760,15 +760,15 @@ public class RendererTileManager {
     return proposed;
   }
 
-  private int getPixelsFromTileX(int pixels) {
+  private int getPixelsFromTileX(final int pixels) {
     return pixels * divisor;
   }
 
-  private int getPixelsFromTileY(int pixels) {
+  private int getPixelsFromTileY(final int pixels) {
     return pixels * divisor;
   }
 
-  int getMaximum(int[] x) {
+  int getMaximum(final int[] x) {
     final int length = x.length;
     int max = 0;
     for (int i = length; --i >= 0;) {
@@ -779,7 +779,7 @@ public class RendererTileManager {
     return max;
   }
 
-  int getMinimum(int[] x) {
+  int getMinimum(final int[] x) {
     final int length = x.length;
     int min = Integer.MAX_VALUE;
     for (int i = length; --i >= 0;) {

@@ -32,7 +32,7 @@ public class CachedLink {
    * (compression member) -> blue; cable (tension-only, no controller)
    * -> mint.
    */
-  private static int getCategoryColour(Link link) {
+  private static int getCategoryColour(final Link link) {
     if (link.handle) {
       return COLOUR_HANDLE;
     }
@@ -57,7 +57,7 @@ public class CachedLink {
 
   boolean selected;
 
-  public void draw(Link link) {
+  public void draw(final Link link) {
     if (!FrEnd.render_hidden_links && link.type.hidden) {
       return;
     }
@@ -73,7 +73,7 @@ public class CachedLink {
     }
   }
 
-  public void scrub(Link link) {
+  public void scrub(final Link link) {
     if (!FrEnd.render_hidden_links && link.type.hidden) {
       return;
     }
@@ -88,7 +88,7 @@ public class CachedLink {
     }
   }
 
-  private void renderLink(Link link, int thickness) {
+  private void renderLink(final Link link, final int thickness) {
     final int display_type = link.getDisplayType();
 
     final int total = this.preserved_node_start.length;
@@ -177,7 +177,7 @@ public class CachedLink {
     }
   }
 
-  private void scrubLink(Link link, int thickness) {
+  private void scrubLink(final Link link, final int thickness) {
     if (this.preserved_node_start == null) {
       return;
     }
@@ -238,7 +238,7 @@ public class CachedLink {
     }
   }
 
-  private void renderCircleThick(Point3D point0, Point3D point1) {
+  private void renderCircleThick(final Point3D point0, final Point3D point1) {
     //final int diameter = this.radius << 1; //Math.max(this.radius,
     //link.node2.type.radius) << 1;
     //final int diameter = Math.max(link.node1.type.radius,
@@ -247,7 +247,7 @@ public class CachedLink {
     renderCircleFillOval(point0, point1);
   }
 
-  private void renderCircleThin(Point3D point0, Point3D point1) {
+  private void renderCircleThin(final Point3D point0, final Point3D point1) {
     //final int diameter = this.radius << 1;
     renderCircleDrawOval(point0, point1); // diameter, this.radius
     //final int diameter = Math.max(link.node1.type.radius,
@@ -256,7 +256,7 @@ public class CachedLink {
     //renderCircleDrawOval(diameter, radius);
   }
 
-  void cache(Link link, int mask) {
+  void cache(final Link link, final int mask) {
     this.radius = link.type.radius;
     this.selected = link.type.selected;
 
@@ -324,7 +324,7 @@ public class CachedLink {
     }
   }
 
-  private void getPreservedShortNodeCoordinates(Point3D preserved_node, Node node,
+  private void getPreservedShortNodeCoordinates(final Point3D preserved_node, Node node,
     final int unit_vector_x, final int unit_vector_y, final int unit_vector_z) {
     //final Node node = link.nodes[i];
     //final Point3D preserved_node_s = this.preserved_node_start[i];
@@ -341,7 +341,7 @@ public class CachedLink {
       preserved_node.z);
   }
 
-  private void getPreservedNodeCoordinates(Point3D preserved_node, Node node) {
+  private void getPreservedNodeCoordinates(final Point3D preserved_node, Node node) {
     //final Node node = link.nodes[i];
     //final Point3D preserved_node = this.preserved_node_start[i];
 
@@ -350,7 +350,7 @@ public class CachedLink {
     preserved_node.y = Coords.getYCoords(node.pos.y, preserved_node.z);
   }
 
-  void renderSelectedLink(Link link) {
+  void renderSelectedLink(final Link link) {
     final int display_type = link.getDisplayType();
 
     final int total = link.nodes.length;
@@ -397,7 +397,7 @@ public class CachedLink {
     }
   }
 
-  void drawStrutWide(Point3D point0, Point3D point1, int thicknesss) {
+  void drawStrutWide(final Point3D point0, final Point3D point1, final int thicknesss) {
     int d_x = point0.y - point1.y; // u. vec. at ???? TODO - check this!
     int d_y = point1.x - point0.x;
 
@@ -419,12 +419,12 @@ public class CachedLink {
     RendererDelegator.graphics_handle.drawLine(x3, y3, x4, y4);
   }
 
-  void drawStrutSolid(Point3D point0, Point3D point1, int thicknesss) {
+  void drawStrutSolid(final Point3D point0, final Point3D point1, final int thicknesss) {
     RendererDelegator.graphics_handle.fillPolygon(getStrutPolygon(point0, point1,
       thicknesss));
   }
 
-  public Polygon getStrutPolygon(Point3D point0, Point3D point1, int thicknesss) {
+  public Polygon getStrutPolygon(final Point3D point0, final Point3D point1, final int thicknesss) {
     int d_x = point0.y - point1.y; // u. vec. at
     int d_y = point1.x - point0.x;
 
@@ -447,21 +447,21 @@ public class CachedLink {
     return new java.awt.Polygon(iax, iay, 4);
   }
 
-  private void renderCircleDrawOval(Point3D point0, Point3D point1) {
+  private void renderCircleDrawOval(final Point3D point0, final Point3D point1) {
     final int diameter = this.radius;
     RendererDelegator.graphics_handle.drawOval(
       ((point0.x + point1.x) >> 1) - this.radius, ((point0.y + point1.y) >> 1)
         - this.radius, diameter, diameter);
   }
 
-  private void renderCircleFillOval(Point3D point0, Point3D point1) {
+  private void renderCircleFillOval(final Point3D point0, final Point3D point1) {
     final int diameter = this.radius;
     RendererDelegator.graphics_handle.fillOval(
       ((point0.x + point1.x) >> 1) - this.radius, ((point0.y + point1.y) >> 1)
         - this.radius, diameter, diameter);
   }
 
-  private void renderDotted(Point3D point0, Point3D point1) {
+  private void renderDotted(final Point3D point0, final Point3D point1) {
     for (int temp = 0; temp <= Link.number_of_dots; temp++) {
       RendererDelegator.graphics_handle
         .fillRect(
@@ -471,7 +471,7 @@ public class CachedLink {
     }
   }
 
-  private void renderMultiple(Point3D point0, Point3D point1, int n,
+  private void renderMultiple(final Point3D point0, final Point3D point1, final int n,
     int thickness) {
     if ((n & 1) != 0) {
       renderSingle(point0, point1);
@@ -482,15 +482,15 @@ public class CachedLink {
     }
   }
 
-  private void renderSingle(Point3D point0, Point3D point1) {
+  private void renderSingle(final Point3D point0, final Point3D point1) {
     RendererDelegator.graphics_handle.drawLine(point0.x, point0.y, point1.x, point1.y);
   }
 
-  private void renderSolid(Point3D point0, Point3D point1, int thickness) {
+  private void renderSolid(final Point3D point0, final Point3D point1, final int thickness) {
     drawStrutSolid(point0, point1, thickness);
   }
 
-  private void renderMultiple(Point3D point0, Point3D point1, Link link,
+  private void renderMultiple(final Point3D point0, final Point3D point1, final Link link,
     int thickness) {
     if (!link.type.compression) {
       renderMultiple(point0, point1, Link.number_of_cable_render_divisions,
@@ -501,7 +501,7 @@ public class CachedLink {
     }
   }
 
-  private void renderTwoOrMore(Point3D point0, Point3D point1, int n,
+  private void renderTwoOrMore(final Point3D point0, final Point3D point1, final int n,
     int thickness) {
     final int n2 = n - 1;
     final int t = thickness / n2;

@@ -57,7 +57,7 @@ public final class ScenicBackground {
    * Returns the scenic background for a canvas of the given size,
    * generating and caching it on first use or when the size changes.
    */
-  public static BufferedImage imageFor(int width, int height) {
+  public static BufferedImage imageFor(final int width, final int height) {
     if (width <= 0 || height <= 0) {
       throw new IllegalArgumentException(
           "width and height must be positive: " + width + "x" + height);
@@ -76,7 +76,7 @@ public final class ScenicBackground {
    * nearest edge pixel. Used by the ray-tracer for sub-pixel background
    * lookups.
    */
-  public static int sampleClamped(BufferedImage image, int x, int y) {
+  public static int sampleClamped(final BufferedImage image, int x, int y) {
     final int w = image.getWidth();
     final int h = image.getHeight();
     if (x < 0) {
@@ -100,7 +100,7 @@ public final class ScenicBackground {
    * the same pan, scaled by the parallax rate ({@link #SKY_PARALLAX}
    * for the sky, {@link #GRASS_PARALLAX} for the grass).
    */
-  public static int sampleWithPan(BufferedImage image, int sx, int sy,
+  public static int sampleWithPan(final BufferedImage image, final int sx, final int sy,
       boolean sky) {
     final double zoom = Coords.shift_constant_z;
     if (zoom <= 0) {
@@ -114,7 +114,7 @@ public final class ScenicBackground {
     return sampleClamped(image, tx, ty);
   }
 
-  private static BufferedImage generate(int width, int height) {
+  private static BufferedImage generate(final int width, final int height) {
     final BufferedImage image = new BufferedImage(width, height,
         BufferedImage.TYPE_INT_RGB);
     final Random random = new Random(SEED ^ (width * 31L + height));
@@ -137,7 +137,7 @@ public final class ScenicBackground {
       { 1000, 244, 164, 88 },
   };
 
-  private static int skyAt(double t) {
+  private static int skyAt(final double t) {
     final int tt = (int) (t * 1000.0);
     for (int s = 0; s < SKY_STOPS.length - 1; s++) {
       final int[] lo = SKY_STOPS[s];
@@ -155,7 +155,7 @@ public final class ScenicBackground {
     return (last[1] << 16) | (last[2] << 8) | last[3];
   }
 
-  private static void paintSky(BufferedImage image, int width, int height,
+  private static void paintSky(final BufferedImage image, final int width, final int height,
       Random random) {
     final int horizon = height / 2;
     for (int y = 0; y < horizon; y++) {
@@ -170,7 +170,7 @@ public final class ScenicBackground {
   /**
    * A few faint early stars in the upper sky, where it is already dark.
    */
-  private static void paintStars(BufferedImage image, int width, int height,
+  private static void paintStars(final BufferedImage image, final int width, final int height,
       Random random) {
     final int horizon = height / 2;
     final int stars = Math.min(160, 40 + width * height / 12000);
@@ -188,7 +188,7 @@ public final class ScenicBackground {
     }
   }
 
-  private static int blend(int base, int over, double alpha) {
+  private static int blend(final int base, final int over, final double alpha) {
     final int br = (base >> 16) & 0xFF;
     final int bg = (base >> 8) & 0xFF;
     final int bb = base & 0xFF;
@@ -208,7 +208,7 @@ public final class ScenicBackground {
    * bright rim along the very bottom edge. Lower clouds catch more
    * light.
    */
-  private static void paintClouds(BufferedImage image, int width, int height,
+  private static void paintClouds(final BufferedImage image, final int width, final int height,
       Random random) {
     final int horizon = height / 2;
     final Graphics2D g = image.createGraphics();
@@ -249,12 +249,12 @@ public final class ScenicBackground {
     }
   }
 
-  private static double triangular(Random random) {
+  private static double triangular(final Random random) {
     return (random.nextDouble() + random.nextDouble()
         + random.nextDouble()) / 3.0 - 0.5;
   }
 
-  private static void drawPuff(Graphics2D g, double x, double y, double radius,
+  private static void drawPuff(final Graphics2D g, final double x, final double y, final double radius,
       Color colour) {
     final float[] fractions = { 0.0f, 0.55f, 1.0f };
     final Color transparent = new Color(colour.getRed(), colour.getGreen(),
@@ -279,7 +279,7 @@ public final class ScenicBackground {
       { 1000, 10, 16, 10 },
   };
 
-  private static int grassAt(double t) {
+  private static int grassAt(final double t) {
     final int tt = (int) (t * 1000.0);
     for (int s = 0; s < GRASS_STOPS.length - 1; s++) {
       final int[] lo = GRASS_STOPS[s];
@@ -303,7 +303,7 @@ public final class ScenicBackground {
    * the last light. The blades are what the eye tracks when the view
    * pans left or right.
    */
-  private static void paintGrass(BufferedImage image, int width, int height,
+  private static void paintGrass(final BufferedImage image, final int width, final int height,
       Random random) {
     final int horizon = height / 2;
     for (int y = horizon; y < height; y++) {

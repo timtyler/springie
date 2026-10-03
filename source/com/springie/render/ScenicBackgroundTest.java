@@ -24,15 +24,15 @@ public class ScenicBackgroundTest {
 
   private int saved_shift_constant_z;
 
-  private static int red(int rgb) {
+  private static int red(final int rgb) {
     return (rgb >> 16) & 0xFF;
   }
 
-  private static int green(int rgb) {
+  private static int green(final int rgb) {
     return (rgb >> 8) & 0xFF;
   }
 
-  private static int blue(int rgb) {
+  private static int blue(final int rgb) {
     return rgb & 0xFF;
   }
 

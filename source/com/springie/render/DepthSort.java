@@ -25,7 +25,7 @@ public final class DepthSort {
   /**
    * Sorts index ascending by the int keys.
    */
-  public static void sort(int[] index, int[] keys, int size, int[] scratch) {
+  public static void sort(final int[] index, final int[] keys, final int size, final int[] scratch) {
     if (size < 2) {
       return;
     }
@@ -75,7 +75,7 @@ public final class DepthSort {
    * as the int variant; NaN keys are not expected (a NaN position
    * breaks coordinate projection long before the sort matters).
    */
-  public static void sort(int[] index, double[] keys, int size,
+  public static void sort(final int[] index, final double[] keys, final int size,
       int[] scratch) {
     if (size < 2) {
       return;

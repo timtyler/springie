@@ -16,11 +16,11 @@ public final class RendererPanels {
   public static Panel setUpPanelForFrame() {
     final Panel panel = new Panel() {
       static final long serialVersionUID = 1250;
-      public void paint(Graphics g) {
+      public void paint(final Graphics g) {
         FrEnd.main_canvas.paint(g);
       }
 
-      public void update(Graphics g) {
+      public void update(final Graphics g) {
         FrEnd.main_canvas.update(g);
       }
     };
@@ -31,11 +31,11 @@ public final class RendererPanels {
     if (FrEnd.application && FrEnd.usingJava120()) {
       final DropablePanel panel = new DropablePanel() {
         static final long serialVersionUID = 1250;
-        public void paint(Graphics g) {
+        public void paint(final Graphics g) {
           FrEnd.main_canvas.paint(g);
         }
 
-        public void update(Graphics g) {
+        public void update(final Graphics g) {
           FrEnd.main_canvas.update(g);
         }
       };

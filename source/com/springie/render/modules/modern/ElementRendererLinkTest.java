@@ -100,11 +100,11 @@ class ElementRendererLinkTest {
     Coords.shift_constant_z = this.saved_shift_constant_z;
   }
 
-  private static Node nodeAt(int x, int y, int z) {
+  private static Node nodeAt(final int x, final int y, final int z) {
     return new Node(new Point3D(x, y, z), 42, new NodeTypeFactory());
   }
 
-  private static Link linkBetween(Node a, Node b, boolean compression) {
+  private static Link linkBetween(final Node a, final Node b, boolean compression) {
     // LinkType's constructor is protected (same-package only), so go
     // through the public factory, as production code does.
     final LinkType type = new LinkTypeFactory().getNew(100 << Coords.shift, 50);
@@ -112,7 +112,7 @@ class ElementRendererLinkTest {
     return new Link(a, b, type, new Clazz(0));
   }
 
-  private static ArrayList<PolygonComposite> render(Link link, Node a, Node b) {
+  private static ArrayList<PolygonComposite> render(final Link link, final Node a, final Node b) {
     return ElementRendererLink.getPolygon(link, a, b, link.getThicknesss(),
         0xFF0000FF);
   }
@@ -138,7 +138,7 @@ class ElementRendererLinkTest {
 
   @ParameterizedTest
   @ValueSource(ints = {2, 3, 4, 6, 8})
-  void onlyFrontFacingQuadsAreEmitted(int sides) {
+  void onlyFrontFacingQuadsAreEmitted(final int sides) {
     RendererDelegator.link_sides = sides;
     for (final boolean compression : new boolean[] {true, false}) {
       final Node a = nodeAt(0, 0, 0);
@@ -248,7 +248,7 @@ class ElementRendererLinkTest {
    *
    * @return per-side outward-normal z, from which facing is derived.
    */
-  private static double[] sideNormalZ(Point3D p0, Point3D p1, int sides) {
+  private static double[] sideNormalZ(final Point3D p0, final Point3D p1, final int sides) {
     final double dx = p0.x - p1.x;
     final double dy = p0.y - p1.y;
     final double dz = p0.z - p1.z;
@@ -285,7 +285,7 @@ class ElementRendererLinkTest {
 
   @ParameterizedTest
   @ValueSource(ints = {3, 4, 6, 8})
-  void tubeWindingMatchesNodeConvention(int sides) {
+  void tubeWindingMatchesNodeConvention(final int sides) {
     // Pins the winding DIRECTION of the tube quads. The other tests
     // reuse isVisible to check isVisible-selected quads, so they pass
     // either way; this one fails if the quads are wound inside-out
