@@ -109,6 +109,18 @@ public class GpuRenderer implements ModularRendererBase {
           }
           System.out.println("[GPU] fx: snapshot " + w + "x" + h
               + " non-bg pixels=" + non_bg);
+          // Save it so we can see what the scene contains.
+          try {
+            final java.io.File out =
+                new java.io.File(System.getProperty("user.home"),
+                    "gpu-scene-snapshot.png");
+            javax.imageio.ImageIO.write(
+                javafx.embed.swing.SwingFXUtils.fromFXImage(img, null),
+                "png", out);
+            System.out.println("[GPU] fx: snapshot saved to " + out);
+          } catch (Exception ex) {
+            System.out.println("[GPU] fx: snapshot save failed: " + ex);
+          }
         } catch (Exception e) {
           System.out.println("[GPU] fx: snapshot failed: " + e);
         }
@@ -129,6 +141,9 @@ public class GpuRenderer implements ModularRendererBase {
   /** Runs on the FX thread. */
   private void updateView(ModelScene scene) {
     this.view.update(scene);
+    // The JFXPanel should repaint on pulse, but nudge it in case a
+    // frame was missed.
+    this.jfx_panel.repaint();
   }
 
   @Override
