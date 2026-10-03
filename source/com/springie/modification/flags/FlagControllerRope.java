@@ -17,7 +17,7 @@ public class FlagControllerRope {
     prepare();
   }
 
-  public void rope(boolean compression, boolean tension) {
+  public void rope(final boolean compression, final boolean tension) {
     ropeLinks(compression, tension);
     new PostModification(this.node_manager).cleanup();
   }

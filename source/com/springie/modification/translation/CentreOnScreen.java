@@ -12,7 +12,7 @@ public final class CentreOnScreen {
   //...
   }
   
-  public static void centre(NodeManager node_manager) {
+  public static void centre(final NodeManager node_manager) {
     final BoundingBox bb = new BoundingBox();
     bb.find(node_manager);
 
@@ -46,8 +46,8 @@ public final class CentreOnScreen {
    * world-locked decoration (the Olympics location markers) can ride the
    * same shift.
    */
-  public static Vector3D centreOnAxes(NodeManager node_manager,
-      boolean centre_x, boolean centre_y, boolean centre_z) {
+  public static Vector3D centreOnAxes(final NodeManager node_manager,
+      boolean centre_x, final boolean centre_y, final boolean centre_z) {
     final Vector3D offset = new Vector3D(0, 0, 0);
     final int number_of_nodes = node_manager.element.size();
     if (number_of_nodes == 0) {

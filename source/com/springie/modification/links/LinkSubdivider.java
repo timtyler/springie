@@ -25,7 +25,7 @@ public class LinkSubdivider {
     prepare();
   }
 
-  public void divide(int n, boolean remove_old) {
+  public void divide(final int n, final boolean remove_old) {
     if (n < 2) {
       return;
     }
@@ -42,7 +42,7 @@ public class LinkSubdivider {
     }
   }
 
-  public void subdivide(Link l, int n, int xn, int xc, boolean remove_old) {
+  public void subdivide(final Link l, int n, final int xn, final int xc, final boolean remove_old) {
     final Node n1 = l.nodes[0];
     final Node n2 = l.nodes[1];
 
@@ -84,13 +84,13 @@ public class LinkSubdivider {
     }
   }
 
-  private void makeLink(Node node_1, Node node_2, int l, int e, int c) {
+  private void makeLink(final Node node_1, final Node node_2, final int l, int e, final int c) {
     final LinkType type = this.link_manager.link_type_factory.getNew(l, e);
     final Clazz clazz = this.node_manager.clazz_factory.getNew(c);
     this.link_manager.setLink(node_1, node_2, type, clazz);
   }
 
-  private Node makeNode(Point3D pos, int r, int c) {
+  private Node makeNode(final Point3D pos, final int r, final int c) {
     final NodeType type = this.node_manager.node_type_factory.getNew();
     type.radius = r;
     // Reference mass: mass is functional now, so keep the historical behavior.

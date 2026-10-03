@@ -159,7 +159,7 @@ public class HexagonMaker {
     }
   }
 
-  int[] setupCounts(int colour) {
+  int[] setupCounts(final int colour) {
     final int number_of_nodes = this.node_manager.element.size();
     final int[] nonoc = new int[number_of_nodes];
     for (int counter = number_of_nodes; --counter >= 0;) {
@@ -206,7 +206,7 @@ public class HexagonMaker {
     }
   }
 
-  private Node nextNearestNodeOfColour(Node node, int link_colour,
+  private Node nextNearestNodeOfColour(final Node node, final int link_colour,
     int max_already) {
     final int i = getIndexOfNearestNodeOfColour(node, link_colour, max_already);
     if (i < 0) {
@@ -216,7 +216,7 @@ public class HexagonMaker {
     return (Node) this.node_manager.element.get(i);
   }
 
-  private int getIndexOfNearestNodeOfColourQuick(Node node, int[] array,
+  private int getIndexOfNearestNodeOfColourQuick(final Node node, final int[] array,
     int max_already) {
     int index_of_nearest = -1;
     int min_distance = Integer.MAX_VALUE;
@@ -242,7 +242,7 @@ public class HexagonMaker {
     return index_of_nearest;
   }
 
-  private int getIndexOfNearestNodeOfColour(Node node, int link_colour,
+  private int getIndexOfNearestNodeOfColour(final Node node, final int link_colour,
     int max_already) {
     int index_of_nearest = -1;
     int min_distance = Integer.MAX_VALUE;
@@ -269,7 +269,7 @@ public class HexagonMaker {
   }
 
   // improve this (or avoid it!)...
-  private int numberOfLinksOfColour(Node node, int colour) {
+  private int numberOfLinksOfColour(final Node node, final int colour) {
     int count = 0;
 
     final int n_o_l = this.link_manager.element.size();
@@ -284,7 +284,7 @@ public class HexagonMaker {
     return count;
   }
 
-  private int quickNumberOfLinksOfColour(Node node, int colour) {
+  private int quickNumberOfLinksOfColour(final Node node, final int colour) {
     int count = 0;
 
     final int n_o_l = node.list_of_links.size();
@@ -299,7 +299,7 @@ public class HexagonMaker {
     return count;
   }
 
-  public void createNodesInTriaxialOuterLayer(float s_f) {
+  public void createNodesInTriaxialOuterLayer(final float s_f) {
     final int number_of_links = this.link_manager.element.size();
     final Point3D centre = this.node_manager.getCentre();
 
@@ -451,7 +451,7 @@ public class HexagonMaker {
 //    }
 //  }
   
-  private void makeNewEdenNode(float s_f, final Point3D centre, final Link link) {
+  private void makeNewEdenNode(final float s_f, final Point3D centre, final Link link) {
     final Node node_1 = link.nodes[0];
     final Node node_2 = link.nodes[1];
     int new_x = (node_1.pos.x + node_2.pos.x) / 2;
@@ -506,7 +506,7 @@ public class HexagonMaker {
     }
   }
 
-  private void joinNodesBetweenLayers(Node node_1, Node node_2, int length) {
+  private void joinNodesBetweenLayers(final Node node_1, final Node node_2, final int length) {
     final LinkType type = this.link_manager.link_type_factory
       .getNew(length, 30);
     final Clazz clazz = this.node_manager.clazz_factory
@@ -514,7 +514,7 @@ public class HexagonMaker {
     this.link_manager.setLink(node_1, node_2, type, clazz);
   }
 
-  private void joinNodesInOuterHexLayer(Node node_1, Node node_2) {
+  private void joinNodesInOuterHexLayer(final Node node_1, final Node node_2) {
     final int length = this.node_manager.distanceBetween(node_1, node_2);
     final LinkType type = this.link_manager.link_type_factory
       .getNew(length, 50);
@@ -524,7 +524,7 @@ public class HexagonMaker {
     this.link_manager.setLink(node_1, node_2, type, clazz);
   }
 
-  private void joinNodesInTriaxialOuterLayer(Node node_1, Node node_2) {
+  private void joinNodesInTriaxialOuterLayer(final Node node_1, final Node node_2) {
     final int length = this.node_manager.distanceBetween(node_1, node_2);
     final LinkType type = this.link_manager.link_type_factory
       .getNew(length, 50);

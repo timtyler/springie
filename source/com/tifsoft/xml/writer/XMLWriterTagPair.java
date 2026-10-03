@@ -11,13 +11,13 @@ public class XMLWriterTagPair implements XMLWriterInterface {
   
   public boolean newlines = true;
 
-  public XMLWriterTagPair(String name, ArrayList<XMLWriterAttribute> arguments, ArrayList<XMLWriterInterface> children) {
+  public XMLWriterTagPair(String name, final ArrayList<XMLWriterAttribute> arguments, ArrayList<XMLWriterInterface> children) {
     this.name = name;
     this.attributes = arguments;
     this.children = children;
   }
 
-  public XMLWriterTagPair(String name, ArrayList<XMLWriterAttribute> arguments) {
+  public XMLWriterTagPair(String name, final ArrayList<XMLWriterAttribute> arguments) {
     this.name = name;
     this.attributes = arguments;
   }
@@ -30,7 +30,7 @@ public class XMLWriterTagPair implements XMLWriterInterface {
     return makeString(0);
   }
 
-  public String makeString(int indent) {
+  public String makeString(final int indent) {
     final StringBuilder sb = new StringBuilder();
 
     outputStartTagAndAttributes(indent, sb);
@@ -66,7 +66,7 @@ public class XMLWriterTagPair implements XMLWriterInterface {
     }
   }
 
-  private void outputChildren(int indent, final StringBuilder sb) {
+  private void outputChildren(final int indent, final StringBuilder sb) {
     if (this.children != null) {
       final int children_size = this.children.size();
       for (int i = 0; i < children_size; i++) {
@@ -76,7 +76,7 @@ public class XMLWriterTagPair implements XMLWriterInterface {
     }
   }
 
-  private void outputEndTag(int indent, final StringBuilder sb) {
+  private void outputEndTag(final int indent, final StringBuilder sb) {
     if (this.name != null) {
       XMLWriterUtilities.indent(sb, indent);
       sb.append("</");
@@ -89,7 +89,7 @@ public class XMLWriterTagPair implements XMLWriterInterface {
     return this.attributes;
   }
 
-  public void setAttributes(ArrayList<XMLWriterAttribute> arguments) {
+  public void setAttributes(final ArrayList<XMLWriterAttribute> arguments) {
     this.attributes = arguments;
   }
 
@@ -109,13 +109,13 @@ public class XMLWriterTagPair implements XMLWriterInterface {
     this.name = name;
   }
 
-  public void add(XMLWriterAttribute attribute) {
+  public void add(final XMLWriterAttribute attribute) {
     ensureAttributesExist();
 
     this.attributes.add(attribute);
   }
 
-  public void add(XMLWriterInterface child) {
+  public void add(final XMLWriterInterface child) {
     ensureChildrenExist();
 
     this.children.add(child);
@@ -133,7 +133,7 @@ public class XMLWriterTagPair implements XMLWriterInterface {
     }
   }
 
-  public void addContentsOf(XMLWriterTagPair child) {
+  public void addContentsOf(final XMLWriterTagPair child) {
     ensureChildrenExist();
     
     for (int i = 0; i < child.children.size(); i++) {

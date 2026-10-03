@@ -53,7 +53,7 @@ public class StellationMaker {
     }
   }
 
-  public void tryToMakeStellation(Face face) {
+  public void tryToMakeStellation(final Face face) {
     //final int number_of_nodes = this.node_manager.element.size();
     final ArrayList<Node> node_list = face.nodes;
     //ArrayList();
@@ -168,7 +168,7 @@ public class StellationMaker {
   //    return count;
   //  }
 
-  private void joinNodesBetweenLayers(Node node_1, Node node_2, int length) {
+  private void joinNodesBetweenLayers(final Node node_1, final Node node_2, final int length) {
     final LinkType type = this.link_manager.link_type_factory
       .getNew(length, 30);
     final Clazz clazz = this.node_manager.clazz_factory

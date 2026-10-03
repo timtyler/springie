@@ -22,7 +22,7 @@ public class AutomaticNodeRadius {
     FrEnd.perform_selection.deselectAll();
   }
 
-  public void set(double ans_d, boolean only_set_if_zero) {
+  public void set(final double ans_d, final boolean only_set_if_zero) {
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) this.node_manager.element
@@ -36,7 +36,7 @@ public class AutomaticNodeRadius {
     }
   }
 
-  private int getRadiusOfLargestLink(Node node) {
+  private int getRadiusOfLargestLink(final Node node) {
     final ListOfIntegers list_of_links = node.list_of_links;
     final int size = list_of_links.size();
     int max = Integer.MIN_VALUE;

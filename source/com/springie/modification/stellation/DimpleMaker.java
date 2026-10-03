@@ -41,7 +41,7 @@ public class DimpleMaker {
   }
 
   
-  public Point3D tryToMakeDimple(Node node) {
+  public Point3D tryToMakeDimple(final Node node) {
     final Point3D initial = node.pos;
     final Point3D average = new Point3D(0, 0, 0);
     final ListOfIntegers list_of_integers = node.list_of_links;

@@ -1,7 +1,7 @@
 package com.tifsoft.xml.driver;
 
 public class ParserStateUpdater {
-  static void endOfIdentifier(ParserState state) {
+  static void endOfIdentifier(final ParserState state) {
     if (!SomeStringUtilities.isWhiteSpace(state.name)) {
       if (state.element_stage == StateElement.WAITING_FOR_ELEMENT) {
         if ("".equals(state.name_element)) {

@@ -26,7 +26,7 @@ public class ColourChanger {
     prepare();
   }
 
-  public void setColour(int argb) {
+  public void setColour(final int argb) {
     setNodeColour(argb);
     setLinkColour(argb);
     setFaceColour(argb);
@@ -46,7 +46,7 @@ public class ColourChanger {
     prepare_mp.prepare();
   }
 
-  private void setNodeColour(int argb) {
+  private void setNodeColour(final int argb) {
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) this.node_manager.element
@@ -59,7 +59,7 @@ public class ColourChanger {
     RendererDelegator.repaint_some_objects = true;
   }
 
-  private void setLinkColour(int argb) {
+  private void setLinkColour(final int argb) {
     final int max_size = this.link_manager.element.size();
 
     for (int counter = max_size; --counter >= 0;) {
@@ -72,7 +72,7 @@ public class ColourChanger {
     RendererDelegator.repaint_some_objects = true;
   }
 
-  private void setFaceColour(int argb) {
+  private void setFaceColour(final int argb) {
     final int max_size = this.manager_faces.element.size();
 
     for (int counter = max_size; --counter >= 0;) {

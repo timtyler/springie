@@ -46,7 +46,7 @@ public final class MuscleTools {
     attach(targets);
   }
 
-  private static void attach(List<Link> targets) {
+  private static void attach(final List<Link> targets) {
     final int count = targets.size();
     for (int i = 0; i < count; i++) {
       targets.get(i).controller = new GlobalOscillatorController(Muscles.active_oscillator);

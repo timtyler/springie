@@ -11,7 +11,7 @@ public class ZFDLWriterSinglet implements FDLWriterInterface {
 
   ArrayList<ZFDLWriterAttribute> attributes;
 
-  public ZFDLWriterSinglet(String name, ArrayList<ZFDLWriterAttribute> arguments) {
+  public ZFDLWriterSinglet(String name, final ArrayList<ZFDLWriterAttribute> arguments) {
     this.name = name;
     this.attributes = arguments;
   }
@@ -24,7 +24,7 @@ public class ZFDLWriterSinglet implements FDLWriterInterface {
     return makeString(0);
   }
 
-  public String makeString(int indent) {
+  public String makeString(final int indent) {
     final StringBuilder sb = new StringBuilder();
 
     if (this.name != null) {
@@ -50,7 +50,7 @@ public class ZFDLWriterSinglet implements FDLWriterInterface {
     return this.attributes;
   }
 
-  public void setAttributes(ArrayList<ZFDLWriterAttribute> arguments) {
+  public void setAttributes(final ArrayList<ZFDLWriterAttribute> arguments) {
     this.attributes = arguments;
   }
 
@@ -62,7 +62,7 @@ public class ZFDLWriterSinglet implements FDLWriterInterface {
     this.name = name;
   }
 
-  public void add(ZFDLWriterAttribute attribute) {
+  public void add(final ZFDLWriterAttribute attribute) {
     ensureAttributesExist();
 
     this.attributes.add(attribute);

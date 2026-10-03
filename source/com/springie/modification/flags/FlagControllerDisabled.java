@@ -16,7 +16,7 @@ public class FlagControllerDisabled {
     prepare();
   }
 
-  public void disable(boolean disabled) {
+  public void disable(final boolean disabled) {
     disableLinks(disabled);
   }
 

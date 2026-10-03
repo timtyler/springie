@@ -54,7 +54,7 @@ public final class DomeRelatedChangeDelegator {
   private static final int CHARGE_MIN = -100;
   private static final int CHARGE_MAX = 100;
 
-  private static int clamp(int value, int min, int max) {
+  private static int clamp(final int value, final int min, final int max) {
     return Math.max(min, Math.min(max, value));
   }
 
@@ -66,7 +66,7 @@ public final class DomeRelatedChangeDelegator {
     changeLengthBy(1);
   }
 
-  private static void changeLengthBy(int delta_px) {
+  private static void changeLengthBy(final int delta_px) {
     FrEnd.prepareToModifyLinkTypes();
     final int average_px = new AverageLengthGetter(
         ContextManager.getNodeManager()).getAverage() >> Coords.shift;
@@ -84,7 +84,7 @@ public final class DomeRelatedChangeDelegator {
     changeRadiusBy(-1);
   }
 
-  private static void changeRadiusBy(int delta) {
+  private static void changeRadiusBy(final int delta) {
     FrEnd.prepareToModifyAllTypes();
     final int average = new AverageRadiusGetter(
         ContextManager.getNodeManager()).getAverage() >> RADIUS_SHIFT;
@@ -103,7 +103,7 @@ public final class DomeRelatedChangeDelegator {
     changeChargeBy(1);
   }
 
-  private static void changeChargeBy(int delta) {
+  private static void changeChargeBy(final int delta) {
     FrEnd.prepareToModifyNodeTypes();
     final int average = new AverageChargeGetter(
         ContextManager.getNodeManager()).getAverage();
@@ -120,7 +120,7 @@ public final class DomeRelatedChangeDelegator {
     changeElasticityBy(-1);
   }
 
-  private static void changeElasticityBy(int delta) {
+  private static void changeElasticityBy(final int delta) {
     FrEnd.prepareToModifyLinkTypes();
     final int average = new AverageElasticityGetter(
         ContextManager.getNodeManager()).getAverage();
@@ -136,7 +136,7 @@ public final class DomeRelatedChangeDelegator {
     changeDampingBy(-1);
   }
 
-  private static void changeDampingBy(int delta) {
+  private static void changeDampingBy(final int delta) {
     FrEnd.prepareToModifyLinkTypes();
     final int average = new AverageStiffnessGetter(
         ContextManager.getNodeManager()).getAverage();

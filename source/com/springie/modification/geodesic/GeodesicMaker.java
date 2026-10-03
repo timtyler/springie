@@ -51,7 +51,7 @@ public class GeodesicMaker {
     }
   }
 
-  private void joinNodesInFirstLayer(Node node_1, Node node_2) {
+  private void joinNodesInFirstLayer(final Node node_1, final Node node_2) {
     final int length = node_1.type.radius + node_2.type.radius;
     final int colour = this.colour_link_geodesic;
     final LinkType type = this.link_manager.link_type_factory.getNew(length, 50);
@@ -59,7 +59,7 @@ public class GeodesicMaker {
     this.link_manager.setLink(node_1, node_2, type, clazz);
   }
   
-  private Node getCellInContactWith(Node node_1) {
+  private Node getCellInContactWith(final Node node_1) {
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
       final int a2 = this.rnd.nextInt(number_of_nodes);

@@ -14,7 +14,7 @@ public class JUR {
     this(System.currentTimeMillis());
   }
 
-  public JUR(long seed) {
+  public JUR(final long seed) {
     setSeed(seed);
   }
 
@@ -23,14 +23,14 @@ public class JUR {
     this.haveNextNextGaussian = false;
   }
 
-  protected int next(int bits) {
+  protected int next(final int bits) {
     final long addend = 0xBL;
     long nextseed = (this.seed * multiplier + addend) & mask;
     this.seed = nextseed;
     return (int) (nextseed >>> (48 - bits));
   }
 
-  void nextBytes(byte[] bytes) {
+  void nextBytes(final byte[] bytes) {
     final int BITS_PER_BYTE = 8;
     final int BYTES_PER_INT = 4;
     final int numRequested = bytes.length;
@@ -55,7 +55,7 @@ public class JUR {
     return next(32);
   }
 
-  public int nextInt(int n) {
+  public int nextInt(final int n) {
     if (n <= 0) {
       throw new IllegalArgumentException("n must be positive");
     }

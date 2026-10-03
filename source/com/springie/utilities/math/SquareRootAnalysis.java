@@ -41,7 +41,7 @@ public final class SquareRootAnalysis {
       new Candidate("tableOneNewtonSqrt", SqrtCandidates::tableOneNewtonSqrt),
   };
 
-  public static void main(String[] args) {
+  public static void main(final String[] args) {
     System.out.println("candidate | maxErrFloor | meanErrFloor | exactFloor% "
         + "| maxErrRound | meanErrRound | checksum");
     System.out.println("-".repeat(95));
@@ -50,7 +50,7 @@ public final class SquareRootAnalysis {
     }
   }
 
-  private static void analyze(Candidate c) {
+  private static void analyze(final Candidate c) {
     long maxErrFloor = 0;
     double sumErrFloor = 0;
     long exactFloor = 0;
@@ -143,7 +143,7 @@ public final class SquareRootAnalysis {
    * Checks one analytic point against the known-true floor and round values;
    * returns 1 (one value checked).
    */
-  private static int check(Candidate c, int x, int trueFloor, int trueRound) {
+  private static int check(final Candidate c, final int x, final int trueFloor, final int trueRound) {
     final Sums s = Sums.HOLDER;
     final int got = c.fn.applyAsInt(x);
     final long eFloor = Math.abs((long) got - trueFloor);

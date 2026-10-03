@@ -409,7 +409,7 @@ public class FrEnd extends Panel implements Runnable {
   public static PanelControlsGenerate panel_edit_generate = new PanelControlsGenerate(new_message_manager);
 
   public static ColorPicker panel_edit_color = new ColorPicker(new ColorPickerInformer() {
-    public void inform(int colour) {
+    public void inform(final int colour) {
       final ColourChanger cc = new ColourChanger(ContextManager.getNodeManager());
       cc.setColour(colour);
     }
@@ -714,7 +714,7 @@ public class FrEnd extends Panel implements Runnable {
     }
 
     controls_stay_on_top_listener = new AWTEventListener() {
-      public void eventDispatched(AWTEvent e) {
+      public void eventDispatched(final AWTEvent e) {
         if (frame_controls == null || !frame_controls.isVisible()) {
           return;
         }
@@ -778,7 +778,7 @@ public class FrEnd extends Panel implements Runnable {
    * dialog), which must be left alone. The native menu bar is not a
    * component at all, so presses on Load/Save/... never reach this test.
    */
-  private static boolean isMainWindowContent(Object source) {
+  private static boolean isMainWindowContent(final Object source) {
     if (!(source instanceof Component)) {
       return false;
     }
@@ -925,7 +925,7 @@ public class FrEnd extends Panel implements Runnable {
     FrEnd.panel_edit_properties_names.updateSuffix();
   }
 
-  public static void selectNewNodeIfAppropriate(Node selected_node) {
+  public static void selectNewNodeIfAppropriate(final Node selected_node) {
     if ((main_canvas.modifiers & 2) != 0) {
       if (button_virginity) {
         prepareToModifyNodeTypes();
@@ -1038,7 +1038,7 @@ public class FrEnd extends Panel implements Runnable {
     }
   }
 
-  public static void processMouseClick(int x, int y) {
+  public static void processMouseClick(final int x, final int y) {
     if ((main_canvas.modifiers & InputEvent.BUTTON1_MASK) != 0) {
       perform_actions.actionSwitch(x, y, action_left_type);
     }
@@ -1055,24 +1055,24 @@ public class FrEnd extends Panel implements Runnable {
     last_mousey = y;
   }
 
-  public static void springieMouseClicked(int x, int y) {
+  public static void springieMouseClicked(final int x, final int y) {
     if (!button_virginity) {
       processMouseClick(x, y);
       button_virginity = false;
     }
   }
 
-  public static void springieMousePressed(int x, int y) {
+  public static void springieMousePressed(final int x, final int y) {
     processMouseClick(x, y);
     button_virginity = false;
   }
 
-  public static void springieMouseDragged(int x, int y) {
+  public static void springieMouseDragged(final int x, final int y) {
     processMouseClick(x, y);
     button_virginity = false;
   }
 
-  public static void springieMouseReleased(int x, int y) {
+  public static void springieMouseReleased(final int x, final int y) {
     perform_actions.dragged_link_manager.terminateLink(x, y);
     perform_actions.drag_box_manager.terminate(x, y);
     rotation_manager.terminate(x, y);
@@ -1086,7 +1086,7 @@ public class FrEnd extends Panel implements Runnable {
     dragged_element = null;
   }
 
-  public static void springieMouseEntered(int x, int y) {
+  public static void springieMouseEntered(final int x, final int y) {
     last_mousex = x;
     last_mousey = y;
 
@@ -1096,7 +1096,7 @@ public class FrEnd extends Panel implements Runnable {
     }
   }
 
-  public static void springieMouseExited(int x, int y) {
+  public static void springieMouseExited(final int x, final int y) {
     last_mousex = x;
     last_mousey = y;
 
@@ -1139,19 +1139,19 @@ public class FrEnd extends Panel implements Runnable {
     RendererDelegator.repaint_some_objects = true;
   }
 
-  public static void killAllLinks(Node e) {
+  public static void killAllLinks(final Node e) {
     ContextManager.getLinkManager().killAllLinks(e);
 
     postCleanup();
   }
 
-  public static void killLastLink(Node e) {
+  public static void killLastLink(final Node e) {
     ContextManager.getLinkManager().killLastLink(e);
 
     postCleanup();
   }
 
-  public static void dragCurrentObject(int x, int y) {
+  public static void dragCurrentObject(final int x, final int y) {
     if (FrEnd.dragged_element != null) {
       if (FrEnd.dragged_element.isSelected()) {
         // Node dragged_node = (Node)FrEnd.dragged_element;
@@ -1180,7 +1180,7 @@ public class FrEnd extends Panel implements Runnable {
     return list_of_nodes;
   }
 
-  private static void addElementsOfList2ToList1(List<Node> list_1, List<Node> list_2) {
+  private static void addElementsOfList2ToList1(final List<Node> list_1, final List<Node> list_2) {
     final int size = list_2.size();
     for (int i = 0; i < size; i++) {
       final Node o = list_2.get(i);
@@ -1190,13 +1190,13 @@ public class FrEnd extends Panel implements Runnable {
     }
   }
 
-  public static void loadFile(FilePath filepath) {
+  public static void loadFile(final FilePath filepath) {
     final String path = "file://" + filepath;
     ModelManager.replaceCurrentModel(path);
   }
 
   /** Loads a model file as an additional model, keeping the current one. */
-  public static void loadFileAsNewModel(FilePath filepath) {
+  public static void loadFileAsNewModel(final FilePath filepath) {
     final String path = "file://" + filepath;
     ModelManager.loadNewModel(path);
   }
@@ -1212,7 +1212,7 @@ public class FrEnd extends Panel implements Runnable {
     return FrEnd.animation_inactive && edit_animation_with_pointer.booleanValue();
   }
 
-  public static void setFilePath(String path) {
+  public static void setFilePath(final String path) {
     FrEnd.last_file_path = path;
     FrEnd.next_file_path = path;
 
@@ -1225,7 +1225,7 @@ public class FrEnd extends Panel implements Runnable {
     FrEnd.frame_main.setTitle(s);
   }
 
-  public static void main(String[] args) {
+  public static void main(final String[] args) {
 
     final FrEnd frontend = new FrEnd();
 

@@ -40,7 +40,7 @@ public final class ImageLoader {
    * Loads a specified image, either from the currect directory,
    * Or from inside the relevant jar file, whichever is appropriate.
    **/
-  public static ImageWrapper getImage(String name) {
+  public static ImageWrapper getImage(final String name) {
     InputStream in;
     ImageWrapper image;
     boolean ispng;
@@ -126,7 +126,7 @@ public final class ImageLoader {
    * If you want to wait for your images to load, you should
    * seriously consider using the ImageLoadingManager class...
    */
-  public static ImageWrapper getImageNow(String name) {
+  public static ImageWrapper getImageNow(final String name) {
     final ImageWrapper temp_image = getImage(name);
     do {
       try {

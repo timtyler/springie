@@ -53,7 +53,7 @@ public final class SquareRoot {
    * over every perfect square and its neighbours, plus a reproducible
    * sample of 1,000,000 random inputs (see SquareRootAnalysis).
    */
-  public static int sqrt(int x) {
+  public static int sqrt(final int x) {
     if (x < 0) {
       illegalArgument();
     }
@@ -75,7 +75,7 @@ public final class SquareRoot {
    * adjustment step; the hardware path below was measured at roughly twice
    * the speed (see SquareRootBenchmark).
    */
-  static int accurateSqrt(int x) {
+  static int accurateSqrt(final int x) {
     if (x < 0) {
       illegalArgument();
     }
@@ -86,7 +86,7 @@ public final class SquareRoot {
    * A *much* faster replacement for (int)(java.lang.Math.sqrt(x)). Completely
    * accurate for x < 289...
    */
-  public static int fastSqrt(int x) {
+  public static int fastSqrt(final int x) {
     if (x >= 0x10000) {
       if (x >= 0x1000000) {
         if (x >= 0x10000000) {

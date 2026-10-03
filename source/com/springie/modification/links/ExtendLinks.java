@@ -28,7 +28,7 @@ public class ExtendLinks {
     prepare();
   }
 
-  public void extend(float sf) {
+  public void extend(final float sf) {
     //Log.log("Extend:" + sf);
     final int n_o_l = this.link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
@@ -43,7 +43,7 @@ public class ExtendLinks {
     FrEnd.postCleanup();
   }
 
-  private void extend(Link l, float sf) {
+  private void extend(final Link l, final float sf) {
     if (l.nodes.length == 2) {
       final Node n1 = l.nodes[0];
       final Node n2 = l.nodes[1];
@@ -80,7 +80,7 @@ public class ExtendLinks {
     }
   }
 
-  private void makeLink(final Node n1, final Node n2, LinkType type, Clazz clazz) {
+  private void makeLink(final Node n1, final Node n2, final LinkType type, final Clazz clazz) {
     this.link_manager.setLink(n1, n2, type, clazz);
   }
 

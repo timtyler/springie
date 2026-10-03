@@ -7,7 +7,7 @@ public class XMLWriterSinglet implements XMLWriterInterface {
 
   ArrayList<XMLWriterAttribute> attributes;
 
-  public XMLWriterSinglet(String name, ArrayList<XMLWriterAttribute> arguments) {
+  public XMLWriterSinglet(String name, final ArrayList<XMLWriterAttribute> arguments) {
     this.name = name;
     this.attributes = arguments;
   }
@@ -20,7 +20,7 @@ public class XMLWriterSinglet implements XMLWriterInterface {
     return makeString(0);
   }
 
-  public String makeString(int indent) {
+  public String makeString(final int indent) {
     final StringBuilder sb = new StringBuilder();
 
     if (this.name != null) {
@@ -46,7 +46,7 @@ public class XMLWriterSinglet implements XMLWriterInterface {
     return this.attributes;
   }
 
-  public void setAttributes(ArrayList<XMLWriterAttribute> arguments) {
+  public void setAttributes(final ArrayList<XMLWriterAttribute> arguments) {
     this.attributes = arguments;
   }
 
@@ -58,7 +58,7 @@ public class XMLWriterSinglet implements XMLWriterInterface {
     this.name = name;
   }
 
-  public void add(XMLWriterAttribute attribute) {
+  public void add(final XMLWriterAttribute attribute) {
     ensureAttributesExist();
 
     this.attributes.add(attribute);

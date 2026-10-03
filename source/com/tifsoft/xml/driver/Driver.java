@@ -161,7 +161,7 @@ public class Driver implements XMLReaderExtension, ContentHandlerExtension,
     }
   }
 
-  private void dealWithXMLElementCharacter(int c) {
+  private void dealWithXMLElementCharacter(final int c) {
     this.state.name += (char) c;
   }
 
@@ -243,7 +243,7 @@ public class Driver implements XMLReaderExtension, ContentHandlerExtension,
     }
   }
 
-  private void flushCharacters(ParserState state) throws SAXException {
+  private void flushCharacters(final ParserState state) throws SAXException {
     final CharArrayOutputStream output_stream = state.output_stream;
     if (output_stream.getSize() > 0) {
       final char[] ca = state.output_stream.getRawArray();
@@ -417,7 +417,7 @@ public class Driver implements XMLReaderExtension, ContentHandlerExtension,
       line_number, column_number));
   }
 
-  void reportError(String msg) throws SAXException {
+  void reportError(final String msg) throws SAXException {
     fatalError(msg, this.state.position.y, this.state.position.x);
   }
 

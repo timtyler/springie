@@ -26,7 +26,7 @@ public class Concatenate {
     }
   }
 
-  private void concatenateFrom(Link link) {
+  private void concatenateFrom(final Link link) {
     // TODO Auto-generated method stub
   }
 }

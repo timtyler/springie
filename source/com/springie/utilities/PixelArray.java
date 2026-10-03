@@ -7,7 +7,7 @@ public class PixelArray {
     this.pixels = new int[1 << 12]; // should be big enough...
   }
 
-  public int[] ensureArraySize(int z) {
+  public int[] ensureArraySize(final int z) {
     if (this.pixels.length < z) {
       this.pixels = new int[z];
     }

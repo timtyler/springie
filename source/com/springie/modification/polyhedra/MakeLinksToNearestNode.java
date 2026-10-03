@@ -25,7 +25,7 @@ public class MakeLinksToNearestNode {
     this.link_manager = node_manager.getLinkManager();
   }
 
-  public void connectNodesToNearestNodes(int how_many) {
+  public void connectNodesToNearestNodes(final int how_many) {
     final int colour = FrEnd.panel_edit_color.cp_gas.one.getColour();
     final int[] selected_node_numbers = getArrayOfSelectedNodes();
     //Log.log("selected_node_numbers" + selected_node_numbers.length);
@@ -67,7 +67,7 @@ public class MakeLinksToNearestNode {
     return nodes;
   }
 
-  private int[] getArrayOfNodesOfColour(int colour) {
+  private int[] getArrayOfNodesOfColour(final int colour) {
     final int number_of_nodes = this.node_manager.element.size();
     final ArrayList<Integer> nodes = new ArrayList<>();
     for (int counter = number_of_nodes; --counter >= 0;) {
@@ -88,7 +88,7 @@ public class MakeLinksToNearestNode {
     return array;
   }
 
-  private void createLinks(int nn_1, ListOfNearest list_of_nearest) {
+  private void createLinks(final int nn_1, final ListOfNearest list_of_nearest) {
     //final PostModification post_modification = new PostModification(this.node_manager);
     final int number = list_of_nearest.size;
     final Node candidate = (Node) this.node_manager.element.get(nn_1);
@@ -106,7 +106,7 @@ public class MakeLinksToNearestNode {
     }
   }
 
-  private ListOfNearest getNearestNodes(Node source, int[] target_node_numbers,
+  private ListOfNearest getNearestNodes(final Node source, final int[] target_node_numbers,
     int max) {
     final ListOfNearest list_of_nearest = new ListOfNearest(max);
 
@@ -135,7 +135,7 @@ public class MakeLinksToNearestNode {
     return list_of_nearest;
   }
 
-  private void makeLinkBetweenNodes(Node node_1, Node node_2) {
+  private void makeLinkBetweenNodes(final Node node_1, final Node node_2) {
     final int length = this.node_manager.distanceBetween(node_1, node_2);
     final LinkType type = this.link_manager.link_type_factory
       .getNew(length, 60);

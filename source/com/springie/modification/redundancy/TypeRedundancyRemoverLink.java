@@ -32,7 +32,7 @@ public class TypeRedundancyRemoverLink {
     this.node_manager.getLinkManager().each_has_its_own_type = false;
   }
 
-  private void replaceLinkTypeWithPrevious(ArrayList<LinkType> v, int old, int nww) {
+  private void replaceLinkTypeWithPrevious(final ArrayList<LinkType> v, final int old, final int nww) {
     final LinkType nt_old = v.get(old);
     final LinkType nt_nww = v.get(nww);
     final int n_o_l = this.node_manager.getLinkManager().element.size();
@@ -46,7 +46,7 @@ public class TypeRedundancyRemoverLink {
     v.remove(old);
   }
 
-  private int getFirstLinkType(ArrayList<LinkType> v, LinkType t, int max) {
+  private int getFirstLinkType(final ArrayList<LinkType> v, final LinkType t, final int max) {
     for (int i = max; --i >= 0;) {
       if (t.equals(v.get(i))) {
         return i;
@@ -56,7 +56,7 @@ public class TypeRedundancyRemoverLink {
     return -1;
   }
 
-  private boolean equalspreviousLinkType(ArrayList<LinkType> v, int max) {
+  private boolean equalspreviousLinkType(final ArrayList<LinkType> v, final int max) {
     final LinkType nt = v.get(max);
 
     return getFirstLinkType(v, nt, max) > 0;

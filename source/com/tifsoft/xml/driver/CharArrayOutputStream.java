@@ -23,13 +23,13 @@ public class CharArrayOutputStream {
     this.array = new char[this.max_size];
   }
 
-  public void add(char c) {
+  public void add(final char c) {
     makeMoreIfNeeded();
 
     this.array[this.size++] = c;
   }
 
-  public void overwrite(char c, int index) {
+  public void overwrite(final char c, final int index) {
     if (this.check_bounds) {
       checkBounds(index);
     }
@@ -45,7 +45,7 @@ public class CharArrayOutputStream {
     this.size = size;
   }
 
-  public char get(int index) {
+  public char get(final int index) {
     if (this.check_bounds) {
       checkBounds(index);
     }
@@ -53,7 +53,7 @@ public class CharArrayOutputStream {
     return this.array[index];
   }
 
-  public void deleteQuickly(int index) {
+  public void deleteQuickly(final int index) {
     if (this.check_bounds) {
       checkBounds(index);
     }
@@ -63,7 +63,7 @@ public class CharArrayOutputStream {
     this.array[this.size] = temp;
   }
 
-  public void delete(int index) {
+  public void delete(final int index) {
     if (this.check_bounds) {
       checkBounds(index);
     }
@@ -76,13 +76,13 @@ public class CharArrayOutputStream {
     this.array[--this.size] = temp;
   }
 
-  public void swap(int j, int k) {
+  public void swap(final int j, final int k) {
     final char temp = get(j);
     overwrite(get(k), j);
     overwrite(temp, k);
   }
 
-  private void checkBounds(int index) {
+  private void checkBounds(final int index) {
     if (index < 0) {
       throw new ArrayIndexOutOfBoundsException("(" + index + ")");
     }

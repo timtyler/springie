@@ -47,7 +47,7 @@ public class PrismaticProjection {
     }
 
     final Executor e = new Executor() {
-      public Object execute(Object o) {
+      public Object execute(final Object o) {
         final NodeManager node_manager = (NodeManager) o;
 
         final RescaleManager rescale_manager = new RescaleManager(node_manager);

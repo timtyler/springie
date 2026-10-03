@@ -12,11 +12,11 @@ public class FlagControllerFixed {
     this.node_manager = node_manager;
     prepare();
   }
-  public void fix(boolean fixed) {
+  public void fix(final boolean fixed) {
     fixNodes(fixed);
   }
   
-  private void fixNodes(boolean fixed) {
+  private void fixNodes(final boolean fixed) {
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = this.node_manager.element.get(counter);

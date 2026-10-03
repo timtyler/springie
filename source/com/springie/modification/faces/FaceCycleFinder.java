@@ -81,7 +81,7 @@ public class FaceCycleFinder {
    * @return one node list per face found, each in cycle order
    */
   public static ArrayList<ArrayList<Node>> findFaceCycles(
-      ArrayList<Node> nodes, ArrayList<Link> links) {
+      ArrayList<Node> nodes, final ArrayList<Link> links) {
     final int n = nodes.size();
     final ArrayList<ArrayList<Node>> faces = new ArrayList<>();
     if (n < 3 || links.size() < 3) {
@@ -185,8 +185,8 @@ public class FaceCycleFinder {
     return faces;
   }
 
-  private static void collectPaths(ArrayList<ArrayList<Integer>> prev,
-      int node, int target, int depth, int[] path, ArrayList<int[]> out) {
+  private static void collectPaths(final ArrayList<ArrayList<Integer>> prev,
+      int node, final int target, final int depth, final int[] path, final ArrayList<int[]> out) {
     if (out.size() >= MAX_PATHS_PER_LINK) {
       return;
     }
@@ -203,7 +203,7 @@ public class FaceCycleFinder {
     }
   }
 
-  private static String canonicalKey(int[] cycle) {
+  private static String canonicalKey(final int[] cycle) {
     final int[] sorted = cycle.clone();
     Arrays.sort(sorted);
     return Arrays.toString(sorted);

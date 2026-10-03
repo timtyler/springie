@@ -32,7 +32,7 @@ public class TypeRedundancyRemoverFace {
     }
   }
 
-  private void replacePolygonTypeWithPrevious(ArrayList<FaceType> v, int old, int nww) {
+  private void replacePolygonTypeWithPrevious(final ArrayList<FaceType> v, final int old, final int nww) {
     final FaceType nt_old = v.get(old);
     final FaceType nt_nww = v.get(nww);
     final int n_o_p = this.node_manager.getFaceManager().element.size();
@@ -46,7 +46,7 @@ public class TypeRedundancyRemoverFace {
     v.remove(old);
   }
 
-  private int getFirstPolygonType(ArrayList<FaceType> v, FaceType t, int max) {
+  private int getFirstPolygonType(final ArrayList<FaceType> v, final FaceType t, final int max) {
     for (int i = max; --i >= 0;) {
       if (t.equals(v.get(i))) {
         return i;
@@ -56,7 +56,7 @@ public class TypeRedundancyRemoverFace {
     return -1;
   }
 
-  private boolean equalspreviousPolygonType(ArrayList<FaceType> v, int max) {
+  private boolean equalspreviousPolygonType(final ArrayList<FaceType> v, final int max) {
     final FaceType t = v.get(max);
 
     return getFirstPolygonType(v, t, max) > 0;

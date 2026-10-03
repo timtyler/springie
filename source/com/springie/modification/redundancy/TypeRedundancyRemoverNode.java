@@ -32,7 +32,7 @@ public class TypeRedundancyRemoverNode {
     this.node_manager.each_has_its_own_type = false;
   }
 
-  private void replaceNodeTypeWithPrevious(ArrayList<NodeType> v, int old, int nww) {
+  private void replaceNodeTypeWithPrevious(final ArrayList<NodeType> v, final int old, final int nww) {
     final NodeType nt_old = v.get(old);
     final NodeType nt_nww = v.get(nww);
     final int n_o_n = this.node_manager.element.size();
@@ -46,7 +46,7 @@ public class TypeRedundancyRemoverNode {
     v.remove(old);
   }
 
-  private int getFirstNodeType(ArrayList<NodeType> v, NodeType nt, int max) {
+  private int getFirstNodeType(final ArrayList<NodeType> v, final NodeType nt, final int max) {
     for (int i = max; --i >= 0;) {
       if (nt.equals(v.get(i))) {
         return i;
@@ -56,7 +56,7 @@ public class TypeRedundancyRemoverNode {
     return -1;
   }
 
-  private boolean equalspreviousNodeType(ArrayList<NodeType> v, int max) {
+  private boolean equalspreviousNodeType(final ArrayList<NodeType> v, final int max) {
     final NodeType nt = v.get(max);
 
     return getFirstNodeType(v, nt, max) > 0;

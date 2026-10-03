@@ -24,7 +24,7 @@ public class FlagControllerHidden {
     prepare();
   }
 
-  public void hide(boolean hidden) {
+  public void hide(final boolean hidden) {
     hideNodes(hidden);
     hideLinks(hidden);
     hideFaces(hidden);

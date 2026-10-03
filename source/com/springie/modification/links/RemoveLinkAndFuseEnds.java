@@ -37,7 +37,7 @@ public class RemoveLinkAndFuseEnds {
     FrEnd.postCleanup();
   }
 
-  private void deleteAndFuseEnds(Link l) {
+  private void deleteAndFuseEnds(final Link l) {
     final Node n1 = l.nodes[0];
     final Node n2 = l.nodes[1];
     this.link_manager.killSpecifiedLink(l);

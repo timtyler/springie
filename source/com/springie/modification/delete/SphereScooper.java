@@ -53,7 +53,7 @@ public class SphereScooper {
     }
   }
 
-  private long getMaxDistance(int av_x, int av_y, int av_z) {
+  private long getMaxDistance(final int av_x, final int av_y, final int av_z) {
     long max_d = 0;
     final int number_of_nodes = this.node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {

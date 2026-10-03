@@ -21,7 +21,7 @@ public class ListOfNearest {
     }
   }
 
-  public void update(int d, int idx) {
+  public void update(final int d, final int idx) {
     if (d < this.largest_proximity) {
       this.proximity[this.largest_index] = d;
       this.array[this.largest_index] = idx;

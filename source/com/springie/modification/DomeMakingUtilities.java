@@ -10,8 +10,8 @@ import com.springie.utilities.random.JUR;
 public class DomeMakingUtilities {
   JUR rnd = new JUR();
 
-  public boolean isThereANodeLinkedTo(NodeManager node_manager, Node node_1,
-    Node node_2, Node node_3) {
+  public boolean isThereANodeLinkedTo(final NodeManager node_manager, final Node node_1,
+    Node node_2, final Node node_3) {
     final LinkManager link_manager = node_manager.getLinkManager();
     final int number_of_nodes = node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
@@ -30,8 +30,8 @@ public class DomeMakingUtilities {
     return false;
   }
 
-  public boolean isThereANodeLinkedTo(NodeManager node_manager, Node node_1,
-    Node node_2, Node node_3, int colour) {
+  public boolean isThereANodeLinkedTo(final NodeManager node_manager, final Node node_1,
+    Node node_2, final Node node_3, final int colour) {
     final LinkManager link_manager = node_manager.getLinkManager();
     final int number_of_nodes = node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
@@ -52,8 +52,8 @@ public class DomeMakingUtilities {
     return false;
   }
 
-  public boolean isThereANodeLinkedTo(NodeManager node_manager, Node node_1,
-    Node node_2, int colour) {
+  public boolean isThereANodeLinkedTo(final NodeManager node_manager, final Node node_1,
+    Node node_2, final int colour) {
     final LinkManager link_manager = node_manager.getLinkManager();
     final int number_of_nodes = node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
@@ -75,7 +75,7 @@ public class DomeMakingUtilities {
   //NOT!!! nodes must be same colour...
   // can produce nulls :-(
 
-  public Node getRandomCellLinkedTo(NodeManager node_manager, Node node_1) {
+  public Node getRandomCellLinkedTo(final NodeManager node_manager, final Node node_1) {
     final LinkManager link_manager = node_manager.getLinkManager();
     final int link_count = node_1.list_of_links.size();
     if (link_count == 0) {
@@ -92,7 +92,7 @@ public class DomeMakingUtilities {
     return other;
   }
 
-  public Node getRandomSelectedCellLinkedTo(NodeManager node_manager,
+  public Node getRandomSelectedCellLinkedTo(final NodeManager node_manager,
     Node node_1) {
     final LinkManager link_manager = node_manager.getLinkManager();
     final int link_count = node_1.list_of_links.size();
@@ -134,7 +134,7 @@ public class DomeMakingUtilities {
   //    return null;
   //  }
 
-  public boolean isNodeTouchingNode(Node node_1, Node node_2) {
+  public boolean isNodeTouchingNode(final Node node_1, final Node node_2) {
     final int sum_of_radii = node_1.type.radius + node_2.type.radius;
     final int max_distance = (sum_of_radii * 9) >> 3;
     final int max_distance_sh = max_distance >> Coords.shift;

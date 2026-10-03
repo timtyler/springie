@@ -9,7 +9,7 @@ public final class DampOverallVelocities {
     // ...
   }
 
-  public static void damp(NodeManager node_manager) {
+  public static void damp(final NodeManager node_manager) {
     final Vector3D velocity_total = new Vector3D(0, 0, 0);
     final int number_of_nodes = node_manager.element.size();
     int sf = number_of_nodes << 6;

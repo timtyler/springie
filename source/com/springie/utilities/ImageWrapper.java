@@ -151,7 +151,7 @@ public class ImageWrapper {
   // return source;
   // }
 
-  public int getPixelColour(int x, int y) {
+  public int getPixelColour(final int x, final int y) {
     return this.source[x + this.width * y];
   }
 }

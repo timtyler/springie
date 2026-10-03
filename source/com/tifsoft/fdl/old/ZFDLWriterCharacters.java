@@ -12,11 +12,11 @@ public class ZFDLWriterCharacters implements FDLWriterInterface {
     this.contents = contents;
   }
 
-  public void add(String to_append) {
+  public void add(final String to_append) {
     this.contents += to_append;
   }
 
-  public String makeString(int indent) {
+  public String makeString(final int indent) {
     final StringBuilder sb = new StringBuilder();
 
     outputContents(indent, sb);

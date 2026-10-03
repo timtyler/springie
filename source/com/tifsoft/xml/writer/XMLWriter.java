@@ -12,7 +12,7 @@ public class XMLWriter {
 
   Writer out;
 
-  public void test(String filename) {
+  public void test(final String filename) {
     try {
       this.out = new FileWriter(filename);
       final XMLWriterTagPair uni = new XMLWriterTagPair("test_tag_1");

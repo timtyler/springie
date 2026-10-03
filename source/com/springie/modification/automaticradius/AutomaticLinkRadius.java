@@ -24,7 +24,7 @@ public class AutomaticLinkRadius {
     FrEnd.perform_selection.deselectAll();
   }
   
-  public void set(double alr_d) {
+  public void set(final double alr_d) {
     final int n_o_l = this.link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final Link l = (Link) this.link_manager.element.get(temp);

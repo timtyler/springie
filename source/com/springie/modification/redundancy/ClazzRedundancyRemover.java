@@ -37,7 +37,7 @@ public class ClazzRedundancyRemover {
     // Log.log("Remaining classes: " + v.size());
   }
 
-  private void replaceClazzWithPrevious(List<Clazz> v, int old, int nww) {
+  private void replaceClazzWithPrevious(final List<Clazz> v, final int old, final int nww) {
     final Clazz c_old = v.get(old);
     final Clazz c_new = v.get(nww);
 
@@ -78,7 +78,7 @@ public class ClazzRedundancyRemover {
     }
   }
 
-  private int getFirstClazz(List<Clazz> v, Clazz t, int max) {
+  private int getFirstClazz(final List<Clazz> v, final Clazz t, final int max) {
     for (int i = max; --i >= 0;) {
       if (t.equals(v.get(i))) {
         return i;
@@ -88,7 +88,7 @@ public class ClazzRedundancyRemover {
     return -1;
   }
 
-  private boolean equalspreviousClazz(List<Clazz> v, int max) {
+  private boolean equalspreviousClazz(final List<Clazz> v, final int max) {
     final Clazz t = v.get(max);
 
     return getFirstClazz(v, t, max) > 0;

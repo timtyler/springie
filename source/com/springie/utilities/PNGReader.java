@@ -94,7 +94,7 @@ public final class PNGReader {
     // Log.log("PNG_IN2");
   }
 
-  public PNGReader(InputStream input_stream_two) throws IOException {
+  public PNGReader(final InputStream input_stream_two) throws IOException {
     // Log.log("PNG_IN InputStream = " + input_stream_two);
     this.ya = 1167;
     setCRC(new CRC32());
@@ -323,7 +323,7 @@ public final class PNGReader {
     }
   }
 
-  private int zv(int[] ai) throws IOException {
+  private int zv(final int[] ai) throws IOException {
     int i = this.bit_depth;
     int colour = 0;
     switch (this.colour_type) {
@@ -403,7 +403,7 @@ public final class PNGReader {
     return colour;
   }
 
-  private int handleDefault(int j) {
+  private int handleDefault(final int j) {
     int j2 = xl[j];
     j2 |= j2 << 8;
     j2 |= (0xff00 & j2) << 8;
@@ -484,7 +484,7 @@ public final class PNGReader {
     }
   }
 
-  private void zn(int i, int j, int k, byte[] abyte0, int[] ai, int[] ai1) {
+  private void zn(final int i, final int j, final int k, final byte[] abyte0, final int[] ai, final int[] ai1) {
     switch (i) {
       case 0:
         for (int l = 0; l < k; l++) {
@@ -539,7 +539,7 @@ public final class PNGReader {
     }
   }
 
-  private int paeth(int i, int j, int k) {
+  private int paeth(final int i, final int j, final int k) {
     final int l = (i + j) - k;
     final int i1 = l <= i ? i - l : l - i;
     final int j1 = l <= j ? j - l : l - j;
@@ -624,7 +624,7 @@ public final class PNGReader {
 
   }
 
-  private boolean containsInteger(int i) {
+  private boolean containsInteger(final int i) {
     boolean flag = false;
     for (final Iterator<Integer> enumeration = this.vector.iterator(); enumeration
         .hasNext();) {
@@ -647,19 +647,19 @@ public final class PNGReader {
     return i << 16 | read16BitValue();
   }
 
-  private int zr(byte[] abyte0, int i) {
+  private int zr(final byte[] abyte0, final int i) {
     return (0xff & abyte0[i]) << 8 | 0xff & abyte0[i + 1];
   }
 
-  public int xh(byte[] abyte0, int i) {
+  public int xh(final byte[] abyte0, final int i) {
     return zr(abyte0, i) << 16 | zr(abyte0, i + 2);
   }
 
-  static IOException error(String s) {
+  static IOException error(final String s) {
     return new IOException(s);
   }
 
-  static EOFException errorEOF(String s) {
+  static EOFException errorEOF(final String s) {
     return new EOFException(error + s);
   }
 
@@ -687,7 +687,7 @@ public final class PNGReader {
     return this.crc;
   }
 
-  protected void setYk(boolean yk) {
+  protected void setYk(final boolean yk) {
     this.bool2 = yk;
   }
 
@@ -695,7 +695,7 @@ public final class PNGReader {
     return this.bool2;
   }
 
-  protected void setYe(long ye) {
+  protected void setYe(final long ye) {
     this.long_v = ye;
   }
 
@@ -706,7 +706,7 @@ public final class PNGReader {
   private class PNGMaker extends InflaterInputStream {
     int total;
 
-    PNGMaker(InputStream input_stream_two, Inflater inflater, int i) {
+    PNGMaker(final InputStream input_stream_two, final Inflater inflater, final int i) {
       super(input_stream_two, inflater, i);
     }
 

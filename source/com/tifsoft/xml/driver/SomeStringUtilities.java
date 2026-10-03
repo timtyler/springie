@@ -1,6 +1,6 @@
 package com.tifsoft.xml.driver;
 public class SomeStringUtilities {
-  static boolean isWhiteSpace(char[] ca, int n) {
+  static boolean isWhiteSpace(final char[] ca, final int n) {
     for (int i = 0; i < n; i++) {
       if (ca[i] > ' ') {
         return false;
@@ -10,7 +10,7 @@ public class SomeStringUtilities {
     return true;
   }
 
-  public static boolean isWhiteSpace(String string) {
+  public static boolean isWhiteSpace(final String string) {
     if (string == null) {
       return true;
     }
@@ -20,7 +20,7 @@ public class SomeStringUtilities {
     return isWhiteSpace(ca, ca.length);
   }
   
-  static boolean isXMLElementPart(char c) {
+  static boolean isXMLElementPart(final char c) {
     if (c == '-') {
       return true;
     }

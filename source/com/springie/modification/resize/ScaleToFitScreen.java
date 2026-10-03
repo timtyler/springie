@@ -15,7 +15,7 @@ public final class ScaleToFitScreen {
    //...
   }
 
-  public static void scale(NodeManager node_manager) {
+  public static void scale(final NodeManager node_manager) {
     final Point3D max = new Point3D(Integer.MIN_VALUE, Integer.MIN_VALUE,
       Integer.MIN_VALUE);
     final Point3D min = new Point3D(Integer.MAX_VALUE, Integer.MAX_VALUE,
@@ -79,7 +79,7 @@ public final class ScaleToFitScreen {
     scaleElasticities(node_manager.getLinkManager(), scale_factor);
   }
 
-  private static void scalePositions(NodeManager node_manager, int scale_factor) {
+  private static void scalePositions(final NodeManager node_manager, final int scale_factor) {
     final int number_of_nodes = node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) node_manager.element.get(counter);
@@ -90,7 +90,7 @@ public final class ScaleToFitScreen {
     }
   }
 
-  private static void scaleVelocities(NodeManager node_manager, int scale_factor) {
+  private static void scaleVelocities(final NodeManager node_manager, final int scale_factor) {
     final int number_of_nodes = node_manager.element.size();
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) node_manager.element.get(counter);
@@ -99,7 +99,7 @@ public final class ScaleToFitScreen {
     }
   }
 
-  private static void scaleNodeRadii(NodeManager node_manager, int scale_factor) {
+  private static void scaleNodeRadii(final NodeManager node_manager, final int scale_factor) {
     final int number_of_node_types = node_manager.node_type_factory.array
       .size();
 
@@ -112,7 +112,7 @@ public final class ScaleToFitScreen {
     }
   }
 
-  private static void scaleCharges(NodeManager node_manager, int scale_factor) {
+  private static void scaleCharges(final NodeManager node_manager, final int scale_factor) {
     final int number_of_node_types = node_manager.node_type_factory.array
       .size();
 
@@ -123,7 +123,7 @@ public final class ScaleToFitScreen {
     }
   }
 
-  private static void scaleLengths(LinkManager link_manager, int scale_factor) {
+  private static void scaleLengths(final LinkManager link_manager, final int scale_factor) {
     final int max_size = link_manager.link_type_factory.array.size();
 
     for (int counter = max_size; --counter >= 0;) {
@@ -137,7 +137,7 @@ public final class ScaleToFitScreen {
   // It seems like this code has to go here :-(
   // Putting it into the "Link" force manager
   // apparently doesn't work :-(
-  private static void scaleElasticities(LinkManager link_manager, int scale_factor) {
+  private static void scaleElasticities(final LinkManager link_manager, final int scale_factor) {
     final int max_size = link_manager.link_type_factory.array.size();
 
     for (int counter = max_size; --counter >= 0;) {

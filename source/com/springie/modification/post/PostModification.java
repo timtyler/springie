@@ -83,7 +83,7 @@ public class PostModification {
     }
   }
 
-  public ListOfIntegers getListOfLinks(Node candidate) {
+  public ListOfIntegers getListOfLinks(final Node candidate) {
     final ListOfIntegers list = new ListOfIntegers();
 
     final int n_o_l = this.link_manager.element.size();
@@ -98,7 +98,7 @@ public class PostModification {
     return list;
   }
 
-  private ListOfIntegers getListOfFaces(Node candidate) {
+  private ListOfIntegers getListOfFaces(final Node candidate) {
     final ListOfIntegers list = new ListOfIntegers();
 
     final int n_o_l = this.face_manager.element.size();

@@ -34,7 +34,7 @@ class CentreOnScreenTest {
     this.manager.element.add(node(2000, 4000, 6000));
   }
 
-  private static Node node(int x, int y, int z) {
+  private static Node node(final int x, final int y, final int z) {
     final Node node = new Node(new Point3D(x, y, z), 42,
         new NodeTypeFactory());
     node.velocity = new Vector3D(7, 8, 9);
@@ -97,7 +97,7 @@ class CentreOnScreenTest {
     assertEquals(6000, node(1).pos.z);
   }
 
-  private Node node(int index) {
+  private Node node(final int index) {
     return (Node) this.manager.element.get(index);
   }
 }

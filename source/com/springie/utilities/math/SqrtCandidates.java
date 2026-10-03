@@ -15,7 +15,7 @@ public final class SqrtCandidates {
     // static only
   }
 
-  private static void checkNegative(int x) {
+  private static void checkNegative(final int x) {
     if (x < 0) {
       throw new IllegalArgumentException(
           "Attemt to take the square root of negative number");
@@ -29,7 +29,7 @@ public final class SqrtCandidates {
    * {@code floor(sqrt(x))} for every non-negative int. This is the candidate
    * that tests whether the hand-rolled integer code is still worth it.
    */
-  public static int intrinsicSqrt(int x) {
+  public static int intrinsicSqrt(final int x) {
     checkNegative(x);
     return (int) Math.sqrt(x);
   }
@@ -40,7 +40,7 @@ public final class SqrtCandidates {
    * the true root, so three Newton steps converge, then a short correction
    * fixes any residual error. Uses only integer division, no floating point.
    */
-  public static int newtonBitSqrt(int x) {
+  public static int newtonBitSqrt(final int x) {
     checkNegative(x);
     if (x == 0) {
       return 0;
@@ -65,7 +65,7 @@ public final class SqrtCandidates {
    * Always exact. (Halleck's method; the commented-out sketch in
    * {@link SquareRoot} had a typo in the initial bit, {@code 1 < <30}.)
    */
-  public static int digitSqrt(int x) {
+  public static int digitSqrt(final int x) {
     checkNegative(x);
     int squaredBit = 0x40000000;
     int remainder = x;
@@ -89,7 +89,7 @@ public final class SqrtCandidates {
    * carries 24 bits of mantissa, so the correction loop can be long for large
    * inputs. The measurement will show whether the tradeoff pays.
    */
-  public static int floatSqrt(int x) {
+  public static int floatSqrt(final int x) {
     checkNegative(x);
     int r = (int) (float) Math.sqrt((float) x);
     while ((long) r * r > x) {
@@ -110,7 +110,7 @@ public final class SqrtCandidates {
    * {@code (x >>> shift) < 256}, so {@code table[j] << (shift/2) >>> 4}
    * approximates {@code sqrt(x)}.
    */
-  public static int tableOneNewtonSqrt(int x) {
+  public static int tableOneNewtonSqrt(final int x) {
     checkNegative(x);
     if (x < 0x100) {
       return SquareRoot.table[x] >> 4;
@@ -134,7 +134,7 @@ public final class SqrtCandidates {
    * contract of {@link SquareRoot#accurateSqrt(int)},
    * {@code (int)(Math.sqrt(x) + 0.5)}.
    */
-  public static int roundIntrinsicSqrt(int x) {
+  public static int roundIntrinsicSqrt(final int x) {
     checkNegative(x);
     return (int) (Math.sqrt(x) + 0.5);
   }

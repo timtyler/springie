@@ -70,7 +70,7 @@ public class CentralHubCreator {
     }
   }
 
-  private void joinNodesBetweenLayers(Node node_1, Node node_2, int length) {
+  private void joinNodesBetweenLayers(final Node node_1, final Node node_2, final int length) {
     final LinkType type = this.link_manager.link_type_factory
       .getNew(length, 30);
     final Clazz clazz = this.node_manager.clazz_factory

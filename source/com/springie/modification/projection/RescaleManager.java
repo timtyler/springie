@@ -74,7 +74,7 @@ public class RescaleManager {
     }
   }
 
-  private void rescaleLink(final float scale_factor, int i) {
+  private void rescaleLink(final float scale_factor, final int i) {
     final Link link = (Link) this.link_manager.element.get(i);
 
     link.type.length = (int) (this.link_length[i] * scale_factor);

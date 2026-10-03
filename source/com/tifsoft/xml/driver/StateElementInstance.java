@@ -1,7 +1,7 @@
 package com.tifsoft.xml.driver;
 
 class StateElementInstance {
-  String toString(Object o) {
+  String toString(final Object o) {
     if (o == StateElement.WAITING_FOR_ELEMENT) {
       return "WAITING_FOR_ELEMENT";
     }

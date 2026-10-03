@@ -30,13 +30,13 @@ class FaceCycleFinderTest {
   private final NodeTypeFactory node_types = new NodeTypeFactory();
   private final LinkTypeFactory link_types = new LinkTypeFactory();
 
-  private Node node(int x, int y, int z) {
+  private Node node(final int x, final int y, final int z) {
     final Node node = new Node(new Point3D(x, y, z), 42, this.node_types);
     node.type.selected = true;
     return node;
   }
 
-  private Link link(Node a, Node b) {
+  private Link link(final Node a, final Node b) {
     final Link link = new Link(a, b,
       this.link_types.getNew(100 << Coords.shift, 50), new Clazz(0));
     link.type.selected = true;
@@ -60,7 +60,7 @@ class FaceCycleFinderTest {
   }
 
   /** Every consecutive pair (wrapping round) must share a link. */
-  private static void assertIsCycle(ArrayList<Node> cycle,
+  private static void assertIsCycle(final ArrayList<Node> cycle,
       ArrayList<Link> links) {
     final Set<String> pairs = new HashSet<>();
     for (Link link : links) {
