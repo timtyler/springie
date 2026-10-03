@@ -1,15 +1,15 @@
 package com.springie.geometry;
 
 public class Vector3D extends Tuple3D {
-  public Vector3D(int x, int y, int z) {
+  public Vector3D(final int x, final int y, final int z) {
     super(x, y, z);
   }
 
-  public Vector3D(Tuple3D t) {
+  public Vector3D(final Tuple3D t) {
     super(t);
   }
 
-  public Vector3D(Tuple3D a, Tuple3D b) {
+  public Vector3D(final Tuple3D a, final Tuple3D b) {
     super(a.x - b.x, a.y - b.y, a.z - b.z);
   }
 
@@ -26,7 +26,7 @@ public class Vector3D extends Tuple3D {
     return new Vector3D(this.x, this.y, this.z);
   }
 
-  public int dot(Vector3D v2) {
+  public int dot(final Vector3D v2) {
     return this.x * v2.x + this.y * v2.y + this.z * v2.z;
   }
 
@@ -43,7 +43,7 @@ public class Vector3D extends Tuple3D {
     return Math.sqrt(sum_sq);
   }
 
-  public Vector3D crossProduct(Vector3D b) {
+  public Vector3D crossProduct(final Vector3D b) {
     final int nx = this.y * b.z - this.z * b.y;
     final int ny = this.z * b.x - this.x * b.z;
     final int nz = this.x * b.y - this.y * b.x;

@@ -10,11 +10,11 @@ import com.springie.render.modules.ModularRendererBase;
 import java.awt.Graphics;
 
 public class ModularRendererOld implements ModularRendererBase {
-  public void repaint(Graphics graphics, NodeManager manager) {
+  public void repaint(final Graphics graphics, final NodeManager manager) {
     nodeAndLinkRender(manager);
   }
 
-  public void nodeAndLinkRender(NodeManager manager) {
+  public void nodeAndLinkRender(final NodeManager manager) {
     manager.sortIndex();
 
     if (FrEnd.render_anaglyph) {
@@ -26,7 +26,7 @@ public class ModularRendererOld implements ModularRendererBase {
     RendererDelegator.countRenderedFrame();
   }
 
-  public void resize(int x, int y) {
+  public void resize(final int x, final int y) {
     reset();
   }
 

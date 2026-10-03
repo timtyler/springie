@@ -39,7 +39,7 @@ public class Particle {
   //Particle() {
   //}
 
-  Particle(int ix, int iy, int idx, int idy, int t) {
+  Particle(final int ix, final int iy, final int idx, final int idy, final int t) {
     this.x = ix; // - idx;
     this.y = iy; // - idy;
 
@@ -51,7 +51,7 @@ public class Particle {
   }
 
   // in internal co-ordinates....
-  final void set(int ix, int iy, int idx, int idy, int t) {
+  final void set(final int ix, final int iy, final int idx, final int idy, final int t) {
     this.x = ix; // - idx;
     this.y = iy; //; - idy;
 

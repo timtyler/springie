@@ -982,7 +982,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
    * when the point sits on or behind the eye plane.
    */
   private static long[] projectLinkPoint(final int ax, final int ay, final int az, final int bx,
-      int by, final int bz, double t, final double radius) {
+      int by, final int bz, final double t, final double radius) {
     final int x = (int) (ax + (bx - ax) * t);
     final int y = (int) (ay + (by - ay) * t);
     final int z = (int) (az + (bz - az) * t);

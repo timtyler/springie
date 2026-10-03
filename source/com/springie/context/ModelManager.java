@@ -72,7 +72,7 @@ public final class ModelManager {
   }
 
   /** Switches to another loaded model, preserving each one's universe. */
-  public static void switchTo(int index) {
+  public static void switchTo(final int index) {
     ensureInitialized();
     if (index < 0 || index >= slots.size() || index == active_index) {
       return;
@@ -96,7 +96,7 @@ public final class ModelManager {
    * Loads a model file into a new slot and switches to it.
    * The current model's universe is preserved.
    */
-  public static void loadNewModel(String path) {
+  public static void loadNewModel(final String path) {
     ensureInitialized();
 
     // the load clobbers the global universe statics, so remember ours first
@@ -125,7 +125,7 @@ public final class ModelManager {
    * Replaces the active model's contents with a model file
    * (the previous "Load objects..." behaviour).
    */
-  public static void replaceCurrentModel(String path) {
+  public static void replaceCurrentModel(final String path) {
     ensureInitialized();
 
     final ModelSlot current = slots.get(active_index);
@@ -163,7 +163,7 @@ public final class ModelManager {
   }
 
   /** Registers a callback run whenever the slot list or selection changes. */
-  public static void addChangeListener(Runnable listener) {
+  public static void addChangeListener(final Runnable listener) {
     change_listeners.add(listener);
   }
 
@@ -173,7 +173,7 @@ public final class ModelManager {
     }
   }
 
-  private static String leafName(String path) {
+  private static String leafName(final String path) {
     if (path == null) {
       return "model";
     }

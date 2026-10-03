@@ -50,7 +50,7 @@ public class ButtonBar extends Panel implements ItemSelectable {
     this.add(ib);
   }
 
-  private ImageButton getImageButton(final String iname, String name) {
+  private ImageButton getImageButton(final String iname, final String name) {
     final ImageWrapper image_o = ImageLoader.getImage(GraphicsDirectory.directory + iname
         + "_o.png");
     final ImageWrapper image_i = ImageLoader.getImage(GraphicsDirectory.directory + iname

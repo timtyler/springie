@@ -14,7 +14,7 @@ public class GenerateFreeNodesMessage extends NewMessage {
 
   public Object execute() {
     ProceduralObjects.allNew(new ArgumentList() {
-      public Object getArguments(int i) {
+      public Object getArguments(final int i) {
         switch (i) {
           case 0:
             return ProceduralObject.free_nodes;

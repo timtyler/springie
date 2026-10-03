@@ -37,7 +37,7 @@ class SensorsTest {
     Muscles.enabled = this.old_enabled;
   }
 
-  private static Link makeLink(int distance) {
+  private static Link makeLink(final int distance) {
     final Node n1 = new Node();
     n1.pos = new Point3D(0, 0, 0);
     final Node n2 = new Node();

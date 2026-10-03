@@ -26,7 +26,7 @@ public final class LineFragmentManager {
     linefragment = new LineFragment[MAX_LINEFRAGMENT_NUMBER];
   }
 
-  public static void add(int ix, int iy, int jx, int jy, int idx, int idy,
+  public static void add(final int ix, final int iy, final int jx, final int jy, final int idx, final int idy,
     int rotspeed) {
     if (current_max_number < MAX_LINEFRAGMENT_NUMBER) {
       if (linefragment[current_max_number] == null) {

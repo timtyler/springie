@@ -28,7 +28,7 @@ public final class ParticleManager {
     particle = new Particle[MAX_PARTICLE_NUMBER];
   }
 
-  public static void add(int ix, int iy, int idx, int idy, int type) {
+  public static void add(final int ix, final int iy, final int idx, final int idy, final int type) {
     if (current_max_number < MAX_PARTICLE_NUMBER) {
       if (particle[current_max_number] == null) {
         particle[current_max_number++] = new Particle(ix, iy, idx, idy, type);

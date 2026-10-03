@@ -44,7 +44,7 @@ public class LineFragment {
 
   static Hortensius32Fast rnd = new Hortensius32Fast();
 
-  LineFragment(int ix, int iy, int jx, int jy, int idx, int idy, int rotspeed) {
+  LineFragment(final int ix, final int iy, final int jx, final int jy, final int idx, final int idy, final int rotspeed) {
     this.x = (ix + jx) >> 1;
     this.y = (iy + jy) >> 1;
 
@@ -70,7 +70,7 @@ public class LineFragment {
   }
 
   // in internal co-ordinates....
-  final void set(int ix, int iy, int jx, int jy, int idx, int idy, int rotspeed) {
+  final void set(final int ix, final int iy, final int jx, final int jy, final int idx, final int idy, final int rotspeed) {
     this.x = (ix + jx) >> 1;
     this.y = (iy + jy) >> 1;
 

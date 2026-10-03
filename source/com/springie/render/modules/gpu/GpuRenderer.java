@@ -57,7 +57,7 @@ public class GpuRenderer implements ModularRendererBase {
       final javafx.animation.AnimationTimer waiter =
           new javafx.animation.AnimationTimer() {
             @Override
-            public void handle(long now) {
+            public void handle(final long now) {
               ready.countDown();
               stop();
             }
@@ -78,7 +78,7 @@ public class GpuRenderer implements ModularRendererBase {
   }
 
   @Override
-  public void repaint(Graphics graphics, NodeManager manager) {
+  public void repaint(final Graphics graphics, final NodeManager manager) {
     final javafx.scene.Scene fx_scene = this.fx_scene;
     if (fx_scene == null) {
       return;
@@ -109,7 +109,7 @@ public class GpuRenderer implements ModularRendererBase {
   }
 
   @Override
-  public void resize(int x, int y) {
+  public void resize(final int x, final int y) {
     if (x == this.scene_width && y == this.scene_height) {
       return;
     }

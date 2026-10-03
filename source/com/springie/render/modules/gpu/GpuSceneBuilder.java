@@ -33,7 +33,7 @@ final class GpuSceneBuilder {
   private final Map<Integer, PhongMaterial> materials = new HashMap<>();
 
   /** The model content of one frame, without camera or lights. */
-  Group build(ModelScene scene) {
+  Group build(final ModelScene scene) {
     final List<javafx.scene.Node> children = new ArrayList<>();
     for (final SceneNode node : scene.nodes) {
       children.add(makeNode(node));
@@ -52,7 +52,7 @@ final class GpuSceneBuilder {
     return group;
   }
 
-  private Sphere makeNode(SceneNode node) {
+  private Sphere makeNode(final SceneNode node) {
     final Sphere sphere = new Sphere(node.radius, 12);
     sphere.setTranslateX(node.x);
     sphere.setTranslateY(node.y);
@@ -61,7 +61,7 @@ final class GpuSceneBuilder {
     return sphere;
   }
 
-  private Cylinder makeLink(SceneLink link) {
+  private Cylinder makeLink(final SceneLink link) {
     final Point3D p1 = new Point3D(link.x1, link.y1, link.z1);
     final Point3D p2 = new Point3D(link.x2, link.y2, link.z2);
     final Point3D dir = p2.subtract(p1);
@@ -90,7 +90,7 @@ final class GpuSceneBuilder {
     return cylinder;
   }
 
-  private MeshView makeFace(SceneFace face) {
+  private MeshView makeFace(final SceneFace face) {
     final TriangleMesh mesh = new TriangleMesh();
     mesh.getPoints().addAll((float) face.x1, (float) face.y1,
         (float) face.z1, (float) face.x2, (float) face.y2,
@@ -108,7 +108,7 @@ final class GpuSceneBuilder {
     return view;
   }
 
-  private PhongMaterial material(int argb, boolean selected) {
+  private PhongMaterial material(final int argb, final boolean selected) {
     final int rgb = selected ? RendererDelegator.colour_selected_number
         : argb;
     PhongMaterial found = this.materials.get(rgb);
@@ -121,7 +121,7 @@ final class GpuSceneBuilder {
     return found;
   }
 
-  private static Color fxColor(int argb) {
+  private static Color fxColor(final int argb) {
     return Color.rgb((argb >> 16) & 255, (argb >> 8) & 255, argb & 255);
   }
 }

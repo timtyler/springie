@@ -42,7 +42,7 @@ public class LinkSubdivider {
     }
   }
 
-  public void subdivide(final Link l, int n, final int xn, final int xc, final boolean remove_old) {
+  public void subdivide(final Link l, final int n, final int xn, final int xc, final boolean remove_old) {
     final Node n1 = l.nodes[0];
     final Node n2 = l.nodes[1];
 
@@ -84,7 +84,7 @@ public class LinkSubdivider {
     }
   }
 
-  private void makeLink(final Node node_1, final Node node_2, final int l, int e, final int c) {
+  private void makeLink(final Node node_1, final Node node_2, final int l, final int e, final int c) {
     final LinkType type = this.link_manager.link_type_factory.getNew(l, e);
     final Clazz clazz = this.node_manager.clazz_factory.getNew(c);
     this.link_manager.setLink(node_1, node_2, type, clazz);

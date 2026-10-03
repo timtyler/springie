@@ -17,7 +17,7 @@ public class Tuple3D implements Cloneable {
     this.z = z;
   }
 
-  public Tuple3D(Tuple3D t) {
+  public Tuple3D(final Tuple3D t) {
     this.x = t.x;
     this.y = t.y;
     this.z = t.z;
@@ -29,49 +29,49 @@ public class Tuple3D implements Cloneable {
     this.z = z;
   }
 
-  public void set(Tuple3D t) {
+  public void set(final Tuple3D t) {
     this.x = t.x;
     this.y = t.y;
     this.z = t.z;
   }
 
-  public void addTuple3D(Tuple3D delta) {
+  public void addTuple3D(final Tuple3D delta) {
     this.x += delta.x;
     this.y += delta.y;
     this.z += delta.z;
   }
 
-  public void subtractTuple3D(Tuple3D delta) {
+  public void subtractTuple3D(final Tuple3D delta) {
     this.x -= delta.x;
     this.y -= delta.y;
     this.z -= delta.z;
   }
 
-  public void divideBy(int number) {
+  public void divideBy(final int number) {
     this.x /= number;
     this.y /= number;
     this.z /= number;
   }
 
-  public void multiplyBy(int factor) {
+  public void multiplyBy(final int factor) {
     this.x *= factor;
     this.y *= factor;
     this.z *= factor;
   }
 
-  public void multiplyBy(float factor) {
+  public void multiplyBy(final float factor) {
     this.x *= factor;
     this.y *= factor;
     this.z *= factor;
   }
 
-  public void multiplyBy(double factor) {
+  public void multiplyBy(final double factor) {
     this.x *= factor;
     this.y *= factor;
     this.z *= factor;
   }
 
-  public boolean equals(Object o) {
+  public boolean equals(final Object o) {
     if (!(o instanceof Tuple3D)) {
       return false;
     }

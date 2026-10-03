@@ -82,7 +82,7 @@ public class GpuSceneBuilderTest {
     return manager;
   }
 
-  private static int count(Group group, Class<?> clazz) {
+  private static int count(final Group group, final Class<?> clazz) {
     int n = 0;
     for (final javafx.scene.Node child : group.getChildren()) {
       if (clazz.isInstance(child)) {

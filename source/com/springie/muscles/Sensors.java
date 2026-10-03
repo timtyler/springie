@@ -23,7 +23,7 @@ public final class Sensors {
    * The rest length used is the effective one, with the controller's
    * current scale applied.
    */
-  public static int strain(Link link) {
+  public static int strain(final Link link) {
     final int rest = link.getEffectiveRestLength();
     if (rest <= 0) {
       return 0;
@@ -40,7 +40,7 @@ public final class Sensors {
    * controller can react in proportion -- stiffen or contract harder
    * when more compressed -- rather than on a boolean edge.
    */
-  public static int compression(Link link) {
+  public static int compression(final Link link) {
     return Math.max(0, -strain(link));
   }
 
@@ -50,7 +50,7 @@ public final class Sensors {
    * Zero at or below rest length; grows the further the link is pulled
    * past rest (a cable under tension). Quantified for the same reason.
    */
-  public static int stretch(Link link) {
+  public static int stretch(final Link link) {
     return Math.max(0, strain(link));
   }
 }

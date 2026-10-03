@@ -19,7 +19,7 @@ public class NewMessageManager {
   // hand-rolled synchronized ArrayList.)
   final ConcurrentLinkedQueue<NewMessage> messages = new ConcurrentLinkedQueue<>();
 
-  public final void add(NewMessage msg) {
+  public final void add(final NewMessage msg) {
     this.messages.add(msg);
   }
 

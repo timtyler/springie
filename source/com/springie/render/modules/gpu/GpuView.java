@@ -25,7 +25,7 @@ final class GpuView {
   private PointLight point_light;
   private final GpuSceneBuilder builder = new GpuSceneBuilder();
 
-  Scene createScene(double width, double height) {
+  Scene createScene(final double width, final double height) {
     this.model_group = new Group();
     final Group root = new Group();
     // The FX scene is display-only: mouse interaction stays on the AWT
@@ -46,7 +46,7 @@ final class GpuView {
   }
 
   /** Shows the latest extracted scene. */
-  void update(ModelScene scene) {
+  void update(final ModelScene scene) {
     this.model_group.getChildren().setAll(this.builder.build(scene)
         .getChildren());
   }
@@ -61,7 +61,7 @@ final class GpuView {
     return this.model_group;
   }
 
-  void resize(double width, double height) {
+  void resize(final double width, final double height) {
     positionCamera(width, height);
   }
 
@@ -72,7 +72,7 @@ final class GpuView {
    * strength (1/1024 per pixel). JavaFX is +x right, +y down, +z into
    * the screen -- the same handedness as the model -- so no axis flips.
    */
-  private void positionCamera(double width, double height) {
+  private void positionCamera(final double width, final double height) {
     final double ex = ((Coords.x_pixelso2 << Coords.shift)
         - Coords.shift_constant_x) / 256.0;
     final double ey = ((Coords.y_pixelso2 << Coords.shift)

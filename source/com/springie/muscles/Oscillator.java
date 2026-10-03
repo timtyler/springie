@@ -42,7 +42,7 @@ public class Oscillator {
    * the adjusted rest length; amplitude and period live here, phase can
    * also be shifted per-link (see {@link #getScale(long, int)}).
    */
-  public int getScale(long tick) {
+  public int getScale(final long tick) {
     return getScale(tick, 0);
   }
 
@@ -51,7 +51,7 @@ public class Oscillator {
    * Links carry their own phase ({@link com.springie.elements.links.Link#phase})
    * so each link can pulse at a different point in the oscillator's cycle.
    */
-  public int getScale(long tick, int phase_shift) {
+  public int getScale(final long tick, final int phase_shift) {
     final double radians = 2.0 * Math.PI * (tick + this.phase + phase_shift) / this.period_ticks;
     return Muscles.UNITY + (int) (this.amplitude * Math.sin(radians));
   }

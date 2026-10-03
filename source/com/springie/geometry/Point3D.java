@@ -1,11 +1,11 @@
 package com.springie.geometry;
 
 public class Point3D extends Tuple3D implements Cloneable {
-  public Point3D(int x, int y, int z) {
+  public Point3D(final int x, final int y, final int z) {
     super(x, y, z);
   }
 
-  public Point3D(Tuple3D t) {
+  public Point3D(final Tuple3D t) {
     super(t);
   }
 

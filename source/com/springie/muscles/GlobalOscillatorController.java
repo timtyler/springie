@@ -23,7 +23,7 @@ public class GlobalOscillatorController implements Controller {
   }
 
   @Override
-  public void update(Link link, long tick) {
+  public void update(final Link link, final long tick) {
     if (this.oscillator_index < 0 || this.oscillator_index >= Muscles.oscillators.length) {
       return;
     }

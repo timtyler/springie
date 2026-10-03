@@ -23,7 +23,7 @@ public class TTChoice {
     this.vector = new ArrayList<>();
   }
 
-  public void add(final String s, int n) {
+  public void add(final String s, final int n) {
     this.choice.addItem(s);
 
     this.vector.add(new TTNumStr(n, s)); //  = s;

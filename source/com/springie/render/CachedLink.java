@@ -323,7 +323,7 @@ public class CachedLink {
     }
   }
 
-  private void getPreservedShortNodeCoordinates(final Point3D preserved_node, Node node,
+  private void getPreservedShortNodeCoordinates(final Point3D preserved_node, final Node node,
     final int unit_vector_x, final int unit_vector_y, final int unit_vector_z) {
     //final Node node = link.nodes[i];
     //final Point3D preserved_node_s = this.preserved_node_start[i];
@@ -340,7 +340,7 @@ public class CachedLink {
       preserved_node.z);
   }
 
-  private void getPreservedNodeCoordinates(final Point3D preserved_node, Node node) {
+  private void getPreservedNodeCoordinates(final Point3D preserved_node, final Node node) {
     //final Node node = link.nodes[i];
     //final Point3D preserved_node = this.preserved_node_start[i];
 

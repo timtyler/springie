@@ -10,7 +10,7 @@ public final class ProceduralObjects {
   private ProceduralObjects() {
   }
 
-  public static void allNew(ArgumentList al) {
+  public static void allNew(final ArgumentList al) {
     FrEnd.data_input.resetWorkspaces();
     SetUpCode.clearAndThenAddProceduralObjects(al);
     FrEnd.reflectValuesInGUIAfterPropertyEditing();

@@ -13,7 +13,7 @@ public class BoundingBox {
 
   public Point3D min;
 
-  public void find(NodeManager node_manager) {
+  public void find(final NodeManager node_manager) {
     this.max = new Point3D(this.min_v, this.min_v, this.min_v);
     this.min = new Point3D(this.max_v, this.max_v, this.max_v);
 
