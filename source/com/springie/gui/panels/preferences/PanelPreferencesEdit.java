@@ -2,14 +2,13 @@
 
 package com.springie.gui.panels.preferences;
 
+import com.springie.FrEnd;
+import com.springie.constants.Actions;
+import com.springie.gui.components.TTChoice;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-
-import com.springie.FrEnd;
-import com.springie.constants.Actions;
-import com.springie.gui.components.TTChoice;
 
 public class PanelPreferencesEdit {
   public Panel panel = FrEnd.setUpPanelForFrame2();

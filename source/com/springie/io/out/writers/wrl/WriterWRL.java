@@ -1,10 +1,5 @@
 package com.springie.io.out.writers.wrl;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
@@ -23,6 +18,10 @@ import com.springie.io.out.GarbageCollection;
 import com.springie.io.out.WriteFloatingPoint;
 import com.springie.metrics.BoundingBox;
 import com.springie.modification.redundancy.RedundancyRemover;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

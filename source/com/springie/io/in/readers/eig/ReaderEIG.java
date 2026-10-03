@@ -2,19 +2,17 @@
 
 package com.springie.io.in.readers.eig;
 
+import com.springie.io.in.ResourceLoader;
+import com.springie.presets.ColourFactory;
+import com.tifsoft.xml.driver.SomeStringUtilities;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.StringTokenizer;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-
-import com.springie.io.in.ResourceLoader;
-import com.springie.presets.ColourFactory;
-import com.tifsoft.xml.driver.SomeStringUtilities;
 
 public class ReaderEIG extends DefaultHandler {
   final int scale_factor = 8000;

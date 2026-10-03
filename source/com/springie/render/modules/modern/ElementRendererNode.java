@@ -2,9 +2,6 @@
 
 package com.springie.render.modules.modern;
 
-import java.awt.Point;
-import java.util.ArrayList;
-
 import com.springie.FrEnd;
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.nodes.Node;
@@ -12,6 +9,8 @@ import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
+import java.awt.Point;
+import java.util.ArrayList;
 
 public final class ElementRendererNode {
   private ElementRendererNode() {

@@ -2,17 +2,16 @@
 
 package com.springie.gui.panels.controls;
 
-import java.awt.Button;
-import java.awt.Panel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.gui.GUIStrings;
 import com.springie.messages.NewMessage;
 import com.springie.messages.NewMessageManager;
 import com.springie.modification.velocity.MotionlessMaker;
+import java.awt.Button;
+import java.awt.Panel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class PanelControlsVelocities {
   public Panel panel = FrEnd.setUpPanelForFrame2();

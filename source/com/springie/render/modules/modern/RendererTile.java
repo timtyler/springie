@@ -3,7 +3,6 @@
 package com.springie.render.modules.modern;
 
 import com.springie.render.RectangleInt;
-
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;

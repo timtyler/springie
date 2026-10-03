@@ -2,18 +2,16 @@
 
 package com.springie.modification.projection;
 
-import java.io.IOException;
-
-import org.xml.sax.SAXException;
-
 import com.springie.FrEnd;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.io.in.readers.spr.ReaderSPR;
 import com.springie.io.out.Serialiser;
 import com.tifsoft.utilities.execute.Executor;
+import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 public class PrismaticProjection {
   private static final Logger logger = LoggerFactory.getLogger(PrismaticProjection.class);

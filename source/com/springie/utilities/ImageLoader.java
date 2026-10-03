@@ -7,12 +7,11 @@
  **/
 
 package com.springie.utilities;
+import com.springie.FrEnd;
 import java.awt.Toolkit;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import com.springie.FrEnd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -2,6 +2,8 @@
 
 package com.springie.gui.components;
 
+import com.springie.utilities.ImageLoader;
+import com.springie.utilities.ImageWrapper;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Event;
@@ -9,9 +11,6 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import com.springie.utilities.ImageLoader;
-import com.springie.utilities.ImageWrapper;
 
 public class ImageButton extends Canvas implements ActionListener {
 

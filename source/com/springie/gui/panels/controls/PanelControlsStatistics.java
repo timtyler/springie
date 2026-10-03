@@ -2,16 +2,15 @@
 
 package com.springie.gui.panels.controls;
 
-import java.awt.Component;
-import java.awt.Label;
-import java.awt.Panel;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.io.out.WriteFloatingPoint;
+import java.awt.Component;
+import java.awt.Label;
+import java.awt.Panel;
 
 public class PanelControlsStatistics {
   public Panel panel = FrEnd.setUpPanelForFrame2();

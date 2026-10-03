@@ -2,21 +2,20 @@
 
 package com.springie.gui.panels.controls;
 
-import java.awt.Button;
-import java.awt.Panel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.gui.GUIStrings;
 import com.springie.messages.NewMessage;
+import com.springie.messages.NewMessageManager;
 import com.springie.messages.commands.DeleteSelectedMessage;
 import com.springie.messages.commands.RemoveLinkAndFuseEndsMessage;
 import com.springie.messages.commands.RemoveLinksMessage;
 import com.springie.messages.commands.RemovePolygonsMessage;
-import com.springie.messages.NewMessageManager;
 import com.springie.modification.links.FuseSelectedNodes;
+import java.awt.Button;
+import java.awt.Panel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class PanelControlsDelete {
   public Panel panel = FrEnd.setUpPanelForFrame2();

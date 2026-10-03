@@ -4,24 +4,6 @@
 
 package com.springie;
 
-import java.awt.AWTEvent;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.Label;
-import java.awt.Panel;
-import java.awt.Scrollbar;
-import java.awt.Toolkit;
-import java.awt.Window;
-import java.awt.event.AWTEventListener;
-import java.awt.event.InputEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowEvent;
-import java.util.List;
-
 import com.springie.constants.Actions;
 import com.springie.constants.Delay;
 import com.springie.constants.FrameFrequency;
@@ -89,7 +71,6 @@ import com.springie.gui.panels.preferences.PanelPreferencesViewpoint;
 import com.springie.io.in.DataInput;
 import com.springie.messages.MessagePump;
 import com.springie.messages.NewMessageManager;
-import com.springie.muscles.Muscles;
 import com.springie.messages.SystemMessages;
 import com.springie.modification.colour.ColourChanger;
 import com.springie.modification.post.PostModification;
@@ -99,6 +80,7 @@ import com.springie.modification.pre.PrepareToModifyLinkClazzes;
 import com.springie.modification.pre.PrepareToModifyLinkTypes;
 import com.springie.modification.pre.PrepareToModifyNodeClazzes;
 import com.springie.modification.pre.PrepareToModifyNodeTypes;
+import com.springie.muscles.Muscles;
 import com.springie.preferences.Preferences;
 import com.springie.render.Coords;
 import com.springie.render.MainCanvas;
@@ -107,6 +89,23 @@ import com.springie.render.SetUpCode;
 import com.springie.render.WorldMarkers;
 import com.springie.utilities.FilePath;
 import com.springie.utilities.random.Hortensius32Fast;
+import java.awt.AWTEvent;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.Scrollbar;
+import java.awt.Toolkit;
+import java.awt.Window;
+import java.awt.event.AWTEventListener;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
+import java.util.List;
 
 public class FrEnd extends Panel implements Runnable {
   static final long serialVersionUID = 1250;

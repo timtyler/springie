@@ -2,24 +2,23 @@
 
 package com.springie.gui.panels.preferences;
 
-import java.awt.BorderLayout;
-import java.awt.Button;
-import java.awt.Checkbox;
-import java.awt.Choice;
-import java.awt.Label;
-import java.awt.GridLayout;
-import java.awt.Panel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
 import com.springie.FrEnd;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TabbedPanel;
 import com.springie.preferences.Preferences;
 import com.springie.render.RendererDelegator;
 import com.springie.render.RendererInfoButton;
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Checkbox;
+import java.awt.Choice;
+import java.awt.GridLayout;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 public class PanelPreferences {
   public Panel panel = FrEnd.setUpPanelForFrame2();

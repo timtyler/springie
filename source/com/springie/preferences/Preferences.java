@@ -2,10 +2,9 @@
 
 package com.springie.preferences;
 
+import com.springie.FrEnd;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.springie.FrEnd;
 
 public class Preferences {
   public static final String key_output_pov_ground = "output.pov.ground";

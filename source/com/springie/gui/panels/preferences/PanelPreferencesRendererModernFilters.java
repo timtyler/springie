@@ -2,20 +2,19 @@
 
 package com.springie.gui.panels.preferences;
 
+import com.springie.FrEnd;
+import com.springie.gui.colourpicker.ColorPicker;
+import com.springie.gui.colourpicker.ColorPickerInformer;
+import com.springie.gui.components.TTChoice;
+import com.springie.gui.components.TabbedPanel;
+import com.springie.render.RendererDelegator;
+import com.springie.render.modules.modern.ColourModifier;
+import com.springie.render.modules.modern.RendererTileManager;
 import java.awt.BorderLayout;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-
-import com.springie.FrEnd;
-import com.springie.gui.colourpicker.ColorPicker;
-import com.springie.gui.colourpicker.ColorPickerInformer;
-import com.springie.gui.components.TabbedPanel;
-import com.springie.gui.components.TTChoice;
-import com.springie.render.RendererDelegator;
-import com.springie.render.modules.modern.ColourModifier;
-import com.springie.render.modules.modern.RendererTileManager;
 
 public class PanelPreferencesRendererModernFilters {
   public Panel panel = FrEnd.setUpPanelForFrame2();

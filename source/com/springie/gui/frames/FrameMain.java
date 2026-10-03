@@ -2,15 +2,14 @@
 
 package com.springie.gui.frames;
 
-import java.awt.Frame;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
 import com.springie.FrEnd;
 import com.springie.gui.components.GraphicsDirectory;
 import com.springie.gui.components.MenuBarTop;
 import com.springie.utilities.ImageLoader;
 import com.springie.utilities.ImageWrapper;
+import java.awt.Frame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class FrameMain extends Frame {
   static final long serialVersionUID = 1250; 

@@ -3,12 +3,11 @@
 package com.springie.render.modules.original;
 
 
-import java.awt.Graphics;
-
 import com.springie.FrEnd;
-import com.springie.render.RendererDelegator;
 import com.springie.elements.nodes.NodeManager;
+import com.springie.render.RendererDelegator;
 import com.springie.render.modules.ModularRendererBase;
+import java.awt.Graphics;
 
 public class ModularRendererOld implements ModularRendererBase {
   public void repaint(Graphics graphics, NodeManager manager) {

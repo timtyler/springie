@@ -1,7 +1,5 @@
 package com.springie.modification.stellation;
 
-import java.util.ArrayList;
-
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
@@ -14,6 +12,7 @@ import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
 import com.springie.modification.DomeMakingUtilities;
 import com.springie.utilities.random.JUR;
+import java.util.ArrayList;
 
 public class StellationMaker {
   int colour_link_between_layers = 0xFFC0C0FF;

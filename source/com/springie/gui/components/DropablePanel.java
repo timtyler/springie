@@ -2,6 +2,8 @@
 
 package com.springie.gui.components;
 
+import com.springie.FrEnd;
+import com.springie.utilities.FilePath;
 import java.awt.Panel;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -17,11 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-
 import javax.swing.JOptionPane;
-
-import com.springie.FrEnd;
-import com.springie.utilities.FilePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

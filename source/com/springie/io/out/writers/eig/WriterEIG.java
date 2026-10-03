@@ -1,10 +1,5 @@
 package com.springie.io.out.writers.eig;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
@@ -26,6 +21,10 @@ import com.springie.render.Coords;
 import com.tifsoft.xml.writer.XMLWriterAttribute;
 import com.tifsoft.xml.writer.XMLWriterCharacters;
 import com.tifsoft.xml.writer.XMLWriterTagPair;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

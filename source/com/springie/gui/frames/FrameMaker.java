@@ -2,17 +2,16 @@
 
 package com.springie.gui.frames;
 
+import com.springie.FrEnd;
+import com.springie.gui.components.GraphicsDirectory;
+import com.springie.utilities.ImageLoader;
+import com.springie.utilities.ImageWrapper;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
-import com.springie.FrEnd;
-import com.springie.gui.components.GraphicsDirectory;
-import com.springie.utilities.ImageLoader;
-import com.springie.utilities.ImageWrapper;
 
 public class FrameMaker {
   // static final String program_name = FrEnd.application_name;

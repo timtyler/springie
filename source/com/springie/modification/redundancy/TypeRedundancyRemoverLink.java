@@ -1,10 +1,9 @@
 package com.springie.modification.redundancy;
 
-import java.util.ArrayList;
-
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkType;
 import com.springie.elements.nodes.NodeManager;
+import java.util.ArrayList;
 
 public class TypeRedundancyRemoverLink {
   NodeManager node_manager;

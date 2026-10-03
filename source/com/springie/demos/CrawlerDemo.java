@@ -2,9 +2,6 @@
 
 package com.springie.demos;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
@@ -21,6 +18,8 @@ import com.springie.muscles.Muscles;
 import com.springie.render.Coords;
 import com.springie.world.Grounding;
 import com.springie.world.World;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Parametric 4-legged crawler built from tetrahedra (third generation --

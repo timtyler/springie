@@ -2,14 +2,13 @@
 
 package com.springie.modification.faces;
 
+import com.springie.elements.links.Link;
+import com.springie.elements.nodes.Node;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Set;
-
-import com.springie.elements.links.Link;
-import com.springie.elements.nodes.Node;
 
 /**
  * Finds polygonal faces in a wireframe made of nodes and links.

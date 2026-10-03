@@ -3,12 +3,10 @@
 package uk.org.fdl.reader;
 
 import java.util.ArrayList;
-
-import uk.org.fdl.tokeniser.FDLTokeniser;
-import uk.org.fdl.tokens.FDLElement;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.org.fdl.tokeniser.FDLTokeniser;
+import uk.org.fdl.tokens.FDLElement;
 
 public final class FDLReader {
   private static final Logger logger = LoggerFactory.getLogger(FDLReader.class);

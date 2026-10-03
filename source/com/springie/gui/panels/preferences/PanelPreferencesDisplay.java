@@ -2,6 +2,12 @@
 
 package com.springie.gui.panels.preferences;
 
+import com.springie.FrEnd;
+import com.springie.constants.Quality;
+import com.springie.gui.components.TTChoice;
+import com.springie.render.RendererDelegator;
+import com.springie.render.modules.modern.ModularRendererNew;
+import com.springie.render.modules.raytraced.ModularRendererRaytraced;
 import java.awt.BorderLayout;
 import java.awt.Label;
 import java.awt.Panel;
@@ -9,13 +15,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.springie.FrEnd;
-import com.springie.constants.Quality;
-import com.springie.gui.components.TTChoice;
-import com.springie.render.RendererDelegator;
-import com.springie.render.modules.modern.ModularRendererNew;
-import com.springie.render.modules.raytraced.ModularRendererRaytraced;
 
 public class PanelPreferencesDisplay {
   public Panel panel = FrEnd.setUpPanelForFrame2();

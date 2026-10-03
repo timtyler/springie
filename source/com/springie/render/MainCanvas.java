@@ -2,6 +2,14 @@
 
 package com.springie.render;
 
+import com.springie.FrEnd;
+import com.springie.context.ContextManager;
+import com.springie.messages.NewMessage;
+import com.springie.messages.commands.DeleteSelectedMessage;
+import com.springie.messages.commands.DeselectAllMessage;
+import com.springie.messages.commands.SelectAllMessage;
+import com.springie.messages.commands.SelectClazzMessage;
+import com.springie.messages.commands.SelectTypeMessage;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -13,15 +21,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.ImageObserver;
-
-import com.springie.FrEnd;
-import com.springie.context.ContextManager;
-import com.springie.messages.commands.DeleteSelectedMessage;
-import com.springie.messages.commands.DeselectAllMessage;
-import com.springie.messages.commands.SelectAllMessage;
-import com.springie.messages.commands.SelectClazzMessage;
-import com.springie.messages.commands.SelectTypeMessage;
-import com.springie.messages.NewMessage;
 
 public class MainCanvas {
   static final long serialVersionUID = 1250; 

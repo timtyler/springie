@@ -2,17 +2,16 @@
 
 package com.springie.gui.components;
 
-import java.awt.ItemSelectable;
+import com.springie.utilities.ImageLoader;
+import com.springie.utilities.ImageWrapper;
 import java.awt.Insets;
+import java.awt.ItemSelectable;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
-
-import com.springie.utilities.ImageLoader;
-import com.springie.utilities.ImageWrapper;
 
 public class ButtonBar extends Panel implements ItemSelectable {
   static final long serialVersionUID = 1L;

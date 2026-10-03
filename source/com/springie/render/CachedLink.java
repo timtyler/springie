@@ -2,8 +2,6 @@
 
 package com.springie.render;
 
-import java.awt.Polygon;
-
 import com.springie.FrEnd;
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.links.Link;
@@ -11,6 +9,7 @@ import com.springie.elements.links.LinkRenderType;
 import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;
 import com.springie.utilities.math.SquareRoot;
+import java.awt.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

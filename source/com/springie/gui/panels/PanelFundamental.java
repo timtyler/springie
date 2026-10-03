@@ -2,6 +2,24 @@
 
 package com.springie.gui.panels;
 
+import com.springie.FrEnd;
+import com.springie.context.ContextManager;
+import com.springie.demos.DemoCatalog;
+import com.springie.gui.components.ButtonBar;
+import com.springie.gui.components.ChoiceWithDescription;
+import com.springie.gui.components.ImageButton;
+import com.springie.gui.components.TextFieldWrapper;
+import com.springie.gui.components.WrapLayout;
+import com.springie.gui.panels.preferences.ButtonMouseActionStrings;
+import com.springie.io.out.writers.spr.WriterSpr;
+import com.springie.messages.NewMessage;
+import com.springie.messages.NewMessageManager;
+import com.springie.messages.commands.DeleteSelectedMessage;
+import com.springie.messages.commands.SelectClazzMessage;
+import com.springie.presets.AddXMLModelIndexLeaves;
+import com.springie.render.Coords;
+import com.springie.render.RendererDelegator;
+import com.springie.utilities.FilePath;
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.CardLayout;
@@ -18,29 +36,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.Iterator;
-
-import org.xml.sax.SAXException;
-
-import com.springie.FrEnd;
-import com.springie.context.ContextManager;
-import com.springie.demos.DemoCatalog;
-import com.springie.gui.components.ButtonBar;
-import com.springie.gui.components.ChoiceWithDescription;
-import com.springie.gui.components.ImageButton;
-import com.springie.gui.components.TextFieldWrapper;
-import com.springie.gui.components.WrapLayout;
-import com.springie.gui.panels.preferences.ButtonMouseActionStrings;
-import com.springie.io.out.writers.spr.WriterSpr;
-import com.springie.messages.commands.DeleteSelectedMessage;
-import com.springie.messages.commands.SelectClazzMessage;
-import com.springie.messages.NewMessage;
-import com.springie.messages.NewMessageManager;
-import com.springie.presets.AddXMLModelIndexLeaves;
-import com.springie.render.Coords;
-import com.springie.render.RendererDelegator;
-import com.springie.utilities.FilePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 public class PanelFundamental {
   private static final Logger logger = LoggerFactory.getLogger(PanelFundamental.class);

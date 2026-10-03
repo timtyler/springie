@@ -1,9 +1,5 @@
 package com.springie.io.out.writers.off;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.Link;
@@ -15,6 +11,9 @@ import com.springie.io.out.GarbageCollection;
 import com.springie.io.out.WriteFloatingPoint;
 import com.springie.metrics.BoundingBox;
 import com.springie.modification.redundancy.RedundancyRemover;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

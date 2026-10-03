@@ -2,18 +2,6 @@
 
 package com.springie.gui.panels.preferences;
 
-import java.awt.BorderLayout;
-import java.awt.Checkbox;
-import java.awt.CheckboxGroup;
-import java.awt.Component;
-import java.awt.Label;
-import java.awt.Panel;
-import java.awt.Scrollbar;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
 import com.springie.FrEnd;
 import com.springie.constants.Quality;
 import com.springie.elements.faces.Face;
@@ -26,6 +14,17 @@ import com.springie.gui.components.TTChoice;
 import com.springie.messages.NewMessageManager;
 import com.springie.messages.commands.LinkLengthMessage;
 import com.springie.render.RendererDelegator;
+import java.awt.BorderLayout;
+import java.awt.Checkbox;
+import java.awt.CheckboxGroup;
+import java.awt.Component;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.Scrollbar;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 public class PanelPreferencesRendererOriginal {
   public Panel panel = FrEnd.setUpPanelForFrame2();

@@ -2,9 +2,6 @@
 
 package com.springie.render.scene;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.springie.context.ContextManager;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
@@ -14,6 +11,8 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.geometry.Point3D;
 import com.springie.render.Coords;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Builds an immutable {@link ModelScene} snapshot of the model: nodes,

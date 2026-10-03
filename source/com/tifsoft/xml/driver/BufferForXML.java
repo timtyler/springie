@@ -3,7 +3,6 @@ package com.tifsoft.xml.driver;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
-
 import org.xml.sax.SAXException;
 
 public class BufferForXML extends Writer {

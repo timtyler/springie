@@ -2,9 +2,8 @@
 
 package com.springie.io.in.readers.wrl;
 
-import java.util.ArrayList;
-
 import com.springie.render.modules.modern.Double3D;
+import java.util.ArrayList;
 
 class ReaderWRLGroup {
   int colour;

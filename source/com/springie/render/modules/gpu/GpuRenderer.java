@@ -2,19 +2,17 @@
 
 package com.springie.render.modules.gpu;
 
-import java.awt.Graphics;
-import java.awt.Panel;
-import java.awt.image.BufferedImage;
-
-import javafx.application.Platform;
-import javafx.embed.swing.SwingFXUtils;
-
 import com.springie.FrEnd;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.scene.ModelScene;
 import com.springie.render.scene.SceneExtractor;
+import java.awt.Graphics;
+import java.awt.Panel;
+import java.awt.image.BufferedImage;
+import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 
 /**
  * The "GPU" renderer: the extracted model scene rendered with JavaFX 3D

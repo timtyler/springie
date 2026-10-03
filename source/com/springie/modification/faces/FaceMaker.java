@@ -1,7 +1,5 @@
 package com.springie.modification.faces;
 
-import java.util.ArrayList;
-
 import com.springie.FrEnd;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.faces.Face;
@@ -13,6 +11,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.modification.DomeMakingUtilities;
 import com.springie.utilities.random.JUR;
+import java.util.ArrayList;
 
 public class FaceMaker {
   JUR rnd = new JUR();

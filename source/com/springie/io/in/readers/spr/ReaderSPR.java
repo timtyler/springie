@@ -2,23 +2,21 @@
 
 package com.springie.io.in.readers.spr;
 
-import java.io.CharArrayReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.StringTokenizer;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
-
 import com.springie.io.in.ResourceLoader;
 import com.springie.io.in.readers.spr.types.TypeBase;
 import com.springie.io.in.readers.spr.types.TypeFace;
 import com.springie.io.in.readers.spr.types.TypeLink;
 import com.springie.io.in.readers.spr.types.TypeNode;
 import com.springie.render.Coords;
+import java.io.CharArrayReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.StringTokenizer;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
 
 public class ReaderSPR extends DefaultHandler {
   final int scale_factor = 1;

@@ -2,19 +2,17 @@
 
 package com.springie.presets;
 
+import com.springie.io.in.ResourceLoader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-
-import com.springie.io.in.ResourceLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ReadXMLModelIndexFile extends DefaultHandler {
   private static final Logger logger = LoggerFactory.getLogger(ReadXMLModelIndexFile.class);

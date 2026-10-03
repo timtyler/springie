@@ -2,15 +2,14 @@
 
 package com.springie.gui.panels.preferences;
 
-import java.awt.Color;
-import java.awt.Panel;
-
 import com.springie.FrEnd;
 import com.springie.gui.colourpicker.ColorPicker;
 import com.springie.gui.colourpicker.ColorPickerInformer;
 import com.springie.gui.components.TabbedPanel;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ElementRendererLink;
+import java.awt.Color;
+import java.awt.Panel;
 
 public class PanelPreferencesRendererModernColours {
   public Panel panel = FrEnd.setUpPanelForFrame2();

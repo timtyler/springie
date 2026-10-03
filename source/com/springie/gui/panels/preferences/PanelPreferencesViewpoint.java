@@ -2,6 +2,10 @@
 
 package com.springie.gui.panels.preferences;
 
+import com.springie.FrEnd;
+import com.springie.gui.GUIStrings;
+import com.springie.render.Coords;
+import com.springie.render.RendererDelegator;
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
 import java.awt.Label;
@@ -11,11 +15,6 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-
-import com.springie.FrEnd;
-import com.springie.gui.GUIStrings;
-import com.springie.render.RendererDelegator;
-import com.springie.render.Coords;
 
 public class PanelPreferencesViewpoint {
   public Panel panel = FrEnd.setUpPanelForFrame2();

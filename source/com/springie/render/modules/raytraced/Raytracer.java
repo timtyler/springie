@@ -2,14 +2,13 @@
 
 package com.springie.render.modules.raytraced;
 
-import java.awt.image.BufferedImage;
-
 import com.springie.geometry.Vector3D;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.render.ScenicBackground;
 import com.springie.render.modules.modern.LightSource;
 import com.springie.render.modules.modern.RendererTileManager;
+import java.awt.image.BufferedImage;
 
 /**
  * Renders one bin tile, pixel by pixel. One primary ray per pixel, plus

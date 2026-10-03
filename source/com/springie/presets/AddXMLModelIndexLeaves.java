@@ -2,20 +2,18 @@
 
 package com.springie.presets;
 
+import com.springie.gui.components.ChoiceWithDescription;
+import com.springie.io.in.ResourceLoader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-
-import com.springie.gui.components.ChoiceWithDescription;
-import com.springie.io.in.ResourceLoader;
 
 public class AddXMLModelIndexLeaves extends DefaultHandler {
 

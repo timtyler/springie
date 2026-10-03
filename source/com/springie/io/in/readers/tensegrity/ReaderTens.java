@@ -1,8 +1,5 @@
 package com.springie.io.in.readers.tensegrity;
 
-import java.io.Reader;
-import java.util.ArrayList;
-
 import com.springie.FrEnd;
 import com.springie.composite.Composite;
 import com.springie.context.ContextManager;
@@ -18,6 +15,8 @@ import com.springie.elements.nodes.NodeType;
 import com.springie.modification.resize.LinkResetter;
 import com.springie.muscles.Muscles;
 import com.springie.world.World;
+import java.io.Reader;
+import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

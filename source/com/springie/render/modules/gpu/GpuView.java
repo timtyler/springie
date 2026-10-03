@@ -2,6 +2,8 @@
 
 package com.springie.render.modules.gpu;
 
+import com.springie.render.Coords;
+import com.springie.render.scene.ModelScene;
 import javafx.scene.AmbientLight;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -9,9 +11,6 @@ import javafx.scene.PointLight;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.paint.Color;
-
-import com.springie.render.Coords;
-import com.springie.render.scene.ModelScene;
 
 /**
  * The JavaFX side of the GPU renderer. Owns the 3D scene: a model group

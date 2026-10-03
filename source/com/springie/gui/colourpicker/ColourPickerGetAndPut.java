@@ -2,13 +2,12 @@
 
 package com.springie.gui.colourpicker;
 
+import com.springie.gui.components.ComponentAccess;
 import java.awt.Button;
 import java.awt.Color;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import com.springie.gui.components.ComponentAccess;
 
 public class ColourPickerGetAndPut extends Panel {
   static final long serialVersionUID = 1250; 

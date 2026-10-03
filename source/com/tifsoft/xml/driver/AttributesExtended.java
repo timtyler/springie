@@ -1,7 +1,6 @@
 package com.tifsoft.xml.driver;
 
 import java.util.ArrayList;
-
 import org.xml.sax.Attributes;
 
 

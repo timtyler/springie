@@ -2,13 +2,6 @@
 
 package com.springie.gui.panels.controls;
 
-import java.awt.Checkbox;
-import java.awt.Label;
-import java.awt.Panel;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.List;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.base.BaseElement;
@@ -17,11 +10,17 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.messages.commands.HideFlagMessage;
-import com.springie.messages.commands.FixFlagMessage;
-import com.springie.messages.commands.DisableFlagMessage;
-import com.springie.messages.commands.RopeFlagMessage;
 import com.springie.messages.NewMessageManager;
+import com.springie.messages.commands.DisableFlagMessage;
+import com.springie.messages.commands.FixFlagMessage;
+import com.springie.messages.commands.HideFlagMessage;
+import com.springie.messages.commands.RopeFlagMessage;
+import java.awt.Checkbox;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.List;
 
 public class PanelControlsPropertiesFlags {
   public Panel panel = FrEnd.setUpPanelForFrame2();

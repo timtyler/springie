@@ -5,8 +5,8 @@ package com.springie.gui.components;
 import java.awt.Choice;
 import java.awt.Color;
 import java.awt.event.ItemListener;
-import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 
 public class TTChoice {

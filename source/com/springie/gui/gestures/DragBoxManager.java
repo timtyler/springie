@@ -2,9 +2,6 @@
 
 package com.springie.gui.gestures;
 
-import java.awt.Point;
-import java.util.ArrayList;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.faces.Face;
@@ -18,6 +15,8 @@ import com.springie.modification.pre.PrepareToModifyLinkTypes;
 import com.springie.modification.pre.PrepareToModifyNodeTypes;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
+import java.awt.Point;
+import java.util.ArrayList;
 
 public class DragBoxManager {
   public Point drag_box_start;

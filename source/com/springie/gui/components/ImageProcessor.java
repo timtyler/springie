@@ -5,9 +5,8 @@ package com.springie.gui.components;
  * allowing the sender to specify the output array...
  */
 
-import java.awt.Color;
-
 import com.springie.utilities.ImageWrapper;
+import java.awt.Color;
 
 public final class ImageProcessor {
   private ImageProcessor() {

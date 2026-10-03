@@ -1,13 +1,12 @@
 package com.springie.modification.polyhedra;
 
-import java.util.ArrayList;
-
 import com.springie.FrEnd;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.links.LinkType;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
+import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

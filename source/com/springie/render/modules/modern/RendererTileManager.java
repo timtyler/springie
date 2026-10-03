@@ -2,23 +2,21 @@
 
 package com.springie.render.modules.modern;
 
+import com.springie.FrEnd;
+import com.springie.context.ContextManager;
+import com.springie.render.Coords;
+import com.springie.render.DepthSort;
 import com.springie.render.RectangleInt;
-
+import com.springie.render.RendererDelegator;
+import com.springie.render.ScenicBackground;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.util.Random;
 import java.util.ArrayList;
-
-import com.springie.FrEnd;
-import com.springie.context.ContextManager;
-import com.springie.render.Coords;
-import com.springie.render.DepthSort;
-import com.springie.render.RendererDelegator;
-import com.springie.render.ScenicBackground;
+import java.util.Random;
 
 public class RendererTileManager {
   // Deliberately prime: no pixellation factor (2, 3, 4, 5) divides it

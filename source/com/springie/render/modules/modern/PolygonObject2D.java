@@ -2,14 +2,12 @@
 
 package com.springie.render.modules.modern;
 
-import com.springie.render.RectangleInt;
-
-import java.awt.Color;
-import java.awt.Graphics;
-
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
 import com.springie.render.Coords;
+import com.springie.render.RectangleInt;
+import java.awt.Color;
+import java.awt.Graphics;
 
 public class PolygonObject2D {
   int[] x;

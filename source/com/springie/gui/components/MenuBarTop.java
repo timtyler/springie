@@ -2,22 +2,6 @@
 
 package com.springie.gui.components;
 
-import java.awt.CheckboxMenuItem;
-import java.awt.FileDialog;
-import java.awt.Menu;
-import java.awt.MenuBar;
-import java.awt.MenuItem;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.context.ModelManager;
@@ -32,6 +16,20 @@ import com.springie.io.out.writers.spr.WriterSpr;
 import com.springie.io.out.writers.wrl.WriterWRL;
 import com.springie.presets.AddXMLModelIndexLeaves;
 import com.springie.utilities.FilePath;
+import java.awt.CheckboxMenuItem;
+import java.awt.FileDialog;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 public class MenuBarTop extends MenuBar {
   static final long serialVersionUID = 1250; 

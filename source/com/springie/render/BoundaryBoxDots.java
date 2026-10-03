@@ -2,11 +2,10 @@
 
 package com.springie.render;
 
+import com.springie.FrEnd;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Random;
-
-import com.springie.FrEnd;
 
 /**
  * Draws the physics boundary box as a dotted wireframe, one dot per frame.

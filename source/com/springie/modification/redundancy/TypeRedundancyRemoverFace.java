@@ -1,10 +1,9 @@
 package com.springie.modification.redundancy;
 
-import java.util.ArrayList;
-
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceType;
 import com.springie.elements.nodes.NodeManager;
+import java.util.ArrayList;
 
 public class TypeRedundancyRemoverFace {
   NodeManager node_manager;

@@ -2,15 +2,6 @@
 
 package com.springie.gui.panels.controls;
 
-import java.awt.Button;
-import java.awt.Checkbox;
-import java.awt.Label;
-import java.awt.Panel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.gui.GUIStrings;
@@ -20,6 +11,14 @@ import com.springie.messages.NewMessage;
 import com.springie.messages.NewMessageManager;
 import com.springie.messages.commands.SelectClazzMessage;
 import com.springie.messages.commands.SelectTypeMessage;
+import java.awt.Button;
+import java.awt.Checkbox;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 public class PanelControlsSelectMain {
   public Panel panel = FrEnd.setUpPanelForFrame2();

@@ -1,17 +1,5 @@
 package com.springie.io.out.writers.fdl;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-
-import uk.org.fdl.object.FDLObjectBraceList;
-import uk.org.fdl.object.FDLObjectBracketList;
-import uk.org.fdl.object.FDLObjectChain;
-import uk.org.fdl.object.FDLObjectIdentifier;
-import uk.org.fdl.object.FDLObjectNumber;
-import uk.org.fdl.writer.FDLWriter;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
@@ -32,8 +20,18 @@ import com.springie.modification.post.PostModification;
 import com.springie.modification.redundancy.RedundancyRemover;
 import com.springie.render.Coords;
 import com.springie.world.World;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.org.fdl.object.FDLObjectBraceList;
+import uk.org.fdl.object.FDLObjectBracketList;
+import uk.org.fdl.object.FDLObjectChain;
+import uk.org.fdl.object.FDLObjectIdentifier;
+import uk.org.fdl.object.FDLObjectNumber;
+import uk.org.fdl.writer.FDLWriter;
 
 public class WriterFDL {
   private static final Logger logger = LoggerFactory.getLogger(WriterFDL.class);

@@ -1,10 +1,9 @@
 package com.springie.modification.redundancy;
 
-import java.util.ArrayList;
-
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
+import java.util.ArrayList;
 
 public class TypeRedundancyRemoverNode {
   NodeManager node_manager;

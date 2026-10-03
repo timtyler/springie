@@ -2,14 +2,6 @@
 
 package com.springie.render.modules.raytraced;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-
 import com.springie.FrEnd;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
@@ -24,6 +16,13 @@ import com.springie.render.RendererDelegator;
 import com.springie.render.ScenicBackground;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.modules.modern.RendererTileManager;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * A ray-traced renderer that lives alongside the default renderer.

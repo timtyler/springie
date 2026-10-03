@@ -1,12 +1,11 @@
 package uk.org.fdl.writer;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-
 import com.tifsoft.fdl.old.ZFDLWriterAttribute;
 import com.tifsoft.fdl.old.ZFDLWriterCharacters;
 import com.tifsoft.fdl.old.ZFDLWriterNamedBraceList;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

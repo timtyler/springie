@@ -1,13 +1,12 @@
 package com.springie.modification.stellation;
 
-import java.util.ArrayList;
-
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.lists.ListOfIntegers;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.geometry.Point3D;
+import java.util.ArrayList;
 
 public class DimpleMaker {
   NodeManager node_manager;

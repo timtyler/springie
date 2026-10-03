@@ -2,9 +2,6 @@
 
 package com.springie.elements.links;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.base.BaseElementManager;
@@ -18,6 +15,8 @@ import com.springie.render.CachedLink;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.utilities.math.SquareRoot;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LinkManager extends BaseElementManager<Link> {
   static int agent_counter;

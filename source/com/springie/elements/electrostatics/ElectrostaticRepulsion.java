@@ -2,11 +2,10 @@
 
 package com.springie.elements.electrostatics;
 
-import java.util.ArrayList;
-
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeType;
 import com.springie.render.Coords;
+import java.util.ArrayList;
 
 public class ElectrostaticRepulsion {
   public ArrayList<Node> charged = new ArrayList<>();

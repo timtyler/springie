@@ -2,12 +2,6 @@
 
 package com.springie.gui.panels.controls;
 
-import java.awt.Button;
-import java.awt.Label;
-import java.awt.Panel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import com.springie.FrEnd;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TextFieldWrapper;
@@ -17,6 +11,11 @@ import com.springie.messages.commands.GenerateMatrixMessage;
 import com.springie.messages.commands.GenerateSpherePackMessage;
 import com.springie.messages.commands.GenerateStringMessage;
 import com.springie.messages.commands.GenerateTubeMessage;
+import java.awt.Button;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class PanelControlsGenerate {
   public Panel panel = FrEnd.setUpPanelForFrame2();

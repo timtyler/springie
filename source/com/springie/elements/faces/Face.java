@@ -2,12 +2,11 @@
 
 package com.springie.elements.faces;
 
-import java.util.ArrayList;
-
 import com.springie.elements.base.BaseElement;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;
+import java.util.ArrayList;
 
 public class Face extends BaseElement {
   public ArrayList<Node> nodes;

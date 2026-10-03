@@ -2,13 +2,7 @@
 
 package com.springie.render.modules.modern;
 
-import java.awt.Graphics;
-import java.util.List;
-import java.util.ArrayList;
-
 import com.springie.FrEnd;
-import com.springie.render.Coords;
-import com.springie.render.RendererDelegator;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.Link;
@@ -16,7 +10,12 @@ import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.gestures.DragBoxManager;
+import com.springie.render.Coords;
+import com.springie.render.RendererDelegator;
 import com.springie.render.modules.ModularRendererBase;
+import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ModularRendererNew implements ModularRendererBase {
   RendererTileManager tiles_current = new RendererTileManager();

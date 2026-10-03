@@ -2,11 +2,10 @@
 
 package com.springie.gui.colourpicker;
 
-import java.awt.GridLayout;
-import java.awt.Panel;
-
 import com.springie.FrEnd;
 import com.springie.gui.components.TabbedPanel;
+import java.awt.GridLayout;
+import java.awt.Panel;
 
 public class ColorPicker {
   public Panel panel = FrEnd.setUpPanelForFrame2();

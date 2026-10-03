@@ -2,22 +2,15 @@
 
 package com.springie.gui.panels.controls;
 
-import java.awt.Button;
-import java.awt.Checkbox;
-import java.awt.Label;
-import java.awt.Panel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
 import com.springie.FrEnd;
 import com.springie.constants.ToolTypes;
 import com.springie.context.ContextManager;
 import com.springie.gui.GUIStrings;
-import com.springie.gui.components.TabbedPanel;
 import com.springie.gui.components.TTChoice;
+import com.springie.gui.components.TabbedPanel;
 import com.springie.gui.components.TextFieldWrapper;
+import com.springie.messages.NewMessage;
+import com.springie.messages.NewMessageManager;
 import com.springie.messages.commands.AddCentralHubMessage;
 import com.springie.messages.commands.AddInnerEdenNodesMessage;
 import com.springie.messages.commands.AddPolygonsMessage;
@@ -34,12 +27,18 @@ import com.springie.messages.commands.MusclesAddSelectedMessage;
 import com.springie.messages.commands.MusclesRemoveMessage;
 import com.springie.messages.commands.ResetLinkLengthsMessage;
 import com.springie.messages.commands.SplitLinksMessage;
-import com.springie.messages.NewMessage;
-import com.springie.messages.NewMessageManager;
 import com.springie.modification.faces.FaceReverser;
 import com.springie.modification.links.ExtendLinks;
 import com.springie.modification.projection.PrismaticProjection;
 import com.springie.modification.stellation.DimpleMaker;
+import java.awt.Button;
+import java.awt.Checkbox;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 public class PanelControlsMisc {
   public Panel panel = FrEnd.setUpPanelForFrame2();

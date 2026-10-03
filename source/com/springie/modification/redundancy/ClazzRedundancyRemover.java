@@ -1,12 +1,11 @@
 package com.springie.modification.redundancy;
 
-import java.util.List;
-
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.faces.Face;
 import com.springie.elements.links.Link;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
+import java.util.List;
 
 public class ClazzRedundancyRemover {
   NodeManager node_manager;

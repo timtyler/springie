@@ -2,12 +2,11 @@
 
 package com.springie.gui.panels;
 
+import com.springie.FrEnd;
+import com.springie.gui.GUIStrings;
 import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.Panel;
-
-import com.springie.FrEnd;
-import com.springie.gui.GUIStrings;
 
 public class PanelAbout {
   public Panel panel = FrEnd.setUpPanelForFrame2();

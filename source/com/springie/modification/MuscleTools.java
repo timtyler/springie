@@ -2,14 +2,13 @@
 
 package com.springie.modification;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Attaches and detaches muscle controllers to links.

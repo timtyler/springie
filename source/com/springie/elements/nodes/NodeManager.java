@@ -2,12 +2,6 @@
 
 package com.springie.elements.nodes;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.xml.sax.SAXException;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.demos.CompassPoint;
@@ -30,8 +24,12 @@ import com.springie.render.WorldMarkers;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;
 import com.springie.utilities.math.SquareRoot;
 import com.springie.world.World;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * The class that manages the particular collection of entities that is

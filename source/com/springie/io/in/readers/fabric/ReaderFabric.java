@@ -2,18 +2,16 @@
 
 package com.springie.io.in.readers.fabric;
 
+import com.springie.io.in.ResourceLoader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-
-import com.springie.io.in.ResourceLoader;
 
 public class ReaderFabric extends DefaultHandler {
   static final int scale_factor = 18000;

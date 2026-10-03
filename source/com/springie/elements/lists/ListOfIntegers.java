@@ -1,8 +1,7 @@
 package com.springie.elements.lists;
 
-import java.util.ArrayList;
-
 import com.springie.elements.base.BaseType;
+import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

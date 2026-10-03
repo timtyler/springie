@@ -2,10 +2,9 @@
 
 package com.springie.gui.colourpicker;
 
+import com.springie.io.out.WriteFloatingPoint;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
-
-import com.springie.io.out.WriteFloatingPoint;
 
 public class ColourPickerVHSBB extends ColourPickerBase {
   static final long serialVersionUID = 1250; 

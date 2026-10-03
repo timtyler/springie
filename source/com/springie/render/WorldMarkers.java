@@ -1,17 +1,16 @@
 package com.springie.render;
 
+import com.springie.FrEnd;
+import com.springie.geometry.Point3D;
+import com.springie.geometry.Vector3D;
+import com.springie.render.modules.modern.PolygonComposite;
+import com.springie.render.modules.modern.PolygonObject2D;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import com.springie.FrEnd;
-import com.springie.geometry.Point3D;
-import com.springie.geometry.Vector3D;
-import com.springie.render.modules.modern.PolygonComposite;
-import com.springie.render.modules.modern.PolygonObject2D;
 
 /**
  * Olympics follow-cam decoration: small gold location markers that live

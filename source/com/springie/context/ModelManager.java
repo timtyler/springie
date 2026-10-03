@@ -6,14 +6,13 @@
 
 package com.springie.context;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.springie.FrEnd;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.io.in.DataInput;
 import com.springie.world.Grounding;
 import com.springie.world.UniverseState;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class ModelManager {
   private static final List<ModelSlot> slots = new ArrayList<>();

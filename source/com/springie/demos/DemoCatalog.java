@@ -2,18 +2,17 @@
 
 package com.springie.demos;
 
-import java.util.function.Supplier;
-
 import com.springie.messages.NewMessage;
 import com.springie.messages.commands.Caterpillar2DemoMessage;
 import com.springie.messages.commands.CaterpillarDemoMessage;
 import com.springie.messages.commands.CaterpillarTrackDemoMessage;
 import com.springie.messages.commands.CrawlerDemoMessage;
 import com.springie.messages.commands.HopperDemoMessage;
-import com.springie.messages.commands.SlinkyDemoMessage;
 import com.springie.messages.commands.SidewinderDemoMessage;
+import com.springie.messages.commands.SlinkyDemoMessage;
 import com.springie.messages.commands.SpiderTankDemoMessage;
 import com.springie.messages.commands.WheelbarrowDemoMessage;
+import java.util.function.Supplier;
 
 /**
  * The procedural demos in one place: display name plus the message that

@@ -2,9 +2,8 @@
 
 package com.springie.io.in.readers.dat;
 
-import java.util.StringTokenizer;
-
 import com.springie.presets.ColourFactory;
+import java.util.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

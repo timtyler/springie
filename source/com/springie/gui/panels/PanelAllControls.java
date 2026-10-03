@@ -2,10 +2,9 @@
 
 package com.springie.gui.panels;
 
-import java.awt.Panel;
-
 import com.springie.FrEnd;
 import com.springie.gui.components.TabbedPanel;
+import java.awt.Panel;
 
 public class PanelAllControls {
   public Panel panel = FrEnd.setUpPanelForFrame2();

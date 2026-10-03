@@ -2,11 +2,6 @@
 
 package com.springie.io.in;
 
-import java.io.IOException;
-import java.io.Reader;
-
-import org.xml.sax.SAXException;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.demos.CompassPoint;
@@ -38,8 +33,11 @@ import com.springie.modification.post.PostModification;
 import com.springie.muscles.Muscles;
 import com.springie.world.World;
 import com.tifsoft.utilities.execute.Executor;
+import java.io.IOException;
+import java.io.Reader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 public class DataInput {
   private static final Logger logger = LoggerFactory.getLogger(DataInput.class);

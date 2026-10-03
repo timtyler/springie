@@ -2,10 +2,9 @@
 
 package com.springie.io.in.readers.m;
 
-import java.util.StringTokenizer;
-import java.util.ArrayList;
-
 import com.springie.geometry.Point3D;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -2,10 +2,9 @@
 
 package com.springie.explosions.particles;
 
-import java.awt.Color;
-
 import com.springie.FrEnd;
 import com.springie.render.RendererDelegator;
+import java.awt.Color;
 
 public final class ParticleManager {
   static Particle[] particle;

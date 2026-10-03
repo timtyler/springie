@@ -2,17 +2,16 @@
 
 package com.springie.gui.panels.preferences;
 
-import java.awt.Checkbox;
-import java.awt.Label;
-import java.awt.Panel;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
 import com.springie.FrEnd;
 import com.springie.constants.Delay;
 import com.springie.gui.components.TTChoice;
 import com.springie.gui.components.TextFieldWrapper;
 import com.springie.preferences.Preferences;
+import java.awt.Checkbox;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 public class PanelPreferencesUpdate {
   public Panel panel = FrEnd.setUpPanelForFrame2();

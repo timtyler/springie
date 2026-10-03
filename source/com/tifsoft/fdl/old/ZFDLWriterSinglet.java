@@ -1,7 +1,6 @@
 package com.tifsoft.fdl.old;
 
 import java.util.ArrayList;
-
 import uk.org.fdl.writer.FDLWriterInterface;
 import uk.org.fdl.writer.FDLWriterStringUtilities;
 

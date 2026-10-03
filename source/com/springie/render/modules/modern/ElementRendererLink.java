@@ -2,9 +2,6 @@
 
 package com.springie.render.modules.modern;
 
-import java.util.ArrayList;
-import java.util.WeakHashMap;
-
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.links.Link;
 import com.springie.elements.nodes.Node;
@@ -15,6 +12,8 @@ import com.springie.gui.panels.preferences.PanelPreferencesRendererModern;
 import com.springie.io.out.WriteFloatingPoint;
 import com.springie.render.Coords;
 import com.springie.render.RendererDelegator;
+import java.util.ArrayList;
+import java.util.WeakHashMap;
 
 public final class ElementRendererLink {
   // Scratch objects reused across calls to avoid per-frame allocation.

@@ -2,14 +2,13 @@
 
 package com.springie.render;
 
-import java.awt.Point;
-import java.util.ArrayList;
-
 import com.springie.FrEnd;
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceRenderTypes;
 import com.springie.elements.nodes.Node;
+import java.awt.Point;
+import java.util.ArrayList;
 
 public class CachedFace {
 

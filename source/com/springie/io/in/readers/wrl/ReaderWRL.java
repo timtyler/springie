@@ -2,13 +2,12 @@
 
 package com.springie.io.in.readers.wrl;
 
+import com.springie.render.modules.modern.Double3D;
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.ArrayList;
-
-import com.springie.render.modules.modern.Double3D;
 
 public final class ReaderWRL {
   static ArrayList<ReaderWRLGroup> groups = new ArrayList<>();

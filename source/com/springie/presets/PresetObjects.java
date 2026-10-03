@@ -2,16 +2,14 @@
 
 package com.springie.presets;
 
-import java.io.IOException;
-
-import org.xml.sax.SAXException;
-
 import com.springie.FrEnd;
 import com.springie.io.in.readers.spr.ReaderSPR;
 import com.springie.messages.ArgumentList;
 import com.springie.utilities.random.JUR;
+import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 public final class PresetObjects {
   private static final Logger logger = LoggerFactory.getLogger(PresetObjects.class);

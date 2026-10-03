@@ -2,11 +2,10 @@
 
 package com.springie.render;
 
+import com.springie.FrEnd;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
-
-import com.springie.FrEnd;
 
 public class RendererInfoButton {
   boolean gui_is_iconised = FrEnd.viewer;

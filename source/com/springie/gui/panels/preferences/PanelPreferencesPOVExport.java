@@ -2,6 +2,9 @@
 
 package com.springie.gui.panels.preferences;
 
+import com.springie.FrEnd;
+import com.springie.gui.components.TTChoice;
+import com.springie.preferences.Preferences;
 import java.awt.BorderLayout;
 import java.awt.Label;
 import java.awt.Panel;
@@ -10,10 +13,6 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-
-import com.springie.FrEnd;
-import com.springie.gui.components.TTChoice;
-import com.springie.preferences.Preferences;
 
 public class PanelPreferencesPOVExport {
   public Panel panel = FrEnd.setUpPanelForFrame2();

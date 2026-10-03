@@ -2,11 +2,15 @@
 
 package com.springie.render.modules.gpu;
 
+import com.springie.render.RendererDelegator;
+import com.springie.render.scene.ModelScene;
+import com.springie.render.scene.SceneFace;
+import com.springie.render.scene.SceneLink;
+import com.springie.render.scene.SceneNode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
@@ -15,12 +19,6 @@ import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.scene.shape.TriangleMesh;
-
-import com.springie.render.RendererDelegator;
-import com.springie.render.scene.ModelScene;
-import com.springie.render.scene.SceneFace;
-import com.springie.render.scene.SceneLink;
-import com.springie.render.scene.SceneNode;
 
 /**
  * Builds a JavaFX 3D scene graph from an extracted ModelScene: nodes

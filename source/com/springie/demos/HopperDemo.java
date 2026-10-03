@@ -2,6 +2,7 @@
 
 package com.springie.demos;
 
+import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.Link;
@@ -14,7 +15,6 @@ import com.springie.geometry.Point3D;
 import com.springie.muscles.Controller;
 import com.springie.muscles.Muscles;
 import com.springie.render.Coords;
-import com.springie.FrEnd;
 import com.springie.world.Grounding;
 import com.springie.world.World;
 

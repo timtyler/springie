@@ -2,11 +2,10 @@
 
 package com.springie.render.modules.modern;
 
+import com.springie.geometry.Point3D;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-
-import com.springie.geometry.Point3D;
 
 public class RenderableText2D extends PolygonObject2D {
   String text;

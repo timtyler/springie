@@ -1,13 +1,12 @@
 package com.springie.modification.faces;
 
-import java.util.ArrayList;
-
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.utilities.random.JUR;
+import java.util.ArrayList;
 
 public class FaceReverser {
   JUR rnd = new JUR();

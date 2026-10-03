@@ -2,13 +2,12 @@
 
 package com.springie.elements.faces;
 
-import java.util.ArrayList;
-
 import com.springie.FrEnd;
 import com.springie.elements.base.BaseElementManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.nodes.Node;
 import com.springie.render.Coords;
+import java.util.ArrayList;
 
 public class FaceManager extends BaseElementManager<Face> {
   static int agent_counter;

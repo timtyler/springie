@@ -1,9 +1,5 @@
 package com.springie.io.out.writers.pov;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
@@ -23,6 +19,9 @@ import com.springie.io.out.WriteFloatingPoint;
 import com.springie.metrics.BoundingBox;
 import com.springie.modification.redundancy.RedundancyRemover;
 import com.springie.preferences.Preferences;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

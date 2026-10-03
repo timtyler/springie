@@ -2,11 +2,10 @@
 
 package com.springie.render;
 
-import java.awt.Graphics;
-import java.awt.Panel;
-
 import com.springie.FrEnd;
 import com.springie.gui.components.DropablePanel;
+import java.awt.Graphics;
+import java.awt.Panel;
 
 public final class RendererPanels {
   private RendererPanels() {

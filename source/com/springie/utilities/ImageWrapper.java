@@ -5,7 +5,6 @@ import java.awt.Toolkit;
 import java.awt.image.ColorModel;
 import java.awt.image.MemoryImageSource;
 import java.awt.image.PixelGrabber;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

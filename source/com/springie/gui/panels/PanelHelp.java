@@ -2,16 +2,14 @@
 
 package com.springie.gui.panels;
 
+import com.springie.FrEnd;
+import com.springie.io.in.ResourceLoader;
 import java.awt.GridLayout;
 import java.awt.Panel;
 import java.awt.TextArea;
 import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.springie.FrEnd;
-import com.springie.io.in.ResourceLoader;
 
 public class PanelHelp {
   private static final Logger logger = LoggerFactory.getLogger(PanelHelp.class);

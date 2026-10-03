@@ -2,9 +2,8 @@
 
 package com.springie.render.modules;
 
-import java.awt.Graphics;
-
 import com.springie.elements.nodes.NodeManager;
+import java.awt.Graphics;
 
 public interface ModularRendererBase {
   void repaint(Graphics graphics, NodeManager manager);

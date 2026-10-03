@@ -2,12 +2,11 @@
 
 package com.springie.gui.colourpicker;
 
+import com.springie.io.out.WriteFloatingPoint;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.Panel;
-
-import com.springie.io.out.WriteFloatingPoint;
 
 public class ColourPickerValueDisplay extends Panel {
   static final long serialVersionUID = 1250; 

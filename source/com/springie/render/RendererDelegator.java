@@ -1,8 +1,5 @@
 package com.springie.render;
 
-import java.awt.Color;
-import java.awt.Graphics;
-
 import com.springie.FrEnd;
 import com.springie.composite.Reproduction;
 import com.springie.context.ContextManager;
@@ -16,6 +13,8 @@ import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;
 import com.springie.utilities.random.JUR;
 import com.springie.world.WorldManager;
+import java.awt.Color;
+import java.awt.Graphics;
 
 /*
  * To do: ======
