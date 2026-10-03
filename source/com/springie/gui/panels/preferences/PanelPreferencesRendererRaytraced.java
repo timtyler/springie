@@ -93,8 +93,9 @@ public class PanelPreferencesRendererRaytraced {
         }, false, 50);
     this.panel.add(this.effect_fresnel.panel);
 
-    // Reflect the persisted Simple lighting state in the other rows.
-    this.syncSimpleLighting();
+    // Note: syncSimpleLighting() is NOT called here; the rows are
+    // detached by takeEffectRows() and the Renderer tab syncs them
+    // on renderer switch (Tim, 2026-10-03).
   }
 
   /**
