@@ -37,7 +37,13 @@ final class Raytracer {
   private static final double BLUE_PX, BLUE_PY, BLUE_PZ;
 
   /** Distance falloff constant: intensity = 1/(1+(d/K)^2). */
-  private static final double LIGHT_FALLOFF_K = 800.0;
+  private static final double LIGHT_FALLOFF_K = 10000.0;
+
+  /**
+   * RGB light brightness boost (Tim, 2026-10-03): the three colored
+   * lights together should match the old white light's punch.
+   */
+  private static final double LIGHT_BRIGHTNESS = 2.0;
 
   /**
    * The fill light: front-right, mirroring the key light's front-left
@@ -978,9 +984,12 @@ final class Raytracer {
       g_dot = 0.0;
       b_dot = 0.0;
     }
-    final int r_scaled = 128 + (int) (127.0 * r_dot * r_fall);
-    final int g_scaled = 128 + (int) (127.0 * g_dot * g_fall);
-    final int b_scaled = 128 + (int) (127.0 * b_dot * b_fall);
+    final int r_scaled = 128
+        + (int) (127.0 * Math.min(1.0, r_dot * r_fall * LIGHT_BRIGHTNESS));
+    final int g_scaled = 128
+        + (int) (127.0 * Math.min(1.0, g_dot * g_fall * LIGHT_BRIGHTNESS));
+    final int b_scaled = 128
+        + (int) (127.0 * Math.min(1.0, b_dot * b_fall * LIGHT_BRIGHTNESS));
 
     final double pz = ray.oz + ray.dz * hit.t;
     final int fogged = Fog.applyFog(hit.primitive.getColour(), (int) pz);
@@ -1000,33 +1009,65 @@ final class Raytracer {
     ob = softAdd(ob, fill);
 
     if (!shadowed) {
-      // The glossy sheen and the specular highlight share the same
-      // half-vector: one cosine (and one square root) serves both.
-      final int sheen;
-      final int highlight;
+      // RGB specular reflections (Tim, 2026-10-03): the glossy sheen
+      // and specular highlight are computed per light, so they show
+      // the light's color. Quality mode only.
+      final int r_sheen;
+      final int g_sheen;
+      final int b_sheen;
+      final int r_highlight;
+      final int g_highlight;
+      final int b_highlight;
       if (RendererDelegator.glossiness_enabled
           || RendererDelegator.specular_enabled) {
-        final double lobe_cosine = lobeCosine(ray, hit);
-        sheen = RendererDelegator.glossiness_enabled
-            ? lobeValue(lobe_cosine, RendererDelegator.glossiness, 8.0)
+        // Normalized directions toward each light (from diffuse above).
+        final double r_lobe = lobeCosineFor(ray, hit,
+            rlx / rd, rly / rd, rlz / rd);
+        final double g_lobe = lobeCosineFor(ray, hit,
+            glx / gd, gly / gd, glz / gd);
+        final double b_lobe = lobeCosineFor(ray, hit,
+            blx / bd, bly / bd, blz / bd);
+        r_sheen = RendererDelegator.glossiness_enabled
+            ? (int) (lobeValue(r_lobe, RendererDelegator.glossiness, 8.0)
+                * r_fall * LIGHT_BRIGHTNESS)
             : 0;
-        highlight = RendererDelegator.specular_enabled
-            ? lobeValue(lobe_cosine, RendererDelegator.specular, 32.0)
+        g_sheen = RendererDelegator.glossiness_enabled
+            ? (int) (lobeValue(g_lobe, RendererDelegator.glossiness, 8.0)
+                * g_fall * LIGHT_BRIGHTNESS)
+            : 0;
+        b_sheen = RendererDelegator.glossiness_enabled
+            ? (int) (lobeValue(b_lobe, RendererDelegator.glossiness, 8.0)
+                * b_fall * LIGHT_BRIGHTNESS)
+            : 0;
+        r_highlight = RendererDelegator.specular_enabled
+            ? (int) (lobeValue(r_lobe, RendererDelegator.specular, 32.0)
+                * r_fall * LIGHT_BRIGHTNESS)
+            : 0;
+        g_highlight = RendererDelegator.specular_enabled
+            ? (int) (lobeValue(g_lobe, RendererDelegator.specular, 32.0)
+                * g_fall * LIGHT_BRIGHTNESS)
+            : 0;
+        b_highlight = RendererDelegator.specular_enabled
+            ? (int) (lobeValue(b_lobe, RendererDelegator.specular, 32.0)
+                * b_fall * LIGHT_BRIGHTNESS)
             : 0;
       } else {
-        sheen = 0;
-        highlight = 0;
+        r_sheen = 0;
+        g_sheen = 0;
+        b_sheen = 0;
+        r_highlight = 0;
+        g_highlight = 0;
+        b_highlight = 0;
       }
       final int rim = fresnelRim(ray, hit);
-      or = softAdd(softAdd(or, sheen), rim);
-      og = softAdd(softAdd(og, sheen), rim);
-      ob = softAdd(softAdd(ob, sheen), rim);
+      or = softAdd(softAdd(or, r_sheen), rim);
+      og = softAdd(softAdd(og, g_sheen), rim);
+      ob = softAdd(softAdd(ob, b_sheen), rim);
       // The specular highlight keeps its original hard clip: at full
-      // strength it punches through to white instead of rolling off
-      // softly like the sheen and the rim do.
-      or = Math.min(255, or + highlight);
-      og = Math.min(255, og + highlight);
-      ob = Math.min(255, ob + highlight);
+      // strength it punches through instead of rolling off softly.
+      or = Math.min(255, or + r_highlight);
+      og = Math.min(255, og + g_highlight);
+      ob = Math.min(255, ob + b_highlight);
     }
 
     return 0xFF000000 | (or << 16) | (og << 8) | ob;
@@ -1098,13 +1139,6 @@ final class Raytracer {
     return bvh.intersect(shadow_ray, shadow_hit, stack);
   }
 
-  /**
-   * The cosine between the surface normal and the Blinn-Phong
-   * half-vector (halfway between the light direction and the view
-   * direction), shared by the glossy sheen and the specular highlight.
-   * Returns 0 when the surface faces away or the vector degenerates,
-   * exactly the cases the old per-effect code returned 0 for.
-   */
   /**
    * Halfway-vector cosine for a given light direction (not the fixed
    * white light), shared by the glossy sheen and the specular highlight.

@@ -136,7 +136,7 @@ public class RaytracerFillLightTest {
   public void zeroFillIsPureDiffuse() {
     // Diffuse only: |normal . light| = 0.85092 at the near pole,
     // scaled = 236, (255 * 236) >> 8 = 235.
-    assertEquals(0xFF7F7F7F, nearPole(0),
+    assertEquals(0xFF858585, nearPole(0),
         "fill 0% must leave the diffuse picture untouched");
   }
 
