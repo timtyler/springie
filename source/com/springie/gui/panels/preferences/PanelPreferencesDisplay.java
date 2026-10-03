@@ -60,6 +60,7 @@ public class PanelPreferencesDisplay {
 
     choice.add("Polygon renderer  ", Quality.SOLID);
     choice.add("Ray-traced renderer", Quality.RAYTRACED);
+    choice.add("Ray traced (fast)", Quality.RAYTRACED_FAST);
     choice.add("Original renderer ", Quality.THICK_OUTLINE);
     choice.choice.select(choice.num_to_str(Quality.SOLID));
 
@@ -220,7 +221,11 @@ public class PanelPreferencesDisplay {
 
   private void applyRendererType(int value) {
     this.panel_main.removeAll();
-    final boolean raytraced = value == Quality.RAYTRACED;
+    final boolean raytraced = value == Quality.RAYTRACED
+        || value == Quality.RAYTRACED_FAST;
+    // "Ray traced (fast)" is the ray tracer with Simple lighting on.
+    RendererDelegator.simple_lighting = value == Quality.RAYTRACED_FAST;
+    FrEnd.panel_preferences_renderer_raytraced.syncSimpleLighting();
     // The ray-traced renderer ignores the rasterizer concepts.
     final boolean no_rasterizer_concepts = raytraced;
     FrEnd.panel_preferences_renderer_modern

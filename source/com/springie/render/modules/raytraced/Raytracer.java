@@ -39,6 +39,13 @@ final class Raytracer {
 
   private static final double FILL_Z;
 
+  /**
+   * Simple lighting shade cache (Tim, 2026-10-03): one flat shade level
+   * per link/face primitive, from a single dot product. Cleared per tile.
+   */
+  private static final java.util.Map<Primitive, Integer>
+      simple_shade_cache = new java.util.HashMap<>();
+
   static {
     final Vector3D source = LightSource.source_1;
     final double length = Math.sqrt(source.x * source.x + source.y * source.y
@@ -134,6 +141,8 @@ final class Raytracer {
     final Ray ray = new Ray();
     final Hit hit = new Hit();
     final int[] stack = new int[64];
+    // Simple lighting: one flat shade per primitive, fresh each tile.
+    simple_shade_cache.clear();
     // One reusable jitter source per tile: reseeded per pixel with the
     // same seed the per-pixel Random used, so the sub-pixel rays are
     // bit-identical with none of the allocation.
@@ -715,8 +724,8 @@ final class Raytracer {
     }
     if (RendererDelegator.simple_lighting) {
       // Simple lighting (Tim, 2026-10-03): front-lit, as if the light
-      // is at the viewer. Nodes are flat; links and faces are shaded
-      // by the angle between the surface normal and the view direction.
+      // is at the viewer. Nodes are flat; links and faces get one flat
+      // shade level per primitive, from a single dot product.
       final double pz = ray.oz + ray.dz * hit.t;
       final int fogged =
           Fog.applyFog(hit.primitive.getColour(), (int) pz);
@@ -724,17 +733,24 @@ final class Raytracer {
         // Node: flat base colour with depth fog.
         return 0xFF000000 | fogged;
       }
-      // Link/face: diffuse from the front. The view direction is the
-      // negative ray direction (ray goes from camera into the scene).
-      double dot = -(hit.nx * ray.dx + hit.ny * ray.dy + hit.nz * ray.dz);
-      if (dot < 0.0) {
-        dot = 0.0;
+      // Link/face: one dot product per primitive (cached), not per pixel.
+      // The view direction is the negative ray direction.
+      Integer cached = simple_shade_cache.get(hit.primitive);
+      final int scaled;
+      if (cached != null) {
+        scaled = cached.intValue();
+      } else {
+        double dot = -(hit.nx * ray.dx + hit.ny * ray.dy + hit.nz * ray.dz);
+        if (dot < 0.0) {
+          dot = 0.0;
+        }
+        if (dot > 1.0) {
+          dot = 1.0;
+        }
+        // Same half-to-full brightness range as the default renderer.
+        scaled = 128 + (int) (127.0 * dot);
+        simple_shade_cache.put(hit.primitive, Integer.valueOf(scaled));
       }
-      if (dot > 1.0) {
-        dot = 1.0;
-      }
-      // Same half-to-full brightness range as the default renderer.
-      final int scaled = 128 + (int) (127.0 * dot);
       final int r = (fogged >> 16) & 0xFF;
       final int g = (fogged >> 8) & 0xFF;
       final int b = fogged & 0xFF;

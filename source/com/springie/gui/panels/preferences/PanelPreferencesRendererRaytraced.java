@@ -28,8 +28,6 @@ public class PanelPreferencesRendererRaytraced {
 
   private Checkbox checkbox_shadows;
 
-  private Checkbox checkbox_simple_lighting;
-
   private Effect effect_specular;
 
   private Effect effect_fresnel;
@@ -63,8 +61,6 @@ public class PanelPreferencesRendererRaytraced {
     this.panel.add(this.effect_glossiness.panel);
 
     this.panel.add(panelShadows());
-
-    this.panel.add(panelSimpleLighting());
 
     this.effect_specular = effectPanel("Specular",
         RendererDelegator.specular_enabled, RendererDelegator.specular,
@@ -226,30 +222,13 @@ public class PanelPreferencesRendererRaytraced {
     return panel;
   }
 
-  private Panel panelSimpleLighting() {
-    final Panel panel = new Panel();
-
-    this.checkbox_simple_lighting = new Checkbox("Simple lighting",
-        RendererDelegator.simple_lighting);
-    this.checkbox_simple_lighting.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
-        RendererDelegator.simple_lighting = PanelPreferencesRendererRaytraced.this.checkbox_simple_lighting
-            .getState();
-        PanelPreferencesRendererRaytraced.this.syncSimpleLighting();
-      }
-    });
-    panel.add(this.checkbox_simple_lighting);
-
-    return panel;
-  }
-
   /**
-   * When Simple lighting is on, the phong/specular/gloss/Fresnel/fill/
-   * shadow controls are irrelevant (shade() bypasses them), so disable
-   * them in the UI.
+   * When Simple lighting is on (the "Ray traced (fast)" renderer), the
+   * phong/specular/gloss/Fresnel/fill/shadow controls are irrelevant
+   * (shade() bypasses them), so disable them in the UI.
    */
-  private void syncSimpleLighting() {
-    final boolean simple = this.checkbox_simple_lighting.getState();
+  public void syncSimpleLighting() {
+    final boolean simple = RendererDelegator.simple_lighting;
     this.effect_glossiness.panel.setEnabled(!simple);
     this.effect_specular.panel.setEnabled(!simple);
     this.effect_fresnel.panel.setEnabled(!simple);
@@ -262,9 +241,6 @@ public class PanelPreferencesRendererRaytraced {
 
     RendererDelegator.shadows = false;
     this.checkbox_shadows.setState(false);
-
-    RendererDelegator.simple_lighting = false;
-    this.checkbox_simple_lighting.setState(false);
     this.syncSimpleLighting();
 
     this.effect_specular.resetToDefaults();
