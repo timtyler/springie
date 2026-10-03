@@ -33,8 +33,6 @@ public class PanelPreferencesRendererRaytraced {
 
   private Effect effect_fresnel;
 
-  private Effect effect_fill_light;
-
   /**
    * The five effect rows, detached from {@link #panel} by
    * {@link #takeEffectRows()}. The Renderer tab adds them directly to its
@@ -88,19 +86,6 @@ public class PanelPreferencesRendererRaytraced {
           }
         }, false, 50);
     this.panel.add(this.effect_fresnel.panel);
-
-    this.effect_fill_light = effectPanel("Fill light",
-        RendererDelegator.fill_light_enabled, RendererDelegator.fill_light,
-        new EffectSetter() {
-          public void setEnabled(final boolean on) {
-            RendererDelegator.fill_light_enabled = on;
-          }
-
-          public void setStrength(final int percent) {
-            RendererDelegator.fill_light = percent;
-          }
-        }, false, 50);
-    this.panel.add(this.effect_fill_light.panel);
 
     // Reflect the persisted Simple lighting state in the other rows.
     this.syncSimpleLighting();
@@ -234,7 +219,6 @@ public class PanelPreferencesRendererRaytraced {
     this.effect_glossiness.panel.setVisible(!simple);
     this.effect_specular.panel.setVisible(!simple);
     this.effect_fresnel.panel.setVisible(!simple);
-    this.effect_fill_light.panel.setVisible(!simple);
     this.shadows_row.setVisible(!simple);
     // The rows live in the shared tab (see takeEffectRows); re-layout.
     final java.awt.Container parent =
@@ -253,6 +237,5 @@ public class PanelPreferencesRendererRaytraced {
 
     this.effect_specular.resetToDefaults();
     this.effect_fresnel.resetToDefaults();
-    this.effect_fill_light.resetToDefaults();
   }
 }

@@ -494,6 +494,35 @@ public class PanelControlsUniverse {
     panel_light_blue.add("East", label_light_blue);
     panel_lights.add(panel_light_blue);
 
+    // Fill light (Tim, 2026-10-03): moved from the ray-traced panel.
+    final Panel panel_fill_light_enable = new Panel();
+    final Checkbox checkbox_fill_light = new Checkbox("Fill light",
+        RendererDelegator.fill_light_enabled);
+    checkbox_fill_light.addItemListener(new ItemListener() {
+      public void itemStateChanged(final ItemEvent e) {
+        RendererDelegator.fill_light_enabled = ((Checkbox) e.getSource()).getState();
+      }
+    });
+    panel_fill_light_enable.add(checkbox_fill_light);
+    panel_lights.add(panel_fill_light_enable);
+
+    final Panel panel_fill_light = new Panel();
+    panel_fill_light.setLayout(new BorderLayout(0, 8));
+    panel_fill_light.add("West", new Label("Fill light %:", Label.RIGHT));
+    final Scrollbar scrollbar_fill_light = new Scrollbar(Scrollbar.HORIZONTAL,
+        RendererDelegator.fill_light, 1, 10, 101);
+    final Label label_fill_light = new Label("" + RendererDelegator.fill_light, Label.LEFT);
+    scrollbar_fill_light.addAdjustmentListener(new AdjustmentListener() {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
+        final int val = e.getValue();
+        RendererDelegator.fill_light = val;
+        label_fill_light.setText("" + val);
+      }
+    });
+    panel_fill_light.add("Center", scrollbar_fill_light);
+    panel_fill_light.add("East", label_fill_light);
+    panel_lights.add(panel_fill_light);
+
     final TabbedPanel universe_tabs = new TabbedPanel();
     universe_tabs.add("Main", panel_main);
     universe_tabs.add("Centering", panel_centering);
