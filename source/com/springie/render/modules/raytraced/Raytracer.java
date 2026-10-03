@@ -193,6 +193,13 @@ final class Raytracer {
       HitStats stats, BufferedImage scenic, int background_rgb, Ray ray,
       Hit hit, int[] stack, Ray shadow_ray, Hit shadow_hit,
       JitterRandom jitter, int aa) {
+    if (RendererDelegator.simple_lighting) {
+      // Coarse-to-fine: only trace edges, fill interiors. (Tim, 2026-10-03)
+      renderTileCoarseToFine(x0, y0, width, height, camera, bvh, rings,
+          pixels, stats, scenic, background_rgb, ray, hit, stack,
+          shadow_ray, shadow_hit, jitter, aa);
+      return;
+    }
     // Blank the tile with the background: no rays, just the colour
     // (or scenic texture) lookup.
     int i = 0;
@@ -368,6 +375,203 @@ final class Raytracer {
           final int n = idx + width;
           if (!visited[n]) {
             flood[top++] = n;
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Coarse-to-fine tile rendering (Tim, 2026-10-03): only active when
+   * Simple lighting is on. Traces a coarse 4x4-block grid via flood
+   * fill, then for each hit block decides edge vs interior. Edge blocks
+   * (a neighbour is background or a different primitive) are traced at
+   * full resolution; interior blocks are filled with the block's colour.
+   * For Simple lighting nodes are flat, so the fill is exact; links and
+   * faces get the centre colour (a 4px-step approximation, acceptable
+   * for the fast low-quality path).
+   */
+  private static void renderTileCoarseToFine(int x0, int y0, int width,
+      int height, RayCamera camera, BVH bvh, RTRing[] rings, int[] pixels,
+      HitStats stats, BufferedImage scenic, int background_rgb, Ray ray,
+      Hit hit, int[] stack, Ray shadow_ray, Hit shadow_hit,
+      JitterRandom jitter, int aa) {
+    // Blank the tile with the background.
+    int i = 0;
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x++) {
+        camera.makeRay(x0 + x, y0 + y, ray);
+        pixels[i++] = backgroundAt(scenic, background_rgb, ray,
+            x0 + x, y0 + y);
+      }
+    }
+    final int cs = 4; // coarse block size
+    final int cw = (width + cs - 1) / cs;
+    final int ch = (height + cs - 1) / cs;
+    final boolean[] c_hit = new boolean[cw * ch];
+    final Primitive[] c_prim = new Primitive[cw * ch];
+    final int[] c_rgb = new int[cw * ch];
+    final boolean[] c_visited = new boolean[cw * ch];
+    final int[] c_flood = new int[cw * ch];
+    int c_top = 0;
+    // 8 uniform seeds at block resolution (4x2 grid, cell centres).
+    for (int cy = 0; cy < 2; cy++) {
+      for (int cx = 0; cx < 4; cx++) {
+        final int bx = Math.min((cx * cw + cw / 2) / 4, cw - 1);
+        final int by = Math.min((cy * ch + ch / 2) / 2, ch - 1);
+        final int bidx = by * cw + bx;
+        if (c_visited[bidx]) {
+          continue;
+        }
+        c_visited[bidx] = true;
+        // Trace the block centre.
+        final int px = Math.min(bx * cs + cs / 2, width - 1);
+        final int py = Math.min(by * cs + cs / 2, height - 1);
+        camera.makeRay(x0 + px, y0 + py, ray);
+        hit.reset();
+        if (intersectScene(ray, hit, bvh, rings, stack)) {
+          c_hit[bidx] = true;
+          c_prim[bidx] = hit.primitive;
+          c_rgb[bidx] =
+              shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
+          // Push 4-neighbour blocks.
+          if (bx > 0) {
+            c_flood[c_top++] = bidx - 1;
+          }
+          if (bx + 1 < cw) {
+            c_flood[c_top++] = bidx + 1;
+          }
+          if (by > 0) {
+            c_flood[c_top++] = bidx - cw;
+          }
+          if (by + 1 < ch) {
+            c_flood[c_top++] = bidx + cw;
+          }
+        }
+      }
+    }
+    // Coarse flood fill.
+    while (c_top > 0) {
+      final int bidx = c_flood[--c_top];
+      if (c_visited[bidx]) {
+        continue;
+      }
+      c_visited[bidx] = true;
+      final int bx = bidx % cw;
+      final int by = bidx / cw;
+      final int px = Math.min(bx * cs + cs / 2, width - 1);
+      final int py = Math.min(by * cs + cs / 2, height - 1);
+      camera.makeRay(x0 + px, y0 + py, ray);
+      hit.reset();
+      if (intersectScene(ray, hit, bvh, rings, stack)) {
+        c_hit[bidx] = true;
+        c_prim[bidx] = hit.primitive;
+        c_rgb[bidx] = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
+        if (bx > 0) {
+          c_flood[c_top++] = bidx - 1;
+        }
+        if (bx + 1 < cw) {
+          c_flood[c_top++] = bidx + 1;
+        }
+        if (by > 0) {
+          c_flood[c_top++] = bidx - cw;
+        }
+        if (by + 1 < ch) {
+          c_flood[c_top++] = bidx + cw;
+        }
+      }
+    }
+    // Refine: edge blocks get full-res traces, interiors get filled.
+    for (int by = 0; by < ch; by++) {
+      for (int bx = 0; bx < cw; bx++) {
+        final int bidx = by * cw + bx;
+        if (!c_hit[bidx]) {
+          continue;
+        }
+        // Edge if any 8-neighbour is a miss or a different primitive.
+        boolean edge = false;
+        for (int dy = -1; dy <= 1 && !edge; dy++) {
+          for (int dx = -1; dx <= 1 && !edge; dx++) {
+            if (dx == 0 && dy == 0) {
+              continue;
+            }
+            final int nx = bx + dx;
+            final int ny = by + dy;
+            if (nx < 0 || nx >= cw || ny < 0 || ny >= ch) {
+              edge = true; // tile boundary counts as edge
+              continue;
+            }
+            final int nidx = ny * cw + nx;
+            if (!c_hit[nidx] || c_prim[nidx] != c_prim[bidx]) {
+              edge = true;
+            }
+          }
+        }
+        final int x_start = bx * cs;
+        final int y_start = by * cs;
+        final int x_end = Math.min(x_start + cs, width);
+        final int y_end = Math.min(y_start + cs, height);
+        if (!edge) {
+          // Interior: fill with the block's colour.
+          final int rgb = c_rgb[bidx];
+          for (int y = y_start; y < y_end; y++) {
+            for (int x = x_start; x < x_end; x++) {
+              pixels[y * width + x] = rgb;
+            }
+          }
+          continue;
+        }
+        // Edge: trace each pixel at full resolution.
+        for (int y = y_start; y < y_end; y++) {
+          for (int x = x_start; x < x_end; x++) {
+            final int idx = y * width + x;
+            final int rgb;
+            if (aa <= 1) {
+              camera.makeRay(x0 + x, y0 + y, ray);
+              hit.reset();
+              rgb = intersectScene(ray, hit, bvh, rings, stack)
+                  ? shade(ray, hit, bvh, stack, shadow_ray, shadow_hit)
+                  : pixels[idx]; // background, already filled
+            } else {
+              long r = 0, g = 0, b = 0;
+              boolean hit_any = false;
+              jitter.setSeed((x0 + x) * 73856093L
+                  ^ (y0 + y) * 19349663L ^ 0x9E3779B9L);
+              for (int sy = 0; sy < aa; sy++) {
+                for (int sx = 0; sx < aa; sx++) {
+                  final double sub_x =
+                      x0 + x + (sx + jitter.nextDouble()) / aa;
+                  final double sub_y =
+                      y0 + y + (sy + jitter.nextDouble()) / aa;
+                  camera.makeRay(sub_x, sub_y, ray);
+                  hit.reset();
+                  if (intersectScene(ray, hit, bvh, rings, stack)) {
+                    final int s = shade(ray, hit, bvh, stack,
+                        shadow_ray, shadow_hit);
+                    r += (s >> 16) & 0xFF;
+                    g += (s >> 8) & 0xFF;
+                    b += s & 0xFF;
+                    hit_any = true;
+                  } else {
+                    final int s = backgroundAt(scenic, background_rgb,
+                        ray, (int) Math.round(sub_x),
+                        (int) Math.round(sub_y));
+                    r += (s >> 16) & 0xFF;
+                    g += (s >> 8) & 0xFF;
+                    b += s & 0xFF;
+                  }
+                }
+              }
+              final int samples = aa * aa;
+              rgb = hit_any
+                  ? 0xFF000000 | (int) (r / samples) << 16
+                      | (int) (g / samples) << 8 | (int) (b / samples)
+                  : pixels[idx];
+            }
+            pixels[idx] = rgb;
+            if (stats != null) {
+              stats.add(x, y);
+            }
           }
         }
       }
