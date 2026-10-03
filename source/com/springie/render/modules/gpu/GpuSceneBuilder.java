@@ -11,7 +11,6 @@ import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.CullFace;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
@@ -29,8 +28,8 @@ import com.springie.render.scene.SceneNode;
  * A pure function of the scene -- no camera, no lights, no toolkit
  * state beyond the shapes themselves -- so it is unit-testable.
  * Selection is shown with the selection colour, like the other
- * renderers. (Pixellation and anti-aliasing are deliberately not a
- * concern here.)
+ * renderers; faces are double-sided like the ray tracer's RTTriangle.
+ * (Pixellation and anti-aliasing are deliberately not a concern here.)
  */
 final class GpuSceneBuilder {
   private final Map<Integer, PhongMaterial> materials = new HashMap<>();
@@ -100,12 +99,14 @@ final class GpuSceneBuilder {
         (float) face.z2, (float) face.x3, (float) face.y3,
         (float) face.z3);
     mesh.getTexCoords().addAll(0, 0);
-    mesh.getFaces().addAll(0, 0, 2, 0, 1, 0);
+    // Double-sided, like the ray tracer's RTTriangle (which flips its
+    // normal toward the incoming ray): both windings are emitted, so for
+    // any view direction exactly one is front-facing and correctly lit,
+    // regardless of the model's winding order. The default back-face
+    // culling then keeps just that one -- no z-fighting, no dark backs.
+    mesh.getFaces().addAll(0, 0, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0);
     final MeshView view = new MeshView(mesh);
     view.setMaterial(material(face.colour, face.selected));
-    // Faces are single-sided in the model; render both sides rather
-    // than depending on winding order.
-    view.setCullFace(CullFace.NONE);
     return view;
   }
 

@@ -23,6 +23,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.MeshView;
+import javafx.scene.shape.TriangleMesh;
 import javafx.scene.shape.Sphere;
 
 import com.springie.elements.clazz.Clazz;
@@ -161,6 +162,24 @@ public class GpuSceneBuilderTest {
       }
     }
     assertTrue(found, "cylinder spans the link endpoints");
+  }
+
+  @Test
+  public void facesAreDoubleSided() {
+    final ModelScene scene = SceneExtractor.extract(buildModel(),
+        true, true, true);
+    final Group group = new GpuSceneBuilder().build(scene);
+
+    // Both windings are emitted so the face is lit from either side,
+    // like the ray tracer's double-sided triangles.
+    for (final javafx.scene.Node child : group.getChildren()) {
+      if (child instanceof MeshView) {
+        final TriangleMesh mesh =
+            (TriangleMesh) ((MeshView) child).getMesh();
+        assertEquals(12, mesh.getFaces().size(),
+            "two triangles (both windings), 6 indices each");
+      }
+    }
   }
 
   @Test
