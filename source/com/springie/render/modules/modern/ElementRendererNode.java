@@ -58,6 +58,9 @@ public final class ElementRendererNode {
         double r_factor = 0.25;
         double g_factor = 0.25;
         double b_factor = 0.25;
+        double r_spec = 0.0;
+        double g_spec = 0.0;
+        double b_spec = 0.0;
         if (nlen > 1e-12) {
           final double nnx = nx / nlen;
           final double nny = ny / nlen;
@@ -90,9 +93,6 @@ public final class ElementRendererNode {
             b_factor = 0.25 + 0.75 * b_dot;
           }
           // Specular highlights from the 3 lights (Tim, 2026-10-03).
-          double r_spec = 0.0;
-          double g_spec = 0.0;
-          double b_spec = 0.0;
           // View vector V = (0, 0, -1).
           if (rd > 1e-12) {
             final double lx = rlx / rd;
