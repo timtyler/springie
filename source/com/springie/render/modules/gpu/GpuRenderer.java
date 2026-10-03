@@ -2,16 +2,13 @@
 
 package com.springie.render.modules.gpu;
 
-import java.awt.BorderLayout;
 import java.awt.Graphics;
-import java.awt.LayoutManager;
 import java.awt.Panel;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.image.BufferedImage;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
+import javafx.embed.swing.SwingFXUtils;
 
 import com.springie.FrEnd;
 import com.springie.elements.nodes.NodeManager;
@@ -20,250 +17,118 @@ import com.springie.render.scene.ModelScene;
 import com.springie.render.scene.SceneExtractor;
 
 /**
- * The "GPU" renderer: the extracted model scene rendered with JavaFX 3D,
- * hosted in a JFXPanel inside the main canvas panel. Each repaint
- * extracts a ModelScene under the usual lock and hands it to the FX
- * Application Thread; the 3D scene graph is rebuilt there. Construct on
- * the AWT event thread (it creates Swing components).
+ * The "GPU" renderer: the extracted model scene rendered with JavaFX 3D
+ * into an offscreen scene, then blitted to the AWT canvas. Each repaint
+ * draws the latest rendered frame and queues a scene-graph rebuild on
+ * the FX Application Thread (at most one queued; stale frames are
+ * skipped, not queued). Construct on the AWT event thread.
+ *
+ * JFXPanel is deliberately not used: on some Windows setups its
+ * presentation path shows nothing while the scene itself renders fine,
+ * so the pixels are copied to AWT directly instead.
  */
 public class GpuRenderer implements ModularRendererBase {
-  private final JFXPanel jfx_panel;
-  private final GpuView view;
-  private final LayoutManager previous_layout;
-  private static boolean diagnostics_logged;
+  private final GpuView view = new GpuView();
+  private volatile javafx.scene.Scene fx_scene;
+  private volatile BufferedImage latest_frame;
   /** At most one FX update queued; stale frames are skipped, not queued. */
-  private final java.util.concurrent.atomic.AtomicBoolean update_pending =
-      new java.util.concurrent.atomic.AtomicBoolean();
+  private final AtomicBoolean update_pending = new AtomicBoolean();
+  private int scene_width;
+  private int scene_height;
 
   public GpuRenderer() {
+    // Keep the toolkit alive: with no Stage or JFXPanel, implicit exit
+    // would shut it down.
     Platform.setImplicitExit(false);
-    this.view = new GpuView();
-    this.jfx_panel = new JFXPanel();
+    try {
+      Platform.startup(() -> {
+      });
+    } catch (IllegalStateException e) {
+      // Toolkit already running.
+    }
     final Panel canvas_panel = FrEnd.main_canvas.panel;
-    this.previous_layout = canvas_panel.getLayout();
-    canvas_panel.setLayout(new BorderLayout());
-    canvas_panel.add(this.jfx_panel, BorderLayout.CENTER);
-    canvas_panel.validate();
-    forwardMouseEvents();
+    this.scene_width = Math.max(1, canvas_panel.getWidth());
+    this.scene_height = Math.max(1, canvas_panel.getHeight());
     final GpuView view = this.view;
-    final JFXPanel panel = this.jfx_panel;
+    final int width = this.scene_width;
+    final int height = this.scene_height;
+    // Wait for the FX pipeline to be ready before 3D content is built;
+    // creating meshes too early NPEs in GraphicsPipeline.getPipeline().
+    final java.util.concurrent.CountDownLatch ready =
+        new java.util.concurrent.CountDownLatch(1);
     Platform.runLater(() -> {
-      panel.setScene(view.createScene(
-          Math.max(1.0, panel.getWidth()),
-          Math.max(1.0, panel.getHeight())));
-      // Pulse check: if the FX render loop runs, this fires.
-      final javafx.animation.AnimationTimer pulse_check =
+      this.fx_scene = view.createScene(width, height);
+      // One pulse ensures the pipeline is live.
+      final javafx.animation.AnimationTimer waiter =
           new javafx.animation.AnimationTimer() {
-            private boolean logged;
             @Override
             public void handle(long now) {
-              if (!this.logged) {
-                this.logged = true;
-                System.out.println("[GPU] fx: pulse running");
-              }
+              ready.countDown();
+              stop();
             }
           };
-      pulse_check.start();
+      waiter.start();
     });
+    try {
+      ready.await(10, java.util.concurrent.TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
   }
 
-  /** Removes the JFXPanel when switching to another renderer. */
+  /** Clears the offscreen scene when switching to another renderer. */
   public void uninstall() {
-    final Panel canvas_panel = FrEnd.main_canvas.panel;
-    canvas_panel.remove(this.jfx_panel);
-    canvas_panel.setLayout(this.previous_layout);
-    canvas_panel.validate();
+    final GpuView view = this.view;
+    Platform.runLater(view::clear);
   }
 
   @Override
   public void repaint(Graphics graphics, NodeManager manager) {
-    // The AWT graphics are unused: the JFXPanel paints itself. The
-    // extract runs under the caller's ContextManager lock (reentrant).
+    // Blit the latest rendered frame; the FX thread refreshes it
+    // asynchronously below.
+    final BufferedImage frame = this.latest_frame;
+    if (frame != null) {
+      graphics.drawImage(frame, 0, 0, null);
+    }
+    final javafx.scene.Scene fx_scene = this.fx_scene;
+    if (fx_scene == null
+        || !this.update_pending.compareAndSet(false, true)) {
+      return;
+    }
+    // The extract runs under the caller's ContextManager lock (reentrant).
     final ModelScene scene = SceneExtractor.extract(manager,
         FrEnd.render_nodes, FrEnd.render_links, FrEnd.render_faces);
     final GpuView view = this.view;
-    final JFXPanel panel = this.jfx_panel;
-    if (!diagnostics_logged) {
-      diagnostics_logged = true;
-      System.out.println("[GPU] repaint: nodes=" + scene.nodes.size()
-          + " links=" + scene.links.size() + " faces="
-          + scene.faces.size() + " jfx=" + panel.getWidth() + "x"
-          + panel.getHeight());
-      Platform.runLater(() -> {
-        final javafx.scene.Scene fx_scene = panel.getScene();
-        System.out.println("[GPU] fx: scene=" + (fx_scene != null)
-            + " camera="
-            + (fx_scene == null ? null : fx_scene.getCamera()));
-        if (fx_scene != null && fx_scene.getCamera() != null) {
-          System.out.println("[GPU] fx: cam pos="
-              + fx_scene.getCamera().getTranslateX() + ","
-              + fx_scene.getCamera().getTranslateY() + ","
-              + fx_scene.getCamera().getTranslateZ());
-        }
-        updateView(scene);
-        System.out.println("[GPU] fx: model children="
-            + view.getModelGroup().getChildren().size());
-        // Definitive: can the scene render 3D pixels at all?
-        try {
-          final javafx.scene.image.WritableImage img =
-              fx_scene.snapshot(null);
-          final javafx.scene.image.PixelReader reader =
-              img.getPixelReader();
-          int non_bg = 0;
-          final int w = (int) img.getWidth();
-          final int h = (int) img.getHeight();
-          for (int y = 0; y < h; y += 8) {
-            for (int x = 0; x < w; x += 8) {
-              final javafx.scene.paint.Color c = reader.getColor(x, y);
-              // Background is rgb(8,10,20); anything brighter is content.
-              if (c.getRed() > 0.1 || c.getGreen() > 0.1
-                  || c.getBlue() > 0.15) {
-                non_bg++;
-              }
-            }
-          }
-          System.out.println("[GPU] fx: snapshot " + w + "x" + h
-              + " non-bg pixels=" + non_bg);
-          // Save it so we can see what the scene contains.
-          try {
-            final java.io.File out =
-                new java.io.File(System.getProperty("user.home"),
-                    "gpu-scene-snapshot.png");
-            javax.imageio.ImageIO.write(
-                javafx.embed.swing.SwingFXUtils.fromFXImage(img, null),
-                "png", out);
-            System.out.println("[GPU] fx: snapshot saved to " + out);
-          } catch (Exception ex) {
-            System.out.println("[GPU] fx: snapshot save failed: " + ex);
-          }
-        } catch (Exception e) {
-          System.out.println("[GPU] fx: snapshot failed: " + e);
-        }
-      });
-    } else if (this.update_pending.compareAndSet(false, true)) {
-      // Coalesce: if an update is already queued, skip this frame rather
-      // than letting the queue grow unboundedly.
-      Platform.runLater(() -> {
-        try {
-          updateView(scene);
-        } finally {
-          this.update_pending.set(false);
-        }
-      });
-    }
-  }
-
-  /** Runs on the FX thread. */
-  private void updateView(ModelScene scene) {
-    this.view.update(scene);
-    // The JFXPanel should repaint on pulse, but nudge it in case a
-    // frame was missed.
-    this.jfx_panel.repaint();
+    Platform.runLater(() -> {
+      try {
+        view.update(scene);
+        final javafx.scene.image.WritableImage snapshot =
+            fx_scene.snapshot(null);
+        this.latest_frame = SwingFXUtils.fromFXImage(snapshot, null);
+      } finally {
+        this.update_pending.set(false);
+      }
+    });
   }
 
   @Override
   public void resize(int x, int y) {
+    if (x == this.scene_width && y == this.scene_height) {
+      return;
+    }
+    this.scene_width = x;
+    this.scene_height = y;
     final GpuView view = this.view;
-    Platform.runLater(() -> view.resize(x, y));
+    Platform.runLater(() -> {
+      // Recreate at the new size so the blit stays 1:1.
+      this.fx_scene = view.createScene(x, y);
+      this.latest_frame = null;
+    });
   }
 
   @Override
   public void reset() {
     final GpuView view = this.view;
     Platform.runLater(view::clear);
-  }
-
-  /**
-   * The JFXPanel covers the canvas, so the panel's own mouse listeners
-   * (selection, gestures, drag box) would go deaf. The panel's listeners
-   * are invoked directly with translated coordinates, so all existing
-   * interaction keeps working unchanged. Note: the event must NOT be
-   * re-dispatched to the panel with dispatchEvent -- the
-   * LightweightDispatcher retargets it back down to the JFXPanel child,
-   * which forwards it again, recursing until StackOverflowError.
-   */
-  private void forwardMouseEvents() {
-    final Panel target = FrEnd.main_canvas.panel;
-    this.jfx_panel.addMouseListener(new MouseAdapter() {
-      @Override
-      public void mousePressed(MouseEvent e) {
-        forward(e);
-      }
-
-      @Override
-      public void mouseReleased(MouseEvent e) {
-        forward(e);
-      }
-
-      @Override
-      public void mouseClicked(MouseEvent e) {
-        forward(e);
-      }
-
-      @Override
-      public void mouseEntered(MouseEvent e) {
-        forward(e);
-      }
-
-      @Override
-      public void mouseExited(MouseEvent e) {
-        forward(e);
-      }
-
-      private void forward(MouseEvent e) {
-        final MouseEvent translated = translatedTo(e, target);
-        for (final java.awt.event.MouseListener listener
-            : target.getMouseListeners()) {
-          switch (translated.getID()) {
-            case MouseEvent.MOUSE_PRESSED:
-              listener.mousePressed(translated);
-              break;
-            case MouseEvent.MOUSE_RELEASED:
-              listener.mouseReleased(translated);
-              break;
-            case MouseEvent.MOUSE_CLICKED:
-              listener.mouseClicked(translated);
-              break;
-            case MouseEvent.MOUSE_ENTERED:
-              listener.mouseEntered(translated);
-              break;
-            case MouseEvent.MOUSE_EXITED:
-              listener.mouseExited(translated);
-              break;
-            default:
-              break;
-          }
-        }
-      }
-    });
-    this.jfx_panel.addMouseMotionListener(new MouseMotionAdapter() {
-      @Override
-      public void mouseMoved(MouseEvent e) {
-        final MouseEvent translated = translatedTo(e, target);
-        for (final java.awt.event.MouseMotionListener listener
-            : target.getMouseMotionListeners()) {
-          listener.mouseMoved(translated);
-        }
-      }
-
-      @Override
-      public void mouseDragged(MouseEvent e) {
-        final MouseEvent translated = translatedTo(e, target);
-        for (final java.awt.event.MouseMotionListener listener
-            : target.getMouseMotionListeners()) {
-          listener.mouseDragged(translated);
-        }
-      }
-    });
-  }
-
-  /**
-   * The JFXPanel fills the canvas panel at (0, 0), so JFXPanel-relative
-   * coordinates are already panel-relative; only the source changes.
-   */
-  private static MouseEvent translatedTo(MouseEvent e, Panel target) {
-    return new MouseEvent(target, e.getID(), e.getWhen(), e.getModifiers(),
-        e.getX(), e.getY(), e.getClickCount(), e.isPopupTrigger(),
-        e.getButton());
   }
 }
