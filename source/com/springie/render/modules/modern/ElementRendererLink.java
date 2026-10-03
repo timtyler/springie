@@ -337,7 +337,7 @@ public final class ElementRendererLink {
             final double rz = 2.0 * ndotl * nnz - lz;
             final double rdotv = -rz;
             if (rdotv > 0.0) {
-              r_spec = Math.pow(rdotv, 32.0);
+              r_spec = Math.pow(rdotv, 16.0);
             }
           }
         }
@@ -360,7 +360,7 @@ public final class ElementRendererLink {
             final double rz = 2.0 * ndotl * nnz - lz;
             final double rdotv = -rz;
             if (rdotv > 0.0) {
-              g_spec = Math.pow(rdotv, 32.0);
+              g_spec = Math.pow(rdotv, 16.0);
             }
           }
         }
@@ -383,7 +383,7 @@ public final class ElementRendererLink {
             final double rz = 2.0 * ndotl * nnz - lz;
             final double rdotv = -rz;
             if (rdotv > 0.0) {
-              b_spec = Math.pow(rdotv, 32.0);
+              b_spec = Math.pow(rdotv, 16.0);
             }
           }
         }
