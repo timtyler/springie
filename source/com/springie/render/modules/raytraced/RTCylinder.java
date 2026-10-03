@@ -60,6 +60,27 @@ final class RTCylinder implements Primitive {
     return this.ny;
   }
 
+  /**
+   * The primitive center X (for viewport-dependent RGB lights).
+   */
+  public double getCenterX() {
+    return this.ax + this.nx * this.length * 0.5;
+  }
+
+  /**
+   * The primitive center Y (for viewport-dependent RGB lights).
+   */
+  public double getCenterY() {
+    return this.ay + this.ny * this.length * 0.5;
+  }
+
+  /**
+   * The primitive center Z (for viewport-dependent RGB lights).
+   */
+  public double getCenterZ() {
+    return this.az + this.nz * this.length * 0.5;
+  }
+
   public boolean isUnlit() {
     return false;
   }

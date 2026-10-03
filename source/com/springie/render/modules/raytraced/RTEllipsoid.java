@@ -61,6 +61,27 @@ final class RTEllipsoid implements Primitive {
     return this.ny;
   }
 
+  /**
+   * The primitive center X (for viewport-dependent RGB lights).
+   */
+  public double getCenterX() {
+    return this.cx;
+  }
+
+  /**
+   * The primitive center Y (for viewport-dependent RGB lights).
+   */
+  public double getCenterY() {
+    return this.cy;
+  }
+
+  /**
+   * The primitive center Z (for viewport-dependent RGB lights).
+   */
+  public double getCenterZ() {
+    return this.cz;
+  }
+
   public boolean isUnlit() {
     return false;
   }

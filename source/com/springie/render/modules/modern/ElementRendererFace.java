@@ -36,6 +36,10 @@ public final class ElementRendererFace {
     final Point3D center = scratch_center;
     getCoordsOfCentre(face, center);
 
+    // RGB light shading (Tim, 2026-10-03): based on angle between
+    // polygon and viewer, and polygon and light source.
+    final int rgb_shaded_colour = applyRgbLights(face, colour, center);
+
     final int opacity = face.clazz.colour >>> 24;
 
     // "Face lines = 0" fills the face in a solid colour: a single
@@ -64,7 +68,7 @@ public final class ElementRendererFace {
       v2.subtractTuple3D(center);
 
       final int new_colour = DeepObjectColourCalculator.getColourOfDeepObject(
-          colour, center.z);
+          rgb_shaded_colour, center.z);
       for (int p = 0; p < n; p++) {
         final Point3D[] points = new Point3D[4];
         final int p1_x1 = center.x + (int) (v1.x * (p + off_in) / n);
@@ -102,5 +106,73 @@ public final class ElementRendererFace {
     }
 
     sum.divideBy(npoints);
+  }
+
+  /**
+   * RGB light shading for polygon faces (Tim, 2026-10-03): modulates
+   * the colour based on the angle between the polygon normal and the
+   * viewer, and between the normal and each RGB light source.
+   */
+  private static int applyRgbLights(final Face face, final int colour,
+      final Point3D center) {
+    final int npolygon = face.nodes.size();
+    if (npolygon < 3) {
+      return colour;
+    }
+    // Compute face normal from first three nodes.
+    final Node n0 = (Node) face.nodes.get(0);
+    final Node n1 = (Node) face.nodes.get(1);
+    final Node n2 = (Node) face.nodes.get(2);
+    final double e1x = n1.pos.x - n0.pos.x;
+    final double e1y = n1.pos.y - n0.pos.y;
+    final double e1z = n1.pos.z - n0.pos.z;
+    final double e2x = n2.pos.x - n0.pos.x;
+    final double e2y = n2.pos.y - n0.pos.y;
+    final double e2z = n2.pos.z - n0.pos.z;
+    double nx = e1y * e2z - e1z * e2y;
+    double ny = e1z * e2x - e1x * e2z;
+    double nz = e1x * e2y - e1y * e2x;
+    final double len = Math.sqrt(nx * nx + ny * ny + nz * nz);
+    if (len < 1e-12) {
+      return colour;
+    }
+    nx /= len;
+    ny /= len;
+    nz /= len;
+    // View direction (orthographic): viewer looks down +Z, so the
+    // direction to the viewer is (0, 0, -1).
+    final double view_dot = Math.abs(nz);
+    // Update light positions for current viewport.
+    LightSource.updateForViewport(com.springie.render.Coords.x_pixelso2,
+        com.springie.render.Coords.y_pixelso2);
+    // Red light.
+    final double rlx = LightSource.source_red_pos.x - center.x;
+    final double rly = LightSource.source_red_pos.y - center.y;
+    final double rlz = LightSource.source_red_pos.z - center.z;
+    final double rd = Math.sqrt(rlx * rlx + rly * rly + rlz * rlz);
+    final double r_dot = Math.abs((nx * rlx + ny * rly + nz * rlz) / rd);
+    // Green light.
+    final double glx = LightSource.source_green_pos.x - center.x;
+    final double gly = LightSource.source_green_pos.y - center.y;
+    final double glz = LightSource.source_green_pos.z - center.z;
+    final double gd = Math.sqrt(glx * glx + gly * gly + glz * glz);
+    final double g_dot = Math.abs((nx * glx + ny * gly + nz * glz) / gd);
+    // Blue light.
+    final double blx = LightSource.source_blue_pos.x - center.x;
+    final double bly = LightSource.source_blue_pos.y - center.y;
+    final double blz = LightSource.source_blue_pos.z - center.z;
+    final double bd = Math.sqrt(blx * blx + bly * bly + blz * blz);
+    final double b_dot = Math.abs((nx * blx + ny * bly + nz * blz) / bd);
+    // Combine: 50% ambient + 50% diffuse (view * light).
+    final double r_factor = 0.5 + 0.5 * view_dot * r_dot;
+    final double g_factor = 0.5 + 0.5 * view_dot * g_dot;
+    final double b_factor = 0.5 + 0.5 * view_dot * b_dot;
+    final int r = (colour >> 16) & 0xFF;
+    final int g = (colour >> 8) & 0xFF;
+    final int b = colour & 0xFF;
+    final int or = Math.min(255, (int) (r * r_factor));
+    final int og = Math.min(255, (int) (g * g_factor));
+    final int ob = Math.min(255, (int) (b * b_factor));
+    return (colour & 0xFF000000) | (or << 16) | (og << 8) | ob;
   }
 }

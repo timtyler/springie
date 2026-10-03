@@ -31,10 +31,10 @@ final class Raytracer {
   private static final double GREEN_X, GREEN_Y, GREEN_Z;
   private static final double BLUE_X, BLUE_Y, BLUE_Z;
 
-  /** RGB point light positions (Tim, 2026-10-03). */
-  private static final double RED_PX, RED_PY, RED_PZ;
-  private static final double GREEN_PX, GREEN_PY, GREEN_PZ;
-  private static final double BLUE_PX, BLUE_PY, BLUE_PZ;
+  /** RGB point light positions (Tim, 2026-10-03): viewport-dependent. */
+  private static double RED_PX, RED_PY, RED_PZ;
+  private static double GREEN_PX, GREEN_PY, GREEN_PZ;
+  private static double BLUE_PX, BLUE_PY, BLUE_PZ;
 
   /** Distance falloff constant: intensity = 1/(1+(d/K)^2). */
   private static final double LIGHT_FALLOFF_K = 10000.0;
@@ -83,19 +83,9 @@ final class Raytracer {
     BLUE_Y = blue.y / blue_len;
     BLUE_Z = blue.z / blue_len;
 
-    // Point light positions.
-    final Vector3D red_p = LightSource.source_red_pos;
-    RED_PX = red_p.x;
-    RED_PY = red_p.y;
-    RED_PZ = red_p.z;
-    final Vector3D green_p = LightSource.source_green_pos;
-    GREEN_PX = green_p.x;
-    GREEN_PY = green_p.y;
-    GREEN_PZ = green_p.z;
-    final Vector3D blue_p = LightSource.source_blue_pos;
-    BLUE_PX = blue_p.x;
-    BLUE_PY = blue_p.y;
-    BLUE_PZ = blue_p.z;
+    // Point light positions are viewport-dependent; set by
+    // updateLightPositions() at the start of each tile render.
+    // (Tim, 2026-10-03)
 
     final double fx = -source.x;
     final double fy = -source.y;
@@ -104,6 +94,24 @@ final class Raytracer {
     FILL_X = fx / fill_length;
     FILL_Y = fy / fill_length;
     FILL_Z = fz / fill_length;
+  }
+
+  /**
+   * Positions the RGB point lights based on the viewport dimensions
+   * (Tim, 2026-10-03): near the top of the frame, equally spaced
+   * across the width. Called at the start of each tile render.
+   */
+  private static void updateLightPositions() {
+    LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
+    RED_PX = LightSource.source_red_pos.x;
+    RED_PY = LightSource.source_red_pos.y;
+    RED_PZ = LightSource.source_red_pos.z;
+    GREEN_PX = LightSource.source_green_pos.x;
+    GREEN_PY = LightSource.source_green_pos.y;
+    GREEN_PZ = LightSource.source_green_pos.z;
+    BLUE_PX = LightSource.source_blue_pos.x;
+    BLUE_PY = LightSource.source_blue_pos.y;
+    BLUE_PZ = LightSource.source_blue_pos.z;
   }
 
   private Raytracer() {
@@ -181,6 +189,8 @@ final class Raytracer {
   static void renderTile(final int x0, final int y0, final int width, final int height,
       RayCamera camera, final BVH bvh, final RTRing[] rings, final int[] pixels,
       HitStats stats) {
+    // Position the RGB lights for the current viewport (Tim, 2026-10-03).
+    updateLightPositions();
     final Ray ray = new Ray();
     final Hit hit = new Hit();
     final int[] stack = new int[64];
@@ -868,9 +878,10 @@ final class Raytracer {
       return 0xFF000000 | Fog.applyFog(hit.primitive.getColour(), (int) pz);
     }
     if (RendererDelegator.simple_lighting) {
-      // Simple lighting (Tim, 2026-10-03): RGB lights near the top.
-      // Nodes are flat; links and faces get one flat RGB shade per
-      // primitive, from three dot products (deterministic, no flicker).
+      // Simple lighting (Tim, 2026-10-03): RGB point lights, viewport-
+      // dependent. Nodes are flat; links and faces get one flat RGB
+      // shade per primitive, computed at the primitive center
+      // (deterministic, no flicker).
       final double pz = ray.oz + ray.dz * hit.t;
       final int fogged =
           Fog.applyFog(hit.primitive.getColour(), (int) pz);
@@ -878,45 +889,99 @@ final class Raytracer {
         // Node: flat base colour with depth fog.
         return 0xFF000000 | fogged;
       }
+      // Primitive center for the light distance/direction.
+      final double pcx;
+      final double pcy;
+      final double pcz;
+      final double ax;
+      final double ay;
+      final double az;
+      final boolean is_cylinder;
+      if (hit.primitive instanceof RTCylinder) {
+        final RTCylinder cyl = (RTCylinder) hit.primitive;
+        pcx = cyl.getCenterX();
+        pcy = cyl.getCenterY();
+        pcz = cyl.getCenterZ();
+        ax = cyl.getAxisX();
+        ay = cyl.getAxisY();
+        az = cyl.getAxisZ();
+        is_cylinder = true;
+      } else if (hit.primitive instanceof RTEllipsoid) {
+        final RTEllipsoid ell = (RTEllipsoid) hit.primitive;
+        pcx = ell.getCenterX();
+        pcy = ell.getCenterY();
+        pcz = ell.getCenterZ();
+        ax = ell.getAxisX();
+        ay = ell.getAxisY();
+        az = ell.getAxisZ();
+        is_cylinder = true;
+      } else {
+        // Face: use hit position as center; normal from hit.
+        pcx = ray.ox + ray.dx * hit.t;
+        pcy = ray.oy + ray.dy * hit.t;
+        pcz = ray.oz + ray.dz * hit.t;
+        ax = hit.nx;
+        ay = hit.ny;
+        az = hit.nz;
+        is_cylinder = false;
+      }
       final double r_factor;
       final double g_factor;
       final double b_factor;
-      if (hit.primitive instanceof RTCylinder) {
-        // Cable: per-light brightness from the axis angle.
-        final RTCylinder cyl = (RTCylinder) hit.primitive;
-        final double ax = cyl.getAxisX();
-        final double ay = cyl.getAxisY();
-        final double az = cyl.getAxisZ();
-        final double r_dot = RED_X * ax + RED_Y * ay + RED_Z * az;
-        final double g_dot = GREEN_X * ax + GREEN_Y * ay + GREEN_Z * az;
-        final double b_dot = BLUE_X * ax + BLUE_Y * ay + BLUE_Z * az;
-        r_factor = Math.sqrt(Math.max(0.0, 1.0 - r_dot * r_dot));
-        g_factor = Math.sqrt(Math.max(0.0, 1.0 - g_dot * g_dot));
-        b_factor = Math.sqrt(Math.max(0.0, 1.0 - b_dot * b_dot));
-      } else if (hit.primitive instanceof RTEllipsoid) {
-        // Strut: same as cable.
-        final RTEllipsoid ell = (RTEllipsoid) hit.primitive;
-        final double ax = ell.getAxisX();
-        final double ay = ell.getAxisY();
-        final double az = ell.getAxisZ();
-        final double r_dot = RED_X * ax + RED_Y * ay + RED_Z * az;
-        final double g_dot = GREEN_X * ax + GREEN_Y * ay + GREEN_Z * az;
-        final double b_dot = BLUE_X * ax + BLUE_Y * ay + BLUE_Z * az;
-        r_factor = Math.sqrt(Math.max(0.0, 1.0 - r_dot * r_dot));
-        g_factor = Math.sqrt(Math.max(0.0, 1.0 - g_dot * g_dot));
-        b_factor = Math.sqrt(Math.max(0.0, 1.0 - b_dot * b_dot));
+      if (is_cylinder) {
+        // Cable/strut: per-light brightness from axis angle to the
+        // light direction, with distance falloff.
+        double rlx = RED_PX - pcx;
+        double rly = RED_PY - pcy;
+        double rlz = RED_PZ - pcz;
+        double rd = Math.sqrt(rlx * rlx + rly * rly + rlz * rlz);
+        double r_dot = (rlx * ax + rly * ay + rlz * az) / rd;
+        double r_fall = 1.0 / (1.0 + (rd / LIGHT_FALLOFF_K) * (rd / LIGHT_FALLOFF_K));
+        r_factor = Math.sqrt(Math.max(0.0, 1.0 - r_dot * r_dot))
+            * Math.min(1.0, r_fall * LIGHT_BRIGHTNESS);
+        double glx = GREEN_PX - pcx;
+        double gly = GREEN_PY - pcy;
+        double glz = GREEN_PZ - pcz;
+        double gd = Math.sqrt(glx * glx + gly * gly + glz * glz);
+        double g_dot = (glx * ax + gly * ay + glz * az) / gd;
+        double g_fall = 1.0 / (1.0 + (gd / LIGHT_FALLOFF_K) * (gd / LIGHT_FALLOFF_K));
+        g_factor = Math.sqrt(Math.max(0.0, 1.0 - g_dot * g_dot))
+            * Math.min(1.0, g_fall * LIGHT_BRIGHTNESS);
+        double blx = BLUE_PX - pcx;
+        double bly = BLUE_PY - pcy;
+        double blz = BLUE_PZ - pcz;
+        double bd = Math.sqrt(blx * blx + bly * bly + blz * blz);
+        double b_dot = (blx * ax + bly * ay + blz * az) / bd;
+        double b_fall = 1.0 / (1.0 + (bd / LIGHT_FALLOFF_K) * (bd / LIGHT_FALLOFF_K));
+        b_factor = Math.sqrt(Math.max(0.0, 1.0 - b_dot * b_dot))
+            * Math.min(1.0, b_fall * LIGHT_BRIGHTNESS);
       } else {
         // Face (triangle): geometric normal is constant; dot with each
-        // light direction.
-        final double nx = hit.nx;
-        final double ny = hit.ny;
-        final double nz = hit.nz;
+        // light direction from the face center.
+        double rlx = RED_PX - pcx;
+        double rly = RED_PY - pcy;
+        double rlz = RED_PZ - pcz;
+        double rd = Math.sqrt(rlx * rlx + rly * rly + rlz * rlz);
+        double r_fall = 1.0 / (1.0 + (rd / LIGHT_FALLOFF_K) * (rd / LIGHT_FALLOFF_K));
         r_factor = Math.max(0.0, Math.min(1.0,
-            nx * RED_X + ny * RED_Y + nz * RED_Z));
+            (ax * rlx + ay * rly + az * rlz) / rd))
+            * Math.min(1.0, r_fall * LIGHT_BRIGHTNESS);
+        double glx = GREEN_PX - pcx;
+        double gly = GREEN_PY - pcy;
+        double glz = GREEN_PZ - pcz;
+        double gd = Math.sqrt(glx * glx + gly * gly + glz * glz);
+        double g_fall = 1.0 / (1.0 + (gd / LIGHT_FALLOFF_K) * (gd / LIGHT_FALLOFF_K));
         g_factor = Math.max(0.0, Math.min(1.0,
-            nx * GREEN_X + ny * GREEN_Y + nz * GREEN_Z));
+            (ax * glx + ay * gly + az * glz) / gd))
+            * Math.min(1.0, g_fall * LIGHT_BRIGHTNESS);
+        double blx = BLUE_PX - pcx;
+        double bly = BLUE_PY - pcy;
+        double blz = BLUE_PZ - pcz;
+        double bd = Math.sqrt(blx * blx + bly * bly + blz * blz);
+        double b_fall = 1.0 / (1.0 + (bd / LIGHT_FALLOFF_K) * (bd / LIGHT_FALLOFF_K));
         b_factor = Math.max(0.0, Math.min(1.0,
-            nx * BLUE_X + ny * BLUE_Y + nz * BLUE_Z));
+            (ax * blx + ay * bly + az * blz) / bd))
+            * Math.min(1.0, b_fall * LIGHT_BRIGHTNESS);
       }
       // Half-to-full brightness per channel.
       final int r_scaled = 128 + (int) (127.0 * r_factor);
