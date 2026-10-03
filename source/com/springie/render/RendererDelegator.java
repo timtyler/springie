@@ -96,7 +96,7 @@ public final class RendererDelegator {
    * light source model, no shadows, no specular/gloss/Fresnel/fill. A
    * stepping stone to a faster, lower-quality ray tracer.
    */
-  public static boolean simple_lighting = false;
+  public static volatile boolean simple_lighting = false;
 
   /**
    * Ray-traced specular highlights as a percentage (10-100): the
