@@ -76,9 +76,39 @@ public class GpuRenderer implements ModularRendererBase {
         System.out.println("[GPU] fx: scene=" + (fx_scene != null)
             + " camera="
             + (fx_scene == null ? null : fx_scene.getCamera()));
+        if (fx_scene != null && fx_scene.getCamera() != null) {
+          System.out.println("[GPU] fx: cam pos="
+              + fx_scene.getCamera().getTranslateX() + ","
+              + fx_scene.getCamera().getTranslateY() + ","
+              + fx_scene.getCamera().getTranslateZ());
+        }
         view.update(scene);
         System.out.println("[GPU] fx: model children="
             + view.getModelGroup().getChildren().size());
+        // Definitive: can the scene render 3D pixels at all?
+        try {
+          final javafx.scene.image.WritableImage img =
+              fx_scene.snapshot(null);
+          final javafx.scene.image.PixelReader reader =
+              img.getPixelReader();
+          int non_bg = 0;
+          final int w = (int) img.getWidth();
+          final int h = (int) img.getHeight();
+          for (int y = 0; y < h; y += 8) {
+            for (int x = 0; x < w; x += 8) {
+              final javafx.scene.paint.Color c = reader.getColor(x, y);
+              // Background is rgb(8,10,20); anything brighter is content.
+              if (c.getRed() > 0.1 || c.getGreen() > 0.1
+                  || c.getBlue() > 0.15) {
+                non_bg++;
+              }
+            }
+          }
+          System.out.println("[GPU] fx: snapshot " + w + "x" + h
+              + " non-bg pixels=" + non_bg);
+        } catch (Exception e) {
+          System.out.println("[GPU] fx: snapshot failed: " + e);
+        }
       });
     } else {
       Platform.runLater(() -> view.update(scene));
