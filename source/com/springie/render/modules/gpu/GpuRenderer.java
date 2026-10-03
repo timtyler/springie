@@ -31,6 +31,9 @@ public class GpuRenderer implements ModularRendererBase {
   private final GpuView view;
   private final LayoutManager previous_layout;
   private static boolean diagnostics_logged;
+  /** At most one FX update queued; stale frames are skipped, not queued. */
+  private final java.util.concurrent.atomic.AtomicBoolean update_pending =
+      new java.util.concurrent.atomic.AtomicBoolean();
 
   public GpuRenderer() {
     Platform.setImplicitExit(false);
@@ -82,7 +85,7 @@ public class GpuRenderer implements ModularRendererBase {
               + fx_scene.getCamera().getTranslateY() + ","
               + fx_scene.getCamera().getTranslateZ());
         }
-        view.update(scene);
+        updateView(scene);
         System.out.println("[GPU] fx: model children="
             + view.getModelGroup().getChildren().size());
         // Definitive: can the scene render 3D pixels at all?
@@ -110,9 +113,22 @@ public class GpuRenderer implements ModularRendererBase {
           System.out.println("[GPU] fx: snapshot failed: " + e);
         }
       });
-    } else {
-      Platform.runLater(() -> view.update(scene));
+    } else if (this.update_pending.compareAndSet(false, true)) {
+      // Coalesce: if an update is already queued, skip this frame rather
+      // than letting the queue grow unboundedly.
+      Platform.runLater(() -> {
+        try {
+          updateView(scene);
+        } finally {
+          this.update_pending.set(false);
+        }
+      });
     }
+  }
+
+  /** Runs on the FX thread. */
+  private void updateView(ModelScene scene) {
+    this.view.update(scene);
   }
 
   @Override
