@@ -30,7 +30,6 @@ import com.springie.render.scene.SceneExtractor;
 public class GpuRenderer implements ModularRendererBase {
   private final GpuView view = new GpuView();
   private volatile javafx.scene.Scene fx_scene;
-  private volatile BufferedImage latest_frame;
   private int scene_width;
   private int scene_height;
 
@@ -82,12 +81,6 @@ public class GpuRenderer implements ModularRendererBase {
 
   @Override
   public void repaint(Graphics graphics, NodeManager manager) {
-    // Blit the latest rendered frame; the FX thread refreshes it
-    // asynchronously below.
-    final BufferedImage frame = this.latest_frame;
-    if (frame != null) {
-      graphics.drawImage(frame, 0, 0, null);
-    }
     final javafx.scene.Scene fx_scene = this.fx_scene;
     if (fx_scene == null) {
       return;
@@ -96,16 +89,25 @@ public class GpuRenderer implements ModularRendererBase {
     final ModelScene scene = SceneExtractor.extract(manager,
         FrEnd.render_nodes, FrEnd.render_links, FrEnd.render_faces);
     final GpuView view = this.view;
-    // No throttling: every frame is queued so the true renderer
-    // throughput is visible.
-    Platform.runLater(() -> {
-      view.update(scene);
-      final javafx.scene.image.WritableImage snapshot =
-          fx_scene.snapshot(null);
-      this.latest_frame = SwingFXUtils.fromFXImage(snapshot, null);
+    // Synchronous: block the EDT until the FX thread finishes the frame.
+    // This restores the original lockstep (physics/render on one logical
+    // thread) -- no queue, no dropped frames, no unbounded growth.
+    final java.util.concurrent.FutureTask<BufferedImage> render_task =
+        new java.util.concurrent.FutureTask<>(() -> {
+          view.update(scene);
+          final javafx.scene.image.WritableImage snapshot =
+              fx_scene.snapshot(null);
+          return SwingFXUtils.fromFXImage(snapshot, null);
+        });
+    Platform.runLater(render_task);
+    try {
+      final BufferedImage frame = render_task.get();
+      graphics.drawImage(frame, 0, 0, null);
       // One completed 3D frame for the Statistics tab FPS readout.
       RendererDelegator.countRenderedFrame();
-    });
+    } catch (Exception e) {
+      // FX thread failed; skip this frame.
+    }
   }
 
   @Override
@@ -119,7 +121,6 @@ public class GpuRenderer implements ModularRendererBase {
     Platform.runLater(() -> {
       // Recreate at the new size so the blit stays 1:1.
       this.fx_scene = view.createScene(x, y);
-      this.latest_frame = null;
     });
   }
 
