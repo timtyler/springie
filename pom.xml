@@ -201,6 +201,12 @@
       <version>${javafx.version}</version>
       <classifier>linux</classifier>
     </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-swing</artifactId>
+      <version>${javafx.version}</version>
+      <classifier>linux</classifier>
+    </dependency>
     <!-- Logging: SLF4J API + Logback implementation. -->
     <dependency>
       <groupId>org.slf4j</groupId>

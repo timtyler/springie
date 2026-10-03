@@ -4,6 +4,7 @@ public interface Quality {
   int THICK_OUTLINE = 0;
   int SOLID = 1;
   int RAYTRACED = 10;
+  int GPU = 11;
   int _QUALITY_1A = 2;
   int MULTIPLE = 3;
   int QUALITY_TERRIBLE = 4;
