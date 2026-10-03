@@ -232,6 +232,9 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   public void repaint(final Graphics graphics, final NodeManager manager) {
     final int width = Coords.x_pixels;
     final int height = Coords.y_pixels;
+    // TEMP DEBUG (Tim, 2026-10-03): count paints vs frames.
+    System.err.println("RAYTRACE: paint frame_done=" + this.frame_done
+        + " frame_id=" + this.frame_id);
     final boolean show_tiles = RendererTileManager.show_tiles;
     if (this.tiles == null || width != this.canvas_width
         || height != this.canvas_height || show_tiles != this.last_show_tiles) {
@@ -310,6 +313,11 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     }
 
     if (this.frame_done) {
+      // TEMP DEBUG: log global and force_whole.
+      final boolean dbg_global = RendererDelegator.shadows
+          || RendererDelegator.scenic_background;
+      System.err.println("RAYTRACE: startFrame global=" + dbg_global
+          + " one_big_tile=" + RendererTileManager.one_big_tile);
       // Each tile's dirty rectangle: the union of every element's
       // screen box clipped to the tile, the same RectangleInt algebra
       // the polygon renderer uses for its tiles. A tile that was empty
@@ -525,6 +533,11 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     // after startFrame returns.)
     final boolean force_whole =
         dirty == null || global || this.tile_empty == null;
+    // TEMP DEBUG.
+    System.err.println("RAYTRACE: force_whole=" + force_whole
+        + " (dirty_null=" + (dirty == null)
+        + " global=" + global
+        + " tile_empty_null=" + (this.tile_empty == null) + ")");
     int submitted = 0;
     for (int i = 0; i < tiles.length; i++) {
       if (skip == null || !skip[i]) {
