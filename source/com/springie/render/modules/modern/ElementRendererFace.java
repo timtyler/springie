@@ -163,10 +163,11 @@ public final class ElementRendererFace {
     final double blz = LightSource.blue_pz - center.z;
     final double bd = Math.sqrt(blx * blx + bly * bly + blz * blz);
     final double b_dot = Math.abs((nx * blx + ny * bly + nz * blz) / bd);
-    // Combine: 50% ambient + 50% diffuse (view * light).
-    final double r_factor = 0.5 + 0.5 * view_dot * r_dot;
-    final double g_factor = 0.5 + 0.5 * view_dot * g_dot;
-    final double b_factor = 0.5 + 0.5 * view_dot * b_dot;
+    // Combine: 37.5% ambient + 62.5% diffuse (view * light). RGB is
+    // prominent; the white ambient is dimmer. (Tim, 2026-10-03)
+    final double r_factor = 0.375 + 0.625 * view_dot * r_dot;
+    final double g_factor = 0.375 + 0.625 * view_dot * g_dot;
+    final double b_factor = 0.375 + 0.625 * view_dot * b_dot;
     // Specular highlight (Tim, 2026-10-03, extra credit): where the
     // polygon reflects the light directly at the viewer, add extra
     // highlighting. R = 2*dot(N,L)*N - L; spec = pow(max(0, dot(R,V)), 32).

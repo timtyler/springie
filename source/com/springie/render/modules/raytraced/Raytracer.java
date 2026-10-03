@@ -43,7 +43,7 @@ final class Raytracer {
    * RGB light brightness boost (Tim, 2026-10-03): the three colored
    * lights together should match the old white light's punch.
    */
-  private static final double LIGHT_BRIGHTNESS = 1.0;
+  private static final double LIGHT_BRIGHTNESS = 2.0;
 
   /**
    * The fill light: front-right, mirroring the key light's front-left
@@ -984,9 +984,9 @@ final class Raytracer {
             * Math.min(1.0, b_fall * LIGHT_BRIGHTNESS);
       }
       // Half-to-full brightness per channel.
-      final int r_scaled = 128 + (int) (127.0 * r_factor);
-      final int g_scaled = 128 + (int) (127.0 * g_factor);
-      final int b_scaled = 128 + (int) (127.0 * b_factor);
+      final int r_scaled = 96 + (int) (159.0 * r_factor);
+      final int g_scaled = 96 + (int) (159.0 * g_factor);
+      final int b_scaled = 96 + (int) (159.0 * b_factor);
       final int r = (fogged >> 16) & 0xFF;
       final int g = (fogged >> 8) & 0xFF;
       final int b = fogged & 0xFF;
@@ -1049,12 +1049,12 @@ final class Raytracer {
       g_dot = 0.0;
       b_dot = 0.0;
     }
-    final int r_scaled = 128
-        + (int) (127.0 * Math.min(1.0, r_dot * r_fall * LIGHT_BRIGHTNESS));
-    final int g_scaled = 128
-        + (int) (127.0 * Math.min(1.0, g_dot * g_fall * LIGHT_BRIGHTNESS));
-    final int b_scaled = 128
-        + (int) (127.0 * Math.min(1.0, b_dot * b_fall * LIGHT_BRIGHTNESS));
+    final int r_scaled = 96
+        + (int) (159.0 * Math.min(1.0, r_dot * r_fall * LIGHT_BRIGHTNESS));
+    final int g_scaled = 96
+        + (int) (159.0 * Math.min(1.0, g_dot * g_fall * LIGHT_BRIGHTNESS));
+    final int b_scaled = 96
+        + (int) (159.0 * Math.min(1.0, b_dot * b_fall * LIGHT_BRIGHTNESS));
 
     final double pz = ray.oz + ray.dz * hit.t;
     final int fogged = Fog.applyFog(hit.primitive.getColour(), (int) pz);
