@@ -188,6 +188,106 @@ final class Raytracer {
    * background (the model's edge). Pixels never reached cost no rays.
    * The fill stays inside the tile; 4-connectivity.
    */
+  /**
+   * Tries a phase of seed points for the flood fill. Each seed is traced;
+   * hits push their 4-neighbours. Returns the updated stack top.
+   * (Tim, 2026-10-03: multi-phase seeds to avoid missing content.)
+   */
+  private static int seedPhase(final int x0, final int y0, final int width,
+      final int height, final RayCamera camera, final BVH bvh,
+      final RTRing[] rings, final int[] pixels, final HitStats stats,
+      final BufferedImage scenic, final int background_rgb, final Ray ray,
+      final Hit hit, final int[] stack, final Ray shadow_ray,
+      final Hit shadow_hit, final JitterRandom jitter, final int aa,
+      final boolean[] visited, final int[] flood, int top,
+      final int[] grid_x, final int[] grid_y, final int grid_w,
+      final int grid_h) {
+    for (int s = 0; s < grid_x.length; s++) {
+      final int cx = grid_x[s];
+      final int cy = grid_y[s];
+      final int sx;
+      final int sy;
+      if (grid_w == 2 && grid_h == 2 && grid_x.length == 5) {
+        // Phase 2: corners + center. Map 0->0, 1->width-1, 2->center.
+        sx = cx == 2 ? width / 2 : (cx == 0 ? 0 : width - 1);
+        sy = cy == 2 ? height / 2 : (cy == 0 ? 0 : height - 1);
+      } else {
+        // Uniform grid: cell centres.
+        sx = Math.min((cx * width + width / 2) / grid_w, width - 1);
+        sy = Math.min((cy * height + height / 2) / grid_h, height - 1);
+      }
+      final int idx = sy * width + sx;
+      if (visited[idx]) {
+        continue;
+      }
+      visited[idx] = true;
+      final int rgb;
+      final boolean struck;
+      if (aa <= 1) {
+        camera.makeRay(x0 + sx, y0 + sy, ray);
+        hit.reset();
+        struck = intersectScene(ray, hit, bvh, rings, stack);
+        rgb = struck
+            ? shade(ray, hit, bvh, stack, shadow_ray, shadow_hit)
+            : pixels[idx];
+      } else {
+        long r = 0, g = 0, b = 0;
+        boolean hit_any = false;
+        jitter.setSeed((x0 + sx) * 73856093L ^ (y0 + sy) * 19349663L
+            ^ 0x9E3779B9L);
+        for (int sy2 = 0; sy2 < aa; sy2++) {
+          for (int sx2 = 0; sx2 < aa; sx2++) {
+            final double sub_x =
+                x0 + sx + (sx2 + jitter.nextDouble()) / aa;
+            final double sub_y =
+                y0 + sy + (sy2 + jitter.nextDouble()) / aa;
+            camera.makeRay(sub_x, sub_y, ray);
+            hit.reset();
+            if (intersectScene(ray, hit, bvh, rings, stack)) {
+              final int sm =
+                  shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
+              r += (sm >> 16) & 0xFF;
+              g += (sm >> 8) & 0xFF;
+              b += sm & 0xFF;
+              hit_any = true;
+            } else {
+              final int sm = backgroundAt(scenic, background_rgb, ray,
+                  (int) Math.round(sub_x), (int) Math.round(sub_y));
+              r += (sm >> 16) & 0xFF;
+              g += (sm >> 8) & 0xFF;
+              b += sm & 0xFF;
+            }
+          }
+        }
+        struck = hit_any;
+        final int samples = aa * aa;
+        rgb = struck
+            ? 0xFF000000 | (int) (r / samples) << 16
+                | (int) (g / samples) << 8 | (int) (b / samples)
+            : pixels[idx];
+      }
+      if (struck) {
+        pixels[idx] = rgb;
+        if (stats != null) {
+          stats.add(sx, sy);
+        }
+        if (sx > 0) {
+          flood[top++] = idx - 1;
+        }
+        if (sx + 1 < width) {
+          flood[top++] = idx + 1;
+        }
+        if (sy > 0) {
+          flood[top++] = idx - width;
+        }
+        if (sy + 1 < height) {
+          flood[top++] = idx + width;
+        }
+      }
+    }
+    return top;
+  }
+
   private static void renderTileFloodFill(final int x0, final int y0, final int width,
       int height, final RayCamera camera, final BVH bvh, final RTRing[] rings, final int[] pixels,
       HitStats stats, final BufferedImage scenic, final int background_rgb, final Ray ray,
@@ -217,84 +317,32 @@ final class Raytracer {
     final boolean[] visited = new boolean[width * height];
     final int[] flood = new int[width * height];
     int top = 0;
-    // 8 uniform seeds per tile (4x2 grid, cell centres). Deterministic,
-    // so renders are reproducible. (Tim, 2026-10-03: the small chance
-    // of missing a tiny isolated component is acceptable.)
-    for (int cy = 0; cy < 2; cy++) {
-      for (int cx = 0; cx < 4; cx++) {
-        final int sx = Math.min((cx * width + width / 2) / 4, width - 1);
-        final int sy = Math.min((cy * height + height / 2) / 2, height - 1);
-        final int idx = sy * width + sx;
-        if (visited[idx]) {
-          continue;
-        }
-        visited[idx] = true;
-        final int rgb;
-        final boolean struck;
-        if (aa <= 1) {
-          camera.makeRay(x0 + sx, y0 + sy, ray);
-          hit.reset();
-          struck = intersectScene(ray, hit, bvh, rings, stack);
-          rgb = struck
-              ? shade(ray, hit, bvh, stack, shadow_ray, shadow_hit)
-              : pixels[idx];
-        } else {
-          long r = 0, g = 0, b = 0;
-          boolean hit_any = false;
-          jitter.setSeed((x0 + sx) * 73856093L ^ (y0 + sy) * 19349663L
-              ^ 0x9E3779B9L);
-          for (int sy2 = 0; sy2 < aa; sy2++) {
-            for (int sx2 = 0; sx2 < aa; sx2++) {
-              final double sub_x =
-                  x0 + sx + (sx2 + jitter.nextDouble()) / aa;
-              final double sub_y =
-                  y0 + sy + (sy2 + jitter.nextDouble()) / aa;
-              camera.makeRay(sub_x, sub_y, ray);
-              hit.reset();
-              if (intersectScene(ray, hit, bvh, rings, stack)) {
-                final int s =
-                    shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
-                r += (s >> 16) & 0xFF;
-                g += (s >> 8) & 0xFF;
-                b += s & 0xFF;
-                hit_any = true;
-              } else {
-                final int s = backgroundAt(scenic, background_rgb, ray,
-                    (int) Math.round(sub_x), (int) Math.round(sub_y));
-                r += (s >> 16) & 0xFF;
-                g += (s >> 8) & 0xFF;
-                b += s & 0xFF;
-              }
-            }
-          }
-          struck = hit_any;
-          final int samples = aa * aa;
-          rgb = struck
-              ? 0xFF000000 | (int) (r / samples) << 16
-                  | (int) (g / samples) << 8 | (int) (b / samples)
-              : pixels[idx];
-        }
-        if (struck) {
-          pixels[idx] = rgb;
-          if (stats != null) {
-            stats.add(sx, sy);
-          }
-          // Seed hit: push its 4-neighbours for the flood fill.
-          // (The seed itself is already traced and marked visited.)
-          if (sx > 0) {
-            flood[top++] = idx - 1;
-          }
-          if (sx + 1 < width) {
-            flood[top++] = idx + 1;
-          }
-          if (sy > 0) {
-            flood[top++] = idx - width;
-          }
-          if (sy + 1 < height) {
-            flood[top++] = idx + width;
-          }
-        }
-      }
+    // Multi-phase seeds (Tim, 2026-10-03): if the uniform seeds miss,
+    // try harder before giving up. Phase 1: 8 uniform (4x2 grid).
+    // Phase 2: 4 corners + center. Phase 3: 4x4 dense grid. Deterministic,
+    // so renders are reproducible. If all fail, the tile is empty.
+    // Phase 1: 8 uniform seeds (4x2 grid, cell centres).
+    top = seedPhase(x0, y0, width, height, camera, bvh, rings, pixels,
+        stats, scenic, background_rgb, ray, hit, stack, shadow_ray,
+        shadow_hit, jitter, aa, visited, flood, top,
+        new int[]{0, 1, 2, 3, 0, 1, 2, 3},
+        new int[]{0, 0, 0, 0, 1, 1, 1, 1}, 4, 2);
+    if (top == 0) {
+      // Phase 2: 4 corners + center.
+      top = seedPhase(x0, y0, width, height, camera, bvh, rings, pixels,
+          stats, scenic, background_rgb, ray, hit, stack, shadow_ray,
+          shadow_hit, jitter, aa, visited, flood, top,
+          new int[]{0, 0, 1, 1, 2},
+          new int[]{0, 1, 0, 1, 2}, 2, 2);
+    }
+    if (top == 0) {
+      // Phase 3: 4x4 dense grid.
+      top = seedPhase(x0, y0, width, height, camera, bvh, rings, pixels,
+          stats, scenic, background_rgb, ray, hit, stack, shadow_ray,
+          shadow_hit, jitter, aa, visited, flood, top,
+          new int[]{0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3},
+          new int[]{0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3},
+          4, 4);
     }
     if (top == 0) {
       // No seed hit: tile is empty, background stands.
@@ -386,6 +434,66 @@ final class Raytracer {
   }
 
   /**
+   * Tries a phase of coarse seed blocks. Returns the updated stack top.
+   * (Tim, 2026-10-03: multi-phase seeds to avoid missing content.)
+   */
+  private static int coarseSeedPhase(final int x0, final int y0,
+      final int width, final int height, final int cs, final int cw,
+      final int ch, final RayCamera camera, final BVH bvh,
+      final RTRing[] rings, final Ray ray, final Hit hit, final int[] stack,
+      final Ray shadow_ray, final Hit shadow_hit, final boolean[] c_hit,
+      final Primitive[] c_prim, final int[] c_rgb,
+      final boolean[] c_visited, final int[] c_flood, int c_top,
+      final int[] grid_x, final int[] grid_y, final int grid_w,
+      final int grid_h) {
+    for (int s = 0; s < grid_x.length; s++) {
+      final int cx = grid_x[s];
+      final int cy = grid_y[s];
+      final int bx;
+      final int by;
+      if (grid_w == 2 && grid_h == 2 && grid_x.length == 5) {
+        // Corners + center.
+        bx = cx == 2 ? cw / 2 : (cx == 0 ? 0 : cw - 1);
+        by = cy == 2 ? ch / 2 : (cy == 0 ? 0 : ch - 1);
+      } else {
+        bx = Math.min((cx * cw + cw / 2) / grid_w, cw - 1);
+        by = Math.min((cy * ch + ch / 2) / grid_h, ch - 1);
+      }
+      final int bidx = by * cw + bx;
+      if (c_visited[bidx]) {
+        continue;
+      }
+      c_visited[bidx] = true;
+      final int px = Math.min(bx * cs + cs / 2, width - 1);
+      final int py = Math.min(by * cs + cs / 2, height - 1);
+      camera.makeRay(x0 + px, y0 + py, ray);
+      hit.reset();
+      if (intersectScene(ray, hit, bvh, rings, stack)) {
+        c_hit[bidx] = true;
+        c_prim[bidx] = hit.primitive;
+        c_rgb[bidx] = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
+        if (bx > 0 && !c_visited[bidx - 1]) {
+          c_visited[bidx - 1] = true;
+          c_flood[c_top++] = bidx - 1;
+        }
+        if (bx + 1 < cw && !c_visited[bidx + 1]) {
+          c_visited[bidx + 1] = true;
+          c_flood[c_top++] = bidx + 1;
+        }
+        if (by > 0 && !c_visited[bidx - cw]) {
+          c_visited[bidx - cw] = true;
+          c_flood[c_top++] = bidx - cw;
+        }
+        if (by + 1 < ch && !c_visited[bidx + cw]) {
+          c_visited[bidx + cw] = true;
+          c_flood[c_top++] = bidx + cw;
+        }
+      }
+    }
+    return c_top;
+  }
+
+  /**
    * Coarse-to-fine tile rendering (Tim, 2026-10-03): only active when
    * Simple lighting is on. Traces a coarse 4x4-block grid via flood
    * fill, then for each hit block decides edge vs interior. Edge blocks
@@ -428,46 +536,20 @@ final class Raytracer {
     final boolean[] c_visited = new boolean[cw * ch];
     final int[] c_flood = new int[cw * ch];
     int c_top = 0;
-    // 8 uniform seeds at block resolution (4x2 grid, cell centres).
-    for (int cy = 0; cy < 2; cy++) {
-      for (int cx = 0; cx < 4; cx++) {
-        final int bx = Math.min((cx * cw + cw / 2) / 4, cw - 1);
-        final int by = Math.min((cy * ch + ch / 2) / 2, ch - 1);
-        final int bidx = by * cw + bx;
-        if (c_visited[bidx]) {
-          continue;
-        }
-        c_visited[bidx] = true;
-        // Trace the block centre.
-        final int px = Math.min(bx * cs + cs / 2, width - 1);
-        final int py = Math.min(by * cs + cs / 2, height - 1);
-        camera.makeRay(x0 + px, y0 + py, ray);
-        hit.reset();
-        if (intersectScene(ray, hit, bvh, rings, stack)) {
-          c_hit[bidx] = true;
-          c_prim[bidx] = hit.primitive;
-          c_rgb[bidx] =
-              shade(ray, hit, bvh, stack, shadow_ray, shadow_hit);
-          // Push 4-neighbour blocks (mark visited at push time so the
-          // stack can't overflow with duplicates).
-          if (bx > 0 && !c_visited[bidx - 1]) {
-            c_visited[bidx - 1] = true;
-            c_flood[c_top++] = bidx - 1;
-          }
-          if (bx + 1 < cw && !c_visited[bidx + 1]) {
-            c_visited[bidx + 1] = true;
-            c_flood[c_top++] = bidx + 1;
-          }
-          if (by > 0 && !c_visited[bidx - cw]) {
-            c_visited[bidx - cw] = true;
-            c_flood[c_top++] = bidx - cw;
-          }
-          if (by + 1 < ch && !c_visited[bidx + cw]) {
-            c_visited[bidx + cw] = true;
-            c_flood[c_top++] = bidx + cw;
-          }
-        }
-      }
+    // Multi-phase seeds at block resolution (Tim, 2026-10-03):
+    // 8 uniform, then 4 corners + center if nothing hit.
+    // Phase 1: 8 uniform seeds (4x2 grid, cell centres).
+    c_top = coarseSeedPhase(x0, y0, width, height, cs, cw, ch, camera,
+        bvh, rings, ray, hit, stack, shadow_ray, shadow_hit, c_hit,
+        c_prim, c_rgb, c_visited, c_flood, c_top,
+        new int[]{0, 1, 2, 3, 0, 1, 2, 3},
+        new int[]{0, 0, 0, 0, 1, 1, 1, 1}, 4, 2);
+    if (c_top == 0) {
+      // Phase 2: 4 corners + center.
+      c_top = coarseSeedPhase(x0, y0, width, height, cs, cw, ch, camera,
+          bvh, rings, ray, hit, stack, shadow_ray, shadow_hit, c_hit,
+          c_prim, c_rgb, c_visited, c_flood, c_top,
+          new int[]{0, 0, 1, 1, 2}, new int[]{0, 1, 0, 1, 2}, 2, 2);
     }
     // Coarse flood fill.
     while (c_top > 0) {
