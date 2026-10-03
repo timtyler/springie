@@ -60,7 +60,6 @@ public class PanelPreferencesDisplay {
 
     choice.add("Polygon renderer  ", Quality.SOLID);
     choice.add("Ray-traced renderer", Quality.RAYTRACED);
-    choice.add("GPU renderer      ", Quality.GPU);
     choice.add("Original renderer ", Quality.THICK_OUTLINE);
     choice.choice.select(choice.num_to_str(Quality.SOLID));
 
@@ -221,17 +220,9 @@ public class PanelPreferencesDisplay {
 
   private void applyRendererType(int value) {
     this.panel_main.removeAll();
-    // Leaving the GPU renderer: take its JFXPanel back out of the
-    // canvas before another renderer takes over the panel.
-    if (RendererDelegator.renderer
-        instanceof com.springie.render.modules.gpu.GpuRenderer) {
-      ((com.springie.render.modules.gpu.GpuRenderer)
-          RendererDelegator.renderer).uninstall();
-    }
     final boolean raytraced = value == Quality.RAYTRACED;
-    final boolean gpu = value == Quality.GPU;
-    // The GPU renderer ignores the rasterizer concepts too.
-    final boolean no_rasterizer_concepts = raytraced || gpu;
+    // The ray-traced renderer ignores the rasterizer concepts.
+    final boolean no_rasterizer_concepts = raytraced;
     FrEnd.panel_preferences_renderer_modern
         .setRaytracedRowsVisible(no_rasterizer_concepts);
     // The depth sort does not apply to the ray-traced renderer, so its
@@ -240,8 +231,7 @@ public class PanelPreferencesDisplay {
         .setDeepestFirstRowVisible(!no_rasterizer_concepts);
     // The rasterizer-only rows ("Node polyhedron", "Cable/Strut
     // divisions", "Strut/cable sides", "Face lines") configure concepts
-    // the ray-traced and GPU renderers ignore, so those rows are hidden
-    // there.
+    // the ray-traced renderer ignores, so those rows are hidden there.
     FrEnd.panel_preferences_renderer_modern
         .setRaytracedHiddenRowsVisible(!no_rasterizer_concepts);
     // Labels are a modern-renderer feature, so the option is hidden for
@@ -256,11 +246,6 @@ public class PanelPreferencesDisplay {
       RendererDelegator.renderer = new ModularRendererRaytraced();
       // Shares the modern panel: the bin size lives there, and the
       // ray-traced renderer uses the same bins as the default renderer.
-      this.panel_main.add(FrEnd.panel_preferences_renderer_modern.panel,
-          "Center");
-    } else if (gpu) {
-      RendererDelegator.renderer =
-          new com.springie.render.modules.gpu.GpuRenderer();
       this.panel_main.add(FrEnd.panel_preferences_renderer_modern.panel,
           "Center");
     } else {

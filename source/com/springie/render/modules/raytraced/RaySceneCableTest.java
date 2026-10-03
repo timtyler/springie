@@ -18,8 +18,6 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.render.Coords;
 import com.springie.elements.clazz.Clazz;
 import com.springie.geometry.Point3D;
-import com.springie.render.scene.ModelScene;
-import com.springie.render.scene.SceneExtractor;
 
 /**
  * The scene builder must turn struts into stretched spheres and cables
@@ -49,8 +47,7 @@ public class RaySceneCableTest {
     manager.getLinkManager().element.add(strut);
     manager.getLinkManager().element.add(cable);
 
-    final ModelScene scene = SceneExtractor.extract(manager, true, true, true);
-    final Primitive[] primitives = RayScene.build(scene);
+    final Primitive[] primitives = RayScene.build(manager);
     int cylinders = 0;
     int ellipsoids = 0;
     for (final Primitive p : primitives) {

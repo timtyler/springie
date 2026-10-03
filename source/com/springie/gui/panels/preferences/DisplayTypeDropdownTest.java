@@ -147,7 +147,7 @@ class DisplayTypeDropdownTest {
     assertNotNull(dropdown, "the Main sub-tab must hold a dropdown");
     assertTrue(hasDisplayTypeLabel(shared),
         "the Main sub-tab must label it 'Renderer:'");
-    assertEquals(4, dropdown.getItemCount(),
+    assertEquals(3, dropdown.getItemCount(),
         "the dropdown must offer the four renderers");
 
     // It must be the first row of the tab, not buried below the options.
@@ -165,7 +165,7 @@ class DisplayTypeDropdownTest {
     final Choice dropdown = originalTabDropdown();
     assertNotNull(dropdown,
         "the original renderer's Renderer tab must hold a dropdown");
-    assertEquals(4, dropdown.getItemCount(),
+    assertEquals(3, dropdown.getItemCount(),
         "the original tab's dropdown must offer the four renderers");
   }
 

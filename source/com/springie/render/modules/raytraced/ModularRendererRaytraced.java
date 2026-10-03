@@ -23,8 +23,6 @@ import com.springie.render.RectangleInt;
 import com.springie.render.RendererDelegator;
 import com.springie.render.ScenicBackground;
 import com.springie.render.modules.ModularRendererBase;
-import com.springie.render.scene.ModelScene;
-import com.springie.render.scene.SceneExtractor;
 import com.springie.render.modules.modern.RendererTileManager;
 
 /**
@@ -506,13 +504,10 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     this.frame_done = false;
 
     final RayCamera camera = new RayCamera();
-    // The scene snapshot is the renderers' shared view of the model;
-    // RayScene only maps it to primitives.
-    final ModelScene scene = SceneExtractor.extract(manager,
-        FrEnd.render_nodes, FrEnd.render_links, FrEnd.render_faces);
-    final Primitive[] primitives = RayScene.build(scene);
+    // Direct model walk: no intermediate scene copy.
+    final Primitive[] primitives = RayScene.build(manager);
     final BVH bvh = new BVH(primitives);
-    final RTRing[] rings = RayScene.selectionRings(scene.nodes,
+    final RTRing[] rings = RayScene.selectionRings(manager,
         camera.getEyeX(), camera.getEyeY(), camera.getEyeZ());
 
     final Tile[] tiles = this.tiles;

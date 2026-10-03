@@ -25,8 +25,6 @@ import com.springie.render.Coords;
 import com.springie.render.RectangleInt;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.RendererTileManager;
-import com.springie.render.scene.ModelScene;
-import com.springie.render.scene.SceneExtractor;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced.Tile;
 
 /**
@@ -175,10 +173,9 @@ public class TilePartialFrameTest {
    */
   private void renderTiles(boolean[] skip) {
     final RayCamera camera = new RayCamera();
-    final ModelScene scene = SceneExtractor.extract(this.manager, true, true, true);
-    final Primitive[] primitives = RayScene.build(scene);
+    final Primitive[] primitives = RayScene.build(this.manager);
     final BVH bvh = new BVH(primitives);
-    final RTRing[] rings = RayScene.selectionRings(scene.nodes,
+    final RTRing[] rings = RayScene.selectionRings(this.manager,
         camera.getEyeX(), camera.getEyeY(), camera.getEyeZ());
     for (int i = 0; i < this.tiles.length; i++) {
       if (skip != null && skip[i]) {
@@ -285,10 +282,9 @@ public class TilePartialFrameTest {
   private void renderStagedRects(boolean[] skip, RectangleInt[] rects,
       RectangleInt[] last_dirty) {
     final RayCamera camera = new RayCamera();
-    final ModelScene scene = SceneExtractor.extract(this.manager, true, true, true);
-    final Primitive[] primitives = RayScene.build(scene);
+    final Primitive[] primitives = RayScene.build(this.manager);
     final BVH bvh = new BVH(primitives);
-    final RTRing[] rings = RayScene.selectionRings(scene.nodes,
+    final RTRing[] rings = RayScene.selectionRings(this.manager,
         camera.getEyeX(), camera.getEyeY(), camera.getEyeZ());
     for (int i = 0; i < this.tiles.length; i++) {
       if (skip[i]) {
