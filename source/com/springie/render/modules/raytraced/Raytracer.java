@@ -611,11 +611,18 @@ final class Raytracer {
       if (verified && samplesUniform(child)) {
         if (samplesSeenHit(child)) {
           fillBlock(pixels, width, qx0, qy0, qx1, qy1, px, child, stats);
+          return;
         }
-        return;
+        // All background: thin-cable check (Tim, 2026-10-04).
+        if (!extraBackgroundSamplesHit(x0, y0, qx0, qy0, qx1, qy1, px,
+            camera, bvh, rings, ray, hit, stack, child)) {
+          return;  // Truly background.
+        }
+        // Else fall through to full render.
       }
     }
-    // Not uniform, or verification failed: full render, reusing traces.
+    // Not uniform, or verification failed, or thin cable found: full
+    // render, reusing traces.
     renderBlock(x0, y0, qx0, qy0, qx1, qy1, cs, min_cs, px, camera, bvh,
         rings, ray, hit, stack, shadow_ray, shadow_hit, jitter, pixels,
         width, stats, child);
@@ -834,7 +841,13 @@ final class Raytracer {
       return false;  // Subdivide.
     }
     if (!samplesSeenHit(samples)) {
-      // Entire block is background (all missed), already pre-filled.
+      // All missed: background. Extra thin-cable check (Tim, 2026-10-04)
+      // before allowing the fill.
+      if (extraBackgroundSamplesHit(x0, y0, bx, by, x_end, y_end, px,
+          camera, bvh, rings, ray, hit, stack, samples)) {
+        return false;  // Hit a thin feature: subdivide.
+      }
+      // Truly background, already pre-filled.
       return true;
     }
     // Uniform: fill the block.
@@ -921,8 +934,29 @@ final class Raytracer {
         if (samplesSeenHit(half_samples)) {
           fillBlock(pixels, width, hx0, hy0, hx1, hy1, px, half_samples,
               stats);
+        } else if (extraBackgroundSamplesHit(x0, y0, hx0, hy0, hx1, hy1,
+            px, camera, bvh, rings, ray, hit, stack, half_samples)) {
+          // Thin cable in a background half: subdivide (Tim, 2026-10-04).
+          final int child = cs / 2;
+          if (horizontal) {
+            final int mx = hx0 + half;
+            renderBlock(x0, y0, hx0, hy0, mx, hy1, child, min_cs, px,
+                camera, bvh, rings, ray, hit, stack, shadow_ray,
+                shadow_hit, jitter, pixels, width, stats, half_samples);
+            renderBlock(x0, y0, mx, hy0, hx1, hy1, child, min_cs, px,
+                camera, bvh, rings, ray, hit, stack, shadow_ray,
+                shadow_hit, jitter, pixels, width, stats, half_samples);
+          } else {
+            final int my = hy0 + half;
+            renderBlock(x0, y0, hx0, hy0, hx1, my, child, min_cs, px,
+                camera, bvh, rings, ray, hit, stack, shadow_ray,
+                shadow_hit, jitter, pixels, width, stats, half_samples);
+            renderBlock(x0, y0, hx0, my, hx1, hy1, child, min_cs, px,
+                camera, bvh, rings, ray, hit, stack, shadow_ray,
+                shadow_hit, jitter, pixels, width, stats, half_samples);
+          }
         }
-        // Else: all background, already pre-filled.
+        // Else: truly background, already pre-filled.
       } else {
         // Not uniform: split the half into two (cs/2)x(cs/2) blocks,
         // reusing the half's samples.
@@ -965,6 +999,54 @@ final class Raytracer {
       }
     }
     return v;
+  }
+
+  /**
+   * Extra background safety check (Tim, 2026-10-04): when all primary
+   * samples miss, thin vertical/horizontal cables can slip between them.
+   * Traces additional edge samples at 1/4, 1/2, 3/4 (skipping already-
+   * sampled positions). Returns true if any hit (caller subdivides).
+   * Scales from 4x4 up to 32x32.
+   */
+  private static boolean extraBackgroundSamplesHit(final int x0,
+      final int y0, final int bx, final int by, final int x_end,
+      final int y_end, final int px, final RayCamera camera, final BVH bvh,
+      final RTRing[] rings, final Ray ray, final Hit hit, final int[] stack,
+      final BlockSamples samples) {
+    final int cs = x_end - bx;
+    if (cs < 4) {
+      return false;
+    }
+    // Quarter, half, three-quarter positions along each edge.
+    final int[] qs = {bx + cs / 4, bx + cs / 2, bx + 3 * cs / 4};
+    final int[] rs = {by + cs / 4, by + cs / 2, by + 3 * cs / 4};
+    // Top and bottom edges.
+    for (final int qx : qs) {
+      if (samples.find(qx, by) < 0
+          && samplePrimitive(x0 + qx * px, y0 + by * px, camera, bvh,
+              rings, ray, hit, stack) != null) {
+        return true;
+      }
+      if (samples.find(qx, y_end - 1) < 0
+          && samplePrimitive(x0 + qx * px, y0 + (y_end - 1) * px, camera,
+              bvh, rings, ray, hit, stack) != null) {
+        return true;
+      }
+    }
+    // Left and right edges.
+    for (final int qy : rs) {
+      if (samples.find(bx, qy) < 0
+          && samplePrimitive(x0 + bx * px, y0 + qy * px, camera, bvh,
+              rings, ray, hit, stack) != null) {
+        return true;
+      }
+      if (samples.find(x_end - 1, qy) < 0
+          && samplePrimitive(x0 + (x_end - 1) * px, y0 + qy * px, camera,
+              bvh, rings, ray, hit, stack) != null) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static boolean samplesUniform(final BlockSamples s) {    Primitive first_prim = null;
