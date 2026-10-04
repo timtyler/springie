@@ -532,9 +532,13 @@ public class PanelControlsUniverse {
     universe_tabs.add("Centering", panel_centering);
     universe_tabs.add("Muscles", panel_muscles);
     universe_tabs.add("Lights", panel_lights);
-    this.panel.add(universe_tabs);
     // Reset button stays visible below the sub-tabs (Tim, 2026-10-03).
-    this.panel.add(getResetUniversePanel());
+    // BorderLayout so the button only takes its preferred height,
+    // not 50% of the space (Tim, 2026-10-03).
+    final Panel universe_wrapper = new Panel(new BorderLayout());
+    universe_wrapper.add(universe_tabs, BorderLayout.CENTER);
+    universe_wrapper.add(getResetUniversePanel(), BorderLayout.SOUTH);
+    this.panel.add(universe_wrapper);
   }
 
   private Panel getResetUniversePanel() {
