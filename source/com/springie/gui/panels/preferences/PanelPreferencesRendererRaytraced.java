@@ -40,6 +40,14 @@ public class PanelPreferencesRendererRaytraced {
   private Effect effect_fresnel;
 
   /**
+   * Coarse-to-fine checkbox (Tim, 2026-10-03): disables the 8x8 block
+   * flood-fill in fast mode, falling back to per-pixel tracing.
+   */
+  private Checkbox checkbox_coarse_to_fine;
+
+  private Panel coarse_to_fine_row;
+
+  /**
    * Container holding Glossiness and Fresnel on one row (Tim, 2026-10-03).
    */
   private Panel gloss_fresnel_row;
@@ -101,6 +109,19 @@ public class PanelPreferencesRendererRaytraced {
     // Note: syncSimpleLighting() is NOT called here; the rows are
     // detached by takeEffectRows() and the Renderer tab syncs them
     // on renderer switch (Tim, 2026-10-03).
+
+    // Coarse-to-fine toggle (Tim, 2026-10-03): only relevant in fast mode.
+    this.coarse_to_fine_row = new Panel();
+    this.checkbox_coarse_to_fine = new Checkbox("Coarse-to-fine",
+        RendererDelegator.coarse_to_fine);
+    this.checkbox_coarse_to_fine.addItemListener(new ItemListener() {
+      public void itemStateChanged(final ItemEvent e) {
+        RendererDelegator.coarse_to_fine =
+            PanelPreferencesRendererRaytraced.this.checkbox_coarse_to_fine
+                .getState();
+      }
+    });
+    this.coarse_to_fine_row.add(this.checkbox_coarse_to_fine);
   }
 
   /**
@@ -282,6 +303,11 @@ public class PanelPreferencesRendererRaytraced {
         parent.add(row);
       }
     }
+    // Coarse-to-fine toggle: only shown in fast mode (simple lighting).
+    parent.remove(this.coarse_to_fine_row);
+    if (simple) {
+      parent.add(this.coarse_to_fine_row);
+    }
     parent.validate();
   }
 
@@ -294,5 +320,8 @@ public class PanelPreferencesRendererRaytraced {
 
     this.effect_specular.resetToDefaults();
     this.effect_fresnel.resetToDefaults();
+
+    RendererDelegator.coarse_to_fine = true;
+    this.checkbox_coarse_to_fine.setState(true);
   }
 }

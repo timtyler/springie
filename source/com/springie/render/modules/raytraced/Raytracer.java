@@ -353,7 +353,8 @@ final class Raytracer {
       HitStats stats, final BufferedImage scenic, final int background_rgb, final Ray ray,
       Hit hit, final int[] stack, final Ray shadow_ray, final Hit shadow_hit,
       JitterRandom jitter, final int aa) {
-    if (RendererDelegator.simple_lighting) {
+    if (RendererDelegator.simple_lighting
+        && RendererDelegator.coarse_to_fine) {
       // Coarse-to-fine: only trace edges, fill interiors. (Tim, 2026-10-03)
       renderTileCoarseToFine(x0, y0, width, height, camera, bvh, rings,
           pixels, stats, scenic, background_rgb, ray, hit, stack,
@@ -503,7 +504,7 @@ final class Raytracer {
       final RTRing[] rings, final Ray ray, final Hit hit, final int[] stack,
       final Ray shadow_ray, final Hit shadow_hit, final JitterRandom jitter,
       final boolean[] c_hit,
-      final Primitive[] c_prim, final int[] c_rgb,
+      final Primitive[] c_prim,
       final boolean[] c_visited, final int[] c_flood, int c_top,
       final int[] grid_x, final int[] grid_y, final int grid_w,
       final int grid_h) {
@@ -532,7 +533,6 @@ final class Raytracer {
       if (intersectScene(ray, hit, bvh, rings, stack)) {
         c_hit[bidx] = true;
         c_prim[bidx] = hit.primitive;
-        c_rgb[bidx] = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit, jitter);
         if (bx > 0 && !c_visited[bidx - 1]) {
           c_visited[bidx - 1] = true;
           c_flood[c_top++] = bidx - 1;
@@ -589,7 +589,6 @@ final class Raytracer {
     final int ch = (height + cs - 1) / cs;
     final boolean[] c_hit = new boolean[cw * ch];
     final Primitive[] c_prim = new Primitive[cw * ch];
-    final int[] c_rgb = new int[cw * ch];
     final boolean[] c_visited = new boolean[cw * ch];
     final int[] c_flood = new int[cw * ch];
     int c_top = 0;
@@ -598,14 +597,14 @@ final class Raytracer {
     // Phase 1: 8 uniform seeds (4x2 grid, cell centres).
     c_top = coarseSeedPhase(x0, y0, width, height, cs, cw, ch, camera,
         bvh, rings, ray, hit, stack, shadow_ray, shadow_hit, jitter, c_hit,
-        c_prim, c_rgb, c_visited, c_flood, c_top,
+        c_prim, c_visited, c_flood, c_top,
         new int[]{0, 1, 2, 3, 0, 1, 2, 3},
         new int[]{0, 0, 0, 0, 1, 1, 1, 1}, 4, 2);
     if (c_top == 0) {
       // Phase 2: 4 corners + center.
       c_top = coarseSeedPhase(x0, y0, width, height, cs, cw, ch, camera,
           bvh, rings, ray, hit, stack, shadow_ray, shadow_hit, jitter, c_hit,
-          c_prim, c_rgb, c_visited, c_flood, c_top,
+          c_prim, c_visited, c_flood, c_top,
           new int[]{0, 0, 1, 1, 2}, new int[]{0, 1, 0, 1, 2}, 2, 2);
     }
     // Coarse flood fill.
@@ -621,7 +620,6 @@ final class Raytracer {
       if (intersectScene(ray, hit, bvh, rings, stack)) {
         c_hit[bidx] = true;
         c_prim[bidx] = hit.primitive;
-        c_rgb[bidx] = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit, jitter);
         if (bx > 0 && !c_visited[bidx - 1]) {
           c_visited[bidx - 1] = true;
           c_flood[c_top++] = bidx - 1;
@@ -671,15 +669,28 @@ final class Raytracer {
         final int x_end = Math.min(x_start + cs, width);
         final int y_end = Math.min(y_start + cs, height);
         if (!edge) {
-          // Interior: fill with the block's colour (no rays). When
-          // "Show active tiles" is on, paint these ray-saving fills red
-          // so the savings are visible. (Tim, 2026-10-03)
-          final int rgb = RendererTileManager.show_active_tiles
-              ? 0xFFFF0000
-              : c_rgb[bidx];
+          // Interior: the flood fill found the primitive, so we skip the
+          // expensive BVH traversal. But we still intersect the single
+          // primitive per pixel and shade per pixel -- the RGB lighting
+          // varies across the block, so a single flat fill would show
+          // as blocky 8x8 lumps. (Tim, 2026-10-03)
+          // When "Show active tiles" is on, paint these ray-saving fills
+          // red so the savings are visible.
+          final Primitive prim = c_prim[bidx];
           for (int y = y_start; y < y_end; y++) {
             for (int x = x_start; x < x_end; x++) {
-              pixels[y * width + x] = rgb;
+              final int idx = y * width + x;
+              if (RendererTileManager.show_active_tiles) {
+                pixels[idx] = 0xFFFF0000;
+                continue;
+              }
+              camera.makeRay(x0 + x, y0 + y, ray);
+              hit.reset();
+              if (prim.intersect(ray, hit)) {
+                pixels[idx] = shade(ray, hit, bvh, stack, shadow_ray,
+                    shadow_hit, jitter);
+              }
+              // Else: background, already filled.
             }
           }
           continue;
