@@ -601,19 +601,26 @@ final class Raytracer {
     final int[] cy = {by, by, y_end - 1, y_end - 1};
     Primitive first_prim = null;
     int first_rgb = 0;
+    boolean all_miss = true;
     for (int c = 0; c < 4; c++) {
       camera.makeRay(x0 + cx[c], y0 + cy[c], ray);
       hit.reset();
       if (!intersectScene(ray, hit, bvh, rings, stack)) {
-        return false;
+        continue;  // Corner is background; check if all are.
       }
-      if (c == 0) {
+      all_miss = false;
+      if (first_prim == null) {
         first_prim = hit.primitive;
         first_rgb = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit,
             jitter);
       } else if (hit.primitive != first_prim) {
-        return false;
+        return false;  // Mixed primitives: subdivide.
       }
+    }
+    if (all_miss) {
+      // Entire block is background, already pre-filled. No rays needed.
+      // (Don't touch stats: background isn't a hit.)
+      return true;
     }
     // Uniform: fill the block. In debug mode ("Show active tiles"), only
     // the saved pixels go red -- the 4 corners were actually traced, so
