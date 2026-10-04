@@ -54,7 +54,7 @@ public class LightSource {
     final double half_h = (double) hh * scale;
     final double light_y_top = -half_h * 0.8;
     final double light_y_bottom = half_h * 0.8;
-    final double light_z = -1000.0 * scale;
+    final double light_z = -800.0 * scale;
     // Dragged lights (Tim, 2026-10-04): X/Y from drag, Z from viewport.
     if (red_custom) {
       red_px = red_custom_x;
