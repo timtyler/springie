@@ -254,21 +254,11 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       this.frame_staged = true;
     }
     if (this.frame_staged) {
-      // The drag box is drawn into the frame composite (not as a
-      // screen-space overlay), clipped to the tile rectangles so it
-      // never lands in the show_tiles gaps. A full blit covers the
-      // gaps, which the partial tile blits do not.
-      final boolean drag_box = isDragBoxActive();
+      // The drag box is drawn as a screen-space overlay AFTER the blit,
+      // not into the frame composite. It never touches the tiles, so no
+      // re-tracing is needed (Tim, 2026-10-04).
       if (this.staged_skip == null) {
         this.frame_image = compositeFrame(this.tiles, width, height);
-        if (drag_box) {
-          final Graphics g = this.frame_image.getGraphics();
-          try {
-            drawDragBoxClippedToTiles(g, this.tiles);
-          } finally {
-            g.dispose();
-          }
-        }
         graphics.drawImage(this.frame_image, 0, 0, null);
       } else {
         final Graphics g2 = this.frame_image.getGraphics();
@@ -280,31 +270,21 @@ public class ModularRendererRaytraced implements ModularRendererBase {
               if (shown != null) {
                 // Paint the re-traced rectangle into the composite...
                 g2.drawImage(shown.image, shown.rx0, shown.ry0, null);
-                if (drag_box) {
-                  // Draw the box clipped to this tile's rectangle.
-                  final java.awt.Shape old_clip = g2.getClip();
-                  g2.setClip(shown.rx0, shown.ry0,
-                      shown.image.getWidth(), shown.image.getHeight());
-                  drawDragBox(g2);
-                  g2.setClip(old_clip);
-                } else {
-                  // ...and blit only that rectangle to the screen.
-                  // Skipped when a drag box is active: the full blit
-                  // below covers the tile gaps too.
-                  final int rx1 = shown.rx0 + shown.image.getWidth();
-                  final int ry1 = shown.ry0 + shown.image.getHeight();
-                  graphics.drawImage(this.frame_image, shown.rx0, shown.ry0,
-                      rx1, ry1, shown.rx0, shown.ry0, rx1, ry1, null);
-                }
+                // ...and blit only that rectangle to the screen.
+                final int rx1 = shown.rx0 + shown.image.getWidth();
+                final int ry1 = shown.ry0 + shown.image.getHeight();
+                graphics.drawImage(this.frame_image, shown.rx0, shown.ry0,
+                    rx1, ry1, shown.rx0, shown.ry0, rx1, ry1, null);
               }
             }
-          }
-          if (drag_box) {
-            graphics.drawImage(this.frame_image, 0, 0, null);
           }
         } finally {
           g2.dispose();
         }
+      }
+      // Overlay the drag box on the screen (not in the frame image).
+      if (isDragBoxActive()) {
+        drawDragBox(graphics);
       }
       this.frame_staged = false;
     }
@@ -796,86 +776,13 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       }
     }
 
-    // The drag-box selection draws directly on the screen, after the
-    // blit -- it is not model geometry, so the walks above never cover
-    // it. Its old and new rectangles join the dirty region here, or the
-    // old rectangle's pixels would never be repainted and the red box
-    // would leave a trail (the same damage the polygon renderer forces
-    // dirty; see RendererTileManager.getDragBoxDamage).
-    final RectangleInt drag_damage = getDragBoxDamage();
-    if (drag_damage != null) {
-      markTilesDirty(rects, tiles, nx, divisor, width, height,
-          drag_damage.min_x, drag_damage.min_y, drag_damage.max_x,
-          drag_damage.max_y);
-    }
-
-
     return rects;
   }
 
   /**
-   * The screen region damaged by a drag-box selection: the union of the
-   * previous and current rectangles, expanded by the box's line
-   * thickness. Null when no drag is active and none was active last
-   * frame.
-   *
-   * Tracks the box rectangle here (from the gesture's live points)
-   * instead of the RendererDragBox draw cache: the box is drawn into
-   * the frame composite, not via the screen-space overlay, so the
-   * overlay's cache never updates.
-   */
-  private static RectangleInt last_drag_box_damage = null;
-
-  private static RectangleInt getDragBoxDamage() {
-    final boolean active = FrEnd.perform_actions != null
-        && FrEnd.perform_actions.drag_box_manager != null
-        && FrEnd.perform_actions.drag_box_manager.drag_box_end != null
-        && FrEnd.perform_actions.drag_box_manager.drag_box_start != null;
-    final RectangleInt current;
-    if (active) {
-      final DragBoxManager dbm = FrEnd.perform_actions.drag_box_manager;
-      final int min_x = Math.min(dbm.drag_box_start.x, dbm.drag_box_end.x);
-      final int max_x = Math.max(dbm.drag_box_start.x, dbm.drag_box_end.x);
-      final int min_y = Math.min(dbm.drag_box_start.y, dbm.drag_box_end.y);
-      final int max_y = Math.max(dbm.drag_box_start.y, dbm.drag_box_end.y);
-      final int pad = 4; // the drag-box lines are drawn 3px thick
-      current = new RectangleInt(
-          Coords.getPixelFromInternalCoords(min_x) - pad,
-          Coords.getPixelFromInternalCoords(min_y) - pad,
-          Coords.getPixelFromInternalCoords(max_x) + pad,
-          Coords.getPixelFromInternalCoords(max_y) + pad);
-    } else {
-      current = null;
-    }
-    final RectangleInt damage;
-    if (current == null) {
-      // No box now: one last damage rect for the previous box, so its
-      // tiles get re-traced and the box is erased for good.
-      damage = last_drag_box_damage;
-      last_drag_box_damage = null;
-    } else if (last_drag_box_damage == null) {
-      damage = current;
-      last_drag_box_damage = new RectangleInt(current.min_x, current.min_y,
-          current.max_x, current.max_y);
-    } else {
-      damage = new RectangleInt(
-          Math.min(current.min_x, last_drag_box_damage.min_x),
-          Math.min(current.min_y, last_drag_box_damage.min_y),
-          Math.max(current.max_x, last_drag_box_damage.max_x),
-          Math.max(current.max_y, last_drag_box_damage.max_y));
-      last_drag_box_damage.min_x = current.min_x;
-      last_drag_box_damage.min_y = current.min_y;
-      last_drag_box_damage.max_x = current.max_x;
-      last_drag_box_damage.max_y = current.max_y;
-    }
-    return damage;
-  }
-
-  /**
    * Whether a drag-box selection is currently active. The box is drawn
-   * into the frame composite (not as a screen-space overlay), so the
-   * tiled blits cover it -- including the show_tiles gaps, which the
-   * partial tile blits do not.
+   * as a screen-space overlay after the blit (Tim, 2026-10-04), so it
+   * never touches the tiles.
    */
   private static boolean isDragBoxActive() {
     return FrEnd.perform_actions != null
@@ -887,10 +794,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   /**
    * Draws the drag-box selection rectangle with the given Graphics. The
    * four 3px-thick edges are filled rectangles, matching
-   * RendererDragBox.drawThickLine. The caller sets the clip: the box
-   * must be clipped to the tile rectangles so it never lands in the
-   * show_tiles gaps (which are never re-traced, so a box drawn there
-   * would leave a permanent trail).
+   * RendererDragBox.drawThickLine.
    */
   private static void drawDragBox(final Graphics g) {
     final DragBoxManager dbm = FrEnd.perform_actions.drag_box_manager;
@@ -909,23 +813,6 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     g.fillRect(x0 - t, y0 - t, x1 - x0 + 2 * t, 2 * t);
     g.fillRect(x0 - t, y1 - t, x1 - x0 + 2 * t, 2 * t);
     g.fillRect(x1 - t, y0 - t, 2 * t, y1 - y0 + 2 * t);
-  }
-
-  /**
-   * Draws the drag box into the frame, clipped to each tile's
-   * rectangle. Used for the full-frame composite path.
-   */
-  private static void drawDragBoxClippedToTiles(final Graphics g, final Tile[] tiles) {
-    for (int i = 0; i < tiles.length; i++) {
-      final ShownTile shown = tiles[i].shown;
-      if (shown != null) {
-        final java.awt.Shape old_clip = g.getClip();
-        g.setClip(shown.rx0, shown.ry0,
-            shown.image.getWidth(), shown.image.getHeight());
-        drawDragBox(g);
-        g.setClip(old_clip);
-      }
-    }
   }
 
   /**
