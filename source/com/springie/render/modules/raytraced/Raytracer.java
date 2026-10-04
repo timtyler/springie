@@ -578,7 +578,6 @@ final class Raytracer {
       }
     }
   }
-  }
 
   /**
    * Pixellated tile rendering: one shade per px-by-px block, replicated
