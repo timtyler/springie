@@ -435,8 +435,6 @@ public class PanelControlsUniverse {
       panel_main.add(panel_excite);
     }
 
-    panel_main.add(getResetUniversePanel());
-
     // Muscles section (Tim, 2026-10-03).
     final Panel panel_muscles = FrEnd.setUpPanelForFrame2();
     panel_muscles.add(panel_muscles_switch);
@@ -518,6 +516,8 @@ public class PanelControlsUniverse {
     universe_tabs.add("Muscles", panel_muscles);
     universe_tabs.add("Lights", panel_lights);
     this.panel.add(universe_tabs);
+    // Reset button stays visible below the sub-tabs (Tim, 2026-10-03).
+    this.panel.add(getResetUniversePanel());
   }
 
   private Panel getResetUniversePanel() {
