@@ -124,6 +124,7 @@ public class PanelPreferencesRendererRaytraced {
     choice_coarse.add("4x4");
     choice_coarse.add("8x8");
     choice_coarse.add("16x16");
+    choice_coarse.add("32x32");
     final int ctf = RendererDelegator.coarse_to_fine;
     choice_coarse.select(ctf == 0 ? "Off" : ctf + "x" + ctf);
     choice_coarse.addItemListener(new ItemListener() {
@@ -342,7 +343,7 @@ public class PanelPreferencesRendererRaytraced {
     this.effect_specular.resetToDefaults();
     this.effect_fresnel.resetToDefaults();
 
-    RendererDelegator.coarse_to_fine = 16;
-    this.choice_coarse_to_fine.select("16x16");
+    RendererDelegator.coarse_to_fine = 32;
+    this.choice_coarse_to_fine.select("32x32");
   }
 }

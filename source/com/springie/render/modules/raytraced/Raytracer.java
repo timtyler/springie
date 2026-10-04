@@ -639,7 +639,8 @@ final class Raytracer {
         jitter, pixels, width, stats, samples, inherited)) {
       return;
     }
-    if ((cs == 16 || cs == 8) && x_end - bx == cs && y_end - by == cs) {
+    if ((cs == 32 || cs == 16 || cs == 8) && x_end - bx == cs
+        && y_end - by == cs) {
       // Tim, 2026-10-04: intermediate cs x (cs/2) split before quadrants.
       // Reuses the parent samples; only the cut edge's new corners traced.
       if (tryIntermediateSplit(x0, y0, bx, by, cs, px, camera, bvh, rings,
