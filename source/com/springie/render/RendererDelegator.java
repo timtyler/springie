@@ -118,12 +118,12 @@ public final class RendererDelegator {
   public static boolean simple_lighting = false;
 
   /**
-   * When true (default), the fast ray tracer uses the coarse-to-fine
-   * algorithm (8x8 blocks, flood fill interiors). When false, it traces
-   * every pixel. Disable if the coarse-to-fine is making a mess.
+   * When true, the fast ray tracer uses the coarse-to-fine algorithm
+   * (8x8 blocks, flood fill interiors). When false (default), it traces
+   * every pixel. Enable via the checkbox if the speedup is wanted.
    * (Tim, 2026-10-03)
    */
-  public static boolean coarse_to_fine = true;
+  public static boolean coarse_to_fine = false;
 
   /**
    * Ray-traced specular highlights as a percentage (10-100): the
