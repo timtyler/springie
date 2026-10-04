@@ -225,8 +225,16 @@ final class Raytracer {
     // block, resolving each coarse pixel.
     final int px = RendererDelegator.pixellation;
     if (px > 1) {
-      renderTilePixellated(x0, y0, width, height, camera, bvh, rings,
-          pixels, stats, scenic, background_rgb, px, aa);
+      if (RendererDelegator.simple_lighting
+          && RendererDelegator.coarse_to_fine > 0) {
+        // Coarse-to-fine on the pixellated grid (Tim, 2026-10-04).
+        renderTileCoarseToFine(x0, y0, width, height, camera, bvh, rings,
+            pixels, stats, scenic, background_rgb, ray, hit, stack,
+            shadow_ray, shadow_hit, jitter, aa, px);
+      } else {
+        renderTilePixellated(x0, y0, width, height, camera, bvh, rings,
+            pixels, stats, scenic, background_rgb, px, aa);
+      }
       return;
     }
     if (aa <= 1) {
@@ -358,7 +366,7 @@ final class Raytracer {
       // Coarse-to-fine: only trace edges, fill interiors. (Tim, 2026-10-03)
       renderTileCoarseToFine(x0, y0, width, height, camera, bvh, rings,
           pixels, stats, scenic, background_rgb, ray, hit, stack,
-          shadow_ray, shadow_hit, jitter, aa);
+          shadow_ray, shadow_hit, jitter, aa, 1);
       return;
     }
     // Blank the tile with the background. If there's no scenic texture,
@@ -497,14 +505,16 @@ final class Raytracer {
   /**
    * Coarse-to-fine fill (Tim, 2026-10-03/04): only active when Simple
    * lighting is on. Hierarchical from the dropdown-selected max block size
-   * (16, 8, or 4): trace corners (+ interior for larger blocks); if
-   * uniform fill, else subdivide down to 4x4, then trace all pixels.
+   * (16, 8, or 4): trace corners (+ edge midpoints for larger blocks); if
+   * uniform fill, else subdivide down to 4x4 (or 1 cell when px>1), then
+   * trace. With pixelation (px>1), operates on the cell grid where each
+   * cell is a px-by-px screen block.
    */
   private static void renderTileCoarseToFine(final int x0, final int y0, final int width,
       int height, final RayCamera camera, final BVH bvh, final RTRing[] rings, final int[] pixels,
       HitStats stats, final BufferedImage scenic, final int background_rgb, final Ray ray,
       Hit hit, final int[] stack, final Ray shadow_ray, final Hit shadow_hit,
-      JitterRandom jitter, final int aa) {
+      JitterRandom jitter, final int aa, final int px) {
     // Blank the tile with the background.
     if (scenic == null) {
       // Flat background: single fill, no per-pixel rays.
@@ -519,75 +529,89 @@ final class Raytracer {
         }
       }
     }
+    // Cell grid dimensions (px=1: cells are pixels).
+    final int cw = (width + px - 1) / px;
+    final int ch = (height + px - 1) / px;
     // Tim's hierarchical 4-corner algorithm (2026-10-03/04): start at the
-    // dropdown-selected max block size (16, 8, or 4). Trace the corners
-    // (+ interior for larger blocks); if uniform, fill. Else subdivide
-    // into quadrants down to 4x4, then trace all pixels.
+    // dropdown-selected max block size (16, 8, or 4 cells). Trace the
+    // corners (+ edge midpoints for larger blocks); if uniform, fill.
+    // Else subdivide into quadrants down to min block, then trace.
     final int max_cs = RendererDelegator.coarse_to_fine;
-    for (int by = 0; by < height; by += max_cs) {
-      for (int bx = 0; bx < width; bx += max_cs) {
-        renderBlock(x0, y0, bx, by, Math.min(bx + max_cs, width),
-            Math.min(by + max_cs, height), max_cs, camera, bvh, rings, ray,
-            hit, stack, shadow_ray, shadow_hit, jitter, pixels, width,
-            stats);
+    // Min block: 4 cells when px=1, else 1 cell (Tim, 2026-10-04).
+    final int min_cs = px > 1 ? 1 : 4;
+    for (int by = 0; by < ch; by += max_cs) {
+      for (int bx = 0; bx < cw; bx += max_cs) {
+        renderBlock(x0, y0, bx, by, Math.min(bx + max_cs, cw),
+            Math.min(by + max_cs, ch), max_cs, min_cs, px, camera, bvh,
+            rings, ray, hit, stack, shadow_ray, shadow_hit, jitter, pixels,
+            width, stats);
       }
     }
   }
 
   /**
-   * Renders one block: try blockUniform; if not uniform and the block is
-   * bigger than 4x4, split into quadrants and recurse; else trace every
-   * pixel.
+   * Renders one block (in cell coordinates): try blockUniform; if not
+   * uniform and bigger than min_cs, split into quadrants and recurse;
+   * else trace every cell.
    */
   private static void renderBlock(final int x0, final int y0, final int bx,
       final int by, final int x_end, final int y_end, final int cs,
-      final RayCamera camera, final BVH bvh, final RTRing[] rings,
-      final Ray ray, final Hit hit, final int[] stack, final Ray shadow_ray,
-      final Hit shadow_hit, final JitterRandom jitter, final int[] pixels,
-      final int width, final HitStats stats) {
-    if (cs > 4 && blockUniform(x0, y0, bx, by, x_end, y_end, camera, bvh,
-        rings, ray, hit, stack, shadow_ray, shadow_hit, jitter, pixels,
-        width, stats)) {
+      final int min_cs, final int px, final RayCamera camera,
+      final BVH bvh, final RTRing[] rings, final Ray ray, final Hit hit,
+      final int[] stack, final Ray shadow_ray, final Hit shadow_hit,
+      final JitterRandom jitter, final int[] pixels, final int width,
+      final HitStats stats) {
+    if (cs > min_cs && blockUniform(x0, y0, bx, by, x_end, y_end, px,
+        camera, bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
+        jitter, pixels, width, stats)) {
       return;
     }
-    if (cs > 4) {
+    if (cs > min_cs) {
       // Not uniform: split into quadrants.
       final int half = cs / 2;
       final int mx = bx + half;
       final int my = by + half;
       renderBlock(x0, y0, bx, by, Math.min(mx, x_end), Math.min(my, y_end),
-          half, camera, bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
-          jitter, pixels, width, stats);
+          half, min_cs, px, camera, bvh, rings, ray, hit, stack,
+          shadow_ray, shadow_hit, jitter, pixels, width, stats);
       if (mx < x_end) {
         renderBlock(x0, y0, mx, by, x_end, Math.min(my, y_end), half,
-            camera, bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
-            jitter, pixels, width, stats);
+            min_cs, px, camera, bvh, rings, ray, hit, stack, shadow_ray,
+            shadow_hit, jitter, pixels, width, stats);
       }
       if (my < y_end) {
         renderBlock(x0, y0, bx, my, Math.min(mx, x_end), y_end, half,
-            camera, bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
-            jitter, pixels, width, stats);
+            min_cs, px, camera, bvh, rings, ray, hit, stack, shadow_ray,
+            shadow_hit, jitter, pixels, width, stats);
       }
       if (mx < x_end && my < y_end) {
-        renderBlock(x0, y0, mx, my, x_end, y_end, half, camera, bvh, rings,
-            ray, hit, stack, shadow_ray, shadow_hit, jitter, pixels, width,
-            stats);
+        renderBlock(x0, y0, mx, my, x_end, y_end, half, min_cs, px, camera,
+            bvh, rings, ray, hit, stack, shadow_ray, shadow_hit, jitter,
+            pixels, width, stats);
       }
       return;
     }
-    // 4x4 (or smaller edge block): try fill, else trace all pixels.
-    if (blockUniform(x0, y0, bx, by, x_end, y_end, camera, bvh, rings, ray,
-        hit, stack, shadow_ray, shadow_hit, jitter, pixels, width, stats)) {
+    // Min block (or smaller edge block): try fill, else trace all cells.
+    if (blockUniform(x0, y0, bx, by, x_end, y_end, px, camera, bvh, rings,
+        ray, hit, stack, shadow_ray, shadow_hit, jitter, pixels, width,
+        stats)) {
       return;
     }
-    for (int y = by; y < y_end; y++) {
-      for (int x = bx; x < x_end; x++) {
-        final int idx = y * width + x;
-        camera.makeRay(x0 + x, y0 + y, ray);
+    for (int cy = by; cy < y_end; cy++) {
+      for (int cx = bx; cx < x_end; cx++) {
+        // Cell (cx, cy) -> screen top-left, then replicate px-by-px.
+        final int sx = x0 + cx * px;
+        final int sy = y0 + cy * px;
+        camera.makeRay(sx, sy, ray);
         hit.reset();
         if (intersectScene(ray, hit, bvh, rings, stack)) {
-          pixels[idx] = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit,
-              jitter);
+          final int rgb = shade(ray, hit, bvh, stack, shadow_ray,
+              shadow_hit, jitter);
+          for (int dy = 0; dy < px; dy++) {
+            for (int dx = 0; dx < px; dx++) {
+              pixels[(sy + dy) * width + (sx + dx)] = rgb;
+            }
+          }
         }
         // Else: background, already filled.
       }
@@ -639,12 +663,13 @@ final class Raytracer {
    */
   private static boolean blockUniform(final int x0, final int y0,
       final int bx, final int by, final int x_end, final int y_end,
-      final RayCamera camera, final BVH bvh, final RTRing[] rings,
-      final Ray ray, final Hit hit, final int[] stack, final Ray shadow_ray,
-      final Hit shadow_hit, final JitterRandom jitter, final int[] pixels,
-      final int width, final HitStats stats) {
-    // Collect all sample points: 4 corners, plus 4 edge midpoints for
-    // 16x16. (Tim, 2026-10-04: extra samples go on the edge, not center.)
+      final int px, final RayCamera camera, final BVH bvh,
+      final RTRing[] rings, final Ray ray, final Hit hit, final int[] stack,
+      final Ray shadow_ray, final Hit shadow_hit, final JitterRandom jitter,
+      final int[] pixels, final int width, final HitStats stats) {
+    // Collect all sample points (in cell coordinates): 4 corners, plus 4
+    // edge midpoints for 16x16. (Tim, 2026-10-04: extra samples go on the
+    // edge, not center.)
     final int bw = x_end - bx;
     final int bh = y_end - by;
     final int mcx = bx + bw / 2;
@@ -673,7 +698,9 @@ final class Raytracer {
     boolean seen_miss = false;
     boolean first = true;
     for (int i = 0; i < n; i++) {
-      final Primitive p = samplePrimitive(x0 + sx[i], y0 + sy[i], camera,
+      // Cell -> screen: top-left of the px-by-px block.
+      final Primitive p = samplePrimitive(x0 + sx[i] * px,
+          y0 + sy[i] * px, camera,
           bvh, rings, ray, hit, stack);
       if (p == null) {
         seen_miss = true;
@@ -704,28 +731,36 @@ final class Raytracer {
       return true;
     }
     // Uniform: fill the block. In debug mode ("Show active tiles"), only
-    // the saved pixels go red -- sampled points (corners, center, edge
-    // midpoints) were actually traced, so they keep their real colour.
-    // (Tim, 2026-10-03/04)
+    // the saved pixels go red -- sampled points (corners, edge midpoints)
+    // were actually traced, so they keep their real colour. (Tim, 2026-10-03/04)
     final boolean debug = RendererTileManager.show_active_tiles;
     final int fill_rgb = debug ? 0xFFFF0000 : first_rgb;
-    for (int y = by; y < y_end; y++) {
-      for (int x = bx; x < x_end; x++) {
+    for (int cy = by; cy < y_end; cy++) {
+      for (int cx = bx; cx < x_end; cx++) {
         boolean sampled = false;
         for (int i = 0; i < n; i++) {
-          if (x == sx[i] && y == sy[i]) {
+          if (cx == sx[i] && cy == sy[i]) {
             sampled = true;
             break;
           }
         }
-        pixels[y * width + x] = (debug && sampled) ? first_rgb : fill_rgb;
+        final int rgb = (debug && sampled) ? first_rgb : fill_rgb;
+        // Replicate across the px-by-px screen block.
+        final int scr_x = x0 + cx * px;
+        final int scr_y = y0 + cy * px;
+        for (int dy = 0; dy < px; dy++) {
+          for (int dx = 0; dx < px; dx++) {
+            pixels[(scr_y + dy) * width + (scr_x + dx)] = rgb;
+          }
+        }
       }
     }
     // Record the filled pixels as hits, so "Show active tiles" still
     // draws the tile's red outline when coarse-to-fine is on. (Tim, 2026-10-03)
     // (add() bumps hits by 1 each; top up the rest of the block.)
-    stats.add(bx, by);
-    stats.add(x_end - 1, y_end - 1);
+    // Convert cell coords to pixel coords for the stats (Tim, 2026-10-04).
+    stats.add(bx * px, by * px);
+    stats.add((x_end - 1) * px, (y_end - 1) * px);
     stats.hits += (x_end - bx) * (y_end - by) - 2;
     return true;
   }
