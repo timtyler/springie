@@ -1307,20 +1307,46 @@ final class Raytracer {
         final double nbdz = BLUE_PZ - ncz;
         final double nbd = Math.sqrt(nbdx * nbdx + nbdy * nbdy + nbdz * nbdz);
         final double nb_fall = 1.0 / (1.0 + (nbd / LIGHT_FALLOFF_K) * (nbd / LIGHT_FALLOFF_K));
-        // White point light (Tim, 2026-10-04): same as RGB, flat falloff
-        // like RGB in fast mode. Adds equally to all channels.
+        // White light distance falloff (Tim, 2026-10-04).
         final double nwdx = WHITE_PX - ncx;
         final double nwdy = WHITE_PY - ncy;
         final double nwdz = WHITE_PZ - ncz;
         final double nwd = Math.sqrt(nwdx * nwdx + nwdy * nwdy + nwdz * nwdz);
         final double nw_fall = 1.0 / (1.0 + (nwd / LIGHT_FALLOFF_K) * (nwd / LIGHT_FALLOFF_K));
-        final int w_add_fast = (int) (159.0 * Math.min(1.0, nw_fall
-            * LIGHT_BRIGHTNESS * RendererDelegator.white_light_pct / 100.0
-            * RendererDelegator.white_light_pct / 100.0));
         final int amb = ambientBase();
-        final int nr_scaled = Math.min(255, amb + w_add_fast + (int) (159.0 * Math.min(1.0, nr_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0 * RendererDelegator.red_light_pct / 100.0)));
-        final int ng_scaled = Math.min(255, amb + w_add_fast + (int) (159.0 * Math.min(1.0, ng_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0 * RendererDelegator.green_light_pct / 100.0)));
-        final int nb_scaled = Math.min(255, amb + w_add_fast + (int) (159.0 * Math.min(1.0, nb_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0 * RendererDelegator.blue_light_pct / 100.0)));
+        // Light colors (Tim, 2026-10-04): scale each light's
+        // contribution by its color channels.
+        final int rrf = (RendererDelegator.red_light_colour >> 16) & 0xFF;
+        final int rgf = (RendererDelegator.red_light_colour >> 8) & 0xFF;
+        final int rbf = RendererDelegator.red_light_colour & 0xFF;
+        final int grf = (RendererDelegator.green_light_colour >> 16) & 0xFF;
+        final int ggf = (RendererDelegator.green_light_colour >> 8) & 0xFF;
+        final int gbf = RendererDelegator.green_light_colour & 0xFF;
+        final int brf = (RendererDelegator.blue_light_colour >> 16) & 0xFF;
+        final int bgf = (RendererDelegator.blue_light_colour >> 8) & 0xFF;
+        final int bbf = RendererDelegator.blue_light_colour & 0xFF;
+        final int wrf = (RendererDelegator.white_light_colour >> 16) & 0xFF;
+        final int wgf = (RendererDelegator.white_light_colour >> 8) & 0xFF;
+        final int wbf = RendererDelegator.white_light_colour & 0xFF;
+        final double r_light = Math.min(1.0, nr_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0 * RendererDelegator.red_light_pct / 100.0);
+        final double g_light = Math.min(1.0, ng_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0 * RendererDelegator.green_light_pct / 100.0);
+        final double b_light = Math.min(1.0, nb_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0 * RendererDelegator.blue_light_pct / 100.0);
+        final double w_light = Math.min(1.0, nw_fall * LIGHT_BRIGHTNESS * RendererDelegator.white_light_pct / 100.0 * RendererDelegator.white_light_pct / 100.0);
+        final int nr_scaled = Math.min(255, amb
+            + (int) (159.0 * r_light * rrf / 255)
+            + (int) (159.0 * g_light * grf / 255)
+            + (int) (159.0 * b_light * brf / 255)
+            + (int) (159.0 * w_light * wrf / 255));
+        final int ng_scaled = Math.min(255, amb
+            + (int) (159.0 * r_light * rgf / 255)
+            + (int) (159.0 * g_light * ggf / 255)
+            + (int) (159.0 * b_light * bgf / 255)
+            + (int) (159.0 * w_light * wgf / 255));
+        final int nb_scaled = Math.min(255, amb
+            + (int) (159.0 * r_light * rbf / 255)
+            + (int) (159.0 * g_light * gbf / 255)
+            + (int) (159.0 * b_light * bbf / 255)
+            + (int) (159.0 * w_light * wbf / 255));
         final int nr = (fogged >> 16) & 0xFF;
         final int ng = (fogged >> 8) & 0xFF;
         final int nb = fogged & 0xFF;
@@ -1443,13 +1469,37 @@ final class Raytracer {
             * Math.min(1.0, w_fall * LIGHT_BRIGHTNESS * RendererDelegator.white_light_pct / 100.0);
       }
       // Half-to-full brightness per channel.
-      // White light (Tim, 2026-10-04): same directional shading as RGB,
-      // adds equally to all channels.
+      // Light colors (Tim, 2026-10-04): each light's factor is scaled
+      // by its color channels. Defaults give red->R, green->G,
+      // blue->B, white->all.
       final int amb2 = ambientBase();
-      final int w_add2 = (int) (159.0 * w_factor);
-      final int r_scaled = Math.min(255, amb2 + w_add2 + (int) (159.0 * r_factor));
-      final int g_scaled = Math.min(255, amb2 + w_add2 + (int) (159.0 * g_factor));
-      final int b_scaled = Math.min(255, amb2 + w_add2 + (int) (159.0 * b_factor));
+      final int rr2 = (RendererDelegator.red_light_colour >> 16) & 0xFF;
+      final int rg2 = (RendererDelegator.red_light_colour >> 8) & 0xFF;
+      final int rb2 = RendererDelegator.red_light_colour & 0xFF;
+      final int gr2 = (RendererDelegator.green_light_colour >> 16) & 0xFF;
+      final int gg2 = (RendererDelegator.green_light_colour >> 8) & 0xFF;
+      final int gb2 = RendererDelegator.green_light_colour & 0xFF;
+      final int br2 = (RendererDelegator.blue_light_colour >> 16) & 0xFF;
+      final int bg2 = (RendererDelegator.blue_light_colour >> 8) & 0xFF;
+      final int bb2 = RendererDelegator.blue_light_colour & 0xFF;
+      final int wr2 = (RendererDelegator.white_light_colour >> 16) & 0xFF;
+      final int wg2 = (RendererDelegator.white_light_colour >> 8) & 0xFF;
+      final int wb2 = RendererDelegator.white_light_colour & 0xFF;
+      final int r_scaled = Math.min(255, amb2
+          + (int) (159.0 * r_factor * rr2 / 255)
+          + (int) (159.0 * g_factor * gr2 / 255)
+          + (int) (159.0 * b_factor * br2 / 255)
+          + (int) (159.0 * w_factor * wr2 / 255));
+      final int g_scaled = Math.min(255, amb2
+          + (int) (159.0 * r_factor * rg2 / 255)
+          + (int) (159.0 * g_factor * gg2 / 255)
+          + (int) (159.0 * b_factor * bg2 / 255)
+          + (int) (159.0 * w_factor * wg2 / 255));
+      final int b_scaled = Math.min(255, amb2
+          + (int) (159.0 * r_factor * rb2 / 255)
+          + (int) (159.0 * g_factor * gb2 / 255)
+          + (int) (159.0 * b_factor * bb2 / 255)
+          + (int) (159.0 * w_factor * wb2 / 255));
       final int r = (fogged >> 16) & 0xFF;
       final int g = (fogged >> 8) & 0xFF;
       final int b = fogged & 0xFF;
@@ -1579,19 +1629,39 @@ final class Raytracer {
       w_dot *= ao;
     }
     final int amb3 = ambientBase();
-    final int r_scaled = Math.min(255, amb3
-        + (int) (159.0 * Math.min(1.0, r_dot * r_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0)));
-    final int g_scaled = Math.min(255, amb3
-        + (int) (159.0 * Math.min(1.0, g_dot * g_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0)));
-    final int b_scaled = Math.min(255, amb3
-        + (int) (159.0 * Math.min(1.0, b_dot * b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0)));
-    // White point light (Tim, 2026-10-04): fourth light, same as RGB.
-    // Adds equally to all channels.
-    final int w_add = (int) (159.0 * Math.min(1.0, w_dot * w_fall
-        * LIGHT_BRIGHTNESS * RendererDelegator.white_light_pct / 100.0));
-    final int r_white = Math.min(255, r_scaled + w_add);
-    final int g_white = Math.min(255, g_scaled + w_add);
-    final int b_white = Math.min(255, b_scaled + w_add);
+    // Light colors (Tim, 2026-10-04): scale each light's contribution
+    // by its color channels.
+    final int rr3 = (RendererDelegator.red_light_colour >> 16) & 0xFF;
+    final int rg3 = (RendererDelegator.red_light_colour >> 8) & 0xFF;
+    final int rb3 = RendererDelegator.red_light_colour & 0xFF;
+    final int gr3 = (RendererDelegator.green_light_colour >> 16) & 0xFF;
+    final int gg3 = (RendererDelegator.green_light_colour >> 8) & 0xFF;
+    final int gb3 = RendererDelegator.green_light_colour & 0xFF;
+    final int br3 = (RendererDelegator.blue_light_colour >> 16) & 0xFF;
+    final int bg3 = (RendererDelegator.blue_light_colour >> 8) & 0xFF;
+    final int bb3 = RendererDelegator.blue_light_colour & 0xFF;
+    final int wr3 = (RendererDelegator.white_light_colour >> 16) & 0xFF;
+    final int wg3 = (RendererDelegator.white_light_colour >> 8) & 0xFF;
+    final int wb3 = RendererDelegator.white_light_colour & 0xFF;
+    final double r_l3 = Math.min(1.0, r_dot * r_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0);
+    final double g_l3 = Math.min(1.0, g_dot * g_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0);
+    final double b_l3 = Math.min(1.0, b_dot * b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0);
+    final double w_l3 = Math.min(1.0, w_dot * w_fall * LIGHT_BRIGHTNESS * RendererDelegator.white_light_pct / 100.0);
+    final int r_white = Math.min(255, amb3
+        + (int) (159.0 * r_l3 * rr3 / 255)
+        + (int) (159.0 * g_l3 * gr3 / 255)
+        + (int) (159.0 * b_l3 * br3 / 255)
+        + (int) (159.0 * w_l3 * wr3 / 255));
+    final int g_white = Math.min(255, amb3
+        + (int) (159.0 * r_l3 * rg3 / 255)
+        + (int) (159.0 * g_l3 * gg3 / 255)
+        + (int) (159.0 * b_l3 * bg3 / 255)
+        + (int) (159.0 * w_l3 * wg3 / 255));
+    final int b_white = Math.min(255, amb3
+        + (int) (159.0 * r_l3 * rb3 / 255)
+        + (int) (159.0 * g_l3 * gb3 / 255)
+        + (int) (159.0 * b_l3 * bb3 / 255)
+        + (int) (159.0 * w_l3 * wb3 / 255));
 
     final double pz = ray.oz + ray.dz * hit.t;
     final int fogged = Fog.applyFog(hit.primitive.getColour(), (int) pz);

@@ -42,21 +42,25 @@ public final class LightSourceDots {
     // zero-size positions collapsed all dots to one point.
     LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
     // Skip lights at 0% intensity (Tim, 2026-10-03).
+    // Dots use the configured light colors (Tim, 2026-10-04).
     if (RendererDelegator.red_light_pct > 0) {
       drawOne(g, LightSource.red_px, LightSource.red_py, LightSource.red_pz,
-          Color.red);
+          new Color(RendererDelegator.red_light_colour));
     }
     if (RendererDelegator.green_light_pct > 0) {
       drawOne(g, LightSource.green_px, LightSource.green_py,
-          LightSource.green_pz, Color.green);
+          LightSource.green_pz,
+          new Color(RendererDelegator.green_light_colour));
     }
     if (RendererDelegator.blue_light_pct > 0) {
       drawOne(g, LightSource.blue_px, LightSource.blue_py,
-          LightSource.blue_pz, Color.blue);
+          LightSource.blue_pz,
+          new Color(RendererDelegator.blue_light_colour));
     }
     if (RendererDelegator.white_light_pct > 0) {
       drawOne(g, LightSource.white_px, LightSource.white_py,
-          LightSource.white_pz, Color.white);
+          LightSource.white_pz,
+          new Color(RendererDelegator.white_light_colour));
     }
   }
 

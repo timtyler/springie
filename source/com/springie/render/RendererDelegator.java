@@ -166,6 +166,19 @@ public final class RendererDelegator {
   public static int white_light_pct = 50;
 
   /**
+   * Light colors (Tim, 2026-10-04): configurable via color pickers in
+   * the Lights tab. Each light's contribution is scaled by its color
+   * channels. Defaults are pure red, green, blue, and white.
+   */
+  public static int red_light_colour = 0xFF0000;
+
+  public static int green_light_colour = 0x00FF00;
+
+  public static int blue_light_colour = 0x0000FF;
+
+  public static int white_light_colour = 0xFFFFFF;
+
+  /**
    * Ambient light (Tim, 2026-10-03): base illumination, 0-100%.
    * Default 50% matches the old hardcoded ambient.
    */

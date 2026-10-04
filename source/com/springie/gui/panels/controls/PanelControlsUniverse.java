@@ -8,6 +8,8 @@ import com.springie.demos.CompassPoint;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.GUIStrings;
+import com.springie.gui.colourpicker.ColorPicker;
+import com.springie.gui.colourpicker.ColorPickerInformer;
 import com.springie.gui.components.TabbedPanel;
 import com.springie.messages.NewMessageManager;
 import com.springie.messages.commands.ContinuouslyCentreMessage;
@@ -538,6 +540,55 @@ public class PanelControlsUniverse {
     panel_light_ambient.add("Center", this.scrollbar_light_ambient);
     panel_light_ambient.add("East", label_light_ambient);
     panel_lights.add(panel_light_ambient);
+
+    // Light colors (Tim, 2026-10-04): color pickers for the four lights.
+    final Label label_light_colours =
+        new Label("Light colors:", Label.LEFT);
+    panel_lights.add(label_light_colours);
+
+    final TabbedPanel tab_light_colours = new TabbedPanel();
+
+    final ColorPicker picker_light_red = new ColorPicker(
+        new ColorPickerInformer() {
+          public void inform(final int colour) {
+            RendererDelegator.red_light_colour = colour;
+          }
+        });
+    picker_light_red.color_picker_controller
+        .setColour(RendererDelegator.red_light_colour);
+    tab_light_colours.add("Red", picker_light_red.panel);
+
+    final ColorPicker picker_light_green = new ColorPicker(
+        new ColorPickerInformer() {
+          public void inform(final int colour) {
+            RendererDelegator.green_light_colour = colour;
+          }
+        });
+    picker_light_green.color_picker_controller
+        .setColour(RendererDelegator.green_light_colour);
+    tab_light_colours.add("Green", picker_light_green.panel);
+
+    final ColorPicker picker_light_blue = new ColorPicker(
+        new ColorPickerInformer() {
+          public void inform(final int colour) {
+            RendererDelegator.blue_light_colour = colour;
+          }
+        });
+    picker_light_blue.color_picker_controller
+        .setColour(RendererDelegator.blue_light_colour);
+    tab_light_colours.add("Blue", picker_light_blue.panel);
+
+    final ColorPicker picker_light_white = new ColorPicker(
+        new ColorPickerInformer() {
+          public void inform(final int colour) {
+            RendererDelegator.white_light_colour = colour;
+          }
+        });
+    picker_light_white.color_picker_controller
+        .setColour(RendererDelegator.white_light_colour);
+    tab_light_colours.add("White", picker_light_white.panel);
+
+    panel_lights.add(tab_light_colours);
 
     final TabbedPanel universe_tabs = new TabbedPanel();
     universe_tabs.add("Main", panel_main);
