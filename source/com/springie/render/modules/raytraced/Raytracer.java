@@ -587,9 +587,41 @@ final class Raytracer {
   }
 
   /**
-   * Traces the 4 corners of a block. If all hit the same primitive, fills
-   * the block with that colour and returns true. Otherwise returns false
-   * (caller subdivides or traces fully).
+   * Traces a single ray, returning the primitive hit (or null for
+   * background). Leaves the hit in the reusable Hit object.
+   */
+  private static Primitive samplePrimitive(final int x, final int y,
+      final RayCamera camera, final BVH bvh, final RTRing[] rings,
+      final Ray ray, final Hit hit, final int[] stack) {
+    camera.makeRay(x, y, ray);
+    hit.reset();
+    if (!intersectScene(ray, hit, bvh, rings, stack)) {
+      return null;
+    }
+    return hit.primitive;
+  }
+
+  /**
+   * Traces a single interior sample; returns true if it matches the
+   * corner verdict (same primitive, or background if all corners missed).
+   */
+  private static boolean sampleMatches(final int x, final int y,
+      final Primitive first_prim, final boolean all_miss,
+      final RayCamera camera, final BVH bvh, final RTRing[] rings,
+      final Ray ray, final Hit hit, final int[] stack) {
+    final Primitive p = samplePrimitive(x, y, camera, bvh, rings, ray, hit,
+        stack);
+    if (all_miss) {
+      return p == null;
+    }
+    return p == first_prim;
+  }
+
+  /**
+   * Traces the 4 corners of a block. If all hit the same primitive (or all
+   * miss), verifies the interior for larger blocks, then fills the block
+   * and returns true. Otherwise returns false (caller subdivides or traces
+   * fully).
    */
   private static boolean blockUniform(final int x0, final int y0,
       final int bx, final int by, final int x_end, final int y_end,
@@ -597,24 +629,51 @@ final class Raytracer {
       final Ray ray, final Hit hit, final int[] stack, final Ray shadow_ray,
       final Hit shadow_hit, final JitterRandom jitter, final int[] pixels,
       final int width, final HitStats stats) {
-    final int[] cx = {bx, x_end - 1, bx, x_end - 1};
-    final int[] cy = {by, by, y_end - 1, y_end - 1};
+    // Sample the 4 corners.
+    final int[] sx = {bx, x_end - 1, bx, x_end - 1};
+    final int[] sy = {by, by, y_end - 1, y_end - 1};
     Primitive first_prim = null;
     int first_rgb = 0;
     boolean all_miss = true;
     for (int c = 0; c < 4; c++) {
-      camera.makeRay(x0 + cx[c], y0 + cy[c], ray);
-      hit.reset();
-      if (!intersectScene(ray, hit, bvh, rings, stack)) {
-        continue;  // Corner is background; check if all are.
+      final Primitive p = samplePrimitive(x0 + sx[c], y0 + sy[c], camera,
+          bvh, rings, ray, hit, stack);
+      if (p == null) {
+        continue;  // Background; check if all are.
       }
       all_miss = false;
       if (first_prim == null) {
-        first_prim = hit.primitive;
+        first_prim = p;
         first_rgb = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit,
             jitter);
-      } else if (hit.primitive != first_prim) {
+      } else if (p != first_prim) {
         return false;  // Mixed primitives: subdivide.
+      }
+    }
+    // Corners agree. For larger blocks, verify the interior: thin geometry
+    // can cross the middle without touching a corner. (Tim, 2026-10-04)
+    final int bw = x_end - bx;
+    final int bh = y_end - by;
+    if (bw >= 8) {
+      // 8x8 and up: check the center.
+      final int cx = bx + bw / 2;
+      final int cy = by + bh / 2;
+      if (!sampleMatches(x0 + cx, y0 + cy, first_prim, all_miss, camera,
+          bvh, rings, ray, hit, stack)) {
+        return false;
+      }
+    }
+    if (bw >= 16) {
+      // 16x16: also check the 4 edge midpoints.
+      final int mx = bx + bw / 2;
+      final int my = by + bh / 2;
+      final int[] ex = {mx, mx, bx, x_end - 1};
+      final int[] ey = {by, y_end - 1, my, my};
+      for (int e = 0; e < 4; e++) {
+        if (!sampleMatches(x0 + ex[e], y0 + ey[e], first_prim, all_miss,
+            camera, bvh, rings, ray, hit, stack)) {
+          return false;
+        }
       }
     }
     if (all_miss) {
@@ -623,15 +682,23 @@ final class Raytracer {
       return true;
     }
     // Uniform: fill the block. In debug mode ("Show active tiles"), only
-    // the saved pixels go red -- the 4 corners were actually traced, so
-    // they keep their real colour. (Tim, 2026-10-03)
+    // the saved pixels go red -- sampled points (corners, center, edge
+    // midpoints) were actually traced, so they keep their real colour.
+    // (Tim, 2026-10-03/04)
     final boolean debug = RendererTileManager.show_active_tiles;
     final int fill_rgb = debug ? 0xFFFF0000 : first_rgb;
+    final int mcx = bx + bw / 2;
+    final int mcy = by + bh / 2;
     for (int y = by; y < y_end; y++) {
       for (int x = bx; x < x_end; x++) {
         final boolean is_corner = (x == bx || x == x_end - 1)
             && (y == by || y == y_end - 1);
-        pixels[y * width + x] = (debug && is_corner) ? first_rgb : fill_rgb;
+        final boolean is_center = bw >= 8 && x == mcx && y == mcy;
+        final boolean is_edge_mid = bw >= 16
+            && ((x == mcx && (y == by || y == y_end - 1))
+                || (y == mcy && (x == bx || x == x_end - 1)));
+        final boolean sampled = is_corner || is_center || is_edge_mid;
+        pixels[y * width + x] = (debug && sampled) ? first_rgb : fill_rgb;
       }
     }
     // Record the filled pixels as hits, so "Show active tiles" still
