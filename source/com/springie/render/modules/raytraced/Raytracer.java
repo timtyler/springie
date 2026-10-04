@@ -680,15 +680,16 @@ final class Raytracer {
           for (int y = y_start; y < y_end; y++) {
             for (int x = x_start; x < x_end; x++) {
               final int idx = y * width + x;
-              if (RendererTileManager.show_active_tiles) {
-                pixels[idx] = 0xFFFF0000;
-                continue;
-              }
               camera.makeRay(x0 + x, y0 + y, ray);
               hit.reset();
               if (prim.intersect(ray, hit)) {
-                pixels[idx] = shade(ray, hit, bvh, stack, shadow_ray,
-                    shadow_hit, jitter);
+                if (RendererTileManager.show_active_tiles) {
+                  // Red debug: only paint pixels that actually hit.
+                  pixels[idx] = 0xFFFF0000;
+                } else {
+                  pixels[idx] = shade(ray, hit, bvh, stack, shadow_ray,
+                      shadow_hit, jitter);
+                }
               }
               // Else: background, already filled.
             }
