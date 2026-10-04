@@ -58,6 +58,8 @@ public class RaytracerShadowTest {
 
   private int saved_blue_pct;
 
+  private int saved_white_pct;
+
   private boolean saved_freeze;
 
   @BeforeEach
@@ -92,12 +94,14 @@ public class RaytracerShadowTest {
     this.saved_red_pz = Raytracer.RED_PZ;
     this.saved_green_pct = RendererDelegator.green_light_pct;
     this.saved_blue_pct = RendererDelegator.blue_light_pct;
+    this.saved_white_pct = RendererDelegator.white_light_pct;
     this.saved_freeze = Raytracer.freeze_lights;
 
     RendererDelegator.glossiness = 0;
-    // Only the red light matters for this test; turn off green/blue.
+    // Only the red light matters for this test; turn off green/blue/white.
     RendererDelegator.green_light_pct = 0;
     RendererDelegator.blue_light_pct = 0;
+    RendererDelegator.white_light_pct = 0;
     RendererDelegator.specular = 0;
   }
 
@@ -121,6 +125,7 @@ public class RaytracerShadowTest {
     Raytracer.RED_PZ = this.saved_red_pz;
     RendererDelegator.green_light_pct = this.saved_green_pct;
     RendererDelegator.blue_light_pct = this.saved_blue_pct;
+    RendererDelegator.white_light_pct = this.saved_white_pct;
     Raytracer.freeze_lights = this.saved_freeze;
   }
 
