@@ -643,23 +643,21 @@ final class Raytracer {
       final Ray ray, final Hit hit, final int[] stack, final Ray shadow_ray,
       final Hit shadow_hit, final JitterRandom jitter, final int[] pixels,
       final int width, final HitStats stats) {
-    // Collect all sample points: 4 corners, plus center for 8x8+,
-    // plus edge midpoints for 16x16.
+    // Collect all sample points: 4 corners, plus 4 edge midpoints for
+    // 16x16. (Tim, 2026-10-04: extra samples go on the edge, not center.)
     final int bw = x_end - bx;
     final int bh = y_end - by;
     final int mcx = bx + bw / 2;
     final int mcy = by + bh / 2;
-    // Max 9 samples: 4 corners + center + 4 edge midpoints.
-    final int[] sx = new int[9];
-    final int[] sy = new int[9];
+    // Max 8 samples: 4 corners + 4 edge midpoints (16x16 only).
+    // (Tim, 2026-10-04: extra samples go on the edge, not the center.)
+    final int[] sx = new int[8];
+    final int[] sy = new int[8];
     int n = 0;
     sx[n] = bx; sy[n] = by; n++;
     sx[n] = x_end - 1; sy[n] = by; n++;
     sx[n] = bx; sy[n] = y_end - 1; n++;
     sx[n] = x_end - 1; sy[n] = y_end - 1; n++;
-    if (bw >= 8) {
-      sx[n] = mcx; sy[n] = mcy; n++;
-    }
     if (bw >= 16) {
       sx[n] = mcx; sy[n] = by; n++;
       sx[n] = mcx; sy[n] = y_end - 1; n++;
