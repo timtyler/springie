@@ -532,7 +532,7 @@ final class Raytracer {
         final int y16_end = Math.min(by16 + cs16, height);
         if (blockUniform(x0, y0, bx16, by16, x16_end, y16_end, camera, bvh,
             rings, ray, hit, stack, shadow_ray, shadow_hit, jitter, pixels,
-            width)) {
+            width, stats)) {
           continue;
         }
         // 16x16 not uniform: split into four 8x8s.
@@ -547,7 +547,7 @@ final class Raytracer {
             final int y8_end = Math.min(by8 + cs8, height);
             if (blockUniform(x0, y0, bx8, by8, x8_end, y8_end, camera, bvh,
                 rings, ray, hit, stack, shadow_ray, shadow_hit, jitter,
-                pixels, width)) {
+                pixels, width, stats)) {
               continue;
             }
             // 8x8 not uniform: split into four 4x4s.
@@ -562,7 +562,7 @@ final class Raytracer {
                 final int y4_end = Math.min(by4 + cs4, height);
                 if (blockUniform(x0, y0, bx4, by4, x4_end, y4_end, camera,
                     bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
-                    jitter, pixels, width)) {
+                    jitter, pixels, width, stats)) {
                   continue;
                 }
                 // 4x4 not uniform: trace all its pixels.
@@ -596,7 +596,7 @@ final class Raytracer {
       final RayCamera camera, final BVH bvh, final RTRing[] rings,
       final Ray ray, final Hit hit, final int[] stack, final Ray shadow_ray,
       final Hit shadow_hit, final JitterRandom jitter, final int[] pixels,
-      final int width) {
+      final int width, final HitStats stats) {
     final int[] cx = {bx, x_end - 1, bx, x_end - 1};
     final int[] cy = {by, by, y_end - 1, y_end - 1};
     Primitive first_prim = null;
@@ -627,6 +627,12 @@ final class Raytracer {
         pixels[y * width + x] = (debug && is_corner) ? first_rgb : fill_rgb;
       }
     }
+    // Record the filled pixels as hits, so "Show active tiles" still
+    // draws the tile's red outline when coarse-to-fine is on. (Tim, 2026-10-03)
+    // (add() bumps hits by 1 each; top up the rest of the block.)
+    stats.add(bx, by);
+    stats.add(x_end - 1, y_end - 1);
+    stats.hits += (x_end - bx) * (y_end - by) - 2;
     return true;
   }
 
