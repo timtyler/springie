@@ -495,10 +495,10 @@ final class Raytracer {
   }
 
   /**
-   * Coarse-to-fine tile rendering (Tim, 2026-10-03): only active when
-   * Simple lighting is on. 4x4 blocks. Traces the 4 corners; if all hit
-   * the same primitive, fills the block with that colour (4 rays). If
-   * they differ, traces all 16 pixels (12 more rays).
+   * Coarse-to-fine fill (Tim, 2026-10-03): only active when Simple
+   * lighting is on. Hierarchical: 8x8 blocks, trace 4 corners; if uniform
+   * fill (4 rays). Else split into four 4x4s, trace their corners; fill
+   * if uniform, else trace all 16 pixels.
    */
   private static void renderTileCoarseToFine(final int x0, final int y0, final int width,
       int height, final RayCamera camera, final BVH bvh, final RTRing[] rings, final int[] pixels,
@@ -519,64 +519,95 @@ final class Raytracer {
         }
       }
     }
-    // Tim's 4-corner algorithm (2026-10-03): 4x4 blocks. Trace the 4
-    // corners. If all hit the same primitive, fill the block with that
-    // colour (4 rays). Otherwise trace all 16 pixels (12 more rays).
-    final int cs = 4;
-    for (int by = 0; by < height; by += cs) {
-      for (int bx = 0; bx < width; bx += cs) {
-        final int x_end = Math.min(bx + cs, width);
-        final int y_end = Math.min(by + cs, height);
-        // Trace the 4 corners.
-        final int[] cx = {bx, x_end - 1, bx, x_end - 1};
-        final int[] cy = {by, by, y_end - 1, y_end - 1};
-        Primitive first_prim = null;
-        int first_rgb = 0;
-        boolean uniform = true;
-        for (int c = 0; c < 4 && uniform; c++) {
-          camera.makeRay(x0 + cx[c], y0 + cy[c], ray);
-          hit.reset();
-          if (!intersectScene(ray, hit, bvh, rings, stack)) {
-            uniform = false;
-          } else if (c == 0) {
-            first_prim = hit.primitive;
-            first_rgb = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit,
-                jitter);
-          } else if (hit.primitive != first_prim) {
-            uniform = false;
-          }
+    // Tim's hierarchical 4-corner algorithm (2026-10-03): start with 8x8
+    // blocks. Trace the 4 corners; if all hit the same primitive, fill
+    // the 8x8 (4 rays). Otherwise split into four 4x4s; for each, trace
+    // its 4 corners, fill if uniform (4 rays), else trace all 16 pixels.
+    final int cs8 = 8;
+    final int cs4 = 4;
+    for (int by8 = 0; by8 < height; by8 += cs8) {
+      for (int bx8 = 0; bx8 < width; bx8 += cs8) {
+        final int x8_end = Math.min(bx8 + cs8, width);
+        final int y8_end = Math.min(by8 + cs8, height);
+        // 8x8 corners.
+        if (blockUniform(x0, y0, bx8, by8, x8_end, y8_end, camera, bvh,
+            rings, ray, hit, stack, shadow_ray, shadow_hit, jitter, pixels,
+            width)) {
+          continue;
         }
-        if (uniform) {
-          // All 4 corners hit the same primitive: fill the block.
-          // (In fast mode the shade is flat per primitive, so the
-          // first corner's colour applies to the whole block.)
-          final int rgb = RendererTileManager.show_active_tiles
-              ? 0xFFFF0000
-              : first_rgb;
-          for (int y = by; y < y_end; y++) {
-            for (int x = bx; x < x_end; x++) {
-              pixels[y * width + x] = rgb;
+        // Not uniform: split into four 4x4s.
+        for (int qy = 0; qy < 2; qy++) {
+          for (int qx = 0; qx < 2; qx++) {
+            final int bx4 = bx8 + qx * cs4;
+            final int by4 = by8 + qy * cs4;
+            if (bx4 >= width || by4 >= height) {
+              continue;
             }
-          }
-        } else {
-          // Corners differ: trace all 16 pixels at full resolution.
-          for (int y = by; y < y_end; y++) {
-            for (int x = bx; x < x_end; x++) {
-              // Skip the corners we already traced? No -- simpler to
-              // just trace all 16; the 4 corner rays are cheap.
-              final int idx = y * width + x;
-              camera.makeRay(x0 + x, y0 + y, ray);
-              hit.reset();
-              if (intersectScene(ray, hit, bvh, rings, stack)) {
-                pixels[idx] = shade(ray, hit, bvh, stack, shadow_ray,
-                    shadow_hit, jitter);
+            final int x4_end = Math.min(bx4 + cs4, width);
+            final int y4_end = Math.min(by4 + cs4, height);
+            if (blockUniform(x0, y0, bx4, by4, x4_end, y4_end, camera, bvh,
+                rings, ray, hit, stack, shadow_ray, shadow_hit, jitter,
+                pixels, width)) {
+              continue;
+            }
+            // 4x4 not uniform: trace all its pixels.
+            for (int y = by4; y < y4_end; y++) {
+              for (int x = bx4; x < x4_end; x++) {
+                final int idx = y * width + x;
+                camera.makeRay(x0 + x, y0 + y, ray);
+                hit.reset();
+                if (intersectScene(ray, hit, bvh, rings, stack)) {
+                  pixels[idx] = shade(ray, hit, bvh, stack, shadow_ray,
+                      shadow_hit, jitter);
+                }
+                // Else: background, already filled.
               }
-              // Else: background, already filled.
             }
           }
         }
       }
     }
+  }
+
+  /**
+   * Traces the 4 corners of a block. If all hit the same primitive, fills
+   * the block with that colour and returns true. Otherwise returns false
+   * (caller subdivides or traces fully).
+   */
+  private static boolean blockUniform(final int x0, final int y0,
+      final int bx, final int by, final int x_end, final int y_end,
+      final RayCamera camera, final BVH bvh, final RTRing[] rings,
+      final Ray ray, final Hit hit, final int[] stack, final Ray shadow_ray,
+      final Hit shadow_hit, final JitterRandom jitter, final int[] pixels,
+      final int width) {
+    final int[] cx = {bx, x_end - 1, bx, x_end - 1};
+    final int[] cy = {by, by, y_end - 1, y_end - 1};
+    Primitive first_prim = null;
+    int first_rgb = 0;
+    for (int c = 0; c < 4; c++) {
+      camera.makeRay(x0 + cx[c], y0 + cy[c], ray);
+      hit.reset();
+      if (!intersectScene(ray, hit, bvh, rings, stack)) {
+        return false;
+      }
+      if (c == 0) {
+        first_prim = hit.primitive;
+        first_rgb = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit,
+            jitter);
+      } else if (hit.primitive != first_prim) {
+        return false;
+      }
+    }
+    // Uniform: fill the block.
+    final int rgb = RendererTileManager.show_active_tiles
+        ? 0xFFFF0000
+        : first_rgb;
+    for (int y = by; y < y_end; y++) {
+      for (int x = bx; x < x_end; x++) {
+        pixels[y * width + x] = rgb;
+      }
+    }
+    return true;
   }
 
   /**
