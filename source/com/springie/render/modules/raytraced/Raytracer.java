@@ -1573,6 +1573,7 @@ final class Raytracer {
     double r_shadow = 1.0;
     double g_shadow = 1.0;
     double b_shadow = 1.0;
+    double w_shadow = 1.0;
     if (RendererDelegator.shadows) {
       r_shadow = shadowFactor(ray, hit, bvh, stack, shadow_ray, shadow_hit,
           RED_PX, RED_PY, RED_PZ, jitter, px, py, pz_light);
@@ -1580,8 +1581,9 @@ final class Raytracer {
           GREEN_PX, GREEN_PY, GREEN_PZ, jitter, px, py, pz_light);
       b_shadow = shadowFactor(ray, hit, bvh, stack, shadow_ray, shadow_hit,
           BLUE_PX, BLUE_PY, BLUE_PZ, jitter, px, py, pz_light);
-      final double w_shadow = shadowFactor(ray, hit, bvh, stack, shadow_ray,
+      final double w_shadow_tmp = shadowFactor(ray, hit, bvh, stack, shadow_ray,
           shadow_hit, WHITE_PX, WHITE_PY, WHITE_PZ, jitter, px, py, pz_light);
+      w_shadow = w_shadow_tmp;
       r_dot *= r_shadow;
       g_dot *= g_shadow;
       b_dot *= b_shadow;
@@ -1681,9 +1683,11 @@ final class Raytracer {
       final int r_sheen;
       final int g_sheen;
       final int b_sheen;
+      final int w_sheen;
       final int r_highlight;
       final int g_highlight;
       final int b_highlight;
+      final int w_highlight;
       if (RendererDelegator.glossiness_enabled
           || RendererDelegator.specular_enabled) {
         // Normalized directions toward each light (from diffuse above).
@@ -1693,6 +1697,8 @@ final class Raytracer {
             glx / gd, gly / gd, glz / gd);
         final double b_lobe = lobeCosineFor(ray, hit,
             blx / bd, bly / bd, blz / bd);
+        final double w_lobe = lobeCosineFor(ray, hit,
+            wlx / wd, wly / wd, wlz / wd);
         r_sheen = RendererDelegator.glossiness_enabled
             ? (int) (lobeValue(r_lobe, RendererDelegator.glossiness, 8.0)
                 * r_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0
@@ -1707,6 +1713,11 @@ final class Raytracer {
             ? (int) (lobeValue(b_lobe, RendererDelegator.glossiness, 8.0)
                 * b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0
                 * b_shadow)
+            : 0;
+        w_sheen = RendererDelegator.glossiness_enabled
+            ? (int) (lobeValue(w_lobe, RendererDelegator.glossiness, 8.0)
+                * w_fall * LIGHT_BRIGHTNESS * RendererDelegator.white_light_pct / 100.0
+                * w_shadow)
             : 0;
         r_highlight = RendererDelegator.specular_enabled
             ? (int) (lobeValue(r_lobe, RendererDelegator.specular, 32.0)
@@ -1723,23 +1734,38 @@ final class Raytracer {
                 * b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0
                 * b_shadow)
             : 0;
+        w_highlight = RendererDelegator.specular_enabled
+            ? (int) (lobeValue(w_lobe, RendererDelegator.specular, 32.0)
+                * w_fall * LIGHT_BRIGHTNESS * RendererDelegator.white_light_pct / 100.0
+                * w_shadow)
+            : 0;
       } else {
         r_sheen = 0;
         g_sheen = 0;
         b_sheen = 0;
+        w_sheen = 0;
         r_highlight = 0;
         g_highlight = 0;
         b_highlight = 0;
+        w_highlight = 0;
       }
       final int rim = fresnelRim(ray, hit);
-      or = softAdd(softAdd(or, r_sheen), rim);
-      og = softAdd(softAdd(og, g_sheen), rim);
-      ob = softAdd(softAdd(ob, b_sheen), rim);
+      // White sheen/highlight tinted by the white light's color
+      // (Tim, 2026-10-04), like the diffuse.
+      final int w_sheen_r = (w_sheen * wr3) / 255;
+      final int w_sheen_g = (w_sheen * wg3) / 255;
+      final int w_sheen_b = (w_sheen * wb3) / 255;
+      final int w_highlight_r = (w_highlight * wr3) / 255;
+      final int w_highlight_g = (w_highlight * wg3) / 255;
+      final int w_highlight_b = (w_highlight * wb3) / 255;
+      or = softAdd(softAdd(softAdd(or, r_sheen), w_sheen_r), rim);
+      og = softAdd(softAdd(softAdd(og, g_sheen), w_sheen_g), rim);
+      ob = softAdd(softAdd(softAdd(ob, b_sheen), w_sheen_b), rim);
       // The specular highlight keeps its original hard clip: at full
       // strength it punches through instead of rolling off softly.
-      or = Math.min(255, or + r_highlight);
-      og = Math.min(255, og + g_highlight);
-      ob = Math.min(255, ob + b_highlight);
+      or = Math.min(255, or + r_highlight + w_highlight_r);
+      og = Math.min(255, og + g_highlight + w_highlight_g);
+      ob = Math.min(255, ob + b_highlight + w_highlight_b);
     }
 
     // Single-bounce reflections on nodes only (Tim, 2026-10-03).

@@ -355,6 +355,38 @@ public class ReaderSPR extends DefaultHandler {
           } else if ("compass_bias".equals(nam)) {
             final double sp = Double.valueOf(val).doubleValue();
             this.out.append("CB:" + (int) sp + " ");
+          } else if ("light1_pct".equals(nam)) {
+            this.out.append("L1P:" + Integer.parseInt(val) + " ");
+          } else if ("light2_pct".equals(nam)) {
+            this.out.append("L2P:" + Integer.parseInt(val) + " ");
+          } else if ("light3_pct".equals(nam)) {
+            this.out.append("L3P:" + Integer.parseInt(val) + " ");
+          } else if ("light4_pct".equals(nam)) {
+            this.out.append("L4P:" + Integer.parseInt(val) + " ");
+          } else if ("light1_colour".equals(nam)) {
+            this.out.append("L1C:0x" + Integer.toHexString(Integer.parseInt(val)) + " ");
+          } else if ("light2_colour".equals(nam)) {
+            this.out.append("L2C:0x" + Integer.toHexString(Integer.parseInt(val)) + " ");
+          } else if ("light3_colour".equals(nam)) {
+            this.out.append("L3C:0x" + Integer.toHexString(Integer.parseInt(val)) + " ");
+          } else if ("light4_colour".equals(nam)) {
+            this.out.append("L4C:0x" + Integer.toHexString(Integer.parseInt(val)) + " ");
+          } else if ("light1_x_pct".equals(nam)) {
+            this.out.append("L1X:" + Integer.parseInt(val) + " ");
+          } else if ("light1_y_pct".equals(nam)) {
+            this.out.append("L1Y:" + Integer.parseInt(val) + " ");
+          } else if ("light2_x_pct".equals(nam)) {
+            this.out.append("L2X:" + Integer.parseInt(val) + " ");
+          } else if ("light2_y_pct".equals(nam)) {
+            this.out.append("L2Y:" + Integer.parseInt(val) + " ");
+          } else if ("light3_x_pct".equals(nam)) {
+            this.out.append("L3X:" + Integer.parseInt(val) + " ");
+          } else if ("light3_y_pct".equals(nam)) {
+            this.out.append("L3Y:" + Integer.parseInt(val) + " ");
+          } else if ("light4_x_pct".equals(nam)) {
+            this.out.append("L4X:" + Integer.parseInt(val) + " ");
+          } else if ("light4_y_pct".equals(nam)) {
+            this.out.append("L4Y:" + Integer.parseInt(val) + " ");
           }
         }
       }

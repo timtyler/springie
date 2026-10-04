@@ -59,6 +59,22 @@ public class Instructions {
     "CY", // 51 // Continuously centre Y
     "CZ", // 52 // Continuously centre Z
     "CD", // 53 // Node compass heading
+    "L1P", // 54 // Light 1 intensity %
+    "L2P", // 55 // Light 2 intensity %
+    "L3P", // 56 // Light 3 intensity %
+    "L4P", // 57 // Light 4 intensity %
+    "L1C", // 58 // Light 1 colour
+    "L2C", // 59 // Light 2 colour
+    "L3C", // 60 // Light 3 colour
+    "L4C", // 61 // Light 4 colour
+    "L1X", // 62 // Light 1 x %
+    "L1Y", // 63 // Light 1 y %
+    "L2X", // 64 // Light 2 x %
+    "L2Y", // 65 // Light 2 y %
+    "L3X", // 66 // Light 3 x %
+    "L3Y", // 67 // Light 3 y %
+    "L4X", // 68 // Light 4 x %
+    "L4Y", // 69 // Light 4 y %
 //  "CS", // 29 // Charge strength
   };
 
@@ -116,4 +132,20 @@ public class Instructions {
   static final int CY  = 51;
   static final int CZ  = 52;
   static final int CD  = 53;
+  static final int L1P = 54;
+  static final int L2P = 55;
+  static final int L3P = 56;
+  static final int L4P = 57;
+  static final int L1C = 58;
+  static final int L2C = 59;
+  static final int L3C = 60;
+  static final int L4C = 61;
+  static final int L1X = 62;
+  static final int L1Y = 63;
+  static final int L2X = 64;
+  static final int L2Y = 65;
+  static final int L3X = 66;
+  static final int L3Y = 67;
+  static final int L4X = 68;
+  static final int L4Y = 69;
 }

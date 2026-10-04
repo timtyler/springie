@@ -3,6 +3,8 @@ package com.springie.io.out.writers.spr;
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.demos.CompassPoint;
+import com.springie.render.RendererDelegator;
+import com.springie.render.modules.modern.LightSource;
 import com.springie.elements.base.BaseElement;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.electrostatics.ElectrostaticRepulsion;
@@ -109,6 +111,25 @@ public class WriterSpr {
     uni.add(new XMLWriterAttribute("muscles_period", "" + Muscles.activeOscillator().getPeriodTicks()));
 
     uni.add(new XMLWriterAttribute("compass_bias", "" + CompassPoint.bias_size));
+
+    // Lights (Tim, 2026-10-04): intensities, colors, and positions
+    // (as percentages of viewport half-size).
+    uni.add(new XMLWriterAttribute("light1_pct", "" + RendererDelegator.red_light_pct));
+    uni.add(new XMLWriterAttribute("light2_pct", "" + RendererDelegator.green_light_pct));
+    uni.add(new XMLWriterAttribute("light3_pct", "" + RendererDelegator.blue_light_pct));
+    uni.add(new XMLWriterAttribute("light4_pct", "" + RendererDelegator.white_light_pct));
+    uni.add(new XMLWriterAttribute("light1_colour", "" + RendererDelegator.red_light_colour));
+    uni.add(new XMLWriterAttribute("light2_colour", "" + RendererDelegator.green_light_colour));
+    uni.add(new XMLWriterAttribute("light3_colour", "" + RendererDelegator.blue_light_colour));
+    uni.add(new XMLWriterAttribute("light4_colour", "" + RendererDelegator.white_light_colour));
+    uni.add(new XMLWriterAttribute("light1_x_pct", "" + (int) Math.round(LightSource.red_x_pct)));
+    uni.add(new XMLWriterAttribute("light1_y_pct", "" + (int) Math.round(LightSource.red_y_pct)));
+    uni.add(new XMLWriterAttribute("light2_x_pct", "" + (int) Math.round(LightSource.green_x_pct)));
+    uni.add(new XMLWriterAttribute("light2_y_pct", "" + (int) Math.round(LightSource.green_y_pct)));
+    uni.add(new XMLWriterAttribute("light3_x_pct", "" + (int) Math.round(LightSource.blue_x_pct)));
+    uni.add(new XMLWriterAttribute("light3_y_pct", "" + (int) Math.round(LightSource.blue_y_pct)));
+    uni.add(new XMLWriterAttribute("light4_x_pct", "" + (int) Math.round(LightSource.white_x_pct)));
+    uni.add(new XMLWriterAttribute("light4_y_pct", "" + (int) Math.round(LightSource.white_y_pct)));
 
     recursivelyOutputAllNodes(uni);
     recursivelyOutputAllLinks(uni);

@@ -4,6 +4,8 @@ import com.springie.FrEnd;
 import com.springie.composite.Composite;
 import com.springie.context.ContextManager;
 import com.springie.demos.CompassPoint;
+import com.springie.render.RendererDelegator;
+import com.springie.render.modules.modern.LightSource;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceType;
@@ -37,10 +39,37 @@ public final class ReaderTens {
     // ...
   }
 
+  /**
+   * Resets all lights to sensible defaults (Tim, 2026-10-04).
+   */
+  private static void resetLightsToDefaults() {
+    RendererDelegator.red_light_pct = 50;
+    RendererDelegator.green_light_pct = 50;
+    RendererDelegator.blue_light_pct = 50;
+    RendererDelegator.white_light_pct = 50;
+    RendererDelegator.red_light_colour = 0xFF0000;
+    RendererDelegator.green_light_colour = 0x00FF00;
+    RendererDelegator.blue_light_colour = 0x0000FF;
+    RendererDelegator.white_light_colour = 0xFFFFFF;
+    LightSource.red_x_pct = -60.0;
+    LightSource.red_y_pct = -80.0;
+    LightSource.green_x_pct = 0.0;
+    LightSource.green_y_pct = 80.0;
+    LightSource.blue_x_pct = 60.0;
+    LightSource.blue_y_pct = -80.0;
+    LightSource.white_x_pct = 0.0;
+    LightSource.white_y_pct = -80.0;
+  }
+
   public static void interpretBuffer(final NodeManager node_manager, final char[] buf,
       int x, int y, int z, final int scale_factor) {
     final int index = buf.length;
     Composite current_creature = null;
+
+    // Reset lights to sensible defaults (Tim, 2026-10-04): files
+    // without light info get defaults, not stale values from a
+    // previously loaded file.
+    resetLightsToDefaults();
 
     int in_token = 0;
     boolean in_number = false;
@@ -374,6 +403,70 @@ public final class ReaderTens {
 
                   case Instructions.CB:
                     CompassPoint.bias_size = temp;
+                    break;
+
+                  case Instructions.L1P:
+                    RendererDelegator.red_light_pct = temp;
+                    break;
+
+                  case Instructions.L2P:
+                    RendererDelegator.green_light_pct = temp;
+                    break;
+
+                  case Instructions.L3P:
+                    RendererDelegator.blue_light_pct = temp;
+                    break;
+
+                  case Instructions.L4P:
+                    RendererDelegator.white_light_pct = temp;
+                    break;
+
+                  case Instructions.L1C:
+                    RendererDelegator.red_light_colour = temp;
+                    break;
+
+                  case Instructions.L2C:
+                    RendererDelegator.green_light_colour = temp;
+                    break;
+
+                  case Instructions.L3C:
+                    RendererDelegator.blue_light_colour = temp;
+                    break;
+
+                  case Instructions.L4C:
+                    RendererDelegator.white_light_colour = temp;
+                    break;
+
+                  case Instructions.L1X:
+                    LightSource.red_x_pct = (double) temp;
+                    break;
+
+                  case Instructions.L1Y:
+                    LightSource.red_y_pct = (double) temp;
+                    break;
+
+                  case Instructions.L2X:
+                    LightSource.green_x_pct = (double) temp;
+                    break;
+
+                  case Instructions.L2Y:
+                    LightSource.green_y_pct = (double) temp;
+                    break;
+
+                  case Instructions.L3X:
+                    LightSource.blue_x_pct = (double) temp;
+                    break;
+
+                  case Instructions.L3Y:
+                    LightSource.blue_y_pct = (double) temp;
+                    break;
+
+                  case Instructions.L4X:
+                    LightSource.white_x_pct = (double) temp;
+                    break;
+
+                  case Instructions.L4Y:
+                    LightSource.white_y_pct = (double) temp;
                     break;
 
                   // case Instructions.CS:
