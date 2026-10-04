@@ -354,7 +354,7 @@ final class Raytracer {
       Hit hit, final int[] stack, final Ray shadow_ray, final Hit shadow_hit,
       JitterRandom jitter, final int aa) {
     if (RendererDelegator.simple_lighting
-        && RendererDelegator.coarse_to_fine) {
+        && RendererDelegator.coarse_to_fine > 0) {
       // Coarse-to-fine: only trace edges, fill interiors. (Tim, 2026-10-03)
       renderTileCoarseToFine(x0, y0, width, height, camera, bvh, rings,
           pixels, stats, scenic, background_rgb, ray, hit, stack,
@@ -495,10 +495,10 @@ final class Raytracer {
   }
 
   /**
-   * Coarse-to-fine fill (Tim, 2026-10-03): only active when Simple
-   * lighting is on. Hierarchical: 16x16 -> 8x8 -> 4x4. At each level,
-   * trace the 4 corners; if uniform fill, else subdivide. At 4x4, if not
-   * uniform trace all 16 pixels.
+   * Coarse-to-fine fill (Tim, 2026-10-03/04): only active when Simple
+   * lighting is on. Hierarchical from the dropdown-selected max block size
+   * (16, 8, or 4): trace corners (+ interior for larger blocks); if
+   * uniform fill, else subdivide down to 4x4, then trace all pixels.
    */
   private static void renderTileCoarseToFine(final int x0, final int y0, final int width,
       int height, final RayCamera camera, final BVH bvh, final RTRing[] rings, final int[] pixels,
@@ -519,69 +519,77 @@ final class Raytracer {
         }
       }
     }
-    // Tim's hierarchical 4-corner algorithm (2026-10-03): start with 16x16
-    // blocks. Trace the 4 corners; if uniform, fill (4 rays). Else split
-    // into four 8x8s; for each, trace corners, fill if uniform. Else split
-    // into four 4x4s; fill if uniform, else trace all 16 pixels.
-    final int cs16 = 16;
-    final int cs8 = 8;
-    final int cs4 = 4;
-    for (int by16 = 0; by16 < height; by16 += cs16) {
-      for (int bx16 = 0; bx16 < width; bx16 += cs16) {
-        final int x16_end = Math.min(bx16 + cs16, width);
-        final int y16_end = Math.min(by16 + cs16, height);
-        if (blockUniform(x0, y0, bx16, by16, x16_end, y16_end, camera, bvh,
-            rings, ray, hit, stack, shadow_ray, shadow_hit, jitter, pixels,
-            width, stats)) {
-          continue;
+    // Tim's hierarchical 4-corner algorithm (2026-10-03/04): start at the
+    // dropdown-selected max block size (16, 8, or 4). Trace the corners
+    // (+ interior for larger blocks); if uniform, fill. Else subdivide
+    // into quadrants down to 4x4, then trace all pixels.
+    final int max_cs = RendererDelegator.coarse_to_fine;
+    for (int by = 0; by < height; by += max_cs) {
+      for (int bx = 0; bx < width; bx += max_cs) {
+        renderBlock(x0, y0, bx, by, Math.min(bx + max_cs, width),
+            Math.min(by + max_cs, height), max_cs, camera, bvh, rings, ray,
+            hit, stack, shadow_ray, shadow_hit, jitter, pixels, width,
+            stats);
+      }
+    }
+  }
+
+  /**
+   * Renders one block: try blockUniform; if not uniform and the block is
+   * bigger than 4x4, split into quadrants and recurse; else trace every
+   * pixel.
+   */
+  private static void renderBlock(final int x0, final int y0, final int bx,
+      final int by, final int x_end, final int y_end, final int cs,
+      final RayCamera camera, final BVH bvh, final RTRing[] rings,
+      final Ray ray, final Hit hit, final int[] stack, final Ray shadow_ray,
+      final Hit shadow_hit, final JitterRandom jitter, final int[] pixels,
+      final int width, final HitStats stats) {
+    if (cs > 4 && blockUniform(x0, y0, bx, by, x_end, y_end, camera, bvh,
+        rings, ray, hit, stack, shadow_ray, shadow_hit, jitter, pixels,
+        width, stats)) {
+      return;
+    }
+    if (cs > 4) {
+      // Not uniform: split into quadrants.
+      final int half = cs / 2;
+      final int mx = bx + half;
+      final int my = by + half;
+      renderBlock(x0, y0, bx, by, Math.min(mx, x_end), Math.min(my, y_end),
+          half, camera, bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
+          jitter, pixels, width, stats);
+      if (mx < x_end) {
+        renderBlock(x0, y0, mx, by, x_end, Math.min(my, y_end), half,
+            camera, bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
+            jitter, pixels, width, stats);
+      }
+      if (my < y_end) {
+        renderBlock(x0, y0, bx, my, Math.min(mx, x_end), y_end, half,
+            camera, bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
+            jitter, pixels, width, stats);
+      }
+      if (mx < x_end && my < y_end) {
+        renderBlock(x0, y0, mx, my, x_end, y_end, half, camera, bvh, rings,
+            ray, hit, stack, shadow_ray, shadow_hit, jitter, pixels, width,
+            stats);
+      }
+      return;
+    }
+    // 4x4 (or smaller edge block): try fill, else trace all pixels.
+    if (blockUniform(x0, y0, bx, by, x_end, y_end, camera, bvh, rings, ray,
+        hit, stack, shadow_ray, shadow_hit, jitter, pixels, width, stats)) {
+      return;
+    }
+    for (int y = by; y < y_end; y++) {
+      for (int x = bx; x < x_end; x++) {
+        final int idx = y * width + x;
+        camera.makeRay(x0 + x, y0 + y, ray);
+        hit.reset();
+        if (intersectScene(ray, hit, bvh, rings, stack)) {
+          pixels[idx] = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit,
+              jitter);
         }
-        // 16x16 not uniform: split into four 8x8s.
-        for (int qy8 = 0; qy8 < 2; qy8++) {
-          for (int qx8 = 0; qx8 < 2; qx8++) {
-            final int bx8 = bx16 + qx8 * cs8;
-            final int by8 = by16 + qy8 * cs8;
-            if (bx8 >= width || by8 >= height) {
-              continue;
-            }
-            final int x8_end = Math.min(bx8 + cs8, width);
-            final int y8_end = Math.min(by8 + cs8, height);
-            if (blockUniform(x0, y0, bx8, by8, x8_end, y8_end, camera, bvh,
-                rings, ray, hit, stack, shadow_ray, shadow_hit, jitter,
-                pixels, width, stats)) {
-              continue;
-            }
-            // 8x8 not uniform: split into four 4x4s.
-            for (int qy4 = 0; qy4 < 2; qy4++) {
-              for (int qx4 = 0; qx4 < 2; qx4++) {
-                final int bx4 = bx8 + qx4 * cs4;
-                final int by4 = by8 + qy4 * cs4;
-                if (bx4 >= width || by4 >= height) {
-                  continue;
-                }
-                final int x4_end = Math.min(bx4 + cs4, width);
-                final int y4_end = Math.min(by4 + cs4, height);
-                if (blockUniform(x0, y0, bx4, by4, x4_end, y4_end, camera,
-                    bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
-                    jitter, pixels, width, stats)) {
-                  continue;
-                }
-                // 4x4 not uniform: trace all its pixels.
-                for (int y = by4; y < y4_end; y++) {
-                  for (int x = bx4; x < x4_end; x++) {
-                    final int idx = y * width + x;
-                    camera.makeRay(x0 + x, y0 + y, ray);
-                    hit.reset();
-                    if (intersectScene(ray, hit, bvh, rings, stack)) {
-                      pixels[idx] = shade(ray, hit, bvh, stack, shadow_ray,
-                          shadow_hit, jitter);
-                    }
-                    // Else: background, already filled.
-                  }
-                }
-              }
-            }
-          }
-        }
+        // Else: background, already filled.
       }
     }
   }

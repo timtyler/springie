@@ -45,9 +45,9 @@ public class PanelPreferencesRendererRaytraced {
    * Coarse-to-fine checkbox (Tim, 2026-10-03): disables the 8x8 block
    * flood-fill in fast mode, falling back to per-pixel tracing.
    */
-  private Checkbox checkbox_coarse_to_fine;
-
   private Panel coarse_to_fine_row;
+
+  private Choice choice_coarse_to_fine;
 
   /**
    * Container holding Glossiness and Fresnel on one row (Tim, 2026-10-03).
@@ -113,18 +113,26 @@ public class PanelPreferencesRendererRaytraced {
     // detached by takeEffectRows() and the Renderer tab syncs them
     // on renderer switch (Tim, 2026-10-03).
 
-    // Coarse-to-fine toggle (Tim, 2026-10-03): only relevant in fast mode.
+    // Coarse-to-fine max block size (Tim, 2026-10-04): dropdown, only
+    // relevant in fast mode. 0 = off.
     this.coarse_to_fine_row = new Panel();
-    this.checkbox_coarse_to_fine = new Checkbox("Coarse-to-fine fill algorithm",
-        RendererDelegator.coarse_to_fine);
-    this.checkbox_coarse_to_fine.addItemListener(new ItemListener() {
+    this.coarse_to_fine_row.add(new Label("Coarse-to-fine:"));
+    final Choice choice_coarse = new Choice();
+    choice_coarse.add("Off");
+    choice_coarse.add("4x4");
+    choice_coarse.add("8x8");
+    choice_coarse.add("16x16");
+    final int ctf = RendererDelegator.coarse_to_fine;
+    choice_coarse.select(ctf == 0 ? "Off" : ctf + "x" + ctf);
+    choice_coarse.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        RendererDelegator.coarse_to_fine =
-            PanelPreferencesRendererRaytraced.this.checkbox_coarse_to_fine
-                .getState();
+        final String sel = choice_coarse.getSelectedItem();
+        RendererDelegator.coarse_to_fine = "Off".equals(sel) ? 0
+            : Integer.parseInt(sel.substring(0, sel.indexOf('x')));
       }
     });
-    this.coarse_to_fine_row.add(this.checkbox_coarse_to_fine);
+    this.choice_coarse_to_fine = choice_coarse;
+    this.coarse_to_fine_row.add(choice_coarse);
   }
 
   /**
@@ -332,7 +340,7 @@ public class PanelPreferencesRendererRaytraced {
     this.effect_specular.resetToDefaults();
     this.effect_fresnel.resetToDefaults();
 
-    RendererDelegator.coarse_to_fine = true;
-    this.checkbox_coarse_to_fine.setState(true);
+    RendererDelegator.coarse_to_fine = 8;
+    this.choice_coarse_to_fine.select("8x8");
   }
 }
