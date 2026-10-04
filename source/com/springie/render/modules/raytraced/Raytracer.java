@@ -1025,10 +1025,10 @@ final class Raytracer {
       }
       // Half-to-full brightness per channel.
       // White point light in fast mode (Tim, 2026-10-03): flat falloff
-      // from hit point, adds equally to all channels.
-      final double wdx2 = WHITE_PX - px;
-      final double wdy2 = WHITE_PY - py;
-      final double wdz2 = WHITE_PZ - pz_light;
+      // from primitive center, adds equally to all channels.
+      final double wdx2 = WHITE_PX - pcx;
+      final double wdy2 = WHITE_PY - pcy;
+      final double wdz2 = WHITE_PZ - pcz;
       final double wd2 = Math.sqrt(wdx2 * wdx2 + wdy2 * wdy2 + wdz2 * wdz2);
       final double w_fall2 = 1.0 / (1.0 + (wd2 / LIGHT_FALLOFF_K) * (wd2 / LIGHT_FALLOFF_K));
       final int w_add2 = (int) (159.0 * Math.min(1.0, w_fall2
