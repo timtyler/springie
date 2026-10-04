@@ -17,6 +17,11 @@ public final class LightSourceDots {
   /** Radius of the light circles in pixels. */
   private static final int RADIUS = 6;
 
+  /** Draw every Nth frame (Tim, 2026-10-03). */
+  private static final int FRAME_SKIP = 16;
+
+  private static int frame_count = 0;
+
   private LightSourceDots() {
     // Static only.
   }
@@ -24,8 +29,13 @@ public final class LightSourceDots {
   /**
    * Draws all four lights. Positions are static (updated by the renderers
    * via LightSource.updateForViewport); just draw them.
+   * Only draws 1 frame in 16 to keep it cheap.
    */
   public static void draw(final Graphics g) {
+    frame_count = (frame_count + 1) % FRAME_SKIP;
+    if (frame_count != 0) {
+      return;
+    }
     drawOne(g, LightSource.red_px, LightSource.red_py, LightSource.red_pz,
         Color.red);
     drawOne(g, LightSource.green_px, LightSource.green_py, LightSource.green_pz,
