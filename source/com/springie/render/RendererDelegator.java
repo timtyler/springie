@@ -122,7 +122,7 @@ public final class RendererDelegator {
    * algorithm (4x4 blocks, 4 corner rays; fill if uniform, else full trace).
    * (Tim, 2026-10-03)
    */
-  public static int coarse_to_fine = 8;
+  public static int coarse_to_fine = 16;
 
   /**
    * Ray-traced specular highlights as a percentage (10-100): the

@@ -342,7 +342,7 @@ public class PanelPreferencesRendererRaytraced {
     this.effect_specular.resetToDefaults();
     this.effect_fresnel.resetToDefaults();
 
-    RendererDelegator.coarse_to_fine = 8;
-    this.choice_coarse_to_fine.select("8x8");
+    RendererDelegator.coarse_to_fine = 16;
+    this.choice_coarse_to_fine.select("16x16");
   }
 }
