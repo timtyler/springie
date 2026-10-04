@@ -327,6 +327,7 @@ public class MainCanvas {
     RendererDelegator.redrawChanged(g);
 
     BoundaryBoxDots.drawOneDot(g);
+    LightSourceDots.draw(g);
 
     this.info_button.drawInfoButton(g);
   }
