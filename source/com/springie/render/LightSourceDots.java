@@ -85,8 +85,21 @@ public final class LightSourceDots {
     // survives window resizes, and what we persist.
     final int hw = Coords.x_pixelso2 == 0 ? 400 : Coords.x_pixelso2;
     final int hh = Coords.y_pixelso2 == 0 ? 300 : Coords.y_pixelso2;
-    final double x_pct = (double) (sx - Coords.x_pixelso2) / (double) hw * 100.0;
-    final double y_pct = (double) (sy - Coords.y_pixelso2) / (double) hh * 100.0;
+    double x_pct = (double) (sx - Coords.x_pixelso2) / (double) hw * 100.0;
+    double y_pct = (double) (sy - Coords.y_pixelso2) / (double) hh * 100.0;
+    // Clamp to a sane range (Tim, 2026-10-04): prevents the light from
+    // going so far off-screen that the projection breaks and the dot
+    // disappears.
+    if (x_pct < -200.0) {
+      x_pct = -200.0;
+    } else if (x_pct > 200.0) {
+      x_pct = 200.0;
+    }
+    if (y_pct < -200.0) {
+      y_pct = -200.0;
+    } else if (y_pct > 200.0) {
+      y_pct = 200.0;
+    }
     synchronized (LightSource.class) {
       if (light >= 0 && light < LightSource.lights.size()) {
         final Light l = LightSource.lights.get(light);
@@ -106,9 +119,14 @@ public final class LightSourceDots {
    * Only draws 1 frame in 16 to keep it cheap.
    */
   public static void draw(final Graphics g) {
-    frame_count = (frame_count + 1) % FRAME_SKIP;
-    if (frame_count != 0) {
-      return;
+    // During an active drag, draw every frame for immediate feedback
+    // (Tim, 2026-10-04: the FRAME_SKIP made dragged lights lag/disappear).
+    final boolean dragging_active = dragging >= 0;
+    if (!dragging_active) {
+      frame_count = (frame_count + 1) % FRAME_SKIP;
+      if (frame_count != 0) {
+        return;
+      }
     }
     // Refresh from the live viewport size (Tim, 2026-10-04): stale
     // zero-size positions collapsed all dots to one point.
