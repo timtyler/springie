@@ -36,6 +36,11 @@ public final class LightSourceDots {
     if (frame_count != 0) {
       return;
     }
+    // Ensure positions are initialized (Tim, 2026-10-03): the renderers
+    // update them, but the first paint may happen before any render.
+    if (LightSource.red_px == 0.0 && LightSource.red_py == 0.0) {
+      LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
+    }
     drawOne(g, LightSource.red_px, LightSource.red_py, LightSource.red_pz,
         Color.red);
     drawOne(g, LightSource.green_px, LightSource.green_py, LightSource.green_pz,
