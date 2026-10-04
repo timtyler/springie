@@ -190,6 +190,9 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   // re-composites frame_image and clears it.
   private volatile boolean frame_staged;
 
+  /** Was the drag box active last frame? (Tim, 2026-10-04) */
+  private boolean was_drag_box_active = false;
+
   // The skip set of the frame currently being composited: null when that
   // frame re-traced every tile, otherwise true = the tile was skipped.
   // Written when a frame is started, read when it is composited, so the
@@ -256,8 +259,16 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     if (this.frame_staged) {
       // The drag box is drawn as a screen-space overlay AFTER the blit,
       // not into the frame composite. It never touches the tiles, so no
-      // re-tracing is needed (Tim, 2026-10-04).
-      if (this.staged_skip == null) {
+      // re-tracing is needed (Tim, 2026-10-04). When the box is active,
+      // force a full blit: the partial path would leave the old box
+      // pixels on screen.
+      final boolean drag_box = isDragBoxActive();
+      // Force full blit while dragging, plus one more after the drag
+      // ends to erase the last box (Tim, 2026-10-04).
+      final boolean full_blit = this.staged_skip == null || drag_box
+          || was_drag_box_active;
+      was_drag_box_active = drag_box;
+      if (full_blit) {
         this.frame_image = compositeFrame(this.tiles, width, height);
         graphics.drawImage(this.frame_image, 0, 0, null);
       } else {
