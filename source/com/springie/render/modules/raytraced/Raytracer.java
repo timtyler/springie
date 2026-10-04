@@ -544,9 +544,81 @@ final class Raytracer {
         renderBlock(x0, y0, bx, by, Math.min(bx + max_cs, cw),
             Math.min(by + max_cs, ch), max_cs, min_cs, px, camera, bvh,
             rings, ray, hit, stack, shadow_ray, shadow_hit, jitter, pixels,
-            width, stats);
+            width, stats, null);
       }
     }
+  }
+
+  /**
+   * Renders one quadrant child with optimistic sample reuse (Tim,
+   * 2026-10-04). Corners matching parent samples exactly are reused;
+   * corners adjacent to parent samples are reused optimistically and
+   * verified with fresh traces before filling. Only truly-new corners
+   * are traced immediately. If the optimistic test fails, or
+   * verification fails, falls back to full renderBlock (reusing the
+   * fresh traces via inherited samples).
+   */
+  private static void renderQuadrant(final int x0, final int y0,
+      final int qx0, final int qy0, final int qx1, final int qy1,
+      final int cs, final int min_cs, final int px, final RayCamera camera,
+      final BVH bvh, final RTRing[] rings, final Ray ray, final Hit hit,
+      final int[] stack, final Ray shadow_ray, final Hit shadow_hit,
+      final JitterRandom jitter, final int[] pixels, final int width,
+      final HitStats stats, final BlockSamples parent) {
+    final BlockSamples child = new BlockSamples();
+    final boolean[] optimistic = new boolean[4];
+    final int[] cx = {qx0, qx1 - 1, qx0, qx1 - 1};
+    final int[] cy = {qy0, qy0, qy1 - 1, qy1 - 1};
+    for (int i = 0; i < 4; i++) {
+      child.sx[child.n] = cx[i];
+      child.sy[child.n] = cy[i];
+      final int pi = parent.find(cx[i], cy[i]);
+      if (pi >= 0) {
+        child.prim[child.n] = parent.prim[pi];
+        child.rgb[child.n] = parent.rgb[pi];
+      } else {
+        final int qi = parent.findAdjacent(cx[i], cy[i]);
+        if (qi >= 0) {
+          child.prim[child.n] = parent.prim[qi];
+          child.rgb[child.n] = parent.rgb[qi];
+          optimistic[child.n] = true;
+        } else {
+          child.prim[child.n] = samplePrimitive(x0 + cx[i] * px,
+              y0 + cy[i] * px, camera, bvh, rings, ray, hit, stack);
+          child.rgb[child.n] = child.prim[child.n] == null ? 0 : shade(
+              ray, hit, bvh, stack, shadow_ray, shadow_hit, jitter);
+        }
+      }
+      child.n++;
+    }
+    if (samplesUniform(child)) {
+      // Verify optimistic samples with fresh traces before filling.
+      boolean verified = true;
+      for (int i = 0; i < 4; i++) {
+        if (optimistic[i]) {
+          final Primitive p = samplePrimitive(x0 + child.sx[i] * px,
+              y0 + child.sy[i] * px, camera, bvh, rings, ray, hit, stack);
+          final int rgb = p == null ? 0 : shade(ray, hit, bvh, stack,
+              shadow_ray, shadow_hit, jitter);
+          // Must match the optimistically reused sample.
+          if (p != child.prim[i] || !colorsMatch(rgb, child.rgb[i])) {
+            verified = false;
+            child.prim[i] = p;
+            child.rgb[i] = rgb;
+          }
+        }
+      }
+      if (verified && samplesUniform(child)) {
+        if (samplesSeenHit(child)) {
+          fillBlock(pixels, width, qx0, qy0, qx1, qy1, px, child, stats);
+        }
+        return;
+      }
+    }
+    // Not uniform, or verification failed: full render, reusing traces.
+    renderBlock(x0, y0, qx0, qy0, qx1, qy1, cs, min_cs, px, camera, bvh,
+        rings, ray, hit, stack, shadow_ray, shadow_hit, jitter, pixels,
+        width, stats, child);
   }
 
   /**
@@ -560,11 +632,11 @@ final class Raytracer {
       final BVH bvh, final RTRing[] rings, final Ray ray, final Hit hit,
       final int[] stack, final Ray shadow_ray, final Hit shadow_hit,
       final JitterRandom jitter, final int[] pixels, final int width,
-      final HitStats stats) {
+      final HitStats stats, final BlockSamples inherited) {
     final BlockSamples samples = new BlockSamples();
     if (cs > min_cs && blockUniform(x0, y0, bx, by, x_end, y_end, px,
         camera, bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
-        jitter, pixels, width, stats, samples)) {
+        jitter, pixels, width, stats, samples, inherited)) {
       return;
     }
     if ((cs == 16 || cs == 8) && x_end - bx == cs && y_end - by == cs) {
@@ -577,27 +649,31 @@ final class Raytracer {
       }
     }
     if (cs > min_cs) {
-      // Not uniform: split into quadrants.
+      // Not uniform: split into quadrants with optimistic reuse (Tim,
+      // 2026-10-04). Child corners reusing parent samples exactly or
+      // adjacently (verified before filling) avoid re-tracing points
+      // right next to already-traced ones.
       final int half = cs / 2;
       final int mx = bx + half;
       final int my = by + half;
-      renderBlock(x0, y0, bx, by, Math.min(mx, x_end), Math.min(my, y_end),
-          half, min_cs, px, camera, bvh, rings, ray, hit, stack,
-          shadow_ray, shadow_hit, jitter, pixels, width, stats);
+      renderQuadrant(x0, y0, bx, by, Math.min(mx, x_end),
+          Math.min(my, y_end), half, min_cs, px, camera, bvh, rings, ray,
+          hit, stack, shadow_ray, shadow_hit, jitter, pixels, width,
+          stats, samples);
       if (mx < x_end) {
-        renderBlock(x0, y0, mx, by, x_end, Math.min(my, y_end), half,
+        renderQuadrant(x0, y0, mx, by, x_end, Math.min(my, y_end), half,
             min_cs, px, camera, bvh, rings, ray, hit, stack, shadow_ray,
-            shadow_hit, jitter, pixels, width, stats);
+            shadow_hit, jitter, pixels, width, stats, samples);
       }
       if (my < y_end) {
-        renderBlock(x0, y0, bx, my, Math.min(mx, x_end), y_end, half,
+        renderQuadrant(x0, y0, bx, my, Math.min(mx, x_end), y_end, half,
             min_cs, px, camera, bvh, rings, ray, hit, stack, shadow_ray,
-            shadow_hit, jitter, pixels, width, stats);
+            shadow_hit, jitter, pixels, width, stats, samples);
       }
       if (mx < x_end && my < y_end) {
-        renderBlock(x0, y0, mx, my, x_end, y_end, half, min_cs, px, camera,
-            bvh, rings, ray, hit, stack, shadow_ray, shadow_hit, jitter,
-            pixels, width, stats);
+        renderQuadrant(x0, y0, mx, my, x_end, y_end, half, min_cs, px,
+            camera, bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
+            jitter, pixels, width, stats, samples);
       }
       return;
     }
@@ -605,7 +681,7 @@ final class Raytracer {
     final BlockSamples min_samples = new BlockSamples();
     if (blockUniform(x0, y0, bx, by, x_end, y_end, px, camera, bvh, rings,
         ray, hit, stack, shadow_ray, shadow_hit, jitter, pixels, width,
-        stats, min_samples)) {
+        stats, min_samples, inherited)) {
       return;
     }
     for (int cy = by; cy < y_end; cy++) {
@@ -690,6 +766,20 @@ final class Raytracer {
       }
       return -1;
     }
+
+    /**
+     * Finds a sample within 1 cell (Chebyshev distance) of (x, y), or -1.
+     * Used for optimistic reuse (Tim, 2026-10-04): child corners landing
+     * next to parent samples reuse them, verified later before filling.
+     */
+    int findAdjacent(final int x, final int y) {
+      for (int i = 0; i < n; i++) {
+        if (Math.abs(sx[i] - x) <= 1 && Math.abs(sy[i] - y) <= 1) {
+          return i;
+        }
+      }
+      return -1;
+    }
   }
 
   /**
@@ -704,7 +794,7 @@ final class Raytracer {
       final RTRing[] rings, final Ray ray, final Hit hit, final int[] stack,
       final Ray shadow_ray, final Hit shadow_hit, final JitterRandom jitter,
       final int[] pixels, final int width, final HitStats stats,
-      final BlockSamples samples) {
+      final BlockSamples samples, final BlockSamples inherited) {
     // Collect all sample points (in cell coordinates): 4 corners, plus 4
     // edge midpoints for 16x16. (Tim, 2026-10-04: extra samples go on the
     // edge, not center.)
@@ -724,13 +814,20 @@ final class Raytracer {
       samples.sx[samples.n] = bx; samples.sy[samples.n] = mcy; samples.n++;
       samples.sx[samples.n] = x_end - 1; samples.sy[samples.n] = mcy; samples.n++;
     }
-    // Trace and shade all samples.
+    // Trace and shade all samples, reusing inherited ones exactly.
     for (int i = 0; i < samples.n; i++) {
-      // Cell -> screen: top-left of the px-by-px block.
-      samples.prim[i] = samplePrimitive(x0 + samples.sx[i] * px,
-          y0 + samples.sy[i] * px, camera, bvh, rings, ray, hit, stack);
-      samples.rgb[i] = samples.prim[i] == null ? 0 : shade(ray, hit, bvh,
-          stack, shadow_ray, shadow_hit, jitter);
+      final int pi = inherited == null ? -1
+          : inherited.find(samples.sx[i], samples.sy[i]);
+      if (pi >= 0) {
+        samples.prim[i] = inherited.prim[pi];
+        samples.rgb[i] = inherited.rgb[pi];
+      } else {
+        // Cell -> screen: top-left of the px-by-px block.
+        samples.prim[i] = samplePrimitive(x0 + samples.sx[i] * px,
+            y0 + samples.sy[i] * px, camera, bvh, rings, ray, hit, stack);
+        samples.rgb[i] = samples.prim[i] == null ? 0 : shade(ray, hit, bvh,
+            stack, shadow_ray, shadow_hit, jitter);
+      }
     }
     if (!samplesUniform(samples)) {
       return false;  // Subdivide.
@@ -826,24 +923,25 @@ final class Raytracer {
         }
         // Else: all background, already pre-filled.
       } else {
-        // Not uniform: split the half into two (cs/2)x(cs/2) blocks.
+        // Not uniform: split the half into two (cs/2)x(cs/2) blocks,
+        // reusing the half's samples.
         final int child = cs / 2;
         if (horizontal) {
           final int mx = hx0 + half;
           renderBlock(x0, y0, hx0, hy0, mx, hy1, child, min_cs, px, camera,
               bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
-              jitter, pixels, width, stats);
+              jitter, pixels, width, stats, half_samples);
           renderBlock(x0, y0, mx, hy0, hx1, hy1, child, min_cs, px, camera,
               bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
-              jitter, pixels, width, stats);
+              jitter, pixels, width, stats, half_samples);
         } else {
           final int my = hy0 + half;
           renderBlock(x0, y0, hx0, hy0, hx1, my, child, min_cs, px, camera,
               bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
-              jitter, pixels, width, stats);
+              jitter, pixels, width, stats, half_samples);
           renderBlock(x0, y0, hx0, my, hx1, hy1, child, min_cs, px, camera,
               bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
-              jitter, pixels, width, stats);
+              jitter, pixels, width, stats, half_samples);
         }
       }
     }
