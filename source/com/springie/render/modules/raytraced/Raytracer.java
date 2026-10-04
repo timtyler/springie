@@ -1004,9 +1004,9 @@ final class Raytracer {
   /**
    * Progressive background safety check (Tim, 2026-10-04): when all
    * primary samples miss, thin cables can slip between them. Refines
-   * progressively: 1/2 points, then 1/4, then 1/8, down to alternate
-   * pixels (spacing 2). Stops at the first hit (caller subdivides).
-   * Only runs for background blocks. Scales 4x4 to 32x32.
+   * progressively: 1/2 points, then 1/4, then 1/8, down to every pixel.
+   * Stops at the first hit (caller subdivides). Only runs for background
+   * blocks. Scales 4x4 to 32x32.
    */
   private static boolean extraBackgroundSamplesHit(final int x0,
       final int y0, final int bx, final int by, final int x_end,
@@ -1019,8 +1019,9 @@ final class Raytracer {
     }
     // Start below the primary sampling density: 1/2 already done for
     // cs>=16 (edge midpoints), so start at 1/4; else start at 1/2.
+    // Continue down to every pixel (spacing 1) to catch 1-pixel cables.
     int step = (cs >= 16) ? cs / 4 : cs / 2;
-    while (step >= 2) {
+    while (step >= 1) {
       // New positions at this level: odd multiples of step.
       for (int i = 1; i * step < cs; i += 2) {
         final int q = bx + i * step;
