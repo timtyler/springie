@@ -460,7 +460,7 @@ public class PanelControlsUniverse {
 
     final Panel panel_light_red = new Panel();
     panel_light_red.setLayout(new BorderLayout(0, 8));
-    panel_light_red.add("West", new Label("Red light %:", Label.RIGHT));
+    panel_light_red.add("West", new Label("Light one %:", Label.RIGHT));
     this.scrollbar_light_red = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
     this.label_light_red = new Label("50", Label.LEFT);
     this.scrollbar_light_red.addAdjustmentListener(new AdjustmentListener() {
@@ -476,7 +476,7 @@ public class PanelControlsUniverse {
 
     final Panel panel_light_green = new Panel();
     panel_light_green.setLayout(new BorderLayout(0, 8));
-    panel_light_green.add("West", new Label("Green light %:", Label.RIGHT));
+    panel_light_green.add("West", new Label("Light two %:", Label.RIGHT));
     this.scrollbar_light_green = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
     this.label_light_green = new Label("50", Label.LEFT);
     this.scrollbar_light_green.addAdjustmentListener(new AdjustmentListener() {
@@ -492,7 +492,7 @@ public class PanelControlsUniverse {
 
     final Panel panel_light_blue = new Panel();
     panel_light_blue.setLayout(new BorderLayout(0, 8));
-    panel_light_blue.add("West", new Label("Blue light %:", Label.RIGHT));
+    panel_light_blue.add("West", new Label("Light three %:", Label.RIGHT));
     this.scrollbar_light_blue = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
     this.label_light_blue = new Label("50", Label.LEFT);
     this.scrollbar_light_blue.addAdjustmentListener(new AdjustmentListener() {
@@ -510,7 +510,7 @@ public class PanelControlsUniverse {
     // restored as a slider.
     final Panel panel_light_white = new Panel();
     panel_light_white.setLayout(new BorderLayout(0, 8));
-    panel_light_white.add("West", new Label("White light %:", Label.RIGHT));
+    panel_light_white.add("West", new Label("Light four %:", Label.RIGHT));
     this.scrollbar_light_white = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
     this.label_light_white = new Label("50", Label.LEFT);
     this.scrollbar_light_white.addAdjustmentListener(new AdjustmentListener() {
@@ -556,7 +556,7 @@ public class PanelControlsUniverse {
         });
     picker_light_red.color_picker_controller
         .setColour(RendererDelegator.red_light_colour);
-    tab_light_colours.add("Red", picker_light_red.panel);
+    tab_light_colours.add("Light one", picker_light_red.panel);
 
     final ColorPicker picker_light_green = new ColorPicker(
         new ColorPickerInformer() {
@@ -566,7 +566,7 @@ public class PanelControlsUniverse {
         });
     picker_light_green.color_picker_controller
         .setColour(RendererDelegator.green_light_colour);
-    tab_light_colours.add("Green", picker_light_green.panel);
+    tab_light_colours.add("Light two", picker_light_green.panel);
 
     final ColorPicker picker_light_blue = new ColorPicker(
         new ColorPickerInformer() {
@@ -576,7 +576,7 @@ public class PanelControlsUniverse {
         });
     picker_light_blue.color_picker_controller
         .setColour(RendererDelegator.blue_light_colour);
-    tab_light_colours.add("Blue", picker_light_blue.panel);
+    tab_light_colours.add("Light three", picker_light_blue.panel);
 
     final ColorPicker picker_light_white = new ColorPicker(
         new ColorPickerInformer() {
@@ -586,7 +586,7 @@ public class PanelControlsUniverse {
         });
     picker_light_white.color_picker_controller
         .setColour(RendererDelegator.white_light_colour);
-    tab_light_colours.add("White", picker_light_white.panel);
+    tab_light_colours.add("Light four", picker_light_white.panel);
 
     panel_lights.add(tab_light_colours);
 

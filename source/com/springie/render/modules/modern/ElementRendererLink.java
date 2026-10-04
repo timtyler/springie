@@ -280,6 +280,23 @@ public final class ElementRendererLink {
       final double alen = Math.sqrt(ax * ax + ay * ay + az * az);
       // Ambient light (Tim, 2026-10-03).
       final double ambient_l = 0.5 * RendererDelegator.ambient_light_pct / 100.0;
+      // Light colors (Tim, 2026-10-04).
+      final int ll1r = (RendererDelegator.red_light_colour >> 16) & 0xFF;
+      final int ll1g = (RendererDelegator.red_light_colour >> 8) & 0xFF;
+      final int ll1b = RendererDelegator.red_light_colour & 0xFF;
+      final int ll2r = (RendererDelegator.green_light_colour >> 16) & 0xFF;
+      final int ll2g = (RendererDelegator.green_light_colour >> 8) & 0xFF;
+      final int ll2b = RendererDelegator.green_light_colour & 0xFF;
+      final int ll3r = (RendererDelegator.blue_light_colour >> 16) & 0xFF;
+      final int ll3g = (RendererDelegator.blue_light_colour >> 8) & 0xFF;
+      final int ll3b = RendererDelegator.blue_light_colour & 0xFF;
+      final int ll4r = (RendererDelegator.white_light_colour >> 16) & 0xFF;
+      final int ll4g = (RendererDelegator.white_light_colour >> 8) & 0xFF;
+      final int ll4b = RendererDelegator.white_light_colour & 0xFF;
+      double l1_diff_l = 0.0;
+      double l2_diff_l = 0.0;
+      double l3_diff_l = 0.0;
+      double l4_diff_l = 0.0;
       double r_factor = ambient_l;
       double g_factor = ambient_l;
       double b_factor = ambient_l;
@@ -290,34 +307,34 @@ public final class ElementRendererLink {
         ax /= alen;
         ay /= alen;
         az /= alen;
-        // Red light.
+        // Light one.
         final double rlx = LightSource.red_px - midx;
         final double rly = LightSource.red_py - midy;
         final double rlz = LightSource.red_pz - midz;
         final double rd = Math.sqrt(rlx * rlx + rly * rly + rlz * rlz);
         if (rd > 1e-12) {
           final double r_dot = (rlx * ax + rly * ay + rlz * az) / rd;
-          r_factor = Math.min(1.0, ambient_l + 0.75 * Math.sqrt(Math.max(0.0, 1.0 - r_dot * r_dot)) * RendererDelegator.red_light_pct / 50.0);
+          l1_diff_l = 0.75 * Math.sqrt(Math.max(0.0, 1.0 - r_dot * r_dot)) * RendererDelegator.red_light_pct / 50.0;
         }
-        // Green light.
+        // Light two.
         final double glx = LightSource.green_px - midx;
         final double gly = LightSource.green_py - midy;
         final double glz = LightSource.green_pz - midz;
         final double gd = Math.sqrt(glx * glx + gly * gly + glz * glz);
         if (gd > 1e-12) {
           final double g_dot = (glx * ax + gly * ay + glz * az) / gd;
-          g_factor = Math.min(1.0, ambient_l + 0.75 * Math.sqrt(Math.max(0.0, 1.0 - g_dot * g_dot)) * RendererDelegator.green_light_pct / 50.0);
+          l2_diff_l = 0.75 * Math.sqrt(Math.max(0.0, 1.0 - g_dot * g_dot)) * RendererDelegator.green_light_pct / 50.0;
         }
-        // Blue light.
+        // Light three.
         final double blx = LightSource.blue_px - midx;
         final double bly = LightSource.blue_py - midy;
         final double blz = LightSource.blue_pz - midz;
         final double bd = Math.sqrt(blx * blx + bly * bly + blz * blz);
         if (bd > 1e-12) {
           final double b_dot = (blx * ax + bly * ay + blz * az) / bd;
-          b_factor = Math.min(1.0, ambient_l + 0.75 * Math.sqrt(Math.max(0.0, 1.0 - b_dot * b_dot)) * RendererDelegator.blue_light_pct / 50.0);
+          l3_diff_l = 0.75 * Math.sqrt(Math.max(0.0, 1.0 - b_dot * b_dot)) * RendererDelegator.blue_light_pct / 50.0;
         }
-        // White point light (Tim, 2026-10-03).
+        // Light four (Tim, 2026-10-03).
         final double wlx_l = LightSource.white_px - midx;
         final double wly_l = LightSource.white_py - midy;
         final double wlz_l = LightSource.white_pz - midz;
@@ -325,13 +342,20 @@ public final class ElementRendererLink {
         if (w_len_l > 1e-12) {
           final double w_dot = (wlx_l * ax + wly_l * ay
               + wlz_l * az) / w_len_l;
-          final double w_factor = 0.95
+          l4_diff_l = 0.75
               * Math.sqrt(Math.max(0.0, 1.0 - w_dot * w_dot))
               * RendererDelegator.white_light_pct / 50.0;
-          r_factor += w_factor;
-          g_factor += w_factor;
-          b_factor += w_factor;
         }
+        // Combine per channel (Tim, 2026-10-04).
+        r_factor = Math.min(1.0, ambient_l
+            + l1_diff_l * ll1r / 255.0 + l2_diff_l * ll2r / 255.0
+            + l3_diff_l * ll3r / 255.0 + l4_diff_l * ll4r / 255.0);
+        g_factor = Math.min(1.0, ambient_l
+            + l1_diff_l * ll1g / 255.0 + l2_diff_l * ll2g / 255.0
+            + l3_diff_l * ll3g / 255.0 + l4_diff_l * ll4g / 255.0);
+        b_factor = Math.min(1.0, ambient_l
+            + l1_diff_l * ll1b / 255.0 + l2_diff_l * ll2b / 255.0
+            + l3_diff_l * ll3b / 255.0 + l4_diff_l * ll4b / 255.0);
         // Specular highlights from the 3 lights (Tim, 2026-10-03).
         // For a cylinder, use the normal at the brightest point:
         // N = normalize(L - (L·A)*A). View V = (0, 0, -1).
@@ -408,9 +432,16 @@ public final class ElementRendererLink {
       final int cr = (new_colour_base >> 16) & 0xFF;
       final int cg = (new_colour_base >> 8) & 0xFF;
       final int cb = new_colour_base & 0xFF;
-      final int or = Math.min(255, (int) (cr * r_factor + 255.0 * r_spec));
-      final int og = Math.min(255, (int) (cg * g_factor + 255.0 * g_spec));
-      final int ob = Math.min(255, (int) (cb * b_factor + 255.0 * b_spec));
+      // Specular tinted by light color (Tim, 2026-10-04).
+      final double spec_r_l = r_spec * ll1r / 255.0 + g_spec * ll2r / 255.0
+          + b_spec * ll3r / 255.0;
+      final double spec_g_l = r_spec * ll1g / 255.0 + g_spec * ll2g / 255.0
+          + b_spec * ll3g / 255.0;
+      final double spec_b_l = r_spec * ll1b / 255.0 + g_spec * ll2b / 255.0
+          + b_spec * ll3b / 255.0;
+      final int or = Math.min(255, (int) (cr * r_factor + 255.0 * spec_r_l));
+      final int og = Math.min(255, (int) (cg * g_factor + 255.0 * spec_g_l));
+      final int ob = Math.min(255, (int) (cb * b_factor + 255.0 * spec_b_l));
       final int new_colour = (new_colour_base & 0xFF000000) | (or << 16) | (og << 8) | ob;
 
       final PolygonObject2D[] quads = pair_cache.quads[segment];

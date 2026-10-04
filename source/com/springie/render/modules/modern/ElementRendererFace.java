@@ -167,28 +167,56 @@ public final class ElementRendererFace {
     // prominent; the white ambient is dimmer. (Tim, 2026-10-03)
     // Ambient light (Tim, 2026-10-03): from the slider. 50% = 0.25.
     final double ambient = 0.5 * RendererDelegator.ambient_light_pct / 100.0;
-    final double r_factor = Math.min(1.0, ambient + 0.75 * view_dot * r_dot * RendererDelegator.red_light_pct / 50.0);
-    final double g_factor = Math.min(1.0, ambient + 0.75 * view_dot * g_dot * RendererDelegator.green_light_pct / 50.0);
-    final double b_factor = Math.min(1.0, ambient + 0.75 * view_dot * b_dot * RendererDelegator.blue_light_pct / 50.0);
-    // White point light (Tim, 2026-10-03): fourth light, like RGB.
-    // Adds equally to all channels.
+    // Light colors (Tim, 2026-10-04): each light's diffuse factor is
+    // scaled by its color channels. Light one/two/three/four default
+    // to red/green/blue/white.
+    final int l1r = (RendererDelegator.red_light_colour >> 16) & 0xFF;
+    final int l1g = (RendererDelegator.red_light_colour >> 8) & 0xFF;
+    final int l1b = RendererDelegator.red_light_colour & 0xFF;
+    final int l2r = (RendererDelegator.green_light_colour >> 16) & 0xFF;
+    final int l2g = (RendererDelegator.green_light_colour >> 8) & 0xFF;
+    final int l2b = RendererDelegator.green_light_colour & 0xFF;
+    final int l3r = (RendererDelegator.blue_light_colour >> 16) & 0xFF;
+    final int l3g = (RendererDelegator.blue_light_colour >> 8) & 0xFF;
+    final int l3b = RendererDelegator.blue_light_colour & 0xFF;
+    final int l4r = (RendererDelegator.white_light_colour >> 16) & 0xFF;
+    final int l4g = (RendererDelegator.white_light_colour >> 8) & 0xFF;
+    final int l4b = RendererDelegator.white_light_colour & 0xFF;
+    final double l1_diff = 0.75 * view_dot * r_dot
+        * RendererDelegator.red_light_pct / 50.0;
+    final double l2_diff = 0.75 * view_dot * g_dot
+        * RendererDelegator.green_light_pct / 50.0;
+    final double l3_diff = 0.75 * view_dot * b_dot
+        * RendererDelegator.blue_light_pct / 50.0;
+    // White point light (Tim, 2026-10-03): fourth light, like the others.
     final double wlx = LightSource.white_px - center.x;
     final double wly = LightSource.white_py - center.y;
     final double wlz = LightSource.white_pz - center.z;
     final double wd = Math.sqrt(wlx * wlx + wly * wly + wlz * wlz);
     final double w_dot = Math.abs((nx * wlx + ny * wly + nz * wlz) / wd);
-    // Boosted 25% vs RGB (Tim, 2026-10-03).
-    final double w_factor = 0.95 * view_dot * w_dot
+    final double l4_diff = 0.75 * view_dot * w_dot
         * RendererDelegator.white_light_pct / 50.0;
+    // Per-output-channel diffuse: sum each light's factor scaled by
+    // its color.
+    final double r_factor = Math.min(1.0, ambient
+        + l1_diff * l1r / 255.0 + l2_diff * l2r / 255.0
+        + l3_diff * l3r / 255.0 + l4_diff * l4r / 255.0);
+    final double g_factor = Math.min(1.0, ambient
+        + l1_diff * l1g / 255.0 + l2_diff * l2g / 255.0
+        + l3_diff * l3g / 255.0 + l4_diff * l4g / 255.0);
+    final double b_factor = Math.min(1.0, ambient
+        + l1_diff * l1b / 255.0 + l2_diff * l2b / 255.0
+        + l3_diff * l3b / 255.0 + l4_diff * l4b / 255.0);
     // Specular highlight (Tim, 2026-10-03, extra credit): where the
     // polygon reflects the light directly at the viewer, add extra
     // highlighting. R = 2*dot(N,L)*N - L; spec = pow(max(0, dot(R,V)), 32).
     // View vector V = (0, 0, -1).
-    double r_spec = 0.0;
-    double g_spec = 0.0;
-    double b_spec = 0.0;
+    // Specular tints by light color (Tim, 2026-10-04).
+    double spec_r = 0.0;
+    double spec_g = 0.0;
+    double spec_b = 0.0;
     {
-      // Red light specular.
+      // Light one specular.
       final double lx = rlx / rd;
       final double ly = rly / rd;
       final double lz = rlz / rd;
@@ -198,9 +226,13 @@ public final class ElementRendererFace {
       final double rz = 2.0 * ndotl * nz - lz;
       final double rdotv = -(rz); // dot(R, (0,0,-1)) = -Rz
       if (rdotv > 0.0) {
-        r_spec = Math.pow(rdotv, 16.0) * RendererDelegator.red_light_pct / 50.0;
+        final double s = Math.pow(rdotv, 16.0)
+            * RendererDelegator.red_light_pct / 50.0;
+        spec_r += s * l1r / 255.0;
+        spec_g += s * l1g / 255.0;
+        spec_b += s * l1b / 255.0;
       }
-      // Green light specular.
+      // Light two specular.
       final double glxn = glx / gd;
       final double glyn = gly / gd;
       final double glzn = glz / gd;
@@ -210,9 +242,13 @@ public final class ElementRendererFace {
       final double grz = 2.0 * gndotl * nz - glzn;
       final double grdotv = -(grz);
       if (grdotv > 0.0) {
-        g_spec = Math.pow(grdotv, 16.0) * RendererDelegator.green_light_pct / 50.0;
+        final double s = Math.pow(grdotv, 16.0)
+            * RendererDelegator.green_light_pct / 50.0;
+        spec_r += s * l2r / 255.0;
+        spec_g += s * l2g / 255.0;
+        spec_b += s * l2b / 255.0;
       }
-      // Blue light specular.
+      // Light three specular.
       final double blxn = blx / bd;
       final double blyn = bly / bd;
       final double blzn = blz / bd;
@@ -222,16 +258,35 @@ public final class ElementRendererFace {
       final double brz = 2.0 * bndotl * nz - blzn;
       final double brdotv = -(brz);
       if (brdotv > 0.0) {
-        b_spec = Math.pow(brdotv, 16.0) * RendererDelegator.blue_light_pct / 50.0;
+        final double s = Math.pow(brdotv, 16.0)
+            * RendererDelegator.blue_light_pct / 50.0;
+        spec_r += s * l3r / 255.0;
+        spec_g += s * l3g / 255.0;
+        spec_b += s * l3b / 255.0;
+      }
+      // Light four specular (Tim, 2026-10-04).
+      final double wlxn = wlx / wd;
+      final double wlyn = wly / wd;
+      final double wlzn = wlz / wd;
+      final double wndotl = nx * wlxn + ny * wlyn + nz * wlzn;
+      final double wrx = 2.0 * wndotl * nx - wlxn;
+      final double wry = 2.0 * wndotl * ny - wlyn;
+      final double wrz = 2.0 * wndotl * nz - wlzn;
+      final double wrdotv = -(wrz);
+      if (wrdotv > 0.0) {
+        final double s = Math.pow(wrdotv, 16.0)
+            * RendererDelegator.white_light_pct / 50.0;
+        spec_r += s * l4r / 255.0;
+        spec_g += s * l4g / 255.0;
+        spec_b += s * l4b / 255.0;
       }
     }
     final int r = (colour >> 16) & 0xFF;
     final int g = (colour >> 8) & 0xFF;
     final int b = colour & 0xFF;
-    // White light adds equally to all channels (Tim, 2026-10-03).
-    final int or = Math.min(255, (int) (r * (r_factor + w_factor) + 255.0 * r_spec));
-    final int og = Math.min(255, (int) (g * (g_factor + w_factor) + 255.0 * g_spec));
-    final int ob = Math.min(255, (int) (b * (b_factor + w_factor) + 255.0 * b_spec));
+    final int or = Math.min(255, (int) (r * r_factor + 255.0 * spec_r));
+    final int og = Math.min(255, (int) (g * g_factor + 255.0 * spec_g));
+    final int ob = Math.min(255, (int) (b * b_factor + 255.0 * spec_b));
     return (colour & 0xFF000000) | (or << 16) | (og << 8) | ob;
   }
 }

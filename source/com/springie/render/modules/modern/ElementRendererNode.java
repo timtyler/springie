@@ -57,44 +57,61 @@ public final class ElementRendererNode {
         final double nlen = Math.sqrt(nx * nx + ny * ny + nz * nz);
         // Ambient light (Tim, 2026-10-03).
         final double ambient_n = 0.5 * RendererDelegator.ambient_light_pct / 100.0;
+        // Light colors (Tim, 2026-10-04).
+        final int nl1r = (RendererDelegator.red_light_colour >> 16) & 0xFF;
+        final int nl1g = (RendererDelegator.red_light_colour >> 8) & 0xFF;
+        final int nl1b = RendererDelegator.red_light_colour & 0xFF;
+        final int nl2r = (RendererDelegator.green_light_colour >> 16) & 0xFF;
+        final int nl2g = (RendererDelegator.green_light_colour >> 8) & 0xFF;
+        final int nl2b = RendererDelegator.green_light_colour & 0xFF;
+        final int nl3r = (RendererDelegator.blue_light_colour >> 16) & 0xFF;
+        final int nl3g = (RendererDelegator.blue_light_colour >> 8) & 0xFF;
+        final int nl3b = RendererDelegator.blue_light_colour & 0xFF;
+        final int nl4r = (RendererDelegator.white_light_colour >> 16) & 0xFF;
+        final int nl4g = (RendererDelegator.white_light_colour >> 8) & 0xFF;
+        final int nl4b = RendererDelegator.white_light_colour & 0xFF;
+        double l1_diff_n = 0.0;
+        double l2_diff_n = 0.0;
+        double l3_diff_n = 0.0;
+        double l4_diff_n = 0.0;
         double r_factor = ambient_n;
         double g_factor = ambient_n;
         double b_factor = ambient_n;
-        double r_spec = 0.0;
-        double g_spec = 0.0;
-        double b_spec = 0.0;
+        double spec_r_n = 0.0;
+        double spec_g_n = 0.0;
+        double spec_b_n = 0.0;
         if (nlen > 1e-12) {
           final double nnx = nx / nlen;
           final double nny = ny / nlen;
           final double nnz = nz / nlen;
-          // Red light.
+          // Light one.
           final double rlx = LightSource.red_px - node.pos.x;
           final double rly = LightSource.red_py - node.pos.y;
           final double rlz = LightSource.red_pz - node.pos.z;
           final double rd = Math.sqrt(rlx * rlx + rly * rly + rlz * rlz);
           if (rd > 1e-12) {
             final double r_dot = Math.abs((nnx * rlx + nny * rly + nnz * rlz) / rd);
-            r_factor = Math.min(1.0, ambient_n + 0.75 * r_dot * RendererDelegator.red_light_pct / 50.0);
+            l1_diff_n = 0.75 * r_dot * RendererDelegator.red_light_pct / 50.0;
           }
-          // Green light.
+          // Light two.
           final double glx = LightSource.green_px - node.pos.x;
           final double gly = LightSource.green_py - node.pos.y;
           final double glz = LightSource.green_pz - node.pos.z;
           final double gd = Math.sqrt(glx * glx + gly * gly + glz * glz);
           if (gd > 1e-12) {
             final double g_dot = Math.abs((nnx * glx + nny * gly + nnz * glz) / gd);
-            g_factor = Math.min(1.0, ambient_n + 0.75 * g_dot * RendererDelegator.green_light_pct / 50.0);
+            l2_diff_n = 0.75 * g_dot * RendererDelegator.green_light_pct / 50.0;
           }
-          // Blue light.
+          // Light three.
           final double blx = LightSource.blue_px - node.pos.x;
           final double bly = LightSource.blue_py - node.pos.y;
           final double blz = LightSource.blue_pz - node.pos.z;
           final double bd = Math.sqrt(blx * blx + bly * bly + blz * blz);
           if (bd > 1e-12) {
             final double b_dot = Math.abs((nnx * blx + nny * bly + nnz * blz) / bd);
-            b_factor = Math.min(1.0, ambient_n + 0.75 * b_dot * RendererDelegator.blue_light_pct / 50.0);
+            l3_diff_n = 0.75 * b_dot * RendererDelegator.blue_light_pct / 50.0;
           }
-          // White point light (Tim, 2026-10-03).
+          // Light four (Tim, 2026-10-03).
           final double wlx_n = LightSource.white_px - node.pos.x;
           final double wly_n = LightSource.white_py - node.pos.y;
           final double wlz_n = LightSource.white_pz - node.pos.z;
@@ -102,14 +119,21 @@ public final class ElementRendererNode {
           if (w_len_n > 1e-12) {
             final double w_dot = Math.abs((nnx * wlx_n + nny * wly_n
                 + nnz * wlz_n) / w_len_n);
-            final double w_factor = 0.95 * w_dot
+            l4_diff_n = 0.75 * w_dot
                 * RendererDelegator.white_light_pct / 50.0;
-            r_factor += w_factor;
-            g_factor += w_factor;
-            b_factor += w_factor;
           }
-          // Specular highlights from the 3 lights (Tim, 2026-10-03).
-          // View vector V = (0, 0, -1).
+          // Combine per channel (Tim, 2026-10-04).
+          r_factor = Math.min(1.0, ambient_n
+              + l1_diff_n * nl1r / 255.0 + l2_diff_n * nl2r / 255.0
+              + l3_diff_n * nl3r / 255.0 + l4_diff_n * nl4r / 255.0);
+          g_factor = Math.min(1.0, ambient_n
+              + l1_diff_n * nl1g / 255.0 + l2_diff_n * nl2g / 255.0
+              + l3_diff_n * nl3g / 255.0 + l4_diff_n * nl4g / 255.0);
+          b_factor = Math.min(1.0, ambient_n
+              + l1_diff_n * nl1b / 255.0 + l2_diff_n * nl2b / 255.0
+              + l3_diff_n * nl3b / 255.0 + l4_diff_n * nl4b / 255.0);
+          // Specular highlights (Tim, 2026-10-03), tinted by light
+          // color (Tim, 2026-10-04). View vector V = (0, 0, -1).
           if (rd > 1e-12) {
             final double lx = rlx / rd;
             final double ly = rly / rd;
@@ -120,7 +144,11 @@ public final class ElementRendererNode {
             final double rz = 2.0 * ndotl * nnz - lz;
             final double rdotv = -rz;
             if (rdotv > 0.0) {
-              r_spec = Math.pow(rdotv, 16.0) * RendererDelegator.red_light_pct / 50.0;
+              final double s = Math.pow(rdotv, 16.0)
+                  * RendererDelegator.red_light_pct / 50.0;
+              spec_r_n += s * nl1r / 255.0;
+              spec_g_n += s * nl1g / 255.0;
+              spec_b_n += s * nl1b / 255.0;
             }
           }
           if (gd > 1e-12) {
@@ -133,7 +161,11 @@ public final class ElementRendererNode {
             final double rz = 2.0 * ndotl * nnz - lz;
             final double rdotv = -rz;
             if (rdotv > 0.0) {
-              g_spec = Math.pow(rdotv, 16.0) * RendererDelegator.green_light_pct / 50.0;
+              final double s = Math.pow(rdotv, 16.0)
+                  * RendererDelegator.green_light_pct / 50.0;
+              spec_r_n += s * nl2r / 255.0;
+              spec_g_n += s * nl2g / 255.0;
+              spec_b_n += s * nl2b / 255.0;
             }
           }
           if (bd > 1e-12) {
@@ -146,16 +178,37 @@ public final class ElementRendererNode {
             final double rz = 2.0 * ndotl * nnz - lz;
             final double rdotv = -rz;
             if (rdotv > 0.0) {
-              b_spec = Math.pow(rdotv, 16.0) * RendererDelegator.blue_light_pct / 50.0;
+              final double s = Math.pow(rdotv, 16.0)
+                  * RendererDelegator.blue_light_pct / 50.0;
+              spec_r_n += s * nl3r / 255.0;
+              spec_g_n += s * nl3g / 255.0;
+              spec_b_n += s * nl3b / 255.0;
+            }
+          }
+          if (w_len_n > 1e-12) {
+            final double lx = wlx_n / w_len_n;
+            final double ly = wly_n / w_len_n;
+            final double lz = wlz_n / w_len_n;
+            final double ndotl = nnx * lx + nny * ly + nnz * lz;
+            final double rx = 2.0 * ndotl * nnx - lx;
+            final double ry = 2.0 * ndotl * nny - ly;
+            final double rz = 2.0 * ndotl * nnz - lz;
+            final double rdotv = -rz;
+            if (rdotv > 0.0) {
+              final double s = Math.pow(rdotv, 16.0)
+                  * RendererDelegator.white_light_pct / 50.0;
+              spec_r_n += s * nl4r / 255.0;
+              spec_g_n += s * nl4g / 255.0;
+              spec_b_n += s * nl4b / 255.0;
             }
           }
         }
         final int r = (colour >> 16) & 0xFF;
         final int g = (colour >> 8) & 0xFF;
         final int b = colour & 0xFF;
-        final int or = Math.min(255, (int) (r * r_factor + 255.0 * r_spec));
-        final int og = Math.min(255, (int) (g * g_factor + 255.0 * g_spec));
-        final int ob = Math.min(255, (int) (b * b_factor + 255.0 * b_spec));
+        final int or = Math.min(255, (int) (r * r_factor + 255.0 * spec_r_n));
+        final int og = Math.min(255, (int) (g * g_factor + 255.0 * spec_g_n));
+        final int ob = Math.min(255, (int) (b * b_factor + 255.0 * spec_b_n));
         final int act_colour = (colour & 0xFF000000) | (or << 16) | (og << 8) | ob;
 
         PolygonObject2D polygon = new PolygonObject2D(array_x, array_y,
