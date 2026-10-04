@@ -1002,11 +1002,11 @@ final class Raytracer {
   }
 
   /**
-   * Extra background safety check (Tim, 2026-10-04): when all primary
-   * samples miss, thin vertical/horizontal cables can slip between them.
-   * Traces additional edge samples at 1/4, 1/2, 3/4 (skipping already-
-   * sampled positions). Returns true if any hit (caller subdivides).
-   * Scales from 4x4 up to 32x32.
+   * Progressive background safety check (Tim, 2026-10-04): when all
+   * primary samples miss, thin cables can slip between them. Refines
+   * progressively: 1/2 points, then 1/4, then 1/8, down to alternate
+   * pixels (spacing 2). Stops at the first hit (caller subdivides).
+   * Only runs for background blocks. Scales 4x4 to 32x32.
    */
   private static boolean extraBackgroundSamplesHit(final int x0,
       final int y0, final int bx, final int by, final int x_end,
@@ -1017,34 +1017,38 @@ final class Raytracer {
     if (cs < 4) {
       return false;
     }
-    // Quarter, half, three-quarter positions along each edge.
-    final int[] qs = {bx + cs / 4, bx + cs / 2, bx + 3 * cs / 4};
-    final int[] rs = {by + cs / 4, by + cs / 2, by + 3 * cs / 4};
-    // Top and bottom edges.
-    for (final int qx : qs) {
-      if (samples.find(qx, by) < 0
-          && samplePrimitive(x0 + qx * px, y0 + by * px, camera, bvh,
-              rings, ray, hit, stack) != null) {
-        return true;
+    // Start below the primary sampling density: 1/2 already done for
+    // cs>=16 (edge midpoints), so start at 1/4; else start at 1/2.
+    int step = (cs >= 16) ? cs / 4 : cs / 2;
+    while (step >= 2) {
+      // New positions at this level: odd multiples of step.
+      for (int i = 1; i * step < cs; i += 2) {
+        final int q = bx + i * step;
+        // Top edge (y=by) and bottom edge (y=y_end-1).
+        if (samples.find(q, by) < 0 && samplePrimitive(x0 + q * px,
+            y0 + by * px, camera, bvh, rings, ray, hit, stack) != null) {
+          return true;
+        }
+        if (samples.find(q, y_end - 1) < 0 && samplePrimitive(
+            x0 + q * px, y0 + (y_end - 1) * px, camera, bvh, rings, ray,
+            hit, stack) != null) {
+          return true;
+        }
       }
-      if (samples.find(qx, y_end - 1) < 0
-          && samplePrimitive(x0 + qx * px, y0 + (y_end - 1) * px, camera,
-              bvh, rings, ray, hit, stack) != null) {
-        return true;
+      for (int i = 1; i * step < cs; i += 2) {
+        final int q = by + i * step;
+        // Left edge (x=bx) and right edge (x=x_end-1).
+        if (samples.find(bx, q) < 0 && samplePrimitive(x0 + bx * px,
+            y0 + q * px, camera, bvh, rings, ray, hit, stack) != null) {
+          return true;
+        }
+        if (samples.find(x_end - 1, q) < 0 && samplePrimitive(
+            x0 + (x_end - 1) * px, y0 + q * px, camera, bvh, rings, ray,
+            hit, stack) != null) {
+          return true;
+        }
       }
-    }
-    // Left and right edges.
-    for (final int qy : rs) {
-      if (samples.find(bx, qy) < 0
-          && samplePrimitive(x0 + bx * px, y0 + qy * px, camera, bvh,
-              rings, ray, hit, stack) != null) {
-        return true;
-      }
-      if (samples.find(x_end - 1, qy) < 0
-          && samplePrimitive(x0 + (x_end - 1) * px, y0 + qy * px, camera,
-              bvh, rings, ray, hit, stack) != null) {
-        return true;
-      }
+      step /= 2;
     }
     return false;
   }
