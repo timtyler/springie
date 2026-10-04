@@ -1070,10 +1070,16 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     // Clamped to the canvas, every (tx, ty) in range names a real tile:
     // only the trailing column/row past the canvas edge was dropped from
     // the grid, and index = ty * tile_nx + tx packs rows tightly.
-    final int tx0 = (int) (x0 / divisor);
-    final int tx1 = (int) (x1 / divisor);
-    final int ty0 = (int) (y0 / divisor);
-    final int ty1 = (int) (y1 / divisor);
+    // Uses the shared tile-index logic (Tim, 2026-10-03) so the ray tracer
+    // agrees with the polygon renderer on tile boundaries.
+    final int tx0 = com.springie.render.modules.modern.RendererTileManager
+        .tileForPixel((int) x0, divisor);
+    final int tx1 = com.springie.render.modules.modern.RendererTileManager
+        .tileForMaxPixel((int) x1, divisor);
+    final int ty0 = com.springie.render.modules.modern.RendererTileManager
+        .tileForPixel((int) y0, divisor);
+    final int ty1 = com.springie.render.modules.modern.RendererTileManager
+        .tileForMaxPixel((int) y1, divisor);
     for (int ty = ty0; ty <= ty1; ty++) {
       final int row = ty * nx;
       for (int tx = tx0; tx <= tx1; tx++) {

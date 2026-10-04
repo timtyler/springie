@@ -730,6 +730,28 @@ public class RendererTileManager {
     return proposed;
   }
 
+  /**
+   * Shared tile-index for a pixel (Tim, 2026-10-03): which tile contains
+   * the pixel. Used by both the polygon renderer and the ray tracer so
+   * they agree on tile boundaries.
+   */
+  public static int tileForPixel(final int pixel, final int divisor) {
+    if (pixel < 0) {
+      return 0;
+    }
+    return pixel / divisor;
+  }
+
+  /**
+   * Shared max tile-index for an inclusive pixel range (Tim, 2026-10-03).
+   * The +1 matches the polygon renderer's bounding-box logic: a box ending
+   * exactly on a tile boundary includes the next tile.
+   */
+  public static int tileForMaxPixel(final int maxPixelInclusive,
+      final int divisor) {
+    return tileForPixel(maxPixelInclusive + 1, divisor);
+  }
+
   private int getTileY(final int pixels) {
     if (pixels < 0) {
       return 0;
