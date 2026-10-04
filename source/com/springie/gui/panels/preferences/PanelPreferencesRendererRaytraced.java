@@ -226,7 +226,9 @@ public class PanelPreferencesRendererRaytraced {
   }
 
   private Panel panelShadows() {
-    final Panel panel = new Panel();
+    final Panel panel = new Panel(new java.awt.GridLayout(2, 1));
+    final Panel row1 = new Panel();
+    final Panel row2 = new Panel();
 
     this.checkbox_shadows = new Checkbox("Shadows",
         RendererDelegator.shadows);
@@ -236,7 +238,7 @@ public class PanelPreferencesRendererRaytraced {
             .getState();
       }
     });
-    panel.add(this.checkbox_shadows);
+    row1.add(this.checkbox_shadows);
 
     this.checkbox_soft_shadows = new Checkbox("Soft shadows",
         RendererDelegator.soft_shadows);
@@ -246,7 +248,7 @@ public class PanelPreferencesRendererRaytraced {
             .getState();
       }
     });
-    panel.add(this.checkbox_soft_shadows);
+    row1.add(this.checkbox_soft_shadows);
 
     this.checkbox_reflections = new Checkbox("Reflections",
         RendererDelegator.reflections_enabled);
@@ -256,7 +258,7 @@ public class PanelPreferencesRendererRaytraced {
             .getState();
       }
     });
-    panel.add(this.checkbox_reflections);
+    row2.add(this.checkbox_reflections);
 
     this.checkbox_ambient_occlusion = new Checkbox("Ambient occlusion",
         RendererDelegator.ambient_occlusion);
@@ -266,7 +268,10 @@ public class PanelPreferencesRendererRaytraced {
             .getState();
       }
     });
-    panel.add(this.checkbox_ambient_occlusion);
+    row2.add(this.checkbox_ambient_occlusion);
+
+    panel.add(row1);
+    panel.add(row2);
 
     this.shadows_row = panel;
     return panel;
