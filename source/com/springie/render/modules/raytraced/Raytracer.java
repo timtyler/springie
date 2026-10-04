@@ -613,23 +613,29 @@ final class Raytracer {
    * Traces a single interior sample; returns true if it matches the
    * corner verdict (same primitive, or background if all corners missed).
    */
-  private static boolean sampleMatches(final int x, final int y,
-      final Primitive first_prim, final boolean all_miss,
-      final RayCamera camera, final BVH bvh, final RTRing[] rings,
-      final Ray ray, final Hit hit, final int[] stack) {
-    final Primitive p = samplePrimitive(x, y, camera, bvh, rings, ray, hit,
-        stack);
-    if (all_miss) {
-      return p == null;
-    }
-    return p == first_prim;
+  /**
+   * Returns true if two shaded colors are close enough to fill a block
+   * with one of them. Fog and shadows can vary the shade across a large
+   * primitive; if the variation is visible, subdivide instead of filling.
+   * (Tim, 2026-10-04)
+   */
+  private static boolean colorsMatch(final int rgb1, final int rgb2) {
+    final int r1 = (rgb1 >> 16) & 0xFF;
+    final int g1 = (rgb1 >> 8) & 0xFF;
+    final int b1 = rgb1 & 0xFF;
+    final int r2 = (rgb2 >> 16) & 0xFF;
+    final int g2 = (rgb2 >> 8) & 0xFF;
+    final int b2 = rgb2 & 0xFF;
+    // Threshold: 3/255 per channel (just-noticeable).
+    return Math.abs(r1 - r2) <= 3 && Math.abs(g1 - g2) <= 3
+        && Math.abs(b1 - b2) <= 3;
   }
 
   /**
-   * Traces the 4 corners of a block. If all hit the same primitive (or all
-   * miss), verifies the interior for larger blocks, then fills the block
-   * and returns true. Otherwise returns false (caller subdivides or traces
-   * fully).
+   * Samples a block (corners + interior for larger blocks). If all samples
+   * hit the same primitive (or all miss) AND produce the same shaded color
+   * (fog/shadows can vary it), fills the block and returns true. Otherwise
+   * returns false (caller subdivides or traces fully).
    */
   private static boolean blockUniform(final int x0, final int y0,
       final int bx, final int by, final int x_end, final int y_end,
@@ -637,56 +643,60 @@ final class Raytracer {
       final Ray ray, final Hit hit, final int[] stack, final Ray shadow_ray,
       final Hit shadow_hit, final JitterRandom jitter, final int[] pixels,
       final int width, final HitStats stats) {
-    // Sample the 4 corners.
-    final int[] sx = {bx, x_end - 1, bx, x_end - 1};
-    final int[] sy = {by, by, y_end - 1, y_end - 1};
+    // Collect all sample points: 4 corners, plus center for 8x8+,
+    // plus edge midpoints for 16x16.
+    final int bw = x_end - bx;
+    final int bh = y_end - by;
+    final int mcx = bx + bw / 2;
+    final int mcy = by + bh / 2;
+    // Max 9 samples: 4 corners + center + 4 edge midpoints.
+    final int[] sx = new int[9];
+    final int[] sy = new int[9];
+    int n = 0;
+    sx[n] = bx; sy[n] = by; n++;
+    sx[n] = x_end - 1; sy[n] = by; n++;
+    sx[n] = bx; sy[n] = y_end - 1; n++;
+    sx[n] = x_end - 1; sy[n] = y_end - 1; n++;
+    if (bw >= 8) {
+      sx[n] = mcx; sy[n] = mcy; n++;
+    }
+    if (bw >= 16) {
+      sx[n] = mcx; sy[n] = by; n++;
+      sx[n] = mcx; sy[n] = y_end - 1; n++;
+      sx[n] = bx; sy[n] = mcy; n++;
+      sx[n] = x_end - 1; sy[n] = mcy; n++;
+    }
+    // Trace and shade all samples. All must hit the same primitive (or
+    // all miss) AND produce the same final color (fog/shadows can vary
+    // the shade across a large primitive). (Tim, 2026-10-04)
     Primitive first_prim = null;
     int first_rgb = 0;
     boolean all_miss = true;
-    for (int c = 0; c < 4; c++) {
-      final Primitive p = samplePrimitive(x0 + sx[c], y0 + sy[c], camera,
+    boolean first = true;
+    for (int i = 0; i < n; i++) {
+      final Primitive p = samplePrimitive(x0 + sx[i], y0 + sy[i], camera,
           bvh, rings, ray, hit, stack);
       if (p == null) {
-        continue;  // Background; check if all are.
+        if (!all_miss) {
+          return false;  // Mixed hit/miss: subdivide.
+        }
+        continue;
       }
       all_miss = false;
-      if (first_prim == null) {
+      final int rgb = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit,
+          jitter);
+      if (first) {
         first_prim = p;
-        first_rgb = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit,
-            jitter);
-      } else if (p != first_prim) {
-        return false;  // Mixed primitives: subdivide.
-      }
-    }
-    // Corners agree. For larger blocks, verify the interior: thin geometry
-    // can cross the middle without touching a corner. (Tim, 2026-10-04)
-    final int bw = x_end - bx;
-    final int bh = y_end - by;
-    if (bw >= 8) {
-      // 8x8 and up: check the center.
-      final int cx = bx + bw / 2;
-      final int cy = by + bh / 2;
-      if (!sampleMatches(x0 + cx, y0 + cy, first_prim, all_miss, camera,
-          bvh, rings, ray, hit, stack)) {
-        return false;
-      }
-    }
-    if (bw >= 16) {
-      // 16x16: also check the 4 edge midpoints.
-      final int mx = bx + bw / 2;
-      final int my = by + bh / 2;
-      final int[] ex = {mx, mx, bx, x_end - 1};
-      final int[] ey = {by, y_end - 1, my, my};
-      for (int e = 0; e < 4; e++) {
-        if (!sampleMatches(x0 + ex[e], y0 + ey[e], first_prim, all_miss,
-            camera, bvh, rings, ray, hit, stack)) {
-          return false;
+        first_rgb = rgb;
+        first = false;
+      } else {
+        if (p != first_prim || !colorsMatch(rgb, first_rgb)) {
+          return false;  // Different primitive or shade: subdivide.
         }
       }
     }
     if (all_miss) {
       // Entire block is background, already pre-filled. No rays needed.
-      // (Don't touch stats: background isn't a hit.)
       return true;
     }
     // Uniform: fill the block. In debug mode ("Show active tiles"), only
@@ -695,17 +705,15 @@ final class Raytracer {
     // (Tim, 2026-10-03/04)
     final boolean debug = RendererTileManager.show_active_tiles;
     final int fill_rgb = debug ? 0xFFFF0000 : first_rgb;
-    final int mcx = bx + bw / 2;
-    final int mcy = by + bh / 2;
     for (int y = by; y < y_end; y++) {
       for (int x = bx; x < x_end; x++) {
-        final boolean is_corner = (x == bx || x == x_end - 1)
-            && (y == by || y == y_end - 1);
-        final boolean is_center = bw >= 8 && x == mcx && y == mcy;
-        final boolean is_edge_mid = bw >= 16
-            && ((x == mcx && (y == by || y == y_end - 1))
-                || (y == mcy && (x == bx || x == x_end - 1)));
-        final boolean sampled = is_corner || is_center || is_edge_mid;
+        boolean sampled = false;
+        for (int i = 0; i < n; i++) {
+          if (x == sx[i] && y == sy[i]) {
+            sampled = true;
+            break;
+          }
+        }
         pixels[y * width + x] = (debug && sampled) ? first_rgb : fill_rgb;
       }
     }
