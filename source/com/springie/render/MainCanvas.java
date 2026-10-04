@@ -70,10 +70,21 @@ public class MainCanvas {
       }
 
       public void mouseDragged(final MouseEvent e) {
-        // Drag the light (Tim, 2026-10-04).
+        // Drag the light (Tim, 2026-10-04). Pass a message: the event
+        // thread must not touch the light position directly; the render
+        // thread updates it and re-traces (the light moved, so the
+        // illumination changed). This also re-blits the frame, erasing
+        // the old dot instead of leaving trails (Tim, 2026-10-04).
         if (LightSourceDots.dragging >= 0) {
-          LightSourceDots.dragTo(LightSourceDots.dragging, e.getX(),
-              e.getY());
+          final int light = LightSourceDots.dragging;
+          final int sx = e.getX();
+          final int sy = e.getY();
+          FrEnd.new_message_manager.add(new NewMessage(null) {
+            public Object execute() {
+              LightSourceDots.dragTo(light, sx, sy);
+              return null;
+            }
+          });
           return;
         }
         final MainCanvas canvas = getCanvas();

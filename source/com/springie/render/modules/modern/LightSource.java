@@ -10,12 +10,19 @@ public class LightSource {
   /**
    * RGB point light positions (Tim, 2026-10-03): viewport-dependent,
    * near the top of the frame, equally spaced. Updated by
-   * updateForViewport() before each render.
+   * updateForViewport() before each render. Volatile: the event thread
+   * (via NewMessage) writes, the render thread reads (Tim, 2026-10-04).
    */
-  public static double red_px, red_py, red_pz;
-  public static double green_px, green_py, green_pz;
-  public static double blue_px, blue_py, blue_pz;
-  public static double white_px, white_py, white_pz;
+  public static volatile double red_px, red_py, red_pz;
+  public static volatile double green_px, green_py, green_pz;
+  public static volatile double blue_px, blue_py, blue_pz;
+  public static volatile double white_px, white_py, white_pz;
+
+  /**
+   * Set when a light is dragged: the next frame re-traces (the
+   * illumination changed). Cleared by the renderer (Tim, 2026-10-04).
+   */
+  public static volatile boolean light_moved = false;
 
   /**
    * Dragged light positions (Tim, 2026-10-04): when true, the light's

@@ -327,7 +327,10 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       // colour changes still do.) (Tim, 2026-10-03)
       final boolean global = (RendererDelegator.shadows
               && !RendererDelegator.simple_lighting)
-          || RendererDelegator.scenic_background || background_changed;
+          || RendererDelegator.scenic_background || background_changed
+          || com.springie.render.modules.modern.LightSource.light_moved;
+      // Clear the flag: this frame re-traces for the moved light.
+      com.springie.render.modules.modern.LightSource.light_moved = false;
       final boolean render_all =
           dirty == null || last_empty == null || global;
       final Tile[] tiles = this.tiles;

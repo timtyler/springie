@@ -127,6 +127,8 @@ public final class LightSourceDots {
       LightSource.white_custom_x = wx;
       LightSource.white_custom_y = wy;
     }
+    // The illumination changed: force a re-trace (Tim, 2026-10-04).
+    LightSource.light_moved = true;
   }
 
   /**
