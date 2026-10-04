@@ -24,7 +24,7 @@ public class RendererTileManager {
   // render/upscale path instead of only 3x3.
   // (Tim, 2026-10-03: halved from 337 -- one big tile is no longer
   // optimal for typical models.)
-  public static int divisor = 167;
+  public static int divisor = 192;
 
   int number_of_tiles_x;
 
