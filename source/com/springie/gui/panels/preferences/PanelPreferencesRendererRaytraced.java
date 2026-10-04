@@ -112,7 +112,7 @@ public class PanelPreferencesRendererRaytraced {
 
     // Coarse-to-fine toggle (Tim, 2026-10-03): only relevant in fast mode.
     this.coarse_to_fine_row = new Panel();
-    this.checkbox_coarse_to_fine = new Checkbox("Coarse-to-fine",
+    this.checkbox_coarse_to_fine = new Checkbox("Coarse-to-fine fill algorithm",
         RendererDelegator.coarse_to_fine);
     this.checkbox_coarse_to_fine.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
