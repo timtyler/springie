@@ -267,7 +267,7 @@ public final class ElementRendererLink {
       final int new_colour_base = DeepObjectColourCalculator.getColourOfDeepObject(
           colour, z);
 
-      // RGB light shading (Tim, 2026-10-03): three colored lights affect
+      // Light shading (Tim, 2026-10-03): N point lights affect
       // the whole model, including links. Use the segment midpoint.
       LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
       final double midx = (point0n.x + point1n.x) / 2.0;
@@ -280,165 +280,82 @@ public final class ElementRendererLink {
       final double alen = Math.sqrt(ax * ax + ay * ay + az * az);
       // Ambient light (Tim, 2026-10-03).
       final double ambient_l = 0.5 * RendererDelegator.ambient_light_pct / 100.0;
-      // Light colors (Tim, 2026-10-04).
-      final int ll1r = (RendererDelegator.red_light_colour >> 16) & 0xFF;
-      final int ll1g = (RendererDelegator.red_light_colour >> 8) & 0xFF;
-      final int ll1b = RendererDelegator.red_light_colour & 0xFF;
-      final int ll2r = (RendererDelegator.green_light_colour >> 16) & 0xFF;
-      final int ll2g = (RendererDelegator.green_light_colour >> 8) & 0xFF;
-      final int ll2b = RendererDelegator.green_light_colour & 0xFF;
-      final int ll3r = (RendererDelegator.blue_light_colour >> 16) & 0xFF;
-      final int ll3g = (RendererDelegator.blue_light_colour >> 8) & 0xFF;
-      final int ll3b = RendererDelegator.blue_light_colour & 0xFF;
-      final int ll4r = (RendererDelegator.white_light_colour >> 16) & 0xFF;
-      final int ll4g = (RendererDelegator.white_light_colour >> 8) & 0xFF;
-      final int ll4b = RendererDelegator.white_light_colour & 0xFF;
-      double l1_diff_l = 0.0;
-      double l2_diff_l = 0.0;
-      double l3_diff_l = 0.0;
-      double l4_diff_l = 0.0;
       double r_factor = ambient_l;
       double g_factor = ambient_l;
       double b_factor = ambient_l;
-      double r_spec = 0.0;
-      double g_spec = 0.0;
-      double b_spec = 0.0;
+      double spec_r_l = 0.0;
+      double spec_g_l = 0.0;
+      double spec_b_l = 0.0;
       if (alen > 1e-12) {
         ax /= alen;
         ay /= alen;
         az /= alen;
-        // Light one.
-        final double rlx = LightSource.red_px - midx;
-        final double rly = LightSource.red_py - midy;
-        final double rlz = LightSource.red_pz - midz;
-        final double rd = Math.sqrt(rlx * rlx + rly * rly + rlz * rlz);
-        if (rd > 1e-12) {
-          final double r_dot = (rlx * ax + rly * ay + rlz * az) / rd;
-          l1_diff_l = 0.75 * Math.sqrt(Math.max(0.0, 1.0 - r_dot * r_dot)) * RendererDelegator.red_light_pct / 50.0;
-        }
-        // Light two.
-        final double glx = LightSource.green_px - midx;
-        final double gly = LightSource.green_py - midy;
-        final double glz = LightSource.green_pz - midz;
-        final double gd = Math.sqrt(glx * glx + gly * gly + glz * glz);
-        if (gd > 1e-12) {
-          final double g_dot = (glx * ax + gly * ay + glz * az) / gd;
-          l2_diff_l = 0.75 * Math.sqrt(Math.max(0.0, 1.0 - g_dot * g_dot)) * RendererDelegator.green_light_pct / 50.0;
-        }
-        // Light three.
-        final double blx = LightSource.blue_px - midx;
-        final double bly = LightSource.blue_py - midy;
-        final double blz = LightSource.blue_pz - midz;
-        final double bd = Math.sqrt(blx * blx + bly * bly + blz * blz);
-        if (bd > 1e-12) {
-          final double b_dot = (blx * ax + bly * ay + blz * az) / bd;
-          l3_diff_l = 0.75 * Math.sqrt(Math.max(0.0, 1.0 - b_dot * b_dot)) * RendererDelegator.blue_light_pct / 50.0;
-        }
-        // Light four (Tim, 2026-10-03).
-        final double wlx_l = LightSource.white_px - midx;
-        final double wly_l = LightSource.white_py - midy;
-        final double wlz_l = LightSource.white_pz - midz;
-        final double w_len_l = Math.sqrt(wlx_l * wlx_l + wly_l * wly_l + wlz_l * wlz_l);
-        if (w_len_l > 1e-12) {
-          final double w_dot = (wlx_l * ax + wly_l * ay
-              + wlz_l * az) / w_len_l;
-          l4_diff_l = 0.75
-              * Math.sqrt(Math.max(0.0, 1.0 - w_dot * w_dot))
-              * RendererDelegator.white_light_pct / 50.0;
-        }
-        // Combine per channel (Tim, 2026-10-04).
-        r_factor = Math.min(1.0, ambient_l
-            + l1_diff_l * ll1r / 255.0 + l2_diff_l * ll2r / 255.0
-            + l3_diff_l * ll3r / 255.0 + l4_diff_l * ll4r / 255.0);
-        g_factor = Math.min(1.0, ambient_l
-            + l1_diff_l * ll1g / 255.0 + l2_diff_l * ll2g / 255.0
-            + l3_diff_l * ll3g / 255.0 + l4_diff_l * ll4g / 255.0);
-        b_factor = Math.min(1.0, ambient_l
-            + l1_diff_l * ll1b / 255.0 + l2_diff_l * ll2b / 255.0
-            + l3_diff_l * ll3b / 255.0 + l4_diff_l * ll4b / 255.0);
-        // Specular highlights from the 3 lights (Tim, 2026-10-03).
-        // For a cylinder, use the normal at the brightest point:
-        // N = normalize(L - (L·A)*A). View V = (0, 0, -1).
-        if (rd > 1e-12) {
-          final double lx = rlx / rd;
-          final double ly = rly / rd;
-          final double lz = rlz / rd;
-          final double ldotA = lx * ax + ly * ay + lz * az;
-          double nnx = lx - ldotA * ax;
-          double nny = ly - ldotA * ay;
-          double nnz = lz - ldotA * az;
-          final double nlen = Math.sqrt(nnx * nnx + nny * nny + nnz * nnz);
-          if (nlen > 1e-12) {
-            nnx /= nlen;
-            nny /= nlen;
-            nnz /= nlen;
-            final double ndotl = nnx * lx + nny * ly + nnz * lz;
-            final double rx = 2.0 * ndotl * nnx - lx;
-            final double ry = 2.0 * ndotl * nny - ly;
-            final double rz = 2.0 * ndotl * nnz - lz;
-            final double rdotv = -rz;
-            if (rdotv > 0.0) {
-              r_spec = Math.pow(rdotv, 16.0) * RendererDelegator.red_light_pct / 50.0;
+        // Diffuse + specular from N lights (Tim, 2026-10-04).
+        // Per-output-channel diffuse: sum each light's factor scaled
+        // by its color.
+        synchronized (LightSource.class) {
+          for (final Light light : LightSource.lights) {
+            if (light.intensity_pct <= 0) {
+              continue;
+            }
+            final double lx = light.px - midx;
+            final double ly = light.py - midy;
+            final double lz = light.pz - midz;
+            final double ld = Math.sqrt(lx * lx + ly * ly + lz * lz);
+            if (ld < 1e-12) {
+              continue;
+            }
+            // Cylinder diffuse: brightest where the light direction is
+            // perpendicular to the link axis.
+            final double light_dot = (lx * ax + ly * ay + lz * az) / ld;
+            final double diff = 0.75
+                * Math.sqrt(Math.max(0.0, 1.0 - light_dot * light_dot))
+                * light.intensity_pct / 50.0;
+            final int lr = (light.colour >> 16) & 0xFF;
+            final int lg = (light.colour >> 8) & 0xFF;
+            final int lb = light.colour & 0xFF;
+            r_factor += diff * lr / 255.0;
+            g_factor += diff * lg / 255.0;
+            b_factor += diff * lb / 255.0;
+            // Specular highlight (Tim, 2026-10-03): for a cylinder, use
+            // the normal at the brightest point:
+            // N = normalize(L - (L·A)*A). View V = (0, 0, -1).
+            // Tints by light color (Tim, 2026-10-04).
+            final double nlx = lx / ld;
+            final double nly = ly / ld;
+            final double nlz = lz / ld;
+            final double ldotA = nlx * ax + nly * ay + nlz * az;
+            double nnx = nlx - ldotA * ax;
+            double nny = nly - ldotA * ay;
+            double nnz = nlz - ldotA * az;
+            final double nlen =
+                Math.sqrt(nnx * nnx + nny * nny + nnz * nnz);
+            if (nlen > 1e-12) {
+              nnx /= nlen;
+              nny /= nlen;
+              nnz /= nlen;
+              final double ndotl = nnx * nlx + nny * nly + nnz * nlz;
+              final double rx = 2.0 * ndotl * nnx - nlx;
+              final double ry = 2.0 * ndotl * nny - nly;
+              final double rz = 2.0 * ndotl * nnz - nlz;
+              final double rdotv = -rz;
+              if (rdotv > 0.0) {
+                final double spec = Math.pow(rdotv, 16.0)
+                    * light.intensity_pct / 50.0;
+                spec_r_l += spec * lr / 255.0;
+                spec_g_l += spec * lg / 255.0;
+                spec_b_l += spec * lb / 255.0;
+              }
             }
           }
         }
-        if (gd > 1e-12) {
-          final double lx = glx / gd;
-          final double ly = gly / gd;
-          final double lz = glz / gd;
-          final double ldotA = lx * ax + ly * ay + lz * az;
-          double nnx = lx - ldotA * ax;
-          double nny = ly - ldotA * ay;
-          double nnz = lz - ldotA * az;
-          final double nlen = Math.sqrt(nnx * nnx + nny * nny + nnz * nnz);
-          if (nlen > 1e-12) {
-            nnx /= nlen;
-            nny /= nlen;
-            nnz /= nlen;
-            final double ndotl = nnx * lx + nny * ly + nnz * lz;
-            final double rx = 2.0 * ndotl * nnx - lx;
-            final double ry = 2.0 * ndotl * nny - ly;
-            final double rz = 2.0 * ndotl * nnz - lz;
-            final double rdotv = -rz;
-            if (rdotv > 0.0) {
-              g_spec = Math.pow(rdotv, 16.0) * RendererDelegator.green_light_pct / 50.0;
-            }
-          }
-        }
-        if (bd > 1e-12) {
-          final double lx = blx / bd;
-          final double ly = bly / bd;
-          final double lz = blz / bd;
-          final double ldotA = lx * ax + ly * ay + lz * az;
-          double nnx = lx - ldotA * ax;
-          double nny = ly - ldotA * ay;
-          double nnz = lz - ldotA * az;
-          final double nlen = Math.sqrt(nnx * nnx + nny * nny + nnz * nnz);
-          if (nlen > 1e-12) {
-            nnx /= nlen;
-            nny /= nlen;
-            nnz /= nlen;
-            final double ndotl = nnx * lx + nny * ly + nnz * lz;
-            final double rx = 2.0 * ndotl * nnx - lx;
-            final double ry = 2.0 * ndotl * nny - ly;
-            final double rz = 2.0 * ndotl * nnz - lz;
-            final double rdotv = -rz;
-            if (rdotv > 0.0) {
-              b_spec = Math.pow(rdotv, 16.0) * RendererDelegator.blue_light_pct / 50.0;
-            }
-          }
-        }
+        r_factor = Math.min(1.0, r_factor);
+        g_factor = Math.min(1.0, g_factor);
+        b_factor = Math.min(1.0, b_factor);
       }
       final int cr = (new_colour_base >> 16) & 0xFF;
       final int cg = (new_colour_base >> 8) & 0xFF;
       final int cb = new_colour_base & 0xFF;
-      // Specular tinted by light color (Tim, 2026-10-04).
-      final double spec_r_l = r_spec * ll1r / 255.0 + g_spec * ll2r / 255.0
-          + b_spec * ll3r / 255.0;
-      final double spec_g_l = r_spec * ll1g / 255.0 + g_spec * ll2g / 255.0
-          + b_spec * ll3g / 255.0;
-      final double spec_b_l = r_spec * ll1b / 255.0 + g_spec * ll2b / 255.0
-          + b_spec * ll3b / 255.0;
       final int or = Math.min(255, (int) (cr * r_factor + 255.0 * spec_r_l));
       final int og = Math.min(255, (int) (cg * g_factor + 255.0 * spec_g_l));
       final int ob = Math.min(255, (int) (cb * b_factor + 255.0 * spec_b_l));

@@ -4,7 +4,7 @@ import com.springie.FrEnd;
 import com.springie.composite.Composite;
 import com.springie.context.ContextManager;
 import com.springie.demos.CompassPoint;
-import com.springie.render.RendererDelegator;
+import com.springie.render.modules.modern.Light;
 import com.springie.render.modules.modern.LightSource;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.faces.Face;
@@ -19,6 +19,7 @@ import com.springie.muscles.Muscles;
 import com.springie.world.World;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,25 +41,32 @@ public final class ReaderTens {
   }
 
   /**
-   * Resets all lights to sensible defaults (Tim, 2026-10-04).
+   * Resets all lights to sensible defaults (Tim, 2026-10-04). Files
+   * without light info get defaults, not stale values from a
+   * previously loaded file.
    */
   private static void resetLightsToDefaults() {
-    RendererDelegator.red_light_pct = 50;
-    RendererDelegator.green_light_pct = 50;
-    RendererDelegator.blue_light_pct = 50;
-    RendererDelegator.white_light_pct = 50;
-    RendererDelegator.red_light_colour = 0xFF0000;
-    RendererDelegator.green_light_colour = 0x00FF00;
-    RendererDelegator.blue_light_colour = 0x0000FF;
-    RendererDelegator.white_light_colour = 0xFFFFFF;
-    LightSource.red_x_pct = -60.0;
-    LightSource.red_y_pct = -80.0;
-    LightSource.green_x_pct = 0.0;
-    LightSource.green_y_pct = 80.0;
-    LightSource.blue_x_pct = 60.0;
-    LightSource.blue_y_pct = -80.0;
-    LightSource.white_x_pct = 0.0;
-    LightSource.white_y_pct = -80.0;
+    LightSource.resetToDefaults();
+    current_light_index = 0;
+  }
+
+  /**
+   * Index of the light the LP/LO/LX/LY tokens apply to (Tim, 2026-10-04),
+   * set by the LI token.
+   */
+  private static int current_light_index = 0;
+
+  /**
+   * Returns the light at the given index, or null if out of range.
+   */
+  private static Light lightAt(final int index) {
+    synchronized (LightSource.class) {
+      final List<Light> lights = LightSource.lights;
+      if (index < 0 || index >= lights.size()) {
+        return null;
+      }
+      return lights.get(index);
+    }
   }
 
   public static void interpretBuffer(final NodeManager node_manager, final char[] buf,
@@ -405,69 +413,184 @@ public final class ReaderTens {
                     CompassPoint.bias_size = temp;
                     break;
 
-                  case Instructions.L1P:
-                    RendererDelegator.red_light_pct = temp;
+                  case Instructions.L1P: {
+                    // Old 4-light files (Tim, 2026-10-04): lights 1-4
+                    // map to list indices 0-3.
+                    final Light light = lightAt(0);
+                    if (light != null) {
+                      light.intensity_pct = temp;
+                    }
+                    break;
+                  }
+
+                  case Instructions.L2P: {
+                    final Light light = lightAt(1);
+                    if (light != null) {
+                      light.intensity_pct = temp;
+                    }
+                    break;
+                  }
+
+                  case Instructions.L3P: {
+                    final Light light = lightAt(2);
+                    if (light != null) {
+                      light.intensity_pct = temp;
+                    }
+                    break;
+                  }
+
+                  case Instructions.L4P: {
+                    final Light light = lightAt(3);
+                    if (light != null) {
+                      light.intensity_pct = temp;
+                    }
+                    break;
+                  }
+
+                  case Instructions.L1C: {
+                    final Light light = lightAt(0);
+                    if (light != null) {
+                      light.colour = temp;
+                    }
+                    break;
+                  }
+
+                  case Instructions.L2C: {
+                    final Light light = lightAt(1);
+                    if (light != null) {
+                      light.colour = temp;
+                    }
+                    break;
+                  }
+
+                  case Instructions.L3C: {
+                    final Light light = lightAt(2);
+                    if (light != null) {
+                      light.colour = temp;
+                    }
+                    break;
+                  }
+
+                  case Instructions.L4C: {
+                    final Light light = lightAt(3);
+                    if (light != null) {
+                      light.colour = temp;
+                    }
+                    break;
+                  }
+
+                  case Instructions.L1X: {
+                    final Light light = lightAt(0);
+                    if (light != null) {
+                      light.x_pct = (double) temp;
+                    }
+                    break;
+                  }
+
+                  case Instructions.L1Y: {
+                    final Light light = lightAt(0);
+                    if (light != null) {
+                      light.y_pct = (double) temp;
+                    }
+                    break;
+                  }
+
+                  case Instructions.L2X: {
+                    final Light light = lightAt(1);
+                    if (light != null) {
+                      light.x_pct = (double) temp;
+                    }
+                    break;
+                  }
+
+                  case Instructions.L2Y: {
+                    final Light light = lightAt(1);
+                    if (light != null) {
+                      light.y_pct = (double) temp;
+                    }
+                    break;
+                  }
+
+                  case Instructions.L3X: {
+                    final Light light = lightAt(2);
+                    if (light != null) {
+                      light.x_pct = (double) temp;
+                    }
+                    break;
+                  }
+
+                  case Instructions.L3Y: {
+                    final Light light = lightAt(2);
+                    if (light != null) {
+                      light.y_pct = (double) temp;
+                    }
+                    break;
+                  }
+
+                  case Instructions.L4X: {
+                    final Light light = lightAt(3);
+                    if (light != null) {
+                      light.x_pct = (double) temp;
+                    }
+                    break;
+                  }
+
+                  case Instructions.L4Y: {
+                    final Light light = lightAt(3);
+                    if (light != null) {
+                      light.y_pct = (double) temp;
+                    }
+                    break;
+                  }
+
+                  case Instructions.LC: {
+                    // N lights (Tim, 2026-10-04): rebuild the list;
+                    // the LI/LP/LO/LX/LY tokens that follow fill it in.
+                    synchronized (LightSource.class) {
+                      LightSource.lights.clear();
+                      for (int li = 0; li < temp; li++) {
+                        LightSource.lights.add(new Light(0.0, 0.0, 50, 0xFFFFFF));
+                      }
+                    }
+                    current_light_index = 0;
+                    break;
+                  }
+
+                  case Instructions.LI:
+                    current_light_index = temp;
                     break;
 
-                  case Instructions.L2P:
-                    RendererDelegator.green_light_pct = temp;
+                  case Instructions.LP: {
+                    final Light light = lightAt(current_light_index);
+                    if (light != null) {
+                      light.intensity_pct = temp;
+                    }
                     break;
+                  }
 
-                  case Instructions.L3P:
-                    RendererDelegator.blue_light_pct = temp;
+                  case Instructions.LO: {
+                    final Light light = lightAt(current_light_index);
+                    if (light != null) {
+                      light.colour = temp;
+                    }
                     break;
+                  }
 
-                  case Instructions.L4P:
-                    RendererDelegator.white_light_pct = temp;
+                  case Instructions.LX: {
+                    final Light light = lightAt(current_light_index);
+                    if (light != null) {
+                      light.x_pct = (double) temp;
+                    }
                     break;
+                  }
 
-                  case Instructions.L1C:
-                    RendererDelegator.red_light_colour = temp;
+                  case Instructions.LY: {
+                    final Light light = lightAt(current_light_index);
+                    if (light != null) {
+                      light.y_pct = (double) temp;
+                    }
                     break;
-
-                  case Instructions.L2C:
-                    RendererDelegator.green_light_colour = temp;
-                    break;
-
-                  case Instructions.L3C:
-                    RendererDelegator.blue_light_colour = temp;
-                    break;
-
-                  case Instructions.L4C:
-                    RendererDelegator.white_light_colour = temp;
-                    break;
-
-                  case Instructions.L1X:
-                    LightSource.red_x_pct = (double) temp;
-                    break;
-
-                  case Instructions.L1Y:
-                    LightSource.red_y_pct = (double) temp;
-                    break;
-
-                  case Instructions.L2X:
-                    LightSource.green_x_pct = (double) temp;
-                    break;
-
-                  case Instructions.L2Y:
-                    LightSource.green_y_pct = (double) temp;
-                    break;
-
-                  case Instructions.L3X:
-                    LightSource.blue_x_pct = (double) temp;
-                    break;
-
-                  case Instructions.L3Y:
-                    LightSource.blue_y_pct = (double) temp;
-                    break;
-
-                  case Instructions.L4X:
-                    LightSource.white_x_pct = (double) temp;
-                    break;
-
-                  case Instructions.L4Y:
-                    LightSource.white_y_pct = (double) temp;
-                    break;
+                  }
 
                   // case Instructions.CS:
                   // ContextManager.getNodeManager().electrostatic.charge_strength = temp;

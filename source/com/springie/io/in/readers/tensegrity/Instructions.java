@@ -75,6 +75,12 @@ public class Instructions {
     "L3Y", // 67 // Light 3 y %
     "L4X", // 68 // Light 4 x %
     "L4Y", // 69 // Light 4 y %
+    "LC", // 70 // Light count (N lights follow)
+    "LI", // 71 // Current light index
+    "LP", // 72 // Light intensity %
+    "LO", // 73 // Light colour
+    "LX", // 74 // Light x %
+    "LY", // 75 // Light y %
 //  "CS", // 29 // Charge strength
   };
 
@@ -148,4 +154,10 @@ public class Instructions {
   static final int L3Y = 67;
   static final int L4X = 68;
   static final int L4Y = 69;
+  static final int LC = 70;
+  static final int LI = 71;
+  static final int LP = 72;
+  static final int LO = 73;
+  static final int LX = 74;
+  static final int LY = 75;
 }

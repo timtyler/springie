@@ -145,142 +145,65 @@ public final class ElementRendererFace {
     // Update light positions for current viewport.
     LightSource.updateForViewport(com.springie.render.Coords.x_pixelso2,
         com.springie.render.Coords.y_pixelso2);
-    // Red light.
-    final double rlx = LightSource.red_px - center.x;
-    final double rly = LightSource.red_py - center.y;
-    final double rlz = LightSource.red_pz - center.z;
-    final double rd = Math.sqrt(rlx * rlx + rly * rly + rlz * rlz);
-    final double r_dot = Math.abs((nx * rlx + ny * rly + nz * rlz) / rd);
-    // Green light.
-    final double glx = LightSource.green_px - center.x;
-    final double gly = LightSource.green_py - center.y;
-    final double glz = LightSource.green_pz - center.z;
-    final double gd = Math.sqrt(glx * glx + gly * gly + glz * glz);
-    final double g_dot = Math.abs((nx * glx + ny * gly + nz * glz) / gd);
-    // Blue light.
-    final double blx = LightSource.blue_px - center.x;
-    final double bly = LightSource.blue_py - center.y;
-    final double blz = LightSource.blue_pz - center.z;
-    final double bd = Math.sqrt(blx * blx + bly * bly + blz * blz);
-    final double b_dot = Math.abs((nx * blx + ny * bly + nz * blz) / bd);
-    // Combine: 25% ambient + 75% diffuse (view * light). RGB is
-    // prominent; the white ambient is dimmer. (Tim, 2026-10-03)
+    // Combine: ambient + diffuse from N lights (Tim, 2026-10-04).
     // Ambient light (Tim, 2026-10-03): from the slider. 50% = 0.25.
     final double ambient = 0.5 * RendererDelegator.ambient_light_pct / 100.0;
-    // Light colors (Tim, 2026-10-04): each light's diffuse factor is
-    // scaled by its color channels. Light one/two/three/four default
-    // to red/green/blue/white.
-    final int l1r = (RendererDelegator.red_light_colour >> 16) & 0xFF;
-    final int l1g = (RendererDelegator.red_light_colour >> 8) & 0xFF;
-    final int l1b = RendererDelegator.red_light_colour & 0xFF;
-    final int l2r = (RendererDelegator.green_light_colour >> 16) & 0xFF;
-    final int l2g = (RendererDelegator.green_light_colour >> 8) & 0xFF;
-    final int l2b = RendererDelegator.green_light_colour & 0xFF;
-    final int l3r = (RendererDelegator.blue_light_colour >> 16) & 0xFF;
-    final int l3g = (RendererDelegator.blue_light_colour >> 8) & 0xFF;
-    final int l3b = RendererDelegator.blue_light_colour & 0xFF;
-    final int l4r = (RendererDelegator.white_light_colour >> 16) & 0xFF;
-    final int l4g = (RendererDelegator.white_light_colour >> 8) & 0xFF;
-    final int l4b = RendererDelegator.white_light_colour & 0xFF;
-    final double l1_diff = 0.75 * view_dot * r_dot
-        * RendererDelegator.red_light_pct / 50.0;
-    final double l2_diff = 0.75 * view_dot * g_dot
-        * RendererDelegator.green_light_pct / 50.0;
-    final double l3_diff = 0.75 * view_dot * b_dot
-        * RendererDelegator.blue_light_pct / 50.0;
-    // White point light (Tim, 2026-10-03): fourth light, like the others.
-    final double wlx = LightSource.white_px - center.x;
-    final double wly = LightSource.white_py - center.y;
-    final double wlz = LightSource.white_pz - center.z;
-    final double wd = Math.sqrt(wlx * wlx + wly * wly + wlz * wlz);
-    final double w_dot = Math.abs((nx * wlx + ny * wly + nz * wlz) / wd);
-    final double l4_diff = 0.75 * view_dot * w_dot
-        * RendererDelegator.white_light_pct / 50.0;
     // Per-output-channel diffuse: sum each light's factor scaled by
-    // its color.
-    final double r_factor = Math.min(1.0, ambient
-        + l1_diff * l1r / 255.0 + l2_diff * l2r / 255.0
-        + l3_diff * l3r / 255.0 + l4_diff * l4r / 255.0);
-    final double g_factor = Math.min(1.0, ambient
-        + l1_diff * l1g / 255.0 + l2_diff * l2g / 255.0
-        + l3_diff * l3g / 255.0 + l4_diff * l4g / 255.0);
-    final double b_factor = Math.min(1.0, ambient
-        + l1_diff * l1b / 255.0 + l2_diff * l2b / 255.0
-        + l3_diff * l3b / 255.0 + l4_diff * l4b / 255.0);
-    // Specular highlight (Tim, 2026-10-03, extra credit): where the
-    // polygon reflects the light directly at the viewer, add extra
-    // highlighting. R = 2*dot(N,L)*N - L; spec = pow(max(0, dot(R,V)), 32).
-    // View vector V = (0, 0, -1).
-    // Specular tints by light color (Tim, 2026-10-04).
+    // its color (Tim, 2026-10-04).
+    double r_factor = ambient;
+    double g_factor = ambient;
+    double b_factor = ambient;
+    // Specular accumulators (Tim, 2026-10-04).
     double spec_r = 0.0;
     double spec_g = 0.0;
     double spec_b = 0.0;
-    {
-      // Light one specular.
-      final double lx = rlx / rd;
-      final double ly = rly / rd;
-      final double lz = rlz / rd;
-      final double ndotl = nx * lx + ny * ly + nz * lz;
-      final double rx = 2.0 * ndotl * nx - lx;
-      final double ry = 2.0 * ndotl * ny - ly;
-      final double rz = 2.0 * ndotl * nz - lz;
-      final double rdotv = -(rz); // dot(R, (0,0,-1)) = -Rz
-      if (rdotv > 0.0) {
-        final double s = Math.pow(rdotv, 16.0)
-            * RendererDelegator.red_light_pct / 50.0;
-        spec_r += s * l1r / 255.0;
-        spec_g += s * l1g / 255.0;
-        spec_b += s * l1b / 255.0;
-      }
-      // Light two specular.
-      final double glxn = glx / gd;
-      final double glyn = gly / gd;
-      final double glzn = glz / gd;
-      final double gndotl = nx * glxn + ny * glyn + nz * glzn;
-      final double grx = 2.0 * gndotl * nx - glxn;
-      final double gry = 2.0 * gndotl * ny - glyn;
-      final double grz = 2.0 * gndotl * nz - glzn;
-      final double grdotv = -(grz);
-      if (grdotv > 0.0) {
-        final double s = Math.pow(grdotv, 16.0)
-            * RendererDelegator.green_light_pct / 50.0;
-        spec_r += s * l2r / 255.0;
-        spec_g += s * l2g / 255.0;
-        spec_b += s * l2b / 255.0;
-      }
-      // Light three specular.
-      final double blxn = blx / bd;
-      final double blyn = bly / bd;
-      final double blzn = blz / bd;
-      final double bndotl = nx * blxn + ny * blyn + nz * blzn;
-      final double brx = 2.0 * bndotl * nx - blxn;
-      final double bry = 2.0 * bndotl * ny - blyn;
-      final double brz = 2.0 * bndotl * nz - blzn;
-      final double brdotv = -(brz);
-      if (brdotv > 0.0) {
-        final double s = Math.pow(brdotv, 16.0)
-            * RendererDelegator.blue_light_pct / 50.0;
-        spec_r += s * l3r / 255.0;
-        spec_g += s * l3g / 255.0;
-        spec_b += s * l3b / 255.0;
-      }
-      // Light four specular (Tim, 2026-10-04).
-      final double wlxn = wlx / wd;
-      final double wlyn = wly / wd;
-      final double wlzn = wlz / wd;
-      final double wndotl = nx * wlxn + ny * wlyn + nz * wlzn;
-      final double wrx = 2.0 * wndotl * nx - wlxn;
-      final double wry = 2.0 * wndotl * ny - wlyn;
-      final double wrz = 2.0 * wndotl * nz - wlzn;
-      final double wrdotv = -(wrz);
-      if (wrdotv > 0.0) {
-        final double s = Math.pow(wrdotv, 16.0)
-            * RendererDelegator.white_light_pct / 50.0;
-        spec_r += s * l4r / 255.0;
-        spec_g += s * l4g / 255.0;
-        spec_b += s * l4b / 255.0;
+    synchronized (LightSource.class) {
+      for (final com.springie.render.modules.modern.Light light
+          : LightSource.lights) {
+        if (light.intensity_pct <= 0) {
+          continue;
+        }
+        final double lx = light.px - center.x;
+        final double ly = light.py - center.y;
+        final double lz = light.pz - center.z;
+        final double ld = Math.sqrt(lx * lx + ly * ly + lz * lz);
+        if (ld < 1e-9) {
+          continue;
+        }
+        final double light_dot = Math.abs((nx * lx + ny * ly + nz * lz) / ld);
+        final double diff = 0.75 * view_dot * light_dot
+            * light.intensity_pct / 50.0;
+        final int lr = (light.colour >> 16) & 0xFF;
+        final int lg = (light.colour >> 8) & 0xFF;
+        final int lb = light.colour & 0xFF;
+        r_factor += diff * lr / 255.0;
+        g_factor += diff * lg / 255.0;
+        b_factor += diff * lb / 255.0;
+        // Specular highlight (Tim, 2026-10-03): R = 2*dot(N,L)*N - L;
+        // spec = pow(max(0, dot(R,V)), 32). View vector V = (0, 0, -1).
+        // Tints by light color (Tim, 2026-10-04).
+        final double nlx = lx / ld;
+        final double nly = ly / ld;
+        final double nlz = lz / ld;
+        final double dot_nl = nx * nlx + ny * nly + nz * nlz;
+        final double rx = 2.0 * dot_nl * nx - nlx;
+        final double ry = 2.0 * dot_nl * ny - nly;
+        final double rz = 2.0 * dot_nl * nz - nlz;
+        // V = (0, 0, -1), so dot(R,V) = -rz.
+        final double spec_dot = Math.max(0.0, -rz);
+        if (spec_dot > 0.0) {
+          final double spec = Math.pow(spec_dot, 16.0)
+              * light.intensity_pct / 50.0;
+          spec_r += spec * lr / 255.0;
+          spec_g += spec * lg / 255.0;
+          spec_b += spec * lb / 255.0;
+        }
       }
     }
+    r_factor = Math.min(1.0, r_factor);
+    g_factor = Math.min(1.0, g_factor);
+    b_factor = Math.min(1.0, b_factor);
+    // (Specular is accumulated in the light loop above.)
     final int r = (colour >> 16) & 0xFF;
     final int g = (colour >> 8) & 0xFF;
     final int b = colour & 0xFF;

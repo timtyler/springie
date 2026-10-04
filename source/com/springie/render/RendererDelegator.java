@@ -149,34 +149,10 @@ public final class RendererDelegator {
   public static int fresnel = 50;
 
   /**
-   * RGB light intensities as percentages (0-100). 100% is the full
-   * brightness; 0% turns the light off. Defaults to 50% each.
-   * Controlled by the Lights tab in the Universe panel (Tim, 2026-10-03).
+   * Light intensities and colors (Tim, 2026-10-04): now stored per-light
+   * in LightSource.lights (N lights). The old red_light_pct etc. fields
+   * are removed; use LightSource.lights instead.
    */
-  public static int red_light_pct = 50;
-
-  public static int green_light_pct = 50;
-
-  public static int blue_light_pct = 50;
-
-  /**
-   * White directional light (Tim, 2026-10-03): the old white light,
-   * restored as a slider alongside the RGB lights. 0-100%.
-   */
-  public static int white_light_pct = 50;
-
-  /**
-   * Light colors (Tim, 2026-10-04): configurable via color pickers in
-   * the Lights tab. Each light's contribution is scaled by its color
-   * channels. Defaults are pure red, green, blue, and white.
-   */
-  public static int red_light_colour = 0xFF0000;
-
-  public static int green_light_colour = 0x00FF00;
-
-  public static int blue_light_colour = 0x0000FF;
-
-  public static int white_light_colour = 0xFFFFFF;
 
   /**
    * Ambient light (Tim, 2026-10-03): base illumination, 0-100%.

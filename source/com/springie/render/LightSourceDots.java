@@ -2,13 +2,13 @@
 
 package com.springie.render;
 
+import com.springie.render.modules.modern.Light;
 import com.springie.render.modules.modern.LightSource;
 import java.awt.Color;
 import java.awt.Graphics;
 
 /**
- * Draws the four point light sources (red, green, blue, white) as small
- * colored circles. (Tim, 2026-10-03)
+ * Draws the point light sources as small colored circles. (Tim, 2026-10-03)
  *
  * <p>Keeps it cheap: one fillOval per light per frame, no depth test.
  * Positions are clamped inside the viewport so the lights stay visible.
@@ -23,8 +23,8 @@ public final class LightSourceDots {
   private static int frame_count = 0;
 
   /**
-   * Currently dragged light (Tim, 2026-10-04): -1 = none, 0 = light one,
-   * 1 = light two, 2 = light three, 3 = light four.
+   * Currently dragged light (Tim, 2026-10-04): -1 = none, otherwise
+   * the index into LightSource.lights.
    */
   public static int dragging = -1;
 
@@ -33,30 +33,19 @@ public final class LightSourceDots {
   }
 
   /**
-   * Hit test (Tim, 2026-10-04): returns the light index (0-3) if the
+   * Hit test (Tim, 2026-10-04): returns the light index if the
    * screen point is within a dot, or -1.
    */
   public static int hitTest(final int sx, final int sy) {
     LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
-    if (RendererDelegator.red_light_pct > 0
-        && near(sx, sy, LightSource.red_px, LightSource.red_py,
-            LightSource.red_pz)) {
-      return 0;
-    }
-    if (RendererDelegator.green_light_pct > 0
-        && near(sx, sy, LightSource.green_px, LightSource.green_py,
-            LightSource.green_pz)) {
-      return 1;
-    }
-    if (RendererDelegator.blue_light_pct > 0
-        && near(sx, sy, LightSource.blue_px, LightSource.blue_py,
-            LightSource.blue_pz)) {
-      return 2;
-    }
-    if (RendererDelegator.white_light_pct > 0
-        && near(sx, sy, LightSource.white_px, LightSource.white_py,
-            LightSource.white_pz)) {
-      return 3;
+    synchronized (LightSource.class) {
+      for (int i = 0; i < LightSource.lights.size(); i++) {
+        final Light light = LightSource.lights.get(i);
+        if (light.intensity_pct > 0
+            && near(sx, sy, light.px, light.py, light.pz)) {
+          return i;
+        }
+      }
     }
     return -1;
   }
@@ -89,34 +78,28 @@ public final class LightSourceDots {
 
   /**
    * Drag a light to a screen position (Tim, 2026-10-04): converts to
-   * world X/Y at the light's Z, stores as custom position.
+   * percentages of the viewport half-size.
    */
   public static void dragTo(final int light, final int sx, final int sy) {
     // Store as percentages of the viewport half-size (Tim, 2026-10-04):
-    // survives window resizes, and what we'll persist.
+    // survives window resizes, and what we persist.
     final int hw = Coords.x_pixelso2 == 0 ? 400 : Coords.x_pixelso2;
     final int hh = Coords.y_pixelso2 == 0 ? 300 : Coords.y_pixelso2;
     final double x_pct = (double) (sx - Coords.x_pixelso2) / (double) hw * 100.0;
     final double y_pct = (double) (sy - Coords.y_pixelso2) / (double) hh * 100.0;
-    if (light == 0) {
-      LightSource.red_x_pct = x_pct;
-      LightSource.red_y_pct = y_pct;
-    } else if (light == 1) {
-      LightSource.green_x_pct = x_pct;
-      LightSource.green_y_pct = y_pct;
-    } else if (light == 2) {
-      LightSource.blue_x_pct = x_pct;
-      LightSource.blue_y_pct = y_pct;
-    } else {
-      LightSource.white_x_pct = x_pct;
-      LightSource.white_y_pct = y_pct;
+    synchronized (LightSource.class) {
+      if (light >= 0 && light < LightSource.lights.size()) {
+        final Light l = LightSource.lights.get(light);
+        l.x_pct = x_pct;
+        l.y_pct = y_pct;
+      }
     }
     // The illumination changed: force a re-trace (Tim, 2026-10-04).
     LightSource.light_moved = true;
   }
 
   /**
-   * Draws all four lights at their true 3D positions (Tim, 2026-10-04):
+   * Draws all lights at their true 3D positions (Tim, 2026-10-04):
    * a visual representation of the light sources used for shading.
    * Positions are refreshed every draw from the current viewport size,
    * then projected via Coords (matches the raytracer's pinhole camera).
@@ -132,24 +115,13 @@ public final class LightSourceDots {
     LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
     // Skip lights at 0% intensity (Tim, 2026-10-03).
     // Dots use the configured light colors (Tim, 2026-10-04).
-    if (RendererDelegator.red_light_pct > 0) {
-      drawOne(g, LightSource.red_px, LightSource.red_py, LightSource.red_pz,
-          new Color(RendererDelegator.red_light_colour));
-    }
-    if (RendererDelegator.green_light_pct > 0) {
-      drawOne(g, LightSource.green_px, LightSource.green_py,
-          LightSource.green_pz,
-          new Color(RendererDelegator.green_light_colour));
-    }
-    if (RendererDelegator.blue_light_pct > 0) {
-      drawOne(g, LightSource.blue_px, LightSource.blue_py,
-          LightSource.blue_pz,
-          new Color(RendererDelegator.blue_light_colour));
-    }
-    if (RendererDelegator.white_light_pct > 0) {
-      drawOne(g, LightSource.white_px, LightSource.white_py,
-          LightSource.white_pz,
-          new Color(RendererDelegator.white_light_colour));
+    synchronized (LightSource.class) {
+      for (final Light light : LightSource.lights) {
+        if (light.intensity_pct > 0) {
+          drawOne(g, light.px, light.py, light.pz,
+              new Color(light.colour));
+        }
+      }
     }
   }
 

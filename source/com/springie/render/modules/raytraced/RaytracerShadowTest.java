@@ -48,17 +48,12 @@ public class RaytracerShadowTest {
 
   private int saved_specular;
 
-  private double saved_red_px;
+  private java.util.List<com.springie.render.modules.modern.Light> saved_lights;
 
-  private double saved_red_py;
 
-  private double saved_red_pz;
 
-  private int saved_green_pct;
 
-  private int saved_blue_pct;
 
-  private int saved_white_pct;
 
   private boolean saved_freeze;
 
@@ -89,19 +84,23 @@ public class RaytracerShadowTest {
     this.saved_glossiness = RendererDelegator.glossiness;
     this.saved_shadows = RendererDelegator.shadows;
     this.saved_specular = RendererDelegator.specular;
-    this.saved_red_px = Raytracer.RED_PX;
-    this.saved_red_py = Raytracer.RED_PY;
-    this.saved_red_pz = Raytracer.RED_PZ;
-    this.saved_green_pct = RendererDelegator.green_light_pct;
-    this.saved_blue_pct = RendererDelegator.blue_light_pct;
-    this.saved_white_pct = RendererDelegator.white_light_pct;
+    // Save N lights (Tim, 2026-10-04).
+    this.saved_lights = new java.util.ArrayList<>();
+    synchronized (com.springie.render.modules.modern.LightSource.class) {
+      for (final com.springie.render.modules.modern.Light light
+          : com.springie.render.modules.modern.LightSource.lights) {
+        this.saved_lights.add(new com.springie.render.modules.modern.Light(light));
+      }
+    }
     this.saved_freeze = Raytracer.freeze_lights;
 
     RendererDelegator.glossiness = 0;
-    // Only the red light matters for this test; turn off green/blue/white.
-    RendererDelegator.green_light_pct = 0;
-    RendererDelegator.blue_light_pct = 0;
-    RendererDelegator.white_light_pct = 0;
+    // Only light 0 matters for this test; turn off the others (N lights, Tim, 2026-10-04).
+    synchronized (com.springie.render.modules.modern.LightSource.class) {
+      for (int i = 1; i < com.springie.render.modules.modern.LightSource.lights.size(); i++) {
+        com.springie.render.modules.modern.LightSource.lights.get(i).intensity_pct = 0;
+      }
+    }
     RendererDelegator.specular = 0;
   }
 
@@ -120,12 +119,14 @@ public class RaytracerShadowTest {
     RendererDelegator.glossiness = this.saved_glossiness;
     RendererDelegator.shadows = this.saved_shadows;
     RendererDelegator.specular = this.saved_specular;
-    Raytracer.RED_PX = this.saved_red_px;
-    Raytracer.RED_PY = this.saved_red_py;
-    Raytracer.RED_PZ = this.saved_red_pz;
-    RendererDelegator.green_light_pct = this.saved_green_pct;
-    RendererDelegator.blue_light_pct = this.saved_blue_pct;
-    RendererDelegator.white_light_pct = this.saved_white_pct;
+    // Restore N lights (Tim, 2026-10-04).
+    synchronized (com.springie.render.modules.modern.LightSource.class) {
+      com.springie.render.modules.modern.LightSource.lights.clear();
+      for (final com.springie.render.modules.modern.Light light : this.saved_lights) {
+        com.springie.render.modules.modern.LightSource.lights.add(
+            new com.springie.render.modules.modern.Light(light));
+      }
+    }
     Raytracer.freeze_lights = this.saved_freeze;
   }
 
@@ -148,14 +149,30 @@ public class RaytracerShadowTest {
     // (Production lights sit behind the camera, which would put the
     // occluder in the primary ray.)
     Raytracer.freeze_lights = true;
-    Raytracer.RED_PX = EX - 30000.0;
-    Raytracer.RED_PY = EY - 30000.0;
-    Raytracer.RED_PZ = 100000.0;
+    // Position light 0 manually (N lights, Tim, 2026-10-04).
+    synchronized (com.springie.render.modules.modern.LightSource.class) {
+      if (!com.springie.render.modules.modern.LightSource.lights.isEmpty()) {
+        com.springie.render.modules.modern.LightSource.lights.get(0).px = EX - 30000.0;
+      }
+    }
     // Green and blue stay where they are (behind camera); they don't
     // affect this test's pole pixel which faces the red light.
-    final double lx = Raytracer.RED_PX;
-    final double ly = Raytracer.RED_PY;
-    final double lz = Raytracer.RED_PZ;
+    final double lx;
+    final double ly;
+    final double lz;
+    synchronized (com.springie.render.modules.modern.LightSource.class) {
+      if (com.springie.render.modules.modern.LightSource.lights.isEmpty()) {
+        lx = 0.0;
+        ly = 0.0;
+        lz = 0.0;
+      } else {
+        final com.springie.render.modules.modern.Light l0 =
+            com.springie.render.modules.modern.LightSource.lights.get(0);
+        lx = l0.px;
+        ly = l0.py;
+        lz = l0.pz;
+      }
+    }
     final double pole_x = EX;
     final double pole_y = EY;
     final double pole_z = -20000.0;

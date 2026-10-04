@@ -178,6 +178,21 @@ public class ReaderSPR extends DefaultHandler {
       }
     }
 
+    // N-light format pre-scan (Tim, 2026-10-04): new files carry a
+    // light_count attribute; old files use light1_*..light4_*. The
+    // names light1_*..light4_* exist in both (old 1-indexed, new
+    // 0-indexed), so the presence of light_count decides the routing.
+    boolean new_light_format = false;
+    if (is_universe) {
+      final int m = atts.getLength();
+      for (int j = 0; j < m; j++) {
+        if ("light_count".equals(atts.getLocalName(j))) {
+          new_light_format = true;
+          break;
+        }
+      }
+    }
+
     if (is_type) {
       if (this.in_nodes_section) {
         this.type_node = new TypeNode();
@@ -355,6 +370,33 @@ public class ReaderSPR extends DefaultHandler {
           } else if ("compass_bias".equals(nam)) {
             final double sp = Double.valueOf(val).doubleValue();
             this.out.append("CB:" + (int) sp + " ");
+          } else if ("light_count".equals(nam)) {
+            // N lights (Tim, 2026-10-04).
+            this.out.append("LC:" + Integer.parseInt(val) + " ");
+          } else if (new_light_format && nam.startsWith("light")) {
+            // N-light per-light attributes (Tim, 2026-10-04):
+            // light<i>_pct, light<i>_colour, light<i>_x_pct,
+            // light<i>_y_pct (0-indexed). Checked before the old
+            // light1_*..light4_* exact matches below: those names
+            // overlap (old 1-indexed vs new 0-indexed), and only
+            // apply to old files (no light_count).
+            final int us = nam.indexOf('_');
+            if (us > 5) {
+              final int idx = Integer.parseInt(nam.substring(5, us));
+              final String suffix = nam.substring(us + 1);
+              // Select the light, then set the one attribute; the
+              // token parser handles a single number per token.
+              this.out.append("LI:" + idx + " ");
+              if ("pct".equals(suffix)) {
+                this.out.append("LP:" + Integer.parseInt(val) + " ");
+              } else if ("colour".equals(suffix)) {
+                this.out.append("LO:0x" + Integer.toHexString(Integer.parseInt(val)) + " ");
+              } else if ("x_pct".equals(suffix)) {
+                this.out.append("LX:" + Integer.parseInt(val) + " ");
+              } else if ("y_pct".equals(suffix)) {
+                this.out.append("LY:" + Integer.parseInt(val) + " ");
+              }
+            }
           } else if ("light1_pct".equals(nam)) {
             this.out.append("L1P:" + Integer.parseInt(val) + " ");
           } else if ("light2_pct".equals(nam)) {

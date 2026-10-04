@@ -31,11 +31,7 @@ final class Raytracer {
   private static final double GREEN_X, GREEN_Y, GREEN_Z;
   private static final double BLUE_X, BLUE_Y, BLUE_Z;
 
-  /** RGB point light positions (Tim, 2026-10-03): viewport-dependent. */
-  static double RED_PX, RED_PY, RED_PZ;
-  static double GREEN_PX, GREEN_PY, GREEN_PZ;
-  static double BLUE_PX, BLUE_PY, BLUE_PZ;
-  static double WHITE_PX, WHITE_PY, WHITE_PZ;
+  /** Point light positions: use LightSource.lights (N lights, Tim, 2026-10-04). */
 
   /**
    * Test hook: when true, updateLightPositions() does not overwrite the
@@ -100,18 +96,63 @@ final class Raytracer {
       return;
     }
     LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
-    RED_PX = LightSource.red_px;
-    RED_PY = LightSource.red_py;
-    RED_PZ = LightSource.red_pz;
-    GREEN_PX = LightSource.green_px;
-    GREEN_PY = LightSource.green_py;
-    GREEN_PZ = LightSource.green_pz;
-    BLUE_PX = LightSource.blue_px;
-    BLUE_PY = LightSource.blue_py;
-    BLUE_PZ = LightSource.blue_pz;
-    WHITE_PX = LightSource.white_px;
-    WHITE_PY = LightSource.white_py;
-    WHITE_PZ = LightSource.white_pz;
+  }
+
+  /** Gets light i's world X, or 0 if i is out of range (N lights, Tim, 2026-10-04). */
+  private static double lightPx(final int i) {
+    synchronized (LightSource.class) {
+      if (i >= 0 && i < LightSource.lights.size()) {
+        return LightSource.lights.get(i).px;
+      }
+    }
+    return 0.0;
+  }
+
+  /** Gets light i's world Y, or 0 if out of range. */
+  private static double lightPy(final int i) {
+    synchronized (LightSource.class) {
+      if (i >= 0 && i < LightSource.lights.size()) {
+        return LightSource.lights.get(i).py;
+      }
+    }
+    return 0.0;
+  }
+
+  /** Gets light i's world Z, or 0 if out of range. */
+  private static double lightPz(final int i) {
+    synchronized (LightSource.class) {
+      if (i >= 0 && i < LightSource.lights.size()) {
+        return LightSource.lights.get(i).pz;
+      }
+    }
+    return 0.0;
+  }
+
+  /** Gets light i's intensity %, or 0 if out of range. */
+  private static int lightPct(final int i) {
+    synchronized (LightSource.class) {
+      if (i >= 0 && i < LightSource.lights.size()) {
+        return LightSource.lights.get(i).intensity_pct;
+      }
+    }
+    return 0;
+  }
+
+  /** Gets light i's colour, or 0 if out of range. */
+  private static int lightColour(final int i) {
+    synchronized (LightSource.class) {
+      if (i >= 0 && i < LightSource.lights.size()) {
+        return LightSource.lights.get(i).colour;
+      }
+    }
+    return 0;
+  }
+
+  /** Gets the number of lights. */
+  private static int lightCount() {
+    synchronized (LightSource.class) {
+      return LightSource.lights.size();
+    }
   }
 
   private Raytracer() {
@@ -1287,66 +1328,41 @@ final class Raytracer {
       final int fogged =
           Fog.applyFog(hit.primitive.getColour(), (int) pz);
       if (hit.primitive instanceof RTSphere) {
-        // Node: RGB flat shading by distance to lights (Tim, 2026-10-03).
-        // Use the sphere center for the light distance.
         final double ncx = ((RTSphere) hit.primitive).cx;
         final double ncy = ((RTSphere) hit.primitive).cy;
         final double ncz = ((RTSphere) hit.primitive).cz;
-        final double nrdx = RED_PX - ncx;
-        final double nrdy = RED_PY - ncy;
-        final double nrdz = RED_PZ - ncz;
-        final double nrd = Math.sqrt(nrdx * nrdx + nrdy * nrdy + nrdz * nrdz);
-        final double nr_fall = 1.0 / (1.0 + (nrd / LIGHT_FALLOFF_K) * (nrd / LIGHT_FALLOFF_K));
-        final double ngdx = GREEN_PX - ncx;
-        final double ngdy = GREEN_PY - ncy;
-        final double ngdz = GREEN_PZ - ncz;
-        final double ngd = Math.sqrt(ngdx * ngdx + ngdy * ngdy + ngdz * ngdz);
-        final double ng_fall = 1.0 / (1.0 + (ngd / LIGHT_FALLOFF_K) * (ngd / LIGHT_FALLOFF_K));
-        final double nbdx = BLUE_PX - ncx;
-        final double nbdy = BLUE_PY - ncy;
-        final double nbdz = BLUE_PZ - ncz;
-        final double nbd = Math.sqrt(nbdx * nbdx + nbdy * nbdy + nbdz * nbdz);
-        final double nb_fall = 1.0 / (1.0 + (nbd / LIGHT_FALLOFF_K) * (nbd / LIGHT_FALLOFF_K));
-        // White light distance falloff (Tim, 2026-10-04).
-        final double nwdx = WHITE_PX - ncx;
-        final double nwdy = WHITE_PY - ncy;
-        final double nwdz = WHITE_PZ - ncz;
-        final double nwd = Math.sqrt(nwdx * nwdx + nwdy * nwdy + nwdz * nwdz);
-        final double nw_fall = 1.0 / (1.0 + (nwd / LIGHT_FALLOFF_K) * (nwd / LIGHT_FALLOFF_K));
         final int amb = ambientBase();
-        // Light colors (Tim, 2026-10-04): scale each light's
-        // contribution by its color channels.
-        final int rrf = (RendererDelegator.red_light_colour >> 16) & 0xFF;
-        final int rgf = (RendererDelegator.red_light_colour >> 8) & 0xFF;
-        final int rbf = RendererDelegator.red_light_colour & 0xFF;
-        final int grf = (RendererDelegator.green_light_colour >> 16) & 0xFF;
-        final int ggf = (RendererDelegator.green_light_colour >> 8) & 0xFF;
-        final int gbf = RendererDelegator.green_light_colour & 0xFF;
-        final int brf = (RendererDelegator.blue_light_colour >> 16) & 0xFF;
-        final int bgf = (RendererDelegator.blue_light_colour >> 8) & 0xFF;
-        final int bbf = RendererDelegator.blue_light_colour & 0xFF;
-        final int wrf = (RendererDelegator.white_light_colour >> 16) & 0xFF;
-        final int wgf = (RendererDelegator.white_light_colour >> 8) & 0xFF;
-        final int wbf = RendererDelegator.white_light_colour & 0xFF;
-        final double r_light = Math.min(1.0, nr_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0 * RendererDelegator.red_light_pct / 100.0);
-        final double g_light = Math.min(1.0, ng_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0 * RendererDelegator.green_light_pct / 100.0);
-        final double b_light = Math.min(1.0, nb_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0 * RendererDelegator.blue_light_pct / 100.0);
-        final double w_light = Math.min(1.0, nw_fall * LIGHT_BRIGHTNESS * RendererDelegator.white_light_pct / 100.0 * RendererDelegator.white_light_pct / 100.0);
-        final int nr_scaled = Math.min(255, amb
-            + (int) (159.0 * r_light * rrf / 255)
-            + (int) (159.0 * g_light * grf / 255)
-            + (int) (159.0 * b_light * brf / 255)
-            + (int) (159.0 * w_light * wrf / 255));
-        final int ng_scaled = Math.min(255, amb
-            + (int) (159.0 * r_light * rgf / 255)
-            + (int) (159.0 * g_light * ggf / 255)
-            + (int) (159.0 * b_light * bgf / 255)
-            + (int) (159.0 * w_light * wgf / 255));
-        final int nb_scaled = Math.min(255, amb
-            + (int) (159.0 * r_light * rbf / 255)
-            + (int) (159.0 * g_light * gbf / 255)
-            + (int) (159.0 * b_light * bbf / 255)
-            + (int) (159.0 * w_light * wbf / 255));
+        // N lights (Tim, 2026-10-04): accumulate each light's contribution
+        // scaled by its color channels.
+        double r_acc = 0.0;
+        double g_acc = 0.0;
+        double b_acc = 0.0;
+        final int n_lights = lightCount();
+        for (int li = 0; li < n_lights; li++) {
+          final int pct = lightPct(li);
+          if (pct <= 0) {
+            continue;
+          }
+          final double ldx = lightPx(li) - ncx;
+          final double ldy = lightPy(li) - ncy;
+          final double ldz = lightPz(li) - ncz;
+          final double ld = Math.sqrt(ldx * ldx + ldy * ldy + ldz * ldz);
+          if (ld < 1e-9) {
+            continue;
+          }
+          final double l_fall = 1.0 / (1.0 + (ld / LIGHT_FALLOFF_K) * (ld / LIGHT_FALLOFF_K));
+          final double l_light = Math.min(1.0, l_fall * LIGHT_BRIGHTNESS * pct / 100.0 * pct / 100.0);
+          final int col = lightColour(li);
+          final int lr = (col >> 16) & 0xFF;
+          final int lg = (col >> 8) & 0xFF;
+          final int lb = col & 0xFF;
+          r_acc += 159.0 * l_light * lr / 255.0;
+          g_acc += 159.0 * l_light * lg / 255.0;
+          b_acc += 159.0 * l_light * lb / 255.0;
+        }
+        final int nr_scaled = Math.min(255, amb + (int) r_acc);
+        final int ng_scaled = Math.min(255, amb + (int) g_acc);
+        final int nb_scaled = Math.min(255, amb + (int) b_acc);
         final int nr = (fogged >> 16) & 0xFF;
         final int ng = (fogged >> 8) & 0xFF;
         final int nb = fogged & 0xFF;
@@ -1398,93 +1414,93 @@ final class Raytracer {
       if (is_cylinder) {
         // Cable/strut: per-light brightness from axis angle to the
         // light direction, with distance falloff.
-        double rlx = RED_PX - pcx;
-        double rly = RED_PY - pcy;
-        double rlz = RED_PZ - pcz;
+        double rlx = lightPx(0) - pcx;
+        double rly = lightPy(0) - pcy;
+        double rlz = lightPz(0) - pcz;
         double rd = Math.sqrt(rlx * rlx + rly * rly + rlz * rlz);
         double r_dot = (rlx * ax + rly * ay + rlz * az) / rd;
         double r_fall = 1.0 / (1.0 + (rd / LIGHT_FALLOFF_K) * (rd / LIGHT_FALLOFF_K));
         r_factor = Math.sqrt(Math.max(0.0, 1.0 - r_dot * r_dot))
-            * Math.min(1.0, r_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0);
-        double glx = GREEN_PX - pcx;
-        double gly = GREEN_PY - pcy;
-        double glz = GREEN_PZ - pcz;
+            * Math.min(1.0, r_fall * LIGHT_BRIGHTNESS * lightPct(0) / 100.0);
+        double glx = lightPx(1) - pcx;
+        double gly = lightPy(1) - pcy;
+        double glz = lightPz(1) - pcz;
         double gd = Math.sqrt(glx * glx + gly * gly + glz * glz);
         double g_dot = (glx * ax + gly * ay + glz * az) / gd;
         double g_fall = 1.0 / (1.0 + (gd / LIGHT_FALLOFF_K) * (gd / LIGHT_FALLOFF_K));
         g_factor = Math.sqrt(Math.max(0.0, 1.0 - g_dot * g_dot))
-            * Math.min(1.0, g_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0);
-        double blx = BLUE_PX - pcx;
-        double bly = BLUE_PY - pcy;
-        double blz = BLUE_PZ - pcz;
+            * Math.min(1.0, g_fall * LIGHT_BRIGHTNESS * lightPct(1) / 100.0);
+        double blx = lightPx(2) - pcx;
+        double bly = lightPy(2) - pcy;
+        double blz = lightPz(2) - pcz;
         double bd = Math.sqrt(blx * blx + bly * bly + blz * blz);
         double b_dot = (blx * ax + bly * ay + blz * az) / bd;
         double b_fall = 1.0 / (1.0 + (bd / LIGHT_FALLOFF_K) * (bd / LIGHT_FALLOFF_K));
         b_factor = Math.sqrt(Math.max(0.0, 1.0 - b_dot * b_dot))
-            * Math.min(1.0, b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0);
+            * Math.min(1.0, b_fall * LIGHT_BRIGHTNESS * lightPct(2) / 100.0);
         // White light (Tim, 2026-10-04): same as RGB, adds to all channels.
-        double wlx = WHITE_PX - pcx;
-        double wly = WHITE_PY - pcy;
-        double wlz = WHITE_PZ - pcz;
+        double wlx = lightPx(3) - pcx;
+        double wly = lightPy(3) - pcy;
+        double wlz = lightPz(3) - pcz;
         double wd = Math.sqrt(wlx * wlx + wly * wly + wlz * wlz);
         double w_dot = (wlx * ax + wly * ay + wlz * az) / wd;
         double w_fall = 1.0 / (1.0 + (wd / LIGHT_FALLOFF_K) * (wd / LIGHT_FALLOFF_K));
         w_factor = Math.sqrt(Math.max(0.0, 1.0 - w_dot * w_dot))
-            * Math.min(1.0, w_fall * LIGHT_BRIGHTNESS * RendererDelegator.white_light_pct / 100.0);
+            * Math.min(1.0, w_fall * LIGHT_BRIGHTNESS * lightPct(3) / 100.0);
       } else {
         // Face (triangle): geometric normal is constant; dot with each
         // light direction from the face center.
-        double rlx = RED_PX - pcx;
-        double rly = RED_PY - pcy;
-        double rlz = RED_PZ - pcz;
+        double rlx = lightPx(0) - pcx;
+        double rly = lightPy(0) - pcy;
+        double rlz = lightPz(0) - pcz;
         double rd = Math.sqrt(rlx * rlx + rly * rly + rlz * rlz);
         double r_fall = 1.0 / (1.0 + (rd / LIGHT_FALLOFF_K) * (rd / LIGHT_FALLOFF_K));
         r_factor = Math.max(0.0, Math.min(1.0,
             (ax * rlx + ay * rly + az * rlz) / rd))
-            * Math.min(1.0, r_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0);
-        double glx = GREEN_PX - pcx;
-        double gly = GREEN_PY - pcy;
-        double glz = GREEN_PZ - pcz;
+            * Math.min(1.0, r_fall * LIGHT_BRIGHTNESS * lightPct(0) / 100.0);
+        double glx = lightPx(1) - pcx;
+        double gly = lightPy(1) - pcy;
+        double glz = lightPz(1) - pcz;
         double gd = Math.sqrt(glx * glx + gly * gly + glz * glz);
         double g_fall = 1.0 / (1.0 + (gd / LIGHT_FALLOFF_K) * (gd / LIGHT_FALLOFF_K));
         g_factor = Math.max(0.0, Math.min(1.0,
             (ax * glx + ay * gly + az * glz) / gd))
-            * Math.min(1.0, g_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0);
-        double blx = BLUE_PX - pcx;
-        double bly = BLUE_PY - pcy;
-        double blz = BLUE_PZ - pcz;
+            * Math.min(1.0, g_fall * LIGHT_BRIGHTNESS * lightPct(1) / 100.0);
+        double blx = lightPx(2) - pcx;
+        double bly = lightPy(2) - pcy;
+        double blz = lightPz(2) - pcz;
         double bd = Math.sqrt(blx * blx + bly * bly + blz * blz);
         double b_fall = 1.0 / (1.0 + (bd / LIGHT_FALLOFF_K) * (bd / LIGHT_FALLOFF_K));
         b_factor = Math.max(0.0, Math.min(1.0,
             (ax * blx + ay * bly + az * blz) / bd))
-            * Math.min(1.0, b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0);
+            * Math.min(1.0, b_fall * LIGHT_BRIGHTNESS * lightPct(2) / 100.0);
         // White light (Tim, 2026-10-04): same as RGB, adds to all channels.
-        double wlx = WHITE_PX - pcx;
-        double wly = WHITE_PY - pcy;
-        double wlz = WHITE_PZ - pcz;
+        double wlx = lightPx(3) - pcx;
+        double wly = lightPy(3) - pcy;
+        double wlz = lightPz(3) - pcz;
         double wd = Math.sqrt(wlx * wlx + wly * wly + wlz * wlz);
         double w_fall = 1.0 / (1.0 + (wd / LIGHT_FALLOFF_K) * (wd / LIGHT_FALLOFF_K));
         w_factor = Math.max(0.0, Math.min(1.0,
             (ax * wlx + ay * wly + az * wlz) / wd))
-            * Math.min(1.0, w_fall * LIGHT_BRIGHTNESS * RendererDelegator.white_light_pct / 100.0);
+            * Math.min(1.0, w_fall * LIGHT_BRIGHTNESS * lightPct(3) / 100.0);
       }
       // Half-to-full brightness per channel.
       // Light colors (Tim, 2026-10-04): each light's factor is scaled
       // by its color channels. Defaults give red->R, green->G,
       // blue->B, white->all.
       final int amb2 = ambientBase();
-      final int rr2 = (RendererDelegator.red_light_colour >> 16) & 0xFF;
-      final int rg2 = (RendererDelegator.red_light_colour >> 8) & 0xFF;
-      final int rb2 = RendererDelegator.red_light_colour & 0xFF;
-      final int gr2 = (RendererDelegator.green_light_colour >> 16) & 0xFF;
-      final int gg2 = (RendererDelegator.green_light_colour >> 8) & 0xFF;
-      final int gb2 = RendererDelegator.green_light_colour & 0xFF;
-      final int br2 = (RendererDelegator.blue_light_colour >> 16) & 0xFF;
-      final int bg2 = (RendererDelegator.blue_light_colour >> 8) & 0xFF;
-      final int bb2 = RendererDelegator.blue_light_colour & 0xFF;
-      final int wr2 = (RendererDelegator.white_light_colour >> 16) & 0xFF;
-      final int wg2 = (RendererDelegator.white_light_colour >> 8) & 0xFF;
-      final int wb2 = RendererDelegator.white_light_colour & 0xFF;
+      final int rr2 = (lightColour(0) >> 16) & 0xFF;
+      final int rg2 = (lightColour(0) >> 8) & 0xFF;
+      final int rb2 = lightColour(0) & 0xFF;
+      final int gr2 = (lightColour(1) >> 16) & 0xFF;
+      final int gg2 = (lightColour(1) >> 8) & 0xFF;
+      final int gb2 = lightColour(1) & 0xFF;
+      final int br2 = (lightColour(2) >> 16) & 0xFF;
+      final int bg2 = (lightColour(2) >> 8) & 0xFF;
+      final int bb2 = lightColour(2) & 0xFF;
+      final int wr2 = (lightColour(3) >> 16) & 0xFF;
+      final int wg2 = (lightColour(3) >> 8) & 0xFF;
+      final int wb2 = lightColour(3) & 0xFF;
       final int r_scaled = Math.min(255, amb2
           + (int) (159.0 * r_factor * rr2 / 255)
           + (int) (159.0 * g_factor * gr2 / 255)
@@ -1515,9 +1531,9 @@ final class Raytracer {
     final double py = ray.oy + ray.dy * hit.t;
     final double pz_light = ray.oz + ray.dz * hit.t;
     // Red light.
-    final double rlx = RED_PX - px;
-    final double rly = RED_PY - py;
-    final double rlz = RED_PZ - pz_light;
+    final double rlx = lightPx(0) - px;
+    final double rly = lightPy(0) - py;
+    final double rlz = lightPz(0) - pz_light;
     final double rd = Math.sqrt(rlx * rlx + rly * rly + rlz * rlz);
     double r_dot = (hit.nx * rlx + hit.ny * rly + hit.nz * rlz) / rd;
     if (r_dot < 0.0) {
@@ -1528,9 +1544,9 @@ final class Raytracer {
     }
     final double r_fall = 1.0 / (1.0 + (rd / LIGHT_FALLOFF_K) * (rd / LIGHT_FALLOFF_K));
     // Green light.
-    final double glx = GREEN_PX - px;
-    final double gly = GREEN_PY - py;
-    final double glz = GREEN_PZ - pz_light;
+    final double glx = lightPx(1) - px;
+    final double gly = lightPy(1) - py;
+    final double glz = lightPz(1) - pz_light;
     final double gd = Math.sqrt(glx * glx + gly * gly + glz * glz);
     double g_dot = (hit.nx * glx + hit.ny * gly + hit.nz * glz) / gd;
     if (g_dot < 0.0) {
@@ -1541,9 +1557,9 @@ final class Raytracer {
     }
     final double g_fall = 1.0 / (1.0 + (gd / LIGHT_FALLOFF_K) * (gd / LIGHT_FALLOFF_K));
     // Blue light.
-    final double blx = BLUE_PX - px;
-    final double bly = BLUE_PY - py;
-    final double blz = BLUE_PZ - pz_light;
+    final double blx = lightPx(2) - px;
+    final double bly = lightPy(2) - py;
+    final double blz = lightPz(2) - pz_light;
     final double bd = Math.sqrt(blx * blx + bly * bly + blz * blz);
     double b_dot = (hit.nx * blx + hit.ny * bly + hit.nz * blz) / bd;
     if (b_dot < 0.0) {
@@ -1554,9 +1570,9 @@ final class Raytracer {
     }
     final double b_fall = 1.0 / (1.0 + (bd / LIGHT_FALLOFF_K) * (bd / LIGHT_FALLOFF_K));
     // White point light (Tim, 2026-10-03): fourth light, like RGB.
-    final double wlx = WHITE_PX - px;
-    final double wly = WHITE_PY - py;
-    final double wlz = WHITE_PZ - pz_light;
+    final double wlx = lightPx(3) - px;
+    final double wly = lightPy(3) - py;
+    final double wlz = lightPz(3) - pz_light;
     final double wd = Math.sqrt(wlx * wlx + wly * wly + wlz * wlz);
     double w_dot = (hit.nx * wlx + hit.ny * wly + hit.nz * wlz) / wd;
     if (w_dot < 0.0) {
@@ -1576,13 +1592,13 @@ final class Raytracer {
     double w_shadow = 1.0;
     if (RendererDelegator.shadows) {
       r_shadow = shadowFactor(ray, hit, bvh, stack, shadow_ray, shadow_hit,
-          RED_PX, RED_PY, RED_PZ, jitter, px, py, pz_light);
+          lightPx(0), lightPy(0), lightPz(0), jitter, px, py, pz_light);
       g_shadow = shadowFactor(ray, hit, bvh, stack, shadow_ray, shadow_hit,
-          GREEN_PX, GREEN_PY, GREEN_PZ, jitter, px, py, pz_light);
+          lightPx(1), lightPy(1), lightPz(1), jitter, px, py, pz_light);
       b_shadow = shadowFactor(ray, hit, bvh, stack, shadow_ray, shadow_hit,
-          BLUE_PX, BLUE_PY, BLUE_PZ, jitter, px, py, pz_light);
+          lightPx(2), lightPy(2), lightPz(2), jitter, px, py, pz_light);
       final double w_shadow_tmp = shadowFactor(ray, hit, bvh, stack, shadow_ray,
-          shadow_hit, WHITE_PX, WHITE_PY, WHITE_PZ, jitter, px, py, pz_light);
+          shadow_hit, lightPx(3), lightPy(3), lightPz(3), jitter, px, py, pz_light);
       w_shadow = w_shadow_tmp;
       r_dot *= r_shadow;
       g_dot *= g_shadow;
@@ -1633,22 +1649,22 @@ final class Raytracer {
     final int amb3 = ambientBase();
     // Light colors (Tim, 2026-10-04): scale each light's contribution
     // by its color channels.
-    final int rr3 = (RendererDelegator.red_light_colour >> 16) & 0xFF;
-    final int rg3 = (RendererDelegator.red_light_colour >> 8) & 0xFF;
-    final int rb3 = RendererDelegator.red_light_colour & 0xFF;
-    final int gr3 = (RendererDelegator.green_light_colour >> 16) & 0xFF;
-    final int gg3 = (RendererDelegator.green_light_colour >> 8) & 0xFF;
-    final int gb3 = RendererDelegator.green_light_colour & 0xFF;
-    final int br3 = (RendererDelegator.blue_light_colour >> 16) & 0xFF;
-    final int bg3 = (RendererDelegator.blue_light_colour >> 8) & 0xFF;
-    final int bb3 = RendererDelegator.blue_light_colour & 0xFF;
-    final int wr3 = (RendererDelegator.white_light_colour >> 16) & 0xFF;
-    final int wg3 = (RendererDelegator.white_light_colour >> 8) & 0xFF;
-    final int wb3 = RendererDelegator.white_light_colour & 0xFF;
-    final double r_l3 = Math.min(1.0, r_dot * r_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0);
-    final double g_l3 = Math.min(1.0, g_dot * g_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0);
-    final double b_l3 = Math.min(1.0, b_dot * b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0);
-    final double w_l3 = Math.min(1.0, w_dot * w_fall * LIGHT_BRIGHTNESS * RendererDelegator.white_light_pct / 100.0);
+    final int rr3 = (lightColour(0) >> 16) & 0xFF;
+    final int rg3 = (lightColour(0) >> 8) & 0xFF;
+    final int rb3 = lightColour(0) & 0xFF;
+    final int gr3 = (lightColour(1) >> 16) & 0xFF;
+    final int gg3 = (lightColour(1) >> 8) & 0xFF;
+    final int gb3 = lightColour(1) & 0xFF;
+    final int br3 = (lightColour(2) >> 16) & 0xFF;
+    final int bg3 = (lightColour(2) >> 8) & 0xFF;
+    final int bb3 = lightColour(2) & 0xFF;
+    final int wr3 = (lightColour(3) >> 16) & 0xFF;
+    final int wg3 = (lightColour(3) >> 8) & 0xFF;
+    final int wb3 = lightColour(3) & 0xFF;
+    final double r_l3 = Math.min(1.0, r_dot * r_fall * LIGHT_BRIGHTNESS * lightPct(0) / 100.0);
+    final double g_l3 = Math.min(1.0, g_dot * g_fall * LIGHT_BRIGHTNESS * lightPct(1) / 100.0);
+    final double b_l3 = Math.min(1.0, b_dot * b_fall * LIGHT_BRIGHTNESS * lightPct(2) / 100.0);
+    final double w_l3 = Math.min(1.0, w_dot * w_fall * LIGHT_BRIGHTNESS * lightPct(3) / 100.0);
     final int r_white = Math.min(255, amb3
         + (int) (159.0 * r_l3 * rr3 / 255)
         + (int) (159.0 * g_l3 * gr3 / 255)
@@ -1701,42 +1717,42 @@ final class Raytracer {
             wlx / wd, wly / wd, wlz / wd);
         r_sheen = RendererDelegator.glossiness_enabled
             ? (int) (lobeValue(r_lobe, RendererDelegator.glossiness, 8.0)
-                * r_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0
+                * r_fall * LIGHT_BRIGHTNESS * lightPct(0) / 100.0
                 * r_shadow)
             : 0;
         g_sheen = RendererDelegator.glossiness_enabled
             ? (int) (lobeValue(g_lobe, RendererDelegator.glossiness, 8.0)
-                * g_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0
+                * g_fall * LIGHT_BRIGHTNESS * lightPct(1) / 100.0
                 * g_shadow)
             : 0;
         b_sheen = RendererDelegator.glossiness_enabled
             ? (int) (lobeValue(b_lobe, RendererDelegator.glossiness, 8.0)
-                * b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0
+                * b_fall * LIGHT_BRIGHTNESS * lightPct(2) / 100.0
                 * b_shadow)
             : 0;
         w_sheen = RendererDelegator.glossiness_enabled
             ? (int) (lobeValue(w_lobe, RendererDelegator.glossiness, 8.0)
-                * w_fall * LIGHT_BRIGHTNESS * RendererDelegator.white_light_pct / 100.0
+                * w_fall * LIGHT_BRIGHTNESS * lightPct(3) / 100.0
                 * w_shadow)
             : 0;
         r_highlight = RendererDelegator.specular_enabled
             ? (int) (lobeValue(r_lobe, RendererDelegator.specular, 32.0)
-                * r_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0
+                * r_fall * LIGHT_BRIGHTNESS * lightPct(0) / 100.0
                 * r_shadow)
             : 0;
         g_highlight = RendererDelegator.specular_enabled
             ? (int) (lobeValue(g_lobe, RendererDelegator.specular, 32.0)
-                * g_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0
+                * g_fall * LIGHT_BRIGHTNESS * lightPct(1) / 100.0
                 * g_shadow)
             : 0;
         b_highlight = RendererDelegator.specular_enabled
             ? (int) (lobeValue(b_lobe, RendererDelegator.specular, 32.0)
-                * b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0
+                * b_fall * LIGHT_BRIGHTNESS * lightPct(2) / 100.0
                 * b_shadow)
             : 0;
         w_highlight = RendererDelegator.specular_enabled
             ? (int) (lobeValue(w_lobe, RendererDelegator.specular, 32.0)
-                * w_fall * LIGHT_BRIGHTNESS * RendererDelegator.white_light_pct / 100.0
+                * w_fall * LIGHT_BRIGHTNESS * lightPct(3) / 100.0
                 * w_shadow)
             : 0;
       } else {

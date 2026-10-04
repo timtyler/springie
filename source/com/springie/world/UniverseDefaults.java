@@ -75,11 +75,8 @@ public final class UniverseDefaults {
   // Compass bias size (velocity units added per frame along the heading).
   private static int compass_bias_size = 0;
 
-  // Lights (Tim, 2026-10-03).
-  private static int red_light_pct = 50;
-  private static int green_light_pct = 50;
-  private static int blue_light_pct = 50;
-  private static int white_light_pct = 50;
+  // Lights (Tim, 2026-10-04): N lights, stored as a list.
+  private static java.util.List<com.springie.render.modules.modern.Light> lights_snapshot = new java.util.ArrayList<>();
   private static int ambient_light_pct = 50;
 
   /**
@@ -109,10 +106,12 @@ public final class UniverseDefaults {
     max_speed = Integer.MAX_VALUE;
     minimum_magnitude = 0;
     compass_bias_size = 0;
-    red_light_pct = 50;
-    green_light_pct = 50;
-    blue_light_pct = 50;
-    white_light_pct = 50;
+    lights_snapshot.clear();
+    // Default 4 lights (will be replaced by LightSource.resetToDefaults if needed).
+    lights_snapshot.add(new com.springie.render.modules.modern.Light(-60.0, -80.0, 50, 0xFF0000));
+    lights_snapshot.add(new com.springie.render.modules.modern.Light(0.0, 80.0, 50, 0x00FF00));
+    lights_snapshot.add(new com.springie.render.modules.modern.Light(60.0, -80.0, 50, 0x0000FF));
+    lights_snapshot.add(new com.springie.render.modules.modern.Light(0.0, -80.0, 50, 0xFFFFFF));
     ambient_light_pct = 50;
   }
 
@@ -140,10 +139,14 @@ public final class UniverseDefaults {
     continuously_centre_z = FrEnd.continuously_centre_z;
     show_world_markers = FrEnd.show_world_markers;
     compass_bias_size = CompassPoint.bias_size;
-    red_light_pct = com.springie.render.RendererDelegator.red_light_pct;
-    green_light_pct = com.springie.render.RendererDelegator.green_light_pct;
-    blue_light_pct = com.springie.render.RendererDelegator.blue_light_pct;
-    white_light_pct = com.springie.render.RendererDelegator.white_light_pct;
+    // Snapshot the N lights (Tim, 2026-10-04).
+    lights_snapshot.clear();
+    synchronized (com.springie.render.modules.modern.LightSource.class) {
+      for (final com.springie.render.modules.modern.Light light
+          : com.springie.render.modules.modern.LightSource.lights) {
+        lights_snapshot.add(new com.springie.render.modules.modern.Light(light));
+      }
+    }
     ambient_light_pct = com.springie.render.RendererDelegator.ambient_light_pct;
     if (FrEnd.development_version) {
       max_speed = Node.max_speed;
@@ -175,10 +178,15 @@ public final class UniverseDefaults {
     FrEnd.continuously_centre_z = continuously_centre_z;
     FrEnd.show_world_markers = show_world_markers;
     CompassPoint.bias_size = compass_bias_size;
-    com.springie.render.RendererDelegator.red_light_pct = red_light_pct;
-    com.springie.render.RendererDelegator.green_light_pct = green_light_pct;
-    com.springie.render.RendererDelegator.blue_light_pct = blue_light_pct;
-    com.springie.render.RendererDelegator.white_light_pct = white_light_pct;
+    // Restore the N lights (Tim, 2026-10-04).
+    synchronized (com.springie.render.modules.modern.LightSource.class) {
+      com.springie.render.modules.modern.LightSource.lights.clear();
+      for (final com.springie.render.modules.modern.Light light : lights_snapshot) {
+        com.springie.render.modules.modern.LightSource.lights.add(
+            new com.springie.render.modules.modern.Light(light));
+      }
+    }
+    com.springie.render.modules.modern.LightSource.light_moved = true;
     com.springie.render.RendererDelegator.ambient_light_pct = ambient_light_pct;
     if (FrEnd.development_version) {
       Node.max_speed = max_speed;

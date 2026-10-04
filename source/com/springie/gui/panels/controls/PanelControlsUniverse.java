@@ -15,6 +15,8 @@ import com.springie.messages.NewMessageManager;
 import com.springie.messages.commands.ContinuouslyCentreMessage;
 import com.springie.muscles.Muscles;
 import com.springie.render.RendererDelegator;
+import com.springie.render.modules.modern.Light;
+import com.springie.render.modules.modern.LightSource;
 import com.springie.world.World;
 import java.awt.BorderLayout;
 import java.awt.Button;
@@ -37,14 +39,11 @@ public class PanelControlsUniverse {
   public Checkbox checkbox_3D;
 
   // Light sliders (Tim, 2026-10-03): stored to reflect reset.
-  private Scrollbar scrollbar_light_red;
-  private Label label_light_red;
-  private Scrollbar scrollbar_light_green;
-  private Label label_light_green;
-  private Scrollbar scrollbar_light_blue;
-  private Label label_light_blue;
-  private Scrollbar scrollbar_light_white;
-  private Label label_light_white;
+  // The N light sources (Tim, 2026-10-04) are rebuilt dynamically by
+  // rebuildLightControls(); only ambient keeps a fixed slider.
+  private Panel panel_light_list;
+  private TabbedPanel tab_light_colours;
+  private Button button_add_light;
   private Scrollbar scrollbar_light_ambient;
   private Label label_light_ambient;
 
@@ -458,71 +457,26 @@ public class PanelControlsUniverse {
     // Lights section (Tim, 2026-10-03): RGB sliders, 0-100%, default 50%.
     final Panel panel_lights = FrEnd.setUpPanelForFrame2();
 
-    final Panel panel_light_red = new Panel();
-    panel_light_red.setLayout(new BorderLayout(0, 8));
-    panel_light_red.add("West", new Label("Light one %:", Label.RIGHT));
-    this.scrollbar_light_red = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
-    this.label_light_red = new Label("50", Label.LEFT);
-    this.scrollbar_light_red.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(final AdjustmentEvent e) {
-        final int val = e.getValue();
-        RendererDelegator.red_light_pct = val;
-        PanelControlsUniverse.this.label_light_red.setText("" + val);
-      }
-    });
-    panel_light_red.add("Center", this.scrollbar_light_red);
-    panel_light_red.add("East", this.label_light_red);
-    panel_lights.add(panel_light_red);
+    // Light sources (Tim, 2026-10-04): N lights, each with an intensity
+    // slider, a color picker, and a delete button. The rows and the color
+    // tabs are rebuilt by rebuildLightControls().
+    panel_lights.add(new Label("Light sources:", Label.LEFT));
+    this.panel_light_list = FrEnd.setUpPanelForFrame2();
+    panel_lights.add(this.panel_light_list);
 
-    final Panel panel_light_green = new Panel();
-    panel_light_green.setLayout(new BorderLayout(0, 8));
-    panel_light_green.add("West", new Label("Light two %:", Label.RIGHT));
-    this.scrollbar_light_green = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
-    this.label_light_green = new Label("50", Label.LEFT);
-    this.scrollbar_light_green.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(final AdjustmentEvent e) {
-        final int val = e.getValue();
-        RendererDelegator.green_light_pct = val;
-        PanelControlsUniverse.this.label_light_green.setText("" + val);
+    final Panel panel_add_light = new Panel();
+    this.button_add_light = new Button("Add light");
+    this.button_add_light.addActionListener(new ActionListener() {
+      public void actionPerformed(final ActionEvent e) {
+        synchronized (LightSource.class) {
+          LightSource.lights.add(new Light(0.0, 0.0, 50, 0xFFFFFF));
+        }
+        LightSource.light_moved = true;
+        rebuildLightControls();
       }
     });
-    panel_light_green.add("Center", this.scrollbar_light_green);
-    panel_light_green.add("East", this.label_light_green);
-    panel_lights.add(panel_light_green);
-
-    final Panel panel_light_blue = new Panel();
-    panel_light_blue.setLayout(new BorderLayout(0, 8));
-    panel_light_blue.add("West", new Label("Light three %:", Label.RIGHT));
-    this.scrollbar_light_blue = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
-    this.label_light_blue = new Label("50", Label.LEFT);
-    this.scrollbar_light_blue.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(final AdjustmentEvent e) {
-        final int val = e.getValue();
-        RendererDelegator.blue_light_pct = val;
-        label_light_blue.setText("" + val);
-      }
-    });
-    panel_light_blue.add("Center", this.scrollbar_light_blue);
-    panel_light_blue.add("East", label_light_blue);
-    panel_lights.add(panel_light_blue);
-
-    // White light (Tim, 2026-10-03): the old white directional light,
-    // restored as a slider.
-    final Panel panel_light_white = new Panel();
-    panel_light_white.setLayout(new BorderLayout(0, 8));
-    panel_light_white.add("West", new Label("Light four %:", Label.RIGHT));
-    this.scrollbar_light_white = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
-    this.label_light_white = new Label("50", Label.LEFT);
-    this.scrollbar_light_white.addAdjustmentListener(new AdjustmentListener() {
-      public void adjustmentValueChanged(final AdjustmentEvent e) {
-        final int val = e.getValue();
-        RendererDelegator.white_light_pct = val;
-        label_light_white.setText("" + val);
-      }
-    });
-    panel_light_white.add("Center", this.scrollbar_light_white);
-    panel_light_white.add("East", label_light_white);
-    panel_lights.add(panel_light_white);
+    panel_add_light.add(this.button_add_light);
+    panel_lights.add(panel_add_light);
 
     // Ambient light (Tim, 2026-10-03).
     final Panel panel_light_ambient = new Panel();
@@ -538,57 +492,15 @@ public class PanelControlsUniverse {
       }
     });
     panel_light_ambient.add("Center", this.scrollbar_light_ambient);
-    panel_light_ambient.add("East", label_light_ambient);
+    panel_light_ambient.add("East", this.label_light_ambient);
     panel_lights.add(panel_light_ambient);
 
-    // Light colors (Tim, 2026-10-04): color pickers for the four lights.
-    final Label label_light_colours =
-        new Label("Light colors:", Label.LEFT);
-    panel_lights.add(label_light_colours);
+    // Light colors (Tim, 2026-10-04): one color picker tab per light.
+    panel_lights.add(new Label("Light colors:", Label.LEFT));
+    this.tab_light_colours = new TabbedPanel();
+    panel_lights.add(this.tab_light_colours);
 
-    final TabbedPanel tab_light_colours = new TabbedPanel();
-
-    final ColorPicker picker_light_red = new ColorPicker(
-        new ColorPickerInformer() {
-          public void inform(final int colour) {
-            RendererDelegator.red_light_colour = colour;
-          }
-        });
-    picker_light_red.color_picker_controller
-        .setColour(RendererDelegator.red_light_colour);
-    tab_light_colours.add("Light one", picker_light_red.panel);
-
-    final ColorPicker picker_light_green = new ColorPicker(
-        new ColorPickerInformer() {
-          public void inform(final int colour) {
-            RendererDelegator.green_light_colour = colour;
-          }
-        });
-    picker_light_green.color_picker_controller
-        .setColour(RendererDelegator.green_light_colour);
-    tab_light_colours.add("Light two", picker_light_green.panel);
-
-    final ColorPicker picker_light_blue = new ColorPicker(
-        new ColorPickerInformer() {
-          public void inform(final int colour) {
-            RendererDelegator.blue_light_colour = colour;
-          }
-        });
-    picker_light_blue.color_picker_controller
-        .setColour(RendererDelegator.blue_light_colour);
-    tab_light_colours.add("Light three", picker_light_blue.panel);
-
-    final ColorPicker picker_light_white = new ColorPicker(
-        new ColorPickerInformer() {
-          public void inform(final int colour) {
-            RendererDelegator.white_light_colour = colour;
-          }
-        });
-    picker_light_white.color_picker_controller
-        .setColour(RendererDelegator.white_light_colour);
-    tab_light_colours.add("Light four", picker_light_white.panel);
-
-    panel_lights.add(tab_light_colours);
+    rebuildLightControls();
 
     final TabbedPanel universe_tabs = new TabbedPanel();
     universe_tabs.add("Main", panel_main);
@@ -758,18 +670,73 @@ public class PanelControlsUniverse {
   }
 
   /**
+   * Rebuilds the per-light intensity rows and the color picker tabs from
+   * LightSource.lights (Tim, 2026-10-04). Called after add/delete and by
+   * reflectLights() after a reset or model load.
+   */
+  private void rebuildLightControls() {
+    final Light[] lights;
+    synchronized (LightSource.class) {
+      lights = LightSource.lights.toArray(new Light[0]);
+    }
+    this.panel_light_list.removeAll();
+    for (int i = 0; i < lights.length; i++) {
+      final Light light = lights[i];
+      final Panel row = new Panel();
+      row.setLayout(new BorderLayout(0, 8));
+      row.add("West", new Label("Light " + (i + 1) + " %:", Label.RIGHT));
+      final Scrollbar scrollbar = new Scrollbar(Scrollbar.HORIZONTAL,
+          light.intensity_pct, 1, 0, 101);
+      final Label value = new Label("" + light.intensity_pct, Label.LEFT);
+      scrollbar.addAdjustmentListener(new AdjustmentListener() {
+        public void adjustmentValueChanged(final AdjustmentEvent e) {
+          final int val = e.getValue();
+          light.intensity_pct = val;
+          value.setText("" + val);
+          LightSource.light_moved = true;
+        }
+      });
+      row.add("Center", scrollbar);
+      final Panel east = new Panel(new BorderLayout(0, 8));
+      east.add("West", value);
+      final Button delete = new Button("Delete");
+      delete.addActionListener(new ActionListener() {
+        public void actionPerformed(final ActionEvent e) {
+          synchronized (LightSource.class) {
+            LightSource.lights.remove(light);
+          }
+          LightSource.light_moved = true;
+          rebuildLightControls();
+        }
+      });
+      east.add("East", delete);
+      row.add("East", east);
+      this.panel_light_list.add(row);
+    }
+    this.panel_light_list.validate();
+
+    this.tab_light_colours.removeAll();
+    for (int i = 0; i < lights.length; i++) {
+      final Light light = lights[i];
+      final ColorPicker picker = new ColorPicker(
+          new ColorPickerInformer() {
+            public void inform(final int colour) {
+              light.colour = colour;
+              LightSource.light_moved = true;
+            }
+          });
+      picker.color_picker_controller.setColour(light.colour);
+      this.tab_light_colours.add("Light " + (i + 1), picker.panel);
+    }
+    this.tab_light_colours.validate();
+  }
+
+  /**
    * Reflects the light slider values in the UI (Tim, 2026-10-03).
    * Called after resetUniverse() restores the defaults.
    */
   public void reflectLights() {
-    this.scrollbar_light_red.setValue(RendererDelegator.red_light_pct);
-    this.label_light_red.setText("" + RendererDelegator.red_light_pct);
-    this.scrollbar_light_green.setValue(RendererDelegator.green_light_pct);
-    this.label_light_green.setText("" + RendererDelegator.green_light_pct);
-    this.scrollbar_light_blue.setValue(RendererDelegator.blue_light_pct);
-    this.label_light_blue.setText("" + RendererDelegator.blue_light_pct);
-    this.scrollbar_light_white.setValue(RendererDelegator.white_light_pct);
-    this.label_light_white.setText("" + RendererDelegator.white_light_pct);
+    rebuildLightControls();
     this.scrollbar_light_ambient.setValue(RendererDelegator.ambient_light_pct);
     this.label_light_ambient.setText("" + RendererDelegator.ambient_light_pct);
   }
