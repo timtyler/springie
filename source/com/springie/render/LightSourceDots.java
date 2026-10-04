@@ -2,7 +2,6 @@
 
 package com.springie.render;
 
-import com.springie.render.modules.modern.LightSource;
 import java.awt.Color;
 import java.awt.Graphics;
 
@@ -27,8 +26,10 @@ public final class LightSourceDots {
   }
 
   /**
-   * Draws all four lights. Positions are static (updated by the renderers
-   * via LightSource.updateForViewport); just draw them.
+   * Draws all four lights at fixed viewport positions (Tim, 2026-10-04):
+   * the world-coordinate projection was fragile and lights overlapped or
+   * vanished. Dots are UI indicators; the 3D positions in LightSource
+   * (used for shading) are untouched.
    * Only draws 1 frame in 16 to keep it cheap.
    */
   public static void draw(final Graphics g) {
@@ -36,55 +37,32 @@ public final class LightSourceDots {
     if (frame_count != 0) {
       return;
     }
-    // Ensure positions are initialized (Tim, 2026-10-03): the renderers
-    // update them, but the first paint may happen before any render.
-    if (LightSource.red_px == 0.0 && LightSource.red_py == 0.0) {
-      LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
+    final int w = Coords.x_pixels;
+    final int h = Coords.y_pixels;
+    if (w <= 0 || h <= 0) {
+      return;
     }
     // Skip lights at 0% intensity (Tim, 2026-10-03).
     if (RendererDelegator.red_light_pct > 0) {
-      drawOne(g, LightSource.red_px, LightSource.red_py, LightSource.red_pz,
-          Color.red);
+      drawAt(g, (int) (w * 0.08), (int) (h * 0.08), Color.red);
     }
     if (RendererDelegator.green_light_pct > 0) {
-      drawOne(g, LightSource.green_px, LightSource.green_py, LightSource.green_pz,
-          Color.green);
+      drawAt(g, (int) (w * 0.08), (int) (h * 0.92), Color.green);
     }
     if (RendererDelegator.blue_light_pct > 0) {
-      drawOne(g, LightSource.blue_px, LightSource.blue_py, LightSource.blue_pz,
-          Color.blue);
+      drawAt(g, (int) (w * 0.92), (int) (h * 0.08), Color.blue);
     }
     if (RendererDelegator.white_light_pct > 0) {
-      drawOne(g, LightSource.white_px, LightSource.white_py, LightSource.white_pz,
-          Color.white);
+      drawAt(g, (int) (w * 0.92), (int) (h * 0.92), Color.white);
     }
   }
 
-  private static void drawOne(final Graphics g, final double wx,
-      final double wy, final double wz, final Color color) {
-    final int ix = (int) wx;
-    final int iy = (int) wy;
-    final int iz = (int) wz;
-    // Skip if on the eye plane (projection divides by zero).
-    if (Coords.shift_constant_z + (iz >> Coords.shift_z) == 0) {
-      return;
-    }
-    int sx = Coords.getXCoords(ix, iz);
-    int sy = Coords.getYCoords(iy, iz);
-    // Clamp inside the viewport (Tim, 2026-10-03).
-    if (sx < RADIUS) {
-      sx = RADIUS;
-    } else if (sx > Coords.x_pixels - RADIUS) {
-      sx = Coords.x_pixels - RADIUS;
-    }
-    if (sy < RADIUS) {
-      sy = RADIUS;
-    } else if (sy > Coords.y_pixels - RADIUS) {
-      sy = Coords.y_pixels - RADIUS;
-    }
+  private static void drawAt(final Graphics g, final int sx, final int sy,
+      final Color color) {
     g.setColor(color);
     g.fillOval(sx - RADIUS, sy - RADIUS, RADIUS * 2, RADIUS * 2);
     g.setColor(Color.black);
     g.drawOval(sx - RADIUS, sy - RADIUS, RADIUS * 2, RADIUS * 2);
   }
+
 }
