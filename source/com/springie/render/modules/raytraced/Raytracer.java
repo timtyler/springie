@@ -643,6 +643,8 @@ final class Raytracer {
       }
     }
     // Refine: edge blocks get full-res traces, interiors get filled.
+    // First pass: compute the edge mask.
+    final boolean[] c_edge = new boolean[cw * ch];
     for (int by = 0; by < ch; by++) {
       for (int bx = 0; bx < cw; bx++) {
         final int bidx = by * cw + bx;
@@ -668,6 +670,49 @@ final class Raytracer {
             }
           }
         }
+        c_edge[bidx] = edge;
+      }
+    }
+    // Second pass: dilate the edge mask by 1 block (Tim, 2026-10-03).
+    // A curved boundary can pass between the center/corner samples, so
+    // blocks adjacent to a detected edge get full-res tracing too. This
+    // creates a guard band; only blocks far from any boundary are filled.
+    final boolean[] c_edge_dilated = new boolean[cw * ch];
+    for (int by = 0; by < ch; by++) {
+      for (int bx = 0; bx < cw; bx++) {
+        final int bidx = by * cw + bx;
+        if (c_edge[bidx]) {
+          c_edge_dilated[bidx] = true;
+          continue;
+        }
+        // Check 8-neighbours for edge.
+        for (int dy = -1; dy <= 1; dy++) {
+          for (int dx = -1; dx <= 1; dx++) {
+            if (dx == 0 && dy == 0) {
+              continue;
+            }
+            final int nx = bx + dx;
+            final int ny = by + dy;
+            if (nx >= 0 && nx < cw && ny >= 0 && ny < ch
+                && c_edge[ny * cw + nx]) {
+              c_edge_dilated[bidx] = true;
+              break;
+            }
+          }
+          if (c_edge_dilated[bidx]) {
+            break;
+          }
+        }
+      }
+    }
+    // Third pass: fill interiors, trace edges.
+    for (int by = 0; by < ch; by++) {
+      for (int bx = 0; bx < cw; bx++) {
+        final int bidx = by * cw + bx;
+        if (!c_hit[bidx]) {
+          continue;
+        }
+        final boolean edge = c_edge_dilated[bidx];
         final int x_start = bx * cs;
         final int y_start = by * cs;
         final int x_end = Math.min(x_start + cs, width);
