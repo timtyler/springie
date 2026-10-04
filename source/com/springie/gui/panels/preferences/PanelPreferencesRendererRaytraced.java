@@ -40,6 +40,11 @@ public class PanelPreferencesRendererRaytraced {
   private Effect effect_fresnel;
 
   /**
+   * Container holding Glossiness and Fresnel on one row (Tim, 2026-10-03).
+   */
+  private Panel gloss_fresnel_row;
+
+  /**
    * The five effect rows, detached from {@link #panel} by
    * {@link #takeEffectRows()}. The Renderer tab adds them directly to its
    * single layout (a GridLayout gives invisible components space, so they
