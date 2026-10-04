@@ -561,10 +561,20 @@ final class Raytracer {
       final int[] stack, final Ray shadow_ray, final Hit shadow_hit,
       final JitterRandom jitter, final int[] pixels, final int width,
       final HitStats stats) {
+    final BlockSamples samples = new BlockSamples();
     if (cs > min_cs && blockUniform(x0, y0, bx, by, x_end, y_end, px,
         camera, bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
-        jitter, pixels, width, stats)) {
+        jitter, pixels, width, stats, samples)) {
       return;
+    }
+    if (cs == 16 && x_end - bx == 16 && y_end - by == 16) {
+      // Tim, 2026-10-04: intermediate 16x8/8x16 split before quadrants.
+      // Reuses the 8 parent samples; costs only 2 new rays.
+      if (tryIntermediateSplit(x0, y0, bx, by, px, camera, bvh, rings, ray,
+          hit, stack, shadow_ray, shadow_hit, jitter, pixels, width, stats,
+          samples, min_cs)) {
+        return;
+      }
     }
     if (cs > min_cs) {
       // Not uniform: split into quadrants.
@@ -592,24 +602,28 @@ final class Raytracer {
       return;
     }
     // Min block (or smaller edge block): try fill, else trace all cells.
+    final BlockSamples min_samples = new BlockSamples();
     if (blockUniform(x0, y0, bx, by, x_end, y_end, px, camera, bvh, rings,
         ray, hit, stack, shadow_ray, shadow_hit, jitter, pixels, width,
-        stats)) {
+        stats, min_samples)) {
       return;
     }
     for (int cy = by; cy < y_end; cy++) {
       for (int cx = bx; cx < x_end; cx++) {
-        // Cell (cx, cy) -> screen top-left, then replicate px-by-px.
-        final int sx = x0 + cx * px;
-        final int sy = y0 + cy * px;
-        camera.makeRay(sx, sy, ray);
+        // Cell (cx, cy) -> screen top-left for the ray, tile-relative for
+        // the pixels[] index. Then replicate px-by-px.
+        final int scr_x = x0 + cx * px;
+        final int scr_y = y0 + cy * px;
+        camera.makeRay(scr_x, scr_y, ray);
         hit.reset();
         if (intersectScene(ray, hit, bvh, rings, stack)) {
           final int rgb = shade(ray, hit, bvh, stack, shadow_ray,
               shadow_hit, jitter);
+          final int px_x = cx * px;
+          final int px_y = cy * px;
           for (int dy = 0; dy < px; dy++) {
             for (int dx = 0; dx < px; dx++) {
-              pixels[(sy + dy) * width + (sx + dx)] = rgb;
+              pixels[(px_y + dy) * width + (px_x + dx)] = rgb;
             }
           }
         }
@@ -656,6 +670,29 @@ final class Raytracer {
   }
 
   /**
+   * Holds traced samples for a block, so a parent block's samples can be
+   * reused when testing subdivisions (Tim, 2026-10-04: intermediate
+   * 16x8/8x16 split). Positions are in cell coordinates, tile-relative.
+   */
+  private static final class BlockSamples {
+    int n;
+    final int[] sx = new int[8];
+    final int[] sy = new int[8];
+    final Primitive[] prim = new Primitive[8];
+    final int[] rgb = new int[8];
+
+    /** Finds a sample at (x, y), or -1. */
+    int find(final int x, final int y) {
+      for (int i = 0; i < n; i++) {
+        if (sx[i] == x && sy[i] == y) {
+          return i;
+        }
+      }
+      return -1;
+    }
+  }
+
+  /**
    * Samples a block (corners + interior for larger blocks). If all samples
    * hit the same primitive (or all miss) AND produce the same shaded color
    * (fog/shadows can vary it), fills the block and returns true. Otherwise
@@ -666,7 +703,8 @@ final class Raytracer {
       final int px, final RayCamera camera, final BVH bvh,
       final RTRing[] rings, final Ray ray, final Hit hit, final int[] stack,
       final Ray shadow_ray, final Hit shadow_hit, final JitterRandom jitter,
-      final int[] pixels, final int width, final HitStats stats) {
+      final int[] pixels, final int width, final HitStats stats,
+      final BlockSamples samples) {
     // Collect all sample points (in cell coordinates): 4 corners, plus 4
     // edge midpoints for 16x16. (Tim, 2026-10-04: extra samples go on the
     // edge, not center.)
@@ -675,94 +713,228 @@ final class Raytracer {
     final int mcx = bx + bw / 2;
     final int mcy = by + bh / 2;
     // Max 8 samples: 4 corners + 4 edge midpoints (16x16 only).
-    // (Tim, 2026-10-04: extra samples go on the edge, not the center.)
-    final int[] sx = new int[8];
-    final int[] sy = new int[8];
-    int n = 0;
-    sx[n] = bx; sy[n] = by; n++;
-    sx[n] = x_end - 1; sy[n] = by; n++;
-    sx[n] = bx; sy[n] = y_end - 1; n++;
-    sx[n] = x_end - 1; sy[n] = y_end - 1; n++;
+    samples.n = 0;
+    samples.sx[samples.n] = bx; samples.sy[samples.n] = by; samples.n++;
+    samples.sx[samples.n] = x_end - 1; samples.sy[samples.n] = by; samples.n++;
+    samples.sx[samples.n] = bx; samples.sy[samples.n] = y_end - 1; samples.n++;
+    samples.sx[samples.n] = x_end - 1; samples.sy[samples.n] = y_end - 1; samples.n++;
     if (bw >= 16) {
-      sx[n] = mcx; sy[n] = by; n++;
-      sx[n] = mcx; sy[n] = y_end - 1; n++;
-      sx[n] = bx; sy[n] = mcy; n++;
-      sx[n] = x_end - 1; sy[n] = mcy; n++;
+      samples.sx[samples.n] = mcx; samples.sy[samples.n] = by; samples.n++;
+      samples.sx[samples.n] = mcx; samples.sy[samples.n] = y_end - 1; samples.n++;
+      samples.sx[samples.n] = bx; samples.sy[samples.n] = mcy; samples.n++;
+      samples.sx[samples.n] = x_end - 1; samples.sy[samples.n] = mcy; samples.n++;
     }
-    // Trace and shade all samples. All must hit the same primitive (or
-    // all miss) AND produce the same final color (fog/shadows can vary
-    // the shade across a large primitive). (Tim, 2026-10-04)
-    Primitive first_prim = null;
+    // Trace and shade all samples.
+    for (int i = 0; i < samples.n; i++) {
+      // Cell -> screen: top-left of the px-by-px block.
+      samples.prim[i] = samplePrimitive(x0 + samples.sx[i] * px,
+          y0 + samples.sy[i] * px, camera, bvh, rings, ray, hit, stack);
+      samples.rgb[i] = samples.prim[i] == null ? 0 : shade(ray, hit, bvh,
+          stack, shadow_ray, shadow_hit, jitter);
+    }
+    if (!samplesUniform(samples)) {
+      return false;  // Subdivide.
+    }
+    if (!samplesSeenHit(samples)) {
+      // Entire block is background (all missed), already pre-filled.
+      return true;
+    }
+    // Uniform: fill the block.
+    fillBlock(pixels, width, bx, by, x_end, y_end, px, samples, stats);
+    return true;
+  }
+
+  /**
+   * Uniformity test: all samples hit the same primitive (or all miss) AND
+   * produce the same shaded color (fog/shadows can vary it). (Tim, 2026-10-04)
+   */
+  /**
+   * Intermediate split (Tim, 2026-10-04): a non-uniform 16x16 block tries
+   * 16x8 or 8x16 halves before quadrants. Reuses the parent's 8 samples;
+   * only 2 new rays per split (the cut edge's corners on the first half;
+   * the second half's corners are all already known). The split direction
+   * is picked heuristically: whichever axis has lower within-half color
+   * variation among the existing samples is "more promising".
+   * Returns true if both halves were resolved (filled or subdivided).
+   */
+  private static boolean tryIntermediateSplit(final int x0, final int y0,
+      final int bx, final int by, final int px, final RayCamera camera,
+      final BVH bvh, final RTRing[] rings, final Ray ray, final Hit hit,
+      final int[] stack, final Ray shadow_ray, final Hit shadow_hit,
+      final JitterRandom jitter, final int[] pixels, final int width,
+      final HitStats stats, final BlockSamples parent, final int min_cs) {
+    // Parent sample indices: 0=TL, 1=TR, 2=BL, 3=BR, 4=TM, 5=BM, 6=ML, 7=MR.
+    // H-split: top rows [by,by+8), bottom rows [by+8,by+16).
+    // V-split: left cols [bx,bx+8), right cols [bx+8,bx+16).
+    final int h_score = variation(parent, new int[]{0, 1, 4})
+        + variation(parent, new int[]{2, 3, 5, 6, 7});
+    final int v_score = variation(parent, new int[]{0, 2, 6})
+        + variation(parent, new int[]{1, 3, 4, 5, 7});
+    final boolean horizontal = h_score <= v_score;
+    // Halves as {x0, y0, x1, y1} in cell coords.
+    final int[][] halves;
+    if (horizontal) {
+      // Top: [bx,bx+16)x[by,by+8); bottom: [bx,bx+16)x[by+8,by+16).
+      halves = new int[][]{
+          {bx, by, bx + 16, by + 8},
+          {bx, by + 8, bx + 16, by + 16}};
+    } else {
+      // Left: [bx,bx+8)x[by,by+16); right: [bx+8,bx+16)x[by,by+16).
+      halves = new int[][]{
+          {bx, by, bx + 8, by + 16},
+          {bx + 8, by, bx + 16, by + 16}};
+    }
+    for (int h = 0; h < 2; h++) {
+      final int hx0 = halves[h][0];
+      final int hy0 = halves[h][1];
+      final int hx1 = halves[h][2];
+      final int hy1 = halves[h][3];
+      final BlockSamples half = new BlockSamples();
+      // 4 corners: (hx0,hy0), (hx1-1,hy0), (hx0,hy1-1), (hx1-1,hy1-1).
+      final int[] cx = {hx0, hx1 - 1, hx0, hx1 - 1};
+      final int[] cy = {hy0, hy0, hy1 - 1, hy1 - 1};
+      for (int i = 0; i < 4; i++) {
+        final int pi = parent.find(cx[i], cy[i]);
+        half.sx[half.n] = cx[i];
+        half.sy[half.n] = cy[i];
+        if (pi >= 0) {
+          half.prim[half.n] = parent.prim[pi];
+          half.rgb[half.n] = parent.rgb[pi];
+        } else {
+          half.prim[half.n] = samplePrimitive(x0 + cx[i] * px,
+              y0 + cy[i] * px, camera, bvh, rings, ray, hit, stack);
+          half.rgb[half.n] = half.prim[half.n] == null ? 0 : shade(ray,
+              hit, bvh, stack, shadow_ray, shadow_hit, jitter);
+        }
+        half.n++;
+      }
+      if (samplesUniform(half)) {
+        if (samplesSeenHit(half)) {
+          fillBlock(pixels, width, hx0, hy0, hx1, hy1, px, half, stats);
+        }
+        // Else: all background, already pre-filled.
+      } else {
+        // Not uniform: split the half into two 8x8s.
+        final int mx = horizontal ? hx0 + 8 : hx1;
+        final int my = horizontal ? hy1 : hy0 + 8;
+        if (horizontal) {
+          renderBlock(x0, y0, hx0, hy0, mx, hy1, 8, min_cs, px, camera,
+              bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
+              jitter, pixels, width, stats);
+          renderBlock(x0, y0, mx, hy0, hx1, hy1, 8, min_cs, px, camera,
+              bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
+              jitter, pixels, width, stats);
+        } else {
+          renderBlock(x0, y0, hx0, hy0, hx1, my, 8, min_cs, px, camera,
+              bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
+              jitter, pixels, width, stats);
+          renderBlock(x0, y0, hx0, my, hx1, hy1, 8, min_cs, px, camera,
+              bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
+              jitter, pixels, width, stats);
+        }
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Heuristic variation of a sample subset: count of samples not matching
+   * the first (different primitive or non-matching color). Lower means the
+   * subset is more internally uniform. (Tim, 2026-10-04)
+   */
+  private static int variation(final BlockSamples s, final int[] indices) {
+    int v = 0;
+    final Primitive p0 = s.prim[indices[0]];
+    final int rgb0 = s.rgb[indices[0]];
+    for (int k = 1; k < indices.length; k++) {
+      final int i = indices[k];
+      if (s.prim[i] != p0 || !colorsMatch(s.rgb[i], rgb0)) {
+        v++;
+      }
+    }
+    return v;
+  }
+
+  private static boolean samplesUniform(final BlockSamples s) {    Primitive first_prim = null;
     int first_rgb = 0;
     boolean seen_hit = false;
     boolean seen_miss = false;
     boolean first = true;
-    for (int i = 0; i < n; i++) {
-      // Cell -> screen: top-left of the px-by-px block.
-      final Primitive p = samplePrimitive(x0 + sx[i] * px,
-          y0 + sy[i] * px, camera,
-          bvh, rings, ray, hit, stack);
+    for (int i = 0; i < s.n; i++) {
+      final Primitive p = s.prim[i];
       if (p == null) {
         seen_miss = true;
         if (seen_hit) {
-          return false;  // Mixed hit/miss: subdivide.
+          return false;  // Mixed hit/miss.
         }
         continue;
       }
       seen_hit = true;
       if (seen_miss) {
-        return false;  // Mixed miss/hit: subdivide.
+        return false;  // Mixed miss/hit.
       }
-      final int rgb = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit,
-          jitter);
       if (first) {
         first_prim = p;
-        first_rgb = rgb;
+        first_rgb = s.rgb[i];
         first = false;
-      } else {
-        if (p != first_prim || !colorsMatch(rgb, first_rgb)) {
-          return false;  // Different primitive or shade: subdivide.
-        }
+      } else if (p != first_prim || !colorsMatch(s.rgb[i], first_rgb)) {
+        return false;  // Different primitive or shade.
       }
     }
-    if (!seen_hit) {
-      // Entire block is background (all missed), already pre-filled.
-      // No rays needed.
-      return true;
+    return true;
+  }
+
+  /** True if any sample hit a primitive. */
+  private static boolean samplesSeenHit(final BlockSamples s) {
+    for (int i = 0; i < s.n; i++) {
+      if (s.prim[i] != null) {
+        return true;
+      }
     }
-    // Uniform: fill the block. In debug mode ("Show active tiles"), only
-    // the saved pixels go red -- sampled points (corners, edge midpoints)
-    // were actually traced, so they keep their real colour. (Tim, 2026-10-03/04)
+    return false;
+  }
+
+  /**
+   * Fills a block's cells, replicating px-by-px (tile-relative). In debug
+   * mode ("Show active tiles") sampled positions keep their real color and
+   * the rest go red; otherwise all go the uniform shade. (Tim, 2026-10-03/04)
+   */
+  private static void fillBlock(final int[] pixels, final int width,
+      final int bx, final int by, final int x_end, final int y_end,
+      final int px, final BlockSamples samples, final HitStats stats) {
     final boolean debug = RendererTileManager.show_active_tiles;
-    final int fill_rgb = debug ? 0xFFFF0000 : first_rgb;
+    // All samples share the shade when uniform; take the first hit's.
+    int fill_rgb = 0;
+    for (int i = 0; i < samples.n; i++) {
+      if (samples.prim[i] != null) {
+        fill_rgb = samples.rgb[i];
+        break;
+      }
+    }
+    final int red_rgb = 0xFFFF0000;
     for (int cy = by; cy < y_end; cy++) {
       for (int cx = bx; cx < x_end; cx++) {
-        boolean sampled = false;
-        for (int i = 0; i < n; i++) {
-          if (cx == sx[i] && cy == sy[i]) {
-            sampled = true;
-            break;
-          }
+        final boolean sampled = samples.find(cx, cy) >= 0;
+        final int rgb;
+        if (debug) {
+          rgb = sampled ? fill_rgb : red_rgb;
+        } else {
+          rgb = fill_rgb;
         }
-        final int rgb = (debug && sampled) ? first_rgb : fill_rgb;
-        // Replicate across the px-by-px screen block.
-        final int scr_x = x0 + cx * px;
-        final int scr_y = y0 + cy * px;
+        // Replicate across the px-by-px screen block (tile-relative).
+        final int px_x = cx * px;
+        final int px_y = cy * px;
         for (int dy = 0; dy < px; dy++) {
           for (int dx = 0; dx < px; dx++) {
-            pixels[(scr_y + dy) * width + (scr_x + dx)] = rgb;
+            pixels[(px_y + dy) * width + (px_x + dx)] = rgb;
           }
         }
       }
     }
     // Record the filled pixels as hits, so "Show active tiles" still
     // draws the tile's red outline when coarse-to-fine is on. (Tim, 2026-10-03)
-    // (add() bumps hits by 1 each; top up the rest of the block.)
-    // Convert cell coords to pixel coords for the stats (Tim, 2026-10-04).
     stats.add(bx * px, by * px);
     stats.add((x_end - 1) * px, (y_end - 1) * px);
-    stats.hits += (x_end - bx) * (y_end - by) - 2;
-    return true;
   }
 
   /**
