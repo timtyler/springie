@@ -567,12 +567,12 @@ final class Raytracer {
         jitter, pixels, width, stats, samples)) {
       return;
     }
-    if (cs == 16 && x_end - bx == 16 && y_end - by == 16) {
-      // Tim, 2026-10-04: intermediate 16x8/8x16 split before quadrants.
-      // Reuses the 8 parent samples; costs only 2 new rays.
-      if (tryIntermediateSplit(x0, y0, bx, by, px, camera, bvh, rings, ray,
-          hit, stack, shadow_ray, shadow_hit, jitter, pixels, width, stats,
-          samples, min_cs)) {
+    if ((cs == 16 || cs == 8) && x_end - bx == cs && y_end - by == cs) {
+      // Tim, 2026-10-04: intermediate cs x (cs/2) split before quadrants.
+      // Reuses the parent samples; only the cut edge's new corners traced.
+      if (tryIntermediateSplit(x0, y0, bx, by, cs, px, camera, bvh, rings,
+          ray, hit, stack, shadow_ray, shadow_hit, jitter, pixels, width,
+          stats, samples, min_cs)) {
         return;
       }
     }
@@ -749,86 +749,99 @@ final class Raytracer {
    * produce the same shaded color (fog/shadows can vary it). (Tim, 2026-10-04)
    */
   /**
-   * Intermediate split (Tim, 2026-10-04): a non-uniform 16x16 block tries
-   * 16x8 or 8x16 halves before quadrants. Reuses the parent's 8 samples;
-   * only 2 new rays per split (the cut edge's corners on the first half;
-   * the second half's corners are all already known). The split direction
-   * is picked heuristically: whichever axis has lower within-half color
-   * variation among the existing samples is "more promising".
+   * Intermediate split (Tim, 2026-10-04): a non-uniform cs×cs block tries
+   * cs×(cs/2) or (cs/2)×cs halves before quadrants. Reuses the parent's
+   * samples; only the cut edge's new corners are traced (2 for 16x16,
+   * which has edge midpoints; 4 for 8x8). The split direction is picked
+   * heuristically: whichever axis has lower within-half color variation
+   * among the existing samples is "more promising".
    * Returns true if both halves were resolved (filled or subdivided).
    */
   private static boolean tryIntermediateSplit(final int x0, final int y0,
-      final int bx, final int by, final int px, final RayCamera camera,
-      final BVH bvh, final RTRing[] rings, final Ray ray, final Hit hit,
-      final int[] stack, final Ray shadow_ray, final Hit shadow_hit,
-      final JitterRandom jitter, final int[] pixels, final int width,
-      final HitStats stats, final BlockSamples parent, final int min_cs) {
-    // Parent sample indices: 0=TL, 1=TR, 2=BL, 3=BR, 4=TM, 5=BM, 6=ML, 7=MR.
-    // H-split: top rows [by,by+8), bottom rows [by+8,by+16).
-    // V-split: left cols [bx,bx+8), right cols [bx+8,bx+16).
-    final int h_score = variation(parent, new int[]{0, 1, 4})
-        + variation(parent, new int[]{2, 3, 5, 6, 7});
-    final int v_score = variation(parent, new int[]{0, 2, 6})
-        + variation(parent, new int[]{1, 3, 4, 5, 7});
+      final int bx, final int by, final int cs, final int px,
+      final RayCamera camera, final BVH bvh, final RTRing[] rings,
+      final Ray ray, final Hit hit, final int[] stack, final Ray shadow_ray,
+      final Hit shadow_hit, final JitterRandom jitter, final int[] pixels,
+      final int width, final HitStats stats, final BlockSamples parent,
+      final int min_cs) {
+    // Parent sample indices: 0=TL, 1=TR, 2=BL, 3=BR, 4=TM, 5=BM, 6=ML,
+    // 7=MR (midpoints only for 16x16).
+    final int half = cs / 2;
+    final int h_score;
+    final int v_score;
+    if (cs >= 16) {
+      h_score = variation(parent, new int[]{0, 1, 4})
+          + variation(parent, new int[]{2, 3, 5, 6, 7});
+      v_score = variation(parent, new int[]{0, 2, 6})
+          + variation(parent, new int[]{1, 3, 4, 5, 7});
+    } else {
+      h_score = variation(parent, new int[]{0, 1})
+          + variation(parent, new int[]{2, 3});
+      v_score = variation(parent, new int[]{0, 2})
+          + variation(parent, new int[]{1, 3});
+    }
     final boolean horizontal = h_score <= v_score;
     // Halves as {x0, y0, x1, y1} in cell coords.
     final int[][] halves;
     if (horizontal) {
-      // Top: [bx,bx+16)x[by,by+8); bottom: [bx,bx+16)x[by+8,by+16).
       halves = new int[][]{
-          {bx, by, bx + 16, by + 8},
-          {bx, by + 8, bx + 16, by + 16}};
+          {bx, by, bx + cs, by + half},
+          {bx, by + half, bx + cs, by + cs}};
     } else {
-      // Left: [bx,bx+8)x[by,by+16); right: [bx+8,bx+16)x[by,by+16).
       halves = new int[][]{
-          {bx, by, bx + 8, by + 16},
-          {bx + 8, by, bx + 16, by + 16}};
+          {bx, by, bx + half, by + cs},
+          {bx + half, by, bx + cs, by + cs}};
     }
     for (int h = 0; h < 2; h++) {
       final int hx0 = halves[h][0];
       final int hy0 = halves[h][1];
       final int hx1 = halves[h][2];
       final int hy1 = halves[h][3];
-      final BlockSamples half = new BlockSamples();
+      final BlockSamples half_samples = new BlockSamples();
       // 4 corners: (hx0,hy0), (hx1-1,hy0), (hx0,hy1-1), (hx1-1,hy1-1).
+      // Reuse parent samples where available; trace the rest.
       final int[] cx = {hx0, hx1 - 1, hx0, hx1 - 1};
       final int[] cy = {hy0, hy0, hy1 - 1, hy1 - 1};
       for (int i = 0; i < 4; i++) {
         final int pi = parent.find(cx[i], cy[i]);
-        half.sx[half.n] = cx[i];
-        half.sy[half.n] = cy[i];
+        half_samples.sx[half_samples.n] = cx[i];
+        half_samples.sy[half_samples.n] = cy[i];
         if (pi >= 0) {
-          half.prim[half.n] = parent.prim[pi];
-          half.rgb[half.n] = parent.rgb[pi];
+          half_samples.prim[half_samples.n] = parent.prim[pi];
+          half_samples.rgb[half_samples.n] = parent.rgb[pi];
         } else {
-          half.prim[half.n] = samplePrimitive(x0 + cx[i] * px,
-              y0 + cy[i] * px, camera, bvh, rings, ray, hit, stack);
-          half.rgb[half.n] = half.prim[half.n] == null ? 0 : shade(ray,
-              hit, bvh, stack, shadow_ray, shadow_hit, jitter);
+          half_samples.prim[half_samples.n] = samplePrimitive(
+              x0 + cx[i] * px, y0 + cy[i] * px, camera, bvh, rings, ray,
+              hit, stack);
+          half_samples.rgb[half_samples.n] =
+              half_samples.prim[half_samples.n] == null ? 0 : shade(ray,
+                  hit, bvh, stack, shadow_ray, shadow_hit, jitter);
         }
-        half.n++;
+        half_samples.n++;
       }
-      if (samplesUniform(half)) {
-        if (samplesSeenHit(half)) {
-          fillBlock(pixels, width, hx0, hy0, hx1, hy1, px, half, stats);
+      if (samplesUniform(half_samples)) {
+        if (samplesSeenHit(half_samples)) {
+          fillBlock(pixels, width, hx0, hy0, hx1, hy1, px, half_samples,
+              stats);
         }
         // Else: all background, already pre-filled.
       } else {
-        // Not uniform: split the half into two 8x8s.
-        final int mx = horizontal ? hx0 + 8 : hx1;
-        final int my = horizontal ? hy1 : hy0 + 8;
+        // Not uniform: split the half into two (cs/2)x(cs/2) blocks.
+        final int child = cs / 2;
         if (horizontal) {
-          renderBlock(x0, y0, hx0, hy0, mx, hy1, 8, min_cs, px, camera,
+          final int mx = hx0 + half;
+          renderBlock(x0, y0, hx0, hy0, mx, hy1, child, min_cs, px, camera,
               bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
               jitter, pixels, width, stats);
-          renderBlock(x0, y0, mx, hy0, hx1, hy1, 8, min_cs, px, camera,
+          renderBlock(x0, y0, mx, hy0, hx1, hy1, child, min_cs, px, camera,
               bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
               jitter, pixels, width, stats);
         } else {
-          renderBlock(x0, y0, hx0, hy0, hx1, my, 8, min_cs, px, camera,
+          final int my = hy0 + half;
+          renderBlock(x0, y0, hx0, hy0, hx1, my, child, min_cs, px, camera,
               bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
               jitter, pixels, width, stats);
-          renderBlock(x0, y0, hx0, my, hx1, hy1, 8, min_cs, px, camera,
+          renderBlock(x0, y0, hx0, my, hx1, hy1, child, min_cs, px, camera,
               bvh, rings, ray, hit, stack, shadow_ray, shadow_hit,
               jitter, pixels, width, stats);
         }
