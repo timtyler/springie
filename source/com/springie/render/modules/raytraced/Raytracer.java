@@ -903,9 +903,10 @@ final class Raytracer {
         final double nbdz = BLUE_PZ - ncz;
         final double nbd = Math.sqrt(nbdx * nbdx + nbdy * nbdy + nbdz * nbdz);
         final double nb_fall = 1.0 / (1.0 + (nbd / LIGHT_FALLOFF_K) * (nbd / LIGHT_FALLOFF_K));
-        // White light disabled in fast mode for now (Tim, 2026-10-03):
-        // investigating psychedelic pulsing issue.
-        final int amb = ambientBase();
+        // White light in fast mode (Tim, 2026-10-03): modulates the ambient.
+        // 50% = no change, 100% = 1.5x brighter, 0% = 0.5x.
+        final int amb = (int) (ambientBase()
+            * (0.5 + RendererDelegator.white_light_pct / 100.0));
         final int nr_scaled = Math.min(255, amb + (int) (159.0 * Math.min(1.0, nr_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0 * RendererDelegator.red_light_pct / 100.0)));
         final int ng_scaled = Math.min(255, amb + (int) (159.0 * Math.min(1.0, ng_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0 * RendererDelegator.green_light_pct / 100.0)));
         final int nb_scaled = Math.min(255, amb + (int) (159.0 * Math.min(1.0, nb_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0 * RendererDelegator.blue_light_pct / 100.0)));
@@ -1012,8 +1013,9 @@ final class Raytracer {
             * Math.min(1.0, b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0);
       }
       // Half-to-full brightness per channel.
-      // White light disabled in fast mode for now (Tim, 2026-10-03).
-      final int amb2 = ambientBase();
+      // White light in fast mode (Tim, 2026-10-03): modulates ambient.
+      final int amb2 = (int) (ambientBase()
+          * (0.5 + RendererDelegator.white_light_pct / 100.0));
       final int r_scaled = Math.min(255, amb2 + (int) (159.0 * r_factor));
       final int g_scaled = Math.min(255, amb2 + (int) (159.0 * g_factor));
       final int b_scaled = Math.min(255, amb2 + (int) (159.0 * b_factor));
