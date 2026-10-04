@@ -1392,7 +1392,9 @@ final class Raytracer {
     if (length < 1e-12) {
       return 0.0;
     }
-    final double cosine = (hit.nx * hx + hit.ny * hy + hit.nz * hz)
+    // Double-sided like the diffuse (Tim, 2026-10-04): take the abs so
+    // front faces get highlights even if the light is behind.
+    final double cosine = Math.abs(hit.nx * hx + hit.ny * hy + hit.nz * hz)
         / length;
     return cosine > 0.0 ? cosine : 0.0;
   }
@@ -1406,7 +1408,8 @@ final class Raytracer {
     if (length < 1e-12) {
       return 0.0;
     }
-    final double cosine = (hit.nx * hx + hit.ny * hy + hit.nz * hz)
+    // Double-sided like the diffuse (Tim, 2026-10-04).
+    final double cosine = Math.abs(hit.nx * hx + hit.ny * hy + hit.nz * hz)
         / length;
     return cosine > 0.0 ? cosine : 0.0;
   }
