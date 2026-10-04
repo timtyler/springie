@@ -92,40 +92,24 @@ public final class LightSourceDots {
    * world X/Y at the light's Z, stores as custom position.
    */
   public static void dragTo(final int light, final int sx, final int sy) {
-    final double wz;
+    // Store as percentages of the viewport half-size (Tim, 2026-10-04):
+    // survives window resizes, and what we'll persist.
+    final int hw = Coords.x_pixelso2 == 0 ? 400 : Coords.x_pixelso2;
+    final int hh = Coords.y_pixelso2 == 0 ? 300 : Coords.y_pixelso2;
+    final double x_pct = (double) (sx - Coords.x_pixelso2) / (double) hw * 100.0;
+    final double y_pct = (double) (sy - Coords.y_pixelso2) / (double) hh * 100.0;
     if (light == 0) {
-      wz = LightSource.red_pz;
+      LightSource.red_x_pct = x_pct;
+      LightSource.red_y_pct = y_pct;
     } else if (light == 1) {
-      wz = LightSource.green_pz;
+      LightSource.green_x_pct = x_pct;
+      LightSource.green_y_pct = y_pct;
     } else if (light == 2) {
-      wz = LightSource.blue_pz;
+      LightSource.blue_x_pct = x_pct;
+      LightSource.blue_y_pct = y_pct;
     } else {
-      wz = LightSource.white_pz;
-    }
-    // Inverse of Coords.getXCoords/getYCoords.
-    final int iz = (int) wz;
-    final double denom =
-        (double) (Coords.shift_constant_z + (iz >> Coords.shift_z));
-    final double wx = (sx - Coords.x_pixelso2) * denom
-        - Coords.shift_constant_x + (Coords.x_pixelso2 << Coords.shift);
-    final double wy = (sy - Coords.y_pixelso2) * denom
-        - Coords.shift_constant_y + (Coords.y_pixelso2 << Coords.shift);
-    if (light == 0) {
-      LightSource.red_custom = true;
-      LightSource.red_custom_x = wx;
-      LightSource.red_custom_y = wy;
-    } else if (light == 1) {
-      LightSource.green_custom = true;
-      LightSource.green_custom_x = wx;
-      LightSource.green_custom_y = wy;
-    } else if (light == 2) {
-      LightSource.blue_custom = true;
-      LightSource.blue_custom_x = wx;
-      LightSource.blue_custom_y = wy;
-    } else {
-      LightSource.white_custom = true;
-      LightSource.white_custom_x = wx;
-      LightSource.white_custom_y = wy;
+      LightSource.white_x_pct = x_pct;
+      LightSource.white_y_pct = y_pct;
     }
     // The illumination changed: force a re-trace (Tim, 2026-10-04).
     LightSource.light_moved = true;
