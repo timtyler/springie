@@ -585,6 +585,7 @@ public class PanelControlsUniverse {
     reflectUniverseToggles();
     setCheckboxSilently(this.checkbox_muscles, Muscles.enabled);
     reflectMuscles();
+    reflectLights();
 
     if (FrEnd.development_version) {
       reflectMaxSpeed();
@@ -703,6 +704,23 @@ public class PanelControlsUniverse {
 
     this.scroll_bar_muscles_period.setValue(Muscles.activeOscillator().getPeriodTicks());
     this.label_muscles_period.setText("" + Muscles.activeOscillator().getPeriodTicks());
+  }
+
+  /**
+   * Reflects the light slider values in the UI (Tim, 2026-10-03).
+   * Called after resetUniverse() restores the defaults.
+   */
+  public void reflectLights() {
+    this.scrollbar_light_red.setValue(RendererDelegator.red_light_pct);
+    this.label_light_red.setText("" + RendererDelegator.red_light_pct);
+    this.scrollbar_light_green.setValue(RendererDelegator.green_light_pct);
+    this.label_light_green.setText("" + RendererDelegator.green_light_pct);
+    this.scrollbar_light_blue.setValue(RendererDelegator.blue_light_pct);
+    this.label_light_blue.setText("" + RendererDelegator.blue_light_pct);
+    this.scrollbar_light_white.setValue(RendererDelegator.white_light_pct);
+    this.label_light_white.setText("" + RendererDelegator.white_light_pct);
+    this.scrollbar_light_ambient.setValue(RendererDelegator.ambient_light_pct);
+    this.label_light_ambient.setText("" + RendererDelegator.ambient_light_pct);
   }
 
   public Label getLabelBias() {
