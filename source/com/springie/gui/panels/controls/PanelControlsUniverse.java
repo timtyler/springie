@@ -34,6 +34,18 @@ public class PanelControlsUniverse {
 
   public Checkbox checkbox_3D;
 
+  // Light sliders (Tim, 2026-10-03): stored to reflect reset.
+  private Scrollbar scrollbar_light_red;
+  private Label label_light_red;
+  private Scrollbar scrollbar_light_green;
+  private Label label_light_green;
+  private Scrollbar scrollbar_light_blue;
+  private Label label_light_blue;
+  private Scrollbar scrollbar_light_white;
+  private Label label_light_white;
+  private Scrollbar scrollbar_light_ambient;
+  private Label label_light_ambient;
+
   public Checkbox checkbox_gravity_switch;
 
   public Checkbox checkbox_charge_switch;
@@ -447,48 +459,48 @@ public class PanelControlsUniverse {
     final Panel panel_light_red = new Panel();
     panel_light_red.setLayout(new BorderLayout(0, 8));
     panel_light_red.add("West", new Label("Red light %:", Label.RIGHT));
-    final Scrollbar scrollbar_light_red = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
-    final Label label_light_red = new Label("50", Label.LEFT);
-    scrollbar_light_red.addAdjustmentListener(new AdjustmentListener() {
+    this.scrollbar_light_red = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
+    this.label_light_red = new Label("50", Label.LEFT);
+    this.scrollbar_light_red.addAdjustmentListener(new AdjustmentListener() {
       public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int val = e.getValue();
         RendererDelegator.red_light_pct = val;
-        label_light_red.setText("" + val);
+        PanelControlsUniverse.this.label_light_red.setText("" + val);
       }
     });
-    panel_light_red.add("Center", scrollbar_light_red);
-    panel_light_red.add("East", label_light_red);
+    panel_light_red.add("Center", this.scrollbar_light_red);
+    panel_light_red.add("East", this.label_light_red);
     panel_lights.add(panel_light_red);
 
     final Panel panel_light_green = new Panel();
     panel_light_green.setLayout(new BorderLayout(0, 8));
     panel_light_green.add("West", new Label("Green light %:", Label.RIGHT));
-    final Scrollbar scrollbar_light_green = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
-    final Label label_light_green = new Label("50", Label.LEFT);
-    scrollbar_light_green.addAdjustmentListener(new AdjustmentListener() {
+    this.scrollbar_light_green = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
+    this.label_light_green = new Label("50", Label.LEFT);
+    this.scrollbar_light_green.addAdjustmentListener(new AdjustmentListener() {
       public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int val = e.getValue();
         RendererDelegator.green_light_pct = val;
-        label_light_green.setText("" + val);
+        PanelControlsUniverse.this.label_light_green.setText("" + val);
       }
     });
-    panel_light_green.add("Center", scrollbar_light_green);
-    panel_light_green.add("East", label_light_green);
+    panel_light_green.add("Center", this.scrollbar_light_green);
+    panel_light_green.add("East", this.label_light_green);
     panel_lights.add(panel_light_green);
 
     final Panel panel_light_blue = new Panel();
     panel_light_blue.setLayout(new BorderLayout(0, 8));
     panel_light_blue.add("West", new Label("Blue light %:", Label.RIGHT));
-    final Scrollbar scrollbar_light_blue = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
-    final Label label_light_blue = new Label("50", Label.LEFT);
-    scrollbar_light_blue.addAdjustmentListener(new AdjustmentListener() {
+    this.scrollbar_light_blue = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
+    this.label_light_blue = new Label("50", Label.LEFT);
+    this.scrollbar_light_blue.addAdjustmentListener(new AdjustmentListener() {
       public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int val = e.getValue();
         RendererDelegator.blue_light_pct = val;
         label_light_blue.setText("" + val);
       }
     });
-    panel_light_blue.add("Center", scrollbar_light_blue);
+    panel_light_blue.add("Center", this.scrollbar_light_blue);
     panel_light_blue.add("East", label_light_blue);
     panel_lights.add(panel_light_blue);
 
@@ -497,16 +509,16 @@ public class PanelControlsUniverse {
     final Panel panel_light_white = new Panel();
     panel_light_white.setLayout(new BorderLayout(0, 8));
     panel_light_white.add("West", new Label("White light %:", Label.RIGHT));
-    final Scrollbar scrollbar_light_white = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
-    final Label label_light_white = new Label("50", Label.LEFT);
-    scrollbar_light_white.addAdjustmentListener(new AdjustmentListener() {
+    this.scrollbar_light_white = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
+    this.label_light_white = new Label("50", Label.LEFT);
+    this.scrollbar_light_white.addAdjustmentListener(new AdjustmentListener() {
       public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int val = e.getValue();
         RendererDelegator.white_light_pct = val;
         label_light_white.setText("" + val);
       }
     });
-    panel_light_white.add("Center", scrollbar_light_white);
+    panel_light_white.add("Center", this.scrollbar_light_white);
     panel_light_white.add("East", label_light_white);
     panel_lights.add(panel_light_white);
 
@@ -514,16 +526,16 @@ public class PanelControlsUniverse {
     final Panel panel_light_ambient = new Panel();
     panel_light_ambient.setLayout(new BorderLayout(0, 8));
     panel_light_ambient.add("West", new Label("Ambient light %:", Label.RIGHT));
-    final Scrollbar scrollbar_light_ambient = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
-    final Label label_light_ambient = new Label("50", Label.LEFT);
-    scrollbar_light_ambient.addAdjustmentListener(new AdjustmentListener() {
+    this.scrollbar_light_ambient = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
+    this.label_light_ambient = new Label("50", Label.LEFT);
+    this.scrollbar_light_ambient.addAdjustmentListener(new AdjustmentListener() {
       public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int val = e.getValue();
         RendererDelegator.ambient_light_pct = val;
         label_light_ambient.setText("" + val);
       }
     });
-    panel_light_ambient.add("Center", scrollbar_light_ambient);
+    panel_light_ambient.add("Center", this.scrollbar_light_ambient);
     panel_light_ambient.add("East", label_light_ambient);
     panel_lights.add(panel_light_ambient);
 

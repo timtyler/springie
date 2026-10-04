@@ -75,6 +75,13 @@ public final class UniverseDefaults {
   // Compass bias size (velocity units added per frame along the heading).
   private static int compass_bias_size = 0;
 
+  // Lights (Tim, 2026-10-03).
+  private static int red_light_pct = 50;
+  private static int green_light_pct = 50;
+  private static int blue_light_pct = 50;
+  private static int white_light_pct = 50;
+  private static int ambient_light_pct = 50;
+
   /**
    * Resets the snapshot to the factory defaults. For tests: the snapshot
    * is global state, and a test that loads a model would otherwise pollute
@@ -102,6 +109,11 @@ public final class UniverseDefaults {
     max_speed = Integer.MAX_VALUE;
     minimum_magnitude = 0;
     compass_bias_size = 0;
+    red_light_pct = 50;
+    green_light_pct = 50;
+    blue_light_pct = 50;
+    white_light_pct = 50;
+    ambient_light_pct = 50;
   }
 
   /**
@@ -128,6 +140,11 @@ public final class UniverseDefaults {
     continuously_centre_z = FrEnd.continuously_centre_z;
     show_world_markers = FrEnd.show_world_markers;
     compass_bias_size = CompassPoint.bias_size;
+    red_light_pct = com.springie.render.RendererDelegator.red_light_pct;
+    green_light_pct = com.springie.render.RendererDelegator.green_light_pct;
+    blue_light_pct = com.springie.render.RendererDelegator.blue_light_pct;
+    white_light_pct = com.springie.render.RendererDelegator.white_light_pct;
+    ambient_light_pct = com.springie.render.RendererDelegator.ambient_light_pct;
     if (FrEnd.development_version) {
       max_speed = Node.max_speed;
       minimum_magnitude = World.minimum_magnitude;
@@ -158,6 +175,11 @@ public final class UniverseDefaults {
     FrEnd.continuously_centre_z = continuously_centre_z;
     FrEnd.show_world_markers = show_world_markers;
     CompassPoint.bias_size = compass_bias_size;
+    com.springie.render.RendererDelegator.red_light_pct = red_light_pct;
+    com.springie.render.RendererDelegator.green_light_pct = green_light_pct;
+    com.springie.render.RendererDelegator.blue_light_pct = blue_light_pct;
+    com.springie.render.RendererDelegator.white_light_pct = white_light_pct;
+    com.springie.render.RendererDelegator.ambient_light_pct = ambient_light_pct;
     if (FrEnd.development_version) {
       Node.max_speed = max_speed;
       World.minimum_magnitude = minimum_magnitude;

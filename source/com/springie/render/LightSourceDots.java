@@ -41,14 +41,23 @@ public final class LightSourceDots {
     if (LightSource.red_px == 0.0 && LightSource.red_py == 0.0) {
       LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
     }
-    drawOne(g, LightSource.red_px, LightSource.red_py, LightSource.red_pz,
-        Color.red);
-    drawOne(g, LightSource.green_px, LightSource.green_py, LightSource.green_pz,
-        Color.green);
-    drawOne(g, LightSource.blue_px, LightSource.blue_py, LightSource.blue_pz,
-        Color.blue);
-    drawOne(g, LightSource.white_px, LightSource.white_py, LightSource.white_pz,
-        Color.white);
+    // Skip lights at 0% intensity (Tim, 2026-10-03).
+    if (RendererDelegator.red_light_pct > 0) {
+      drawOne(g, LightSource.red_px, LightSource.red_py, LightSource.red_pz,
+          Color.red);
+    }
+    if (RendererDelegator.green_light_pct > 0) {
+      drawOne(g, LightSource.green_px, LightSource.green_py, LightSource.green_pz,
+          Color.green);
+    }
+    if (RendererDelegator.blue_light_pct > 0) {
+      drawOne(g, LightSource.blue_px, LightSource.blue_py, LightSource.blue_pz,
+          Color.blue);
+    }
+    if (RendererDelegator.white_light_pct > 0) {
+      drawOne(g, LightSource.white_px, LightSource.white_py, LightSource.white_pz,
+          Color.white);
+    }
   }
 
   private static void drawOne(final Graphics g, final double wx,
