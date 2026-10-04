@@ -326,7 +326,7 @@ public class PanelPreferencesRendererRaytraced {
     this.effect_specular.resetToDefaults();
     this.effect_fresnel.resetToDefaults();
 
-    RendererDelegator.coarse_to_fine = false;
-    this.checkbox_coarse_to_fine.setState(false);
+    RendererDelegator.coarse_to_fine = true;
+    this.checkbox_coarse_to_fine.setState(true);
   }
 }
