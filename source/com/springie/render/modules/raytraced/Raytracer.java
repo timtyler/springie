@@ -914,7 +914,7 @@ final class Raytracer {
         final double nwdz = WHITE_PZ - ncz;
         final double nwd = Math.sqrt(nwdx * nwdx + nwdy * nwdy + nwdz * nwdz);
         final double nw_fall = 1.0 / (1.0 + (nwd / LIGHT_FALLOFF_K) * (nwd / LIGHT_FALLOFF_K));
-        final int w_add_fast = (int) (159.0 * Math.min(1.0, nw_fall
+        final int w_add_fast = (int) (200.0 * Math.min(1.0, nw_fall
             * LIGHT_BRIGHTNESS * RendererDelegator.white_light_pct / 100.0
             * RendererDelegator.white_light_pct / 100.0));
         final int amb = ambientBase();
@@ -1031,7 +1031,7 @@ final class Raytracer {
       final double wdz2 = WHITE_PZ - pcz;
       final double wd2 = Math.sqrt(wdx2 * wdx2 + wdy2 * wdy2 + wdz2 * wdz2);
       final double w_fall2 = 1.0 / (1.0 + (wd2 / LIGHT_FALLOFF_K) * (wd2 / LIGHT_FALLOFF_K));
-      final int w_add2 = (int) (159.0 * Math.min(1.0, w_fall2
+      final int w_add2 = (int) (200.0 * Math.min(1.0, w_fall2
           * LIGHT_BRIGHTNESS * RendererDelegator.white_light_pct / 100.0));
       final int amb2 = ambientBase();
       final int r_scaled = Math.min(255, amb2 + w_add2 + (int) (159.0 * r_factor));
@@ -1172,8 +1172,9 @@ final class Raytracer {
     final int b_scaled = Math.min(255, amb3
         + (int) (159.0 * Math.min(1.0, b_dot * b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0)));
     // White point light (Tim, 2026-10-03): fourth light, adds equally
-    // to all channels.
-    final int w_add = (int) (159.0 * Math.min(1.0, w_dot * w_fall
+    // to all channels. Boosted 25% vs RGB (Tim, 2026-10-03) -- the white
+    // felt weak at 100%.
+    final int w_add = (int) (200.0 * Math.min(1.0, w_dot * w_fall
         * LIGHT_BRIGHTNESS * RendererDelegator.white_light_pct / 100.0));
     final int r_white = Math.min(255, r_scaled + w_add);
     final int g_white = Math.min(255, g_scaled + w_add);

@@ -177,7 +177,8 @@ public final class ElementRendererFace {
     final double wlz = LightSource.white_pz - center.z;
     final double wd = Math.sqrt(wlx * wlx + wly * wly + wlz * wlz);
     final double w_dot = Math.abs((nx * wlx + ny * wly + nz * wlz) / wd);
-    final double w_factor = 0.75 * view_dot * w_dot
+    // Boosted 25% vs RGB (Tim, 2026-10-03).
+    final double w_factor = 0.95 * view_dot * w_dot
         * RendererDelegator.white_light_pct / 50.0;
     // Specular highlight (Tim, 2026-10-03, extra credit): where the
     // polygon reflects the light directly at the viewer, add extra

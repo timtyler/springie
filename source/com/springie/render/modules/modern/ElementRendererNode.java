@@ -102,7 +102,7 @@ public final class ElementRendererNode {
           if (w_len_n > 1e-12) {
             final double w_dot = Math.abs((nnx * wlx_n + nny * wly_n
                 + nnz * wlz_n) / w_len_n);
-            final double w_factor = 0.75 * w_dot
+            final double w_factor = 0.95 * w_dot
                 * RendererDelegator.white_light_pct / 50.0;
             r_factor += w_factor;
             g_factor += w_factor;

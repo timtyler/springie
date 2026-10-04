@@ -325,7 +325,7 @@ public final class ElementRendererLink {
         if (w_len_l > 1e-12) {
           final double w_dot = (wlx_l * ax + wly_l * ay
               + wlz_l * az) / w_len_l;
-          final double w_factor = 0.75
+          final double w_factor = 0.95
               * Math.sqrt(Math.max(0.0, 1.0 - w_dot * w_dot))
               * RendererDelegator.white_light_pct / 50.0;
           r_factor += w_factor;
