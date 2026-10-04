@@ -67,19 +67,6 @@ public class PanelPreferencesRendererRaytraced {
   }
 
   void makePanel() {
-    this.effect_glossiness = effectPanel("Glossiness",
-        RendererDelegator.glossiness_enabled, RendererDelegator.glossiness,
-        new EffectSetter() {
-          public void setEnabled(final boolean on) {
-            RendererDelegator.glossiness_enabled = on;
-          }
-
-          public void setStrength(final int percent) {
-            RendererDelegator.glossiness = percent;
-          }
-        }, false, 50);
-    this.panel.add(this.effect_glossiness.panel);
-
     this.panel.add(panelShadows());
     this.panel.add(panelReflections());
 
@@ -95,6 +82,19 @@ public class PanelPreferencesRendererRaytraced {
           }
         }, true, 100);
     this.panel.add(this.effect_specular.panel);
+
+    this.effect_glossiness = effectPanel("Glossiness",
+        RendererDelegator.glossiness_enabled, RendererDelegator.glossiness,
+        new EffectSetter() {
+          public void setEnabled(final boolean on) {
+            RendererDelegator.glossiness_enabled = on;
+          }
+
+          public void setStrength(final int percent) {
+            RendererDelegator.glossiness = percent;
+          }
+        }, false, 50);
+    this.panel.add(this.effect_glossiness.panel);
 
     this.effect_fresnel = effectPanel("Fresnel",
         RendererDelegator.fresnel_enabled, RendererDelegator.fresnel,
@@ -300,10 +300,10 @@ public class PanelPreferencesRendererRaytraced {
       return;
     }
     final Panel[] rows = {
-        this.effect_glossiness.panel,
         this.shadows_row,
         this.reflections_row,
         this.effect_specular.panel,
+        this.effect_glossiness.panel,
         this.effect_fresnel.panel,
     };
     for (final Panel row : rows) {
