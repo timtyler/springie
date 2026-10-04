@@ -17,6 +17,20 @@ public class LightSource {
   public static double blue_px, blue_py, blue_pz;
   public static double white_px, white_py, white_pz;
 
+  /**
+   * Dragged light positions (Tim, 2026-10-04): when true, the light's
+   * X/Y comes from the drag (not the viewport defaults). Z stays at
+   * the viewport default. Not persisted.
+   */
+  public static boolean red_custom = false;
+  public static double red_custom_x, red_custom_y;
+  public static boolean green_custom = false;
+  public static double green_custom_x, green_custom_y;
+  public static boolean blue_custom = false;
+  public static double blue_custom_x, blue_custom_y;
+  public static boolean white_custom = false;
+  public static double white_custom_x, white_custom_y;
+
   /** Directional versions (for compatibility). */
   public static final Vector3D source_red = new Vector3D(-100, -100, -100);
   public static final Vector3D source_green = new Vector3D(0, -100, -100);
@@ -41,18 +55,39 @@ public class LightSource {
     final double light_y_top = -half_h * 0.8;
     final double light_y_bottom = half_h * 0.8;
     final double light_z = -1000.0 * scale;
-    red_px = -half_w * 0.6;
-    red_py = light_y_top;
+    // Dragged lights (Tim, 2026-10-04): X/Y from drag, Z from viewport.
+    if (red_custom) {
+      red_px = red_custom_x;
+      red_py = red_custom_y;
+    } else {
+      red_px = -half_w * 0.6;
+      red_py = light_y_top;
+    }
     red_pz = light_z;
-    green_px = 0.0;
-    green_py = light_y_bottom;
+    if (green_custom) {
+      green_px = green_custom_x;
+      green_py = green_custom_y;
+    } else {
+      green_px = 0.0;
+      green_py = light_y_bottom;
+    }
     green_pz = light_z;
-    blue_px = half_w * 0.6;
-    blue_py = light_y_top;
+    if (blue_custom) {
+      blue_px = blue_custom_x;
+      blue_py = blue_custom_y;
+    } else {
+      blue_px = half_w * 0.6;
+      blue_py = light_y_top;
+    }
     blue_pz = light_z;
     // White light (Tim, 2026-10-03): fourth point light, center top.
-    white_px = 0.0;
-    white_py = light_y_top;
+    if (white_custom) {
+      white_px = white_custom_x;
+      white_py = white_custom_y;
+    } else {
+      white_px = 0.0;
+      white_py = light_y_top;
+    }
     white_pz = light_z;
   }
 }

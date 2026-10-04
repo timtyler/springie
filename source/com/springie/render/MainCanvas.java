@@ -70,6 +70,12 @@ public class MainCanvas {
       }
 
       public void mouseDragged(final MouseEvent e) {
+        // Drag the light (Tim, 2026-10-04).
+        if (LightSourceDots.dragging >= 0) {
+          LightSourceDots.dragTo(LightSourceDots.dragging, e.getX(),
+              e.getY());
+          return;
+        }
         final MainCanvas canvas = getCanvas();
         canvas.modifiers = e.getModifiers();
         canvas.current_mouse_x = e.getX() << Coords.shift;
@@ -87,6 +93,8 @@ public class MainCanvas {
 
     this.panel.addMouseListener(new MouseListener() {
       public void mouseReleased(final MouseEvent e) {
+        // End light drag (Tim, 2026-10-04).
+        LightSourceDots.dragging = -1;
         FrEnd.mouse_pressed = false;
         FrEnd.new_message_manager.add(new NewMessage(new Point(e.getX() << Coords.shift, e.getY() << Coords.shift)) {
           public Object execute() {
@@ -98,6 +106,13 @@ public class MainCanvas {
       }
 
       public void mousePressed(final MouseEvent e) {
+        // Start light drag (Tim, 2026-10-04): if the press hits a
+        // light dot, drag the light instead of the model.
+        final int hit = LightSourceDots.hitTest(e.getX(), e.getY());
+        if (hit >= 0) {
+          LightSourceDots.dragging = hit;
+          return;
+        }
         final MainCanvas canvas = getCanvas();
 
         canvas.modifiers = e.getModifiers();

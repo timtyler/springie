@@ -22,8 +22,111 @@ public final class LightSourceDots {
 
   private static int frame_count = 0;
 
+  /**
+   * Currently dragged light (Tim, 2026-10-04): -1 = none, 0 = light one,
+   * 1 = light two, 2 = light three, 3 = light four.
+   */
+  public static int dragging = -1;
+
   private LightSourceDots() {
     // Static only.
+  }
+
+  /**
+   * Hit test (Tim, 2026-10-04): returns the light index (0-3) if the
+   * screen point is within a dot, or -1.
+   */
+  public static int hitTest(final int sx, final int sy) {
+    LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
+    if (RendererDelegator.red_light_pct > 0
+        && near(sx, sy, LightSource.red_px, LightSource.red_py,
+            LightSource.red_pz)) {
+      return 0;
+    }
+    if (RendererDelegator.green_light_pct > 0
+        && near(sx, sy, LightSource.green_px, LightSource.green_py,
+            LightSource.green_pz)) {
+      return 1;
+    }
+    if (RendererDelegator.blue_light_pct > 0
+        && near(sx, sy, LightSource.blue_px, LightSource.blue_py,
+            LightSource.blue_pz)) {
+      return 2;
+    }
+    if (RendererDelegator.white_light_pct > 0
+        && near(sx, sy, LightSource.white_px, LightSource.white_py,
+            LightSource.white_pz)) {
+      return 3;
+    }
+    return -1;
+  }
+
+  private static boolean near(final int sx, final int sy, final double wx,
+      final double wy, final double wz) {
+    final int ix = (int) wx;
+    final int iy = (int) wy;
+    final int iz = (int) wz;
+    if (Coords.shift_constant_z + (iz >> Coords.shift_z) == 0) {
+      return false;
+    }
+    int dx = Coords.getXCoords(ix, iz);
+    int dy = Coords.getYCoords(iy, iz);
+    // Clamp like drawOne.
+    if (dx < RADIUS) {
+      dx = RADIUS;
+    } else if (dx > Coords.x_pixels - RADIUS) {
+      dx = Coords.x_pixels - RADIUS;
+    }
+    if (dy < RADIUS) {
+      dy = RADIUS;
+    } else if (dy > Coords.y_pixels - RADIUS) {
+      dy = Coords.y_pixels - RADIUS;
+    }
+    final int ddx = sx - dx;
+    final int ddy = sy - dy;
+    return ddx * ddx + ddy * ddy <= (RADIUS * 2) * (RADIUS * 2);
+  }
+
+  /**
+   * Drag a light to a screen position (Tim, 2026-10-04): converts to
+   * world X/Y at the light's Z, stores as custom position.
+   */
+  public static void dragTo(final int light, final int sx, final int sy) {
+    final double wz;
+    if (light == 0) {
+      wz = LightSource.red_pz;
+    } else if (light == 1) {
+      wz = LightSource.green_pz;
+    } else if (light == 2) {
+      wz = LightSource.blue_pz;
+    } else {
+      wz = LightSource.white_pz;
+    }
+    // Inverse of Coords.getXCoords/getYCoords.
+    final int iz = (int) wz;
+    final double denom =
+        (double) (Coords.shift_constant_z + (iz >> Coords.shift_z));
+    final double wx = (sx - Coords.x_pixelso2) * denom
+        - Coords.shift_constant_x + (Coords.x_pixelso2 << Coords.shift);
+    final double wy = (sy - Coords.y_pixelso2) * denom
+        - Coords.shift_constant_y + (Coords.y_pixelso2 << Coords.shift);
+    if (light == 0) {
+      LightSource.red_custom = true;
+      LightSource.red_custom_x = wx;
+      LightSource.red_custom_y = wy;
+    } else if (light == 1) {
+      LightSource.green_custom = true;
+      LightSource.green_custom_x = wx;
+      LightSource.green_custom_y = wy;
+    } else if (light == 2) {
+      LightSource.blue_custom = true;
+      LightSource.blue_custom_x = wx;
+      LightSource.blue_custom_y = wy;
+    } else {
+      LightSource.white_custom = true;
+      LightSource.white_custom_x = wx;
+      LightSource.white_custom_y = wy;
+    }
   }
 
   /**
