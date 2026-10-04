@@ -376,6 +376,20 @@ public class ModularRendererRaytraced implements ModularRendererBase {
             shown.max_x - shown.min_x, shown.max_y - shown.min_y);
       }
     }
+    // "Show tiles": grid lines at tile boundaries, drawn as a screen
+    // overlay (Tim, 2026-10-04). Tiles now cover the canvas with no gaps.
+    if (RendererTileManager.show_tiles) {
+      final int divisor = RendererTileManager.divisor;
+      final int w = this.canvas_width;
+      final int h = this.canvas_height;
+      graphics.setColor(Color.BLACK);
+      for (int x = 0; x < w; x += divisor) {
+        graphics.drawLine(x, 0, x, h);
+      }
+      for (int y = 0; y < h; y += divisor) {
+        graphics.drawLine(0, y, w, y);
+      }
+    }
   }
 
   /**
@@ -424,9 +438,11 @@ public class ModularRendererRaytraced implements ModularRendererBase {
 
   /**
    * Builds the tile grid: divisor-sized blocks covering the canvas, the
-   * same tiles the default renderer uses. With "show tiles" each tile is
-   * shrunk by the same margin the default renderer leaves, so the
-   * background shows through as black grid lines between the tiles.
+   * same tiles the default renderer uses. Tiles cover every pixel with
+   * no gaps (Tim, 2026-10-04: the old show-tiles margin left 4-pixel
+   * gaps that markTilesDirty could not assign, cutting nodes off at
+   * tile boundaries). The grid lines for "show tiles" are drawn as a
+   * screen overlay, not as gaps.
    */
   static Tile[] buildTileGrid(final int width, final int height) {
     if (RendererTileManager.one_big_tile) {
@@ -435,9 +451,6 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       return new Tile[] { new Tile(0, 0, width, height) };
     }
     final int divisor = RendererTileManager.divisor;
-    // Same margin as the default renderer's getMargin().
-    final int margin = RendererTileManager.show_tiles ? 4 : 0;
-    final int block = divisor - margin;
     final int nx = width / divisor + 1;
     final int ny = height / divisor + 1;
     final Tile[] tiles = new Tile[nx * ny];
@@ -446,8 +459,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       for (int tx = 0; tx < nx; tx++) {
         final int x0 = tx * divisor;
         final int y0 = ty * divisor;
-        final int w = Math.min(block, width - x0);
-        final int h = Math.min(block, height - y0);
+        final int w = Math.min(divisor, width - x0);
+        final int h = Math.min(divisor, height - y0);
         if (w > 0 && h > 0) {
           tiles[i++] = new Tile(x0, y0, w, h);
         }
