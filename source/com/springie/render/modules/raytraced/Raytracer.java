@@ -695,7 +695,7 @@ final class Raytracer {
     for (int cy = by; cy < y_end; cy++) {
       for (int cx = bx; cx < x_end; cx++) {
         // Cell (cx, cy) -> screen top-left for the ray, tile-relative for
-        // the pixels[] index. Then replicate px-by-px.
+        // the pixels[] index. Then replicate px-by-px, clamped.
         final int scr_x = x0 + cx * px;
         final int scr_y = y0 + cy * px;
         camera.makeRay(scr_x, scr_y, ray);
@@ -703,11 +703,14 @@ final class Raytracer {
         if (intersectScene(ray, hit, bvh, rings, stack)) {
           final int rgb = shade(ray, hit, bvh, stack, shadow_ray,
               shadow_hit, jitter);
-          final int px_x = cx * px;
-          final int px_y = cy * px;
-          for (int dy = 0; dy < px; dy++) {
-            for (int dx = 0; dx < px; dx++) {
-              pixels[(px_y + dy) * width + (px_x + dx)] = rgb;
+          final int x0_px = cx * px;
+          final int y0_px = cy * px;
+          final int x1_px = Math.min(x0_px + px, width);
+          final int y1_px = Math.min(y0_px + px,
+              pixels.length / width);
+          for (int y = y0_px; y < y1_px; y++) {
+            for (int x = x0_px; x < x1_px; x++) {
+              pixels[y * width + x] = rgb;
             }
           }
         }
@@ -1111,6 +1114,7 @@ final class Raytracer {
       }
     }
     final int red_rgb = 0xFFFF0000;
+    final int height = pixels.length / width;
     for (int cy = by; cy < y_end; cy++) {
       for (int cx = bx; cx < x_end; cx++) {
         final boolean sampled = samples.find(cx, cy) >= 0;
@@ -1120,12 +1124,15 @@ final class Raytracer {
         } else {
           rgb = fill_rgb;
         }
-        // Replicate across the px-by-px screen block (tile-relative).
-        final int px_x = cx * px;
-        final int px_y = cy * px;
-        for (int dy = 0; dy < px; dy++) {
-          for (int dx = 0; dx < px; dx++) {
-            pixels[(px_y + dy) * width + (px_x + dx)] = rgb;
+        // Replicate across the px-by-px block, clamped to tile bounds
+        // (Tim, 2026-10-04: fixes overflow on partial edge cells).
+        final int x0_px = cx * px;
+        final int y0_px = cy * px;
+        final int x1_px = Math.min(x0_px + px, width);
+        final int y1_px = Math.min(y0_px + px, height);
+        for (int y = y0_px; y < y1_px; y++) {
+          for (int x = x0_px; x < x1_px; x++) {
+            pixels[y * width + x] = rgb;
           }
         }
       }
