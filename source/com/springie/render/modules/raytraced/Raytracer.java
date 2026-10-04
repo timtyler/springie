@@ -495,76 +495,12 @@ final class Raytracer {
   }
 
   /**
-   * Tries a phase of coarse seed blocks. Returns the updated stack top.
-   * (Tim, 2026-10-03: multi-phase seeds to avoid missing content.)
-   */
-  private static int coarseSeedPhase(final int x0, final int y0,
-      final int width, final int height, final int cs, final int cw,
-      final int ch, final RayCamera camera, final BVH bvh,
-      final RTRing[] rings, final Ray ray, final Hit hit, final int[] stack,
-      final Ray shadow_ray, final Hit shadow_hit, final JitterRandom jitter,
-      final boolean[] c_hit,
-      final Primitive[] c_prim, final int[] c_rgb,
-      final boolean[] c_visited, final int[] c_flood, int c_top,
-      final int[] grid_x, final int[] grid_y, final int grid_w,
-      final int grid_h) {
-    for (int s = 0; s < grid_x.length; s++) {
-      final int cx = grid_x[s];
-      final int cy = grid_y[s];
-      final int bx;
-      final int by;
-      if (grid_w == 2 && grid_h == 2 && grid_x.length == 5) {
-        // Corners + center.
-        bx = cx == 2 ? cw / 2 : (cx == 0 ? 0 : cw - 1);
-        by = cy == 2 ? ch / 2 : (cy == 0 ? 0 : ch - 1);
-      } else {
-        bx = Math.min((cx * cw + cw / 2) / grid_w, cw - 1);
-        by = Math.min((cy * ch + ch / 2) / grid_h, ch - 1);
-      }
-      final int bidx = by * cw + bx;
-      if (c_visited[bidx]) {
-        continue;
-      }
-      c_visited[bidx] = true;
-      final int px = Math.min(bx * cs + cs / 2, width - 1);
-      final int py = Math.min(by * cs + cs / 2, height - 1);
-      camera.makeRay(x0 + px, y0 + py, ray);
-      hit.reset();
-      if (intersectScene(ray, hit, bvh, rings, stack)) {
-        c_hit[bidx] = true;
-        c_prim[bidx] = hit.primitive;
-        c_rgb[bidx] = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit, jitter);
-        c_rgb[bidx] = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit, jitter);
-        if (bx > 0 && !c_visited[bidx - 1]) {
-          c_visited[bidx - 1] = true;
-          c_flood[c_top++] = bidx - 1;
-        }
-        if (bx + 1 < cw && !c_visited[bidx + 1]) {
-          c_visited[bidx + 1] = true;
-          c_flood[c_top++] = bidx + 1;
-        }
-        if (by > 0 && !c_visited[bidx - cw]) {
-          c_visited[bidx - cw] = true;
-          c_flood[c_top++] = bidx - cw;
-        }
-        if (by + 1 < ch && !c_visited[bidx + cw]) {
-          c_visited[bidx + cw] = true;
-          c_flood[c_top++] = bidx + cw;
-        }
-      }
-    }
-    return c_top;
-  }
-
-  /**
    * Coarse-to-fine tile rendering (Tim, 2026-10-03): only active when
-   * Simple lighting is on. Traces a coarse 8x8-block grid via flood
-   * fill, then for each hit block decides edge vs interior. Edge blocks
+   * Simple lighting is on. Tests every 4x4-block center (1 ray per block),
+   * then for each hit block decides edge vs interior. Edge blocks
    * (a neighbour is background or a different primitive) are traced at
-   * full resolution; interior blocks are filled with the block's colour.
-   * For Simple lighting nodes are flat, so the fill is exact; links and
-   * faces get the centre colour (a 8px-step approximation, acceptable
-   * for the fast low-quality path).
+   * full resolution; interior blocks (center + 4 corners all hit the same
+   * primitive) are filled with the block's colour.
    */
   private static void renderTileCoarseToFine(final int x0, final int y0, final int width,
       int height, final RayCamera camera, final BVH bvh, final RTRing[] rings, final int[] pixels,
@@ -592,53 +528,22 @@ final class Raytracer {
     final boolean[] c_hit = new boolean[cw * ch];
     final Primitive[] c_prim = new Primitive[cw * ch];
     final int[] c_rgb = new int[cw * ch];
-    final boolean[] c_visited = new boolean[cw * ch];
-    final int[] c_flood = new int[cw * ch];
-    int c_top = 0;
-    // Multi-phase seeds at block resolution (Tim, 2026-10-03):
-    // 8 uniform, then 4 corners + center if nothing hit.
-    // Phase 1: 8 uniform seeds (4x2 grid, cell centres).
-    c_top = coarseSeedPhase(x0, y0, width, height, cs, cw, ch, camera,
-        bvh, rings, ray, hit, stack, shadow_ray, shadow_hit, jitter, c_hit,
-        c_prim, c_rgb, c_visited, c_flood, c_top,
-        new int[]{0, 1, 2, 3, 0, 1, 2, 3},
-        new int[]{0, 0, 0, 0, 1, 1, 1, 1}, 4, 2);
-    if (c_top == 0) {
-      // Phase 2: 4 corners + center.
-      c_top = coarseSeedPhase(x0, y0, width, height, cs, cw, ch, camera,
-          bvh, rings, ray, hit, stack, shadow_ray, shadow_hit, jitter, c_hit,
-          c_prim, c_rgb, c_visited, c_flood, c_top,
-          new int[]{0, 0, 1, 1, 2}, new int[]{0, 1, 0, 1, 2}, 2, 2);
-    }
-    // Coarse flood fill.
-    while (c_top > 0) {
-      final int bidx = c_flood[--c_top];
-      // (Visited was marked at push time, so no check needed here.)
-      final int bx = bidx % cw;
-      final int by = bidx / cw;
-      final int px = Math.min(bx * cs + cs / 2, width - 1);
-      final int py = Math.min(by * cs + cs / 2, height - 1);
-      camera.makeRay(x0 + px, y0 + py, ray);
-      hit.reset();
-      if (intersectScene(ray, hit, bvh, rings, stack)) {
-        c_hit[bidx] = true;
-        c_prim[bidx] = hit.primitive;
-        c_rgb[bidx] = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit, jitter);
-        if (bx > 0 && !c_visited[bidx - 1]) {
-          c_visited[bidx - 1] = true;
-          c_flood[c_top++] = bidx - 1;
-        }
-        if (bx + 1 < cw && !c_visited[bidx + 1]) {
-          c_visited[bidx + 1] = true;
-          c_flood[c_top++] = bidx + 1;
-        }
-        if (by > 0 && !c_visited[bidx - cw]) {
-          c_visited[bidx - cw] = true;
-          c_flood[c_top++] = bidx - cw;
-        }
-        if (by + 1 < ch && !c_visited[bidx + cw]) {
-          c_visited[bidx + cw] = true;
-          c_flood[c_top++] = bidx + cw;
+    // Coarse pass (Tim, 2026-10-03): test EVERY block center, not just
+    // sparse seeds. The old seed+flood could miss thin components falling
+    // between seeds, leaving their blocks as background (jagged edges).
+    // 1 ray per block is still 16x cheaper than full tracing.
+    for (int by = 0; by < ch; by++) {
+      for (int bx = 0; bx < cw; bx++) {
+        final int bidx = by * cw + bx;
+        final int px = Math.min(bx * cs + cs / 2, width - 1);
+        final int py = Math.min(by * cs + cs / 2, height - 1);
+        camera.makeRay(x0 + px, y0 + py, ray);
+        hit.reset();
+        if (intersectScene(ray, hit, bvh, rings, stack)) {
+          c_hit[bidx] = true;
+          c_prim[bidx] = hit.primitive;
+          c_rgb[bidx] = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit,
+              jitter);
         }
       }
     }
