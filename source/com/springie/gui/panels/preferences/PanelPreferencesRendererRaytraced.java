@@ -35,6 +35,8 @@ public class PanelPreferencesRendererRaytraced {
 
   private Panel shadows_row;
 
+  private Panel reflections_row;
+
   private Effect effect_specular;
 
   private Effect effect_fresnel;
@@ -79,6 +81,7 @@ public class PanelPreferencesRendererRaytraced {
     this.panel.add(this.effect_glossiness.panel);
 
     this.panel.add(panelShadows());
+    this.panel.add(panelReflections());
 
     this.effect_specular = effectPanel("Specular",
         RendererDelegator.specular_enabled, RendererDelegator.specular,
@@ -226,9 +229,7 @@ public class PanelPreferencesRendererRaytraced {
   }
 
   private Panel panelShadows() {
-    final Panel panel = new Panel(new java.awt.GridLayout(2, 1));
-    final Panel row1 = new Panel();
-    final Panel row2 = new Panel();
+    final Panel panel = new Panel();
 
     this.checkbox_shadows = new Checkbox("Shadows",
         RendererDelegator.shadows);
@@ -238,7 +239,7 @@ public class PanelPreferencesRendererRaytraced {
             .getState();
       }
     });
-    row1.add(this.checkbox_shadows);
+    panel.add(this.checkbox_shadows);
 
     this.checkbox_soft_shadows = new Checkbox("Soft shadows",
         RendererDelegator.soft_shadows);
@@ -248,7 +249,14 @@ public class PanelPreferencesRendererRaytraced {
             .getState();
       }
     });
-    row1.add(this.checkbox_soft_shadows);
+    panel.add(this.checkbox_soft_shadows);
+
+    this.shadows_row = panel;
+    return panel;
+  }
+
+  private Panel panelReflections() {
+    final Panel panel = new Panel();
 
     this.checkbox_reflections = new Checkbox("Reflections",
         RendererDelegator.reflections_enabled);
@@ -258,7 +266,7 @@ public class PanelPreferencesRendererRaytraced {
             .getState();
       }
     });
-    row2.add(this.checkbox_reflections);
+    panel.add(this.checkbox_reflections);
 
     this.checkbox_ambient_occlusion = new Checkbox("Ambient occlusion",
         RendererDelegator.ambient_occlusion);
@@ -268,12 +276,9 @@ public class PanelPreferencesRendererRaytraced {
             .getState();
       }
     });
-    row2.add(this.checkbox_ambient_occlusion);
+    panel.add(this.checkbox_ambient_occlusion);
 
-    panel.add(row1);
-    panel.add(row2);
-
-    this.shadows_row = panel;
+    this.reflections_row = panel;
     return panel;
   }
 
@@ -297,6 +302,7 @@ public class PanelPreferencesRendererRaytraced {
     final Panel[] rows = {
         this.effect_glossiness.panel,
         this.shadows_row,
+        this.reflections_row,
         this.effect_specular.panel,
         this.effect_fresnel.panel,
     };
