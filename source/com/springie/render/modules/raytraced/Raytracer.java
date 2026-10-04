@@ -598,13 +598,16 @@ final class Raytracer {
         return false;
       }
     }
-    // Uniform: fill the block.
-    final int rgb = RendererTileManager.show_active_tiles
-        ? 0xFFFF0000
-        : first_rgb;
+    // Uniform: fill the block. In debug mode ("Show active tiles"), only
+    // the saved pixels go red -- the 4 corners were actually traced, so
+    // they keep their real colour. (Tim, 2026-10-03)
+    final boolean debug = RendererTileManager.show_active_tiles;
+    final int fill_rgb = debug ? 0xFFFF0000 : first_rgb;
     for (int y = by; y < y_end; y++) {
       for (int x = bx; x < x_end; x++) {
-        pixels[y * width + x] = rgb;
+        final boolean is_corner = (x == bx || x == x_end - 1)
+            && (y == by || y == y_end - 1);
+        pixels[y * width + x] = (debug && is_corner) ? first_rgb : fill_rgb;
       }
     }
     return true;
