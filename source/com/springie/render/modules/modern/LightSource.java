@@ -15,11 +15,13 @@ public class LightSource {
   public static double red_px, red_py, red_pz;
   public static double green_px, green_py, green_pz;
   public static double blue_px, blue_py, blue_pz;
+  public static double white_px, white_py, white_pz;
 
   /** Directional versions (for compatibility). */
   public static final Vector3D source_red = new Vector3D(-100, -100, -100);
   public static final Vector3D source_green = new Vector3D(0, -100, -100);
   public static final Vector3D source_blue = new Vector3D(100, -100, -100);
+  public static final Vector3D source_white = new Vector3D(0, -100, -100);
 
   /**
    * Positions the RGB lights based on viewport dimensions (Tim, 2026-10-03).
@@ -46,5 +48,9 @@ public class LightSource {
     blue_px = half_w * 0.6;
     blue_py = light_y_top;
     blue_pz = light_z;
+    // White light (Tim, 2026-10-03): fourth point light, center top.
+    white_px = 0.0;
+    white_py = light_y_top;
+    white_pz = light_z;
   }
 }

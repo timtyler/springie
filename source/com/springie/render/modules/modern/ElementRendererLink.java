@@ -317,13 +317,14 @@ public final class ElementRendererLink {
           final double b_dot = (blx * ax + bly * ay + blz * az) / bd;
           b_factor = Math.min(1.0, ambient_l + 0.75 * Math.sqrt(Math.max(0.0, 1.0 - b_dot * b_dot)) * RendererDelegator.blue_light_pct / 50.0);
         }
-        // White directional light (Tim, 2026-10-03).
-        final com.springie.geometry.Vector3D white_dir = LightSource.source_1;
-        final double w_len = Math.sqrt(white_dir.x * white_dir.x
-            + white_dir.y * white_dir.y + white_dir.z * white_dir.z);
-        if (w_len > 1e-12) {
-          final double w_dot = (white_dir.x * ax + white_dir.y * ay
-              + white_dir.z * az) / w_len;
+        // White point light (Tim, 2026-10-03).
+        final double wlx_l = LightSource.white_px - midx;
+        final double wly_l = LightSource.white_py - midy;
+        final double wlz_l = LightSource.white_pz - midz;
+        final double w_len_l = Math.sqrt(wlx_l * wlx_l + wly_l * wly_l + wlz_l * wlz_l);
+        if (w_len_l > 1e-12) {
+          final double w_dot = (wlx_l * ax + wly_l * ay
+              + wlz_l * az) / w_len_l;
           final double w_factor = 0.75
               * Math.sqrt(Math.max(0.0, 1.0 - w_dot * w_dot))
               * RendererDelegator.white_light_pct / 50.0;

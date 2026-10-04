@@ -94,13 +94,14 @@ public final class ElementRendererNode {
             final double b_dot = Math.abs((nnx * blx + nny * bly + nnz * blz) / bd);
             b_factor = Math.min(1.0, ambient_n + 0.75 * b_dot * RendererDelegator.blue_light_pct / 50.0);
           }
-          // White directional light (Tim, 2026-10-03).
-          final com.springie.geometry.Vector3D white_dir = LightSource.source_1;
-          final double w_len = Math.sqrt(white_dir.x * white_dir.x
-              + white_dir.y * white_dir.y + white_dir.z * white_dir.z);
-          if (w_len > 1e-12) {
-            final double w_dot = Math.abs((nnx * white_dir.x + nny * white_dir.y
-                + nnz * white_dir.z) / w_len);
+          // White point light (Tim, 2026-10-03).
+          final double wlx_n = LightSource.white_px - node.pos.x;
+          final double wly_n = LightSource.white_py - node.pos.y;
+          final double wlz_n = LightSource.white_pz - node.pos.z;
+          final double w_len_n = Math.sqrt(wlx_n * wlx_n + wly_n * wly_n + wlz_n * wlz_n);
+          if (w_len_n > 1e-12) {
+            final double w_dot = Math.abs((nnx * wlx_n + nny * wly_n
+                + nnz * wlz_n) / w_len_n);
             final double w_factor = 0.75 * w_dot
                 * RendererDelegator.white_light_pct / 50.0;
             r_factor += w_factor;

@@ -170,13 +170,13 @@ public final class ElementRendererFace {
     final double r_factor = Math.min(1.0, ambient + 0.75 * view_dot * r_dot * RendererDelegator.red_light_pct / 50.0);
     final double g_factor = Math.min(1.0, ambient + 0.75 * view_dot * g_dot * RendererDelegator.green_light_pct / 50.0);
     final double b_factor = Math.min(1.0, ambient + 0.75 * view_dot * b_dot * RendererDelegator.blue_light_pct / 50.0);
-    // White directional light (Tim, 2026-10-03): the old white light,
-    // restored. Adds equally to all channels.
-    final com.springie.geometry.Vector3D white_dir = LightSource.source_1;
-    final double w_len = Math.sqrt(white_dir.x * white_dir.x
-        + white_dir.y * white_dir.y + white_dir.z * white_dir.z);
-    final double w_dot = Math.abs((nx * white_dir.x + ny * white_dir.y
-        + nz * white_dir.z) / w_len);
+    // White point light (Tim, 2026-10-03): fourth light, like RGB.
+    // Adds equally to all channels.
+    final double wlx = LightSource.white_px - center.x;
+    final double wly = LightSource.white_py - center.y;
+    final double wlz = LightSource.white_pz - center.z;
+    final double wd = Math.sqrt(wlx * wlx + wly * wly + wlz * wlz);
+    final double w_dot = Math.abs((nx * wlx + ny * wly + nz * wlz) / wd);
     final double w_factor = 0.75 * view_dot * w_dot
         * RendererDelegator.white_light_pct / 50.0;
     // Specular highlight (Tim, 2026-10-03, extra credit): where the

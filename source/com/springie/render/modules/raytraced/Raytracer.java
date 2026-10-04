@@ -35,6 +35,7 @@ final class Raytracer {
   static double RED_PX, RED_PY, RED_PZ;
   static double GREEN_PX, GREEN_PY, GREEN_PZ;
   static double BLUE_PX, BLUE_PY, BLUE_PZ;
+  static double WHITE_PX, WHITE_PY, WHITE_PZ;
 
   /**
    * Test hook: when true, updateLightPositions() does not overwrite the
@@ -108,6 +109,9 @@ final class Raytracer {
     BLUE_PX = LightSource.blue_px;
     BLUE_PY = LightSource.blue_py;
     BLUE_PZ = LightSource.blue_pz;
+    WHITE_PX = LightSource.white_px;
+    WHITE_PY = LightSource.white_py;
+    WHITE_PZ = LightSource.white_pz;
   }
 
   private Raytracer() {
@@ -903,13 +907,20 @@ final class Raytracer {
         final double nbdz = BLUE_PZ - ncz;
         final double nbd = Math.sqrt(nbdx * nbdx + nbdy * nbdy + nbdz * nbdz);
         final double nb_fall = 1.0 / (1.0 + (nbd / LIGHT_FALLOFF_K) * (nbd / LIGHT_FALLOFF_K));
-        // White light in fast mode (Tim, 2026-10-03): modulates the ambient.
-        // 50% = no change, 100% = 1.5x brighter, 0% = 0.5x.
-        final int amb = (int) (ambientBase()
-            * (0.5 + RendererDelegator.white_light_pct / 100.0));
-        final int nr_scaled = Math.min(255, amb + (int) (159.0 * Math.min(1.0, nr_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0 * RendererDelegator.red_light_pct / 100.0)));
-        final int ng_scaled = Math.min(255, amb + (int) (159.0 * Math.min(1.0, ng_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0 * RendererDelegator.green_light_pct / 100.0)));
-        final int nb_scaled = Math.min(255, amb + (int) (159.0 * Math.min(1.0, nb_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0 * RendererDelegator.blue_light_pct / 100.0)));
+        // White point light in fast mode (Tim, 2026-10-03): flat falloff,
+        // like RGB. Adds equally to all channels.
+        final double nwdx = WHITE_PX - ncx;
+        final double nwdy = WHITE_PY - ncy;
+        final double nwdz = WHITE_PZ - ncz;
+        final double nwd = Math.sqrt(nwdx * nwdx + nwdy * nwdy + nwdz * nwdz);
+        final double nw_fall = 1.0 / (1.0 + (nwd / LIGHT_FALLOFF_K) * (nwd / LIGHT_FALLOFF_K));
+        final int w_add_fast = (int) (159.0 * Math.min(1.0, nw_fall
+            * LIGHT_BRIGHTNESS * RendererDelegator.white_light_pct / 100.0
+            * RendererDelegator.white_light_pct / 100.0));
+        final int amb = ambientBase();
+        final int nr_scaled = Math.min(255, amb + w_add_fast + (int) (159.0 * Math.min(1.0, nr_fall * LIGHT_BRIGHTNESS * RendererDelegator.red_light_pct / 100.0 * RendererDelegator.red_light_pct / 100.0)));
+        final int ng_scaled = Math.min(255, amb + w_add_fast + (int) (159.0 * Math.min(1.0, ng_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0 * RendererDelegator.green_light_pct / 100.0)));
+        final int nb_scaled = Math.min(255, amb + w_add_fast + (int) (159.0 * Math.min(1.0, nb_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0 * RendererDelegator.blue_light_pct / 100.0)));
         final int nr = (fogged >> 16) & 0xFF;
         final int ng = (fogged >> 8) & 0xFF;
         final int nb = fogged & 0xFF;
@@ -1013,12 +1024,19 @@ final class Raytracer {
             * Math.min(1.0, b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0);
       }
       // Half-to-full brightness per channel.
-      // White light in fast mode (Tim, 2026-10-03): modulates ambient.
-      final int amb2 = (int) (ambientBase()
-          * (0.5 + RendererDelegator.white_light_pct / 100.0));
-      final int r_scaled = Math.min(255, amb2 + (int) (159.0 * r_factor));
-      final int g_scaled = Math.min(255, amb2 + (int) (159.0 * g_factor));
-      final int b_scaled = Math.min(255, amb2 + (int) (159.0 * b_factor));
+      // White point light in fast mode (Tim, 2026-10-03): flat falloff
+      // from hit point, adds equally to all channels.
+      final double wdx2 = WHITE_PX - px;
+      final double wdy2 = WHITE_PY - py;
+      final double wdz2 = WHITE_PZ - pz_light;
+      final double wd2 = Math.sqrt(wdx2 * wdx2 + wdy2 * wdy2 + wdz2 * wdz2);
+      final double w_fall2 = 1.0 / (1.0 + (wd2 / LIGHT_FALLOFF_K) * (wd2 / LIGHT_FALLOFF_K));
+      final int w_add2 = (int) (159.0 * Math.min(1.0, w_fall2
+          * LIGHT_BRIGHTNESS * RendererDelegator.white_light_pct / 100.0));
+      final int amb2 = ambientBase();
+      final int r_scaled = Math.min(255, amb2 + w_add2 + (int) (159.0 * r_factor));
+      final int g_scaled = Math.min(255, amb2 + w_add2 + (int) (159.0 * g_factor));
+      final int b_scaled = Math.min(255, amb2 + w_add2 + (int) (159.0 * b_factor));
       final int r = (fogged >> 16) & 0xFF;
       final int g = (fogged >> 8) & 0xFF;
       final int b = fogged & 0xFF;
@@ -1072,6 +1090,19 @@ final class Raytracer {
       b_dot = 1.0;
     }
     final double b_fall = 1.0 / (1.0 + (bd / LIGHT_FALLOFF_K) * (bd / LIGHT_FALLOFF_K));
+    // White point light (Tim, 2026-10-03): fourth light, like RGB.
+    final double wlx = WHITE_PX - px;
+    final double wly = WHITE_PY - py;
+    final double wlz = WHITE_PZ - pz_light;
+    final double wd = Math.sqrt(wlx * wlx + wly * wly + wlz * wlz);
+    double w_dot = (hit.nx * wlx + hit.ny * wly + hit.nz * wlz) / wd;
+    if (w_dot < 0.0) {
+      w_dot = -w_dot;
+    }
+    if (w_dot > 1.0) {
+      w_dot = 1.0;
+    }
+    final double w_fall = 1.0 / (1.0 + (wd / LIGHT_FALLOFF_K) * (wd / LIGHT_FALLOFF_K));
 
     // Per-light shadows from the RGB point lights (Tim, 2026-10-03).
     // Each light gets its own shadow factor (1.0 = lit, 0.0 = shadowed);
@@ -1086,9 +1117,12 @@ final class Raytracer {
           GREEN_PX, GREEN_PY, GREEN_PZ, jitter, px, py, pz_light);
       b_shadow = shadowFactor(ray, hit, bvh, stack, shadow_ray, shadow_hit,
           BLUE_PX, BLUE_PY, BLUE_PZ, jitter, px, py, pz_light);
+      final double w_shadow = shadowFactor(ray, hit, bvh, stack, shadow_ray,
+          shadow_hit, WHITE_PX, WHITE_PY, WHITE_PZ, jitter, px, py, pz_light);
       r_dot *= r_shadow;
       g_dot *= g_shadow;
       b_dot *= b_shadow;
+      w_dot *= w_shadow;
     }
     // Ambient occlusion (Tim, 2026-10-03): short hemisphere rays darken
     // crevices. Scales the diffuse; specular and fill are unaffected.
@@ -1137,12 +1171,10 @@ final class Raytracer {
         + (int) (159.0 * Math.min(1.0, g_dot * g_fall * LIGHT_BRIGHTNESS * RendererDelegator.green_light_pct / 100.0)));
     final int b_scaled = Math.min(255, amb3
         + (int) (159.0 * Math.min(1.0, b_dot * b_fall * LIGHT_BRIGHTNESS * RendererDelegator.blue_light_pct / 100.0)));
-    // White directional light (Tim, 2026-10-03): the old white light,
-    // restored. Adds equally to all channels.
-    final double w_dot = Math.max(0.0,
-        hit.nx * LIGHT_X + hit.ny * LIGHT_Y + hit.nz * LIGHT_Z);
-    final int w_add = (int) (159.0 * w_dot
-        * RendererDelegator.white_light_pct / 100.0);
+    // White point light (Tim, 2026-10-03): fourth light, adds equally
+    // to all channels.
+    final int w_add = (int) (159.0 * Math.min(1.0, w_dot * w_fall
+        * LIGHT_BRIGHTNESS * RendererDelegator.white_light_pct / 100.0));
     final int r_white = Math.min(255, r_scaled + w_add);
     final int g_white = Math.min(255, g_scaled + w_add);
     final int b_white = Math.min(255, b_scaled + w_add);
