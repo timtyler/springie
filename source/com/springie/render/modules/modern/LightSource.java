@@ -32,13 +32,15 @@ public class LightSource {
     final int hh = half_h_pixels == 0 ? 300 : half_h_pixels;
     // Lights in fixed-point world units (shifted by Coords.shift), to match
     // the geometry coordinates used by both the ray tracer and the polygon
-    // renderer. Near the top, equally spaced. The z puts them in front.
+    // renderer. Near the top, equally spaced. The z puts them in front of
+    // the model, from the user's perspective (Tim, 2026-10-04): just in
+    // front of the camera at -1024, so they stay on the viewer's side.
     final double scale = (double) (1 << com.springie.render.Coords.shift);
     final double half_w = (double) hw * scale;
     final double half_h = (double) hh * scale;
     final double light_y_top = -half_h * 0.8;
     final double light_y_bottom = half_h * 0.8;
-    final double light_z = -800.0 * scale;
+    final double light_z = -1000.0 * scale;
     red_px = -half_w * 0.6;
     red_py = light_y_top;
     red_pz = light_z;
