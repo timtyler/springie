@@ -673,18 +673,37 @@ final class Raytracer {
         final int x_end = Math.min(x_start + cs, width);
         final int y_end = Math.min(y_start + cs, height);
         if (!edge) {
-          // Interior: fill with the block's colour (no rays). When
-          // "Show active tiles" is on, paint these ray-saving fills red
-          // so the savings are visible. (Tim, 2026-10-03)
-          final int rgb = RendererTileManager.show_active_tiles
-              ? 0xFFFF0000
-              : c_rgb[bidx];
-          for (int y = y_start; y < y_end; y++) {
-            for (int x = x_start; x < x_end; x++) {
-              pixels[y * width + x] = rgb;
+          // Corner verification (Tim, 2026-10-03): the block center hit,
+          // but the corners might miss (jagged borders). Trace the 4
+          // corners; if all hit the same primitive, the block is truly
+          // interior. Otherwise, treat as edge.
+          final Primitive center_prim = c_prim[bidx];
+          boolean corners_match = true;
+          final int[] corner_x = {x_start, x_end - 1, x_start, x_end - 1};
+          final int[] corner_y = {y_start, y_start, y_end - 1, y_end - 1};
+          for (int c = 0; c < 4 && corners_match; c++) {
+            camera.makeRay(x0 + corner_x[c], y0 + corner_y[c], ray);
+            hit.reset();
+            if (!intersectScene(ray, hit, bvh, rings, stack)
+                || hit.primitive != center_prim) {
+              corners_match = false;
             }
           }
-          continue;
+          if (corners_match) {
+            // Interior: fill with the block's colour (no rays). When
+            // "Show active tiles" is on, paint these ray-saving fills red
+            // so the savings are visible.
+            final int rgb = RendererTileManager.show_active_tiles
+                ? 0xFFFF0000
+                : c_rgb[bidx];
+            for (int y = y_start; y < y_end; y++) {
+              for (int x = x_start; x < x_end; x++) {
+                pixels[y * width + x] = rgb;
+              }
+            }
+            continue;
+          }
+          // Corners didn't match: fall through to edge tracing.
         }
         // Edge: trace each pixel at full resolution.
         for (int y = y_start; y < y_end; y++) {
