@@ -365,6 +365,23 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     // composite block above; when nothing was staged the screen already
     // shows this frame, so nothing is painted here.
 
+    // "Show tiles": grid lines at tile boundaries, drawn as a screen
+    // overlay (Tim, 2026-10-04). Tiles now cover the canvas with no gaps.
+    // Drawn BEFORE the red active-tile outlines so the red stays on top
+    // (Tim, 2026-10-04: the black lines were overwriting the red boxes).
+    if (RendererTileManager.show_tiles) {
+      final int divisor = RendererTileManager.divisor;
+      final int w = this.canvas_width;
+      final int h = this.canvas_height;
+      graphics.setColor(Color.BLACK);
+      for (int x = 0; x < w; x += divisor) {
+        graphics.drawLine(x, 0, x, h);
+      }
+      for (int y = 0; y < h; y += divisor) {
+        graphics.drawLine(0, y, w, y);
+      }
+    }
+
     final boolean show_active = RendererTileManager.show_active_tiles;
     final Tile[] tiles = this.tiles;
     for (int i = 0; i < tiles.length; i++) {
@@ -377,20 +394,6 @@ public class ModularRendererRaytraced implements ModularRendererBase {
         graphics.setColor(Color.RED);
         graphics.drawRect(shown.min_x, shown.min_y,
             shown.max_x - shown.min_x, shown.max_y - shown.min_y);
-      }
-    }
-    // "Show tiles": grid lines at tile boundaries, drawn as a screen
-    // overlay (Tim, 2026-10-04). Tiles now cover the canvas with no gaps.
-    if (RendererTileManager.show_tiles) {
-      final int divisor = RendererTileManager.divisor;
-      final int w = this.canvas_width;
-      final int h = this.canvas_height;
-      graphics.setColor(Color.BLACK);
-      for (int x = 0; x < w; x += divisor) {
-        graphics.drawLine(x, 0, x, h);
-      }
-      for (int y = 0; y < h; y += divisor) {
-        graphics.drawLine(0, y, w, y);
       }
     }
   }
