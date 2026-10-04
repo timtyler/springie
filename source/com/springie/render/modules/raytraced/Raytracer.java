@@ -496,19 +496,16 @@ final class Raytracer {
 
   /**
    * Coarse-to-fine tile rendering (Tim, 2026-10-03): only active when
-   * Simple lighting is on. Tests every 4x4-block center (1 ray per block),
-   * then for each hit block decides edge vs interior. Edge blocks
-   * (a neighbour is background or a different primitive) are traced at
-   * full resolution; interior blocks (center + 4 corners all hit the same
-   * primitive) are filled with the block's colour.
+   * Simple lighting is on. 4x4 blocks. Traces the 4 corners; if all hit
+   * the same primitive, fills the block with that colour (4 rays). If
+   * they differ, traces all 16 pixels (12 more rays).
    */
   private static void renderTileCoarseToFine(final int x0, final int y0, final int width,
       int height, final RayCamera camera, final BVH bvh, final RTRing[] rings, final int[] pixels,
       HitStats stats, final BufferedImage scenic, final int background_rgb, final Ray ray,
       Hit hit, final int[] stack, final Ray shadow_ray, final Hit shadow_hit,
       JitterRandom jitter, final int aa) {
-    // Blank the tile with the background. (Tim, 2026-10-03: no longer
-    // red in debug mode -- only the interior ray-saving fills are red.)
+    // Blank the tile with the background.
     if (scenic == null) {
       // Flat background: single fill, no per-pixel rays.
       java.util.Arrays.fill(pixels, 0xFF000000 | background_rgb);
@@ -522,164 +519,65 @@ final class Raytracer {
         }
       }
     }
-    final int cs = 4; // coarse block size
-    final int cw = (width + cs - 1) / cs;
-    final int ch = (height + cs - 1) / cs;
-    final boolean[] c_hit = new boolean[cw * ch];
-    final Primitive[] c_prim = new Primitive[cw * ch];
-    final int[] c_rgb = new int[cw * ch];
-    // Coarse pass (Tim, 2026-10-03): test EVERY block center, not just
-    // sparse seeds. The old seed+flood could miss thin components falling
-    // between seeds, leaving their blocks as background (jagged edges).
-    // 1 ray per block is still 16x cheaper than full tracing.
-    for (int by = 0; by < ch; by++) {
-      for (int bx = 0; bx < cw; bx++) {
-        final int bidx = by * cw + bx;
-        final int px = Math.min(bx * cs + cs / 2, width - 1);
-        final int py = Math.min(by * cs + cs / 2, height - 1);
-        camera.makeRay(x0 + px, y0 + py, ray);
-        hit.reset();
-        if (intersectScene(ray, hit, bvh, rings, stack)) {
-          c_hit[bidx] = true;
-          c_prim[bidx] = hit.primitive;
-          c_rgb[bidx] = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit,
-              jitter);
-        }
-      }
-    }
-    // Refine: edge blocks get full-res traces, interiors get filled.
-    // First pass: compute the edge mask.
-    final boolean[] c_edge = new boolean[cw * ch];
-    for (int by = 0; by < ch; by++) {
-      for (int bx = 0; bx < cw; bx++) {
-        final int bidx = by * cw + bx;
-        if (!c_hit[bidx]) {
-          continue;
-        }
-        // Edge if any 8-neighbour is a miss or a different primitive.
-        boolean edge = false;
-        for (int dy = -1; dy <= 1 && !edge; dy++) {
-          for (int dx = -1; dx <= 1 && !edge; dx++) {
-            if (dx == 0 && dy == 0) {
-              continue;
-            }
-            final int nx = bx + dx;
-            final int ny = by + dy;
-            if (nx < 0 || nx >= cw || ny < 0 || ny >= ch) {
-              edge = true; // tile boundary counts as edge
-              continue;
-            }
-            final int nidx = ny * cw + nx;
-            if (!c_hit[nidx] || c_prim[nidx] != c_prim[bidx]) {
-              edge = true;
-            }
+    // Tim's 4-corner algorithm (2026-10-03): 4x4 blocks. Trace the 4
+    // corners. If all hit the same primitive, fill the block with that
+    // colour (4 rays). Otherwise trace all 16 pixels (12 more rays).
+    final int cs = 4;
+    for (int by = 0; by < height; by += cs) {
+      for (int bx = 0; bx < width; bx += cs) {
+        final int x_end = Math.min(bx + cs, width);
+        final int y_end = Math.min(by + cs, height);
+        // Trace the 4 corners.
+        final int[] cx = {bx, x_end - 1, bx, x_end - 1};
+        final int[] cy = {by, by, y_end - 1, y_end - 1};
+        Primitive first_prim = null;
+        int first_rgb = 0;
+        boolean uniform = true;
+        for (int c = 0; c < 4 && uniform; c++) {
+          camera.makeRay(x0 + cx[c], y0 + cy[c], ray);
+          hit.reset();
+          if (!intersectScene(ray, hit, bvh, rings, stack)) {
+            uniform = false;
+          } else if (c == 0) {
+            first_prim = hit.primitive;
+            first_rgb = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit,
+                jitter);
+          } else if (hit.primitive != first_prim) {
+            uniform = false;
           }
         }
-        c_edge[bidx] = edge;
-      }
-    }
-    // Second pass: fill interiors, trace edges.
-    for (int by = 0; by < ch; by++) {
-      for (int bx = 0; bx < cw; bx++) {
-        final int bidx = by * cw + bx;
-        if (!c_hit[bidx]) {
-          continue;
-        }
-        final boolean edge = c_edge[bidx];
-        final int x_start = bx * cs;
-        final int y_start = by * cs;
-        final int x_end = Math.min(x_start + cs, width);
-        final int y_end = Math.min(y_start + cs, height);
-        if (!edge) {
-          // Corner verification (Tim, 2026-10-03): the block center hit,
-          // but the corners might miss (jagged borders). Trace the 4
-          // corners; if all hit the same primitive, the block is truly
-          // interior. Otherwise, treat as edge.
-          final Primitive center_prim = c_prim[bidx];
-          boolean corners_match = true;
-          final int[] corner_x = {x_start, x_end - 1, x_start, x_end - 1};
-          final int[] corner_y = {y_start, y_start, y_end - 1, y_end - 1};
-          for (int c = 0; c < 4 && corners_match; c++) {
-            camera.makeRay(x0 + corner_x[c], y0 + corner_y[c], ray);
-            hit.reset();
-            if (!intersectScene(ray, hit, bvh, rings, stack)
-                || hit.primitive != center_prim) {
-              corners_match = false;
+        if (uniform) {
+          // All 4 corners hit the same primitive: fill the block.
+          // (In fast mode the shade is flat per primitive, so the
+          // first corner's colour applies to the whole block.)
+          final int rgb = RendererTileManager.show_active_tiles
+              ? 0xFFFF0000
+              : first_rgb;
+          for (int y = by; y < y_end; y++) {
+            for (int x = bx; x < x_end; x++) {
+              pixels[y * width + x] = rgb;
             }
           }
-          if (corners_match) {
-            // Interior: fill with the block's colour (no rays). When
-            // "Show active tiles" is on, paint these ray-saving fills red
-            // so the savings are visible.
-            final int rgb = RendererTileManager.show_active_tiles
-                ? 0xFFFF0000
-                : c_rgb[bidx];
-            for (int y = y_start; y < y_end; y++) {
-              for (int x = x_start; x < x_end; x++) {
-                pixels[y * width + x] = rgb;
-              }
-            }
-            continue;
-          }
-          // Corners didn't match: fall through to edge tracing.
-        }
-        // Edge: trace each pixel at full resolution.
-        for (int y = y_start; y < y_end; y++) {
-          for (int x = x_start; x < x_end; x++) {
-            final int idx = y * width + x;
-            final int rgb;
-            if (aa <= 1) {
+        } else {
+          // Corners differ: trace all 16 pixels at full resolution.
+          for (int y = by; y < y_end; y++) {
+            for (int x = bx; x < x_end; x++) {
+              // Skip the corners we already traced? No -- simpler to
+              // just trace all 16; the 4 corner rays are cheap.
+              final int idx = y * width + x;
               camera.makeRay(x0 + x, y0 + y, ray);
               hit.reset();
-              rgb = intersectScene(ray, hit, bvh, rings, stack)
-                  ? shade(ray, hit, bvh, stack, shadow_ray, shadow_hit, jitter)
-                  : pixels[idx]; // background, already filled
-            } else {
-              long r = 0, g = 0, b = 0;
-              boolean hit_any = false;
-              jitter.setSeed((x0 + x) * 73856093L
-                  ^ (y0 + y) * 19349663L ^ 0x9E3779B9L);
-              for (int sy = 0; sy < aa; sy++) {
-                for (int sx = 0; sx < aa; sx++) {
-                  final double sub_x =
-                      x0 + x + (sx + jitter.nextDouble()) / aa;
-                  final double sub_y =
-                      y0 + y + (sy + jitter.nextDouble()) / aa;
-                  camera.makeRay(sub_x, sub_y, ray);
-                  hit.reset();
-                  if (intersectScene(ray, hit, bvh, rings, stack)) {
-                    final int s = shade(ray, hit, bvh, stack,
-                        shadow_ray, shadow_hit, jitter);
-                    r += (s >> 16) & 0xFF;
-                    g += (s >> 8) & 0xFF;
-                    b += s & 0xFF;
-                    hit_any = true;
-                  } else {
-                    final int s = backgroundAt(scenic, background_rgb,
-                        ray, (int) Math.round(sub_x),
-                        (int) Math.round(sub_y));
-                    r += (s >> 16) & 0xFF;
-                    g += (s >> 8) & 0xFF;
-                    b += s & 0xFF;
-                  }
-                }
+              if (intersectScene(ray, hit, bvh, rings, stack)) {
+                pixels[idx] = shade(ray, hit, bvh, stack, shadow_ray,
+                    shadow_hit, jitter);
               }
-              final int samples = aa * aa;
-              if (hit_any) {
-                rgb = 0xFF000000 | (int) (r / samples) << 16
-                    | (int) (g / samples) << 8 | (int) (b / samples);
-              } else {
-                rgb = pixels[idx]; // background, already filled
-              }
-            }
-            pixels[idx] = rgb;
-            if (stats != null) {
-              stats.add(x, y);
+              // Else: background, already filled.
             }
           }
         }
       }
     }
+  }
   }
 
   /**
