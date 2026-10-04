@@ -671,18 +671,23 @@ final class Raytracer {
     // the shade across a large primitive). (Tim, 2026-10-04)
     Primitive first_prim = null;
     int first_rgb = 0;
-    boolean all_miss = true;
+    boolean seen_hit = false;
+    boolean seen_miss = false;
     boolean first = true;
     for (int i = 0; i < n; i++) {
       final Primitive p = samplePrimitive(x0 + sx[i], y0 + sy[i], camera,
           bvh, rings, ray, hit, stack);
       if (p == null) {
-        if (!all_miss) {
+        seen_miss = true;
+        if (seen_hit) {
           return false;  // Mixed hit/miss: subdivide.
         }
         continue;
       }
-      all_miss = false;
+      seen_hit = true;
+      if (seen_miss) {
+        return false;  // Mixed miss/hit: subdivide.
+      }
       final int rgb = shade(ray, hit, bvh, stack, shadow_ray, shadow_hit,
           jitter);
       if (first) {
@@ -695,8 +700,9 @@ final class Raytracer {
         }
       }
     }
-    if (all_miss) {
-      // Entire block is background, already pre-filled. No rays needed.
+    if (!seen_hit) {
+      // Entire block is background (all missed), already pre-filled.
+      // No rays needed.
       return true;
     }
     // Uniform: fill the block. In debug mode ("Show active tiles"), only
