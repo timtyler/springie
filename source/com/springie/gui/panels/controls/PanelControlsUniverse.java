@@ -510,6 +510,23 @@ public class PanelControlsUniverse {
     panel_light_white.add("East", label_light_white);
     panel_lights.add(panel_light_white);
 
+    // Ambient light (Tim, 2026-10-03).
+    final Panel panel_light_ambient = new Panel();
+    panel_light_ambient.setLayout(new BorderLayout(0, 8));
+    panel_light_ambient.add("West", new Label("Ambient light %:", Label.RIGHT));
+    final Scrollbar scrollbar_light_ambient = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
+    final Label label_light_ambient = new Label("50", Label.LEFT);
+    scrollbar_light_ambient.addAdjustmentListener(new AdjustmentListener() {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
+        final int val = e.getValue();
+        RendererDelegator.ambient_light_pct = val;
+        label_light_ambient.setText("" + val);
+      }
+    });
+    panel_light_ambient.add("Center", scrollbar_light_ambient);
+    panel_light_ambient.add("East", label_light_ambient);
+    panel_lights.add(panel_light_ambient);
+
     final TabbedPanel universe_tabs = new TabbedPanel();
     universe_tabs.add("Main", panel_main);
     universe_tabs.add("Centering", panel_centering);

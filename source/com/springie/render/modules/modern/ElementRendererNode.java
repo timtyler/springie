@@ -55,9 +55,11 @@ public final class ElementRendererNode {
         final double ny = normal.y / (double) (1 << Coords.shift);
         final double nz = normal.z / (double) (1 << Coords.shift);
         final double nlen = Math.sqrt(nx * nx + ny * ny + nz * nz);
-        double r_factor = 0.25;
-        double g_factor = 0.25;
-        double b_factor = 0.25;
+        // Ambient light (Tim, 2026-10-03).
+        final double ambient_n = 0.5 * RendererDelegator.ambient_light_pct / 100.0;
+        double r_factor = ambient_n;
+        double g_factor = ambient_n;
+        double b_factor = ambient_n;
         double r_spec = 0.0;
         double g_spec = 0.0;
         double b_spec = 0.0;
@@ -72,7 +74,7 @@ public final class ElementRendererNode {
           final double rd = Math.sqrt(rlx * rlx + rly * rly + rlz * rlz);
           if (rd > 1e-12) {
             final double r_dot = Math.abs((nnx * rlx + nny * rly + nnz * rlz) / rd);
-            r_factor = 0.25 + 0.75 * r_dot * RendererDelegator.red_light_pct / 50.0;
+            r_factor = Math.min(1.0, ambient_n + 0.75 * r_dot * RendererDelegator.red_light_pct / 50.0);
           }
           // Green light.
           final double glx = LightSource.green_px - node.pos.x;
@@ -81,7 +83,7 @@ public final class ElementRendererNode {
           final double gd = Math.sqrt(glx * glx + gly * gly + glz * glz);
           if (gd > 1e-12) {
             final double g_dot = Math.abs((nnx * glx + nny * gly + nnz * glz) / gd);
-            g_factor = 0.25 + 0.75 * g_dot * RendererDelegator.green_light_pct / 50.0;
+            g_factor = Math.min(1.0, ambient_n + 0.75 * g_dot * RendererDelegator.green_light_pct / 50.0);
           }
           // Blue light.
           final double blx = LightSource.blue_px - node.pos.x;
@@ -90,7 +92,7 @@ public final class ElementRendererNode {
           final double bd = Math.sqrt(blx * blx + bly * bly + blz * blz);
           if (bd > 1e-12) {
             final double b_dot = Math.abs((nnx * blx + nny * bly + nnz * blz) / bd);
-            b_factor = 0.25 + 0.75 * b_dot * RendererDelegator.blue_light_pct / 50.0;
+            b_factor = Math.min(1.0, ambient_n + 0.75 * b_dot * RendererDelegator.blue_light_pct / 50.0);
           }
           // White directional light (Tim, 2026-10-03).
           final com.springie.geometry.Vector3D white_dir = LightSource.source_1;
