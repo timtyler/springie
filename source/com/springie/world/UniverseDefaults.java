@@ -190,14 +190,20 @@ public final class UniverseDefaults {
     CompassPoint.bias_size = compass_bias_size;
     // Restore the N lights (Tim, 2026-10-04).
     synchronized (com.springie.render.modules.modern.LightSource.class) {
-      com.springie.render.modules.modern.LightSource.lights.clear();
-      for (final com.springie.render.modules.modern.Light light : lights_snapshot) {
-        com.springie.render.modules.modern.LightSource.lights.add(
-            new com.springie.render.modules.modern.Light(light));
+      // Don't overwrite user-configured lights (Tim, 2026-10-05).
+      if (!com.springie.render.modules.modern.LightSource.user_configured) {
+        com.springie.render.modules.modern.LightSource.lights.clear();
+        for (final com.springie.render.modules.modern.Light light : lights_snapshot) {
+          com.springie.render.modules.modern.LightSource.lights.add(
+              new com.springie.render.modules.modern.Light(light));
+        }
       }
     }
     com.springie.render.modules.modern.LightSource.light_moved = true;
-    com.springie.render.RendererDelegator.ambient_light_pct = ambient_light_pct;
+    // Don't overwrite user-configured ambient (Tim, 2026-10-05).
+    if (!com.springie.render.modules.modern.LightSource.user_configured) {
+      com.springie.render.RendererDelegator.ambient_light_pct = ambient_light_pct;
+    }
     if (FrEnd.development_version) {
       Node.max_speed = max_speed;
       World.minimum_magnitude = minimum_magnitude;
