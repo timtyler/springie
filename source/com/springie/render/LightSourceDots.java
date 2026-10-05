@@ -24,9 +24,10 @@ public final class LightSourceDots {
 
   /**
    * Currently dragged light (Tim, 2026-10-04): -1 = none, otherwise
-   * the index into LightSource.lights.
+   * the index into LightSource.lights. Volatile: written on the event
+   * thread, read on the render thread (for FRAME_SKIP bypass).
    */
-  public static int dragging = -1;
+  public static volatile int dragging = -1;
 
   private LightSourceDots() {
     // Static only.
@@ -39,6 +40,11 @@ public final class LightSourceDots {
   public static int hitTest(final int sx, final int sy) {
     LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
     synchronized (LightSource.class) {
+      // Defensive: if the list is empty, reset to defaults (Tim, 2026-10-04).
+      if (LightSource.lights.isEmpty()) {
+        LightSource.resetToDefaults();
+        LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
+      }
       for (int i = 0; i < LightSource.lights.size(); i++) {
         final Light light = LightSource.lights.get(i);
         if (light.intensity_pct > 0

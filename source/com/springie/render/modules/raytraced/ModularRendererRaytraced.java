@@ -369,7 +369,9 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     // overlay (Tim, 2026-10-04). Tiles now cover the canvas with no gaps.
     // Drawn BEFORE the red active-tile outlines so the red stays on top
     // (Tim, 2026-10-04: the black lines were overwriting the red boxes).
-    if (RendererTileManager.show_tiles) {
+    // With "one big tile" there's just one tile, so no grid lines
+    // (Tim, 2026-10-04: the divisor grid was misleading).
+    if (RendererTileManager.show_tiles && !RendererTileManager.one_big_tile) {
       final int divisor = RendererTileManager.divisor;
       final int w = this.canvas_width;
       final int h = this.canvas_height;
