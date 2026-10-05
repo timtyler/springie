@@ -108,10 +108,11 @@ public final class UniverseDefaults {
     compass_bias_size = 0;
     lights_snapshot.clear();
     // Default 4 lights (will be replaced by LightSource.resetToDefaults if needed).
-    lights_snapshot.add(new com.springie.render.modules.modern.Light(-60.0, -80.0, 50, 0xFF0000));
-    lights_snapshot.add(new com.springie.render.modules.modern.Light(0.0, 80.0, 50, 0x00FF00));
-    lights_snapshot.add(new com.springie.render.modules.modern.Light(60.0, -80.0, 50, 0x0000FF));
-    lights_snapshot.add(new com.springie.render.modules.modern.Light(0.0, -80.0, 50, 0xFFFFFF));
+    // (Tim, 2026-10-04: spread to the sides, not jammed in one corner.)
+    lights_snapshot.add(new com.springie.render.modules.modern.Light(-80.0, 0.0, 50, 0xFF0000));
+    lights_snapshot.add(new com.springie.render.modules.modern.Light(80.0, 0.0, 50, 0x00FF00));
+    lights_snapshot.add(new com.springie.render.modules.modern.Light(0.0, -80.0, 50, 0x0000FF));
+    lights_snapshot.add(new com.springie.render.modules.modern.Light(0.0, 80.0, 50, 0xFFFFFF));
     ambient_light_pct = 50;
   }
 
