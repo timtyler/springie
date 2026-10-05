@@ -657,7 +657,7 @@ final class Raytracer {
         // All background: thin-cable check (Tim, 2026-10-04).
         if (!extraBackgroundSamplesHit(x0, y0, qx0, qy0, qx1, qy1, px,
             camera, bvh, rings, ray, hit, stack, child)) {
-          return;  // Truly background.
+          return;  // Truly background (pre-filled purple in debug mode).
         }
         // Else fall through to full render.
       }
@@ -1139,8 +1139,10 @@ final class Raytracer {
 
   /**
    * Fills a block's cells, replicating px-by-px (tile-relative). In debug
-   * mode ("Show active tiles") sampled positions keep their real color and
-   * the rest go red; otherwise all go the uniform shade. (Tim, 2026-10-03/04)
+   * mode ("Show rendering details") sampled positions keep their real
+   * color and the rest go red (skipped and hit the model); skipped and
+   * missed shows purple (the tile pre-fill). Otherwise all go the
+   * uniform shade. (Tim, 2026-10-03/04)
    */
   private static void fillBlock(final int[] pixels, final int width,
       final int bx, final int by, final int x_end, final int y_end,
