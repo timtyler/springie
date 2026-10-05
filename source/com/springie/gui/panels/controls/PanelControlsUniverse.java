@@ -21,6 +21,7 @@ import com.springie.world.World;
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Checkbox;
+import java.awt.FlowLayout;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.Scrollbar;
@@ -455,16 +456,19 @@ public class PanelControlsUniverse {
     panel_muscles.add(panel_muscles_period);
 
     // Lights section (Tim, 2026-10-03): RGB sliders, 0-100%, default 50%.
-    final Panel panel_lights = FrEnd.setUpPanelForFrame2();
+    // Use BorderLayout (Tim, 2026-10-04): the old single-column grid
+    // cramped the color tabs at the bottom.
+    final Panel panel_lights = new Panel(new BorderLayout(0, 8));
 
     // Light sources (Tim, 2026-10-04): N lights, each with an intensity
     // slider, a color picker, and a delete button. The rows and the color
     // tabs are rebuilt by rebuildLightControls().
-    panel_lights.add(new Label("Light sources:", Label.LEFT));
+    final Panel panel_light_top = new Panel(new BorderLayout(0, 4));
+    panel_light_top.add("North", new Label("Light sources:", Label.LEFT));
     this.panel_light_list = FrEnd.setUpPanelForFrame2();
-    panel_lights.add(this.panel_light_list);
+    panel_light_top.add("Center", this.panel_light_list);
 
-    final Panel panel_add_light = new Panel();
+    final Panel panel_add_light = new Panel(new FlowLayout(FlowLayout.LEFT, 0, 0));
     this.button_add_light = new Button("Add light");
     this.button_add_light.addActionListener(new ActionListener() {
       public void actionPerformed(final ActionEvent e) {
@@ -476,7 +480,16 @@ public class PanelControlsUniverse {
       }
     });
     panel_add_light.add(this.button_add_light);
-    panel_lights.add(panel_add_light);
+    panel_light_top.add("South", panel_add_light);
+    panel_lights.add("North", panel_light_top);
+
+    // Light colors (Tim, 2026-10-04): one color picker tab per light.
+    // In the Center so the tabs get the available space.
+    final Panel panel_light_colors = new Panel(new BorderLayout(0, 4));
+    panel_light_colors.add("North", new Label("Light colors:", Label.LEFT));
+    this.tab_light_colours = new TabbedPanel();
+    panel_light_colors.add("Center", this.tab_light_colours);
+    panel_lights.add("Center", panel_light_colors);
 
     // Ambient light (Tim, 2026-10-03).
     final Panel panel_light_ambient = new Panel();
@@ -493,12 +506,7 @@ public class PanelControlsUniverse {
     });
     panel_light_ambient.add("Center", this.scrollbar_light_ambient);
     panel_light_ambient.add("East", this.label_light_ambient);
-    panel_lights.add(panel_light_ambient);
-
-    // Light colors (Tim, 2026-10-04): one color picker tab per light.
-    panel_lights.add(new Label("Light colors:", Label.LEFT));
-    this.tab_light_colours = new TabbedPanel();
-    panel_lights.add(this.tab_light_colours);
+    panel_lights.add("South", panel_light_ambient);
 
     rebuildLightControls();
 
