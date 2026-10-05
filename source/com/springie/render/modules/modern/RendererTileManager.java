@@ -55,6 +55,14 @@ public class RendererTileManager {
    */
   public static boolean one_big_tile = false;
 
+  /**
+   * Single buffering (Tim, 2026-10-04): when true, the ray-traced
+   * renderer skips the tile system entirely and re-renders the dirty
+   * rectangle directly onto the main canvas. No tile images, no
+   * compositing -- the main canvas is the only buffer. Off by default.
+   */
+  public static boolean direct_to_canvas = false;
+
   public static int colour_modifier_filled = ColourModifier.natural;
 
   public static int colour_modifier_wireframe = ColourModifier.darker;

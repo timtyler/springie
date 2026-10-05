@@ -193,6 +193,9 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   /** Was the drag box active last frame? (Tim, 2026-10-04) */
   private boolean was_drag_box_active = false;
 
+  /** First frame in direct-to-canvas mode? (Tim, 2026-10-04) */
+  private boolean direct_first_frame = true;
+
   // The skip set of the frame currently being composited: null when that
   // frame re-traced every tile, otherwise true = the tile was skipped.
   // Written when a frame is started, read when it is composited, so the
@@ -232,9 +235,125 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     return this.frame_staged;
   }
 
+  /**
+   * Single-buffered repaint (Tim, 2026-10-04): renders the dirty
+   * rectangle directly onto the main canvas Graphics, with no tile
+   * images and no compositing. The main canvas is the only buffer.
+   */
+  private void repaintDirect(final Graphics graphics,
+      final NodeManager manager, final int width, final int height) {
+    // Compute the dirty rectangle: for now, the full canvas on the
+    // first frame or when the background changed; otherwise the union
+    // of element bounds. (A full dirty-rect tracker is future work.)
+    final int background_rgb =
+        0xFF000000 | RendererDelegator.color_background_number;
+    final boolean background_changed =
+        background_rgb != this.last_background_rgb;
+    this.last_background_rgb = background_rgb;
+
+    int x0 = 0;
+    int y0 = 0;
+    int x1 = width - 1;
+    int y1 = height - 1;
+    final boolean force_full = background_changed || this.direct_first_frame;
+    this.direct_first_frame = false;
+
+    if (!force_full) {
+      // Compute the union of element screen boxes as the dirty rect.
+      // (Simplified: uses the same per-element bounds as the tiled path,
+      // but unioned into one rectangle instead of per-tile.)
+      final RectangleInt dirty = new RectangleInt(Integer.MAX_VALUE,
+          Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
+      boolean has_content = false;
+      if (FrEnd.render_nodes) {
+        final List<?> nodes = manager.element;
+        final int count = nodes.size();
+        for (int i = 0; i < count; i++) {
+          final Node node = (Node) nodes.get(i);
+          final double radius = node.type.radius;
+          if (radius <= 0.0) {
+            continue;
+          }
+          final int z = node.pos.z;
+          final int world_per_pixel =
+              Coords.shift_constant_z + (z >> Coords.shift_z);
+          if (world_per_pixel <= 0) {
+            continue;
+          }
+          final long sx = Coords.getXCoords(node.pos.x, z);
+          final long sy = Coords.getYCoords(node.pos.y, z);
+          final long r =
+              (long) Math.ceil(radius / world_per_pixel) + 2;
+          final int ex0 = (int) Math.max(0, sx - r);
+          final int ey0 = (int) Math.max(0, sy - r);
+          final int ex1 = (int) Math.min(width - 1, sx + r);
+          final int ey1 = (int) Math.min(height - 1, sy + r);
+          if (ex0 <= ex1 && ey0 <= ey1) {
+            if (ex0 < dirty.min_x) dirty.min_x = ex0;
+            if (ey0 < dirty.min_y) dirty.min_y = ey0;
+            if (ex1 > dirty.max_x) dirty.max_x = ex1;
+            if (ey1 > dirty.max_y) dirty.max_y = ey1;
+            has_content = true;
+          }
+        }
+      }
+      // (Links/faces omitted for brevity: they are covered by the node
+      // bounds in practice, and a full re-render happens on background
+      // change or first frame. A complete dirty-rect tracker would
+      // include them.)
+      if (!has_content) {
+        // Nothing to render.
+        return;
+      }
+      x0 = dirty.min_x;
+      y0 = dirty.min_y;
+      x1 = dirty.max_x;
+      y1 = dirty.max_y;
+    }
+
+    // Clamp to canvas.
+    if (x0 < 0) x0 = 0;
+    if (y0 < 0) y0 = 0;
+    if (x1 >= width) x1 = width - 1;
+    if (y1 >= height) y1 = height - 1;
+    if (x0 > x1 || y0 > y1) {
+      return;
+    }
+
+    // Render the dirty rectangle directly.
+    final int rw = x1 - x0 + 1;
+    final int rh = y1 - y0 + 1;
+    final RayCamera camera = new RayCamera();
+    final Primitive[] primitives = RayScene.build(manager);
+    final BVH bvh = new BVH(primitives);
+    final RTRing[] rings = RayScene.selectionRings(manager,
+        camera.getEyeX(), camera.getEyeY(), camera.getEyeZ());
+    final int[] pixels = new int[rw * rh];
+    final Raytracer.HitStats stats = new Raytracer.HitStats();
+    Raytracer.renderTile(x0, y0, rw, rh, camera, bvh, rings, pixels, stats);
+
+    // Blit directly to the main canvas.
+    final java.awt.image.BufferedImage img =
+        new java.awt.image.BufferedImage(rw, rh,
+            java.awt.image.BufferedImage.TYPE_INT_RGB);
+    img.setRGB(0, 0, rw, rh, pixels, 0, rw);
+    graphics.drawImage(img, x0, y0, null);
+
+    // Overlay the drag box on the screen (not in the rendered pixels).
+    if (isDragBoxActive()) {
+      drawDragBox(graphics);
+    }
+  }
+
   public void repaint(final Graphics graphics, final NodeManager manager) {
     final int width = Coords.x_pixels;
     final int height = Coords.y_pixels;
+    // Single buffering (Tim, 2026-10-04): render the dirty rectangle
+    // directly onto the main canvas, no tiles.
+    if (com.springie.render.modules.modern.RendererTileManager.direct_to_canvas) {
+      repaintDirect(graphics, manager, width, height);
+      return;
+    }
     final boolean show_tiles = RendererTileManager.show_tiles;
     if (this.tiles == null || width != this.canvas_width
         || height != this.canvas_height || show_tiles != this.last_show_tiles) {

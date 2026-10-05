@@ -35,6 +35,8 @@ public class PanelPreferencesRendererRaytraced {
 
   private Checkbox checkbox_ambient_occlusion;
 
+  private Checkbox checkbox_direct_to_canvas;
+
   private Panel shadows_row;
 
   private Panel reflections_row;
@@ -136,6 +138,20 @@ public class PanelPreferencesRendererRaytraced {
     });
     this.choice_coarse_to_fine = choice_coarse;
     this.coarse_to_fine_row.add(choice_coarse);
+
+    // Single buffering (Tim, 2026-10-04): render the dirty rectangle
+    // directly onto the main canvas, no tiles. Off by default.
+    final Panel panel_direct = new Panel();
+    this.checkbox_direct_to_canvas = new Checkbox("Direct to canvas (single buffering)",
+        com.springie.render.modules.modern.RendererTileManager.direct_to_canvas);
+    this.checkbox_direct_to_canvas.addItemListener(new ItemListener() {
+      public void itemStateChanged(final ItemEvent e) {
+        com.springie.render.modules.modern.RendererTileManager.direct_to_canvas =
+            ((Checkbox) e.getSource()).getState();
+      }
+    });
+    panel_direct.add(this.checkbox_direct_to_canvas);
+    this.panel.add(panel_direct);
   }
 
   /**
@@ -345,5 +361,8 @@ public class PanelPreferencesRendererRaytraced {
 
     RendererDelegator.coarse_to_fine = 32;
     this.choice_coarse_to_fine.select("32x32");
+
+    com.springie.render.modules.modern.RendererTileManager.direct_to_canvas = false;
+    this.checkbox_direct_to_canvas.setState(false);
   }
 }
