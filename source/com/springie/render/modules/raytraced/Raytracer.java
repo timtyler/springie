@@ -412,15 +412,22 @@ final class Raytracer {
     }
     // Blank the tile with the background. If there's no scenic texture,
     // a single fill is enough (no per-pixel rays). (Tim, 2026-10-03)
-    if (scenic == null) {
-      java.util.Arrays.fill(pixels, 0xFF000000 | background_rgb);
-    } else {
-      int i = 0;
-      for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-          camera.makeRay(x0 + x, y0 + y, ray);
-          pixels[i++] = backgroundAt(scenic, background_rgb, ray,
-              x0 + x, y0 + y);
+    // In debug mode ("Show rendering details", Tim, 2026-10-04) the
+    // pixels are pre-filled with purple; don't overwrite.
+    final boolean debug =
+        com.springie.render.modules.modern.RendererTileManager
+            .show_active_tiles;
+    if (!debug) {
+      if (scenic == null) {
+        java.util.Arrays.fill(pixels, 0xFF000000 | background_rgb);
+      } else {
+        int i = 0;
+        for (int y = 0; y < height; y++) {
+          for (int x = 0; x < width; x++) {
+            camera.makeRay(x0 + x, y0 + y, ray);
+            pixels[i++] = backgroundAt(scenic, background_rgb, ray,
+                x0 + x, y0 + y);
+          }
         }
       }
     }
@@ -556,17 +563,24 @@ final class Raytracer {
       HitStats stats, final BufferedImage scenic, final int background_rgb, final Ray ray,
       Hit hit, final int[] stack, final Ray shadow_ray, final Hit shadow_hit,
       JitterRandom jitter, final int aa, final int px) {
-    // Blank the tile with the background.
-    if (scenic == null) {
-      // Flat background: single fill, no per-pixel rays.
-      java.util.Arrays.fill(pixels, 0xFF000000 | background_rgb);
-    } else {
-      int i = 0;
-      for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-          camera.makeRay(x0 + x, y0 + y, ray);
-          pixels[i++] = backgroundAt(scenic, background_rgb, ray,
-              x0 + x, y0 + y);
+    // Blank the tile with the background. In debug mode ("Show
+    // rendering details", Tim, 2026-10-04) the pixels are pre-filled
+    // with purple (skipped and missed); don't overwrite.
+    final boolean debug =
+        com.springie.render.modules.modern.RendererTileManager
+            .show_active_tiles;
+    if (!debug) {
+      if (scenic == null) {
+        // Flat background: single fill, no per-pixel rays.
+        java.util.Arrays.fill(pixels, 0xFF000000 | background_rgb);
+      } else {
+        int i = 0;
+        for (int y = 0; y < height; y++) {
+          for (int x = 0; x < width; x++) {
+            camera.makeRay(x0 + x, y0 + y, ray);
+            pixels[i++] = backgroundAt(scenic, background_rgb, ray,
+                x0 + x, y0 + y);
+          }
         }
       }
     }
