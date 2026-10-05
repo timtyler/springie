@@ -279,14 +279,14 @@ final class Raytracer {
       return;
     }
     if (aa <= 1) {
-      renderTileFloodFill(x0, y0, width, height, camera, bvh, rings,
+      renderTileCoarseToFine(x0, y0, width, height, camera, bvh, rings,
           pixels, stats, scenic, background_rgb, ray, hit, stack,
-          shadow_ray, shadow_hit, jitter, aa);
+          shadow_ray, shadow_hit, jitter, aa, px);
       return;
     }
-    renderTileFloodFill(x0, y0, width, height, camera, bvh, rings,
+    renderTileCoarseToFine(x0, y0, width, height, camera, bvh, rings,
         pixels, stats, scenic, background_rgb, ray, hit, stack,
-        shadow_ray, shadow_hit, jitter, aa);
+        shadow_ray, shadow_hit, jitter, aa, px);
   }
 
   /**
