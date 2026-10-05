@@ -282,7 +282,10 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       final boolean full_blit = this.staged_skip == null || drag_box
           || was_drag_box_active || this.light_moved_since_blit;
       // Capture before the update: the clear needs "was active".
-      final boolean box_needs_erase = drag_box || was_drag_box_active;
+      // Also clear when a light moved (Tim, 2026-10-04): the dots are
+      // screen-space overlays, like the box.
+      final boolean box_needs_erase = drag_box || was_drag_box_active
+          || this.light_moved_since_blit;
       was_drag_box_active = drag_box;
       this.light_moved_since_blit = false;
       // Single buffering (Tim, 2026-10-04): draw the re-traced tiles

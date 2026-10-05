@@ -109,20 +109,30 @@ public final class LightSourceDots {
   }
 
   /**
-   * Drag a light to a screen position (Tim, 2026-10-04): converts to
-   * percentages of the viewport half-size. Takes the Light reference
-   * directly (not an index) to avoid index mismatches.
+   * Drag a light to a screen position (Tim, 2026-10-04): uses the
+   * inverse projection to convert screen pixels to world coordinates
+   * at the light's depth, then stores as percentages. This accounts
+   * for perspective; the old linear math had a 0.5x error.
    */
   public static void dragTo(final Light light_ref, final int sx, final int sy) {
     if (light_ref == null) {
       return;
     }
+    // Inverse project: screen pixels (fixed-point) -> world coordinates
+    // at the light's current depth. The inverse functions expect
+    // fixed-point screen coordinates.
+    final int sx_fp = sx << Coords.shift;
+    final int sy_fp = sy << Coords.shift;
+    final int pz = (int) light_ref.pz;
+    final int world_x = Coords.inverseXCoords(sx_fp, pz);
+    final int world_y = Coords.inverseYCoords(sy_fp, pz);
     // Store as percentages of the viewport half-size (Tim, 2026-10-04):
     // survives window resizes, and what we persist.
     final int hw = Coords.x_pixelso2 == 0 ? 400 : Coords.x_pixelso2;
     final int hh = Coords.y_pixelso2 == 0 ? 300 : Coords.y_pixelso2;
-    double x_pct = (double) (sx - Coords.x_pixelso2) / (double) hw * 100.0;
-    double y_pct = (double) (sy - Coords.y_pixelso2) / (double) hh * 100.0;
+    final double scale = (double) (1 << Coords.shift);
+    double x_pct = (double) world_x / ((double) hw * scale) * 100.0;
+    double y_pct = (double) world_y / ((double) hh * scale) * 100.0;
     // Clamp to a sane range (Tim, 2026-10-04): prevents the light from
     // going so far off-screen that the projection breaks and the dot
     // disappears.
