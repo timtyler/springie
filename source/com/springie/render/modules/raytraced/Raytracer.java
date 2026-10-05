@@ -671,7 +671,14 @@ final class Raytracer {
         // All background: thin-cable check (Tim, 2026-10-04).
         if (!extraBackgroundSamplesHit(x0, y0, qx0, qy0, qx1, qy1, px,
             camera, bvh, rings, ray, hit, stack, child)) {
-          return;  // Truly background (pre-filled purple in debug mode).
+          // Truly background: in debug mode, mark sampled positions
+          // with their traced result (Tim, 2026-10-04).
+          if (com.springie.render.modules.modern.RendererTileManager
+              .show_active_tiles) {
+            fillSkippedBackground(pixels, width, qx0, qy0, qx1, qy1, px,
+                child);
+          }
+          return;
         }
         // Else fall through to full render.
       }
@@ -905,7 +912,14 @@ final class Raytracer {
           camera, bvh, rings, ray, hit, stack, samples)) {
         return false;  // Hit a thin feature: subdivide.
       }
-      // Truly background, already pre-filled.
+      // Truly background: in debug mode, mark the sampled positions
+      // with their traced result (black), leaving the interior purple.
+      // (Tim, 2026-10-04: purple must mean zero rays.)
+      if (com.springie.render.modules.modern.RendererTileManager
+          .show_active_tiles) {
+        fillSkippedBackground(pixels, width, bx, by, x_end, y_end, px,
+            samples);
+      }
       return true;
     }
     // Uniform: fill the block.
@@ -1198,6 +1212,42 @@ final class Raytracer {
     // draws the tile's red outline when coarse-to-fine is on. (Tim, 2026-10-03)
     stats.add(bx * px, by * px);
     stats.add((x_end - 1) * px, (y_end - 1) * px);
+  }
+
+  /**
+   * Fills a skipped background block in debug mode (Tim, 2026-10-04):
+   * the sampled positions (corners, edge samples) show their actual
+   * traced result (black for misses), and the unsampled interior shows
+   * purple. This gives an accurate picture: purple means zero rays,
+   * black means traced and missed.
+   */
+  private static void fillSkippedBackground(final int[] pixels,
+      final int width, final int bx, final int by, final int x_end,
+      final int y_end, final int px, final BlockSamples samples) {
+    final int purple_rgb = 0xFFFF00FF;
+    final int height = pixels.length / width;
+    for (int cy = by; cy < y_end; cy++) {
+      for (int cx = bx; cx < x_end; cx++) {
+        final int si = samples.find(cx, cy);
+        final int rgb;
+        if (si >= 0) {
+          // Traced: show the actual result (black for background).
+          rgb = samples.prim[si] == null ? 0xFF000000 : samples.rgb[si];
+        } else {
+          // Not traced: purple.
+          rgb = purple_rgb;
+        }
+        final int x0_px = cx * px;
+        final int y0_px = cy * px;
+        final int x1_px = Math.min(x0_px + px, width);
+        final int y1_px = Math.min(y0_px + px, height);
+        for (int y = y0_px; y < y1_px; y++) {
+          for (int x = x0_px; x < x1_px; x++) {
+            pixels[y * width + x] = rgb;
+          }
+        }
+      }
+    }
   }
 
   /**
