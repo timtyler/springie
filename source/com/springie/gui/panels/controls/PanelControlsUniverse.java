@@ -502,6 +502,8 @@ public class PanelControlsUniverse {
         final int val = e.getValue();
         RendererDelegator.ambient_light_pct = val;
         label_light_ambient.setText("" + val);
+        // Ambient is a light: force a re-trace (Tim, 2026-10-04).
+        LightSource.light_moved = true;
       }
     });
     panel_light_ambient.add("Center", this.scrollbar_light_ambient);
