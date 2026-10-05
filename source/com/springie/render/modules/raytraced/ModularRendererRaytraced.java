@@ -778,12 +778,20 @@ public class ModularRendererRaytraced implements ModularRendererBase {
         }
         final long sx = Coords.getXCoords(node.pos.x, z);
         final long sy = Coords.getYCoords(node.pos.y, z);
-        long r = (long) Math.ceil(radius / world_per_pixel) + 2;
+        // The sphere's front hemisphere is closer to the camera, so it
+        // projects larger than radius / wpp_at_center. Use the front
+        // depth for the screen radius, or the tile culling will clip
+        // the node's silhouette at tile edges. (Tim, 2026-10-04)
+        final int z_front = z - (int) Math.ceil(radius);
+        final int wpp_front =
+            Coords.shift_constant_z + (z_front >> Coords.shift_z);
+        final int wpp = wpp_front > 0 ? wpp_front : world_per_pixel;
+        long r = (long) Math.ceil(radius / wpp) + 2;
         if (node.type.selected) {
           // The billboard selection ring reaches 4/3 the node radius
           // plus 8 pixels, exactly like RayScene.selectionRings.
           final long ring =
-              (long) Math.ceil(radius * 4.0 / 3.0 / world_per_pixel) + 8 + 2;
+              (long) Math.ceil(radius * 4.0 / 3.0 / wpp) + 8 + 2;
           if (ring > r) {
             r = ring;
           }
