@@ -41,14 +41,15 @@ public class LightSource {
    */
   public static synchronized void resetToDefaults() {
     lights.clear();
-    // Light one: red, left top.
-    lights.add(new Light(-60.0, -80.0, 50, 0xFF0000));
-    // Light two: green, center bottom.
-    lights.add(new Light(0.0, 80.0, 50, 0x00FF00));
-    // Light three: blue, right top.
-    lights.add(new Light(60.0, -80.0, 50, 0x0000FF));
-    // Light four: white, center top.
-    lights.add(new Light(0.0, -80.0, 50, 0xFFFFFF));
+    // Light one: red, far left. (Tim, 2026-10-04: spread to the sides,
+    // not jammed in one corner.)
+    lights.add(new Light(-80.0, 0.0, 50, 0xFF0000));
+    // Light two: green, far right.
+    lights.add(new Light(80.0, 0.0, 50, 0x00FF00));
+    // Light three: blue, top.
+    lights.add(new Light(0.0, -80.0, 50, 0x0000FF));
+    // Light four: white, bottom.
+    lights.add(new Light(0.0, 80.0, 50, 0xFFFFFF));
   }
 
   /**
