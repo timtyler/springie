@@ -42,7 +42,7 @@ public class PanelControlsUniverse {
   // Light sliders (Tim, 2026-10-03): stored to reflect reset.
   // The N light sources (Tim, 2026-10-04) are rebuilt dynamically by
   // rebuildLightControls(); only ambient keeps a fixed slider.
-  private Panel panel_light_list;
+  // Light controls are rebuilt by rebuildLightControls() (Tim, 2026-10-05).
   private TabbedPanel tab_light_colours;
   private Button button_add_light;
   private Scrollbar scrollbar_light_ambient;
@@ -455,40 +455,32 @@ public class PanelControlsUniverse {
     panel_muscles.add(panel_muscles_amplitude);
     panel_muscles.add(panel_muscles_period);
 
-    // Lights section (Tim, 2026-10-03): RGB sliders, 0-100%, default 50%.
-    // Use BorderLayout (Tim, 2026-10-04): the old single-column grid
-    // cramped the color tabs at the bottom.
+    // Lights section (Tim, 2026-10-05): one tab per light, each with
+    // its intensity slider at the top, delete button, and color picker.
+    // The old duplicate intensity list at the top is gone.
     final Panel panel_lights = new Panel(new BorderLayout(0, 8));
 
-    // Light sources (Tim, 2026-10-04): N lights, each with an intensity
-    // slider, a color picker, and a delete button. The rows and the color
-    // tabs are rebuilt by rebuildLightControls().
-    final Panel panel_light_top = new Panel(new BorderLayout(0, 4));
-    panel_light_top.add("North", new Label("Light sources:", Label.LEFT));
-    this.panel_light_list = FrEnd.setUpPanelForFrame2();
-    panel_light_top.add("Center", this.panel_light_list);
+    // Light tabs (Tim, 2026-10-04/05): one tab per light.
+    // In the Center so the tabs get the available space.
+    final Panel panel_light_colors = new Panel(new BorderLayout(0, 4));
+    this.tab_light_colours = new TabbedPanel();
+    panel_light_colors.add("Center", this.tab_light_colours);
 
+    // Add light button below the tabs (Tim, 2026-10-05).
     final Panel panel_add_light = new Panel(new FlowLayout(FlowLayout.LEFT, 0, 0));
     this.button_add_light = new Button("Add light");
     this.button_add_light.addActionListener(new ActionListener() {
       public void actionPerformed(final ActionEvent e) {
         synchronized (LightSource.class) {
           LightSource.lights.add(new Light(0.0, 0.0, 50, 0xFFFFFF));
+          LightSource.user_configured = true;
         }
         LightSource.light_moved = true;
         rebuildLightControls();
       }
     });
     panel_add_light.add(this.button_add_light);
-    panel_light_top.add("South", panel_add_light);
-    panel_lights.add("North", panel_light_top);
-
-    // Light colors (Tim, 2026-10-04): one color picker tab per light.
-    // In the Center so the tabs get the available space.
-    final Panel panel_light_colors = new Panel(new BorderLayout(0, 4));
-    panel_light_colors.add("North", new Label("Light colors:", Label.LEFT));
-    this.tab_light_colours = new TabbedPanel();
-    panel_light_colors.add("Center", this.tab_light_colours);
+    panel_light_colors.add("South", panel_add_light);
     panel_lights.add("Center", panel_light_colors);
 
     // Ambient light (Tim, 2026-10-03).
@@ -506,6 +498,7 @@ public class PanelControlsUniverse {
         // the value is lost when defaults are re-applied.
         com.springie.world.UniverseDefaults.setAmbientLightPct(val);
         // Ambient is a light: force a re-trace (Tim, 2026-10-04).
+        LightSource.user_configured = true;
         LightSource.light_moved = true;
       }
     });
@@ -683,21 +676,23 @@ public class PanelControlsUniverse {
   }
 
   /**
-   * Rebuilds the per-light intensity rows and the color picker tabs from
-   * LightSource.lights (Tim, 2026-10-04). Called after add/delete and by
-   * reflectLights() after a reset or model load.
+   * Rebuilds the per-light tabs from LightSource.lights (Tim, 2026-10-05):
+   * each tab has its intensity slider at the top, a delete button, and
+   * the color picker. Called after add/delete and by reflectLights()
+   * after a reset or model load.
    */
   private void rebuildLightControls() {
     final Light[] lights;
     synchronized (LightSource.class) {
       lights = LightSource.lights.toArray(new Light[0]);
     }
-    this.panel_light_list.removeAll();
+    this.tab_light_colours.removeAll();
     for (int i = 0; i < lights.length; i++) {
       final Light light = lights[i];
-      final Panel row = new Panel();
-      row.setLayout(new BorderLayout(0, 8));
-      row.add("West", new Label("Light " + (i + 1) + " %:", Label.RIGHT));
+      final Panel tab = new Panel(new BorderLayout(0, 4));
+      // Intensity slider at the top (Tim, 2026-10-05).
+      final Panel row = new Panel(new BorderLayout(0, 8));
+      row.add("West", new Label("Intensity %:", Label.RIGHT));
       final Scrollbar scrollbar = new Scrollbar(Scrollbar.HORIZONTAL,
           light.intensity_pct, 1, 0, 101);
       final Label value = new Label("" + light.intensity_pct, Label.LEFT);
@@ -706,6 +701,7 @@ public class PanelControlsUniverse {
           final int val = e.getValue();
           light.intensity_pct = val;
           value.setText("" + val);
+          LightSource.user_configured = true;
           LightSource.light_moved = true;
         }
       });
@@ -717,6 +713,7 @@ public class PanelControlsUniverse {
         public void actionPerformed(final ActionEvent e) {
           synchronized (LightSource.class) {
             LightSource.lights.remove(light);
+            LightSource.user_configured = true;
           }
           LightSource.light_moved = true;
           rebuildLightControls();
@@ -724,13 +721,8 @@ public class PanelControlsUniverse {
       });
       east.add("East", delete);
       row.add("East", east);
-      this.panel_light_list.add(row);
-    }
-    this.panel_light_list.validate();
-
-    this.tab_light_colours.removeAll();
-    for (int i = 0; i < lights.length; i++) {
-      final Light light = lights[i];
+      tab.add("North", row);
+      // Color picker below.
       final ColorPicker picker = new ColorPicker(
           new ColorPickerInformer() {
             public void inform(final int colour) {
@@ -739,7 +731,8 @@ public class PanelControlsUniverse {
             }
           });
       picker.color_picker_controller.setColour(light.colour);
-      this.tab_light_colours.add("Light " + (i + 1), picker.panel);
+      tab.add("Center", picker.panel);
+      this.tab_light_colours.add("Light " + (i + 1), tab);
     }
     this.tab_light_colours.validate();
   }

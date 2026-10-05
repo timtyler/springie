@@ -19,6 +19,13 @@ public class LightSource {
    */
   public static final List<Light> lights = new ArrayList<>();
 
+  /**
+   * True if the user has explicitly configured lights via the UI (Tim,
+   * 2026-10-05). When true, resetToDefaults() (called on model load)
+   * does not overwrite the user's settings with hardcoded defaults.
+   */
+  public static volatile boolean user_configured = false;
+
   static {
     resetToDefaults();
   }
@@ -40,6 +47,10 @@ public class LightSource {
    * Resets to the four default lights (Tim, 2026-10-04).
    */
   public static synchronized void resetToDefaults() {
+    // Don't overwrite user-configured lights (Tim, 2026-10-05).
+    if (user_configured) {
+      return;
+    }
     lights.clear();
     // Light one: red, far left. (Tim, 2026-10-04: spread to the sides,
     // not jammed in one corner.)

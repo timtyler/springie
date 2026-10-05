@@ -23,6 +23,14 @@ public final class LightSourceDots {
   private static int frame_count = 0;
 
   /**
+   * Last drawn screen positions (Tim, 2026-10-05): used to erase the
+   * old dots with background color before drawing new ones, preventing
+   * trails during drag. Indexed by light list position; -1 = not drawn.
+   */
+  private static int[] last_sx = new int[0];
+  private static int[] last_sy = new int[0];
+
+  /**
    * Currently dragged light (Tim, 2026-10-04): null = none, otherwise
    * the Light object reference. Using the reference (not the index)
    * avoids index mismatches if the list changes mid-drag. Volatile:
@@ -181,26 +189,56 @@ public final class LightSourceDots {
     // Refresh from the live viewport size (Tim, 2026-10-04): stale
     // zero-size positions collapsed all dots to one point.
     LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
+    // Erase old dots with background color (Tim, 2026-10-05): prevents
+    // trails during drag. Essential in single-buffered mode where the
+    // canvas isn't cleared each frame.
+    final int bg = com.springie.render.RendererDelegator
+        .color_background_number;
+    g.setColor(new Color(bg));
+    synchronized (LightSource.class) {
+      // Resize tracking arrays if light count changed.
+      final int n = LightSource.lights.size();
+      if (last_sx.length != n) {
+        last_sx = new int[n];
+        last_sy = new int[n];
+        java.util.Arrays.fill(last_sx, -1);
+        java.util.Arrays.fill(last_sy, -1);
+      }
+      for (int i = 0; i < n; i++) {
+        if (last_sx[i] >= 0) {
+          g.fillOval(last_sx[i] - RADIUS - 1, last_sy[i] - RADIUS - 1,
+              (RADIUS + 1) * 2, (RADIUS + 1) * 2);
+        }
+        last_sx[i] = -1;
+        last_sy[i] = -1;
+      }
+    }
     // Skip lights at 0% intensity (Tim, 2026-10-03).
     // Dots use the configured light colors (Tim, 2026-10-04).
     synchronized (LightSource.class) {
-      for (final Light light : LightSource.lights) {
+      final int n = LightSource.lights.size();
+      for (int i = 0; i < n; i++) {
+        final Light light = LightSource.lights.get(i);
         if (light.intensity_pct > 0) {
-          drawOne(g, light.px, light.py, light.pz,
+          final int[] pos = drawOne(g, light.px, light.py, light.pz,
               new Color(light.colour));
+          if (pos != null && i < last_sx.length) {
+            last_sx[i] = pos[0];
+            last_sy[i] = pos[1];
+          }
         }
       }
     }
   }
 
-  private static void drawOne(final Graphics g, final double wx,
+  private static int[] drawOne(final Graphics g, final double wx,
       final double wy, final double wz, final Color color) {
     final int ix = (int) wx;
     final int iy = (int) wy;
     final int iz = (int) wz;
     // Skip if on the eye plane (projection divides by zero).
     if (Coords.shift_constant_z + (iz >> Coords.shift_z) == 0) {
-      return;
+      return null;
     }
     int sx = Coords.getXCoords(ix, iz);
     int sy = Coords.getYCoords(iy, iz);
@@ -219,5 +257,6 @@ public final class LightSourceDots {
     g.fillOval(sx - RADIUS, sy - RADIUS, RADIUS * 2, RADIUS * 2);
     g.setColor(Color.black);
     g.drawOval(sx - RADIUS, sy - RADIUS, RADIUS * 2, RADIUS * 2);
+    return new int[]{sx, sy};
   }
 }
