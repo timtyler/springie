@@ -531,7 +531,7 @@ public class RendererTileManager {
     }
   }
 
-  private void renderThePolygon(final Graphics graphics,
+  public void renderThePolygon(final Graphics graphics,
       final PolygonComposite composite) {
     final int size = composite.count;
     final int frame = render_frame;

@@ -32,6 +32,16 @@ public class ModularRendererNew implements ModularRendererBase {
   private final ArrayList<PolygonComposite> frame_composites =
       new ArrayList<>();
 
+  /**
+   * Last frame's dirty rectangle in direct-to-canvas mode (Tim, 2026-10-04):
+   * the union of content bounds, used to clear moved content.
+   */
+  private final com.springie.render.RectangleInt last_direct_dirty =
+      new com.springie.render.RectangleInt(Integer.MAX_VALUE,
+          Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
+
+  private boolean direct_first_frame = true;
+
   public void resize(final int x, final int y) {
     this.tiles_current.resize(x, y);
     this.tiles_last.resize(x, y);
@@ -43,6 +53,12 @@ public class ModularRendererNew implements ModularRendererBase {
   }
 
   public void repaint(final Graphics graphics, final NodeManager manager) {
+    // Single buffering (Tim, 2026-10-04): render directly to the canvas,
+    // no tiles.
+    if (RendererTileManager.direct_to_canvas) {
+      repaintDirect(graphics, manager);
+      return;
+    }
     // clear tiles...
 
     this.tiles_current.clear();
@@ -73,6 +89,97 @@ public class ModularRendererNew implements ModularRendererBase {
     // rectangles for next frame's damage repair (moved content is scrubbed
     // over the union of last frame's and this frame's content rects).
     this.tiles_current.rotateFrameState(this.tiles_last);
+
+    RendererDelegator.countRenderedFrame();
+  }
+
+  /**
+   * Single-buffered repaint (Tim, 2026-10-04): renders the dirty
+   * rectangle directly onto the main canvas Graphics, with no tile
+   * images. The main canvas is the only buffer.
+   */
+  private void repaintDirect(final Graphics graphics,
+      final NodeManager manager) {
+    final ArrayList<PolygonComposite> all = this.frame_composites;
+    all.clear();
+
+    final int mask = 0xFFFFFFFF;
+    addNodesToTiles(manager, mask, all);
+    addLinksToTiles(manager, mask, all);
+    addFacesToTiles(manager, mask, all);
+    addDragBoxToTiles(all);
+
+    // Depth sort (same as distribute(), but without tiling).
+    final int size = all.size();
+    if (FrEnd.redraw_deepest_first && size > 1) {
+      // Simple insertion sort by z (stable, adequate for direct mode).
+      for (int i = 1; i < size; i++) {
+        final PolygonComposite key = all.get(i);
+        final int key_z = key.z;
+        int j = i - 1;
+        while (j >= 0 && all.get(j).z > key_z) {
+          all.set(j + 1, all.get(j));
+          j--;
+        }
+        all.set(j + 1, key);
+      }
+    }
+
+    // Compute the dirty rectangle: union of this frame's content bounds
+    // and last frame's (to clear moved content).
+    final com.springie.render.RectangleInt dirty =
+        new com.springie.render.RectangleInt(Integer.MAX_VALUE,
+            Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
+    for (int i = 0; i < size; i++) {
+      final com.springie.render.RectangleInt bb =
+          all.get(i).getBoundingBox();
+      if (bb.min_x < dirty.min_x) dirty.min_x = bb.min_x;
+      if (bb.min_y < dirty.min_y) dirty.min_y = bb.min_y;
+      if (bb.max_x > dirty.max_x) dirty.max_x = bb.max_x;
+      if (bb.max_y > dirty.max_y) dirty.max_y = bb.max_y;
+    }
+    // Union with last frame's dirty rect.
+    if (!this.direct_first_frame) {
+      final com.springie.render.RectangleInt last = this.last_direct_dirty;
+      if (last.min_x < dirty.min_x) dirty.min_x = last.min_x;
+      if (last.min_y < dirty.min_y) dirty.min_y = last.min_y;
+      if (last.max_x > dirty.max_x) dirty.max_x = last.max_x;
+      if (last.max_y > dirty.max_y) dirty.max_y = last.max_y;
+    }
+    this.direct_first_frame = false;
+    // Save for next frame.
+    this.last_direct_dirty.min_x = dirty.min_x;
+    this.last_direct_dirty.min_y = dirty.min_y;
+    this.last_direct_dirty.max_x = dirty.max_x;
+    this.last_direct_dirty.max_y = dirty.max_y;
+
+    final int width = com.springie.render.Coords.x_pixels;
+    final int height = com.springie.render.Coords.y_pixels;
+    // Clamp to canvas.
+    int x0 = Math.max(0, dirty.min_x);
+    int y0 = Math.max(0, dirty.min_y);
+    int x1 = Math.min(width - 1, dirty.max_x);
+    int y1 = Math.min(height - 1, dirty.max_y);
+    if (x0 > x1 || y0 > y1) {
+      return; // Nothing to draw.
+    }
+
+    // Clear the dirty rectangle with the background colour.
+    graphics.setColor(new java.awt.Color(
+        RendererDelegator.color_background_number));
+    graphics.fillRect(x0, y0, x1 - x0 + 1, y1 - y0 + 1);
+
+    // Draw the composites directly, clipped to the dirty rect.
+    final java.awt.Shape old_clip = graphics.getClip();
+    graphics.setClip(x0, y0, x1 - x0 + 1, y1 - y0 + 1);
+    try {
+      // Draw back-to-front (reverse of sorted order) for correct overlap.
+      for (int i = size; --i >= 0;) {
+        this.tiles_current.renderThePolygon(graphics, all.get(i));
+      }
+    } finally {
+      graphics.setClip(old_clip);
+    }
 
     RendererDelegator.countRenderedFrame();
   }
