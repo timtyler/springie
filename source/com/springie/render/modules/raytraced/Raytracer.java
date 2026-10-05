@@ -671,7 +671,17 @@ final class Raytracer {
         // All background: thin-cable check (Tim, 2026-10-04).
         if (!extraBackgroundSamplesHit(x0, y0, qx0, qy0, qx1, qy1, px,
             camera, bvh, rings, ray, hit, stack, child)) {
-          return;  // Truly background (pre-filled purple in debug mode).
+          // Center check (Tim, 2026-10-04): don't skip if the center hits.
+          final int ccx = qx0 + (qx1 - qx0) / 2;
+          final int ccy = qy0 + (qy1 - qy0) / 2;
+          boolean center_hit = false;
+          if (child.find(ccx, ccy) < 0) {
+            center_hit = samplePrimitive(x0 + ccx * px, y0 + ccy * px,
+                camera, bvh, rings, ray, hit, stack) != null;
+          }
+          if (!center_hit) {
+            return;  // Truly background (pre-filled purple in debug mode).
+          }
         }
         // Else fall through to full render.
       }
@@ -904,6 +914,15 @@ final class Raytracer {
       if (extraBackgroundSamplesHit(x0, y0, bx, by, x_end, y_end, px,
           camera, bvh, rings, ray, hit, stack, samples)) {
         return false;  // Hit a thin feature: subdivide.
+      }
+      // Center check (Tim, 2026-10-04): the edge samples can miss a
+      // feature in the block's interior. Sample the center before
+      // skipping as background.
+      final int cx = bx + (x_end - bx) / 2;
+      final int cy = by + (y_end - by) / 2;
+      if (samples.find(cx, cy) < 0 && samplePrimitive(x0 + cx * px,
+          y0 + cy * px, camera, bvh, rings, ray, hit, stack) != null) {
+        return false;  // Hit in the center: subdivide.
       }
       // Truly background, already pre-filled.
       return true;
