@@ -502,6 +502,9 @@ public class PanelControlsUniverse {
         final int val = e.getValue();
         RendererDelegator.ambient_light_pct = val;
         label_light_ambient.setText("" + val);
+        // Write through to the universe snapshot (Tim, 2026-10-04): or
+        // the value is lost when defaults are re-applied.
+        com.springie.world.UniverseDefaults.setAmbientLightPct(val);
         // Ambient is a light: force a re-trace (Tim, 2026-10-04).
         LightSource.light_moved = true;
       }

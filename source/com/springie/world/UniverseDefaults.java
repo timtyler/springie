@@ -80,6 +80,15 @@ public final class UniverseDefaults {
   private static int ambient_light_pct = 50;
 
   /**
+   * Updates the ambient light snapshot (Tim, 2026-10-04): the UI slider
+   * writes through here so the value isn't lost when universe defaults
+   * are re-applied.
+   */
+  public static void setAmbientLightPct(final int pct) {
+    ambient_light_pct = pct;
+  }
+
+  /**
    * Resets the snapshot to the factory defaults. For tests: the snapshot
    * is global state, and a test that loads a model would otherwise pollute
    * the snapshot for tests that run later in the same JVM.
