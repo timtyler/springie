@@ -37,10 +37,11 @@ public class Light {
     this.colour = colour;
     // Initialize derived coords to sensible defaults (Tim, 2026-10-04):
     // prevents 0,0,0 which is on the eye plane and makes the dot vanish.
+    // Z is -50 (slightly in front, not -200 which broke drag tracking).
     final double scale = (double) (1 << com.springie.render.Coords.shift);
     this.px = x_pct / 100.0 * 400.0 * scale;
     this.py = y_pct / 100.0 * 300.0 * scale;
-    this.pz = -200.0 * scale;
+    this.pz = -50.0 * scale;
   }
 
   /** Copy constructor. */

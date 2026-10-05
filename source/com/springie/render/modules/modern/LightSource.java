@@ -62,12 +62,13 @@ public class LightSource {
     final int hh = half_h_pixels == 0 ? 300 : half_h_pixels;
     // Lights in fixed-point world units (shifted by Coords.shift), to match
     // the geometry coordinates used by both the ray tracer and the polygon
-    // renderer. The z puts them in front of the model, from the user's
-    // perspective (Tim, 2026-10-04).
+    // renderer. The z puts them slightly in front of the model, from the
+    // user's perspective (Tim, 2026-10-04): was -200 (too far forward,
+    // broke the drag tracking), now -50.
     final double scale = (double) (1 << com.springie.render.Coords.shift);
     final double half_w = (double) hw * scale;
     final double half_h = (double) hh * scale;
-    final double light_z = -200.0 * scale;
+    final double light_z = -50.0 * scale;
     synchronized (LightSource.class) {
       for (final Light light : lights) {
         light.px = light.x_pct / 100.0 * half_w;

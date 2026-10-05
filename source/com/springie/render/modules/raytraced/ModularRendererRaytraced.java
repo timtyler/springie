@@ -193,6 +193,11 @@ public class ModularRendererRaytraced implements ModularRendererBase {
   /** Was the drag box active last frame? (Tim, 2026-10-04) */
   private boolean was_drag_box_active = false;
 
+  /** Was a light moved since the last blit? (Tim, 2026-10-04): persists
+   * until the blit, unlike LightSource.light_moved which is cleared
+   * when the re-trace starts. */
+  private boolean light_moved_since_blit = false;
+
   // The skip set of the frame currently being composited: null when that
   // frame re-traced every tile, otherwise true = the tile was skipped.
   // Written when a frame is started, read when it is composited, so the
@@ -268,10 +273,16 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       // pixels on screen.
       final boolean drag_box = isDragBoxActive();
       // Force full blit while dragging, plus one more after the drag
-      // ends to erase the last box (Tim, 2026-10-04).
+      // ends to erase the last box (Tim, 2026-10-04). Also force full
+      // blit when a light moved (Tim, 2026-10-04): the light dots are
+      // drawn on the screen (not in the frame), so a partial blit
+      // leaves the old dot behind as a trail. Uses
+      // light_moved_since_blit (persists until the blit) not
+      // LightSource.light_moved (cleared when the re-trace starts).
       final boolean full_blit = this.staged_skip == null || drag_box
-          || was_drag_box_active;
+          || was_drag_box_active || this.light_moved_since_blit;
       was_drag_box_active = drag_box;
+      this.light_moved_since_blit = false;
       // Single buffering (Tim, 2026-10-04): draw the re-traced tiles
       // directly onto the main canvas, skipping the frame_image
       // composite. The tile dirty-tracking, parallelism, and worker
@@ -279,6 +290,15 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       final boolean direct =
           com.springie.render.modules.modern.RendererTileManager.direct_to_canvas;
       if (direct) {
+        // On a full blit, clear the canvas first (Tim, 2026-10-04):
+        // the tile images might not cover every pixel (sub-rectangles),
+        // and the drag box / light dots are screen-space overlays that
+        // must be erased.
+        if (full_blit) {
+          graphics.setColor(new java.awt.Color(
+              RendererDelegator.color_background_number));
+          graphics.fillRect(0, 0, width, height);
+        }
         final Tile[] ctiles = this.tiles;
         for (int i = 0; i < ctiles.length; i++) {
           if (full_blit || !this.staged_skip[i]) {
@@ -349,6 +369,12 @@ public class ModularRendererRaytraced implements ModularRendererBase {
               && !RendererDelegator.simple_lighting)
           || RendererDelegator.scenic_background || background_changed
           || com.springie.render.modules.modern.LightSource.light_moved;
+      // Remember for the blit: the flag is cleared now, but the blit
+      // needs to know a light moved (to erase the old dot).
+      // (Tim, 2026-10-04)
+      if (com.springie.render.modules.modern.LightSource.light_moved) {
+        this.light_moved_since_blit = true;
+      }
       // Clear the flag: this frame re-traces for the moved light.
       com.springie.render.modules.modern.LightSource.light_moved = false;
       final boolean render_all =
