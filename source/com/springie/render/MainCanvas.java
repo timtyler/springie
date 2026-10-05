@@ -70,23 +70,16 @@ public class MainCanvas {
       }
 
       public void mouseDragged(final MouseEvent e) {
-        // Drag the light (Tim, 2026-10-04). Pass a message: the event
-        // thread must not touch the light position directly; the render
-        // thread updates it and re-traces (the light moved, so the
-        // illumination changed). This also re-blits the frame, erasing
-        // the old dot instead of leaving trails (Tim, 2026-10-04).
+        // Drag the light (Tim, 2026-10-04). Updates the Light directly:
+        // the fields are volatile, so the event thread can write them
+        // safely; the render thread picks up the new position and
+        // re-traces (light_moved). No message queue: the async post
+        // was adding latency and failure modes.
         // Uses the Light reference (not the index).
         final com.springie.render.modules.modern.Light dragging =
             LightSourceDots.dragging_light;
         if (dragging != null) {
-          final int sx = e.getX();
-          final int sy = e.getY();
-          FrEnd.new_message_manager.add(new NewMessage(null) {
-            public Object execute() {
-              LightSourceDots.dragTo(dragging, sx, sy);
-              return null;
-            }
-          });
+          LightSourceDots.dragTo(dragging, e.getX(), e.getY());
           return;
         }
         final MainCanvas canvas = getCanvas();
