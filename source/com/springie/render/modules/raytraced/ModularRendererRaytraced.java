@@ -281,6 +281,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       // LightSource.light_moved (cleared when the re-trace starts).
       final boolean full_blit = this.staged_skip == null || drag_box
           || was_drag_box_active || this.light_moved_since_blit;
+      // Capture before the update: the clear needs "was active".
+      final boolean box_needs_erase = drag_box || was_drag_box_active;
       was_drag_box_active = drag_box;
       this.light_moved_since_blit = false;
       // Single buffering (Tim, 2026-10-04): draw the re-traced tiles
@@ -290,11 +292,11 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       final boolean direct =
           com.springie.render.modules.modern.RendererTileManager.direct_to_canvas;
       if (direct) {
-        // On a full blit, clear the canvas first (Tim, 2026-10-04):
-        // the tile images might not cover every pixel (sub-rectangles),
-        // and the drag box / light dots are screen-space overlays that
-        // must be erased.
-        if (full_blit) {
+        // Clear the canvas only when the selection box is/was active
+        // (Tim, 2026-10-04): the box is a screen-space overlay, so the
+        // tile images don't erase its old position. Don't clear on
+        // every full blit -- that would drain performance.
+        if (box_needs_erase) {
           graphics.setColor(new java.awt.Color(
               RendererDelegator.color_background_number));
           graphics.fillRect(0, 0, width, height);
