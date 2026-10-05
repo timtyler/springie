@@ -66,8 +66,6 @@ public class PanelPreferencesRendererModern {
 
   private Checkbox checkbox_one_big_tile;
 
-  private Checkbox checkbox_direct_to_canvas;
-
   private TTChoice choose_polyhedron;
 
   private Label label_tile_size_number;
@@ -302,21 +300,6 @@ public class PanelPreferencesRendererModern {
 
     this.panel_tiles.add(panel_one_big_tile);
 
-    // Single buffering (Tim, 2026-10-04): render directly to the canvas,
-    // no tiles. Shared with the ray-traced renderer.
-    final Panel panel_direct = new Panel();
-    this.checkbox_direct_to_canvas = new Checkbox(
-        "Direct to canvas (single buffering)",
-        RendererTileManager.direct_to_canvas);
-    this.checkbox_direct_to_canvas.addItemListener(new ItemListener() {
-      public void itemStateChanged(final ItemEvent e) {
-        RendererTileManager.direct_to_canvas =
-            ((Checkbox) e.getSource()).getState();
-      }
-    });
-    panel_direct.add(this.checkbox_direct_to_canvas);
-    this.panel_tiles.add(panel_direct);
-
     this.panel_tiles.add(panel_tile_size);
   }
 
@@ -517,10 +500,6 @@ public class PanelPreferencesRendererModern {
     // Show active tiles.
     RendererTileManager.show_active_tiles = false;
     this.checkbox_show_active_tiles.setState(false);
-
-    // Direct to canvas (single buffering).
-    RendererTileManager.direct_to_canvas = false;
-    this.checkbox_direct_to_canvas.setState(false);
 
     // Tile size.
     RendererTileManager.divisor = 340;

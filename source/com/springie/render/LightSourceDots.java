@@ -23,10 +23,17 @@ public final class LightSourceDots {
   private static int frame_count = 0;
 
   /**
-   * Currently dragged light (Tim, 2026-10-04): -1 = none, otherwise
-   * the index into LightSource.lights. Volatile: written on the event
-   * thread, read on the render thread (for FRAME_SKIP bypass).
+   * Currently dragged light (Tim, 2026-10-04): null = none, otherwise
+   * the Light object reference. Using the reference (not the index)
+   * avoids index mismatches if the list changes mid-drag. Volatile:
+   * written on the event thread, read on the render thread.
    */
+  public static volatile Light dragging_light = null;
+
+  /**
+   * @deprecated Use dragging_light instead (Tim, 2026-10-04).
+   */
+  @Deprecated
   public static volatile int dragging = -1;
 
   private LightSourceDots() {
@@ -37,7 +44,11 @@ public final class LightSourceDots {
    * Hit test (Tim, 2026-10-04): returns the light index if the
    * screen point is within a dot, or -1.
    */
-  public static int hitTest(final int sx, final int sy) {
+  /**
+   * Hit test (Tim, 2026-10-04): returns the Light object if the screen
+   * point is within a dot, or null.
+   */
+  public static Light hitTestLight(final int sx, final int sy) {
     LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
     synchronized (LightSource.class) {
       // Defensive: if the list is empty, reset to defaults (Tim, 2026-10-04).
@@ -49,11 +60,26 @@ public final class LightSourceDots {
         final Light light = LightSource.lights.get(i);
         if (light.intensity_pct > 0
             && near(sx, sy, light.px, light.py, light.pz)) {
-          return i;
+          return light;
         }
       }
     }
-    return -1;
+    return null;
+  }
+
+  /**
+   * Hit test (Tim, 2026-10-04): returns the light index (0-N) if the
+   * screen point is within a dot, or -1. @deprecated Use hitTestLight.
+   */
+  @Deprecated
+  public static int hitTest(final int sx, final int sy) {
+    final Light light = hitTestLight(sx, sy);
+    if (light == null) {
+      return -1;
+    }
+    synchronized (LightSource.class) {
+      return LightSource.lights.indexOf(light);
+    }
   }
 
   private static boolean near(final int sx, final int sy, final double wx,
@@ -84,9 +110,13 @@ public final class LightSourceDots {
 
   /**
    * Drag a light to a screen position (Tim, 2026-10-04): converts to
-   * percentages of the viewport half-size.
+   * percentages of the viewport half-size. Takes the Light reference
+   * directly (not an index) to avoid index mismatches.
    */
-  public static void dragTo(final int light, final int sx, final int sy) {
+  public static void dragTo(final Light light_ref, final int sx, final int sy) {
+    if (light_ref == null) {
+      return;
+    }
     // Store as percentages of the viewport half-size (Tim, 2026-10-04):
     // survives window resizes, and what we persist.
     final int hw = Coords.x_pixelso2 == 0 ? 400 : Coords.x_pixelso2;
@@ -106,15 +136,22 @@ public final class LightSourceDots {
     } else if (y_pct > 200.0) {
       y_pct = 200.0;
     }
-    synchronized (LightSource.class) {
-      if (light >= 0 && light < LightSource.lights.size()) {
-        final Light l = LightSource.lights.get(light);
-        l.x_pct = x_pct;
-        l.y_pct = y_pct;
-      }
-    }
+    light_ref.x_pct = x_pct;
+    light_ref.y_pct = y_pct;
     // The illumination changed: force a re-trace (Tim, 2026-10-04).
     LightSource.light_moved = true;
+  }
+
+  /**
+   * @deprecated Use dragTo(Light, int, int) instead (Tim, 2026-10-04).
+   */
+  @Deprecated
+  public static void dragTo(final int light, final int sx, final int sy) {
+    synchronized (LightSource.class) {
+      if (light >= 0 && light < LightSource.lights.size()) {
+        dragTo(LightSource.lights.get(light), sx, sy);
+      }
+    }
   }
 
   /**
@@ -127,7 +164,7 @@ public final class LightSourceDots {
   public static void draw(final Graphics g) {
     // During an active drag, draw every frame for immediate feedback
     // (Tim, 2026-10-04: the FRAME_SKIP made dragged lights lag/disappear).
-    final boolean dragging_active = dragging >= 0;
+    final boolean dragging_active = dragging_light != null;
     if (!dragging_active) {
       frame_count = (frame_count + 1) % FRAME_SKIP;
       if (frame_count != 0) {

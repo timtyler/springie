@@ -75,13 +75,15 @@ public class MainCanvas {
         // thread updates it and re-traces (the light moved, so the
         // illumination changed). This also re-blits the frame, erasing
         // the old dot instead of leaving trails (Tim, 2026-10-04).
-        if (LightSourceDots.dragging >= 0) {
-          final int light = LightSourceDots.dragging;
+        // Uses the Light reference (not the index).
+        final com.springie.render.modules.modern.Light dragging =
+            LightSourceDots.dragging_light;
+        if (dragging != null) {
           final int sx = e.getX();
           final int sy = e.getY();
           FrEnd.new_message_manager.add(new NewMessage(null) {
             public Object execute() {
-              LightSourceDots.dragTo(light, sx, sy);
+              LightSourceDots.dragTo(dragging, sx, sy);
               return null;
             }
           });
@@ -105,6 +107,7 @@ public class MainCanvas {
     this.panel.addMouseListener(new MouseListener() {
       public void mouseReleased(final MouseEvent e) {
         // End light drag (Tim, 2026-10-04).
+        LightSourceDots.dragging_light = null;
         LightSourceDots.dragging = -1;
         FrEnd.mouse_pressed = false;
         FrEnd.new_message_manager.add(new NewMessage(new Point(e.getX() << Coords.shift, e.getY() << Coords.shift)) {
@@ -118,10 +121,12 @@ public class MainCanvas {
 
       public void mousePressed(final MouseEvent e) {
         // Start light drag (Tim, 2026-10-04): if the press hits a
-        // light dot, drag the light instead of the model.
-        final int hit = LightSourceDots.hitTest(e.getX(), e.getY());
-        if (hit >= 0) {
-          LightSourceDots.dragging = hit;
+        // light dot, drag the light instead of the model. Uses the Light
+        // reference (not the index) to avoid mismatches.
+        final com.springie.render.modules.modern.Light hit =
+            LightSourceDots.hitTestLight(e.getX(), e.getY());
+        if (hit != null) {
+          LightSourceDots.dragging_light = hit;
           return;
         }
         final MainCanvas canvas = getCanvas();

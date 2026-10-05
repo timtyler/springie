@@ -26,12 +26,16 @@ public class PanelPreferencesRendererSharedMisc {
 
   public Checkbox checkbox_redraw_deepest_first;
 
+  public Checkbox checkbox_direct_to_canvas;
+
   /**
    * The "Render deepest objects first" row. It lives on the Renderer tab,
    * not in this panel: PanelPreferencesDisplay adds it to the shared
    * Renderer tab when that is built (after this panel).
    */
   Panel panel_redraw_deepest_first;
+
+  Panel panel_direct_to_canvas;
 
   /**
    * The "Face lines:" row. It lives on the Renderer tab's Main sub-tab,
@@ -80,6 +84,22 @@ public class PanelPreferencesRendererSharedMisc {
     });
     this.checkbox_explosions.setState(FrEnd.explosions);
     panel_visible_explosions.add(this.checkbox_explosions);
+
+    // Single buffering (Tim, 2026-10-04): one checkbox for all renderers.
+    // When on, renderers skip the tile system and draw the dirty rectangle
+    // directly onto the main canvas.
+    final Panel panel_direct_to_canvas = new Panel();
+    this.checkbox_direct_to_canvas = new Checkbox(
+        "Direct to canvas (single buffering)",
+        com.springie.render.modules.modern.RendererTileManager.direct_to_canvas);
+    this.checkbox_direct_to_canvas.addItemListener(new ItemListener() {
+      public void itemStateChanged(final ItemEvent e) {
+        com.springie.render.modules.modern.RendererTileManager.direct_to_canvas =
+            ((Checkbox) e.getSource()).getState();
+      }
+    });
+    panel_direct_to_canvas.add(this.checkbox_direct_to_canvas);
+    this.panel_direct_to_canvas = panel_direct_to_canvas;
 
     final Panel panel_redraw_deepest_first = new Panel();
     this.panel_redraw_deepest_first = panel_redraw_deepest_first;
@@ -195,6 +215,7 @@ public class PanelPreferencesRendererSharedMisc {
     fog_target.add(this.panel_fog_row);
     main_target.add(this.panel_face_lines);
     main_target.add(this.checkbox_explosions.getParent());
+    main_target.add(this.panel_direct_to_canvas);
     this.panel.removeAll();
   }
 
@@ -208,6 +229,9 @@ public class PanelPreferencesRendererSharedMisc {
 
     this.checkbox_explosions.setState(true);
     FrEnd.explosions = true;
+
+    this.checkbox_direct_to_canvas.setState(false);
+    com.springie.render.modules.modern.RendererTileManager.direct_to_canvas = false;
 
     this.checkbox_relative_fog.setState(true);
     DeepObjectColourCalculator.depth_is_relative = true;
