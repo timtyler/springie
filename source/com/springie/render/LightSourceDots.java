@@ -162,14 +162,11 @@ public final class LightSourceDots {
    * Only draws 1 frame in 16 to keep it cheap.
    */
   public static void draw(final Graphics g) {
-    // During an active drag, draw every frame for immediate feedback
-    // (Tim, 2026-10-04: the FRAME_SKIP made dragged lights lag/disappear).
-    final boolean dragging_active = dragging_light != null;
-    if (!dragging_active) {
-      frame_count = (frame_count + 1) % FRAME_SKIP;
-      if (frame_count != 0) {
-        return;
-      }
+    // Draw at most 1 frame in 16 (Tim, 2026-10-04): the dots are
+    // cheap but the canvas blit isn't; every frame is too much.
+    frame_count = (frame_count + 1) % FRAME_SKIP;
+    if (frame_count != 0) {
+      return;
     }
     // Refresh from the live viewport size (Tim, 2026-10-04): stale
     // zero-size positions collapsed all dots to one point.
