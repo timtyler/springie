@@ -85,16 +85,17 @@ public class PanelPreferencesRendererSharedMisc {
     this.checkbox_explosions.setState(FrEnd.explosions);
     panel_visible_explosions.add(this.checkbox_explosions);
 
-    // Single buffering (Tim, 2026-10-04): one checkbox for all renderers.
-    // When on, renderers skip the tile system and draw the dirty rectangle
-    // directly onto the main canvas.
+    // Double buffering (Tim, 2026-10-05): one checkbox for all renderers.
+    // When on (the default), renderers composite into an offscreen frame
+    // image before blitting. When off, the ray-traced renderer draws
+    // tiles directly onto the main canvas (single buffering).
     final Panel panel_direct_to_canvas = new Panel();
     this.checkbox_direct_to_canvas = new Checkbox(
-        "Direct to canvas (single buffering)",
-        com.springie.render.modules.modern.RendererTileManager.direct_to_canvas);
+        "Double buffering",
+        com.springie.render.modules.modern.RendererTileManager.double_buffering);
     this.checkbox_direct_to_canvas.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        com.springie.render.modules.modern.RendererTileManager.direct_to_canvas =
+        com.springie.render.modules.modern.RendererTileManager.double_buffering =
             ((Checkbox) e.getSource()).getState();
       }
     });
@@ -230,8 +231,8 @@ public class PanelPreferencesRendererSharedMisc {
     this.checkbox_explosions.setState(true);
     FrEnd.explosions = true;
 
-    this.checkbox_direct_to_canvas.setState(false);
-    com.springie.render.modules.modern.RendererTileManager.direct_to_canvas = false;
+    this.checkbox_direct_to_canvas.setState(true);
+    com.springie.render.modules.modern.RendererTileManager.double_buffering = true;
 
     this.checkbox_relative_fog.setState(true);
     DeepObjectColourCalculator.depth_is_relative = true;

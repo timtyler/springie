@@ -56,12 +56,14 @@ public class RendererTileManager {
   public static boolean one_big_tile = false;
 
   /**
-   * Single buffering (Tim, 2026-10-04): when true, the ray-traced
-   * renderer skips the tile system entirely and re-renders the dirty
-   * rectangle directly onto the main canvas. No tile images, no
-   * compositing -- the main canvas is the only buffer. Off by default.
+   * Double buffering (Tim, 2026-10-05): when true (the default),
+   * renderers composite tiles into an offscreen frame image before
+   * blitting to the canvas. When false (single buffering), the
+   * ray-traced renderer draws re-traced tiles directly onto the main
+   * canvas, skipping the frame image. Inverted from the old
+   * direct_to_canvas flag.
    */
-  public static boolean direct_to_canvas = false;
+  public static boolean double_buffering = true;
 
   public static int colour_modifier_filled = ColourModifier.natural;
 
@@ -320,7 +322,7 @@ public class RendererTileManager {
         // image. The dirty-tracking, distribution, and depth sort are
         // reused; only the offscreen is bypassed. AA/px are not applied
         // in direct mode (they need the offscreen for resampling).
-        if (direct_to_canvas) {
+        if (!double_buffering) {
           potential.min_x = getPixelsFromTileX(i);
           potential.min_y = getPixelsFromTileY(j);
           potential.max_x = potential.min_x + block_size;
@@ -441,9 +443,9 @@ public class RendererTileManager {
     // boundary-box dots, the info button) are not clipped to a stale
     // tile. (Toggling "Show active tiles" used to mask this: its
     // outline pass resets the clip as a side effect.)
-    // In direct-to-canvas mode there are no tile images to blit
-    // (Tim, 2026-10-04): the tiles drew straight to the canvas above.
-    if (direct_to_canvas) {
+    // In single-buffered mode there are no tile images to blit
+    // (Tim, 2026-10-04/05): the tiles drew straight to the canvas above.
+    if (!double_buffering) {
       graphics.setClip(0, 0, Coords.x_pixels, Coords.y_pixels);
       return;
     }

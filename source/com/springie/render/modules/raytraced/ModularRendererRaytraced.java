@@ -259,7 +259,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     // frame being composited. In direct-to-canvas mode the frame_image
     // is skipped (Tim, 2026-10-04): tiles draw straight to the canvas.
     final boolean direct_mode =
-        com.springie.render.modules.modern.RendererTileManager.direct_to_canvas;
+        !com.springie.render.modules.modern.RendererTileManager.double_buffering;
     if (!direct_mode && this.frame_image == null) {
       this.frame_image =
           new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -293,7 +293,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       // composite. The tile dirty-tracking, parallelism, and worker
       // tasks are reused; only the compositing is bypassed.
       final boolean direct =
-          com.springie.render.modules.modern.RendererTileManager.direct_to_canvas;
+          !com.springie.render.modules.modern.RendererTileManager.double_buffering;
       if (direct) {
         // Clear the canvas only when the selection box is/was active
         // (Tim, 2026-10-04): the box is a screen-space overlay, so the
