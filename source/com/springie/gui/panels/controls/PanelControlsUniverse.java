@@ -133,6 +133,13 @@ public class PanelControlsUniverse {
         });
       }
     };
+    // Refresh the X/Y/Z sliders when a light dot is dragged (Tim,
+    // 2026-10-05). Drag events are on the UI thread.
+    LightSource.onLightMoved = new Runnable() {
+      public void run() {
+        refreshLightSliders();
+      }
+    };
   }
 
   void makeEditMiscPanel() {
@@ -688,21 +695,67 @@ public class PanelControlsUniverse {
    * Makes a 0-100% position slider for a light's X, Y, or Z (Tim,
    * 2026-10-05). Exactly one of is_x, is_y, is_z is true.
    */
+  /** Tracks a position slider for refresh on drag (Tim, 2026-10-05). */
+  private static final class LightPosSlider {
+    final Light light;
+    final Scrollbar scrollbar;
+    final Label value;
+    final int axis; // 0=X, 1=Y, 2=Z
+    LightPosSlider(final Light light, final Scrollbar scrollbar,
+        final Label value, final int axis) {
+      this.light = light;
+      this.scrollbar = scrollbar;
+      this.value = value;
+      this.axis = axis;
+    }
+  }
+
+  private final java.util.List<LightPosSlider> light_pos_sliders =
+      new java.util.ArrayList<>();
+
+  /**
+   * Refreshes the X/Y/Z sliders from the light positions (Tim,
+   * 2026-10-05): called when a light dot is dragged.
+   */
+  public void refreshLightSliders() {
+    for (final LightPosSlider lps : this.light_pos_sliders) {
+      final int val;
+      if (lps.axis == 0) {
+        val = (int) lps.light.x_pct;
+      } else if (lps.axis == 1) {
+        val = (int) lps.light.y_pct;
+      } else {
+        val = (int) lps.light.z_pct;
+      }
+      // Clamp to scrollbar range (drag allows -50..150).
+      final int clamped = Math.max(0, Math.min(100, val));
+      lps.scrollbar.setValue(clamped);
+      lps.value.setText("" + clamped);
+    }
+  }
+
   private Panel makePctSlider(final String label_text, final Light light,
       final boolean is_x, final boolean is_y, final boolean is_z) {
     final Panel p = new Panel(new BorderLayout(0, 0));
     p.add("West", new Label(label_text, Label.RIGHT));
     final int initial;
+    final int axis;
     if (is_x) {
       initial = (int) light.x_pct;
+      axis = 0;
     } else if (is_y) {
       initial = (int) light.y_pct;
+      axis = 1;
     } else {
       initial = (int) light.z_pct;
+      axis = 2;
     }
     final Scrollbar scrollbar = new Scrollbar(Scrollbar.HORIZONTAL,
         initial, 1, 0, 101);
     final Label value = new Label("" + initial, Label.LEFT);
+    // Track for refresh on drag (Tim, 2026-10-05).
+    this.light_pos_sliders.add(new LightPosSlider(light, scrollbar, value,
+        axis));
     scrollbar.addAdjustmentListener(new AdjustmentListener() {
       public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int val = e.getValue();
@@ -734,6 +787,8 @@ public class PanelControlsUniverse {
       lights = LightSource.lights.toArray(new Light[0]);
     }
     this.tab_light_colours.removeAll();
+    // Clear tracked sliders; they are re-added by makePctSlider below.
+    this.light_pos_sliders.clear();
     for (int i = 0; i < lights.length; i++) {
       final Light light = lights[i];
       final Panel tab = new Panel(new BorderLayout(0, 4));

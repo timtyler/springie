@@ -159,6 +159,11 @@ public final class LightSourceDots {
     light_ref.y_pct = y_pct;
     // The illumination changed: force a re-trace (Tim, 2026-10-04).
     LightSource.light_moved = true;
+    // Refresh the UI sliders (Tim, 2026-10-05).
+    final Runnable hook = LightSource.onLightMoved;
+    if (hook != null) {
+      hook.run();
+    }
   }
 
   /**

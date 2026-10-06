@@ -44,6 +44,12 @@ public class LightSource {
   public static volatile Runnable onLightsReset;
 
   /**
+   * Callback run after a light is dragged (Tim, 2026-10-05): the UI
+   * registers a hook to refresh the position sliders.
+   */
+  public static volatile Runnable onLightMoved;
+
+  /**
    * Resets to the four default lights (Tim, 2026-10-04): red left,
    * green right, blue top, white bottom.
    */
