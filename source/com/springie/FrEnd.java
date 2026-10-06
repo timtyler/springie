@@ -1226,6 +1226,11 @@ public class FrEnd extends Panel implements Runnable {
 
   public static void main(final String[] args) {
 
+    // Lights start spread to the four sides, not stacked (Tim,
+    // 2026-10-05). Force even if a previous session set the
+    // user_configured flag.
+    com.springie.render.modules.modern.LightSource.forceResetToDefaults();
+
     final FrEnd frontend = new FrEnd();
 
     FrEnd.application = true;

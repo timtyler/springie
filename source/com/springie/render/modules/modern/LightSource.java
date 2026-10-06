@@ -51,6 +51,16 @@ public class LightSource {
     if (user_configured) {
       return;
     }
+    forceResetToDefaults();
+  }
+
+  /**
+   * Resets to the spread defaults even if user_configured is true.
+   * Called once on program startup (Tim, 2026-10-05): lights must
+   * start separate, not stacked.
+   */
+  public static synchronized void forceResetToDefaults() {
+    user_configured = false;
     lights.clear();
     // Light one: red, far left. (Tim, 2026-10-04: spread to the sides,
     // not jammed in one corner.)
