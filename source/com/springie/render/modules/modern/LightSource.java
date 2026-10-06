@@ -37,20 +37,34 @@ public class LightSource {
   public static final Vector3D source_white = new Vector3D(0, -100, -100);
 
   /**
+   * Callback run after resetToDefaults() (Tim, 2026-10-05): the UI
+   * registers a hook to rebuild the light tabs when a model load
+   * resets the lights.
+   */
+  public static volatile Runnable onLightsReset;
+
+  /**
    * Resets to the four default lights (Tim, 2026-10-04): red left,
    * green right, blue top, white bottom.
    */
   public static synchronized void resetToDefaults() {
     lights.clear();
-    // Light one: red, far left. (Tim, 2026-10-04: spread to the sides,
-    // not jammed in one corner.)
-    lights.add(new Light(-80.0, 0.0, 50, 0xFF0000));
+    // Light positions are 0-100% (50 = center). All positive (Tim,
+    // 2026-10-05): the negative percentages were not projecting
+    // correctly.
+    // Light one: red, far left.
+    lights.add(new Light(10.0, 50.0, 50, 0xFF0000));
     // Light two: green, far right.
-    lights.add(new Light(80.0, 0.0, 50, 0x00FF00));
+    lights.add(new Light(90.0, 50.0, 50, 0x00FF00));
     // Light three: blue, top.
-    lights.add(new Light(0.0, -80.0, 50, 0x0000FF));
+    lights.add(new Light(50.0, 10.0, 50, 0x0000FF));
     // Light four: white, bottom.
-    lights.add(new Light(0.0, 80.0, 50, 0xFFFFFF));
+    lights.add(new Light(50.0, 90.0, 50, 0xFFFFFF));
+    // Notify the UI to rebuild the light tabs (Tim, 2026-10-05).
+    final Runnable hook = onLightsReset;
+    if (hook != null) {
+      hook.run();
+    }
   }
 
   /**
@@ -73,8 +87,9 @@ public class LightSource {
     final double light_z = -50.0 * scale;
     synchronized (LightSource.class) {
       for (final Light light : lights) {
-        light.px = light.x_pct / 100.0 * half_w;
-        light.py = light.y_pct / 100.0 * half_h;
+        // 0-100% (50 = center) to -half to +half (Tim, 2026-10-05).
+        light.px = (light.x_pct - 50.0) / 50.0 * half_w;
+        light.py = (light.y_pct - 50.0) / 50.0 * half_h;
         light.pz = light_z;
       }
     }

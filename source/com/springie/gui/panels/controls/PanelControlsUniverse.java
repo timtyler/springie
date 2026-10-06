@@ -122,6 +122,17 @@ public class PanelControlsUniverse {
   public PanelControlsUniverse(NewMessageManager new_message_manager) {
     this.new_message_manager = new_message_manager;
     makeEditMiscPanel();
+    // Rebuild the light tabs when a model load resets the lights
+    // (Tim, 2026-10-05). Runs on the UI thread.
+    LightSource.onLightsReset = new Runnable() {
+      public void run() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+          public void run() {
+            rebuildLightControls();
+          }
+        });
+      }
+    };
   }
 
   void makeEditMiscPanel() {

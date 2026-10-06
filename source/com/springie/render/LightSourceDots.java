@@ -139,20 +139,21 @@ public final class LightSourceDots {
     final int hw = Coords.x_pixelso2 == 0 ? 400 : Coords.x_pixelso2;
     final int hh = Coords.y_pixelso2 == 0 ? 300 : Coords.y_pixelso2;
     final double scale = (double) (1 << Coords.shift);
-    double x_pct = (double) world_x / ((double) hw * scale) * 100.0;
-    double y_pct = (double) world_y / ((double) hh * scale) * 100.0;
+    // Inverse of updateForViewport: 0-100% (50 = center) (Tim, 2026-10-05).
+    double x_pct = (double) world_x / ((double) hw * scale) * 50.0 + 50.0;
+    double y_pct = (double) world_y / ((double) hh * scale) * 50.0 + 50.0;
     // Clamp to a sane range (Tim, 2026-10-04): prevents the light from
     // going so far off-screen that the projection breaks and the dot
     // disappears.
-    if (x_pct < -200.0) {
-      x_pct = -200.0;
-    } else if (x_pct > 200.0) {
-      x_pct = 200.0;
+    if (x_pct < -50.0) {
+      x_pct = -50.0;
+    } else if (x_pct > 150.0) {
+      x_pct = 150.0;
     }
-    if (y_pct < -200.0) {
-      y_pct = -200.0;
-    } else if (y_pct > 200.0) {
-      y_pct = 200.0;
+    if (y_pct < -50.0) {
+      y_pct = -50.0;
+    } else if (y_pct > 150.0) {
+      y_pct = 150.0;
     }
     light_ref.x_pct = x_pct;
     light_ref.y_pct = y_pct;
