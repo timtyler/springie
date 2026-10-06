@@ -433,6 +433,16 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       for (int y = 0; y < h; y += divisor) {
         graphics.drawLine(0, y, w, y);
       }
+      // Show details: red line inside the black tile border (Tim,
+      // 2026-10-05).
+      if (RendererTileManager.show_active_tiles) {
+        graphics.setColor(Color.RED);
+        for (int x = 0; x < w; x += divisor) {
+          for (int y = 0; y < h; y += divisor) {
+            graphics.drawRect(x + 2, y + 2, divisor - 5, divisor - 5);
+          }
+        }
+      }
     }
 
     final boolean show_active = RendererTileManager.show_active_tiles;
@@ -666,14 +676,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     final int rw = tile.rx1 - tile.rx0 + 1;
     final int rh = tile.ry1 - tile.ry0 + 1;
     final int[] pixels = new int[rw * rh];
-    // Debug mode ("Show rendering details", Tim, 2026-10-04): pre-fill
-    // with dark red (skipped and missed the model). Skipped-and-hit shows
-    // red via fillBlock; traced pixels get their real colors.
-    // (Tim, 2026-10-05: was purple.)
-    if (com.springie.render.modules.modern.RendererTileManager
-        .show_active_tiles) {
-      java.util.Arrays.fill(pixels, 0xFF800000);
-    }
+    // Note: "Show rendering details" (show_active_tiles) draws a red
+    // inner border per tile (Tim, 2026-10-05), not a fill.
     final Raytracer.HitStats stats = new Raytracer.HitStats();
     Raytracer.renderTile(rx0, ry0, rw, rh, camera, bvh, rings, pixels,
         stats);
