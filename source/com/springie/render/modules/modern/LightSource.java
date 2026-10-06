@@ -19,13 +19,6 @@ public class LightSource {
    */
   public static final List<Light> lights = new ArrayList<>();
 
-  /**
-   * True if the user has explicitly configured lights via the UI (Tim,
-   * 2026-10-05). When true, resetToDefaults() (called on model load)
-   * does not overwrite the user's settings with hardcoded defaults.
-   */
-  public static volatile boolean user_configured = false;
-
   static {
     resetToDefaults();
   }
@@ -44,23 +37,10 @@ public class LightSource {
   public static final Vector3D source_white = new Vector3D(0, -100, -100);
 
   /**
-   * Resets to the four default lights (Tim, 2026-10-04).
+   * Resets to the four default lights (Tim, 2026-10-04): red left,
+   * green right, blue top, white bottom.
    */
   public static synchronized void resetToDefaults() {
-    // Don't overwrite user-configured lights (Tim, 2026-10-05).
-    if (user_configured) {
-      return;
-    }
-    forceResetToDefaults();
-  }
-
-  /**
-   * Resets to the spread defaults even if user_configured is true.
-   * Called once on program startup (Tim, 2026-10-05): lights must
-   * start separate, not stacked.
-   */
-  public static synchronized void forceResetToDefaults() {
-    user_configured = false;
     lights.clear();
     // Light one: red, far left. (Tim, 2026-10-04: spread to the sides,
     // not jammed in one corner.)

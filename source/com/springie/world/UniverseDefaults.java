@@ -190,13 +190,9 @@ public final class UniverseDefaults {
     CompassPoint.bias_size = compass_bias_size;
     // Reset universe restores the factory spread defaults (Tim,
     // 2026-10-05): red left, green right, blue top, white bottom.
-    // Ignores user_configured and the per-model snapshot.
-    com.springie.render.modules.modern.LightSource.forceResetToDefaults();
+    com.springie.render.modules.modern.LightSource.resetToDefaults();
     com.springie.render.modules.modern.LightSource.light_moved = true;
-    // Restore ambient from the snapshot (still respects user_configured).
-    if (!com.springie.render.modules.modern.LightSource.user_configured) {
-      com.springie.render.RendererDelegator.ambient_light_pct = ambient_light_pct;
-    }
+    com.springie.render.RendererDelegator.ambient_light_pct = ambient_light_pct;
     if (FrEnd.development_version) {
       Node.max_speed = max_speed;
       World.minimum_magnitude = minimum_magnitude;

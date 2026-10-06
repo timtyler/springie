@@ -473,7 +473,6 @@ public class PanelControlsUniverse {
       public void actionPerformed(final ActionEvent e) {
         synchronized (LightSource.class) {
           LightSource.lights.add(new Light(0.0, 0.0, 50, 0xFFFFFF));
-          LightSource.user_configured = true;
         }
         LightSource.light_moved = true;
         rebuildLightControls();
@@ -498,7 +497,6 @@ public class PanelControlsUniverse {
         // the value is lost when defaults are re-applied.
         com.springie.world.UniverseDefaults.setAmbientLightPct(val);
         // Ambient is a light: force a re-trace (Tim, 2026-10-04).
-        LightSource.user_configured = true;
         LightSource.light_moved = true;
       }
     });
@@ -701,7 +699,6 @@ public class PanelControlsUniverse {
           final int val = e.getValue();
           light.intensity_pct = val;
           value.setText("" + val);
-          LightSource.user_configured = true;
           LightSource.light_moved = true;
         }
       });
@@ -713,7 +710,6 @@ public class PanelControlsUniverse {
         public void actionPerformed(final ActionEvent e) {
           synchronized (LightSource.class) {
             LightSource.lights.remove(light);
-            LightSource.user_configured = true;
           }
           LightSource.light_moved = true;
           rebuildLightControls();
