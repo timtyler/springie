@@ -71,16 +71,6 @@ public class RendererTileManager {
    */
   public static boolean one_big_tile = false;
 
-  /**
-   * Double buffering (Tim, 2026-10-05): when true (the default),
-   * renderers composite tiles into an offscreen frame image before
-   * blitting to the canvas. When false (single buffering), the
-   * ray-traced renderer draws re-traced tiles directly onto the main
-   * canvas, skipping the frame image. Inverted from the old
-   * direct_to_canvas flag.
-   */
-  public static boolean double_buffering = true;
-
   public static int colour_modifier_filled = ColourModifier.natural;
 
   public static int colour_modifier_wireframe = ColourModifier.darker;
@@ -431,37 +421,6 @@ public class RendererTileManager {
           continue;
         }
 
-        // Single buffering (Tim, 2026-10-04): draw the tile's vectors
-        // directly onto the main canvas, skipping the offscreen tile
-        // image. The dirty-tracking, distribution, and depth sort are
-        // reused; only the offscreen is bypassed. AA/px are not applied
-        // in direct mode (they need the offscreen for resampling).
-        if (!double_buffering) {
-          potential.min_x = getPixelsFromTileX(i);
-          potential.min_y = getPixelsFromTileY(j);
-          potential.max_x = potential.min_x + block_size;
-          potential.max_y = potential.min_y + block_size;
-
-          tile.setUpActual(potential);
-          tile.union.setToUnion(tile.actual, last_tile.actual);
-
-          // Scrub the union directly on the canvas.
-          doScrubbing(graphics, potential, tile);
-
-          // Draw the vectors directly, clipped to the tile.
-          final java.awt.Shape old_clip = graphics.getClip();
-          graphics.setClip(potential.min_x, potential.min_y,
-              block_size, block_size);
-          try {
-            for (int c = size; --c >= 0;) {
-              renderThePolygon(graphics, v_this.get(c));
-            }
-          } finally {
-            graphics.setClip(old_clip);
-          }
-          continue;
-        }
-
         potential.min_x = getPixelsFromTileX(i);
         potential.min_y = getPixelsFromTileY(j);
         potential.max_x = potential.min_x + block_size;
@@ -512,12 +471,6 @@ public class RendererTileManager {
     // boundary-box dots, the info button) are not clipped to a stale
     // tile. (Toggling "Show active tiles" used to mask this: its
     // outline pass resets the clip as a side effect.)
-    // In single-buffered mode there are no tile images to blit
-    // (Tim, 2026-10-04/05): the tiles drew straight to the canvas above.
-    if (!double_buffering) {
-      graphics.setClip(0, 0, Coords.x_pixels, Coords.y_pixels);
-      return;
-    }
     for (int j = 0; j < this.number_of_tiles_y; j++) {
       for (int i = 0; i < this.number_of_tiles_x; i++) {
         final RendererTile tile = this.array[i][j];

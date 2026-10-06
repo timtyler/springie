@@ -256,11 +256,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     // overlays (like the boundary-box dots) survive there, exactly like
     // the polygon renderer's dirty tiles. The composite runs before the
     // next frame starts, so the staged skip set still describes the
-    // frame being composited. In direct-to-canvas mode the frame_image
-    // is skipped (Tim, 2026-10-04): tiles draw straight to the canvas.
-    final boolean direct_mode =
-        !com.springie.render.modules.modern.RendererTileManager.double_buffering;
-    if (!direct_mode && this.frame_image == null) {
+    // frame being composited.
+    if (this.frame_image == null) {
       this.frame_image =
           new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
       this.frame_staged = true;
@@ -288,32 +285,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
           || this.light_moved_since_blit;
       was_drag_box_active = drag_box;
       this.light_moved_since_blit = false;
-      // Single buffering (Tim, 2026-10-04): draw the re-traced tiles
-      // directly onto the main canvas, skipping the frame_image
-      // composite. The tile dirty-tracking, parallelism, and worker
-      // tasks are reused; only the compositing is bypassed.
-      final boolean direct =
-          !com.springie.render.modules.modern.RendererTileManager.double_buffering;
-      if (direct) {
-        // Clear the canvas only when the selection box is/was active
-        // (Tim, 2026-10-04): the box is a screen-space overlay, so the
-        // tile images don't erase its old position. Don't clear on
-        // every full blit -- that would drain performance.
-        if (box_needs_erase) {
-          graphics.setColor(new java.awt.Color(
-              RendererDelegator.color_background_number));
-          graphics.fillRect(0, 0, width, height);
-        }
-        final Tile[] ctiles = this.tiles;
-        for (int i = 0; i < ctiles.length; i++) {
-          if (full_blit || !this.staged_skip[i]) {
-            final ShownTile shown = ctiles[i].shown;
-            if (shown != null && shown.image != null) {
-              graphics.drawImage(shown.image, shown.rx0, shown.ry0, null);
-            }
-          }
-        }
-      } else if (full_blit) {
+      if (full_blit) {
         this.frame_image = compositeFrame(this.tiles, width, height);
         graphics.drawImage(this.frame_image, 0, 0, null);
       } else {
