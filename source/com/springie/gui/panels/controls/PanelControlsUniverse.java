@@ -685,6 +685,44 @@ public class PanelControlsUniverse {
   }
 
   /**
+   * Makes a 0-100% position slider for a light's X, Y, or Z (Tim,
+   * 2026-10-05). Exactly one of is_x, is_y, is_z is true.
+   */
+  private Panel makePctSlider(final String label_text, final Light light,
+      final boolean is_x, final boolean is_y, final boolean is_z) {
+    final Panel p = new Panel(new BorderLayout(0, 0));
+    p.add("West", new Label(label_text, Label.RIGHT));
+    final int initial;
+    if (is_x) {
+      initial = (int) light.x_pct;
+    } else if (is_y) {
+      initial = (int) light.y_pct;
+    } else {
+      initial = (int) light.z_pct;
+    }
+    final Scrollbar scrollbar = new Scrollbar(Scrollbar.HORIZONTAL,
+        initial, 1, 0, 101);
+    final Label value = new Label("" + initial, Label.LEFT);
+    scrollbar.addAdjustmentListener(new AdjustmentListener() {
+      public void adjustmentValueChanged(final AdjustmentEvent e) {
+        final int val = e.getValue();
+        if (is_x) {
+          light.x_pct = val;
+        } else if (is_y) {
+          light.y_pct = val;
+        } else {
+          light.z_pct = val;
+        }
+        value.setText("" + val);
+        LightSource.light_moved = true;
+      }
+    });
+    p.add("Center", scrollbar);
+    p.add("East", value);
+    return p;
+  }
+
+  /**
    * Rebuilds the per-light tabs from LightSource.lights (Tim, 2026-10-05):
    * each tab has its intensity slider at the top, a delete button, and
    * the color picker. Called after add/delete and by reflectLights()
@@ -729,6 +767,12 @@ public class PanelControlsUniverse {
       east.add("East", delete);
       row.add("East", east);
       tab.add("North", row);
+      // X, Y, Z position sliders (0-100%, 50=center) (Tim, 2026-10-05).
+      final Panel pos_panel = new Panel(new java.awt.GridLayout(3, 1, 0, 2));
+      pos_panel.add(makePctSlider("X %:", light, true, false, false));
+      pos_panel.add(makePctSlider("Y %:", light, false, true, false));
+      pos_panel.add(makePctSlider("Z %:", light, false, false, true));
+      tab.add("Center", pos_panel);
       // Color picker below.
       final ColorPicker picker = new ColorPicker(
           new ColorPickerInformer() {
@@ -738,7 +782,11 @@ public class PanelControlsUniverse {
             }
           });
       picker.color_picker_controller.setColour(light.colour);
-      tab.add("Center", picker.panel);
+      // Wrap color picker and position in a center panel.
+      final Panel center_wrap = new Panel(new BorderLayout(0, 4));
+      center_wrap.add("North", pos_panel);
+      center_wrap.add("Center", picker.panel);
+      tab.add("Center", center_wrap);
       this.tab_light_colours.add("Light " + (i + 1), tab);
     }
     this.tab_light_colours.validate();

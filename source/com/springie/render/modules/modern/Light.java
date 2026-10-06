@@ -8,11 +8,14 @@ package com.springie.render.modules.modern;
  * The world coordinates are derived by LightSource.updateForViewport().
  */
 public class Light {
-  /** X position as % of viewport half-width. */
+  /** X position as % (0-100, 50=center). */
   public volatile double x_pct;
 
-  /** Y position as % of viewport half-height. */
+  /** Y position as % (0-100, 50=center). */
   public volatile double y_pct;
+
+  /** Z position as % (0-100, 50=current -50*scale in front). */
+  public volatile double z_pct;
 
   /** Intensity 0-100%. */
   public volatile int intensity_pct;
@@ -31,23 +34,28 @@ public class Light {
 
   public Light(final double x_pct, final double y_pct, final int intensity_pct,
       final int colour) {
+    this(x_pct, y_pct, 50.0, intensity_pct, colour);
+  }
+
+  public Light(final double x_pct, final double y_pct, final double z_pct,
+      final int intensity_pct, final int colour) {
     this.x_pct = x_pct;
     this.y_pct = y_pct;
+    this.z_pct = z_pct;
     this.intensity_pct = intensity_pct;
     this.colour = colour;
-    // Initialize derived coords to sensible defaults (Tim, 2026-10-04):
-    // prevents 0,0,0 which is on the eye plane and makes the dot vanish.
-    // Z is -50 (slightly in front, not -200 which broke drag tracking).
+    // Initialize derived coords (Tim, 2026-10-05): 0-100% (50=center).
     final double scale = (double) (1 << com.springie.render.Coords.shift);
-    this.px = x_pct / 100.0 * 400.0 * scale;
-    this.py = y_pct / 100.0 * 300.0 * scale;
-    this.pz = -50.0 * scale;
+    this.px = (x_pct - 50.0) / 50.0 * 400.0 * scale;
+    this.py = (y_pct - 50.0) / 50.0 * 300.0 * scale;
+    this.pz = -z_pct * scale;
   }
 
   /** Copy constructor. */
   public Light(final Light other) {
     this.x_pct = other.x_pct;
     this.y_pct = other.y_pct;
+    this.z_pct = other.z_pct;
     this.intensity_pct = other.intensity_pct;
     this.colour = other.colour;
     this.px = other.px;

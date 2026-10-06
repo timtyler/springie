@@ -84,13 +84,13 @@ public class LightSource {
     final double scale = (double) (1 << com.springie.render.Coords.shift);
     final double half_w = (double) hw * scale;
     final double half_h = (double) hh * scale;
-    final double light_z = -50.0 * scale;
     synchronized (LightSource.class) {
       for (final Light light : lights) {
         // 0-100% (50 = center) to -half to +half (Tim, 2026-10-05).
         light.px = (light.x_pct - 50.0) / 50.0 * half_w;
         light.py = (light.y_pct - 50.0) / 50.0 * half_h;
-        light.pz = light_z;
+        // Z: 0-100% (50 = -50*scale in front, the previous fixed value).
+        light.pz = -light.z_pct * scale;
       }
     }
   }
