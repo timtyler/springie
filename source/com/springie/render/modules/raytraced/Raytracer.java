@@ -413,7 +413,7 @@ final class Raytracer {
     // Blank the tile with the background. If there's no scenic texture,
     // a single fill is enough (no per-pixel rays). (Tim, 2026-10-03)
     // In debug mode ("Show rendering details", Tim, 2026-10-04) the
-    // pixels are pre-filled with purple; don't overwrite.
+    // pixels are pre-filled with dark red; don't overwrite.
     final boolean debug =
         com.springie.render.modules.modern.RendererTileManager
             .show_active_tiles;
@@ -565,7 +565,7 @@ final class Raytracer {
       JitterRandom jitter, final int aa, final int px) {
     // Blank the tile with the background. In debug mode ("Show
     // rendering details", Tim, 2026-10-04) the pixels are pre-filled
-    // with purple (skipped and missed); don't overwrite.
+    // with dark red (skipped and missed); don't overwrite.
     final boolean debug =
         com.springie.render.modules.modern.RendererTileManager
             .show_active_tiles;
@@ -913,8 +913,8 @@ final class Raytracer {
         return false;  // Hit a thin feature: subdivide.
       }
       // Truly background: in debug mode, mark the sampled positions
-      // with their traced result (black), leaving the interior purple.
-      // (Tim, 2026-10-04: purple must mean zero rays.)
+      // with their traced result (black), leaving the interior dark red.
+      // (Tim, 2026-10-04: dark red must mean zero rays.)
       if (com.springie.render.modules.modern.RendererTileManager
           .show_active_tiles) {
         fillSkippedBackground(pixels, width, bx, by, x_end, y_end, px,
@@ -1169,7 +1169,7 @@ final class Raytracer {
    * Fills a block's cells, replicating px-by-px (tile-relative). In debug
    * mode ("Show rendering details") sampled positions keep their real
    * color and the rest go red (skipped and hit the model); skipped and
-   * missed shows purple (the tile pre-fill). Otherwise all go the
+   * missed shows dark red (the tile pre-fill). Otherwise all go the
    * uniform shade. (Tim, 2026-10-03/04)
    */
   private static void fillBlock(final int[] pixels, final int width,
@@ -1218,13 +1218,14 @@ final class Raytracer {
    * Fills a skipped background block in debug mode (Tim, 2026-10-04):
    * the sampled positions (corners, edge samples) show their actual
    * traced result (black for misses), and the unsampled interior shows
-   * purple. This gives an accurate picture: purple means zero rays,
+   * dark red. This gives an accurate picture: dark red means zero rays,
    * black means traced and missed.
    */
   private static void fillSkippedBackground(final int[] pixels,
       final int width, final int bx, final int by, final int x_end,
       final int y_end, final int px, final BlockSamples samples) {
-    final int purple_rgb = 0xFFFF00FF;
+    // Dark red for zero-ray tiles (Tim, 2026-10-05: was purple).
+    final int dark_red_rgb = 0xFF800000;
     final int height = pixels.length / width;
     for (int cy = by; cy < y_end; cy++) {
       for (int cx = bx; cx < x_end; cx++) {
@@ -1234,8 +1235,8 @@ final class Raytracer {
           // Traced: show the actual result (black for background).
           rgb = samples.prim[si] == null ? 0xFF000000 : samples.rgb[si];
         } else {
-          // Not traced: purple.
-          rgb = purple_rgb;
+          // Not traced: dark red.
+          rgb = dark_red_rgb;
         }
         final int x0_px = cx * px;
         final int y0_px = cy * px;

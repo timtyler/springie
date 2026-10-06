@@ -667,11 +667,12 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     final int rh = tile.ry1 - tile.ry0 + 1;
     final int[] pixels = new int[rw * rh];
     // Debug mode ("Show rendering details", Tim, 2026-10-04): pre-fill
-    // with purple (skipped and missed the model). Skipped-and-hit shows
+    // with dark red (skipped and missed the model). Skipped-and-hit shows
     // red via fillBlock; traced pixels get their real colors.
+    // (Tim, 2026-10-05: was purple.)
     if (com.springie.render.modules.modern.RendererTileManager
         .show_active_tiles) {
-      java.util.Arrays.fill(pixels, 0xFFFF00FF);
+      java.util.Arrays.fill(pixels, 0xFF800000);
     }
     final Raytracer.HitStats stats = new Raytracer.HitStats();
     Raytracer.renderTile(rx0, ry0, rw, rh, camera, bvh, rings, pixels,
