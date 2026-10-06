@@ -164,6 +164,8 @@ public class TabbedPanel extends Panel implements MouseListener,
   public void removeAll() {
     super.removeAll();
     this.names.clear();
+    this.nCards = 0;
+    this.selected = -1;
     repaint();
   }
 
