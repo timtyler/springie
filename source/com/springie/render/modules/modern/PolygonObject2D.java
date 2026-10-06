@@ -3,7 +3,6 @@
 package com.springie.render.modules.modern;
 
 import com.springie.geometry.Point3D;
-import com.springie.geometry.Vector3D;
 import com.springie.render.Coords;
 import com.springie.render.RectangleInt;
 import java.awt.Color;
@@ -130,26 +129,65 @@ public class PolygonObject2D {
     ny /= len;
     nz /= len;
 
-    final Vector3D light_source = LightSource.source_1;
-    final int dot_product = (int) (nx * 256) * light_source.x
-        + (int) (ny * 256) * light_source.y
-        + (int) (nz * 256) * light_source.z;
-    int scaled = dot_product >> (Coords.shift + 1);
-
-    // Surfaces facing away from the light get no diffuse (Tim,
-    // 2026-10-05): the old code took the absolute value, making
-    // backfaces as bright as frontfaces.
-    if (scaled < 0) {
-      scaled = 0;
+    // N RGB point lights (Tim, 2026-10-05): accumulate diffuse per
+    // channel. Face center is the shading point.
+    final double cx = (x0 + x1 + x2) / 3.0;
+    final double cy = (y0 + y1 + y2) / 3.0;
+    final double cz = (z0 + z1 + z2) / 3.0;
+    double r_acc = 0.0;
+    double g_acc = 0.0;
+    double b_acc = 0.0;
+    // Ambient base (Tim, 2026-10-05): matches the old +128 offset
+    // (128/256 = 50% ambient).
+    final double ambient = 0.5;
+    synchronized (LightSource.class) {
+      for (final com.springie.render.modules.modern.Light light
+          : LightSource.lights) {
+        final int pct = light.intensity_pct;
+        if (pct <= 0) {
+          continue;
+        }
+        final double lx = light.px - cx;
+        final double ly = light.py - cy;
+        final double lz = light.pz - cz;
+        final double llen = Math.sqrt(lx * lx + ly * ly + lz * lz);
+        if (llen < 1e-9) {
+          continue;
+        }
+        // Diffuse: dot of normal with direction to light. Backfaces
+        // (dot < 0) get no contribution (Tim, 2026-10-05).
+        double dot = (nx * lx + ny * ly + nz * lz) / llen;
+        if (dot < 0.0) {
+          dot = 0.0;
+        }
+        final double contrib = dot * pct / 100.0;
+        final int col = light.colour;
+        r_acc += contrib * ((col >> 16) & 0xFF) / 255.0;
+        g_acc += contrib * ((col >> 8) & 0xFF) / 255.0;
+        b_acc += contrib * (col & 0xFF) / 255.0;
+      }
     }
-
-    if (scaled > 127) {
-      scaled = 127;
+    // Scale to 0-255 per channel: ambient + accumulated, clamped.
+    int r_scaled = (int) ((ambient + r_acc) * 255.0);
+    int g_scaled = (int) ((ambient + g_acc) * 255.0);
+    int b_scaled = (int) ((ambient + b_acc) * 255.0);
+    if (r_scaled > 255) {
+      r_scaled = 255;
     }
-
-    scaled += 128;
-
-    final int act_colour = ElementRendererNode.getColour(colour, scaled);
+    if (g_scaled > 255) {
+      g_scaled = 255;
+    }
+    if (b_scaled > 255) {
+      b_scaled = 255;
+    }
+    // Apply per-channel scaling to the base color.
+    final int base_r = colour & 0xFF;
+    final int base_g = (colour >> 8) & 0xFF;
+    final int base_b = (colour >> 16) & 0xFF;
+    final int or = (base_r * r_scaled) >> 8;
+    final int og = (base_g * g_scaled) >> 8;
+    final int ob = (base_b * b_scaled) >> 8;
+    final int act_colour = 0xFF000000 | or | (og << 8) | (ob << 16);
 
     this.colour = act_colour;
     this.bounding_box = null;
