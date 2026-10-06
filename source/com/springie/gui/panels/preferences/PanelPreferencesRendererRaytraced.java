@@ -10,6 +10,7 @@ import java.awt.Choice;
 import java.awt.Component;
 import java.awt.Label;
 import java.awt.Panel;
+import java.awt.BorderLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -206,7 +207,7 @@ public class PanelPreferencesRendererRaytraced {
   private Effect effectPanel(final String name, final boolean enabled, final int strength,
       final EffectSetter setter, final boolean default_on,
       int default_strength) {
-    final Panel panel = new Panel();
+    final Panel panel = new Panel(new BorderLayout(5, 0));
 
     final Checkbox checkbox = new Checkbox(name, enabled);
     // Holder so the listener can use the TTChoice's own mapping.
@@ -234,8 +235,8 @@ public class PanelPreferencesRendererRaytraced {
     });
 
     tt_choice.choice.setVisible(enabled);
-    panel.add(checkbox);
-    panel.add(tt_choice.choice);
+    panel.add("West", checkbox);
+    panel.add("Center", tt_choice.choice);
     return new Effect(panel, checkbox, tt_choice, setter, default_on,
         default_strength);
   }
