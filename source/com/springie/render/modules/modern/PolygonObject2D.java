@@ -136,8 +136,11 @@ public class PolygonObject2D {
         + (int) (nz * 256) * light_source.z;
     int scaled = dot_product >> (Coords.shift + 1);
 
+    // Surfaces facing away from the light get no diffuse (Tim,
+    // 2026-10-05): the old code took the absolute value, making
+    // backfaces as bright as frontfaces.
     if (scaled < 0) {
-      scaled = -scaled;
+      scaled = 0;
     }
 
     if (scaled > 127) {
