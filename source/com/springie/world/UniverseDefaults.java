@@ -116,12 +116,11 @@ public final class UniverseDefaults {
     minimum_magnitude = 0;
     compass_bias_size = 0;
     lights_snapshot.clear();
-    // Default 4 lights (will be replaced by LightSource.resetToDefaults if needed).
-    // (Tim, 2026-10-04: spread to the sides, not jammed in one corner.)
-    lights_snapshot.add(new com.springie.render.modules.modern.Light(-80.0, 0.0, 50, 0xFF0000));
-    lights_snapshot.add(new com.springie.render.modules.modern.Light(80.0, 0.0, 50, 0x00FF00));
-    lights_snapshot.add(new com.springie.render.modules.modern.Light(0.0, -80.0, 50, 0x0000FF));
-    lights_snapshot.add(new com.springie.render.modules.modern.Light(0.0, 80.0, 50, 0xFFFFFF));
+    // Default 4 lights (Tim, 2026-10-05: all-positive 0-100%, 50=center).
+    lights_snapshot.add(new com.springie.render.modules.modern.Light(10.0, 50.0, 50, 0xFF0000));
+    lights_snapshot.add(new com.springie.render.modules.modern.Light(90.0, 50.0, 50, 0x00FF00));
+    lights_snapshot.add(new com.springie.render.modules.modern.Light(50.0, 10.0, 50, 0x0000FF));
+    lights_snapshot.add(new com.springie.render.modules.modern.Light(50.0, 90.0, 50, 0xFFFFFF));
     ambient_light_pct = 50;
   }
 
@@ -188,11 +187,12 @@ public final class UniverseDefaults {
     FrEnd.continuously_centre_z = continuously_centre_z;
     FrEnd.show_world_markers = show_world_markers;
     CompassPoint.bias_size = compass_bias_size;
-    // Reset universe restores the factory spread defaults (Tim,
-    // 2026-10-05): red left, green right, blue top, white bottom.
+    // Reset universe restores the factory defaults (Tim, 2026-10-05):
+    // lights spread (red left, green right, blue top, white bottom),
+    // ambient at 50%.
     com.springie.render.modules.modern.LightSource.resetToDefaults();
     com.springie.render.modules.modern.LightSource.light_moved = true;
-    com.springie.render.RendererDelegator.ambient_light_pct = ambient_light_pct;
+    com.springie.render.RendererDelegator.ambient_light_pct = 50;
     if (FrEnd.development_version) {
       Node.max_speed = max_speed;
       World.minimum_magnitude = minimum_magnitude;
