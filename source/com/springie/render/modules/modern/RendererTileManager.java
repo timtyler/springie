@@ -16,7 +16,11 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.RecursiveAction;
 
 public class RendererTileManager {
   // Deliberately prime: no pixellation factor (2, 3, 4, 5) divides it
@@ -46,6 +50,18 @@ public class RendererTileManager {
   public static boolean show_tiles;
 
   public static boolean show_active_tiles;
+
+  /**
+   * Parallel tile rendering (Tim, 2026-10-05): offscreen tile renders
+   * run in the ForkJoinPool, the blit stays serial. Opt-in with
+   * -Dspringie.parallel_tiles=true. Benchmarked slower on 2-core VM
+   * (ForkJoin overhead dominates for ~10 tiles), may help on more cores.
+   */
+  private static final boolean PARALLEL_TILES =
+      Boolean.getBoolean("springie.parallel_tiles");
+
+  private static final ForkJoinPool TILE_POOL = new ForkJoinPool(
+      Math.max(2, Runtime.getRuntime().availableProcessors() - 1));
 
   /**
    * Tim: when true, use a single tile cropped to the model's bounds
@@ -266,6 +282,101 @@ public class RendererTileManager {
     }
   }
 
+  /**
+   * Renders one tile's offscreen image in parallel (Tim, 2026-10-05).
+   * Each tile owns its BufferedImage, so no sharing. The blit to the
+   * main canvas stays serial.
+   */
+  private final class TileRenderTask extends RecursiveAction {
+    private final RendererTile tile;
+    private final ArrayList<PolygonComposite> v_this;
+    private final int size;
+    private final RectangleInt potential;
+    private final int block_size;
+    private final int aa;
+    private final int px;
+    private final int coarse_w;
+    private final int coarse_h;
+    private final int render_w;
+    private final int render_h;
+
+    TileRenderTask(final RendererTile tile,
+        final ArrayList<PolygonComposite> v_this, final int size,
+        final RectangleInt potential, final int block_size, final int aa,
+        final int px, final int coarse_w, final int coarse_h,
+        final int render_w, final int render_h) {
+      this.tile = tile;
+      this.v_this = v_this;
+      this.size = size;
+      // Copy: the loop reuses its potential object.
+      this.potential = new RectangleInt(potential.min_x, potential.min_y,
+          potential.max_x, potential.max_y);
+      this.block_size = block_size;
+      this.aa = aa;
+      this.px = px;
+      this.coarse_w = coarse_w;
+      this.coarse_h = coarse_h;
+      this.render_w = render_w;
+      this.render_h = render_h;
+    }
+
+    @Override
+    protected void compute() {
+      renderTileOffscreen(this.tile, this.v_this, this.size, this.potential,
+          this.block_size, this.aa, this.px, this.coarse_w, this.coarse_h,
+          this.render_w, this.render_h);
+    }
+  }
+
+  /**
+   * Renders a single tile's polygons to its offscreen image (Tim,
+   * 2026-10-05). Called serially or from TileRenderTask in parallel.
+   * Each tile owns its image, so this is thread-safe. Assumes
+   * tile.setUpActual() and union have been computed.
+   */
+  private void renderTileOffscreen(final RendererTile tile,
+      final ArrayList<PolygonComposite> v_this,
+      final int size, final RectangleInt potential, final int block_size,
+      final int aa, final int px, final int coarse_w, final int coarse_h,
+      final int render_w, final int render_h) {
+    if (tile.image == null) {
+      FrEnd.main_canvas.panel
+          .setBackground(RendererDelegator.color_background);
+      if (aa > 1 || px > 1) {
+        tile.image = new BufferedImage(render_w, render_h,
+            BufferedImage.TYPE_INT_RGB);
+      } else {
+        tile.image = FrEnd.main_canvas.createImage(block_size,
+            block_size);
+      }
+    }
+    final Graphics graphics_paint = tile.image.getGraphics();
+    if (aa > 1 || px > 1) {
+      final Graphics2D graphics_2d = (Graphics2D) graphics_paint;
+      final double scale =
+          (double) (coarse_w * aa) / block_size;
+      graphics_2d.translate(-potential.min_x * scale,
+          -potential.min_y * scale);
+      graphics_2d.scale(scale, scale);
+    } else {
+      graphics_paint.translate(-potential.min_x, -potential.min_y);
+    }
+    doScrubbing(graphics_paint, potential, tile);
+    graphics_paint.setClip(potential.min_x, potential.min_y,
+        block_size, block_size);
+    for (int c = size; --c >= 0;) {
+      renderThePolygon(graphics_paint, v_this.get(c));
+    }
+    if (aa > 1) {
+      if (tile.image_aa == null) {
+        tile.image_aa = new BufferedImage(coarse_w, coarse_h,
+            BufferedImage.TYPE_INT_RGB);
+      }
+      downsampleTile((BufferedImage) tile.image, tile.image_aa, aa);
+    }
+    graphics_paint.dispose();
+  }
+
   private void renderTiled(final RendererTileManager tiles_last, final Graphics graphics,
       int block_size) {
 
@@ -303,6 +414,9 @@ public class RendererTileManager {
     // (and every vacated tile's repaired screen area) is blitted below, so
     // exposure damage self-heals on the next frame without any explicit
     // invalidation.
+    // Parallel tile tasks (Tim, 2026-10-05): collected here, executed
+    // after the loop.
+    final List<TileRenderTask> tile_tasks = new ArrayList<>();
     for (int j = 0; j < this.number_of_tiles_y; j++) {
       for (int i = 0; i < this.number_of_tiles_x; i++) {
         final RendererTile tile = this.array[i][j];
@@ -364,76 +478,31 @@ public class RendererTileManager {
         }
 
         if (size > 0) {
-            if (tile.image == null) {
-              FrEnd.main_canvas.panel
-                  .setBackground(RendererDelegator.color_background);
-              if (aa > 1 || px > 1) {
-                // Rendered at aa / px resolution, then box-filtered
-                // (anti-aliasing) and/or nearest-neighbour upsampled
-                // (pixellation) on blit. A BufferedImage guarantees
-                // readable pixels for the resampling.
-                tile.image = new BufferedImage(render_w, render_h,
-                    BufferedImage.TYPE_INT_RGB);
-              } else {
-                tile.image = FrEnd.main_canvas.createImage(block_size,
-                    block_size);
-              }
-            }
-            final Graphics graphics_paint = tile.image.getGraphics();
-            if (aa > 1 || px > 1) {
-              // Render in screen coordinates scaled to the coarse tile:
-              // translate first, then scale, so a screen point p lands on
-              // tile pixel (coarse_w * aa / block_size) * (p - min). The
-              // scale is the exact inverse of the blit's upscale (which
-              // maps the coarse tile back onto the full tile), not aa /
-              // px: with a prime tile size no px divides block_size
-              // evenly, so aa / px always leaves the last coarse
-              // row/column only fractionally covered, the rasterizer
-              // skips the sliver, and the upscale samples the unpainted
-              // pixels as a dark seam along the tile's bottom and right
-              // edges. The clip and scrub below are in the same user
-              // space, so they scale along untouched.
-              final Graphics2D graphics_2d = (Graphics2D) graphics_paint;
-              final double scale =
-                  (double) (coarse_w * aa) / block_size;
-              graphics_2d.translate(-potential.min_x * scale,
-                  -potential.min_y * scale);
-              graphics_2d.scale(scale, scale);
-            } else {
-              graphics_paint.translate(-potential.min_x, -potential.min_y);
-            }
-            // Scrub the union of last frame's and this frame's content, so
-            // moved content leaves no trail. Always scrub, even for newly
-            // created tiles (createImage content is undefined).
-            doScrubbing(graphics_paint, potential, tile);
-
-            // The tile's vector is already in draw order (see
-            // distribute): ascending by z with deepest-first on, drawn
-            // from the end backwards -- deepest first -- and creation
-            // order with it off. No per-tile sort.
-            graphics_paint.setClip(potential.min_x, potential.min_y,
-                block_size, block_size);
-
-            for (int c = size; --c >= 0;) {
-              renderThePolygon(graphics_paint, v_this.get(c));
-            }
-
-            if (aa > 1) {
-              // Box-filter the supersampled tile into the coarse tile
-              // (the full tile size while pixellation is off).
-              if (tile.image_aa == null) {
-                tile.image_aa = new BufferedImage(coarse_w, coarse_h,
-                    BufferedImage.TYPE_INT_RGB);
-              }
-              downsampleTile((BufferedImage) tile.image, tile.image_aa, aa);
-            }
-            graphics_paint.dispose();
+          if (PARALLEL_TILES) {
+            tile_tasks.add(new TileRenderTask(tile, v_this, size, potential,
+                block_size, aa, px, coarse_w, coarse_h, render_w, render_h));
+          } else {
+            renderTileOffscreen(tile, v_this, size, potential, block_size,
+                aa, px, coarse_w, coarse_h, render_w, render_h);
+          }
           } else if (tile.image != null) {
             // Vacated tile: repair the screen directly and drop the tile.
             doScrubbing(graphics, potential, tile);
             tile.image = null;
             tile.image_aa = null;
           }
+      }
+    }
+
+    // Execute parallel tile renders (Tim, 2026-10-05). The blit below
+    // stays serial.
+    if (!tile_tasks.isEmpty()) {
+      if (PARALLEL_TILES) {
+        ForkJoinTask.invokeAll(tile_tasks);
+      } else {
+        for (final TileRenderTask task : tile_tasks) {
+          task.compute();
+        }
       }
     }
 
@@ -663,6 +732,9 @@ public class RendererTileManager {
       // upsampler then streaks to the right and bottom. Snap the clip out
       // to whole coarse blocks (aligned to the tile origin, matching the
       // upsampler); the min edges already over-cover, which is harmless.
+      // Local (not shared) for thread-safety with parallel tiles (Tim,
+      // 2026-10-05).
+      final RectangleInt scrub_rect = new RectangleInt(0, 0, 0, 0);
       snapScrubToCoarseBlocks(union, potential.min_x, potential.min_y, px,
           scrub_rect);
       graphics.setClip(scrub_rect.min_x, scrub_rect.min_y,
@@ -675,10 +747,6 @@ public class RendererTileManager {
     // Tim: blank the minimal content box, not the whole tile/canvas.
     scrubTile(graphics, union);
   }
-
-  // Scratch rect for the snapped scrub clip, reused across tiles and
-  // frames to stay out of the render loop's allocations.
-  private final RectangleInt scrub_rect = new RectangleInt(0, 0, 0, 0);
 
   /**
    * Expands a damage rect by the pixellation bleed margin. The coarse
