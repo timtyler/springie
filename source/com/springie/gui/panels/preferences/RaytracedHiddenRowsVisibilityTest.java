@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The rows that do not apply to the ray-traced renderer ("Node
- * polyhedron", "Cable divisions", "Strut divisions", "Strut/cable
+ * polyhedron", "Cable divisions", "Strut divisions", "Link
  * sides", "Face lines") configure rasterizer-only concepts. They are
  * removed from the Renderer tab's Main sub-tab while ray-tracing is
  * active and restored to their usual slot for the rasterizers -- added
@@ -34,7 +34,7 @@ class RaytracedHiddenRowsVisibilityTest {
 
   private static final String[] LABELS = {
       "Node polyhedron:", "Cable divisions:", "Strut divisions:",
-      "Strut/cable sides:", "Face lines:" };
+      "Link sides:", "Face lines:" };
 
   @BeforeAll
   static void boot() throws Exception {

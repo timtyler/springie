@@ -243,7 +243,7 @@ public class PanelPreferencesDisplay {
     FrEnd.panel_preferences_renderer_modern
         .setDeepestFirstRowVisible(!no_rasterizer_concepts);
     // The rasterizer-only rows ("Node polyhedron", "Cable/Strut
-    // divisions", "Strut/cable sides", "Face lines") configure concepts
+    // divisions", "Link sides", "Face lines") configure concepts
     // the ray-traced renderer ignores, so those rows are hidden there.
     FrEnd.panel_preferences_renderer_modern
         .setRaytracedHiddenRowsVisible(!no_rasterizer_concepts);

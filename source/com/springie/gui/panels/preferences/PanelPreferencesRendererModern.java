@@ -52,7 +52,7 @@ public class PanelPreferencesRendererModern {
 
   /**
    * The rows that do not apply to the ray-traced renderer ("Node
-   * polyhedron", "Cable divisions", "Strut divisions", "Strut/cable
+   * polyhedron", "Cable divisions", "Strut divisions", "Link
    * sides", "Face lines"): rasterizer-only settings, removed from the
    * Renderer tab's Main sub-tab while ray-tracing and restored after.
    */
@@ -206,7 +206,7 @@ public class PanelPreferencesRendererModern {
   /**
    * Shows or hides the rows that do not apply to the ray-traced
    * renderer ("Node polyhedron", "Cable divisions", "Strut divisions",
-   * "Strut/cable sides", "Face lines") on the Renderer tab's Main
+   * "Link sides", "Face lines") on the Renderer tab's Main
    * sub-tab. They configure rasterizer-only concepts the ray-traced
    * renderer ignores, so they are removed while ray-tracing is active
    * and restored to their usual slot (just above the explosions row)
@@ -327,7 +327,7 @@ public class PanelPreferencesRendererModern {
 
   private Panel panelLinkSides() {
     final Panel panel = new Panel();
-    final Label label = new Label("Strut/cable sides:");
+    final Label label = new Label("Link sides:");
     panel.add(label);
 
     this.choose_link_sides = new TTChoice(new ItemListener() {
@@ -517,7 +517,7 @@ public class PanelPreferencesRendererModern {
         .setValue(ElementRendererLink.cable_divisions);
     reflectLabelCableDivisions();
 
-    // Strut/cable sides (2).
+    // Link sides (2).
     RendererDelegator.link_sides = 4;
     this.choose_link_sides.choice.select(this.choose_link_sides
         .num_to_str(2));
