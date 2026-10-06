@@ -188,19 +188,12 @@ public final class UniverseDefaults {
     FrEnd.continuously_centre_z = continuously_centre_z;
     FrEnd.show_world_markers = show_world_markers;
     CompassPoint.bias_size = compass_bias_size;
-    // Restore the N lights (Tim, 2026-10-04).
-    synchronized (com.springie.render.modules.modern.LightSource.class) {
-      // Don't overwrite user-configured lights (Tim, 2026-10-05).
-      if (!com.springie.render.modules.modern.LightSource.user_configured) {
-        com.springie.render.modules.modern.LightSource.lights.clear();
-        for (final com.springie.render.modules.modern.Light light : lights_snapshot) {
-          com.springie.render.modules.modern.LightSource.lights.add(
-              new com.springie.render.modules.modern.Light(light));
-        }
-      }
-    }
+    // Reset universe restores the factory spread defaults (Tim,
+    // 2026-10-05): red left, green right, blue top, white bottom.
+    // Ignores user_configured and the per-model snapshot.
+    com.springie.render.modules.modern.LightSource.forceResetToDefaults();
     com.springie.render.modules.modern.LightSource.light_moved = true;
-    // Don't overwrite user-configured ambient (Tim, 2026-10-05).
+    // Restore ambient from the snapshot (still respects user_configured).
     if (!com.springie.render.modules.modern.LightSource.user_configured) {
       com.springie.render.RendererDelegator.ambient_light_pct = ambient_light_pct;
     }

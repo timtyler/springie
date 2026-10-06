@@ -137,9 +137,10 @@ public class PolygonObject2D {
     double r_acc = 0.0;
     double g_acc = 0.0;
     double b_acc = 0.0;
-    // Ambient base (Tim, 2026-10-05): matches the old +128 offset
-    // (128/256 = 50% ambient).
-    final double ambient = 0.5;
+    // Ambient base (Tim, 2026-10-05): from the ambient slider, not
+    // hardcoded. Black lights + 0% ambient = black.
+    final double ambient =
+        com.springie.render.RendererDelegator.ambient_light_pct / 100.0;
     synchronized (LightSource.class) {
       for (final com.springie.render.modules.modern.Light light
           : LightSource.lights) {
