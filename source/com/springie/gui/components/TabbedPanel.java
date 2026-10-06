@@ -165,7 +165,10 @@ public class TabbedPanel extends Panel implements MouseListener,
     super.removeAll();
     this.names.clear();
     this.nCards = 0;
-    this.selected = -1;
+    // Reset to 0 (not -1): paint() skips the selected-tab logic when
+    // nCards==0, and add() expects a valid index once cards return.
+    // (Tim, 2026-10-05)
+    this.selected = 0;
     repaint();
   }
 
