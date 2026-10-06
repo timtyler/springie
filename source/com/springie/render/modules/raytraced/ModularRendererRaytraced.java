@@ -427,11 +427,13 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       final int w = this.canvas_width;
       final int h = this.canvas_height;
       graphics.setColor(Color.BLACK);
+      // 1px lines via fillRect (Tim, 2026-10-05): drawLine was
+      // rendering 2px wide.
       for (int x = 0; x < w; x += divisor) {
-        graphics.drawLine(x, 0, x, h);
+        graphics.fillRect(x, 0, 1, h);
       }
       for (int y = 0; y < h; y += divisor) {
-        graphics.drawLine(0, y, w, y);
+        graphics.fillRect(0, y, w, 1);
       }
       // Show details: red line inside the black tile border (Tim,
       // 2026-10-05).
