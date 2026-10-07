@@ -126,34 +126,24 @@ public final class LightSourceDots {
     if (light_ref == null) {
       return;
     }
-    // Inverse project: screen pixels (fixed-point) -> world coordinates
-    // at the light's current depth. The inverse functions expect
-    // fixed-point screen coordinates.
-    final int sx_fp = sx << Coords.shift;
-    final int sy_fp = sy << Coords.shift;
-    final int pz = (int) light_ref.pz;
-    final int world_x = Coords.inverseXCoords(sx_fp, pz);
-    final int world_y = Coords.inverseYCoords(sy_fp, pz);
-    // Store as percentages of the viewport half-size (Tim, 2026-10-04):
-    // survives window resizes, and what we persist.
+    // Percentages map directly to screen position (Tim, 2026-10-06):
+    // 0% = left/top edge, 50% = center, 100% = right/bottom edge.
+    // This is the inverse of updateForViewport's mapping.
     final int hw = Coords.x_pixelso2 == 0 ? 400 : Coords.x_pixelso2;
     final int hh = Coords.y_pixelso2 == 0 ? 300 : Coords.y_pixelso2;
-    final double scale = (double) (1 << Coords.shift);
-    // Inverse of updateForViewport: 0-100% (50 = center) (Tim, 2026-10-05).
-    double x_pct = (double) world_x / ((double) hw * scale) * 50.0 + 50.0;
-    double y_pct = (double) world_y / ((double) hh * scale) * 50.0 + 50.0;
-    // Clamp to a sane range (Tim, 2026-10-04): prevents the light from
-    // going so far off-screen that the projection breaks and the dot
-    // disappears.
-    if (x_pct < -50.0) {
-      x_pct = -50.0;
-    } else if (x_pct > 150.0) {
-      x_pct = 150.0;
+    double x_pct = (double) sx / (2.0 * (double) hw) * 100.0;
+    double y_pct = (double) sy / (2.0 * (double) hh) * 100.0;
+    // Clamp to 0-100% (Tim, 2026-10-06): the percentages are defined
+    // inside the bounding box.
+    if (x_pct < 0.0) {
+      x_pct = 0.0;
+    } else if (x_pct > 100.0) {
+      x_pct = 100.0;
     }
-    if (y_pct < -50.0) {
-      y_pct = -50.0;
-    } else if (y_pct > 150.0) {
-      y_pct = 150.0;
+    if (y_pct < 0.0) {
+      y_pct = 0.0;
+    } else if (y_pct > 100.0) {
+      y_pct = 100.0;
     }
     light_ref.x_pct = x_pct;
     light_ref.y_pct = y_pct;

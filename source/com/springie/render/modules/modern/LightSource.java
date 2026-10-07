@@ -84,19 +84,27 @@ public class LightSource {
     final int hh = half_h_pixels == 0 ? 300 : half_h_pixels;
     // Lights in fixed-point world units (shifted by Coords.shift), to match
     // the geometry coordinates used by both the ray tracer and the polygon
-    // renderer. The z puts them slightly in front of the model, from the
-    // user's perspective (Tim, 2026-10-04): was -200 (too far forward,
-    // broke the drag tracking), now -50.
+    // renderer.
     final double scale = (double) (1 << com.springie.render.Coords.shift);
     final double half_w = (double) hw * scale;
     final double half_h = (double) hh * scale;
     synchronized (LightSource.class) {
       for (final Light light : lights) {
-        // 0-100% (50 = center) to -half to +half (Tim, 2026-10-05).
-        light.px = (light.x_pct - 50.0) / 50.0 * half_w;
-        light.py = (light.y_pct - 50.0) / 50.0 * half_h;
-        // Z: 0-100% (50 = -50*scale in front, the previous fixed value).
-        light.pz = -light.z_pct * scale;
+        // Z: 0-100% maps to +50*scale (behind) through -50*scale (the
+        // previous fixed front value) to -150*scale (far front). 50% is
+        // the default front position (Tim, 2026-10-06).
+        light.pz = (50.0 - 2.0 * light.z_pct) * scale;
+        // 0-100% (50=center) to world coords (Tim, 2026-10-06). The
+        // Coords.getXCoords convention is: sx = HW + (px + scx - HW*S)/PF,
+        // so px = HW*S - scx is the screen center. The range is HW*PF
+        // for exact screen mapping (PF = perspective factor at the
+        // light's depth).
+        final double pf = (double) (com.springie.render.Coords.shift_constant_z
+            + ((int) light.pz >> com.springie.render.Coords.shift_z));
+        light.px = (light.x_pct - 50.0) / 50.0 * half_w * (pf / scale)
+            + (half_w - com.springie.render.Coords.shift_constant_x);
+        light.py = (light.y_pct - 50.0) / 50.0 * half_h * (pf / scale)
+            + (half_h - com.springie.render.Coords.shift_constant_y);
       }
     }
   }
