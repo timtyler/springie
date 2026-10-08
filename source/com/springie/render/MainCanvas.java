@@ -324,7 +324,11 @@ public class MainCanvas {
     if (FrEnd.isAnimationInactive()) {
       if (!RendererDelegator.repaint_all_objects) {
         if (!RendererDelegator.repaint_some_objects) {
-          return;
+          // Lighting changed while paused (Tim, 2026-10-07): force
+          // a repaint so the new lighting is visible.
+          if (!com.springie.render.modules.modern.LightSource.light_moved) {
+            return;
+          }
         }
       }
     }

@@ -69,6 +69,10 @@ public class ModularRendererNew implements ModularRendererBase {
 
     this.tiles_current.render(this.tiles_last, graphics);
 
+    // Lighting was applied (Tim, 2026-10-07): clear the flag so a
+    // paused canvas doesn't repaint every frame.
+    com.springie.render.modules.modern.LightSource.light_moved = false;
+
     // Rotate per-tile frame state: tiles_last takes this frame's vectors and
     // rectangles for next frame's damage repair (moved content is scrubbed
     // over the union of last frame's and this frame's content rects).
