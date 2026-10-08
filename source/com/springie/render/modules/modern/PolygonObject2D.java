@@ -156,8 +156,10 @@ public class PolygonObject2D {
           continue;
         }
         // Diffuse: dot of normal with direction to light. Backfaces
-        // (dot < 0) get no contribution (Tim, 2026-10-05).
-        double dot = (nx * lx + ny * ly + nz * lz) / llen;
+        // (dot < 0) get no contribution (Tim, 2026-10-05). The normal
+        // is negated (Tim, 2026-10-07): the winding gives inward
+        // normals, so the side facing the light had dot < 0.
+        double dot = -(nx * lx + ny * ly + nz * lz) / llen;
         if (dot < 0.0) {
           dot = 0.0;
         }
