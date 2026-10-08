@@ -123,12 +123,15 @@ public class PanelControlsUniverse {
     this.new_message_manager = new_message_manager;
     makeEditMiscPanel();
     // Rebuild the light tabs when a model load resets the lights
-    // (Tim, 2026-10-05). Runs on the UI thread.
+    // (Tim, 2026-10-05). Runs on the UI thread. Also resets the
+    // ambient slider (Tim, 2026-10-08).
     LightSource.onLightsReset = new Runnable() {
       public void run() {
         java.awt.EventQueue.invokeLater(new Runnable() {
           public void run() {
             rebuildLightControls();
+            scrollbar_light_ambient.setValue(50);
+            label_light_ambient.setText("50");
           }
         });
       }

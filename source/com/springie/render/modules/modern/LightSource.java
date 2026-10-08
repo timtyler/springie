@@ -66,6 +66,9 @@ public class LightSource {
     lights.add(new Light(50.0, 10.0, 100, 0x0000FF));
     // Light four: white, bottom.
     lights.add(new Light(50.0, 90.0, 100, 0xFFFFFF));
+    // Ambient resets too (Tim, 2026-10-08): model loads restore
+    // factory state.
+    com.springie.render.RendererDelegator.ambient_light_pct = 50;
     // Notify the UI to rebuild the light tabs (Tim, 2026-10-05).
     final Runnable hook = onLightsReset;
     if (hook != null) {
