@@ -55,20 +55,18 @@ public class LightSource {
    */
   public static synchronized void resetToDefaults() {
     lights.clear();
-    // Light positions are 0-100% (50 = center). All positive (Tim,
-    // 2026-10-05): the negative percentages were not projecting
-    // correctly.
-    // Light one: red, far left.
-    lights.add(new Light(10.0, 50.0, 100, 0xFF0000));
-    // Light two: green, far right.
-    lights.add(new Light(90.0, 50.0, 100, 0x00FF00));
-    // Light three: blue, top.
-    lights.add(new Light(50.0, 10.0, 100, 0x0000FF));
-    // Light four: white, bottom.
-    lights.add(new Light(50.0, 90.0, 100, 0xFFFFFF));
-    // Ambient resets too (Tim, 2026-10-08): model loads restore
-    // factory state.
-    com.springie.render.RendererDelegator.ambient_light_pct = 50;
+    // Six lights spread uniformly around the edge (Tim, 2026-10-08):
+    // hexagon at 60-degree intervals, 0-100% (50 = center).
+    // Red right, yellow top-right, green top-left, cyan left,
+    // blue bottom-left, magenta bottom-right.
+    lights.add(new Light(100.0, 50.0, 100, 0xFF0000));   // Red
+    lights.add(new Light(75.0, 6.7, 100, 0xFFFF00));     // Yellow
+    lights.add(new Light(25.0, 6.7, 100, 0x00FF00));     // Green
+    lights.add(new Light(0.0, 50.0, 100, 0x00FFFF));     // Cyan
+    lights.add(new Light(25.0, 93.3, 100, 0x0000FF));    // Blue
+    lights.add(new Light(75.0, 93.3, 100, 0xFF00FF));    // Magenta
+    // Ambient defaults to 0 (Tim, 2026-10-08).
+    com.springie.render.RendererDelegator.ambient_light_pct = 0;
     // Notify the UI to rebuild the light tabs (Tim, 2026-10-05).
     final Runnable hook = onLightsReset;
     if (hook != null) {

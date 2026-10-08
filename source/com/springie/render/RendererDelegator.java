@@ -158,7 +158,7 @@ public final class RendererDelegator {
    * Ambient light (Tim, 2026-10-03): base illumination, 0-100%.
    * Default 50% matches the old hardcoded ambient.
    */
-  public static int ambient_light_pct = 50;
+  public static int ambient_light_pct = 0;
 
   /**
    * Anti-aliasing supersampling factor (1 to 5): 1x1 is off, 2x2, 3x3,

@@ -188,11 +188,11 @@ public final class UniverseDefaults {
     FrEnd.show_world_markers = show_world_markers;
     CompassPoint.bias_size = compass_bias_size;
     // Reset universe restores the factory defaults (Tim, 2026-10-05):
-    // lights spread (red left, green right, blue top, white bottom),
-    // ambient at 50%.
+    // lights spread uniformly around the edge, ambient at 0%
+    // (Tim, 2026-10-08).
     com.springie.render.modules.modern.LightSource.resetToDefaults();
     com.springie.render.modules.modern.LightSource.light_moved = true;
-    com.springie.render.RendererDelegator.ambient_light_pct = 50;
+    com.springie.render.RendererDelegator.ambient_light_pct = 0;
     if (FrEnd.development_version) {
       Node.max_speed = max_speed;
       World.minimum_magnitude = minimum_magnitude;

@@ -130,8 +130,8 @@ public class PanelControlsUniverse {
         java.awt.EventQueue.invokeLater(new Runnable() {
           public void run() {
             rebuildLightControls();
-            scrollbar_light_ambient.setValue(50);
-            label_light_ambient.setText("50");
+            scrollbar_light_ambient.setValue(0);
+            label_light_ambient.setText("0");
           }
         });
       }
@@ -493,7 +493,7 @@ public class PanelControlsUniverse {
     this.button_add_light.addActionListener(new ActionListener() {
       public void actionPerformed(final ActionEvent e) {
         synchronized (LightSource.class) {
-          LightSource.lights.add(new Light(0.0, 0.0, 50, 0xFFFFFF));
+          LightSource.lights.add(new Light(0.0, 0.0, 100, 0xFFFFFF));
         }
         LightSource.light_moved = true;
         rebuildLightControls();
@@ -507,8 +507,8 @@ public class PanelControlsUniverse {
     final Panel panel_light_ambient = new Panel();
     panel_light_ambient.setLayout(new BorderLayout(0, 8));
     panel_light_ambient.add("West", new Label("Ambient light %:", Label.RIGHT));
-    this.scrollbar_light_ambient = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 0, 101);
-    this.label_light_ambient = new Label("50", Label.LEFT);
+    this.scrollbar_light_ambient = new Scrollbar(Scrollbar.HORIZONTAL, 0, 1, 0, 101);
+    this.label_light_ambient = new Label("0", Label.LEFT);
     this.scrollbar_light_ambient.addAdjustmentListener(new AdjustmentListener() {
       public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int val = e.getValue();
