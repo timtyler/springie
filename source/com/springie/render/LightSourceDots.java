@@ -15,7 +15,7 @@ import java.awt.Graphics;
  */
 public final class LightSourceDots {
   /** Radius of the light circles in pixels. */
-  private static final int RADIUS = 6;
+  private static final int RADIUS = 8;
 
   /** Draw every Nth frame (Tim, 2026-10-03). */
   private static final int FRAME_SKIP = 16;
@@ -251,7 +251,8 @@ public final class LightSourceDots {
     }
     g.setColor(color);
     g.fillOval(sx - RADIUS, sy - RADIUS, RADIUS * 2, RADIUS * 2);
-    g.setColor(Color.black);
+    // White ring at the boundary (Tim, 2026-10-07).
+    g.setColor(Color.white);
     g.drawOval(sx - RADIUS, sy - RADIUS, RADIUS * 2, RADIUS * 2);
     return new int[]{sx, sy};
   }
