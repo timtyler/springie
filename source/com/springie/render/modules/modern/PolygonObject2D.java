@@ -156,14 +156,14 @@ public class PolygonObject2D {
           continue;
         }
         // Diffuse: dot of normal with direction to light. Backfaces
-        // (dot < 0) get no contribution (Tim, 2026-10-05). The normal
-        // is negated (Tim, 2026-10-07): the winding gives inward
-        // normals, so the side facing the light had dot < 0.
-        double dot = -(nx * lx + ny * ly + nz * lz) / llen;
+        // (dot < 0) get no contribution (Tim, 2026-10-05).
+        double dot = (nx * lx + ny * ly + nz * lz) / llen;
         if (dot < 0.0) {
           dot = 0.0;
         }
-        final double contrib = dot * pct / 100.0;
+        // Boost point lights 2x (Tim, 2026-10-07): they barely affected
+        // the model at 1x.
+        final double contrib = dot * pct / 100.0 * 2.0;
         final int col = light.colour;
         r_acc += contrib * ((col >> 16) & 0xFF) / 255.0;
         g_acc += contrib * ((col >> 8) & 0xFF) / 255.0;

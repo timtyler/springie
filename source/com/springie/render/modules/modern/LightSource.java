@@ -59,13 +59,13 @@ public class LightSource {
     // 2026-10-05): the negative percentages were not projecting
     // correctly.
     // Light one: red, far left.
-    lights.add(new Light(10.0, 50.0, 50, 0xFF0000));
+    lights.add(new Light(10.0, 50.0, 100, 0xFF0000));
     // Light two: green, far right.
-    lights.add(new Light(90.0, 50.0, 50, 0x00FF00));
+    lights.add(new Light(90.0, 50.0, 100, 0x00FF00));
     // Light three: blue, top.
-    lights.add(new Light(50.0, 10.0, 50, 0x0000FF));
+    lights.add(new Light(50.0, 10.0, 100, 0x0000FF));
     // Light four: white, bottom.
-    lights.add(new Light(50.0, 90.0, 50, 0xFFFFFF));
+    lights.add(new Light(50.0, 90.0, 100, 0xFFFFFF));
     // Notify the UI to rebuild the light tabs (Tim, 2026-10-05).
     final Runnable hook = onLightsReset;
     if (hook != null) {

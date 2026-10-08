@@ -154,22 +154,29 @@ public class SimpleC60 extends ObjectBase {
   }
 
   // Ensures the face vertices wind the outward-facing way (the polygon
-  // renderer backface-culls on projected winding).
+  // renderer backface-culls on projected winding). NOTE: PolygonObject2D
+  // computes the normal as (p0-p1) x (p2-p1), which is the OPPOSITE of
+  // Newell's method. We use the PolygonObject2D convention here so the
+  // lighting normal points outward (Tim, 2026-10-07).
   private static int[] fixWinding(final List<Double3D> points, final int[] face) {
-    // Newell's method for the face normal.
-    double nx = 0;
-    double ny = 0;
-    double nz = 0;
+    final Double3D p0 = points.get(face[0]);
+    final Double3D p1 = points.get(face[1]);
+    final Double3D p2 = points.get(face[2]);
+    final double v1x = p0.x - p1.x;
+    final double v1y = p0.y - p1.y;
+    final double v1z = p0.z - p1.z;
+    final double v2x = p2.x - p1.x;
+    final double v2y = p2.y - p1.y;
+    final double v2z = p2.z - p1.z;
+    final double nx = v1y * v2z - v1z * v2y;
+    final double ny = v1z * v2x - v1x * v2z;
+    final double nz = v1x * v2y - v1y * v2x;
     double cx = 0;
     double cy = 0;
     double cz = 0;
     final int n = face.length;
     for (int i = 0; i < n; i++) {
       final Double3D p = points.get(face[i]);
-      final Double3D q = points.get(face[(i + 1) % n]);
-      nx += (p.y - q.y) * (p.z + q.z);
-      ny += (p.z - q.z) * (p.x + q.x);
-      nz += (p.x - q.x) * (p.y + q.y);
       cx += p.x;
       cy += p.y;
       cz += p.z;
