@@ -202,8 +202,10 @@ public final class LightSourceDots {
       }
       for (int i = 0; i < n; i++) {
         if (last_sx[i] >= 0) {
-          g.fillOval(last_sx[i] - RADIUS - 1, last_sy[i] - RADIUS - 1,
-              (RADIUS + 1) * 2, (RADIUS + 1) * 2);
+          // Wipe with a 2px margin (Tim, 2026-10-07): the white ring's
+          // drawOval pixels extend past the fill, leaving trails.
+          g.fillOval(last_sx[i] - RADIUS - 2, last_sy[i] - RADIUS - 2,
+              (RADIUS + 2) * 2, (RADIUS + 2) * 2);
         }
         last_sx[i] = -1;
         last_sy[i] = -1;
