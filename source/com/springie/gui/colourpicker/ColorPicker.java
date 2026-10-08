@@ -12,8 +12,6 @@ public class ColorPicker {
 
   public ColourPickerController color_picker_controller;
 
-  public ColourPickerGettersAndPutters cp_gas;
-
   ColourPickerPreview cp_fc;
 
   public ColorPicker(final ColorPickerInformer informer) {
@@ -49,8 +47,6 @@ public class ColorPicker {
     //final ColourPickerValueDisplay cpfcv = new ColourPickerValueDisplay();
     //cpfcv.init();
 
-    this.cp_gas = new ColourPickerGettersAndPutters();
-
     this.color_picker_controller.inform(this.cp_fc);
     this.cp_fc.inform(this.color_picker_controller);
 
@@ -78,8 +74,10 @@ public class ColorPicker {
     //this.colour_picker_controller.inform(cpfcv);
     //cpfcv.inform(this.colour_picker_controller);
 
-    this.cp_gas.inform(this.color_picker_controller);
-    this.color_picker_controller.inform(this.cp_gas);
+    // Get/Put pairs are merged into the Preview panel (Tim, 2026-10-08).
+    this.cp_fc.get_put_one.inform(this.color_picker_controller);
+    this.cp_fc.get_put_two.inform(this.color_picker_controller);
+    this.cp_fc.get_put_three.inform(this.color_picker_controller);
 
     // panel_rgb.add(this.colour_picker_controller);
 
@@ -106,7 +104,6 @@ public class ColorPicker {
 
     panel_colour_misc.add(cpt);
     panel_colour_misc.add(this.cp_fc);
-    panel_colour_misc.add(this.cp_gas);
     //panel_colour_misc.add(cpfcv);
 
     this.panel.add(tab_colour_model);

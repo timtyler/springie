@@ -25,6 +25,12 @@ public class ColourPickerPreview extends Panel {
 
   public Button button_reset;
 
+  /** Get/Put button pairs, merged here from ColourPickerGettersAndPutters
+   * (Tim, 2026-10-08): one combined button panel. */
+  public ColourPickerGetAndPut get_put_one;
+  public ColourPickerGetAndPut get_put_two;
+  public ColourPickerGetAndPut get_put_three;
+
   private ColourPickerController colour_picker;
 
   private int colour;
@@ -74,12 +80,27 @@ public class ColourPickerPreview extends Panel {
     this.button_last.addActionListener(action_listener_put_last);
     this.panel_last.add(this.button_last);
 
-    this.setLayout(new GridLayout(1, 0, 0, 0));
+    // Merged Get/Put pairs (Tim, 2026-10-08).
+    this.get_put_one = new ColourPickerGetAndPut();
+    this.get_put_two = new ColourPickerGetAndPut();
+    this.get_put_three = new ColourPickerGetAndPut();
+
+    this.setLayout(new GridLayout(2, 3, 0, 0));
     this.add(this.panel_original);
     this.add(this.panel_last);
     this.add(this.panel_proposed);
+    this.add(this.get_put_one);
+    this.add(this.get_put_two);
+    this.add(this.get_put_three);
 
     this.setBackground(Color.black);
+  }
+
+  /** Delegates to the merged Get/Put pairs. */
+  public void greyGetAndSetColourButtons(final int colour) {
+    this.get_put_one.greyGetAndSetColourButtons(colour);
+    this.get_put_two.greyGetAndSetColourButtons(colour);
+    this.get_put_three.greyGetAndSetColourButtons(colour);
   }
 
   public void inform(ColourPickerController colour_picker) {

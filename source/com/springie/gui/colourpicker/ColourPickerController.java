@@ -41,8 +41,6 @@ public class ColourPickerController {
 
   //ColourPickerValueDisplay cpfcv;
 
-  ColourPickerGettersAndPutters cp_gas;
-
   // boolean colour_model_rgb;
 
   public ColourPickerController() {
@@ -115,10 +113,6 @@ public class ColourPickerController {
     //this.cpfcv = cpfcv;
   //}
 
-  public void inform(ColourPickerGettersAndPutters cp_gas) {
-    this.cp_gas = cp_gas;
-  }
-
   public void repaintChildren() {
     this.cp_preview.refresh();
     //this.cpfcv.refresh();
@@ -179,7 +173,7 @@ public class ColourPickerController {
   }
 
   public void greyGetAndSetColourButtons() {
-    this.cp_gas.greyGetAndSetColourButtons(getColour());
+    this.cp_preview.greyGetAndSetColourButtons(getColour());
   }
 
   public int getColour() {
