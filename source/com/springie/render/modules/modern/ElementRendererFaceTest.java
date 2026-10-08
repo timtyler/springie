@@ -31,6 +31,7 @@ class ElementRendererFaceTest {
   private boolean saved_depth_is_relative;
   private int saved_render_divisions;
   private java.util.List<com.springie.render.modules.modern.Light> saved_lights;
+  private int saved_ambient_light_pct;
   private int saved_x_pixels;
   private int saved_y_pixels;
 
@@ -45,6 +46,9 @@ class ElementRendererFaceTest {
     Face.number_of_render_divisions = 4;
     // Light intensities affect the face shading (Tim, 2026-10-04): save/restore N lights.
     this.saved_lights = new java.util.ArrayList<>();
+    // resetToDefaults() also resets ambient (Tim, 2026-10-08): save/restore it.
+    this.saved_ambient_light_pct =
+        com.springie.render.RendererDelegator.ambient_light_pct;
     synchronized (com.springie.render.modules.modern.LightSource.class) {
       for (final com.springie.render.modules.modern.Light light
           : com.springie.render.modules.modern.LightSource.lights) {
@@ -74,6 +78,8 @@ class ElementRendererFaceTest {
             new com.springie.render.modules.modern.Light(light));
       }
     }
+    com.springie.render.RendererDelegator.ambient_light_pct =
+        this.saved_ambient_light_pct;
     Coords.x_pixels = this.saved_x_pixels;
     Coords.y_pixels = this.saved_y_pixels;
     Coords.x_pixelso2 = this.saved_x_pixels >> 1;

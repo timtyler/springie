@@ -77,7 +77,7 @@ public final class UniverseDefaults {
 
   // Lights (Tim, 2026-10-04): N lights, stored as a list.
   private static java.util.List<com.springie.render.modules.modern.Light> lights_snapshot = new java.util.ArrayList<>();
-  private static int ambient_light_pct = 50;
+  private static int ambient_light_pct = 0;
 
   /**
    * Updates the ambient light snapshot (Tim, 2026-10-04): the UI slider
@@ -116,12 +116,15 @@ public final class UniverseDefaults {
     minimum_magnitude = 0;
     compass_bias_size = 0;
     lights_snapshot.clear();
-    // Default 4 lights (Tim, 2026-10-05: all-positive 0-100%, 50=center).
-    lights_snapshot.add(new com.springie.render.modules.modern.Light(10.0, 50.0, 50, 0xFF0000));
-    lights_snapshot.add(new com.springie.render.modules.modern.Light(90.0, 50.0, 50, 0x00FF00));
-    lights_snapshot.add(new com.springie.render.modules.modern.Light(50.0, 10.0, 50, 0x0000FF));
-    lights_snapshot.add(new com.springie.render.modules.modern.Light(50.0, 90.0, 50, 0xFFFFFF));
-    ambient_light_pct = 50;
+    // Default 6 lights (Tim, 2026-10-08): hexagon at 60-degree
+    // intervals around the edge, 0-100% (50=center).
+    lights_snapshot.add(new com.springie.render.modules.modern.Light(100.0, 50.0, 100, 0xFF0000));
+    lights_snapshot.add(new com.springie.render.modules.modern.Light(75.0, 6.7, 100, 0xFFFF00));
+    lights_snapshot.add(new com.springie.render.modules.modern.Light(25.0, 6.7, 100, 0x00FF00));
+    lights_snapshot.add(new com.springie.render.modules.modern.Light(0.0, 50.0, 100, 0x00FFFF));
+    lights_snapshot.add(new com.springie.render.modules.modern.Light(25.0, 93.3, 100, 0x0000FF));
+    lights_snapshot.add(new com.springie.render.modules.modern.Light(75.0, 93.3, 100, 0xFF00FF));
+    ambient_light_pct = 0;
   }
 
   /**

@@ -156,7 +156,7 @@ public final class RendererDelegator {
 
   /**
    * Ambient light (Tim, 2026-10-03): base illumination, 0-100%.
-   * Default 50% matches the old hardcoded ambient.
+   * Default 0% (Tim, 2026-10-08).
    */
   public static int ambient_light_pct = 0;
 

@@ -50,8 +50,9 @@ public class LightSource {
   public static volatile Runnable onLightMoved;
 
   /**
-   * Resets to the four default lights (Tim, 2026-10-04): red left,
-   * green right, blue top, white bottom.
+   * Resets to the six default lights (Tim, 2026-10-08): red, yellow,
+   * green, cyan, blue, magenta at 60-degree intervals around the edge;
+   * ambient to 0%.
    */
   public static synchronized void resetToDefaults() {
     lights.clear();
