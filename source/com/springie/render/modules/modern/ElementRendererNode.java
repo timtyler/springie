@@ -82,8 +82,12 @@ public final class ElementRendererNode {
               if (ld < 1e-12) {
                 continue;
               }
+              // Backfaces get no diffuse (Tim, 2026-10-07): was
+              // Math.abs, which lit both sides.
+              final double light_dot_raw =
+                  (nnx * lx + nny * ly + nnz * lz) / ld;
               final double light_dot =
-                  Math.abs((nnx * lx + nny * ly + nnz * lz) / ld);
+                  light_dot_raw < 0.0 ? 0.0 : light_dot_raw;
               final double diff =
                   0.75 * light_dot * light.intensity_pct / 50.0;
               final int lr = (light.colour >> 16) & 0xFF;
