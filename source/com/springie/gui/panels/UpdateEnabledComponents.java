@@ -193,7 +193,6 @@ public final class UpdateEnabledComponents {
 
     final ColorPicker panel_controls_colour = FrEnd.panel_edit_color;
 
-    panel_controls_colour.color_picker_controller.greyGetAndSetColourButtons();
     ComponentAccess.setAccess(
         panel_controls_colour.color_picker_controller.cp_preview.button_set,
         any);
