@@ -12,7 +12,7 @@ public class ColorPicker {
 
   public ColourPickerController color_picker_controller;
 
-  ColourPickerPreview cp_fc;
+  public ColourPickerPreview cp_fc;
 
   public ColorPicker(final ColorPickerInformer informer) {
     makePanel(informer);
