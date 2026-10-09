@@ -118,10 +118,10 @@ public final class UniverseDefaults {
     lights_snapshot.clear();
     // Default 6 lights (Tim, 2026-10-08): hexagon at 60-degree
     // intervals around the edge, 0-100% (50=center).
-    lights_snapshot.add(new com.springie.render.modules.modern.Light(100.0, 50.0, 100, 0xFF0000));
+    lights_snapshot.add(new com.springie.render.modules.modern.Light(100.0, 50.0, 100, 0x00FFFF));
     lights_snapshot.add(new com.springie.render.modules.modern.Light(75.0, 6.7, 100, 0xFFFF00));
     lights_snapshot.add(new com.springie.render.modules.modern.Light(25.0, 6.7, 100, 0x00FF00));
-    lights_snapshot.add(new com.springie.render.modules.modern.Light(0.0, 50.0, 100, 0x00FFFF));
+    lights_snapshot.add(new com.springie.render.modules.modern.Light(0.0, 50.0, 100, 0xFF0000));
     lights_snapshot.add(new com.springie.render.modules.modern.Light(25.0, 93.3, 100, 0x0000FF));
     lights_snapshot.add(new com.springie.render.modules.modern.Light(75.0, 93.3, 100, 0xFF00FF));
     ambient_light_pct = 0;

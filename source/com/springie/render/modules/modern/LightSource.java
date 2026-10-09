@@ -50,20 +50,20 @@ public class LightSource {
   public static volatile Runnable onLightMoved;
 
   /**
-   * Resets to the six default lights (Tim, 2026-10-08): red, yellow,
-   * green, cyan, blue, magenta at 60-degree intervals around the edge;
+   * Resets to the six default lights (Tim, 2026-10-08): cyan, yellow,
+   * green, red, blue, magenta at 60-degree intervals around the edge;
    * ambient to 0%.
    */
   public static synchronized void resetToDefaults() {
     lights.clear();
     // Six lights spread uniformly around the edge (Tim, 2026-10-08):
     // hexagon at 60-degree intervals, 0-100% (50 = center).
-    // Red right, yellow top-right, green top-left, cyan left,
+    // Cyan right, yellow top-right, green top-left, red left,
     // blue bottom-left, magenta bottom-right.
-    lights.add(new Light(100.0, 50.0, 100, 0xFF0000));   // Red
+    lights.add(new Light(100.0, 50.0, 100, 0x00FFFF));   // Cyan
     lights.add(new Light(75.0, 6.7, 100, 0xFFFF00));     // Yellow
     lights.add(new Light(25.0, 6.7, 100, 0x00FF00));     // Green
-    lights.add(new Light(0.0, 50.0, 100, 0x00FFFF));     // Cyan
+    lights.add(new Light(0.0, 50.0, 100, 0xFF0000));     // Red
     lights.add(new Light(25.0, 93.3, 100, 0x0000FF));    // Blue
     lights.add(new Light(75.0, 93.3, 100, 0xFF00FF));    // Magenta
     // Ambient defaults to 0 (Tim, 2026-10-08).
