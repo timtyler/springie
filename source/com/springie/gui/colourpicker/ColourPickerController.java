@@ -123,8 +123,6 @@ public class ColourPickerController {
     repaintHSBS();
     repaintHSBB();
     repaintT();
-
-    greyGetAndSetColourButtons();
   }
 
   public void repaintHSBH() {
@@ -170,10 +168,6 @@ public class ColourPickerController {
     this.red = (rgb >> 16) & 0xFF;
     this.green = (rgb >> 8) & 0xFF;
     this.blue = rgb & 0xFF;
-  }
-
-  public void greyGetAndSetColourButtons() {
-    this.cp_preview.greyGetAndSetColourButtons(getColour());
   }
 
   public int getColour() {

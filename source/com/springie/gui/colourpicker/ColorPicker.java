@@ -74,11 +74,6 @@ public class ColorPicker {
     //this.colour_picker_controller.inform(cpfcv);
     //cpfcv.inform(this.colour_picker_controller);
 
-    // Get/Put pairs are merged into the Preview panel (Tim, 2026-10-08).
-    this.cp_fc.get_put_one.inform(this.color_picker_controller);
-    this.cp_fc.get_put_two.inform(this.color_picker_controller);
-    this.cp_fc.get_put_three.inform(this.color_picker_controller);
-
     // panel_rgb.add(this.colour_picker_controller);
 
     final Panel panel_hsb = new Panel();
