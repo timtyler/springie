@@ -148,6 +148,18 @@ public final class WheelbarrowDemo {
   public static int xbrace_elasticity = 40;
 
   /**
+   * Tassels (Tim, 2026-10-10): short links with a node at the end,
+   * attached to the handle ends. They trail along behind on the ground;
+   * dragging the wheel backward shoves the tassel nodes, which dig in
+   * via ground friction -- helping prevent reversal.
+   */
+  public static int tassel_length_px = 60;
+  /** Nominal mass for tassel nodes (log scale): light, so they trail. */
+  public static int tassel_log_mass = 10;
+  /** Elasticity for the tassel links. */
+  public static int tassel_elasticity = 40;
+
+  /**
    * Handle muscle drive (Tim, 2026-10-01): the two handle shafts
    * (hub-to-handle) are muscles. They haul the trailing handle nodes,
    * stabbing them into the ground; the ground reaction drives the wheel
@@ -293,6 +305,21 @@ public final class WheelbarrowDemo {
     passive(link_manager, clazz, hub0, handle1, xbrace_elasticity).handle = true;
     passive(link_manager, clazz, hub1, handle0, xbrace_elasticity).handle = true;
 
+    // Tassels (Tim, 2026-10-10): a short link + light node on each
+    // handle end, trailing along behind (-X) on the ground. Tension-only
+    // cables -- they trail, never push.
+    final NodeType tassel_type = node_manager.node_type_factory.getNew();
+    tassel_type.log_mass = tassel_log_mass;
+    tassel_type.radius = nodeRadius();
+    final Node tassel0 = addNode(node_manager, handle_clazz, tassel_type,
+        handle0.pos.x - (tassel_length_px << Coords.shift), ground,
+        handle0.pos.z);
+    final Node tassel1 = addNode(node_manager, handle_clazz, tassel_type,
+        handle1.pos.x - (tassel_length_px << Coords.shift), ground,
+        handle1.pos.z);
+    tasselCable(link_manager, handle_clazz, handle0, tassel0);
+    tasselCable(link_manager, handle_clazz, handle1, tassel1);
+
     // No mid-air starts: rest the whole model on the ground plane.
     Grounding.restOnGround(node_manager);
 
@@ -369,6 +396,20 @@ public final class WheelbarrowDemo {
     link.phase = phase;
     link.controller = muscle;
     return link;
+  }
+
+  /**
+   * Tassel cable: tension-only (compression=false), so the tassel trails
+   * along behind and never pushes (Tim, 2026-10-10).
+   */
+  private static void tasselCable(final LinkManager lm, final Clazz clazz,
+      Node handle, final Node tassel) {
+    final LinkType type = thin(lm.link_type_factory.getNew(
+        distance(handle, tassel), tassel_elasticity));
+    type.compression = false;
+    final Link link = lm.setLink(handle, tassel, type, clazz);
+    link.adjusted_rest_length = type.length;
+    link.handle = true;
   }
 
   private static int scaledSpokeLength(final int geometric) {
