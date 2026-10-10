@@ -148,16 +148,17 @@ public final class WheelbarrowDemo {
   public static int xbrace_elasticity = 40;
 
   /**
-   * Tassels (Tim, 2026-10-10): short links with a node at the end,
-   * attached to the handle ends. They trail along behind on the ground;
-   * dragging the wheel backward shoves the tassel nodes, which dig in
-   * via ground friction -- helping prevent reversal.
+   * Feet (Tim, 2026-10-10): an equilateral triangle of nodes on each
+   * handle end -- one apex node attached to the handle, the other two
+   * trailing behind. Bigger footprint than the old single tassel node,
+   * more drag to resist reversal. Tension-only links: they trail along
+   * behind, never push.
    */
-  public static int tassel_length_px = 60;
-  /** Nominal mass for tassel nodes (log scale): light, so they trail. */
-  public static int tassel_log_mass = 10;
-  /** Elasticity for the tassel links. */
-  public static int tassel_elasticity = 40;
+  public static int foot_side_px = 60;
+  /** Nominal mass for foot nodes (log scale): light, so they trail. */
+  public static int foot_log_mass = 10;
+  /** Elasticity for the foot links. */
+  public static int foot_elasticity = 40;
 
   /**
    * Handle muscle drive (Tim, 2026-10-01): the two handle shafts
@@ -305,20 +306,20 @@ public final class WheelbarrowDemo {
     passive(link_manager, clazz, hub0, handle1, xbrace_elasticity).handle = true;
     passive(link_manager, clazz, hub1, handle0, xbrace_elasticity).handle = true;
 
-    // Tassels (Tim, 2026-10-10): a short link + light node on each
-    // handle end, trailing along behind (-X) on the ground. Tension-only
-    // cables -- they trail, never push.
-    final NodeType tassel_type = node_manager.node_type_factory.getNew();
-    tassel_type.log_mass = tassel_log_mass;
-    tassel_type.radius = nodeRadius();
-    final Node tassel0 = addNode(node_manager, handle_clazz, tassel_type,
-        handle0.pos.x - (tassel_length_px << Coords.shift), ground,
-        handle0.pos.z);
-    final Node tassel1 = addNode(node_manager, handle_clazz, tassel_type,
-        handle1.pos.x - (tassel_length_px << Coords.shift), ground,
-        handle1.pos.z);
-    tasselCable(link_manager, handle_clazz, handle0, tassel0);
-    tasselCable(link_manager, handle_clazz, handle1, tassel1);
+    // Feet (Tim, 2026-10-10): an equilateral triangle on each handle
+    // end. Apex node attached to the handle, two base nodes trailing
+    // behind, spread in z. All three rest on the ground.
+    final NodeType foot_type = node_manager.node_type_factory.getNew();
+    foot_type.log_mass = foot_log_mass;
+    foot_type.radius = nodeRadius();
+    final double tri_h = foot_side_px * Math.sqrt(3.0) / 2.0;
+    final int side = foot_side_px << Coords.shift;
+    final int half = side / 2;
+    final int height = (int) (tri_h * (1 << Coords.shift));
+    buildFoot(node_manager, link_manager, handle_clazz, foot_type,
+        handle0, side, half, height, ground);
+    buildFoot(node_manager, link_manager, handle_clazz, foot_type,
+        handle1, side, half, height, ground);
 
     // No mid-air starts: rest the whole model on the ground plane.
     Grounding.restOnGround(node_manager);
@@ -399,15 +400,36 @@ public final class WheelbarrowDemo {
   }
 
   /**
-   * Tassel cable: tension-only (compression=false), so the tassel trails
+   * Builds one foot: an equilateral triangle of nodes trailing behind a
+   * handle end. Apex attaches to the handle; the two base nodes sit
+   * further back (-X), spread in z. All links tension-only
+   * (compression=false) -- the foot trails along behind, never pushes.
+   */
+  private static void buildFoot(final NodeManager nm, final LinkManager lm,
+      final Clazz clazz, final NodeType foot_type, final Node handle,
+      final int side, final int half, final int height, final int ground) {
+    final Node apex = addNode(nm, clazz, foot_type,
+        handle.pos.x - side, ground, handle.pos.z);
+    final Node base1 = addNode(nm, clazz, foot_type,
+        apex.pos.x - height, ground, handle.pos.z + half);
+    final Node base2 = addNode(nm, clazz, foot_type,
+        apex.pos.x - height, ground, handle.pos.z - half);
+    footCable(lm, clazz, handle, apex);
+    footCable(lm, clazz, apex, base1);
+    footCable(lm, clazz, apex, base2);
+    footCable(lm, clazz, base1, base2);
+  }
+
+  /**
+   * Foot cable: tension-only (compression=false), so the foot trails
    * along behind and never pushes (Tim, 2026-10-10).
    */
-  private static void tasselCable(final LinkManager lm, final Clazz clazz,
-      Node handle, final Node tassel) {
+  private static void footCable(final LinkManager lm, final Clazz clazz,
+      Node a, final Node b) {
     final LinkType type = thin(lm.link_type_factory.getNew(
-        distance(handle, tassel), tassel_elasticity));
+        distance(a, b), foot_elasticity));
     type.compression = false;
-    final Link link = lm.setLink(handle, tassel, type, clazz);
+    final Link link = lm.setLink(a, b, type, clazz);
     link.adjusted_rest_length = type.length;
     link.handle = true;
   }
