@@ -13,7 +13,7 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
 import com.springie.muscles.Sensors;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.utilities.random.Hortensius32Fast;
 import com.springie.world.World;
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ class CrawlerDemoTest {
     old_muscles_enabled = Muscles.enabled;
     old_gravity_active = World.gravity_active;
     old_friction = World.ground_friction;
-    old_collisions = FrEnd.check_collisions;
+    old_collisions = World.check_collisions;
     old_amplitude = CrawlerDemo.muscle_amplitude_pct;
     old_bias = CrawlerDemo.heading_stabilizer_bias;
     ContextManager.setNodeManager(new NodeManager());
@@ -64,7 +64,7 @@ class CrawlerDemoTest {
     Muscles.enabled = old_muscles_enabled;
     World.gravity_active = old_gravity_active;
     World.ground_friction = old_friction;
-    FrEnd.check_collisions = old_collisions;
+    World.check_collisions = old_collisions;
     CrawlerDemo.muscle_amplitude_pct = old_amplitude;
     CrawlerDemo.heading_stabilizer_bias = old_bias;
   }
@@ -194,18 +194,18 @@ class CrawlerDemoTest {
       World.maximum_magnitude = Integer.MAX_VALUE;
       Node.max_speed = Integer.MAX_VALUE;
       Node.viscocity = 0;
-      FrEnd.three_d = true;
-      FrEnd.check_collisions = false;
-      FrEnd.continuously_centre_x = false;
-    com.springie.FrEnd.continuously_centre_y = false;
-    com.springie.FrEnd.continuously_centre_z = false;
-      FrEnd.boundaries = true;
-      FrEnd.explosions = false;
-      FrEnd.oscd = true;
-      FrEnd.dragged_element = null;
-      FrEnd.forces_disabled_during_gesture = false;
-      FrEnd.paused = false;
-      FrEnd.frame_frequency = 0;
+      World.three_d = true;
+      World.check_collisions = false;
+      World.continuously_centre_x = false;
+    com.springie.world.World.continuously_centre_y = false;
+    com.springie.world.World.continuously_centre_z = false;
+      World.boundaries = true;
+      World.explosions = false;
+      World.oscd = true;
+      World.dragged_element = null;
+      World.forces_disabled_during_gesture = false;
+      World.paused = false;
+      World.frame_frequency = 0;
       Muscles.enabled = false;
       Muscles.active_oscillator = 0;
       Coords.x_pixels = 800;
@@ -216,7 +216,7 @@ class CrawlerDemoTest {
       ContextManager.setNodeManager(new NodeManager());
       final NodeManager nm = ContextManager.getNodeManager();
       CrawlerDemo.buildAt(0);
-      FrEnd.check_collisions = false;
+      World.check_collisions = false;
 
       final LinkManager lm = nm.getLinkManager();
       double max_strain = 0;

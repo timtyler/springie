@@ -1,6 +1,7 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.gui.gestures;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
@@ -9,7 +10,7 @@ import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.geometry.Point3D;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 
 public class ScaleManager {
@@ -46,7 +47,7 @@ public class ScaleManager {
     this.node_radius = new TransferUtilities().transferNodeRadii();
 
     this.centre = this.node_manager.getCentre();
-    //FrEnd.forces_disabled_during_gesture = true;
+    //World.forces_disabled_during_gesture = true;
   }
 
   public void performScale(final int x, final int y) {
@@ -95,7 +96,7 @@ public class ScaleManager {
     if (this.link_length != null) {
       performScale(x, y);
       this.link_length = null;
-      //FrEnd.forces_disabled_during_gesture = false;
+      //World.forces_disabled_during_gesture = false;
     }
   }
 }

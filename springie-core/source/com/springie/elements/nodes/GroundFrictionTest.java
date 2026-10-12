@@ -27,8 +27,8 @@ class GroundFrictionTest {
   }
 
   private Node groundNodeWithVelocity(final int vx, final int vz) {
-    final int c = 100 << com.springie.render.Coords.shift;
-    final int ground_y = com.springie.render.Coords.y_pixels << com.springie.render.Coords.shift;
+    final int c = 100 << com.springie.geometry.Coords.shift;
+    final int ground_y = com.springie.geometry.Coords.y_pixels << com.springie.geometry.Coords.shift;
     final Node node = new Node(new com.springie.geometry.Point3D(c, ground_y, c),
         0, new NodeTypeFactory());
     node.pos.y = ground_y; // touching the ground (high-Y wall)
@@ -69,7 +69,7 @@ class GroundFrictionTest {
   void frictionDoesNotAffectAirborneNodes() {
     World.ground_friction = 100;
     final Node node = groundNodeWithVelocity(1000, -600);
-    node.pos.y = 100 << com.springie.render.Coords.shift; // well above ground
+    node.pos.y = 100 << com.springie.geometry.Coords.shift; // well above ground
     node.boundaryCheck();
     assertEquals(1000, node.velocity.x, "airborne vx must be untouched");
     assertEquals(-600, node.velocity.z, "airborne vz must be untouched");

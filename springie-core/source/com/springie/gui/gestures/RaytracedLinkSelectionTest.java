@@ -7,7 +7,7 @@ import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.gui.GuiTestSupport;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;

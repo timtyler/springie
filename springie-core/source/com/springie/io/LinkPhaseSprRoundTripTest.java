@@ -8,7 +8,7 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.geometry.Point3D;
 import com.springie.io.in.readers.spr.ReaderSPR;
 import com.springie.io.out.writers.spr.WriterSpr;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import java.awt.GraphicsEnvironment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

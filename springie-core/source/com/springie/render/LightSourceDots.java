@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.render;
+import com.springie.geometry.Coords;
 
 import com.springie.render.modules.modern.Light;
 import com.springie.render.modules.modern.LightSource;

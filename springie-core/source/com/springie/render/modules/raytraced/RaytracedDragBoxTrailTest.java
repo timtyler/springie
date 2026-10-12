@@ -1,10 +1,11 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.render.modules.raytraced;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.ModularRendererBase;
 import java.awt.Point;
@@ -44,7 +45,7 @@ class RaytracedDragBoxTrailTest {
   private static void setDrag(final int x0, final int y0, final int x1, final int y1)
       throws Exception {
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.paused = true;
+      World.paused = true;
       FrEnd.perform_actions.drag_box_manager.drag_box_start =
           new Point(x0 << Coords.shift, y0 << Coords.shift);
       FrEnd.perform_actions.drag_box_manager.drag_box_end =
@@ -164,7 +165,7 @@ class RaytracedDragBoxTrailTest {
       SwingUtilities.invokeAndWait(() -> {
         FrEnd.perform_actions.drag_box_manager.drag_box_start = null;
         FrEnd.perform_actions.drag_box_manager.drag_box_end = null;
-        FrEnd.paused = false;
+        World.paused = false;
         RendererDelegator.renderer = previous[0];
       });
     }

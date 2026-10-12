@@ -1,6 +1,6 @@
 // This code has been placed into the public domain by its author
 
-package com.springie.render;
+package com.springie.geometry;
 
 /**
  * Stable bottom-up merge sorts over an index array, ascending by key.

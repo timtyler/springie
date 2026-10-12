@@ -1,6 +1,7 @@
 //This program has been placed into the public domain by its author.
 
 package com.springie.messages.commands;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.messages.ArgumentList;
@@ -11,7 +12,7 @@ public final class ProceduralObjects {
   }
 
   public static void allNew(final ArgumentList al) {
-    FrEnd.data_input.resetWorkspaces();
+    World.data_input.resetWorkspaces();
     SetUpCode.clearAndThenAddProceduralObjects(al);
     FrEnd.reflectValuesInGUIAfterPropertyEditing();
   }

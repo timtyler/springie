@@ -204,7 +204,7 @@ public final class RollingJudge extends HeadlessJudge {
       // Direction reversal (Tim): 60-tick windowed average velocity
       // must stay positive. Polygonal gait jitter averages out; a real
       // flip drags the window negative.
-      final int cur_x = hub.pos.x >> com.springie.render.Coords.shift;
+      final int cur_x = hub.pos.x >> com.springie.geometry.Coords.shift;
       x_history[hist_idx] = cur_x;
       hist_idx = (hist_idx + 1) % REV_WINDOW;
       if (hist_filled < REV_WINDOW) {
@@ -295,7 +295,7 @@ public final class RollingJudge extends HeadlessJudge {
     result.disqualified = tipped_over || shoved || shattered || collapsed;
     result.initial_velocity_px_per_frame = initial_velocity;
     result.z_drift_px =
-        (hub.pos.z - start_z) >> com.springie.render.Coords.shift;
+        (hub.pos.z - start_z) >> com.springie.geometry.Coords.shift;
     // Score: rolling match rewards pure rolling; sliding penalty punishes
     // sliding; reversals kill the marathon bonus (score halved).
     double base = distance_px * rolling_match - 3.0 * height_std_px

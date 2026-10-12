@@ -33,7 +33,7 @@ import com.springie.metrics.AverageLengthGetter;
 import com.springie.metrics.AveragePhaseGetter;
 import com.springie.metrics.AverageRadiusGetter;
 import com.springie.metrics.AverageStiffnessGetter;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Choice;

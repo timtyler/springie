@@ -4,7 +4,7 @@ package com.springie.gui.panels.preferences;
 
 import com.springie.FrEnd;
 import com.springie.gui.GUIStrings;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import java.awt.BorderLayout;
 import java.awt.Checkbox;

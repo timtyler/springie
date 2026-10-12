@@ -2,7 +2,7 @@
 
 package com.springie.muscles;
 
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 
 /**
  * Global muscle configuration.

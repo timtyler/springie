@@ -18,7 +18,7 @@ import com.springie.io.out.GarbageCollection;
 import com.springie.io.out.WriteFloatingPoint;
 import com.springie.modification.post.PostModification;
 import com.springie.modification.redundancy.RedundancyRemover;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.world.World;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -101,7 +101,7 @@ public class WriterFDL {
     }
 
     // 2D
-    if (!FrEnd.three_d) {
+    if (!World.three_d) {
       final FDLObjectChain chain_dimensions = new FDLObjectChain("=");
       chain_dimensions.add(new FDLObjectIdentifier("dimensions"));
       chain_dimensions.add(new FDLObjectNumber("2"));

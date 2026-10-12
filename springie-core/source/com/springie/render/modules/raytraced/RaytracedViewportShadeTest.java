@@ -1,8 +1,9 @@
 package com.springie.render.modules.raytraced;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.ModularRendererBase;
 import java.awt.Point;
@@ -41,7 +42,7 @@ public class RaytracedViewportShadeTest {
     SwingUtilities.invokeAndWait(() -> {
       saved_renderer = RendererDelegator.renderer;
       RendererDelegator.renderer = new ModularRendererRaytraced();
-      FrEnd.paused = true;
+      World.paused = true;
       FrEnd.main_canvas.forceResize();
       RendererDelegator.repaint_all_objects = true;
     });

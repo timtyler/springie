@@ -1,4 +1,6 @@
 package com.springie.render;
+import com.springie.geometry.Coords;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.geometry.Point3D;
@@ -421,9 +423,9 @@ public final class WorldMarkers {
   }
 
   private static boolean olympicsActive() {
-    return FrEnd.show_world_markers
-        && (FrEnd.continuously_centre_x || FrEnd.continuously_centre_y
-            || FrEnd.continuously_centre_z);
+    return World.show_world_markers
+        && (World.continuously_centre_x || World.continuously_centre_y
+            || World.continuously_centre_z);
   }
 
   /**

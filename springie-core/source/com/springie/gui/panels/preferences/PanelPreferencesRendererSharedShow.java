@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.preferences;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.render.RendererDelegator;
@@ -59,28 +60,28 @@ public class PanelPreferencesRendererSharedShow {
     final Panel panel_render_normal = new Panel();
     panel_render_normal.add(new Label("Show:"));
 
-    this.checkbox_render_nodes = new Checkbox("Nodes", FrEnd.render_nodes);
+    this.checkbox_render_nodes = new Checkbox("Nodes", World.render_nodes);
     this.checkbox_render_nodes.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        FrEnd.render_nodes = ((Checkbox) e.getSource()).getState();
+        World.render_nodes = ((Checkbox) e.getSource()).getState();
         RendererDelegator.repaintAll();
       }
     });
     panel_render_normal.add(this.checkbox_render_nodes);
 
-    this.checkbox_render_links = new Checkbox("Links", FrEnd.render_links);
+    this.checkbox_render_links = new Checkbox("Links", World.render_links);
     this.checkbox_render_links.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        FrEnd.render_links = ((Checkbox) e.getSource()).getState();
+        World.render_links = ((Checkbox) e.getSource()).getState();
         RendererDelegator.repaintAll();
       }
     });
     panel_render_normal.add(this.checkbox_render_links);
 
-    this.checkbox_render_polygons = new Checkbox("Faces", FrEnd.render_faces);
+    this.checkbox_render_polygons = new Checkbox("Faces", World.render_faces);
     this.checkbox_render_polygons.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        FrEnd.render_faces = getCheckboxRenderPolygons().getState();
+        World.render_faces = getCheckboxRenderPolygons().getState();
         RendererDelegator.repaintAll();
       }
     });
@@ -89,10 +90,10 @@ public class PanelPreferencesRendererSharedShow {
     final Panel panel_render_charges = new Panel();
     panel_render_charges.add(new Label("Show:"));
     
-    this.checkbox_render_charges = new Checkbox("Charges", FrEnd.render_charges);
+    this.checkbox_render_charges = new Checkbox("Charges", World.render_charges);
     this.checkbox_render_charges.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        FrEnd.render_charges = ((Checkbox) e.getSource()).getState();
+        World.render_charges = ((Checkbox) e.getSource()).getState();
         RendererDelegator.repaintAll();
       }
     });
@@ -100,10 +101,10 @@ public class PanelPreferencesRendererSharedShow {
 
     final Panel panel_render_hidden = new Panel();
     this.checkbox_render_hidden_nodes = new Checkbox("Nodes",
-        FrEnd.render_hidden_nodes);
+        World.render_hidden_nodes);
     this.checkbox_render_hidden_nodes.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        FrEnd.render_hidden_nodes = getCheckboxRenderHiddenNodes().getState();
+        World.render_hidden_nodes = getCheckboxRenderHiddenNodes().getState();
         RendererDelegator.repaintAll();
       }
     });
@@ -111,20 +112,20 @@ public class PanelPreferencesRendererSharedShow {
     panel_render_hidden.add(this.checkbox_render_hidden_nodes);
 
     this.checkbox_render_hidden_links = new Checkbox("Links",
-        FrEnd.render_hidden_links);
+        World.render_hidden_links);
     this.checkbox_render_hidden_links.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        FrEnd.render_hidden_links = getCheckboxRenderHiddenLinks().getState();
+        World.render_hidden_links = getCheckboxRenderHiddenLinks().getState();
         RendererDelegator.repaintAll();
       }
     });
     panel_render_hidden.add(this.checkbox_render_hidden_links);
 
     this.checkbox_render_hidden_polygons = new Checkbox("Faces",
-        FrEnd.render_hidden_faces);
+        World.render_hidden_faces);
     this.checkbox_render_hidden_polygons.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        FrEnd.render_hidden_faces = getCheckboxRenderHiddenPolygons().getState();
+        World.render_hidden_faces = getCheckboxRenderHiddenPolygons().getState();
         RendererDelegator.repaintAll();
       }
     });
@@ -205,13 +206,13 @@ public class PanelPreferencesRendererSharedShow {
     this.checkbox_scenic_background.setState(false);
 
     // In case a checkbox was already in its default state (no item event).
-    FrEnd.render_nodes = true;
-    FrEnd.render_links = true;
-    FrEnd.render_faces = true;
-    FrEnd.render_charges = true;
-    FrEnd.render_hidden_nodes = false;
-    FrEnd.render_hidden_links = false;
-    FrEnd.render_hidden_faces = false;
+    World.render_nodes = true;
+    World.render_links = true;
+    World.render_faces = true;
+    World.render_charges = true;
+    World.render_hidden_nodes = false;
+    World.render_hidden_links = false;
+    World.render_hidden_faces = false;
     RendererDelegator.scenic_background = false;
 
     RendererDelegator.repaintAll();

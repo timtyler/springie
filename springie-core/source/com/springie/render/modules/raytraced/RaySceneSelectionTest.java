@@ -1,13 +1,14 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.render.modules.raytraced;
+import com.springie.world.World;
 
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeTypeFactory;
 import com.springie.geometry.Point3D;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import java.awt.GraphicsEnvironment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * ring; unselected nodes get no ring.
  *
  * <p>Needs a display like RaySceneCableTest: building the scene reads
- * FrEnd.render_nodes, and FrEnd's class initialisation creates AWT
+ * World.render_nodes, and FrEnd's class initialisation creates AWT
  * components.
  */
 class RaySceneSelectionTest {

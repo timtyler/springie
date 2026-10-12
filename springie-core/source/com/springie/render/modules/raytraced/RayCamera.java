@@ -2,7 +2,7 @@
 
 package com.springie.render.modules.raytraced;
 
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 
 /**
  * Pinhole camera that reproduces the default renderer's projection exactly.

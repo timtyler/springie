@@ -1,6 +1,7 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.gui.gestures;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
@@ -24,7 +25,7 @@ public class TranslationManager {
       this.pos = new TransferUtilities().transferPositions();
       // Tim: snapshot the gold dots so they translate with the model.
       WorldMarkers.snapshotForDrag();
-      FrEnd.forces_disabled_during_gesture = true;
+      World.forces_disabled_during_gesture = true;
     } else {
       performTranslation(x, y);
     }
@@ -53,7 +54,7 @@ public class TranslationManager {
     if (this.pos != null) {
       performTranslation(x, y);
       this.pos = null;
-      FrEnd.forces_disabled_during_gesture = false;
+      World.forces_disabled_during_gesture = false;
     }
   }
 }

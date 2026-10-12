@@ -2,7 +2,7 @@
 
 package com.springie.render.modules.raytraced;
 
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import java.awt.Color;
 import org.junit.jupiter.api.AfterEach;

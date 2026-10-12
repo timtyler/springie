@@ -1,13 +1,12 @@
 package com.springie.world;
 
-import com.springie.FrEnd;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkTypeFactory;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.geometry.Point3D;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import java.awt.GraphicsEnvironment;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,8 +25,8 @@ class WorldSimTest {
     // (it runs under xvfb in headless CI environments).
     assumeTrue(!GraphicsEnvironment.isHeadless(), "needs a display");
 
-    final boolean old_check_collisions = FrEnd.check_collisions;
-    FrEnd.check_collisions = false;
+    final boolean old_check_collisions = World.check_collisions;
+    World.check_collisions = false;
     try {
       final NodeManager nodes_world = new NodeManager();
       final World world = nodes_world;
@@ -65,7 +64,7 @@ class WorldSimTest {
         assertNotEquals(start_x[i], nodes[i].pos.x, "node " + i + " should have moved");
       }
     } finally {
-      FrEnd.check_collisions = old_check_collisions;
+      World.check_collisions = old_check_collisions;
     }
   }
 }

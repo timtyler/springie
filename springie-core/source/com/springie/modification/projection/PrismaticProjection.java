@@ -1,6 +1,7 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.modification.projection;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.elements.links.LinkManager;
@@ -61,7 +62,7 @@ public class PrismaticProjection {
 
     //Log.log(tokenised);
 
-    FrEnd.data_input.processBuffer(tokenised.toCharArray(), e);
+    World.data_input.processBuffer(tokenised.toCharArray(), e);
   }
 
   float getScaleFactor() {

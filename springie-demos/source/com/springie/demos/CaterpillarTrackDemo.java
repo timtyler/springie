@@ -16,7 +16,7 @@ import com.springie.geometry.Point3D;
 import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
 import com.springie.muscles.Oscillator;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.world.Grounding;
 import com.springie.world.World;
 import java.util.ArrayList;

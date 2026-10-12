@@ -3,7 +3,7 @@
 package com.springie.muscles;
 
 import com.springie.elements.links.Link;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 
 /**
  * The first controller behaviour: the link follows one of the global

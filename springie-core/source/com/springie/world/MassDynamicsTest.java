@@ -7,7 +7,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
 import com.springie.geometry.Point3D;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import java.awt.GraphicsEnvironment;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;

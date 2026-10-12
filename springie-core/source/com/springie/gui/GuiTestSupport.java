@@ -79,7 +79,7 @@ public final class GuiTestSupport {
       SwingUtilities.invokeAndWait(() -> {
         state[0] = World.gravity_strength;
         state[1] = ContextManager.getNodeManager().element.size();
-        state[2] = FrEnd.new_message_manager.size();
+        state[2] = World.new_message_manager.size();
       });
       if (state[0] != last_gravity || state[1] != last_nodes) {
         last_gravity = state[0];

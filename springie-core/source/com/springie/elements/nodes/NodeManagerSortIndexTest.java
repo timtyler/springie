@@ -1,8 +1,8 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.elements.nodes;
+import com.springie.world.World;
 
-import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.geometry.Point3D;
@@ -47,7 +47,7 @@ class NodeManagerSortIndexTest {
   @BeforeEach
   void saveAndBuildModel() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
-      this.saved_redraw_deepest_first = FrEnd.redraw_deepest_first;
+      this.saved_redraw_deepest_first = World.redraw_deepest_first;
       this.saved_renderer = RendererDelegator.renderer;
       buildThreeNodeModel();
     });
@@ -56,7 +56,7 @@ class NodeManagerSortIndexTest {
   @AfterEach
   void restore() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.redraw_deepest_first = this.saved_redraw_deepest_first;
+      World.redraw_deepest_first = this.saved_redraw_deepest_first;
       RendererDelegator.renderer = this.saved_renderer;
     });
   }
@@ -96,7 +96,7 @@ class NodeManagerSortIndexTest {
       throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       RendererDelegator.renderer = new ModularRendererNew();
-      FrEnd.redraw_deepest_first = true;
+      World.redraw_deepest_first = true;
       ContextManager.getNodeManager().sortIndex();
     });
     // Ascending by z: the caller draws the index from the end
@@ -109,7 +109,7 @@ class NodeManagerSortIndexTest {
   void sortIsSkippedWhileTheRaytracedRendererIsActive() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       RendererDelegator.renderer = new ModularRendererRaytraced();
-      FrEnd.redraw_deepest_first = true;
+      World.redraw_deepest_first = true;
       ContextManager.getNodeManager().sortIndex();
     });
     // The identity index set up for the three nodes is untouched: the
@@ -121,7 +121,7 @@ class NodeManagerSortIndexTest {
   void sortIsSkippedWhenDeepestFirstIsOff() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       RendererDelegator.renderer = new ModularRendererNew();
-      FrEnd.redraw_deepest_first = false;
+      World.redraw_deepest_first = false;
       ContextManager.getNodeManager().sortIndex();
     });
     assertArrayEquals(new int[] {0, 1, 2}, depthIndexCopy());
@@ -131,7 +131,7 @@ class NodeManagerSortIndexTest {
   void sortedIndexOrdersNodesByAscendingDepth() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       RendererDelegator.renderer = new ModularRendererNew();
-      FrEnd.redraw_deepest_first = true;
+      World.redraw_deepest_first = true;
       ContextManager.getNodeManager().sortIndex();
     });
     final int[] index = depthIndexCopy();

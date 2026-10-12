@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.preferences;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.constants.Quality;
@@ -157,7 +158,7 @@ public class PanelPreferencesDisplay {
 //    this.panel_shared.add(panel_redraw_deepest_first);
 //    this.panel_shared.add(panel_fog);
 //    this.panel_shared.add(panel_visible_explosions);
-//    if (FrEnd.development_version) {
+//    if (World.development_version) {
 //      this.panel_shared.add(panel_fps);
 //    }
   }

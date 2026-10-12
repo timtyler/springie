@@ -1,6 +1,7 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.render.modules.raytraced;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.elements.clazz.Clazz;
@@ -10,7 +11,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeTypeFactory;
 import com.springie.geometry.Point3D;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RectangleInt;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.RendererTileManager;
@@ -112,14 +113,14 @@ public class TilePartialFrameTest {
     // These tests verify grid tiling; force grid mode.
     RendererTileManager.one_big_tile = false;
 
-    this.saved_render_nodes = FrEnd.render_nodes;
-    this.saved_render_links = FrEnd.render_links;
+    this.saved_render_nodes = World.render_nodes;
+    this.saved_render_links = World.render_links;
     this.saved_shadows = RendererDelegator.shadows;
     this.saved_scenic = RendererDelegator.scenic_background;
     this.saved_antialiasing = RendererDelegator.antialiasing;
     this.saved_pixellation = RendererDelegator.pixellation;
-    FrEnd.render_nodes = true;
-    FrEnd.render_links = true;
+    World.render_nodes = true;
+    World.render_links = true;
     RendererDelegator.shadows = false;
     RendererDelegator.scenic_background = false;
     RendererDelegator.antialiasing = 1;
@@ -154,8 +155,8 @@ public class TilePartialFrameTest {
     RendererTileManager.divisor = this.saved_divisor;
     RendererTileManager.show_tiles = this.saved_show_tiles;
     RendererTileManager.one_big_tile = this.saved_one_big_tile;
-    FrEnd.render_nodes = this.saved_render_nodes;
-    FrEnd.render_links = this.saved_render_links;
+    World.render_nodes = this.saved_render_nodes;
+    World.render_links = this.saved_render_links;
     RendererDelegator.shadows = this.saved_shadows;
     RendererDelegator.scenic_background = this.saved_scenic;
     RendererDelegator.antialiasing = this.saved_antialiasing;

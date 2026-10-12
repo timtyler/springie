@@ -7,7 +7,7 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.utilities.random.Hortensius32Fast;
 import com.springie.world.World;
 
@@ -336,25 +336,25 @@ public final class HopperJudge {
     World.maximum_magnitude = Integer.MAX_VALUE;
     com.springie.elements.nodes.Node.max_speed = Integer.MAX_VALUE;
     com.springie.elements.nodes.Node.viscocity = 0;
-    com.springie.FrEnd.three_d = true;
-    com.springie.FrEnd.check_collisions = false;
-    com.springie.FrEnd.continuously_centre_x = false;
-    com.springie.FrEnd.continuously_centre_y = false;
-    com.springie.FrEnd.continuously_centre_z = false;
-    com.springie.FrEnd.boundaries = true;
-    com.springie.FrEnd.explosions = true;
-    com.springie.FrEnd.oscd = true;
-    com.springie.FrEnd.dragged_element = null;
-    com.springie.FrEnd.forces_disabled_during_gesture = false;
-    com.springie.FrEnd.paused = false;
-    com.springie.FrEnd.frame_frequency = 0;
+    com.springie.world.World.three_d = true;
+    com.springie.world.World.check_collisions = false;
+    com.springie.world.World.continuously_centre_x = false;
+    com.springie.world.World.continuously_centre_y = false;
+    com.springie.world.World.continuously_centre_z = false;
+    com.springie.world.World.boundaries = true;
+    com.springie.world.World.explosions = true;
+    com.springie.world.World.oscd = true;
+    com.springie.world.World.dragged_element = null;
+    com.springie.world.World.forces_disabled_during_gesture = false;
+    com.springie.world.World.paused = false;
+    com.springie.world.World.frame_frequency = 0;
     com.springie.muscles.Muscles.enabled = false;
     com.springie.muscles.Muscles.active_oscillator = 0;
     // Pin the universe size: a booted GUI resizes Coords to its canvas,
     // moving the ground walls and changing the absolute score.
-    com.springie.render.Coords.x_pixels = 800;
-    com.springie.render.Coords.y_pixels = 600;
-    com.springie.render.Coords.z_pixels = 1024;
+    com.springie.geometry.Coords.x_pixels = 800;
+    com.springie.geometry.Coords.y_pixels = 600;
+    com.springie.geometry.Coords.z_pixels = 1024;
   }
 
   /**

@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.gestures;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
@@ -11,7 +12,7 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkType;
 import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;
@@ -38,7 +39,7 @@ public class PerformSelection {
       ContextManager.getNodeManager().nodeAndLinkRenderDummy();
     }
 
-    final BaseElement dragged_element = FrEnd.dragged_element;
+    final BaseElement dragged_element = World.dragged_element;
 
     if (dragged_element != null) {
       // Mid-drag (this also covers the click event that follows a
@@ -95,7 +96,7 @@ public class PerformSelection {
     if (hit) {
       // With the no-drag tool there is nothing more to do; otherwise
       // a drag has started and dragged_element is now set.
-      if (FrEnd.dragged_element == null) {
+      if (World.dragged_element == null) {
         return;
       }
     } else {
@@ -156,16 +157,16 @@ public class PerformSelection {
     if (FrEnd.button_virginity) {
       if (selected_element != null) {
         if (selected_element.isSelected()) {
-          FrEnd.dragged_element = selected_element;
-          final Point3D centre = FrEnd.dragged_element.getCoordinatesOfCentrePoint();
+          World.dragged_element = selected_element;
+          final Point3D centre = World.dragged_element.getCoordinatesOfCentrePoint();
 
           FrEnd.dragged_x_offset = x - centre.x;
           FrEnd.dragged_y_offset = y - centre.y;
-          FrEnd.currently_dragging = true;
+          World.currently_dragging = true;
         }
       }
     } else {
-      if (FrEnd.currently_dragging) {
+      if (World.currently_dragging) {
         FrEnd.dragCurrentObject(x, y);
       }
     }
@@ -178,7 +179,7 @@ public class PerformSelection {
     // check for selected node...
     boolean selection_changed = false;
     if (selected_node != null) {
-      if (!FrEnd.currently_dragging) {
+      if (!World.currently_dragging) {
         if (!selected_node.isSelected()) {
           conditionallyDeselectAll();
           selection_changed = true;
@@ -211,7 +212,7 @@ public class PerformSelection {
     final Link selected_link = ContextManager.getLinkManager().isThereOne(x, y);
     boolean selection_changed = false;
 
-    final BaseElement dragged_element = FrEnd.dragged_element;
+    final BaseElement dragged_element = World.dragged_element;
 
     if (dragged_element == null) {
       if (selected_link != null) {
@@ -222,7 +223,7 @@ public class PerformSelection {
       }
 
       if (selected_link != null) {
-        if (selected_link != FrEnd.dragged_element) {
+        if (selected_link != World.dragged_element) {
           final LinkType type = selected_link.type;
           if ((FrEnd.main_canvas.modifiers & 2) != 0) {
             if (FrEnd.button_virginity) {

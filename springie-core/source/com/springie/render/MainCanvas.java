@@ -1,6 +1,8 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.render;
+import com.springie.world.World;
+import com.springie.geometry.Coords;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
@@ -87,7 +89,7 @@ public class MainCanvas {
         canvas.current_mouse_x = e.getX() << Coords.shift;
         canvas.current_mouse_y = e.getY() << Coords.shift;
         
-        FrEnd.new_message_manager.add(new NewMessage(new Point(e.getX() << Coords.shift, e.getY() << Coords.shift)) {
+        World.new_message_manager.add(new NewMessage(new Point(e.getX() << Coords.shift, e.getY() << Coords.shift)) {
           public Object execute() {
             final Point p = (Point) this.context;
             FrEnd.springieMouseDragged(p.x, p.y);
@@ -103,7 +105,7 @@ public class MainCanvas {
         LightSourceDots.dragging_light = null;
         LightSourceDots.dragging = -1;
         FrEnd.mouse_pressed = false;
-        FrEnd.new_message_manager.add(new NewMessage(new Point(e.getX() << Coords.shift, e.getY() << Coords.shift)) {
+        World.new_message_manager.add(new NewMessage(new Point(e.getX() << Coords.shift, e.getY() << Coords.shift)) {
           public Object execute() {
             final Point p = (Point) this.context;
             FrEnd.springieMouseReleased(p.x, p.y);
@@ -127,7 +129,7 @@ public class MainCanvas {
         canvas.modifiers = e.getModifiers();
         FrEnd.mouse_pressed = true;
 
-        FrEnd.new_message_manager.add(new NewMessage(new Point(e.getX() << Coords.shift, e.getY() << Coords.shift)) {
+        World.new_message_manager.add(new NewMessage(new Point(e.getX() << Coords.shift, e.getY() << Coords.shift)) {
           public Object execute() {
             final Point p = (Point) this.context;
             FrEnd.springieMousePressed(p.x, p.y);
@@ -143,7 +145,7 @@ public class MainCanvas {
         final MainCanvas canvas = getCanvas();
         canvas.modifiers = e.getModifiers();
 
-        FrEnd.new_message_manager.add(new NewMessage(new Point(e.getX() << Coords.shift, e.getY() << Coords.shift)) {
+        World.new_message_manager.add(new NewMessage(new Point(e.getX() << Coords.shift, e.getY() << Coords.shift)) {
           public Object execute() {
             final Point p = (Point) this.context;
             FrEnd.springieMouseClicked(p.x, p.y);
@@ -153,7 +155,7 @@ public class MainCanvas {
       }
 
       public void mouseEntered(final MouseEvent e) {
-        FrEnd.new_message_manager.add(new NewMessage(new Point(e.getX() << Coords.shift, e.getY() << Coords.shift)) {
+        World.new_message_manager.add(new NewMessage(new Point(e.getX() << Coords.shift, e.getY() << Coords.shift)) {
           public Object execute() {
             final Point p = (Point) this.context;
             FrEnd.springieMouseEntered(p.x, p.y);
@@ -163,7 +165,7 @@ public class MainCanvas {
       }
 
       public void mouseExited(final MouseEvent e) {
-        FrEnd.new_message_manager.add(new NewMessage(new Point(e.getX() << Coords.shift, e.getY() << Coords.shift)) {
+        World.new_message_manager.add(new NewMessage(new Point(e.getX() << Coords.shift, e.getY() << Coords.shift)) {
           public Object execute() {
             final Point p = (Point) this.context;
             FrEnd.springieMouseExited(p.x, p.y);
@@ -183,31 +185,31 @@ public class MainCanvas {
         switch (c) {
           case 'a':
           case 'A':
-            FrEnd.new_message_manager.add(new SelectAllMessage());
+            World.new_message_manager.add(new SelectAllMessage());
 
             break;
 
           case 'z':
           case 'Z':
-            FrEnd.new_message_manager.add(new DeselectAllMessage());
+            World.new_message_manager.add(new DeselectAllMessage());
 
             break;
 
           case 'c':
           case 'C':
-            FrEnd.new_message_manager.add(new SelectClazzMessage());
+            World.new_message_manager.add(new SelectClazzMessage());
             break;
 
           case 't':
           case 'T':
-            FrEnd.new_message_manager.add(new SelectTypeMessage());
+            World.new_message_manager.add(new SelectTypeMessage());
             break;
 
           case 'P':
           case 'p':
             //final Checkbox checkbox_pause = FrEnd.panel_fundamental.checkbox_pause;
             //checkbox_pause.setState(!checkbox_pause.getState());
-            FrEnd.new_message_manager.add(FrEnd.system_messages.getPauseMessage());
+            World.new_message_manager.add(FrEnd.system_messages.getPauseMessage());
             break;
 
           default:
@@ -220,7 +222,7 @@ public class MainCanvas {
 
         switch (e.getKeyCode()) {
           case KeyEvent.VK_DELETE:
-            FrEnd.new_message_manager.add(new DeleteSelectedMessage());
+            World.new_message_manager.add(new DeleteSelectedMessage());
 
             break;
 

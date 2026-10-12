@@ -1,4 +1,5 @@
 package com.springie.io.out.writers.wrl;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
@@ -379,7 +380,7 @@ public class WriterWRL {
     for (int n = 0; n < number_of_faces; n++) {
       final Face face = (Face) face_manager.element.get(n);
       if (face.type.equals(type)) {
-        if (!face.type.hidden || FrEnd.render_hidden_faces) {
+        if (!face.type.hidden || World.render_hidden_faces) {
           writeFaceClockwise(face);
           writeFaceAntiClockwise(face);
         }
@@ -481,7 +482,7 @@ public class WriterWRL {
     int number) {
     final NodeType node_type = (NodeType) ContextManager.getNodeManager().node_type_factory.array
       .get(number);
-    if (!node_type.hidden || FrEnd.render_hidden_nodes) {
+    if (!node_type.hidden || World.render_hidden_nodes) {
 
       final int number_of_nodes = node_manager.element.size();
       for (int n = 0; n < number_of_nodes; n++) {
@@ -513,7 +514,7 @@ public class WriterWRL {
       final Link link = (Link) link_manager.element.get(temp);
       if (link.type == type) {
         if (link.clazz == clazz) {
-          if (!link.type.hidden || FrEnd.render_hidden_links) {
+          if (!link.type.hidden || World.render_hidden_links) {
             outputLink(link, number);
           }
         }

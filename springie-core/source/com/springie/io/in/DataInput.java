@@ -71,7 +71,7 @@ public class DataInput {
   }
 
   public void resetWorkspaces() {
-    // The shared FrEnd.data_input is constructed with a null destination;
+    // The shared World.data_input is constructed with a null destination;
     // fall back to the live manager so reset paths never see a null.
     final NodeManager destination = this.manager_destination != null
         ? this.manager_destination : ContextManager.getNodeManager();
@@ -104,13 +104,13 @@ public class DataInput {
     World.minimum_magnitude = 0;
     Node.max_speed = Integer.MAX_VALUE;
     Node.viscocity = 0;
-    FrEnd.three_d = true;
-    FrEnd.check_collisions = true;
-    FrEnd.continuously_centre_x = false;
-    com.springie.FrEnd.continuously_centre_y = false;
-    com.springie.FrEnd.continuously_centre_z = false;
-    FrEnd.demo_model = false;
-    FrEnd.show_world_markers = true;
+    World.three_d = true;
+    World.check_collisions = true;
+    World.continuously_centre_x = false;
+    com.springie.world.World.continuously_centre_y = false;
+    com.springie.world.World.continuously_centre_z = false;
+    World.demo_model = false;
+    World.show_world_markers = true;
     Muscles.enabled = false;
     // Which oscillator first: the amplitude/period/phase below must land on
     // oscillator 0, not on whichever oscillator the previous model left
@@ -196,7 +196,7 @@ public class DataInput {
       load_error = "Failed to parse: " + filename + " (" + e.getMessage() + ")";
     }
 
-    if (FrEnd.development_version) {
+    if (World.development_version) {
       logger.debug("DataInput->readInSprFile output:" + input);
     }
 

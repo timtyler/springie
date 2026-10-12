@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.controls;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
@@ -90,7 +91,7 @@ public class PanelControlsDelete {
           public Object execute() {
             ContextManager.getNodeManager().initialSetUp();
 
-            FrEnd.last_file_path = null;
+            World.last_file_path = null;
 
             FrEnd.reflectValuesInGUIAfterPropertyEditing();
             return null;

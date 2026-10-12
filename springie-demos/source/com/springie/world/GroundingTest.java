@@ -7,7 +7,7 @@ import com.springie.demos.WheelbarrowDemo;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.muscles.Muscles;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

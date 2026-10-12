@@ -1,6 +1,7 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.gui.gestures;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
@@ -14,7 +15,7 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
 import com.springie.geometry.Point3D;
 import com.springie.gui.GuiTestSupport;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import java.util.ArrayList;
 import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.AfterAll;
@@ -69,8 +70,8 @@ class SingleClickNearestSelectionTest {
     ContextManager.getFaceManager().element.clear();
     ContextManager.getLinkManager().element.clear();
     ContextManager.getNodeManager().element.clear();
-    FrEnd.dragged_element = null;
-    FrEnd.currently_dragging = false;
+    World.dragged_element = null;
+    World.currently_dragging = false;
     FrEnd.perform_actions.drag_box_manager.drag_box_start = null;
     FrEnd.perform_actions.drag_box_manager.drag_box_end = null;
   }
@@ -193,7 +194,7 @@ class SingleClickNearestSelectionTest {
     final boolean[] nodeSelected = new boolean[1];
     final int[] total = new int[1];
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.paused = true;
+      World.paused = true;
       final boolean[] boxes = saveBoxes();
       try {
         setBoxes(true, false, true);
@@ -242,7 +243,7 @@ class SingleClickNearestSelectionTest {
     final boolean[] nodeSelected = new boolean[1];
     final int[] total = new int[1];
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.paused = true;
+      World.paused = true;
       final boolean[] boxes = saveBoxes();
       try {
         setBoxes(true, false, true);
@@ -290,7 +291,7 @@ class SingleClickNearestSelectionTest {
     final boolean[] linkSelected = new boolean[1];
     final int[] total = new int[1];
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.paused = true;
+      World.paused = true;
       final boolean[] boxes = saveBoxes();
       try {
         setBoxes(false, true, true);
@@ -344,7 +345,7 @@ class SingleClickNearestSelectionTest {
     final boolean[] farSelected = new boolean[1];
     final int[] total = new int[1];
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.paused = true;
+      World.paused = true;
       final boolean[] boxes = saveBoxes();
       try {
         setBoxes(true, false, false);
@@ -379,7 +380,7 @@ class SingleClickNearestSelectionTest {
   void clickOnEmptySpaceSelectsNothing() throws Exception {
     final int[] total = new int[1];
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.paused = true;
+      World.paused = true;
       final boolean[] boxes = saveBoxes();
       try {
         setBoxes(true, true, true);

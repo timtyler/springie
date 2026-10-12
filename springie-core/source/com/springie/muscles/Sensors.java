@@ -3,7 +3,7 @@
 package com.springie.muscles;
 
 import com.springie.elements.links.Link;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 
 /**
  * Read-only sensing helpers for {@link Controller}s.

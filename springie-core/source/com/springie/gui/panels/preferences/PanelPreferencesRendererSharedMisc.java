@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.preferences;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.elements.DeepObjectColourCalculator;
@@ -75,10 +76,10 @@ public class PanelPreferencesRendererSharedMisc {
     this.checkbox_explosions = new Checkbox(GUIStrings.EXPLOSIONS);
     this.checkbox_explosions.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        FrEnd.explosions = ((Checkbox) e.getSource()).getState();
+        World.explosions = ((Checkbox) e.getSource()).getState();
       }
     });
-    this.checkbox_explosions.setState(FrEnd.explosions);
+    this.checkbox_explosions.setState(World.explosions);
     panel_visible_explosions.add(this.checkbox_explosions);
 
     final Panel panel_redraw_deepest_first = new Panel();
@@ -87,10 +88,10 @@ public class PanelPreferencesRendererSharedMisc {
         "Render deepest objects first");
     this.checkbox_redraw_deepest_first.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        FrEnd.redraw_deepest_first = ((Checkbox) e.getSource()).getState();
+        World.redraw_deepest_first = ((Checkbox) e.getSource()).getState();
       }
     });
-    this.checkbox_redraw_deepest_first.setState(FrEnd.redraw_deepest_first);
+    this.checkbox_redraw_deepest_first.setState(World.redraw_deepest_first);
     panel_redraw_deepest_first.add(this.checkbox_redraw_deepest_first);
     
     final Panel panel_relative_fog = new Panel();
@@ -204,10 +205,10 @@ public class PanelPreferencesRendererSharedMisc {
   public void resetToDefaults() {
     // The listeners copy the checkbox state into the statics.
     this.checkbox_redraw_deepest_first.setState(true);
-    FrEnd.redraw_deepest_first = true;
+    World.redraw_deepest_first = true;
 
     this.checkbox_explosions.setState(true);
-    FrEnd.explosions = true;
+    World.explosions = true;
 
     this.checkbox_relative_fog.setState(true);
     DeepObjectColourCalculator.depth_is_relative = true;

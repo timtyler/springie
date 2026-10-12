@@ -73,7 +73,7 @@ class CaterpillarTrackDemoTest {
     assertNotNull(south, "one axle end heads S");
     // N = -z, S = +z: the ends sit on opposite sides of the track
     // middle, clear of the z=0 depth wall.
-    final int shift = com.springie.render.Coords.shift;
+    final int shift = com.springie.geometry.Coords.shift;
     assertEquals(
         (CaterpillarTrackDemo.Z_OFFSET_PX - CaterpillarTrackDemo.AXLE_HALF_PX)
             << shift,

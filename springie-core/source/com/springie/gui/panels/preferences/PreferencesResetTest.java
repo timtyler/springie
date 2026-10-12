@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.preferences;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.constants.Actions;
@@ -13,7 +14,7 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkRenderType;
 import com.springie.gui.GuiTestSupport;
 import com.springie.preferences.Preferences;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ColourModifier;
 import com.springie.render.modules.modern.ElementRendererLink;
@@ -40,17 +41,17 @@ class PreferencesResetTest {
 
       // Scramble a spread of preferences across every tab.
       SwingUtilities.invokeAndWait(() -> {
-        FrEnd.render_nodes = false;
-        FrEnd.render_hidden_links = true;
-        FrEnd.explosions = false;
-        FrEnd.redraw_deepest_first = false;
+        World.render_nodes = false;
+        World.render_hidden_links = true;
+        World.explosions = false;
+        World.redraw_deepest_first = false;
         FrEnd.delay = Delay._DELAY_100;
         FrEnd.action_left_type = Actions.KILL;
         FrEnd.action_middle_type = Actions.KILL;
         FrEnd.action_right_type = Actions.KILL;
         FrEnd.merge = true;
-        FrEnd.quality = Quality.SOLID;
-        FrEnd.xor = true;
+        World.quality = Quality.SOLID;
+        World.xor = true;
 
         Coords.shift_constant_x = 12345;
         Coords.shift_constant_y = -999;
@@ -118,17 +119,17 @@ class PreferencesResetTest {
           () -> FrEnd.panel_preferences.resetPreferences());
 
       // Every static is back at its default...
-      assertTrue(FrEnd.render_nodes);
-      assertFalse(FrEnd.render_hidden_links);
-      assertTrue(FrEnd.explosions);
-      assertTrue(FrEnd.redraw_deepest_first);
+      assertTrue(World.render_nodes);
+      assertFalse(World.render_hidden_links);
+      assertTrue(World.explosions);
+      assertTrue(World.redraw_deepest_first);
       assertEquals(Delay._DELAY_2, FrEnd.delay);
       assertEquals(Actions.SELECT, FrEnd.action_left_type);
       assertEquals(Actions.TRANSLATE, FrEnd.action_middle_type);
       assertEquals(Actions.ROTATE, FrEnd.action_right_type);
       assertFalse(FrEnd.merge);
-      assertEquals(Quality.THICK_OUTLINE, FrEnd.quality);
-      assertFalse(FrEnd.xor);
+      assertEquals(Quality.THICK_OUTLINE, World.quality);
+      assertFalse(World.xor);
 
       assertEquals(0, Coords.shift_constant_x);
       assertEquals(0, Coords.shift_constant_y);

@@ -4,7 +4,7 @@ package com.springie.elements.electrostatics;
 
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeType;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import java.util.ArrayList;
 
 public class ElectrostaticRepulsion {

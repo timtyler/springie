@@ -7,7 +7,7 @@ import com.springie.io.in.readers.spr.types.TypeBase;
 import com.springie.io.in.readers.spr.types.TypeFace;
 import com.springie.io.in.readers.spr.types.TypeLink;
 import com.springie.io.in.readers.spr.types.TypeNode;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.Reader;

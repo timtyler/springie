@@ -1,6 +1,7 @@
 // This code has been placed into the public domain by its author.
 
 package com.springie.demos;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
@@ -9,7 +10,7 @@ import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.muscles.Muscles;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import java.awt.GraphicsEnvironment;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,8 +40,8 @@ class SlinkyDemoTest {
     ContextManager.setNodeManager(new NodeManager());
 
     this.old_enabled = Muscles.enabled;
-    this.old_paused = FrEnd.paused;
-    this.old_frame_frequency = FrEnd.frame_frequency;
+    this.old_paused = World.paused;
+    this.old_frame_frequency = World.frame_frequency;
     this.old_coords_x = Coords.x_pixels;
     this.old_coords_y = Coords.y_pixels;
     this.old_coords_z = Coords.z_pixels;
@@ -49,8 +50,8 @@ class SlinkyDemoTest {
   @AfterEach
   void tearDown() {
     Muscles.enabled = this.old_enabled;
-    FrEnd.paused = this.old_paused;
-    FrEnd.frame_frequency = this.old_frame_frequency;
+    World.paused = this.old_paused;
+    World.frame_frequency = this.old_frame_frequency;
     Coords.x_pixels = this.old_coords_x;
     Coords.y_pixels = this.old_coords_y;
     Coords.z_pixels = this.old_coords_z;

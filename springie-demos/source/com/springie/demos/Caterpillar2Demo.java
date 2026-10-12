@@ -17,7 +17,7 @@ import com.springie.geometry.Point3D;
 import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
 import com.springie.muscles.Oscillator;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.world.Grounding;
 import com.springie.world.World;
 
@@ -122,7 +122,7 @@ public final class Caterpillar2Demo {
     // Tim 2026-09-18 experiment settings: charge off, node-node
     // collisions off (the usual rule).
     node_manager.electrostatic.charge_active = false; // charge off
-    FrEnd.check_collisions = false; // node-node collision detection off
+    World.check_collisions = false; // node-node collision detection off
     World.gravity_active = true;
     World.gravity_strength = gravity_strength;
     World.ground_friction = friction;

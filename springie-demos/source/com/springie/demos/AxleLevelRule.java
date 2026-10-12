@@ -4,7 +4,7 @@ package com.springie.demos;
 
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 
 /**
  * The wheel's version of Tim's "not tipping over" rule: the axle must stay

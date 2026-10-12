@@ -23,7 +23,7 @@ import com.springie.io.out.WriteFloatingPoint;
 import com.springie.modification.post.PostModification;
 import com.springie.modification.redundancy.RedundancyRemover;
 import com.springie.muscles.Muscles;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.world.World;
 import com.tifsoft.xml.writer.XMLWriterAttribute;
 import com.tifsoft.xml.writer.XMLWriterSinglet;
@@ -92,15 +92,15 @@ public class WriterSpr {
 
     uni.add(new XMLWriterAttribute("temperature", "" + World.global_temperature));
     uni.add(new XMLWriterAttribute("viscosity", "" + Node.viscocity));
-    uni.add(new XMLWriterAttribute("collision_check", "" + FrEnd.check_collisions));
-    uni.add(new XMLWriterAttribute("continuously_centre_x", "" + FrEnd.continuously_centre_x));
-    uni.add(new XMLWriterAttribute("continuously_centre_y", "" + FrEnd.continuously_centre_y));
-    uni.add(new XMLWriterAttribute("continuously_centre_z", "" + FrEnd.continuously_centre_z));
+    uni.add(new XMLWriterAttribute("collision_check", "" + World.check_collisions));
+    uni.add(new XMLWriterAttribute("continuously_centre_x", "" + World.continuously_centre_x));
+    uni.add(new XMLWriterAttribute("continuously_centre_y", "" + World.continuously_centre_y));
+    uni.add(new XMLWriterAttribute("continuously_centre_z", "" + World.continuously_centre_z));
     uni.add(new XMLWriterAttribute("speed_limit", "" + Node.max_speed));
     uni.add(new XMLWriterAttribute("excite", "" + World.minimum_magnitude));
 
     // 2D
-    if (!FrEnd.three_d) {
+    if (!World.three_d) {
       uni.add(new XMLWriterAttribute("dimensions", "2"));
     }
 

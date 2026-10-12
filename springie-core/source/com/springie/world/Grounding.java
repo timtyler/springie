@@ -4,7 +4,7 @@ package com.springie.world;
 
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 
 /**
  * General mechanism that keeps models from starting in mid-air.

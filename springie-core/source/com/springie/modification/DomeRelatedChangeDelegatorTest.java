@@ -7,7 +7,7 @@ import com.springie.metrics.AverageElasticityGetter;
 import com.springie.metrics.AverageLengthGetter;
 import com.springie.metrics.AverageRadiusGetter;
 import com.springie.metrics.AverageStiffnessGetter;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
 import javax.swing.SwingUtilities;

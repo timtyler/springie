@@ -149,11 +149,11 @@ public class PanelControlsUniverse {
     final Panel panel_main = FrEnd.setUpPanelForFrame2();
     final Panel panel3D = new Panel();
     this.checkbox_3D = new Checkbox("3D");
-    this.checkbox_3D.setState(FrEnd.three_d);
+    this.checkbox_3D.setState(World.three_d);
 
     this.checkbox_3D.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        FrEnd.three_d = getCheckbox3D().getState();
+        World.three_d = getCheckbox3D().getState();
 
         RendererDelegator.repaintAll();
       }
@@ -350,10 +350,10 @@ public class PanelControlsUniverse {
 
     this.checkbox_show_world_markers = new Checkbox(
       GUIStrings.SHOW_WORLD_MARKERS);
-    this.checkbox_show_world_markers.setState(FrEnd.show_world_markers);
+    this.checkbox_show_world_markers.setState(World.show_world_markers);
     this.checkbox_show_world_markers.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        FrEnd.show_world_markers =
+        World.show_world_markers =
             getCheckboxShowWorldMarkers().getState();
         // Screen-space dots: turning them off must clear them from
         // the whole canvas, and the flag alone schedules no paint
@@ -390,7 +390,7 @@ public class PanelControlsUniverse {
         // Set from the checkbox state, never toggle: the static can be
         // changed from under the UI (model files carry their own
         // collision_check), and a toggle would then flip it the wrong way.
-        FrEnd.check_collisions =
+        World.check_collisions =
             ((Checkbox) e.getSource()).getState();
       }
     });
@@ -462,7 +462,7 @@ public class PanelControlsUniverse {
     panel_main.add(panel_collision_check);
     panel_main.add(panel_charge_switch);
 
-    if (FrEnd.development_version) {
+    if (World.development_version) {
       panel_main.add(panel_bias); // bias...
 
       panel_main.add(panel_speed);
@@ -563,7 +563,7 @@ public class PanelControlsUniverse {
     com.springie.world.UniverseDefaults.restore();
 
     // Reflect the restored statics in the controls.
-    this.checkbox_3D.setState(FrEnd.three_d);
+    this.checkbox_3D.setState(World.three_d);
     reflectGravity();
     reflectFriction();
     reflectCompassBias();
@@ -575,7 +575,7 @@ public class PanelControlsUniverse {
     reflectMuscles();
     reflectLights();
 
-    if (FrEnd.development_version) {
+    if (World.development_version) {
       reflectMaxSpeed();
       reflectImpact();
 
@@ -648,7 +648,7 @@ public class PanelControlsUniverse {
   }
 
   public void reflect3D() {
-    this.checkbox_3D.setState(FrEnd.three_d);
+    this.checkbox_3D.setState(World.three_d);
   }
 
   /**
@@ -660,15 +660,15 @@ public class PanelControlsUniverse {
    * listeners must not fire here: several of them invert the static.
    */
   public void reflectUniverseToggles() {
-    setCheckboxSilently(this.checkbox_collision_check, FrEnd.check_collisions);
+    setCheckboxSilently(this.checkbox_collision_check, World.check_collisions);
     setCheckboxSilently(this.checkbox_continuously_centre_x,
-        FrEnd.continuously_centre_x);
+        World.continuously_centre_x);
     setCheckboxSilently(this.checkbox_continuously_centre_y,
-        FrEnd.continuously_centre_y);
+        World.continuously_centre_y);
     setCheckboxSilently(this.checkbox_continuously_centre_z,
-        FrEnd.continuously_centre_z);
+        World.continuously_centre_z);
     setCheckboxSilently(this.checkbox_show_world_markers,
-        FrEnd.show_world_markers);
+        World.show_world_markers);
     final NodeManager manager = ContextManager.getNodeManager();
     setCheckboxSilently(this.checkbox_charge_switch,
         manager != null && manager.electrostatic.charge_active);

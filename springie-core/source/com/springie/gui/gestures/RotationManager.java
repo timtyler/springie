@@ -1,12 +1,13 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.gui.gestures;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.render.WorldMarkers;
 
@@ -34,7 +35,7 @@ public class RotationManager {
       // Tim: snapshot the gold dots so they rotate with the model.
       WorldMarkers.snapshotForDrag();
 
-      FrEnd.forces_disabled_during_gesture = true;
+      World.forces_disabled_during_gesture = true;
     } else {
       performRotation(x, y);
     }
@@ -105,7 +106,7 @@ public class RotationManager {
     if (this.pos != null) {
       performRotation(x, y);
       this.pos = null;
-      FrEnd.forces_disabled_during_gesture = false;
+      World.forces_disabled_during_gesture = false;
     }
   }
 }

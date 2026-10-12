@@ -1,5 +1,6 @@
 //This program has been placed into the public domain by its author.
 package com.springie.messages;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 
@@ -25,10 +26,10 @@ public final class MessagePump {
   public static void processAll() {
     // Like the old MessageManager.process(), the generation bump happens
     // only when there is actually work to drain.
-    if (FrEnd.new_message_manager.size() > 0) {
+    if (World.new_message_manager.size() > 0) {
       FrEnd.generation++;
 
-      FrEnd.new_message_manager.process();
+      World.new_message_manager.process();
     }
   }
 }

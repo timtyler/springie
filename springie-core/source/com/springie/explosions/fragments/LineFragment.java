@@ -4,7 +4,7 @@ package com.springie.explosions.fragments;
 
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.Node;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.utilities.math.SquareRoot;
 import com.springie.utilities.random.Hortensius32Fast;

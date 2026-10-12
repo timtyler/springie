@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.controls;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.constants.ToolTypes;
@@ -345,7 +346,7 @@ public class PanelControlsMisc {
     panel_more.add(panel_prismatic_projection);
     panel_more.add(getAddCentralHubPanel());
     panel_more.add(getCartesianColourerPanel());
-    if (FrEnd.development_version) {
+    if (World.development_version) {
       panel_more.add(panel_tool);
     }
     tab.add("More", panel_more);
@@ -575,7 +576,7 @@ public class PanelControlsMisc {
   // public Object execute() {
   // ContextManager.getNodeManager().initialSetUp();
   //
-  // FrEnd.last_file_path = null;
+  // World.last_file_path = null;
   //
   // FrEnd.reflectStatusInGUI();
   // return null;
@@ -587,7 +588,7 @@ public class PanelControlsMisc {
   // // case Message.MSG_CLEAR:
   // // ContextManager.getNodeManager().initialSetUp();
   // //
-  // // FrEnd.last_file_path = null;
+  // // World.last_file_path = null;
   // //
   // // FrEnd.reflectStatusInGUI();
   // //

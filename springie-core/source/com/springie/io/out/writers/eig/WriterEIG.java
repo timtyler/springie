@@ -17,7 +17,7 @@ import com.springie.io.out.GarbageCollection;
 import com.springie.io.out.WriteFloatingPoint;
 import com.springie.metrics.BoundingBox;
 import com.springie.modification.redundancy.RedundancyRemover;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.tifsoft.xml.writer.XMLWriterAttribute;
 import com.tifsoft.xml.writer.XMLWriterCharacters;
 import com.tifsoft.xml.writer.XMLWriterTagPair;

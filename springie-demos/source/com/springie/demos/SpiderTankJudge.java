@@ -46,8 +46,8 @@ public final class SpiderTankJudge {
     final long dx = (long) body.pos.x - start_x;
     final long dz = (long) body.pos.z - start_z;
     final int displacement_px = (int) (SpiderTankDemo.compassHeading()
-        .progress(dx, dz) >> com.springie.render.Coords.shift);
-    final int height_px = body.pos.y >> com.springie.render.Coords.shift;
+        .progress(dx, dz) >> com.springie.geometry.Coords.shift);
+    final int height_px = body.pos.y >> com.springie.geometry.Coords.shift;
 
     System.out.println("INITIAL_VELOCITY "
         + String.format("%.4f", initial_velocity));

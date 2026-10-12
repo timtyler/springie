@@ -1,6 +1,7 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.render.modules.raytraced;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
@@ -12,7 +13,7 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeTypeFactory;
 import com.springie.geometry.Point3D;
 import com.springie.gui.gestures.PerformActions;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RectangleInt;
 import com.springie.render.modules.modern.RendererTileManager;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced.Tile;
@@ -106,10 +107,10 @@ public class TileEmptyTest {
     RendererTileManager.one_big_tile = false;
     RendererTileManager.show_tiles = false;
 
-    this.saved_render_nodes = FrEnd.render_nodes;
-    this.saved_render_links = FrEnd.render_links;
-    FrEnd.render_nodes = true;
-    FrEnd.render_links = true;
+    this.saved_render_nodes = World.render_nodes;
+    this.saved_render_links = World.render_links;
+    World.render_nodes = true;
+    World.render_links = true;
 
     this.manager = new NodeManager();
     this.renderer = new ModularRendererRaytraced();
@@ -128,8 +129,8 @@ public class TileEmptyTest {
     RendererTileManager.divisor = this.saved_divisor;
     RendererTileManager.show_tiles = this.saved_show_tiles;
     RendererTileManager.one_big_tile = this.saved_one_big_tile;
-    FrEnd.render_nodes = this.saved_render_nodes;
-    FrEnd.render_links = this.saved_render_links;
+    World.render_nodes = this.saved_render_nodes;
+    World.render_links = this.saved_render_links;
   }
 
   private static int tileContaining(final Tile[] grid, final int sx, final int sy) {
@@ -211,7 +212,7 @@ public class TileEmptyTest {
     final Node b = nodeAt(150, 120);
     this.manager.element.add(a);
     this.manager.element.add(b);
-    FrEnd.render_nodes = false;
+    World.render_nodes = false;
     final Link link = new Link(a, b,
         new LinkTypeFactory().getNew(100 << Coords.shift, 50),
         new Clazz(0x654321));
@@ -260,7 +261,7 @@ public class TileEmptyTest {
     final Node b = nodeAt(350, 350);
     this.manager.element.add(a);
     this.manager.element.add(b);
-    FrEnd.render_nodes = false;
+    World.render_nodes = false;
     final Link link = new Link(a, b,
         new LinkTypeFactory().getNew(100 << Coords.shift, 50),
         new Clazz(0x654321));

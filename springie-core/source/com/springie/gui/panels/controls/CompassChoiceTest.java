@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.controls;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
@@ -92,7 +93,7 @@ class CompassChoiceTest {
       for (ItemListener listener : choice.getItemListeners()) {
         listener.itemStateChanged(event);
       }
-      FrEnd.new_message_manager.process();
+      World.new_message_manager.process();
     });
   }
 

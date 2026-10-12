@@ -1,6 +1,5 @@
 package com.springie.world;
 
-import com.springie.FrEnd;
 import com.springie.composite.CompositeManager;
 import com.springie.context.ContextManager;
 import com.springie.elements.base.BaseElementManager;
@@ -18,7 +17,7 @@ import com.springie.elements.nodes.NodeType;
 import com.springie.elements.nodes.NodeTypeFactory;
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererArrays;
 import com.springie.render.RendererDelegator;
 import com.springie.utilities.math.SquareRoot;
@@ -89,6 +88,87 @@ public class World extends BaseElementManager<Node> {
 
   public static int maximum_magnitude = 1 << 24; // 512; // 1024;
 
+  // Simulation control state (moved from FrEnd for the engine split).
+  // These are read by the physics engine and written by the GUI.
+  public static boolean paused;
+  public static boolean check_collisions = true;
+  public static boolean continuously_centre_x;
+  public static boolean continuously_centre_y;
+  public static boolean continuously_centre_z;
+  public static boolean currently_dragging;
+  public static boolean forces_disabled_during_gesture;
+  public static boolean demo_model;
+  public static boolean links_disabled;
+
+  // Render state read by the model managers when iterating (moved from FrEnd).
+  public static boolean render_hidden_nodes;
+  public static boolean render_hidden_links;
+  public static boolean render_hidden_faces;
+  public static boolean render_nodes = true;
+  public static boolean render_links = true;
+  public static boolean render_faces = true;
+  public static boolean three_d = true;
+  public static boolean redraw_deepest_first = true;
+  public static boolean explosions = true;
+  public static boolean xor;
+  public static boolean show_world_markers = true;
+  public static int frame_frequency;
+  /**
+   * False when the active renderer resolves occlusion itself (ray-traced)
+   * and the model's depth sort is pure cost. Set by the GUI on renderer switch.
+   */
+  public static boolean renderer_needs_depth_sort = true;
+  /** Set by the model when all objects need repainting; the renderer clears it. */
+  public static boolean repaint_requested;
+  // Render quality flags (moved from FrEnd).
+  public static int quality;
+  public static boolean render_charges = true;
+  /**
+   * The centering offset applied this frame (for WorldMarkers). Set by the
+   * model, read by the renderer.
+   */
+  public static com.springie.geometry.Vector3D centering_offset =
+      new com.springie.geometry.Vector3D(0, 0, 0);
+
+  /**
+   * Called when the selection changes. The GUI sets this to update panels;
+   * the engine fires it without depending on the GUI.
+   */
+  public static Runnable on_selection_change = () -> {
+  };
+
+  // More state moved from FrEnd for the engine split.
+  public static final boolean module = false;
+  public static boolean boundaries = true;
+  public static boolean oscd = true;
+  public static final boolean development_version = false;
+  public static boolean pandemic_paradigm_direct_contact = true;
+  /** The element currently being dragged (null when none). Moved from FrEnd. */
+  public static com.springie.elements.base.BaseElement dragged_element;
+  /** Message queue for deferred operations. Moved from FrEnd. */
+  public static com.springie.messages.NewMessageManager new_message_manager =
+      new com.springie.messages.NewMessageManager();
+
+  /**
+   * Model cleanup after modification. The GUI version (FrEnd.postCleanup)
+   * calls this plus GUI reflection.
+   */
+  public static void postCleanup() {
+    new com.springie.modification.post.PostModification(
+        com.springie.context.ContextManager.getNodeManager()).cleanup();
+  }
+
+  // Model loading state (moved from FrEnd).
+  public static String archive;
+  public static String last_file_path = "test.spr";
+  public static com.springie.io.in.DataInput data_input =
+      new com.springie.io.in.DataInput(null);
+  /**
+   * The currently selected model location (set by the GUI from the
+   * model dropdown; the engine reads it when add() is called).
+   */
+  public static String default_creature_location;
+
   protected static Hortensius32Fast rnd = new Hortensius32Fast();
 
   protected World() {
@@ -141,12 +221,12 @@ public class World extends BaseElementManager<Node> {
   void privateWorldUnbufferedUpdate() {
     final int number_of_nodes = this.element.size();
     Node.temp_private_world = this;
-    if (FrEnd.frame_frequency == 0) {
+    if (World.frame_frequency == 0) {
       if (number_of_nodes > 0) {
         for (int counter = number_of_nodes; --counter >= 0;) {
           temp_agent = (Node) this.element.get(counter);
 
-          if (!FrEnd.paused) {
+          if (!World.paused) {
             temp_agent.travel();
             confine();
           }
@@ -156,14 +236,14 @@ public class World extends BaseElementManager<Node> {
       Link.temp_private_world = this;
       wrappedLinkExerciser(this.link_manager);
 
-      if (!FrEnd.paused) {
-        if (FrEnd.check_collisions) {
+      if (!World.paused) {
+        if (World.check_collisions) {
           collisionCheckNbyN();
         }
       }
     } else {
-      for (int temp = 0; temp <= FrEnd.frame_frequency; temp++) {
-        if (!FrEnd.paused) {
+      for (int temp = 0; temp <= World.frame_frequency; temp++) {
+        if (!World.paused) {
           if (number_of_nodes > 0) {
             travelTheAgents();
           }
@@ -171,15 +251,15 @@ public class World extends BaseElementManager<Node> {
           Link.temp_private_world = this;
           wrappedLinkExerciser(this.link_manager);
 
-          if (FrEnd.check_collisions) {
+          if (World.check_collisions) {
             collisionCheckNbyN();
           }
         }
       }
 
-      for (int temp = 0; temp <= FrEnd.frame_frequency; temp++) {
-        if (!FrEnd.paused) {
-          if (FrEnd.check_collisions) {
+      for (int temp = 0; temp <= World.frame_frequency; temp++) {
+        if (!World.paused) {
+          if (World.check_collisions) {
             collisionCheckNbyN();
           }
         }
@@ -360,7 +440,7 @@ public class World extends BaseElementManager<Node> {
     for (int temp = number_of_nodes; --temp >= 0;) {
       final Node n = (Node) this.element.get(temp);
       if (n.type.selected) {
-        FrEnd.killAllLinks(n);
+        com.springie.context.ContextManager.getLinkManager().killAllLinks(n);
         killThisNode(n);
         // temp--;
       }
@@ -453,7 +533,7 @@ public class World extends BaseElementManager<Node> {
         || temp_z1 > temp_detection_distance2o2) {
       // probable collision...
       // inner diamond check...
-      // (FrEnd.three_d)
+      // (World.three_d)
       if ((temp_detection_distance2 - temp_x1) < temp_y1) {
         // 3d version of above needed...
         // make smaller to prevent overflow...

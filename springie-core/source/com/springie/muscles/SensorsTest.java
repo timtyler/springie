@@ -7,7 +7,7 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkTypeFactory;
 import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import java.awt.GraphicsEnvironment;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

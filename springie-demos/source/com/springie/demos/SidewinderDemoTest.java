@@ -1,6 +1,7 @@
 // This code has been placed into the public domain by its author.
 
 package com.springie.demos;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
@@ -10,7 +11,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import java.awt.GraphicsEnvironment;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,8 +49,8 @@ class SidewinderDemoTest {
     this.old_amplitude = active.getAmplitude();
     this.old_period = active.getPeriodTicks();
     this.old_phase = active.getPhase();
-    this.old_paused = FrEnd.paused;
-    this.old_frame_frequency = FrEnd.frame_frequency;
+    this.old_paused = World.paused;
+    this.old_frame_frequency = World.frame_frequency;
     this.old_coords_x = Coords.x_pixels;
     this.old_coords_y = Coords.y_pixels;
     this.old_coords_z = Coords.z_pixels;
@@ -63,8 +64,8 @@ class SidewinderDemoTest {
     active.setAmplitude(this.old_amplitude);
     active.setPeriodTicks(this.old_period);
     active.setPhase(this.old_phase);
-    FrEnd.paused = this.old_paused;
-    FrEnd.frame_frequency = this.old_frame_frequency;
+    World.paused = this.old_paused;
+    World.frame_frequency = this.old_frame_frequency;
     Coords.x_pixels = this.old_coords_x;
     Coords.y_pixels = this.old_coords_y;
     Coords.z_pixels = this.old_coords_z;
@@ -175,14 +176,14 @@ class SidewinderDemoTest {
       com_y0 += ((Node) node_manager.element.get(i)).pos.y;
     }
 
-    final boolean old_paused = FrEnd.paused;
-    FrEnd.paused = false;
+    final boolean old_paused = World.paused;
+    World.paused = false;
     try {
       for (int t = 0; t < 120; t++) {
         node_manager.nodeAndLinkUpdate();
       }
     } finally {
-      FrEnd.paused = old_paused;
+      World.paused = old_paused;
     }
 
     long com_y1 = 0;
@@ -210,15 +211,15 @@ class SidewinderDemoTest {
     final int start_x = mid.pos.x;
     final int start_y = mid.pos.y;
 
-    // Force dynamics on: other tests may leave FrEnd.paused set.
-    final boolean old_paused = FrEnd.paused;
-    FrEnd.paused = false;
+    // Force dynamics on: other tests may leave World.paused set.
+    final boolean old_paused = World.paused;
+    World.paused = false;
     try {
       for (int t = 0; t < 120; t++) {
         node_manager.nodeAndLinkUpdate();
       }
     } finally {
-      FrEnd.paused = old_paused;
+      World.paused = old_paused;
     }
 
     int min_x = Integer.MAX_VALUE;

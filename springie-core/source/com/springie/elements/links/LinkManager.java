@@ -1,8 +1,8 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.elements.links;
+import com.springie.world.World;
 
-import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.base.BaseElementManager;
 import com.springie.elements.clazz.Clazz;
@@ -12,7 +12,7 @@ import com.springie.geometry.Point3D;
 import com.springie.muscles.Controller;
 import com.springie.muscles.Muscles;
 import com.springie.render.CachedLink;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.utilities.math.SquareRoot;
 import java.util.ArrayList;
@@ -272,8 +272,8 @@ public class LinkManager extends BaseElementManager<Link> {
   // }
 
   // public final void performLinkUpdate() {
-  // if (!FrEnd.paused) {
-  // if (!FrEnd.links_disabled) {
+  // if (!World.paused) {
+  // if (!World.links_disabled) {
   // exerciseTheLinks();
   // ContextManager.getNodeManager().electrostatic.repel();
   // ContextManager.getNodeManager().applyViscousDrag();
@@ -346,7 +346,7 @@ public class LinkManager extends BaseElementManager<Link> {
       final Link l = (Link) this.element.get(temp);
       final CachedLink cl = ContextManager.getNodeManager().renderer.renderer_link.array[temp];
       // return name;t;// this.element.get(temp);
-      if (!l.type.hidden || FrEnd.render_hidden_links) {
+      if (!l.type.hidden || World.render_hidden_links) {
         for (int i = 0; i < cl.preserved_node_start.length - 1; i++) {
           final Point3D point0 = cl.preserved_node_start[i];
           final Point3D point1 = cl.preserved_node_end[i];
@@ -409,7 +409,7 @@ public class LinkManager extends BaseElementManager<Link> {
         // BinGrid.RepaintAll = true;
       }
     }
-    FrEnd.updateGUIToReflectSelectionChange();
+    World.on_selection_change.run();
   }
 
   public final void deselectAll(final int colour) {
@@ -422,31 +422,31 @@ public class LinkManager extends BaseElementManager<Link> {
         }
       }
     }
-    FrEnd.updateGUIToReflectSelectionChange();
+    World.on_selection_change.run();
   }
 
   public final void selectionInvert() {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final Link link = (Link) this.element.get(temp);
-      if (!link.type.hidden || FrEnd.render_hidden_links) {
+      if (!link.type.hidden || World.render_hidden_links) {
         link.setSelectedFiltered(!link.type.selected);
       }
     }
-    FrEnd.updateGUIToReflectSelectionChange();
+    World.on_selection_change.run();
   }
 
   public final void selectAll() {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final Link link = (Link) this.element.get(temp);
-      if (!link.type.hidden || FrEnd.render_hidden_links) {
+      if (!link.type.hidden || World.render_hidden_links) {
         if (!link.type.selected) {
           link.setSelectedFiltered(true);
         }
       }
     }
-    FrEnd.updateGUIToReflectSelectionChange();
+    World.on_selection_change.run();
   }
 
   public final void selectAll(final int colour) {
@@ -454,12 +454,12 @@ public class LinkManager extends BaseElementManager<Link> {
     for (int temp = n_o_l; --temp >= 0;) {
       final Link link = (Link) this.element.get(temp);
       if (link.clazz.colour == colour) {
-        if (!link.type.hidden || FrEnd.render_hidden_links) {
+        if (!link.type.hidden || World.render_hidden_links) {
           link.setSelectedFiltered(true);
         }
       }
     }
-    FrEnd.updateGUIToReflectSelectionChange();
+    World.on_selection_change.run();
   }
 
   public final void deleteSelected() {
@@ -470,7 +470,7 @@ public class LinkManager extends BaseElementManager<Link> {
         killSpecifiedLink(l);
       }
     }
-    FrEnd.updateGUIToReflectSelectionChange();
+    World.on_selection_change.run();
   }
 
   public final void setColourOfSelected(final int c) {
@@ -479,7 +479,7 @@ public class LinkManager extends BaseElementManager<Link> {
       final Link l = (Link) this.element.get(temp);
       if (l.type.selected) {
         l.clazz.colour = c;
-        RendererDelegator.repaint_all_objects = true;
+        World.repaint_requested = true;
       }
     }
   }

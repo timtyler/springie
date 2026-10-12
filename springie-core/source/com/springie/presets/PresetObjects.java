@@ -1,6 +1,7 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.presets;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.io.in.readers.spr.ReaderSPR;
@@ -50,10 +51,10 @@ public final class PresetObjects {
 
   public static String getCreatureDescription(final String location)
       throws IOException, SAXException {
-    // if (FrEnd.archive != null) {
-    // if (!"".equals(FrEnd.archive)) {
-    // location = FrEnd.archive;
-    // FrEnd.last_file_path = location;
+    // if (World.archive != null) {
+    // if (!"".equals(World.archive)) {
+    // location = World.archive;
+    // World.last_file_path = location;
     // }
     // }
 

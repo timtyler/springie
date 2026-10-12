@@ -9,7 +9,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeTypeFactory;
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RectangleInt;
 import com.springie.render.RendererDelegator;
 import java.awt.Color;

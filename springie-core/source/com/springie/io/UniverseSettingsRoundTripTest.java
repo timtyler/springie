@@ -58,11 +58,11 @@ class UniverseSettingsRoundTripTest {
     this.saved_minimum_magnitude = World.minimum_magnitude;
     this.saved_viscocity = Node.viscocity;
     this.saved_max_speed = Node.max_speed;
-    this.saved_three_d = FrEnd.three_d;
-    this.saved_check_collisions = FrEnd.check_collisions;
-    this.saved_continuously_centre_x = FrEnd.continuously_centre_x;
-    this.saved_continuously_centre_y = FrEnd.continuously_centre_y;
-    this.saved_continuously_centre_z = FrEnd.continuously_centre_z;
+    this.saved_three_d = World.three_d;
+    this.saved_check_collisions = World.check_collisions;
+    this.saved_continuously_centre_x = World.continuously_centre_x;
+    this.saved_continuously_centre_y = World.continuously_centre_y;
+    this.saved_continuously_centre_z = World.continuously_centre_z;
     this.saved_charge_active = this.manager.electrostatic.charge_active;
     this.saved_muscles_enabled = Muscles.enabled;
     this.saved_muscles_amplitude = Muscles.activeOscillator().getAmplitude();
@@ -79,11 +79,11 @@ class UniverseSettingsRoundTripTest {
     World.minimum_magnitude = this.saved_minimum_magnitude;
     Node.viscocity = this.saved_viscocity;
     Node.max_speed = this.saved_max_speed;
-    FrEnd.three_d = this.saved_three_d;
-    FrEnd.check_collisions = this.saved_check_collisions;
-    FrEnd.continuously_centre_x = this.saved_continuously_centre_x;
-    FrEnd.continuously_centre_y = this.saved_continuously_centre_y;
-    FrEnd.continuously_centre_z = this.saved_continuously_centre_z;
+    World.three_d = this.saved_three_d;
+    World.check_collisions = this.saved_check_collisions;
+    World.continuously_centre_x = this.saved_continuously_centre_x;
+    World.continuously_centre_y = this.saved_continuously_centre_y;
+    World.continuously_centre_z = this.saved_continuously_centre_z;
     ContextManager.getNodeManager().electrostatic.charge_active =
         this.saved_charge_active;
     Muscles.enabled = this.saved_muscles_enabled;
@@ -105,11 +105,11 @@ class UniverseSettingsRoundTripTest {
     World.minimum_magnitude = minimum_magnitude;
     Node.viscocity = viscocity;
     Node.max_speed = max_speed;
-    FrEnd.three_d = three_d;
-    FrEnd.check_collisions = check_collisions;
-    FrEnd.continuously_centre_x = continuously_centre_x;
-    FrEnd.continuously_centre_y = continuously_centre_y;
-    FrEnd.continuously_centre_z = continuously_centre_z;
+    World.three_d = three_d;
+    World.check_collisions = check_collisions;
+    World.continuously_centre_x = continuously_centre_x;
+    World.continuously_centre_y = continuously_centre_y;
+    World.continuously_centre_z = continuously_centre_z;
     ContextManager.getNodeManager().electrostatic.charge_active =
         charge_active;
     CompassPoint.bias_size = compass_bias_size;
@@ -127,14 +127,14 @@ class UniverseSettingsRoundTripTest {
     assertEquals(minimum_magnitude, World.minimum_magnitude, "excite");
     assertEquals(viscocity, Node.viscocity, "viscosity");
     assertEquals(max_speed, Node.max_speed, "speed limit");
-    assertEquals(three_d, FrEnd.three_d, "3D");
-    assertEquals(check_collisions, FrEnd.check_collisions,
+    assertEquals(three_d, World.three_d, "3D");
+    assertEquals(check_collisions, World.check_collisions,
         "collision check");
-    assertEquals(continuously_centre_x, FrEnd.continuously_centre_x,
+    assertEquals(continuously_centre_x, World.continuously_centre_x,
         "continuously centre x");
-    assertEquals(continuously_centre_y, FrEnd.continuously_centre_y,
+    assertEquals(continuously_centre_y, World.continuously_centre_y,
         "continuously centre y");
-    assertEquals(continuously_centre_z, FrEnd.continuously_centre_z,
+    assertEquals(continuously_centre_z, World.continuously_centre_z,
         "continuously centre z");
     assertEquals(charge_active,
         ContextManager.getNodeManager().electrostatic.charge_active,
@@ -216,12 +216,12 @@ class UniverseSettingsRoundTripTest {
     assertEquals(0, World.minimum_magnitude, "excite");
     assertEquals(0, Node.viscocity, "viscosity");
     assertEquals(Integer.MAX_VALUE, Node.max_speed, "speed limit");
-    assertFalse(FrEnd.check_collisions, "collision check");
-    assertFalse(FrEnd.continuously_centre_x, "continuously centre x");
-    assertFalse(FrEnd.continuously_centre_y, "continuously centre y");
-    assertFalse(FrEnd.continuously_centre_z, "continuously centre z");
+    assertFalse(World.check_collisions, "collision check");
+    assertFalse(World.continuously_centre_x, "continuously centre x");
+    assertFalse(World.continuously_centre_y, "continuously centre y");
+    assertFalse(World.continuously_centre_z, "continuously centre z");
     // ...absent attributes back at the defaults.
-    assertTrue(FrEnd.three_d, "3D");
+    assertTrue(World.three_d, "3D");
     assertMuscles(false, 85 * Muscles.UNITY / 100, 12);
     assertEquals(0, CompassPoint.bias_size, "compass bias");
   }

@@ -6,7 +6,7 @@ import com.springie.elements.CompassPoint;
 
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 
 /**
  * "No free shove" check for the locomotion judges: a demo must start at

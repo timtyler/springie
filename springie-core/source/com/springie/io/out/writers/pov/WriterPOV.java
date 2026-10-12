@@ -1,4 +1,5 @@
 package com.springie.io.out.writers.pov;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
@@ -553,7 +554,7 @@ public class WriterPOV {
 
     for (int n = 0; n < number_of_faces; n++) {
       final Face face = (Face) this.face_manager.element.get(n);
-      if (!face.type.hidden || FrEnd.render_hidden_faces) {
+      if (!face.type.hidden || World.render_hidden_faces) {
         writeFaceClockwise(face, n_clazz);
       }
     }
@@ -607,7 +608,7 @@ public class WriterPOV {
       final Node node = (Node) this.node_manager.element.get(n);
       if (node.type == node_type) {
         if (node.clazz == clazz) {
-          if (!node.type.hidden || FrEnd.render_hidden_nodes) {
+          if (!node.type.hidden || World.render_hidden_nodes) {
             outputNode(node, n_clazz, n_type);
           }
         }
@@ -638,7 +639,7 @@ public class WriterPOV {
       final Link link = (Link) this.link_manager.element.get(temp);
       if (link.type == type) {
         if (link.clazz == clazz) {
-          if (!link.type.hidden || FrEnd.render_hidden_links) {
+          if (!link.type.hidden || World.render_hidden_links) {
             outputLink(link, n_clazz, n_type);
           }
         }

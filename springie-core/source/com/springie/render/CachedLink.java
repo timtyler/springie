@@ -1,6 +1,8 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.render;
+import com.springie.geometry.Coords;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.elements.DeepObjectColourCalculator;
@@ -57,7 +59,7 @@ public class CachedLink {
   boolean selected;
 
   public void draw(final Link link) {
-    if (!FrEnd.render_hidden_links && link.type.hidden) {
+    if (!World.render_hidden_links && link.type.hidden) {
       return;
     }
 
@@ -73,7 +75,7 @@ public class CachedLink {
   }
 
   public void scrub(final Link link) {
-    if (!FrEnd.render_hidden_links && link.type.hidden) {
+    if (!World.render_hidden_links && link.type.hidden) {
       return;
     }
 
@@ -115,7 +117,7 @@ public class CachedLink {
 
           break;
 
-        //        switch (FrEnd.quality) {
+        //        switch (World.quality) {
         //          case Quality.THICK_OUTLINE:
         //          case Quality.SOLID:
         //          case Quality._QUALITY_1A:

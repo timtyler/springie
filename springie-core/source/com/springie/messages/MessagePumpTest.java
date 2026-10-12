@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.messages;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
@@ -27,7 +28,7 @@ class MessagePumpTest {
   @Test
   void holdingTheMouseDownSynthesizesNoClick() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.new_message_manager.messages.clear();
+      World.new_message_manager.messages.clear();
       FrEnd.mouse_pressed = true;
       FrEnd.last_mousex = 12345;
       FrEnd.last_mousey = 67890;
@@ -35,7 +36,7 @@ class MessagePumpTest {
       final int generation_before = FrEnd.generation;
       MessagePump.processAll();
 
-      assertEquals(0, FrEnd.new_message_manager.size(),
+      assertEquals(0, World.new_message_manager.size(),
           "the pump must not enqueue a click while the button is held");
       assertEquals(generation_before, FrEnd.generation,
           "no work was drained, so the generation must not bump");
@@ -46,11 +47,11 @@ class MessagePumpTest {
   @Test
   void queuedWorkStillDrainsWhileTheMouseIsDown() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.new_message_manager.messages.clear();
+      World.new_message_manager.messages.clear();
       FrEnd.mouse_pressed = true;
 
       final boolean[] ran = {false};
-      FrEnd.new_message_manager.add(new NewMessage(null) {
+      World.new_message_manager.add(new NewMessage(null) {
         @Override
         public Object execute() {
           ran[0] = true;
@@ -61,7 +62,7 @@ class MessagePumpTest {
       MessagePump.processAll();
 
       assertEquals(true, ran[0], "the queued message must still execute");
-      assertEquals(0, FrEnd.new_message_manager.size(),
+      assertEquals(0, World.new_message_manager.size(),
           "only the queued message may run -- no synthetic click");
       FrEnd.mouse_pressed = false;
     });

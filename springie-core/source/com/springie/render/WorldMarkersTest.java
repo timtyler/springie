@@ -1,5 +1,7 @@
 // This program has been placed into the public domain by its author.
 package com.springie.render;
+import com.springie.geometry.Coords;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.geometry.Vector3D;
@@ -35,16 +37,16 @@ class WorldMarkersTest {
   @BeforeEach
   void setUp() {
     assumeTrue(!GraphicsEnvironment.isHeadless(), "needs a display");
-    this.saved_demo = FrEnd.demo_model;
-    this.saved_show = FrEnd.show_world_markers;
-    this.saved_x = FrEnd.continuously_centre_x;
-    this.saved_y = FrEnd.continuously_centre_y;
-    this.saved_z = FrEnd.continuously_centre_z;
-    FrEnd.demo_model = true;
-    FrEnd.show_world_markers = true;
-    FrEnd.continuously_centre_x = true;
-    FrEnd.continuously_centre_y = false;
-    FrEnd.continuously_centre_z = false;
+    this.saved_demo = World.demo_model;
+    this.saved_show = World.show_world_markers;
+    this.saved_x = World.continuously_centre_x;
+    this.saved_y = World.continuously_centre_y;
+    this.saved_z = World.continuously_centre_z;
+    World.demo_model = true;
+    World.show_world_markers = true;
+    World.continuously_centre_x = true;
+    World.continuously_centre_y = false;
+    World.continuously_centre_z = false;
     WorldMarkers.clear();
   }
 
@@ -125,11 +127,11 @@ class WorldMarkersTest {
 
   @AfterEach
   void tearDown() {
-    FrEnd.demo_model = this.saved_demo;
-    FrEnd.show_world_markers = this.saved_show;
-    FrEnd.continuously_centre_x = this.saved_x;
-    FrEnd.continuously_centre_y = this.saved_y;
-    FrEnd.continuously_centre_z = this.saved_z;
+    World.demo_model = this.saved_demo;
+    World.show_world_markers = this.saved_show;
+    World.continuously_centre_x = this.saved_x;
+    World.continuously_centre_y = this.saved_y;
+    World.continuously_centre_z = this.saved_z;
     WorldMarkers.clear();
   }
 
@@ -146,7 +148,7 @@ class WorldMarkersTest {
     // Tim, 2026-09-25: the gold dots no longer require a demo model --
     // they appear whenever 'Show world markers' is on and continuous
     // centering is enabled.
-    FrEnd.demo_model = false;
+    World.demo_model = false;
 
     WorldMarkers.onFrame(new Vector3D(0, 0, 0));
 
@@ -156,7 +158,7 @@ class WorldMarkersTest {
 
   @Test
   void inactiveWhenHidden() {
-    FrEnd.show_world_markers = false;
+    World.show_world_markers = false;
 
     WorldMarkers.onFrame(new Vector3D(0, 0, 0));
 
@@ -165,7 +167,7 @@ class WorldMarkersTest {
 
   @Test
   void inactiveWhenNoCentering() {
-    FrEnd.continuously_centre_x = false;
+    World.continuously_centre_x = false;
 
     WorldMarkers.onFrame(new Vector3D(0, 0, 0));
 
@@ -259,7 +261,7 @@ class WorldMarkersTest {
 
   @Test
   void addToTilesIsNoOpWhenInactive() {
-    FrEnd.demo_model = false;
+    World.demo_model = false;
     final ArrayList<PolygonComposite> all = new ArrayList<>();
 
     WorldMarkers.addToTiles(all);
@@ -287,7 +289,7 @@ class WorldMarkersTest {
 
   @Test
   void damageIsNullWhenInactive() {
-    FrEnd.demo_model = false;
+    World.demo_model = false;
 
     assertNull(WorldMarkers.getDamage(), "no damage without markers");
   }

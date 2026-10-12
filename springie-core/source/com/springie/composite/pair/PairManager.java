@@ -1,7 +1,7 @@
 package com.springie.composite.pair;
 
 import com.springie.elements.nodes.Node;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 
 public class PairManager {
   Pair[] node_pair;

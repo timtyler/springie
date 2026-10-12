@@ -4,8 +4,8 @@ package com.springie.render.modules.modern;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
-import com.springie.render.Coords;
-import com.springie.render.DepthSort;
+import com.springie.geometry.Coords;
+import com.springie.geometry.DepthSort;
 import com.springie.render.RectangleInt;
 import com.springie.render.RendererDelegator;
 import com.springie.render.ScenicBackground;

@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.preferences;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
@@ -193,7 +194,7 @@ class DeepestFirstRowVisibilityTest {
       for (final ItemListener listener : checkbox.getItemListeners()) {
         listener.itemStateChanged(off);
       }
-      cleared[0] = FrEnd.redraw_deepest_first;
+      cleared[0] = World.redraw_deepest_first;
       checkbox.setState(true);
       final ItemEvent on = new ItemEvent(checkbox,
           ItemEvent.ITEM_STATE_CHANGED, checkbox.getLabel(),
@@ -202,8 +203,8 @@ class DeepestFirstRowVisibilityTest {
         listener.itemStateChanged(on);
       }
     });
-    assertFalse(cleared[0], "unchecking must clear FrEnd.redraw_deepest_first");
-    assertTrue(FrEnd.redraw_deepest_first,
-        "re-checking must restore FrEnd.redraw_deepest_first");
+    assertFalse(cleared[0], "unchecking must clear World.redraw_deepest_first");
+    assertTrue(World.redraw_deepest_first,
+        "re-checking must restore World.redraw_deepest_first");
   }
 }

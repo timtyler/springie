@@ -87,7 +87,7 @@ public class LightSource {
     // Lights in fixed-point world units (shifted by Coords.shift), to match
     // the geometry coordinates used by both the ray tracer and the polygon
     // renderer.
-    final double scale = (double) (1 << com.springie.render.Coords.shift);
+    final double scale = (double) (1 << com.springie.geometry.Coords.shift);
     final double half_w = (double) hw * scale;
     final double half_h = (double) hh * scale;
     synchronized (LightSource.class) {
@@ -101,12 +101,12 @@ public class LightSource {
         // so px = HW*S - scx is the screen center. The range is HW*PF
         // for exact screen mapping (PF = perspective factor at the
         // light's depth).
-        final double pf = (double) (com.springie.render.Coords.shift_constant_z
-            + ((int) light.pz >> com.springie.render.Coords.shift_z));
+        final double pf = (double) (com.springie.geometry.Coords.shift_constant_z
+            + ((int) light.pz >> com.springie.geometry.Coords.shift_z));
         light.px = (light.x_pct - 50.0) / 50.0 * half_w * (pf / scale)
-            + (half_w - com.springie.render.Coords.shift_constant_x);
+            + (half_w - com.springie.geometry.Coords.shift_constant_x);
         light.py = (light.y_pct - 50.0) / 50.0 * half_h * (pf / scale)
-            + (half_h - com.springie.render.Coords.shift_constant_y);
+            + (half_h - com.springie.geometry.Coords.shift_constant_y);
       }
     }
   }

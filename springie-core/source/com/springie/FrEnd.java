@@ -3,6 +3,7 @@
 // How broken? Bins? Surely not.
 
 package com.springie;
+import com.springie.world.World;
 
 import com.springie.constants.Actions;
 import com.springie.constants.Delay;
@@ -82,7 +83,7 @@ import com.springie.modification.pre.PrepareToModifyNodeClazzes;
 import com.springie.modification.pre.PrepareToModifyNodeTypes;
 import com.springie.muscles.Muscles;
 import com.springie.preferences.Preferences;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.MainCanvas;
 import com.springie.render.RendererDelegator;
 import com.springie.render.SetUpCode;
@@ -113,7 +114,6 @@ public class FrEnd extends Panel implements Runnable {
   /**
    * true if development version of the app
    */
-  public static final boolean development_version = false;
 
   static final boolean testing = false;
 
@@ -125,15 +125,13 @@ public class FrEnd extends Panel implements Runnable {
   public static final String application_name = viewer ? "SprView" : "Springie";
 
   /*
-   * <pre> true if 3rd party module is in use &lt;STRONG&gt;MAKE SURE THIS BIT IS
-   * SET &lt;/STRONG&gt; if developing or using a 3rd party module... </pre>
+   * <pre> true if 3rd party World.module is in use &lt;STRONG&gt;MAKE SURE THIS BIT IS
+   * SET &lt;/STRONG&gt; if developing or using a 3rd party World.module... </pre>
    */
-  public static final boolean module = false;
 
   /**
    * true if running in 3D space
    */
-  public static boolean three_d = true;
 
   static final boolean chained = true;
 
@@ -142,11 +140,8 @@ public class FrEnd extends Panel implements Runnable {
   public static String model_index = "resource://" + index_subdirectory + "/index.xml";
 
 
-  public static boolean continuously_centre_x;
 
-  public static boolean continuously_centre_y;
 
-  public static boolean continuously_centre_z;
 
   /**
    * True while the current model was built by one of the Demos menu
@@ -154,42 +149,29 @@ public class FrEnd extends Panel implements Runnable {
    * follow-cam dressing -- world markers, boundless world -- only
    * applies to demo models.
    */
-  public static boolean demo_model;
 
   /** World location markers streaming past in Olympics follow-cam mode. */
-  public static boolean show_world_markers = true;
 
-  public static boolean render_nodes = true;
 
-  public static boolean render_links = true;
 
   public static boolean render_anaglyph;
 
-  public static boolean render_faces = true;
 
-  public static boolean render_charges = true;
 
-  public static boolean render_hidden_nodes;
 
-  public static boolean render_hidden_links;
 
-  public static boolean render_hidden_faces;
 
   public static boolean show_boundary_box = true;
 
   public static boolean output_linefeeds = true;
 
-  public static boolean check_collisions = true;
 
-  public static boolean boundaries = true;
 
-  public static boolean oscd = true;
 
   public static boolean controls_visible = true;
 
   public static int node_initial_size = 32;
 
-  public static boolean explosions = true;
 
   public static boolean merge;
 
@@ -203,7 +185,6 @@ public class FrEnd extends Panel implements Runnable {
 
   public static String initial_initial_type = "Moscow";
 
-  public static int frame_frequency = FrameFrequency._FRAME_1;
 
   // 2 is too much for IE JVM!
   public static int delay = Delay._DELAY_2;
@@ -214,9 +195,7 @@ public class FrEnd extends Panel implements Runnable {
 
   public static int action_right_type = Actions.ROTATE;
 
-  public static boolean currently_dragging;
 
-  public static boolean pandemic_paradigm_direct_contact = true;
 
   public static Module extension;
 
@@ -279,7 +258,6 @@ public class FrEnd extends Panel implements Runnable {
 
   public static int generation;
 
-  public static boolean paused;
 
   // Volatile: written on the animation thread (step button message),
   // read/written on the AWT thread (RendererDelegator, sync with physics).
@@ -307,7 +285,9 @@ public class FrEnd extends Panel implements Runnable {
 
   static Hortensius32Fast rnd = new Hortensius32Fast();
 
-  public static NewMessageManager new_message_manager = new NewMessageManager();
+  /** @deprecated Use World.new_message_manager. */
+  @Deprecated
+  public static NewMessageManager new_message_manager = World.new_message_manager;
 
   public static int last_mousex;
 
@@ -327,17 +307,13 @@ public class FrEnd extends Panel implements Runnable {
 
   // public static NodeManager node_manager;
 
-  public static boolean xor;
 
-  public static int quality;
 
   public static Frame frame_main;
 
   public static final String window_title_prefix = application_name;
 
-  public static String last_file_path = "test.spr";
-
-  public static String next_file_path = last_file_path;
+  public static String next_file_path = World.last_file_path;
 
   static Panel panel_resolution_selector;
 
@@ -399,13 +375,12 @@ public class FrEnd extends Panel implements Runnable {
 
   public static TranslationManager translation_manager;
 
-  public static boolean redraw_deepest_first = true;
 
   public static Preferences preferences = new Preferences();
 
-  public static PanelControlsMisc panel_edit_misc = new PanelControlsMisc(new_message_manager);
+  public static PanelControlsMisc panel_edit_misc = new PanelControlsMisc(World.new_message_manager);
 
-  public static PanelControlsGenerate panel_edit_generate = new PanelControlsGenerate(new_message_manager);
+  public static PanelControlsGenerate panel_edit_generate = new PanelControlsGenerate(World.new_message_manager);
 
   public static ColorPicker panel_edit_color = new ColorPicker(new ColorPickerInformer() {
     public void inform(final int colour) {
@@ -414,29 +389,29 @@ public class FrEnd extends Panel implements Runnable {
     }
   });
 
-  public static PanelControlsDelete panel_edit_delete = new PanelControlsDelete(new_message_manager);
+  public static PanelControlsDelete panel_edit_delete = new PanelControlsDelete(World.new_message_manager);
 
-  public static PanelControlsVelocities panel_edit_velocities = new PanelControlsVelocities(new_message_manager);
+  public static PanelControlsVelocities panel_edit_velocities = new PanelControlsVelocities(World.new_message_manager);
 
   public static PanelControlsEdit panel_edit_edit = new PanelControlsEdit();
 
-  public static PanelControlsUniverse panel_universe = new PanelControlsUniverse(new_message_manager);
+  public static PanelControlsUniverse panel_universe = new PanelControlsUniverse(World.new_message_manager);
 
-  public static PanelControlsSelectAdvanced panel_edit_select_advanced = new PanelControlsSelectAdvanced(new_message_manager);
+  public static PanelControlsSelectAdvanced panel_edit_select_advanced = new PanelControlsSelectAdvanced(World.new_message_manager);
 
   public static PanelControlsSelectLinks panel_edit_select_links = new PanelControlsSelectLinks();
 
-  public static PanelControlsSelectMain panel_edit_select_main = new PanelControlsSelectMain(new_message_manager);
+  public static PanelControlsSelectMain panel_edit_select_main = new PanelControlsSelectMain(World.new_message_manager);
 
   public static PanelControlsSelect panel_edit_select = new PanelControlsSelect();
 
-  public static PanelControlsPropertiesFlags panel_edit_properties_flags = new PanelControlsPropertiesFlags(new_message_manager);
+  public static PanelControlsPropertiesFlags panel_edit_properties_flags = new PanelControlsPropertiesFlags(World.new_message_manager);
 
-  public static PanelControlsPropertiesNames panel_edit_properties_names = new PanelControlsPropertiesNames(new_message_manager);
+  public static PanelControlsPropertiesNames panel_edit_properties_names = new PanelControlsPropertiesNames(World.new_message_manager);
 
   public static PanelControlsStatistics panel_controls_statistics = new PanelControlsStatistics();
 
-  public static PanelControlsPropertiesScalars panel_edit_properties_scalars = new PanelControlsPropertiesScalars(new_message_manager);
+  public static PanelControlsPropertiesScalars panel_edit_properties_scalars = new PanelControlsPropertiesScalars(World.new_message_manager);
 
   public static PanelControlsProperties panel_edit_properties = new PanelControlsProperties();
 
@@ -444,7 +419,7 @@ public class FrEnd extends Panel implements Runnable {
 
   public static PanelControlsModify panel_edit_model = new PanelControlsModify();
 
-  public static PanelFundamental panel_fundamental = new PanelFundamental(new_message_manager);
+  public static PanelFundamental panel_fundamental = new PanelFundamental(World.new_message_manager);
 
   public static PanelAbout panel_about = new PanelAbout();
 
@@ -466,7 +441,7 @@ public class FrEnd extends Panel implements Runnable {
 
   public static PanelPreferencesPOVExport panel_preferences_pov_export = new PanelPreferencesPOVExport();
 
-  public static PanelPreferencesRendererOriginal panel_preferences_renderer_original = new PanelPreferencesRendererOriginal(new_message_manager);
+  public static PanelPreferencesRendererOriginal panel_preferences_renderer_original = new PanelPreferencesRendererOriginal(World.new_message_manager);
 
   public static PanelPreferencesRendererModernFilters panel_preferences_renderer_modern_filters = new PanelPreferencesRendererModernFilters();
 
@@ -477,7 +452,7 @@ public class FrEnd extends Panel implements Runnable {
   // the ray-traced renderer is active.
   public static PanelPreferencesRendererRaytraced panel_preferences_renderer_raytraced = new PanelPreferencesRendererRaytraced();
 
-  public static PanelPreferencesRendererModern panel_preferences_renderer_modern = new PanelPreferencesRendererModern(new_message_manager);
+  public static PanelPreferencesRendererModern panel_preferences_renderer_modern = new PanelPreferencesRendererModern(World.new_message_manager);
 
   public static PanelPreferencesDisplay panel_preferences_display = new PanelPreferencesDisplay();
 
@@ -491,15 +466,11 @@ public class FrEnd extends Panel implements Runnable {
 
   public static FrEnd instance;
 
-  public static DataInput data_input = new DataInput(null);
 
-  public static BaseElement dragged_element;
 
-  public static boolean forces_disabled_during_gesture;
 
   public static boolean animation_inactive = true;
 
-  public static String archive;
 
   static int last_known_good_x;
 
@@ -513,7 +484,7 @@ public class FrEnd extends Panel implements Runnable {
     resolutionx = 800;
     resolutiony = 600;
 
-    if (module) {
+    if (World.module) {
       extension = new Module();
       extension.oneOffInitialisation();
     }
@@ -524,10 +495,10 @@ public class FrEnd extends Panel implements Runnable {
 
     main_canvas = new MainCanvas(this);
 
-    paused = false;
+    World.paused = false;
 
     show_exhaust = true;
-    quality = Quality.MULTIPLE;
+    World.quality = Quality.MULTIPLE;
 
     panel_with_controls_at_bottom = setUpPanelForFrame2();
 
@@ -588,7 +559,7 @@ public class FrEnd extends Panel implements Runnable {
       resize(last_known_good_x, last_known_good_y);
     }
 
-    new_message_manager.add(FrEnd.system_messages.getRestartMessage());
+    World.new_message_manager.add(FrEnd.system_messages.getRestartMessage());
 
     validate();
     repaint();
@@ -596,7 +567,7 @@ public class FrEnd extends Panel implements Runnable {
 
   // Note: sequence is important here...
   private void loadInitialModel() {
-    // FrEnd.archive = null;
+    // World.archive = null;
 
     initial_type = initial_initial_type;
 
@@ -865,7 +836,7 @@ public class FrEnd extends Panel implements Runnable {
   }
 
   public static void postCleanup() {
-    new PostModification(ContextManager.getNodeManager()).cleanup();
+    World.postCleanup();
     reflectAllValuesInGUIAfterSeriousEditing();
   }
 
@@ -952,7 +923,7 @@ public class FrEnd extends Panel implements Runnable {
     while (!thread_terminated) {
       // Stepping is decremented in RendererDelegator, synchronously with
       // the physics (nodeAndLinkUpdate). It used to be here, but repaint()
-      // is async -- the counter would hit zero and set paused=true before
+      // is async -- the counter would hit zero and set World.paused=true before
       // the AWT thread ran the physics, so steps were lost. (f9abb82 moved
       // message processing to this thread, introducing the race.)
 
@@ -985,7 +956,7 @@ public class FrEnd extends Panel implements Runnable {
 
   public static final void endStepping() {
     stepping = 0;
-    paused = true;
+    World.paused = true;
     greyPauseAndRestartIfNeeded();
     // button_step.setLabel(GUIStrings.STEP);
     if (button_step != null) {
@@ -1025,15 +996,15 @@ public class FrEnd extends Panel implements Runnable {
   }
 
   public static void greyStepIfNeeded() {
-    button_step.setEnabled(paused);
+    button_step.setEnabled(World.paused);
   }
 
   public static void greyPauseAndRestartIfNeeded() {
     if (panel_fundamental != null && panel_fundamental.button_paused != null) {
-      panel_fundamental.button_paused.setEnabled(paused);
+      panel_fundamental.button_paused.setEnabled(World.paused);
     }
     if (button_restart != null) {
-      button_restart.setEnabled(paused);
+      button_restart.setEnabled(World.paused);
     }
   }
 
@@ -1080,9 +1051,9 @@ public class FrEnd extends Panel implements Runnable {
     diet_manager.terminate(x, y);
 
     perform_actions.dragged_link_manager.pointer_node = null;
-    currently_dragging = false;
+    World.currently_dragging = false;
     button_virginity = true;
-    dragged_element = null;
+    World.dragged_element = null;
   }
 
   public static void springieMouseEntered(final int x, final int y) {
@@ -1151,10 +1122,10 @@ public class FrEnd extends Panel implements Runnable {
   }
 
   public static void dragCurrentObject(final int x, final int y) {
-    if (FrEnd.dragged_element != null) {
-      if (FrEnd.dragged_element.isSelected()) {
-        // Node dragged_node = (Node)FrEnd.dragged_element;
-        final Point3D centre = FrEnd.dragged_element.getCoordinatesOfCentrePoint();
+    if (World.dragged_element != null) {
+      if (World.dragged_element.isSelected()) {
+        // Node dragged_node = (Node)World.dragged_element;
+        final Point3D centre = World.dragged_element.getCoordinatesOfCentrePoint();
         final int d_x = x - dragged_x_offset - centre.x;
         final int d_y = y - dragged_y_offset - centre.y;
 
@@ -1201,7 +1172,7 @@ public class FrEnd extends Panel implements Runnable {
   }
 
   public static boolean isAnimationInactive() {
-    if (FrEnd.paused) {
+    if (World.paused) {
       return true;
     }
 
@@ -1212,14 +1183,14 @@ public class FrEnd extends Panel implements Runnable {
   }
 
   public static void setFilePath(final String path) {
-    FrEnd.last_file_path = path;
+    World.last_file_path = path;
     FrEnd.next_file_path = path;
 
     if (FrEnd.frame_main == null) {
       return;
     }
 
-    final String s = FrEnd.window_title_prefix + " - " + FrEnd.last_file_path;
+    final String s = FrEnd.window_title_prefix + " - " + World.last_file_path;
 
     FrEnd.frame_main.setTitle(s);
   }
@@ -1229,6 +1200,9 @@ public class FrEnd extends Panel implements Runnable {
     // Lights start spread to the four sides, not stacked (Tim,
     // 2026-10-05).
     com.springie.render.modules.modern.LightSource.resetToDefaults();
+
+    // Wire the engine's selection notifier to the GUI updater.
+    World.on_selection_change = FrEnd::updateGUIToReflectSelectionChange;
 
     final FrEnd frontend = new FrEnd();
 

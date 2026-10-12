@@ -1,4 +1,4 @@
-package com.springie.render;
+package com.springie.geometry;
 
 import java.awt.Graphics;
 

@@ -1,6 +1,7 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.render.modules.raytraced;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.elements.faces.Face;
@@ -10,7 +11,7 @@ import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.gestures.DragBoxManager;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RectangleInt;
 import com.springie.render.RendererDelegator;
 import com.springie.render.ScenicBackground;
@@ -740,7 +741,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
           Integer.MIN_VALUE, Integer.MIN_VALUE);
     }
 
-    if (FrEnd.render_nodes) {
+    if (World.render_nodes) {
       final List<?> nodes = manager.element;
       final int count = nodes.size();
       for (int i = 0; i < count; i++) {
@@ -780,7 +781,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       }
     }
 
-    if (FrEnd.render_links) {
+    if (World.render_links) {
       final LinkManager link_manager = manager.getLinkManager();
       final List<?> links = link_manager.element;
       final int count = links.size();
@@ -810,7 +811,7 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       }
     }
 
-    if (FrEnd.render_faces) {
+    if (World.render_faces) {
       final FaceManager face_manager = manager.getFaceManager();
       final List<?> faces = face_manager.element;
       final int count = faces.size();

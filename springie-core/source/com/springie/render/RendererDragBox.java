@@ -1,5 +1,6 @@
 // This code has been placed into the public domain by its author
 package com.springie.render;
+import com.springie.geometry.Coords;
 
 import com.springie.gui.gestures.DragBoxManager;
 import java.awt.Graphics;

@@ -1,9 +1,9 @@
 // This program has been placed into the public domain by its author.
 package com.springie.elements.nodes;
+import com.springie.world.World;
 
-import com.springie.FrEnd;
 import com.springie.geometry.Point3D;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import java.awt.GraphicsEnvironment;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,18 +28,18 @@ class NodeBoundaryCheckTest {
   @BeforeEach
   void setUp() {
     assumeTrue(!GraphicsEnvironment.isHeadless(), "needs a display");
-    this.saved_demo = FrEnd.demo_model;
-    this.saved_x = FrEnd.continuously_centre_x;
-    this.saved_y = FrEnd.continuously_centre_y;
-    this.saved_z = FrEnd.continuously_centre_z;
+    this.saved_demo = World.demo_model;
+    this.saved_x = World.continuously_centre_x;
+    this.saved_y = World.continuously_centre_y;
+    this.saved_z = World.continuously_centre_z;
   }
 
   @AfterEach
   void tearDown() {
-    FrEnd.demo_model = this.saved_demo;
-    FrEnd.continuously_centre_x = this.saved_x;
-    FrEnd.continuously_centre_y = this.saved_y;
-    FrEnd.continuously_centre_z = this.saved_z;
+    World.demo_model = this.saved_demo;
+    World.continuously_centre_x = this.saved_x;
+    World.continuously_centre_y = this.saved_y;
+    World.continuously_centre_z = this.saved_z;
   }
 
   private static Node node(final int x, final int y, final int z) {
@@ -62,16 +62,16 @@ class NodeBoundaryCheckTest {
   }
 
   private static void olympicMode() {
-    FrEnd.demo_model = true;
-    FrEnd.continuously_centre_x = true;
-    FrEnd.continuously_centre_y = false;
-    FrEnd.continuously_centre_z = false;
+    World.demo_model = true;
+    World.continuously_centre_x = true;
+    World.continuously_centre_y = false;
+    World.continuously_centre_z = false;
   }
 
   @Test
   void sideWallAppliesOutsideOlympicMode() {
-    FrEnd.demo_model = false;
-    FrEnd.continuously_centre_x = true;
+    World.demo_model = false;
+    World.continuously_centre_x = true;
     final Node node = node(wallX() + 1000, wallY() / 2, wallZ() / 2);
     node.velocity.x = 500;
 
@@ -97,10 +97,10 @@ class NodeBoundaryCheckTest {
   void xWallAppliesInOlympicModeWithoutXCentering() {
     // The follow-cam is not tracking x, so the old wall keeps the
     // creature in view instead of letting it run off-screen for good.
-    FrEnd.demo_model = true;
-    FrEnd.continuously_centre_x = false;
-    FrEnd.continuously_centre_y = true;
-    FrEnd.continuously_centre_z = false;
+    World.demo_model = true;
+    World.continuously_centre_x = false;
+    World.continuously_centre_y = true;
+    World.continuously_centre_z = false;
     final Node node = node(wallX() + 1000, wallY() / 2, wallZ() / 2);
 
     node.boundaryCheck();
@@ -148,10 +148,10 @@ class NodeBoundaryCheckTest {
 
   @Test
   void wallsReturnWhenCenteringOff() {
-    FrEnd.demo_model = true;
-    FrEnd.continuously_centre_x = false;
-    FrEnd.continuously_centre_y = false;
-    FrEnd.continuously_centre_z = false;
+    World.demo_model = true;
+    World.continuously_centre_x = false;
+    World.continuously_centre_y = false;
+    World.continuously_centre_z = false;
     final Node node = node(wallX() + 1000, wallY() / 2, wallZ() / 2);
 
     node.boundaryCheck();

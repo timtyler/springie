@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.render;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
@@ -65,7 +66,7 @@ public class PolygonRendererClickBoxTest {
   private static void useOldRenderer() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       saved_renderer = RendererDelegator.renderer;
-      saved_paused = FrEnd.paused;
+      saved_paused = World.paused;
       RendererDelegator.renderer = new ModularRendererOld();
       FrEnd.main_canvas.forceResize();
       RendererDelegator.repaintAll();
@@ -77,7 +78,7 @@ public class PolygonRendererClickBoxTest {
   private static void restoreRenderer() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       RendererDelegator.renderer = saved_renderer;
-      FrEnd.paused = saved_paused;
+      World.paused = saved_paused;
       FrEnd.perform_actions.drag_box_manager.drag_box_start = null;
       FrEnd.perform_actions.drag_box_manager.drag_box_end = null;
       FrEnd.main_canvas.forceResize();

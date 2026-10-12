@@ -2,7 +2,6 @@
 
 package com.springie.elements.nodes;
 
-import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.CompassPoint;
 import com.springie.geometry.Point3D;
@@ -34,11 +33,11 @@ class CompassBiasTest {
     this.saved_bias = CompassPoint.bias_size;
     this.saved_gravity = World.gravity_strength;
     this.saved_temperature = World.global_temperature;
-    this.saved_gesture = FrEnd.forces_disabled_during_gesture;
+    this.saved_gesture = World.forces_disabled_during_gesture;
     CompassPoint.bias_size = 5;
     World.gravity_strength = 0;
     World.global_temperature = 0;
-    FrEnd.forces_disabled_during_gesture = false;
+    World.forces_disabled_during_gesture = false;
     this.manager = new NodeManager();
   }
 
@@ -47,7 +46,7 @@ class CompassBiasTest {
     CompassPoint.bias_size = this.saved_bias;
     World.gravity_strength = this.saved_gravity;
     World.global_temperature = this.saved_temperature;
-    FrEnd.forces_disabled_during_gesture = this.saved_gesture;
+    World.forces_disabled_during_gesture = this.saved_gesture;
   }
 
   private Node headingNode(final CompassPoint heading) {

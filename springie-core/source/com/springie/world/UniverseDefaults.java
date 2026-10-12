@@ -2,7 +2,6 @@
 
 package com.springie.world;
 
-import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.CompassPoint;
 import com.springie.elements.nodes.Node;
@@ -132,24 +131,24 @@ public final class UniverseDefaults {
    * Call this once the model has finished setting its universe parameters.
    */
   public static void snapshot() {
-    three_d = FrEnd.three_d;
+    three_d = World.three_d;
     gravity_strength = World.gravity_strength;
     gravity_active = World.gravity_active;
     ground_friction = World.ground_friction;
     bounding_box_bounciness = World.bounding_box_bounciness;
     global_temperature = World.global_temperature;
     viscocity = Node.viscocity;
-    check_collisions = FrEnd.check_collisions;
+    check_collisions = World.check_collisions;
     charge_active = ContextManager.getNodeManager().electrostatic.charge_active;
     muscles_enabled = Muscles.enabled;
     active_oscillator = Muscles.active_oscillator;
     muscle_amplitude = Muscles.activeOscillator().getAmplitude();
     muscle_period_ticks = Muscles.activeOscillator().getPeriodTicks();
     muscle_phase = Muscles.activeOscillator().getPhase();
-    continuously_centre_x = FrEnd.continuously_centre_x;
-    continuously_centre_y = FrEnd.continuously_centre_y;
-    continuously_centre_z = FrEnd.continuously_centre_z;
-    show_world_markers = FrEnd.show_world_markers;
+    continuously_centre_x = World.continuously_centre_x;
+    continuously_centre_y = World.continuously_centre_y;
+    continuously_centre_z = World.continuously_centre_z;
+    show_world_markers = World.show_world_markers;
     compass_bias_size = CompassPoint.bias_size;
     // Snapshot the N lights (Tim, 2026-10-04).
     lights_snapshot.clear();
@@ -160,7 +159,7 @@ public final class UniverseDefaults {
       }
     }
     ambient_light_pct = com.springie.render.RendererDelegator.ambient_light_pct;
-    if (FrEnd.development_version) {
+    if (World.development_version) {
       max_speed = Node.max_speed;
       minimum_magnitude = World.minimum_magnitude;
     }
@@ -171,24 +170,24 @@ public final class UniverseDefaults {
    * GUI controls -- the caller reflects afterwards.
    */
   public static void restore() {
-    FrEnd.three_d = three_d;
+    World.three_d = three_d;
     World.gravity_strength = gravity_strength;
     World.gravity_active = gravity_active;
     World.ground_friction = ground_friction;
     World.bounding_box_bounciness = bounding_box_bounciness;
     World.global_temperature = global_temperature;
     Node.viscocity = viscocity;
-    FrEnd.check_collisions = check_collisions;
+    World.check_collisions = check_collisions;
     ContextManager.getNodeManager().electrostatic.charge_active = charge_active;
     Muscles.enabled = muscles_enabled;
     Muscles.active_oscillator = active_oscillator;
     Muscles.activeOscillator().setAmplitude(muscle_amplitude);
     Muscles.activeOscillator().setPeriodTicks(muscle_period_ticks);
     Muscles.activeOscillator().setPhase(muscle_phase);
-    FrEnd.continuously_centre_x = continuously_centre_x;
-    FrEnd.continuously_centre_y = continuously_centre_y;
-    FrEnd.continuously_centre_z = continuously_centre_z;
-    FrEnd.show_world_markers = show_world_markers;
+    World.continuously_centre_x = continuously_centre_x;
+    World.continuously_centre_y = continuously_centre_y;
+    World.continuously_centre_z = continuously_centre_z;
+    World.show_world_markers = show_world_markers;
     CompassPoint.bias_size = compass_bias_size;
     // Reset universe restores the factory defaults (Tim, 2026-10-05):
     // lights spread uniformly around the edge, ambient at 0%
@@ -196,7 +195,7 @@ public final class UniverseDefaults {
     com.springie.render.modules.modern.LightSource.resetToDefaults();
     com.springie.render.modules.modern.LightSource.light_moved = true;
     com.springie.render.RendererDelegator.ambient_light_pct = 0;
-    if (FrEnd.development_version) {
+    if (World.development_version) {
       Node.max_speed = max_speed;
       World.minimum_magnitude = minimum_magnitude;
     }

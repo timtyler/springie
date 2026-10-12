@@ -1,13 +1,14 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.gui.gestures;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.GuiTestSupport;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import java.awt.Point;
 import java.util.List;
 import javax.swing.SwingUtilities;
@@ -46,7 +47,7 @@ class DragBoxSelectionTest {
     final boolean[] selected = new boolean[1];
     final boolean[] nodeBox = new boolean[1];
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.paused = true;
+      World.paused = true;
       nodeBox[0] = FrEnd.panel_edit_select_main.checkbox_select_nodes
           .getState();
       FrEnd.panel_edit_select_main.checkbox_select_nodes.setState(true);
@@ -119,7 +120,7 @@ class DragBoxSelectionTest {
   void terminateSelectsNothingWhenBoxMissesEveryNode() throws Exception {
     final boolean[] any_selected = new boolean[1];
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.paused = true;
+      World.paused = true;
       final boolean nodeBox =
           FrEnd.panel_edit_select_main.checkbox_select_nodes.getState();
       FrEnd.panel_edit_select_main.checkbox_select_nodes.setState(true);

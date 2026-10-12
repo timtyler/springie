@@ -7,7 +7,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.muscles.Controller;
 import com.springie.muscles.Muscles;
 import com.springie.muscles.Oscillator;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 
 /**
  * A stance-gated hop controller. While airborne the cables hold their

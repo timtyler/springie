@@ -17,7 +17,7 @@ import com.springie.geometry.Point3D;
 import com.springie.muscles.Controller;
 import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.world.Grounding;
 import com.springie.world.World;
 import java.util.LinkedHashMap;
@@ -194,7 +194,7 @@ public final class CrawlerDemo {
     World.ground_friction = friction;
     World.bounding_box_bounciness = 0; // Tim, 2026-10-01: no wall bounce for demos.
     // No node-node collisions: the structure holds itself together.
-    FrEnd.check_collisions = false;
+    World.check_collisions = false;
 
     // Layout: x grows toward the direction of travel (+x = East),
     // y grows downward, z grows southward (N = -z, S = +z).

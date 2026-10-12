@@ -13,7 +13,7 @@ import com.springie.elements.nodes.NodeType;
 import com.springie.geometry.Point3D;
 import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.world.Grounding;
 import com.springie.world.World;
 

@@ -1,12 +1,12 @@
 //This code has been placed into the public domain by its author
 
 package com.springie.elements.faces;
+import com.springie.world.World;
 
-import com.springie.FrEnd;
 import com.springie.elements.base.BaseElementManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.nodes.Node;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import java.util.ArrayList;
 
 public class FaceManager extends BaseElementManager<Face> {
@@ -124,29 +124,29 @@ public class FaceManager extends BaseElementManager<Face> {
       final Face poly = (Face) this.element.get(temp);
       poly.type.selected = false;
     }
-    FrEnd.updateGUIToReflectSelectionChange();
+    World.on_selection_change.run();
   }
 
   public final void selectAll() {
     final int n = this.element.size();
     for (int temp = n; --temp >= 0;) {
       final Face face = (Face) this.element.get(temp);
-      if (!face.type.hidden || FrEnd.render_hidden_faces) {
+      if (!face.type.hidden || World.render_hidden_faces) {
         face.type.selected = true;
       }
     }
-    FrEnd.updateGUIToReflectSelectionChange();
+    World.on_selection_change.run();
   }
   
   public final void selectionInvert() {
     final int n = this.element.size();
     for (int temp = n; --temp >= 0;) {
       final Face face = (Face) this.element.get(temp);
-      if (!face.type.hidden || FrEnd.render_hidden_faces) {
+      if (!face.type.hidden || World.render_hidden_faces) {
         face.type.selected = !face.type.selected;
       }
     }
-    FrEnd.updateGUIToReflectSelectionChange();
+    World.on_selection_change.run();
   }
 
   public final Face isThereOne(final int x, final int y) {
@@ -156,7 +156,7 @@ public class FaceManager extends BaseElementManager<Face> {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final Face p = (Face) this.element.get(temp);
-      if (!p.type.hidden || FrEnd.render_hidden_faces) {
+      if (!p.type.hidden || World.render_hidden_faces) {
         final int npoints = p.nodes.size();
 
         int sum_z = 0;
@@ -220,12 +220,12 @@ public class FaceManager extends BaseElementManager<Face> {
     for (int temp = number; --temp >= 0;) {
       final Face face = (Face) this.element.get(temp);
       if (face.clazz.colour == colour) {
-        if (!face.type.hidden || FrEnd.render_hidden_faces) {
+        if (!face.type.hidden || World.render_hidden_faces) {
           face.type.selected = true;
         }
       }
     }
-    FrEnd.updateGUIToReflectSelectionChange();
+    World.on_selection_change.run();
   }
 
   public final void selectAllWithNSides(final int n) {
@@ -236,7 +236,7 @@ public class FaceManager extends BaseElementManager<Face> {
         p.type.selected = true;
       }
     }
-    FrEnd.updateGUIToReflectSelectionChange();
+    World.on_selection_change.run();
   }
 
   public final void deleteSelected() {
@@ -247,7 +247,7 @@ public class FaceManager extends BaseElementManager<Face> {
         kill(p);
       }
     }
-    FrEnd.updateGUIToReflectSelectionChange();
+    World.on_selection_change.run();
   }
 
   final void killNumbered(final int n) {

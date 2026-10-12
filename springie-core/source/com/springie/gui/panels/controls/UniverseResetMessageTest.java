@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.controls;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
@@ -58,20 +59,20 @@ class UniverseResetMessageTest {
       clickCheckbox(panel.checkbox_collision_check, ItemEvent.DESELECTED);
 
       // Let the queued toggles take effect, then drain.
-      FrEnd.new_message_manager.process();
-      assertTrue(FrEnd.continuously_centre_x);
-      assertFalse(FrEnd.check_collisions);
+      World.new_message_manager.process();
+      assertTrue(World.continuously_centre_x);
+      assertFalse(World.check_collisions);
       drainMessageQueue();
 
       // The reset must restore the statics without queueing anything that
       // a later process() would turn back.
       panel.resetUniverse();
-      assertEquals(0, FrEnd.new_message_manager.size(),
+      assertEquals(0, World.new_message_manager.size(),
           "resetUniverse must not enqueue messages");
 
-      FrEnd.new_message_manager.process();
-      assertFalse(FrEnd.continuously_centre_x);
-      assertTrue(FrEnd.check_collisions);
+      World.new_message_manager.process();
+      assertFalse(World.continuously_centre_x);
+      assertTrue(World.check_collisions);
     });
   }
 
@@ -83,21 +84,21 @@ class UniverseResetMessageTest {
       // The hazard the silent update guards against: a click queues a
       // toggle message, the reset fixes the static directly, then the
       // queued toggle flips it back when processed.
-      FrEnd.continuously_centre_x = true;
+      World.continuously_centre_x = true;
       clickCheckbox(FrEnd.panel_universe.checkbox_continuously_centre_x,
           ItemEvent.DESELECTED);
-      FrEnd.continuously_centre_x = false;
+      World.continuously_centre_x = false;
 
       // The click queued a toggle message...
-      assertEquals(1, FrEnd.new_message_manager.size());
+      assertEquals(1, World.new_message_manager.size());
 
       // ...which flips the static back when the queue is processed.
-      FrEnd.new_message_manager.process();
-      assertTrue(FrEnd.continuously_centre_x,
+      World.new_message_manager.process();
+      assertTrue(World.continuously_centre_x,
           "a queued toggle undoes the reset -- this is why the reset updates the checkboxes silently");
 
       // Restore the default for the next test.
-      FrEnd.continuously_centre_x = false;
+      World.continuously_centre_x = false;
       drainMessageQueue();
     });
   }
@@ -118,8 +119,8 @@ class UniverseResetMessageTest {
   }
 
   private static void drainMessageQueue() {
-    while (FrEnd.new_message_manager.size() > 0) {
-      FrEnd.new_message_manager.process();
+    while (World.new_message_manager.size() > 0) {
+      World.new_message_manager.process();
     }
   }
 

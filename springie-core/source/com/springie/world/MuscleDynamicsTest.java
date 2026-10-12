@@ -2,7 +2,6 @@
 
 package com.springie.world;
 
-import com.springie.FrEnd;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkTypeFactory;
@@ -11,7 +10,7 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.geometry.Point3D;
 import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import java.awt.GraphicsEnvironment;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,11 +38,11 @@ class MuscleDynamicsTest {
     assumeTrue(!GraphicsEnvironment.isHeadless(), "needs a display");
 
     this.old_enabled = Muscles.enabled;
-    this.old_check_collisions = FrEnd.check_collisions;
+    this.old_check_collisions = World.check_collisions;
     this.old_amplitude = Muscles.activeOscillator().getAmplitude();
     this.old_period = Muscles.activeOscillator().getPeriodTicks();
 
-    FrEnd.check_collisions = false;
+    World.check_collisions = false;
     Muscles.enabled = true;
     Muscles.activeOscillator().setAmplitude((int) (0.4 * Muscles.UNITY));
     Muscles.activeOscillator().setPeriodTicks(40);
@@ -52,7 +51,7 @@ class MuscleDynamicsTest {
   @AfterEach
   void tearDown() {
     Muscles.enabled = this.old_enabled;
-    FrEnd.check_collisions = this.old_check_collisions;
+    World.check_collisions = this.old_check_collisions;
     Muscles.activeOscillator().setAmplitude(this.old_amplitude);
     Muscles.activeOscillator().setPeriodTicks(this.old_period);
   }

@@ -1,4 +1,6 @@
 package com.springie.render;
+import com.springie.geometry.Coords;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.composite.Reproduction;
@@ -204,14 +206,14 @@ public final class RendererDelegator {
   //}
 
   private static void incrementGenerationCount() {
-    if (!FrEnd.paused) {
+    if (!World.paused) {
       RendererDelegator.generation += RendererDelegator.direction;
     }
   }
 
   public static void setColour(final int colour) {
     RendererDelegator.graphics_handle.setColor(new Color(colour));
-    if (FrEnd.xor) {
+    if (World.xor) {
       RendererDelegator.graphics_handle.setXORMode(color_background);
     }
   }
@@ -224,6 +226,7 @@ public final class RendererDelegator {
     // Tim: gold dots get their own simple 2D space, drawn BEFORE the
     // main model tiles. The tiles obliterate any dots underneath them.
     // Same renderer for ray-tracer and polygon mode.
+    WorldMarkers.onFrame(World.centering_offset);
     WorldMarkers.drawUnder(graphics);
 
     // Mutually exclusive with message execution (see NewMessageManager):
@@ -308,11 +311,11 @@ public final class RendererDelegator {
   }
 
   private static void possibleInitialClear(final Graphics graphics) {
-    if (FrEnd.module) {
+    if (World.module) {
       FrEnd.extension.update();
     }
 
-    if (RendererDelegator.repaint_all_objects) {
+    if (RendererDelegator.repaint_all_objects || World.repaint_requested) {
       if (RendererDelegator.virgin_paint > 0) {
         RendererDelegator.virgin_paint--;
       } else {
@@ -329,6 +332,7 @@ public final class RendererDelegator {
         }
         renderer.reset();
         RendererDelegator.repaint_all_objects = false;
+        World.repaint_requested = false;
       }
     }
 
@@ -405,7 +409,7 @@ public final class RendererDelegator {
     if (!hold) {
       RendererDelegator.incrementGenerationCount();
 
-      if (!FrEnd.paused) {
+      if (!World.paused) {
         ParticleManager.update();
         LineFragmentManager.update();
         Reproduction.handleReproduction(ContextManager.getNodeManager().creature_manager);

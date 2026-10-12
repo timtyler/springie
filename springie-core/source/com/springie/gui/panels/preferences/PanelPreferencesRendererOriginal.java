@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.preferences;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.constants.Quality;
@@ -139,10 +140,10 @@ public class PanelPreferencesRendererOriginal {
 //    this.checkbox_explosions = new Checkbox(GUIStrings.EXPLOSIONS);
 //    this.checkbox_explosions.addItemListener(new ItemListener() {
 //      public void itemStateChanged(ItemEvent e) {
-//        FrEnd.explosions = ((Checkbox) e.getSource()).getState();
+//        World.explosions = ((Checkbox) e.getSource()).getState();
 //      }
 //    });
-//    this.checkbox_explosions.setState(FrEnd.explosions);
+//    this.checkbox_explosions.setState(World.explosions);
 //    panel_visible_explosions.add(this.checkbox_explosions);
 //
 //    final Panel panel_redraw_deepest_first = new Panel();
@@ -150,22 +151,22 @@ public class PanelPreferencesRendererOriginal {
 //        "Render deepest objects first");
 //    this.checkbox_redraw_deepest_first.addItemListener(new ItemListener() {
 //      public void itemStateChanged(ItemEvent e) {
-//        FrEnd.redraw_deepest_first = ((Checkbox) e.getSource()).getState();
+//        World.redraw_deepest_first = ((Checkbox) e.getSource()).getState();
 //      }
 //    });
-//    this.checkbox_redraw_deepest_first.setState(FrEnd.redraw_deepest_first);
+//    this.checkbox_redraw_deepest_first.setState(World.redraw_deepest_first);
 //    panel_redraw_deepest_first.add(this.checkbox_redraw_deepest_first);
 
     final Panel panel_xor = new Panel();
 
-    final Checkbox checkbox_xor = new Checkbox(GUIStrings.XOR, FrEnd.xor);
+    final Checkbox checkbox_xor = new Checkbox(GUIStrings.XOR, World.xor);
     checkbox_xor.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        FrEnd.xor = ((Checkbox) e.getSource()).getState();
+        World.xor = ((Checkbox) e.getSource()).getState();
         RendererDelegator.repaintAll();
       }
     });
-    if (FrEnd.development_version) {
+    if (World.development_version) {
     panel_xor.add(checkbox_xor);
     }
 
@@ -204,7 +205,7 @@ public class PanelPreferencesRendererOriginal {
     FrEnd.choose_quality = new TTChoice(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
         final String scs = (String) e.getItem();
-        FrEnd.quality = FrEnd.choose_quality.str_to_num(scs);
+        World.quality = FrEnd.choose_quality.str_to_num(scs);
         RendererDelegator.repaintAll();
       }
     });
@@ -222,7 +223,7 @@ public class PanelPreferencesRendererOriginal {
     choose_quality.add("< abysmal", Quality._QUALITY_4A);
     choose_quality.add("dots only", Quality._QUALITY_5);
     choose_quality.add("gone", Quality._QUALITY_6);
-    choose_quality.choice.select(choose_quality.num_to_str(FrEnd.quality));
+    choose_quality.choice.select(choose_quality.num_to_str(World.quality));
     panel_node_render_type.add(choose_quality.choice);
     return panel_node_render_type;
   }
@@ -591,7 +592,7 @@ public class PanelPreferencesRendererOriginal {
     // Node render type (thick outline).
     FrEnd.choose_quality.choice.select(FrEnd.choose_quality
         .num_to_str(Quality.THICK_OUTLINE));
-    FrEnd.quality = Quality.THICK_OUTLINE;
+    World.quality = Quality.THICK_OUTLINE;
 
     // Struts and cables display types.
     FrEnd.choose_display_struts.choice.select(FrEnd.choose_display_struts
@@ -628,7 +629,7 @@ public class PanelPreferencesRendererOriginal {
     Link.link_display_length = Link.SHORT;
 
     // XOR rendering (development builds only).
-    FrEnd.xor = false;
+    World.xor = false;
 
     RendererDelegator.repaintAll();
   }

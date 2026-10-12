@@ -143,8 +143,8 @@ public final class ElementRendererFace {
     // direction to the viewer is (0, 0, -1).
     final double view_dot = Math.abs(nz);
     // Update light positions for current viewport.
-    LightSource.updateForViewport(com.springie.render.Coords.x_pixelso2,
-        com.springie.render.Coords.y_pixelso2);
+    LightSource.updateForViewport(com.springie.geometry.Coords.x_pixelso2,
+        com.springie.geometry.Coords.y_pixelso2);
     // Combine: ambient + diffuse from N lights (Tim, 2026-10-04).
     // Ambient light (Tim, 2026-10-03): from the slider. 50% = 0.25.
     final double ambient = 0.5 * RendererDelegator.ambient_light_pct / 100.0;

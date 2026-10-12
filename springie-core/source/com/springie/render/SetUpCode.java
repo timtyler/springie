@@ -1,4 +1,5 @@
 package com.springie.render;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
@@ -49,7 +50,7 @@ public final class SetUpCode {
 
   private static void informModulesOfReset() {
     WorldManager.initial();
-    if (FrEnd.module) {
+    if (World.module) {
       FrEnd.extension.calledOnReset();
     }
   }

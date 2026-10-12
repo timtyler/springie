@@ -6,7 +6,7 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeTypeFactory;
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import java.awt.GraphicsEnvironment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

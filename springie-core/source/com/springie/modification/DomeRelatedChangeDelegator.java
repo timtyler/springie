@@ -15,7 +15,7 @@ import com.springie.modification.flags.FlagControllerHidden;
 import com.springie.modification.flags.FlagControllerRope;
 import com.springie.modification.resize.LinkLengthEqualisation;
 import com.springie.modification.resize.LinkResetter;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 
 public final class DomeRelatedChangeDelegator {

@@ -1,6 +1,7 @@
 // This code has been placed into the public domain by its author.
 
 package com.springie.elements;
+import com.springie.world.World;
 
 /**
  * Compass heading for a demo model: its intended direction of travel on the

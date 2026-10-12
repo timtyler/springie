@@ -5,8 +5,8 @@
 // * simulation parameters it was saved -- or last left -- with.
 
 package com.springie.context;
+import com.springie.world.World;
 
-import com.springie.FrEnd;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.io.in.DataInput;
 import com.springie.world.Grounding;
@@ -51,7 +51,7 @@ public final class ModelManager {
     if (manager == null) {
       return;
     }
-    final String path = FrEnd.last_file_path;
+    final String path = World.last_file_path;
     slots.add(new ModelSlot(leafName(path), manager,
         UniverseState.capture(manager), path));
   }
@@ -87,9 +87,15 @@ public final class ModelManager {
     ContextManager.setNodeManager(next.manager);
     next.universe.restore(next.manager);
 
-    FrEnd.setFilePath(next.file_path);
-    FrEnd.reflectAllValuesInGUIAfterSeriousEditing();
     notifyChanged();
+  }
+
+  /**
+   * The file path of the currently active model (for the GUI to display).
+   */
+  public static String activeFilePath() {
+    ensureInitialized();
+    return slots.get(active_index).file_path;
   }
 
   /**
@@ -116,8 +122,6 @@ public final class ModelManager {
     ContextManager.setNodeManager(fresh);
     universe.restore(fresh);
 
-    FrEnd.setFilePath(path);
-    FrEnd.reflectAllValuesInGUIAfterSeriousEditing();
     notifyChanged();
   }
 
@@ -136,8 +140,6 @@ public final class ModelManager {
     current.name = leafName(path);
     current.file_path = path;
 
-    FrEnd.setFilePath(path);
-    FrEnd.reflectAllValuesInGUIAfterSeriousEditing();
     notifyChanged();
   }
 
@@ -157,8 +159,6 @@ public final class ModelManager {
     ContextManager.setNodeManager(next.manager);
     next.universe.restore(next.manager);
 
-    FrEnd.setFilePath(next.file_path);
-    FrEnd.reflectAllValuesInGUIAfterSeriousEditing();
     notifyChanged();
   }
 

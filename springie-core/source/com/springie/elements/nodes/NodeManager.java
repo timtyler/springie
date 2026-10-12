@@ -2,7 +2,6 @@
 
 package com.springie.elements.nodes;
 
-import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.CompassPoint;
 import com.springie.elements.clazz.Clazz;
@@ -17,8 +16,8 @@ import com.springie.modification.post.PostModification;
 import com.springie.modification.translation.CentreOnScreen;
 import com.springie.presets.PresetObjects;
 import com.springie.render.CachedNode;
-import com.springie.render.Coords;
-import com.springie.render.DepthSort;
+import com.springie.geometry.Coords;
+import com.springie.geometry.DepthSort;
 import com.springie.render.RendererDelegator;
 import com.springie.render.WorldMarkers;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;
@@ -87,7 +86,7 @@ public class NodeManager extends World {
   public final void initial() {
     initialSetUp();
 
-    if (!FrEnd.module) {
+    if (!World.module) {
       addCreature();
     }
   }
@@ -112,24 +111,20 @@ public class NodeManager extends World {
   }
 
   private void addCreature() {
-    final String desc = FrEnd.choose_initial.choice.getSelectedItem();
-
-    final String location = (String) FrEnd.choose_initial.hashtable.get(desc);
-
-    addCreatureFromLocation(location);
+    addCreatureFromLocation(World.default_creature_location);
   }
 
   void addCreatureFromPresetObject(final ArgumentList preset_type) {
     String d = null;
     d = PresetObjects.getCreatureDescription(preset_type);
-    FrEnd.data_input.addFromString(d, ContextManager.getNodeManager());
+    World.data_input.addFromString(d, ContextManager.getNodeManager());
   }
 
   public void addCreatureFromLocation(final String location) {
     String d = null;
-    if (FrEnd.archive != null) {
-      if (!"".equals(FrEnd.archive)) {
-        FrEnd.last_file_path = FrEnd.archive;
+    if (World.archive != null) {
+      if (!"".equals(World.archive)) {
+        World.last_file_path = World.archive;
       }
     }
 
@@ -150,7 +145,7 @@ public class NodeManager extends World {
       return;
     }
 
-    FrEnd.data_input.addFromString(d, ContextManager.getNodeManager());
+    World.data_input.addFromString(d, ContextManager.getNodeManager());
   }
 
   private void reportProblem(final String location) {
@@ -187,7 +182,7 @@ public class NodeManager extends World {
 
   public void nodeAndLinkUpdate() {
     Node.temp_private_world = this;
-    if (FrEnd.frame_frequency == 0) {
+    if (World.frame_frequency == 0) {
       oneFrameWorthOfUpdate();
     } else {
       updateAgentsAfterMoreThanOneFrameHasPassed();
@@ -210,7 +205,7 @@ public class NodeManager extends World {
       // collisions off, and the centering checkbox must still do
       // something for them.
       agentExpansion();
-      if (FrEnd.check_collisions) {
+      if (World.check_collisions) {
         collisionCheck();
       }
       // Camera-frame walls run last, so they are the final word on
@@ -221,17 +216,17 @@ public class NodeManager extends World {
   }
 
   private void updateAgentsAfterMoreThanOneFrameHasPassed() {
-    for (int temp = 0; temp <= FrEnd.frame_frequency; temp++) {
+    for (int temp = 0; temp <= World.frame_frequency; temp++) {
       oneFrameWorthOfUpdate();
     }
   }
 
   boolean needToMoveNodes() {
-    if (FrEnd.paused) {
+    if (World.paused) {
       return false;
     }
 
-    if (FrEnd.forces_disabled_during_gesture) {
+    if (World.forces_disabled_during_gesture) {
       return false;
     }
 
@@ -240,7 +235,7 @@ public class NodeManager extends World {
 
   private void updateLinks(final LinkManager link_manager) {
     if (needToMoveNodes()) {
-      if (!FrEnd.paused) {
+      if (!World.paused) {
         final int n_o_l = this.getLinkManager().element.size();
         if (n_o_l > 0) {
           wrappedLinkExerciser(link_manager);
@@ -263,11 +258,11 @@ public class NodeManager extends World {
       final int num = this.node_depth_index[counter];
       final Node node = (Node) this.element.get(num);
       final CachedNode cached_node = this.renderer.renderer_node.array[num];
-      // if (FrEnd.render_nodes) {
+      // if (World.render_nodes) {
       // cached_node.renderNodes(node, mask);
       // }
 
-      // if (FrEnd.render_links) {
+      // if (World.render_links) {
       cached_node.renderDummyLinks(this.renderer.renderer_link, getLinkManager(), node, mask);
       // }
 
@@ -287,15 +282,15 @@ public class NodeManager extends World {
       final int num = this.node_depth_index[counter];
       final Node node = (Node) this.element.get(num);
       final CachedNode cached_node = this.renderer.renderer_node.array[num];
-      if (FrEnd.render_nodes) {
+      if (World.render_nodes) {
         cached_node.renderNodes(node, mask);
       }
 
-      if (FrEnd.render_links) {
+      if (World.render_links) {
         cached_node.renderLinks(this.renderer.renderer_link, getLinkManager(), node, mask);
       }
 
-      if (FrEnd.render_faces) {
+      if (World.render_faces) {
         cached_node.renderPolygons(this.renderer.renderer_face, this.getFaceManager(), node, mask);
       }
     }
@@ -313,7 +308,7 @@ public class NodeManager extends World {
       final Node n = (Node) this.element.get(num);
       final CachedNode cn1 = this.renderer.renderer_node.array[num];
       final CachedNode cn2 = this.renderer2.renderer_node.array[num];
-      if (FrEnd.render_nodes) {
+      if (World.render_nodes) {
         Coords.shift_constant_x -= anaglyph_distance;
         cn1.renderNodes(n, mask_right);
         Coords.shift_constant_x += anaglyph_distance << 1;
@@ -321,7 +316,7 @@ public class NodeManager extends World {
         Coords.shift_constant_x -= anaglyph_distance;
       }
 
-      if (FrEnd.render_links) {
+      if (World.render_links) {
         Coords.shift_constant_x -= anaglyph_distance;
         cn1.renderLinks(this.renderer.renderer_link, getLinkManager(), n, mask_right);
         Coords.shift_constant_x += anaglyph_distance << 1;
@@ -329,7 +324,7 @@ public class NodeManager extends World {
         Coords.shift_constant_x -= anaglyph_distance;
       }
 
-      if (FrEnd.render_faces) {
+      if (World.render_faces) {
         Coords.shift_constant_x -= anaglyph_distance;
         cn1.renderPolygons(this.renderer.renderer_face, getFaceManager(), n, mask_right);
         Coords.shift_constant_x += anaglyph_distance << 1;
@@ -355,8 +350,7 @@ public class NodeManager extends World {
       setUpNewNodeDepthIndex();
     }
 
-    if (FrEnd.redraw_deepest_first
-      && !(RendererDelegator.renderer instanceof ModularRendererRaytraced)) {
+    if (World.redraw_deepest_first && World.renderer_needs_depth_sort) {
       // The ray-traced renderer resolves occlusion per ray through
       // its BVH and never reads the sorted order, so the sort is
       // pure cost there -- it runs inside nodeAndLinkRenderDummy()
@@ -391,15 +385,16 @@ public class NodeManager extends World {
     // would otherwise yank the bounding box back every frame and make
     // the dragged link vibrate.
     Vector3D offset = new Vector3D(0, 0, 0);
-    if (!FrEnd.currently_dragging && (FrEnd.continuously_centre_x
-        || FrEnd.continuously_centre_y || FrEnd.continuously_centre_z)) {
+    if (!World.currently_dragging && (World.continuously_centre_x
+        || World.continuously_centre_y || World.continuously_centre_z)) {
       offset = CentreOnScreen.centreOnAxes(this,
-          FrEnd.continuously_centre_x, FrEnd.continuously_centre_y,
-          FrEnd.continuously_centre_z);
+          World.continuously_centre_x, World.continuously_centre_y,
+          World.continuously_centre_z);
     }
     // The Olympics location markers ride the same shift, so they stay
     // locked to the world while the creature stays centred.
-    WorldMarkers.onFrame(offset);
+    // (The renderer calls WorldMarkers.onFrame(World.centering_offset).)
+    World.centering_offset = offset;
   }
 
   /**
@@ -518,7 +513,7 @@ public class NodeManager extends World {
   }
 
   final void applyAcceleration() {
-    if (FrEnd.forces_disabled_during_gesture) {
+    if (World.forces_disabled_during_gesture) {
       return;
     }
 
@@ -554,7 +549,7 @@ public class NodeManager extends World {
         if (counter == 1) {
           temp_agent.clazz = new Clazz(0xFF40FF40);
         }
-        if (!FrEnd.pandemic_paradigm_direct_contact) {
+        if (!World.pandemic_paradigm_direct_contact) {
           if (counter == PerformSelection.VIRUS_RELEASE1) {
             releaseVirus(temp_agent);
           }
@@ -565,7 +560,7 @@ public class NodeManager extends World {
   }
 
   private void sendDeleteNodeMessage(final Node node) {
-    FrEnd.new_message_manager.add(new NewMessage(null) {
+    World.new_message_manager.add(new NewMessage(null) {
 
       @Override
       public Object execute() {
@@ -599,12 +594,12 @@ public class NodeManager extends World {
     node.pos.x += delta_x;
     node.pos.y += delta_y;
 
-    FrEnd.new_message_manager.add(new NewMessage(null) {
+    World.new_message_manager.add(new NewMessage(null) {
 
       @Override
       public Object execute() {
         element.add(node);
-        FrEnd.postCleanup();
+        World.postCleanup();
         return null;
       }
     });
@@ -795,7 +790,7 @@ public class NodeManager extends World {
       if (!temp2_agent.type.pinned) {
         final int counter1 = temp_agent.type.counter;
         final int counter2 = temp2_agent.type.counter;
-        if (FrEnd.pandemic_paradigm_direct_contact) {
+        if (World.pandemic_paradigm_direct_contact) {
           spreadInfectionOneWay(temp2_agent, counter1, counter2);
           spreadInfectionOneWay(temp_agent, counter2, counter1);
         } else {
@@ -832,7 +827,7 @@ public class NodeManager extends World {
     final int number_of_nodes = this.element.size();
     for (int temp = 0; temp < number_of_nodes; temp++) {
       temp_agent = (Node) this.element.get(temp);
-      if (!temp_agent.type.hidden || FrEnd.render_hidden_nodes) {
+      if (!temp_agent.type.hidden || World.render_hidden_nodes) {
         final int temp_detection_distance = Coords.getRadiusInternal(temp_agent.type.radius, temp_agent.pos.z);
         final int temp_x0 = Coords.getXCoordsInternal(temp_agent.pos.x, temp_agent.pos.z) - _x;
         final int temp_x1 = (temp_x0 < 0) ? -temp_x0 : temp_x0;
@@ -969,7 +964,7 @@ public class NodeManager extends World {
       }
     }
 
-    FrEnd.updateGUIToReflectSelectionChange();
+    World.on_selection_change.run();
   }
 
   public void deselectAll(final int colour) {
@@ -983,31 +978,31 @@ public class NodeManager extends World {
         }
       }
     }
-    FrEnd.updateGUIToReflectSelectionChange();
+    World.on_selection_change.run();
   }
 
   public void selectAll() {
     final int number_of_nodes = this.element.size();
     for (int temp = 0; temp < number_of_nodes; temp++) {
       final Node node = (Node) this.element.get(temp);
-      if (!node.type.hidden || FrEnd.render_hidden_nodes) {
+      if (!node.type.hidden || World.render_hidden_nodes) {
         if (!node.type.selected) {
           node.setSelected(true);
         }
       }
     }
-    FrEnd.updateGUIToReflectSelectionChange();
+    World.on_selection_change.run();
   }
 
   public void selectionInvert() {
     final int number_of_nodes = this.element.size();
     for (int temp = 0; temp < number_of_nodes; temp++) {
       final Node node = (Node) this.element.get(temp);
-      if (!node.type.hidden || FrEnd.render_hidden_nodes) {
+      if (!node.type.hidden || World.render_hidden_nodes) {
         node.type.selected = !node.type.selected;
       }
     }
-    FrEnd.updateGUIToReflectSelectionChange();
+    World.on_selection_change.run();
   }
 
   public void selectAll(final int colour) {
@@ -1015,12 +1010,12 @@ public class NodeManager extends World {
     for (int temp = 0; temp < number_of_nodes; temp++) {
       final Node node = (Node) this.element.get(temp);
       if (node.clazz.colour == colour) {
-        if (!node.type.hidden || FrEnd.render_hidden_nodes) {
+        if (!node.type.hidden || World.render_hidden_nodes) {
           node.type.selected = true;
         }
       }
     }
-    FrEnd.updateGUIToReflectSelectionChange();
+    World.on_selection_change.run();
   }
 
   public void deleteSelected() {
@@ -1031,7 +1026,7 @@ public class NodeManager extends World {
         killNumberedAgent(temp2);
       }
     }
-    FrEnd.updateGUIToReflectSelectionChange();
+    World.on_selection_change.run();
   }
 
   public final void setColourOfSelected(final int c) {
@@ -1045,7 +1040,7 @@ public class NodeManager extends World {
       }
     }
     if (clean_up) {
-      FrEnd.postCleanup();
+      World.postCleanup();
     }
   }
 
@@ -1060,7 +1055,7 @@ public class NodeManager extends World {
       }
     }
     if (clean_up) {
-      FrEnd.postCleanup();
+      World.postCleanup();
     }
   }
 

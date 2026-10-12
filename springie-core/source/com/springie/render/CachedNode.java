@@ -1,6 +1,8 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.render;
+import com.springie.geometry.Coords;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.constants.Quality;
@@ -25,7 +27,7 @@ public class CachedNode {
   boolean selected;
 
   public void draw(final Node node) {
-    if (!FrEnd.render_hidden_nodes && node.type.hidden) {
+    if (!World.render_hidden_nodes && node.type.hidden) {
       return;
     }
 
@@ -36,7 +38,7 @@ public class CachedNode {
     final int temp_diameter = this.radius << 1;
     final int thickness = Node.thickness;
 
-    switch (FrEnd.quality) {
+    switch (World.quality) {
       case Quality.SOLID:
         renderSolid(temp_x, temp_y, temp_diameter);
         break;
@@ -99,7 +101,7 @@ public class CachedNode {
 
   // colour set up?
   public void scrub(final Node node) {
-    if (!FrEnd.render_hidden_nodes && node.type.hidden) {
+    if (!World.render_hidden_nodes && node.type.hidden) {
       return;
     }
 
@@ -107,7 +109,7 @@ public class CachedNode {
     final int temp_y = this.pos.y - this.radius;
     final int temp_diameter = this.radius << 1;
 
-    final int temp2 = FrEnd.quality;
+    final int temp2 = World.quality;
 
     RendererDelegator.graphics_handle.setColor(RendererDelegator.color_background);
 
@@ -167,7 +169,7 @@ public class CachedNode {
   }
 
   private void cache(final Node node, final int mask) {
-    if (!FrEnd.render_hidden_nodes && node.type.hidden) {
+    if (!World.render_hidden_nodes && node.type.hidden) {
       return;
     }
 
@@ -225,7 +227,7 @@ public class CachedNode {
   }
 
   private void renderTheChargeSymbol(final Node node) {
-    if (FrEnd.render_charges) {
+    if (World.render_charges) {
       if (node.type.charge > 0) {
         plotPositiveChargeSign();
       } else {
@@ -260,7 +262,7 @@ public class CachedNode {
   }
 
   public void renderNodes(final Node node, final int mask) {
-    if (FrEnd.xor) {
+    if (World.xor) {
       draw(node);
     } else {
       scrub(node);
@@ -284,7 +286,7 @@ public class CachedNode {
       final CachedLink cached_link = renderer_link.array[num_of_link];
       final Node other = link.theOtherEnd(n);
       if (n.pos.z >= other.pos.z) {
-        if (FrEnd.xor) {
+        if (World.xor) {
           cached_link.draw(link);
         } else {
           cached_link.scrub(link);
@@ -309,7 +311,7 @@ public class CachedNode {
         final CachedLink cached_link = renderer_link.array[num_of_link];
         final Node other = link.theOtherEnd(n);
         if (n.pos.z >= other.pos.z) {
-//          if (FrEnd.xor) {
+//          if (World.xor) {
 //            cached_link.draw(link);
 //          } else {
 //            cached_link.scrub(link);
@@ -342,7 +344,7 @@ public class CachedNode {
         }
 
         if (cnt == npolygon) {
-//          if (FrEnd.xor) {
+//          if (World.xor) {
 //            cached_face.draw(polygon);
 //          } else {
 //            cached_face.scrub(polygon);
@@ -375,7 +377,7 @@ public class CachedNode {
       }
 
       if (cnt == npolygon) {
-        if (FrEnd.xor) {
+        if (World.xor) {
           cached_face.draw(polygon);
         } else {
           cached_face.scrub(polygon);

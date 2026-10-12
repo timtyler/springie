@@ -1,6 +1,7 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.render.modules.modern;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.elements.faces.Face;
@@ -10,7 +11,7 @@ import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.gestures.DragBoxManager;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.ModularRendererBase;
 import java.awt.Graphics;
@@ -63,7 +64,7 @@ public class ModularRendererNew implements ModularRendererBase {
     // One global depth sort, then distribute to the tiles in sorted
     // order: every tile's vector arrives at render() pre-sorted, so the
     // per-tile sorts are gone.
-    this.tiles_current.distribute(all, FrEnd.redraw_deepest_first);
+    this.tiles_current.distribute(all, World.redraw_deepest_first);
 
     // do the drawing operations, offscreen if needed...
 
@@ -144,7 +145,7 @@ public class ModularRendererNew implements ModularRendererBase {
 
   private void addFacesToTiles(final NodeManager manager, final int mask,
       ArrayList<PolygonComposite> all) {
-    if (FrEnd.render_faces) {
+    if (World.render_faces) {
       final FaceManager face_manager = manager.getFaceManager();
       final List<Face> faces = face_manager.element;
 
@@ -162,7 +163,7 @@ public class ModularRendererNew implements ModularRendererBase {
 
   private void addLinksToTiles(final NodeManager manager, final int mask,
       ArrayList<PolygonComposite> all) {
-    if (FrEnd.render_links) {
+    if (World.render_links) {
       final LinkManager link_manager = manager.getLinkManager();
       final int number = link_manager.element.size();
 
@@ -196,7 +197,7 @@ public class ModularRendererNew implements ModularRendererBase {
 
     final int number_of_nodes = manager.element.size();
 
-    if (FrEnd.render_nodes) {
+    if (World.render_nodes) {
 
       // fill tiles...
       // ObjectBase sphere_object = new SimpleTetrahedron();

@@ -1,6 +1,7 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.gui.gestures;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
@@ -13,7 +14,7 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.modification.pre.PrepareToModifyFaceTypes;
 import com.springie.modification.pre.PrepareToModifyLinkTypes;
 import com.springie.modification.pre.PrepareToModifyNodeTypes;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ public class DragBoxManager {
           if (y - radius > min.y) {
             if (y + radius < max.y) {
               this.list_of_nodes.add(node);
-              if (!node.type.hidden || FrEnd.render_hidden_nodes) {
+              if (!node.type.hidden || World.render_hidden_nodes) {
                 node.type.selected = true;
               }
             }
@@ -109,7 +110,7 @@ public class DragBoxManager {
     final int number = link_manager.element.size();
     for (int temp = 0; temp < number; temp++) {
       final Link link = link_manager.element.get(temp);
-      if (!link.type.hidden || FrEnd.render_hidden_links) {
+      if (!link.type.hidden || World.render_hidden_links) {
         if (allNodesInArrayAreInVector(link.nodes, list_of_nodes)) {
           link.setSelectedFiltered(true);
         }
@@ -136,7 +137,7 @@ public class DragBoxManager {
     final int number = face_manager.element.size();
     for (int temp = 0; temp < number; temp++) {
       final Face face = face_manager.element.get(temp);
-      if (!face.type.hidden || FrEnd.render_hidden_faces) {
+      if (!face.type.hidden || World.render_hidden_faces) {
         if (faceHasAllNodesInList(face, list_of_nodes)) {
           face.type.selected = true;
         }

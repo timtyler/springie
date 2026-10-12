@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.frames;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.gui.components.GraphicsDirectory;
@@ -128,7 +129,7 @@ public class FrameMain extends Frame {
   //
   //          final String returnedstring = fd.getFile();
   //          if (!returnedstring.equals("")) {
-  //            FrEnd.data_input.addFile(returnedstring);
+  //            World.data_input.addFile(returnedstring);
   //          }
   //        }
 
@@ -157,7 +158,7 @@ public class FrameMain extends Frame {
   //    final FileDialog fd = new FileDialog(this,
   //      "Save .WRL file as:", FileDialog.SAVE);
   //
-  //    String no_ext = getLeaf(FrEnd.last_file_path);
+  //    String no_ext = getLeaf(World.last_file_path);
   //    final int index_of_dot = no_ext.indexOf(".");
   //    if (index_of_dot >= 0) {
   //      no_ext = no_ext.substring(0, index_of_dot);
@@ -181,7 +182,7 @@ public class FrameMain extends Frame {
   //    final FileDialog fd = new FileDialog(this,
   //      "Save .SPR file as:", FileDialog.SAVE);
   //
-  //    final String leaf = getLeaf(FrEnd.last_file_path);
+  //    final String leaf = getLeaf(World.last_file_path);
   //    fd.setFile(leaf);
   //
   //    fd.setFilenameFilter(new FilenameFilter() {
@@ -204,7 +205,7 @@ public class FrameMain extends Frame {
   //    final FileDialog fd = new FileDialog(this,
   //      "Save .OFF file as:", FileDialog.SAVE);
   //
-  //    final String leaf = getLeaf(FrEnd.last_file_path);
+  //    final String leaf = getLeaf(World.last_file_path);
   //    fd.setFile(leaf);
   //
   //    fd.setFilenameFilter(new FilenameFilter() {

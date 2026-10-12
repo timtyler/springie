@@ -4,7 +4,7 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.utilities.random.JUR;
 
 public class DomeMakingUtilities {

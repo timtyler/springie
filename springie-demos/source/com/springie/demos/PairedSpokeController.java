@@ -5,7 +5,7 @@ package com.springie.demos;
 import com.springie.elements.links.Link;
 import com.springie.elements.nodes.Node;
 import com.springie.muscles.Controller;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 
 /**
  * A paired ground-contact push-off reflex for wheel spokes.

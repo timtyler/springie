@@ -2,7 +2,7 @@ package com.springie.elements;
 
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.Range;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 
 public final class DeepObjectColourCalculator {
   public static int factor = 640;

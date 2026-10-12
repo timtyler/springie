@@ -355,7 +355,7 @@ public final class ReaderTens {
                     break;
 
                   case Instructions.DIM:
-                    FrEnd.three_d = temp == 3;
+                    World.three_d = temp == 3;
                     break;
 
                   case Instructions.TMP:
@@ -367,26 +367,26 @@ public final class ReaderTens {
                     break;
 
                   case Instructions.CC:
-                    FrEnd.check_collisions = temp == 1;
+                    World.check_collisions = temp == 1;
                     break;
 
                   case Instructions.CE:
                     // Legacy: the old single checkbox centred all axes.
-                    FrEnd.continuously_centre_x = temp == 1;
-                    FrEnd.continuously_centre_y = temp == 1;
-                    FrEnd.continuously_centre_z = temp == 1;
+                    World.continuously_centre_x = temp == 1;
+                    World.continuously_centre_y = temp == 1;
+                    World.continuously_centre_z = temp == 1;
                     break;
 
                   case Instructions.CX:
-                    FrEnd.continuously_centre_x = temp == 1;
+                    World.continuously_centre_x = temp == 1;
                     break;
 
                   case Instructions.CY:
-                    FrEnd.continuously_centre_y = temp == 1;
+                    World.continuously_centre_y = temp == 1;
                     break;
 
                   case Instructions.CZ:
-                    FrEnd.continuously_centre_z = temp == 1;
+                    World.continuously_centre_z = temp == 1;
                     break;
 
                   case Instructions.SL:
@@ -835,7 +835,7 @@ public final class ReaderTens {
   }
 
   //?
-  private static void setUpUniverseProperties(final NodeManager node_manager) {    FrEnd.three_d = true;
+  private static void setUpUniverseProperties(final NodeManager node_manager) {    World.three_d = true;
     node_manager.electrostatic.charge_active = true;
     World.gravity_active = false;
     World.gravity_strength = 10;

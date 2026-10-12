@@ -3,7 +3,7 @@
 package com.springie.elements.nodegrid;
 
 import com.springie.elements.nodes.Node;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.utilities.random.JUR;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

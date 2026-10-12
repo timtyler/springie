@@ -2,7 +2,6 @@
 
 package com.springie.elements.links;
 
-import com.springie.FrEnd;
 import com.springie.elements.base.BaseElement;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.nodes.Node;
@@ -11,7 +10,7 @@ import com.springie.geometry.Point3D;
 import com.springie.gui.panels.controls.PanelControlsSelectLinks;
 import com.springie.muscles.Controller;
 import com.springie.muscles.Muscles;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.utilities.math.SquareRoot;
 import com.springie.utilities.random.JUR;
 import com.springie.world.World;
@@ -547,8 +546,8 @@ public class Link extends BaseElement {
     int d_dx = (this.nodes[1].velocity.x - this.nodes[0].velocity.x) / temp2;
     int d_dy = (this.nodes[1].velocity.y - this.nodes[0].velocity.y) / temp2;
 
-    if (FrEnd.explosions) {
-      if (!FrEnd.xor) {
+    if (World.explosions) {
+      if (!World.xor) {
         for (int temp = 0; temp < temp2; temp++) {
           int temp3 = rnd.nextInt();
           final int temp4 = (temp3 << 8) >> 23;

@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
@@ -17,7 +18,7 @@ import com.springie.messages.NewMessageManager;
 import com.springie.messages.commands.DeleteSelectedMessage;
 import com.springie.messages.commands.SelectClazzMessage;
 import com.springie.presets.AddXMLModelIndexLeaves;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.utilities.FilePath;
 import java.awt.BorderLayout;
@@ -184,7 +185,7 @@ public class PanelFundamental {
     final Panel panel = new Panel();
     panel.setLayout(new WrapLayout());
 
-    this.label_file_name = new Label(leafOf(FrEnd.last_file_path));
+    this.label_file_name = new Label(leafOf(World.last_file_path));
     panel.add(this.label_file_name);
 
     final Button button_load = new Button("Load");
@@ -217,7 +218,7 @@ public class PanelFundamental {
 
   /** Shows the leaf of the file named by the load menu / save dialog. */
   void reflectFileName() {
-    this.label_file_name.setText(leafOf(FrEnd.last_file_path));
+    this.label_file_name.setText(leafOf(World.last_file_path));
   }
 
   /** The Load button: the same file dialog as the Load menu. */
@@ -241,7 +242,7 @@ public class PanelFundamental {
    * dialog like the menu's "Save .SPR file as...".
    */
   void chooseSaveFile() {
-    final String current = FrEnd.last_file_path;
+    final String current = World.last_file_path;
     if (isLocalFile(current)) {
       writeSprFile(stripFilePrefix(current));
       return;
@@ -423,8 +424,8 @@ public class PanelFundamental {
       public void actionPerformed(final ActionEvent e) {
         getNewMessageManager().add(new NewMessage(null) {
           public Object execute() {
-            // FrEnd.new_message_manager.add(getRestartMessage());
-            FrEnd.paused = false;
+            // World.new_message_manager.add(getRestartMessage());
+            World.paused = false;
 
             try {
               FrEnd.stepping = Integer.parseInt(FrEnd.textfield_step_size
@@ -622,6 +623,7 @@ public class PanelFundamental {
         final String path = (String) FrEnd.choose_initial.hashtable.get(string);
         if (path != null) {
           FrEnd.next_file_path = path;
+          World.default_creature_location = path;
           // A model file is current again: stand the demos dropdown back
           // down to its placeholder, so the launch button rebuilds the
           // file rather than the last demo.

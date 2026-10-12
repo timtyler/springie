@@ -1,6 +1,7 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.render.modules.raytraced;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.elements.faces.Face;
@@ -9,7 +10,7 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,7 @@ final class RayScene {
 
   private static void addNodes(final NodeManager manager,
       List<Primitive> primitives) {
-    if (!FrEnd.render_nodes) {
+    if (!World.render_nodes) {
       return;
     }
     final List<?> elements = manager.element;
@@ -76,7 +77,7 @@ final class RayScene {
    */
   static RTRing[] selectionRings(final NodeManager manager, final double ex, final double ey,
       double ez) {
-    if (!FrEnd.render_nodes) {
+    if (!World.render_nodes) {
       return new RTRing[0];
     }
     final List<RTRing> rings = new ArrayList<RTRing>();
@@ -117,7 +118,7 @@ final class RayScene {
 
   private static void addLinks(final NodeManager manager,
       List<Primitive> primitives) {
-    if (!FrEnd.render_links) {
+    if (!World.render_links) {
       return;
     }
     final LinkManager link_manager = manager.getLinkManager();
@@ -152,7 +153,7 @@ final class RayScene {
 
   private static void addFaces(final NodeManager manager,
       List<Primitive> primitives) {
-    if (!FrEnd.render_faces) {
+    if (!World.render_faces) {
       return;
     }
     final FaceManager face_manager = manager.getFaceManager();

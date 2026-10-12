@@ -7,7 +7,6 @@
 
 package com.springie.world;
 
-import com.springie.FrEnd;
 import com.springie.elements.CompassPoint;
 import com.springie.elements.electrostatics.ElectrostaticRepulsion;
 import com.springie.elements.nodes.Node;
@@ -53,11 +52,11 @@ public final class UniverseState {
     state.viscocity = Node.viscocity;
     state.max_speed = Node.max_speed;
 
-    state.three_d = FrEnd.three_d;
-    state.check_collisions = FrEnd.check_collisions;
-    state.continuously_centre_x = FrEnd.continuously_centre_x;
-    state.continuously_centre_y = FrEnd.continuously_centre_y;
-    state.continuously_centre_z = FrEnd.continuously_centre_z;
+    state.three_d = World.three_d;
+    state.check_collisions = World.check_collisions;
+    state.continuously_centre_x = World.continuously_centre_x;
+    state.continuously_centre_y = World.continuously_centre_y;
+    state.continuously_centre_z = World.continuously_centre_z;
 
     final ElectrostaticRepulsion electrostatic = manager != null
         ? manager.electrostatic : null;
@@ -82,11 +81,11 @@ public final class UniverseState {
     Node.viscocity = this.viscocity;
     Node.max_speed = this.max_speed;
 
-    FrEnd.three_d = this.three_d;
-    FrEnd.check_collisions = this.check_collisions;
-    FrEnd.continuously_centre_x = this.continuously_centre_x;
-    FrEnd.continuously_centre_y = this.continuously_centre_y;
-    FrEnd.continuously_centre_z = this.continuously_centre_z;
+    World.three_d = this.three_d;
+    World.check_collisions = this.check_collisions;
+    World.continuously_centre_x = this.continuously_centre_x;
+    World.continuously_centre_y = this.continuously_centre_y;
+    World.continuously_centre_z = this.continuously_centre_z;
 
     if (manager != null) {
       manager.electrostatic.charge_active = this.charge_active;

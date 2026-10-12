@@ -47,16 +47,16 @@ public class Light {
     // Initialize derived coords (Tim, 2026-10-06): 0-100% (50=center),
     // using the Coords.getXCoords convention (px = HW*S - scx at center,
     // range HW*PF for exact screen mapping).
-    final double scale = (double) (1 << com.springie.render.Coords.shift);
+    final double scale = (double) (1 << com.springie.geometry.Coords.shift);
     final double half_w = 400.0 * scale;
     final double half_h = 300.0 * scale;
     this.pz = (50.0 - 2.0 * z_pct) * scale;
-    final double pf = (double) (com.springie.render.Coords.shift_constant_z
-        + ((int) this.pz >> com.springie.render.Coords.shift_z));
+    final double pf = (double) (com.springie.geometry.Coords.shift_constant_z
+        + ((int) this.pz >> com.springie.geometry.Coords.shift_z));
     this.px = (x_pct - 50.0) / 50.0 * half_w * (pf / scale)
-        + (half_w - com.springie.render.Coords.shift_constant_x);
+        + (half_w - com.springie.geometry.Coords.shift_constant_x);
     this.py = (y_pct - 50.0) / 50.0 * half_h * (pf / scale)
-        + (half_h - com.springie.render.Coords.shift_constant_y);
+        + (half_h - com.springie.geometry.Coords.shift_constant_y);
   }
 
   /** Copy constructor. */

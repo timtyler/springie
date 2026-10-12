@@ -1,5 +1,6 @@
 // This code has been placed into the public domain by its author.
 package com.springie.demos;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
@@ -41,9 +42,9 @@ class SpiderTankLiveUiTest {
   @Test
   void spiderSurvivesTenSecondsLiveInUi() throws Exception {
     GuiTestSupport.bootApp();
-    final boolean old_paused = FrEnd.paused;
+    final boolean old_paused = World.paused;
     try {
-      FrEnd.new_message_manager.add(new SpiderTankDemoMessage());
+      World.new_message_manager.add(new SpiderTankDemoMessage());
       // Wait for the demo to load (16 nodes: plate+ridge+turret+legs),
       // then for the link build to settle (links land after nodes).
       NodeManager node_manager = null;
@@ -70,7 +71,7 @@ class SpiderTankLiveUiTest {
       }
       final LinkManager link_manager = node_manager.getLinkManager();
       // Let the live animation thread run it at full speed.
-      FrEnd.paused = false;
+      World.paused = false;
       double worst_speed = 0;
       double worst_strain = 0;
       final NodeManager nm = node_manager;
@@ -114,13 +115,13 @@ class SpiderTankLiveUiTest {
           break;
         }
       }
-      FrEnd.paused = true;
+      World.paused = true;
       assertTrue(worst_speed < 50,
           "Spider disintegrated live in the UI: worst speed " + worst_speed + "px/tick");
       assertTrue(worst_strain < 0.3,
           "Spider over-strained live in the UI: worst strain " + worst_strain);
     } finally {
-      FrEnd.paused = old_paused;
+      World.paused = old_paused;
     }
   }
 }

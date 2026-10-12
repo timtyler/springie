@@ -1,11 +1,11 @@
 // This program has been placed into the public domain by its author.
 package com.springie.elements.nodes;
+import com.springie.world.World;
 
-import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import java.awt.GraphicsEnvironment;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,15 +32,15 @@ class NodeManagerCenteringDragTest {
   @BeforeEach
   void setUp() {
     assumeTrue(!GraphicsEnvironment.isHeadless(), "needs a display");
-    this.saved_x = FrEnd.continuously_centre_x;
-    this.saved_y = FrEnd.continuously_centre_y;
-    this.saved_z = FrEnd.continuously_centre_z;
-    this.saved_dragging = FrEnd.currently_dragging;
-    this.saved_collisions = FrEnd.check_collisions;
-    this.saved_paused = FrEnd.paused;
-    FrEnd.continuously_centre_x = true;
-    FrEnd.continuously_centre_y = false;
-    FrEnd.continuously_centre_z = false;
+    this.saved_x = World.continuously_centre_x;
+    this.saved_y = World.continuously_centre_y;
+    this.saved_z = World.continuously_centre_z;
+    this.saved_dragging = World.currently_dragging;
+    this.saved_collisions = World.check_collisions;
+    this.saved_paused = World.paused;
+    World.continuously_centre_x = true;
+    World.continuously_centre_y = false;
+    World.continuously_centre_z = false;
 
     this.manager = new NodeManager();
     // Off-centre on x.
@@ -52,17 +52,17 @@ class NodeManagerCenteringDragTest {
 
   @AfterEach
   void tearDown() {
-    FrEnd.continuously_centre_x = this.saved_x;
-    FrEnd.continuously_centre_y = this.saved_y;
-    FrEnd.continuously_centre_z = this.saved_z;
-    FrEnd.currently_dragging = this.saved_dragging;
-    FrEnd.check_collisions = this.saved_collisions;
-    FrEnd.paused = this.saved_paused;
+    World.continuously_centre_x = this.saved_x;
+    World.continuously_centre_y = this.saved_y;
+    World.continuously_centre_z = this.saved_z;
+    World.currently_dragging = this.saved_dragging;
+    World.check_collisions = this.saved_collisions;
+    World.paused = this.saved_paused;
   }
 
   @Test
   void draggingSuspendsCentering() {
-    FrEnd.currently_dragging = true;
+    World.currently_dragging = true;
 
     this.manager.agentExpansion();
 
@@ -72,7 +72,7 @@ class NodeManagerCenteringDragTest {
 
   @Test
   void releaseResumesCentering() {
-    FrEnd.currently_dragging = false;
+    World.currently_dragging = false;
 
     this.manager.agentExpansion();
 
@@ -90,9 +90,9 @@ class NodeManagerCenteringDragTest {
    */
   @Test
   void centeringRunsWhenCollisionsAreOff() {
-    FrEnd.currently_dragging = false;
-    FrEnd.check_collisions = false;
-    FrEnd.paused = false;
+    World.currently_dragging = false;
+    World.check_collisions = false;
+    World.paused = false;
     node(0).velocity = new Vector3D(0, 0, 0);
     node(1).velocity = new Vector3D(0, 0, 0);
     final NodeManager saved_manager = ContextManager.getNodeManager();

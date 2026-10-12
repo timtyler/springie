@@ -35,7 +35,7 @@ class CubeTensegrityTest {
    */
   @BeforeEach
   void setUp() {
-    old_paused = FrEnd.paused;
+    old_paused = World.paused;
     old_merge = FrEnd.merge;
     FrEnd.merge = false;
     resetWorldRandom();
@@ -43,7 +43,7 @@ class CubeTensegrityTest {
 
   @AfterEach
   void tearDown() {
-    FrEnd.paused = old_paused;
+    World.paused = old_paused;
     FrEnd.merge = old_merge;
     // Leave the RNG pristine so later tests see a fresh-JVM sequence.
     resetWorldRandom();
@@ -79,9 +79,9 @@ class CubeTensegrityTest {
     // Coords.x/y/z_pixels, and earlier GUI tests (e.g. BottomBarWrapTest)
     // leave those at whatever narrow width they last resized to, which
     // changes the integer scale factor and hence the link elasticities.
-    com.springie.render.Coords.x_pixels = 800;
-    com.springie.render.Coords.y_pixels = 600;
-    com.springie.render.Coords.z_pixels = 1024;
+    com.springie.geometry.Coords.x_pixels = 800;
+    com.springie.geometry.Coords.y_pixels = 600;
+    com.springie.geometry.Coords.z_pixels = 1024;
     new DataInput(manager).loadFile("resource://models/cube.spr");
 
     // Belt-and-braces: explicitly establish the universe state the
@@ -95,16 +95,16 @@ class CubeTensegrityTest {
     World.minimum_magnitude = 0;
     Node.max_speed = Integer.MAX_VALUE;
     Node.viscocity = 0;
-    FrEnd.three_d = true;
-    FrEnd.check_collisions = true;
-    FrEnd.continuously_centre_x = false;
-    com.springie.FrEnd.continuously_centre_y = false;
-    com.springie.FrEnd.continuously_centre_z = false;
-    FrEnd.boundaries = true;
-    FrEnd.explosions = true;
-    FrEnd.oscd = true;
-    FrEnd.dragged_element = null;
-    FrEnd.forces_disabled_during_gesture = false;
+    World.three_d = true;
+    World.check_collisions = true;
+    World.continuously_centre_x = false;
+    com.springie.world.World.continuously_centre_y = false;
+    com.springie.world.World.continuously_centre_z = false;
+    World.boundaries = true;
+    World.explosions = true;
+    World.oscd = true;
+    World.dragged_element = null;
+    World.forces_disabled_during_gesture = false;
     com.springie.muscles.Muscles.enabled = false;
     manager.electrostatic.charge_active = false; // as specified by cube.spr
 
@@ -143,7 +143,7 @@ class CubeTensegrityTest {
       initial[i] = linkLength((Link) links.element.get(i));
     }
 
-    FrEnd.paused = false;
+    World.paused = false;
     for (int step = 0; step < 4000; step++) {
       manager.nodeAndLinkUpdate();
     }

@@ -1,6 +1,8 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.render;
+import com.springie.geometry.Coords;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.elements.DeepObjectColourCalculator;
@@ -23,7 +25,7 @@ public class CachedFace {
   boolean selected;
 
   public void draw(final Face face) {
-    if (!face.type.hidden || FrEnd.render_hidden_faces) {
+    if (!face.type.hidden || World.render_hidden_faces) {
       //final Node n1 = (Node) face.node.get(0);
 
       RendererDelegator.setColour(this.colour);
@@ -38,7 +40,7 @@ public class CachedFace {
   }
 
   public void scrub(final Face face) {
-    if (!FrEnd.render_hidden_links && face.type.hidden) {
+    if (!World.render_hidden_links && face.type.hidden) {
       return;
     }
 

@@ -1,6 +1,7 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.render.modules.raytraced;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.elements.clazz.Clazz;
@@ -11,7 +12,7 @@ import com.springie.elements.links.LinkTypeFactory;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.geometry.Point3D;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.render.scene.ModelScene;
 import com.springie.render.scene.SceneExtractor;
@@ -108,9 +109,9 @@ public class SceneExtractorAgreementTest {
   @Test
   public void extractorAgreesWithRayScene() {
     assumeTrue(!GraphicsEnvironment.isHeadless(), "needs a display");
-    FrEnd.render_nodes = true;
-    FrEnd.render_links = true;
-    FrEnd.render_faces = true;
+    World.render_nodes = true;
+    World.render_links = true;
+    World.render_faces = true;
 
     final NodeManager manager = buildModel();
     final Primitive[] primitives = RayScene.build(manager);

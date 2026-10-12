@@ -8,7 +8,7 @@ import com.springie.elements.nodes.NodeType;
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
 import com.springie.gui.panels.preferences.PanelPreferencesImport;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 
 public final class ScaleToFitScreen {
   private ScaleToFitScreen() {

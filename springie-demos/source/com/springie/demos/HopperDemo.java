@@ -14,7 +14,7 @@ import com.springie.elements.nodes.NodeType;
 import com.springie.geometry.Point3D;
 import com.springie.muscles.Controller;
 import com.springie.muscles.Muscles;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.world.Grounding;
 import com.springie.world.World;
 
@@ -145,7 +145,7 @@ public final class HopperDemo {
    * ground. Returns the crown marker node.
    */
   public static Node buildAt(final int x_px) {
-    FrEnd.check_collisions = false;
+    World.check_collisions = false;
     final NodeManager node_manager = ContextManager.getNodeManager();
     node_manager.initial_reset();
     final LinkManager link_manager = node_manager.getLinkManager();

@@ -1,13 +1,14 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.render.modules.modern;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -146,7 +147,7 @@ public final class ElementRendererNode {
       composite = addSelection(node, composite);
     }
 
-    if (FrEnd.render_charges) {
+    if (World.render_charges) {
       if (node.type.charge > 0) {
         composite = addPositiveCharge(node, composite);
       } else if (node.type.charge < 0) {

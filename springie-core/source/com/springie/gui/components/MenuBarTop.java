@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.components;
+import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
@@ -138,6 +139,8 @@ public class MenuBarTop extends MenuBar {
       item.addItemListener(new java.awt.event.ItemListener() {
         public void itemStateChanged(final java.awt.event.ItemEvent e) {
           ModelManager.switchTo(index);
+          FrEnd.setFilePath(ModelManager.activeFilePath());
+          FrEnd.reflectAllValuesInGUIAfterSeriousEditing();
         }
       });
       menu.add(item);
@@ -149,6 +152,8 @@ public class MenuBarTop extends MenuBar {
     close.addActionListener(new ActionListener() {
       public void actionPerformed(final ActionEvent e) {
         ModelManager.closeActiveSlot();
+        FrEnd.setFilePath(ModelManager.activeFilePath());
+        FrEnd.reflectAllValuesInGUIAfterSeriousEditing();
       }
     });
     menu.add(close);
@@ -182,7 +187,7 @@ public class MenuBarTop extends MenuBar {
               // preset that was just chosen here.
               FrEnd.panel_fundamental.selectPreset(index_name, leaf_name);
               FrEnd.next_file_path = path;
-              FrEnd.new_message_manager
+              World.new_message_manager
                   .add(FrEnd.system_messages.getRestartMessage());
             }
           });
@@ -213,7 +218,7 @@ public class MenuBarTop extends MenuBar {
           // Demos are built in code, not loaded from a file, so show the
           // demo's name in the window title the way file loads do.
           FrEnd.setFilePath(demo.name);
-          FrEnd.new_message_manager.add(demo.newMessage());
+          World.new_message_manager.add(demo.newMessage());
         }
       });
       demos.add(item);
@@ -250,7 +255,7 @@ public class MenuBarTop extends MenuBar {
     export.add(MenuBarTop.SAVE_AS_WRL);
     export.add(MenuBarTop.SAVE_AS_EIG);
     export.add(MenuBarTop.SAVE_AS_OFF);
-    if (FrEnd.development_version) {
+    if (World.development_version) {
       export.add(MenuBarTop.SAVE_AS_FDL);
     }
 
@@ -329,7 +334,7 @@ public class MenuBarTop extends MenuBar {
     final FileDialog fd = new FileDialog(this.frame,
       "Save .WRL file as:", FileDialog.SAVE);
 
-    final String no_ext = getLeaf(FrEnd.last_file_path);
+    final String no_ext = getLeaf(World.last_file_path);
     fd.setFile(ensureExtension(no_ext, "wrl"));
 
     fd.setFilenameFilter(new FilenameFilter() {
@@ -349,7 +354,7 @@ public class MenuBarTop extends MenuBar {
     final FileDialog fd = new FileDialog(this.frame,
       "Save .SPR file as:", FileDialog.SAVE);
 
-    final String leaf = getLeaf(FrEnd.last_file_path);
+    final String leaf = getLeaf(World.last_file_path);
     fd.setFile(ensureExtension(leaf, "spr"));
 
     fd.setFilenameFilter(new FilenameFilter() {
@@ -372,7 +377,7 @@ public class MenuBarTop extends MenuBar {
     final FileDialog fd = new FileDialog(this.frame,
       "Save .FDL file as:", FileDialog.SAVE);
 
-    final String leaf = getLeaf(FrEnd.last_file_path);
+    final String leaf = getLeaf(World.last_file_path);
     fd.setFile(ensureExtension(leaf, "fdl"));
 
     fd.setFilenameFilter(new FilenameFilter() {
@@ -395,7 +400,7 @@ public class MenuBarTop extends MenuBar {
     final FileDialog fd = new FileDialog(this.frame,
       "Save .OFF file as:", FileDialog.SAVE);
 
-    final String leaf = getLeaf(FrEnd.last_file_path);
+    final String leaf = getLeaf(World.last_file_path);
     fd.setFile(ensureExtension(leaf, "off"));
 
     fd.setFilenameFilter(new FilenameFilter() {
@@ -418,7 +423,7 @@ public class MenuBarTop extends MenuBar {
     final FileDialog fd = new FileDialog(this.frame,
       "Save .EIG file as:", FileDialog.SAVE);
 
-    final String leaf = getLeaf(FrEnd.last_file_path);
+    final String leaf = getLeaf(World.last_file_path);
     fd.setFile(ensureExtension(leaf, "eig"));
 
     fd.setFilenameFilter(new FilenameFilter() {
@@ -441,7 +446,7 @@ public class MenuBarTop extends MenuBar {
     final FileDialog fd = new FileDialog(this.frame,
       "Save .POV file as:", FileDialog.SAVE);
 
-    final String leaf = getLeaf(FrEnd.last_file_path);
+    final String leaf = getLeaf(World.last_file_path);
     fd.setFile(ensureExtension(leaf, "pov"));
 
     fd.setFilenameFilter(new FilenameFilter() {

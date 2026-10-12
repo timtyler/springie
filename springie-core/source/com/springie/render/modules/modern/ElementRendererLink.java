@@ -10,7 +10,7 @@ import com.springie.geometry.Vector3D;
 import com.springie.gui.panels.controls.PanelControlsStatistics;
 import com.springie.gui.panels.preferences.PanelPreferencesRendererModern;
 import com.springie.io.out.WriteFloatingPoint;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import java.util.ArrayList;
 import java.util.WeakHashMap;

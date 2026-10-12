@@ -51,11 +51,11 @@ class UniverseResetTest {
         World.gravity_active = true;
         World.global_temperature = 500;
         Node.viscocity = 42;
-        FrEnd.three_d = false;
-        FrEnd.check_collisions = false;
-        FrEnd.continuously_centre_x = true;
-        FrEnd.continuously_centre_y = true;
-        FrEnd.show_world_markers = false;
+        World.three_d = false;
+        World.check_collisions = false;
+        World.continuously_centre_x = true;
+        World.continuously_centre_y = true;
+        World.show_world_markers = false;
         // Phase on oscillator 0, then switch to an uninitialized slot: the
         // reset must bring the index back to 0 (and the phase to 0).
         Muscles.activeOscillator().setPhase(7);
@@ -69,12 +69,12 @@ class UniverseResetTest {
         assertFalse(World.gravity_active);
         assertEquals(6, World.global_temperature);
         assertEquals(0, Node.viscocity);
-        assertTrue(FrEnd.three_d);
-        assertTrue(FrEnd.check_collisions);
-        assertFalse(FrEnd.continuously_centre_x);
-        assertFalse(FrEnd.continuously_centre_y);
-        assertFalse(FrEnd.continuously_centre_z);
-        assertTrue(FrEnd.show_world_markers);
+        assertTrue(World.three_d);
+        assertTrue(World.check_collisions);
+        assertFalse(World.continuously_centre_x);
+        assertFalse(World.continuously_centre_y);
+        assertFalse(World.continuously_centre_z);
+        assertTrue(World.show_world_markers);
         assertEquals(0, Muscles.active_oscillator);
         assertEquals(0, Muscles.activeOscillator().getPhase());
         assertTrue(
@@ -123,7 +123,7 @@ class UniverseResetTest {
         CaterpillarDemo.buildAt(100);
         // The demo leaves the markers at their ambient value; pin it so
         // the snapshot (and the assertion below) is deterministic.
-        FrEnd.show_world_markers = true;
+        World.show_world_markers = true;
         UniverseDefaults.snapshot();
 
         // Scramble everything the reset covers.
@@ -133,8 +133,8 @@ class UniverseResetTest {
         World.bounding_box_bounciness = 0;
         World.global_temperature = 500;
         Node.viscocity = 42;
-        FrEnd.check_collisions = true;
-        FrEnd.show_world_markers = false;
+        World.check_collisions = true;
+        World.show_world_markers = false;
         ContextManager.getNodeManager().electrostatic.charge_active = true;
         Muscles.enabled = false;
 
@@ -149,9 +149,9 @@ class UniverseResetTest {
         assertEquals(0, World.bounding_box_bounciness);
         assertEquals(0, World.global_temperature);
         assertEquals(2, Node.viscocity);
-        assertFalse(FrEnd.check_collisions);
+        assertFalse(World.check_collisions);
         // Caterpillar leaves the markers on (its snapshot value).
-        assertTrue(FrEnd.show_world_markers);
+        assertTrue(World.show_world_markers);
         assertFalse(
             ContextManager.getNodeManager().electrostatic.charge_active);
         assertTrue(Muscles.enabled);
@@ -187,9 +187,9 @@ class UniverseResetTest {
         final PanelControlsUniverse panel = FrEnd.panel_universe;
 
         // What loading Moscow does: the file disagrees with the UI.
-        FrEnd.check_collisions = false;
-        FrEnd.continuously_centre_x = true;
-        FrEnd.continuously_centre_y = true;
+        World.check_collisions = false;
+        World.continuously_centre_x = true;
+        World.continuously_centre_y = true;
         ContextManager.getNodeManager().electrostatic.charge_active = false;
 
         panel.reflectUniverseToggles();
@@ -206,16 +206,16 @@ class UniverseResetTest {
             "charge switch");
 
         // The statics themselves are untouched: reflecting never toggles.
-        assertFalse(FrEnd.check_collisions);
-        assertTrue(FrEnd.continuously_centre_x);
-        assertTrue(FrEnd.continuously_centre_y);
-        assertFalse(FrEnd.continuously_centre_z);
+        assertFalse(World.check_collisions);
+        assertTrue(World.continuously_centre_x);
+        assertTrue(World.continuously_centre_y);
+        assertFalse(World.continuously_centre_z);
         assertFalse(ContextManager.getNodeManager().electrostatic.charge_active);
       });
     } finally {
-      FrEnd.check_collisions = true;
-      FrEnd.continuously_centre_x = false;
-      com.springie.FrEnd.continuously_centre_y = false;
+      World.check_collisions = true;
+      World.continuously_centre_x = false;
+      com.springie.world.World.continuously_centre_y = false;
       ContextManager.getNodeManager().electrostatic.charge_active = true;
     }
   }

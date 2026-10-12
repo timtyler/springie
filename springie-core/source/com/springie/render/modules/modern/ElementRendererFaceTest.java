@@ -7,7 +7,7 @@ import com.springie.elements.faces.FaceType;
 import com.springie.elements.faces.FaceTypeFactory;
 import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import java.util.ArrayList;
 import java.util.HashSet;

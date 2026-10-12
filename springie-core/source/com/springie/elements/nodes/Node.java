@@ -2,7 +2,6 @@
 
 package com.springie.elements.nodes;
 
-import com.springie.FrEnd;
 import com.springie.elements.CompassPoint;
 import com.springie.elements.base.BaseElement;
 import com.springie.elements.clazz.ClazzFactory;
@@ -13,7 +12,7 @@ import com.springie.explosions.particles.Particle;
 import com.springie.explosions.particles.ParticleManager;
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
-import com.springie.render.Coords;
+import com.springie.geometry.Coords;
 import com.springie.world.World;
 
 /**
@@ -136,7 +135,7 @@ public class Node extends BaseElement {
   public void travel() {
     capVelocities();
 
-    final boolean motionless = this.type.pinned || FrEnd.dragged_element != null && this.type.selected;
+    final boolean motionless = this.type.pinned || World.dragged_element != null && this.type.selected;
     
     if (motionless) {
       this.velocity = new Vector3D(0, 0, 0);
@@ -148,7 +147,7 @@ public class Node extends BaseElement {
 
     boundaryCheck();
 
-    if (!FrEnd.three_d) {
+    if (!World.three_d) {
       this.pos.z = Coords.getInternalFromPixelCoords(DEFAULT_2D_DEPTH);
     }
   }
@@ -157,8 +156,8 @@ public class Node extends BaseElement {
    * Generates a pretty explosion...
    */
   void explode() {
-    if (FrEnd.explosions) {
-      if (!FrEnd.xor) {
+    if (World.explosions) {
+      if (!World.xor) {
         final int _x = Coords.getXCoordsInternal(this.pos.x, this.pos.z);
         final int _y = Coords.getYCoordsInternal(this.pos.y, this.pos.z);
 
@@ -230,7 +229,7 @@ public class Node extends BaseElement {
   }
 
   void capVelocities() {
-    if (FrEnd.boundaries) {
+    if (World.boundaries) {
       boundaryCheck();
     }
   }
@@ -243,10 +242,10 @@ public class Node extends BaseElement {
     // The depth glass stays: the demos are tuned against it, and the
     // renderer cannot see past the eye plane. The ground always
     // stays: runners need something to run on.
-    final boolean olympic = FrEnd.demo_model
-        && (FrEnd.continuously_centre_x || FrEnd.continuously_centre_y
-            || FrEnd.continuously_centre_z);
-    if (!(olympic && FrEnd.continuously_centre_x)) {
+    final boolean olympic = World.demo_model
+        && (World.continuously_centre_x || World.continuously_centre_y
+            || World.continuously_centre_z);
+    if (!(olympic && World.continuously_centre_x)) {
       if ((this.pos.x + radius) > (Coords.x_pixels << Coords.shift)) {
         this.pos.x = (Coords.x_pixels << Coords.shift) - radius;
         if (this.velocity.x > 0) {
@@ -340,7 +339,7 @@ public class Node extends BaseElement {
   }
 
   public final void findNewBin(final GridOfBinsForCachedNodes bg) {
-    if (!FrEnd.oscd) {
+    if (!World.oscd) {
       final int new_bin_x = this.pos.x >>> bg.log2binsize;
       final int new_bin_y = this.pos.y >>> bg.log2binsize;
       final int new_bin_z = this.pos.z >>> bg.log2binsize;
@@ -360,7 +359,7 @@ public class Node extends BaseElement {
   }
 
   final void removeFromBin(final GridOfBinsForCachedNodes bg) {
-    if (!FrEnd.oscd) { //!?
+    if (!World.oscd) { //!?
       bg.removeFromList(this.current_bin.x,
         this.current_bin.y, this.current_bin.z, this);
     }
