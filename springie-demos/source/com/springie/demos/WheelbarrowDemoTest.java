@@ -153,20 +153,21 @@ class WheelbarrowDemoTest {
   }
 
   @Test
-  void buildsSixteenNodesFortyEightLinks() {
+  void buildsTwentyTwoNodesFiftySixLinks() {
     final Node hub0 = WheelbarrowDemo.buildAt(120);
     assertNotNull(hub0);
 
     final NodeManager nm = ContextManager.getNodeManager();
-    // 6 nodes per rim x 2 rims + 2 hubs + 2 handle nodes = 16.
-    // (Tim, 2026-10-01: hexagonal prism, axle, N/S, handle -- nothing else.)
-    assertEquals(16, nm.element.size());
+    // 6 nodes per rim x 2 rims + 2 hubs + 2 handle nodes + 2 feet x 3 = 22.
+    // (Tim, 2026-10-01: hexagonal prism, axle, N/S, handle -- nothing else;
+    // Tim, 2026-10-10: triangular foot on each handle end.)
+    assertEquals(22, nm.element.size());
 
     final LinkManager lm = nm.getLinkManager();
     // 6 segments x 5 (rim0, rim1, cross, 2 mirror diagonals) = 30 rim
     // links + 1 rigid axle + 12 passive spokes + 2 handle shafts
-    // + 1 handle cross-brace + 2 X-brace cables = 48.
-    assertEquals(48, lm.element.size());
+    // + 1 handle cross-brace + 2 X-brace cables + 2 feet x 4 = 56.
+    assertEquals(56, lm.element.size());
   }
 
   @Test
@@ -207,8 +208,12 @@ class WheelbarrowDemoTest {
     final LinkManager lm =
         ContextManager.getNodeManager().getLinkManager();
 
-    // The last 3 links are the handle: 2 shafts + 1 cross-brace.
-    // (Tim, 2026-10-01: handle links render pastel yellow.)
+    // The handle-marked links: 2 handle shafts + 1 cross-brace
+    // + 2 X-brace cables + 2 feet x 4 cables. The trailing foot cables
+    // are marked handle so they render in the handle color
+    // (Tim, 2026-10-01: handle links render pastel yellow;
+    // Tim, 2026-10-10: trailing cables carried the handle marking
+    // over from the tassel version).
     int handle_count = 0;
     for (int i = 0; i < lm.element.size(); i++) {
       final Link link = (Link) lm.element.get(i);
@@ -216,7 +221,7 @@ class WheelbarrowDemoTest {
         handle_count++;
       }
     }
-    assertEquals(5, handle_count, "must have 5 handle links");
+    assertEquals(13, handle_count, "must have 13 handle links");
   }
 
   @Test
