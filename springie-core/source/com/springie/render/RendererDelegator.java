@@ -32,6 +32,9 @@ public final class RendererDelegator {
 
   public static ModularRendererBase renderer = new ModularRendererNew();
 
+  /** The GUI selection drag-box painter (was RendererArrays.renderer_drag_box). */
+  public static final RendererDragBox drag_box = new RendererDragBox();
+
   public static int virgin_paint;
 
   static int direction = 1;
@@ -371,7 +374,7 @@ public final class RendererDelegator {
       // drawn -- never erased -- so there is nothing to repair.) The ray
       // tracer includes the damaged region in its dirty rectangles; the
       // old polygon renderer gets a full clear-and-redraw (see below).
-      final RendererDragBox drag_box_renderer = ContextManager.getNodeManager().renderer.renderer_drag_box;
+      final RendererDragBox drag_box_renderer = RendererDelegator.drag_box;
       drag_box_renderer.draw(graphics, FrEnd.perform_actions.drag_box_manager);
     }
 

@@ -1,5 +1,5 @@
 // This code has been placed into the public domain by its author
-package com.springie.render;
+package com.springie.scene;
 
 public class ArrayOfNodesToRender {
   public CachedNode[] array;

@@ -18,8 +18,7 @@ import com.springie.elements.nodes.NodeTypeFactory;
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
 import com.springie.geometry.Coords;
-import com.springie.render.RendererArrays;
-import com.springie.render.RendererDelegator;
+import com.springie.scene.RendererArrays;
 import com.springie.utilities.math.SquareRoot;
 import com.springie.utilities.random.Hortensius32Fast;
 import org.slf4j.Logger;
@@ -120,6 +119,9 @@ public class World extends BaseElementManager<Node> {
   public static boolean renderer_needs_depth_sort = true;
   /** Set by the model when all objects need repainting; the renderer clears it. */
   public static boolean repaint_requested;
+
+  /** Set by the engine to ask for a repaint without a full clear. */
+  public static boolean repaint_some_requested;
   // Render quality flags (moved from FrEnd).
   public static int quality;
   public static boolean render_charges = true;
@@ -389,7 +391,6 @@ public class World extends BaseElementManager<Node> {
   }
 
   public void killNumberedAgent(final int n) {
-    RendererDelegator.colourZero();
     final Node nod = (Node) this.element.get(n);
     // nod.scrub();
     this.link_manager.killAllLinks(nod);
@@ -432,7 +433,7 @@ public class World extends BaseElementManager<Node> {
       final Node n = (Node) this.element.get(temp);
       n.type.selected = false;
     }
-    RendererDelegator.repaintAll();
+    World.repaint_requested = true;
   }
 
   public void deleteSelected() {
@@ -453,7 +454,7 @@ public class World extends BaseElementManager<Node> {
       final Node n = (Node) this.element.get(temp);
       if (n.type.selected) {
         n.clazz.colour = c;
-        RendererDelegator.repaintAll();
+        World.repaint_requested = true;
       }
     }
   }
@@ -464,7 +465,7 @@ public class World extends BaseElementManager<Node> {
       final Node n = (Node) this.element.get(temp);
       if (n.type.selected) {
         n.type.setSize((byte) s);
-        RendererDelegator.repaintAll();
+        World.repaint_requested = true;
       }
     }
   }

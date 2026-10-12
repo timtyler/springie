@@ -1,12 +1,11 @@
 // This code has been placed into the public domain by its author
 
-package com.springie.render;
+package com.springie.scene;
 
 public class RendererArrays {
   public ArrayOfNodesToRender renderer_node = new ArrayOfNodesToRender();
   public ArrayOfLinksToRender renderer_link = new ArrayOfLinksToRender();
   public ArrayOfFacesToRender renderer_face = new ArrayOfFacesToRender();
-  public RendererDragBox renderer_drag_box = new RendererDragBox();
 
   public int mask = 0xFF00FFFF;
   

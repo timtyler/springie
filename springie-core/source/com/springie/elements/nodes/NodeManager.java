@@ -15,12 +15,8 @@ import com.springie.messages.NewMessage;
 import com.springie.modification.post.PostModification;
 import com.springie.modification.translation.CentreOnScreen;
 import com.springie.presets.PresetObjects;
-import com.springie.render.CachedNode;
 import com.springie.geometry.Coords;
 import com.springie.geometry.DepthSort;
-import com.springie.render.RendererDelegator;
-import com.springie.render.WorldMarkers;
-import com.springie.render.modules.raytraced.ModularRendererRaytraced;
 import com.springie.utilities.math.SquareRoot;
 import com.springie.world.World;
 import java.io.IOException;
@@ -36,7 +32,6 @@ import org.xml.sax.SAXException;
  */
 public class NodeManager extends World {
   private static final Logger logger = LoggerFactory.getLogger(NodeManager.class);
-
 
   static int max_poss_dyn_size = 500;
 
@@ -54,7 +49,7 @@ public class NodeManager extends World {
 
   public Range depth_range;
 
-  int[] node_depth_index = new int[1];
+  public int[] node_depth_index = new int[1];
 
   // Scratch buffers for the node depth sort, reused across frames.
   private double[] node_sort_keys = new double[0];
@@ -246,94 +241,6 @@ public class NodeManager extends World {
     }
   }
 
-  // just set up polygons...
-  public void nodeAndLinkRenderDummy() {
-    sortIndex();
-    // Log.log("nodeAndLinkRenderNormal");
-    final int number_of_nodes = this.element.size();
-    this.renderer.renderer_node.ensureCapacity(number_of_nodes);
-    final int mask = 0xFFFFFFFF;
-
-    for (int counter = number_of_nodes; --counter >= 0;) {
-      final int num = this.node_depth_index[counter];
-      final Node node = (Node) this.element.get(num);
-      final CachedNode cached_node = this.renderer.renderer_node.array[num];
-      // if (World.render_nodes) {
-      // cached_node.renderNodes(node, mask);
-      // }
-
-      // if (World.render_links) {
-      cached_node.renderDummyLinks(this.renderer.renderer_link, getLinkManager(), node, mask);
-      // }
-
-      // if (FrEnd.render_polygons) {
-      cached_node.renderDummyPolygons(this.renderer.renderer_face, getFaceManager(), node, mask);
-      // }
-    }
-  }
-
-  public void nodeAndLinkRenderNormal() {
-    // Log.log("nodeAndLinkRenderNormal");
-    final int number_of_nodes = this.element.size();
-    this.renderer.renderer_node.ensureCapacity(number_of_nodes);
-    final int mask = 0xFFFFFFFF;
-
-    for (int counter = number_of_nodes; --counter >= 0;) {
-      final int num = this.node_depth_index[counter];
-      final Node node = (Node) this.element.get(num);
-      final CachedNode cached_node = this.renderer.renderer_node.array[num];
-      if (World.render_nodes) {
-        cached_node.renderNodes(node, mask);
-      }
-
-      if (World.render_links) {
-        cached_node.renderLinks(this.renderer.renderer_link, getLinkManager(), node, mask);
-      }
-
-      if (World.render_faces) {
-        cached_node.renderPolygons(this.renderer.renderer_face, this.getFaceManager(), node, mask);
-      }
-    }
-  }
-
-  public void nodeAndLinkRenderAnaglyph() {
-    int anaglyph_distance = NodeManager.eye_distance;
-    final int number_of_nodes = this.element.size();
-
-    this.renderer.renderer_node.ensureCapacity(number_of_nodes);
-    this.renderer2.renderer_node.ensureCapacity(number_of_nodes);
-
-    for (int counter = number_of_nodes; --counter >= 0;) {
-      final int num = this.node_depth_index[counter];
-      final Node n = (Node) this.element.get(num);
-      final CachedNode cn1 = this.renderer.renderer_node.array[num];
-      final CachedNode cn2 = this.renderer2.renderer_node.array[num];
-      if (World.render_nodes) {
-        Coords.shift_constant_x -= anaglyph_distance;
-        cn1.renderNodes(n, mask_right);
-        Coords.shift_constant_x += anaglyph_distance << 1;
-        cn2.renderNodes(n, mask_left);
-        Coords.shift_constant_x -= anaglyph_distance;
-      }
-
-      if (World.render_links) {
-        Coords.shift_constant_x -= anaglyph_distance;
-        cn1.renderLinks(this.renderer.renderer_link, getLinkManager(), n, mask_right);
-        Coords.shift_constant_x += anaglyph_distance << 1;
-        cn2.renderLinks(this.renderer2.renderer_link, getLinkManager(), n, mask_left);
-        Coords.shift_constant_x -= anaglyph_distance;
-      }
-
-      if (World.render_faces) {
-        Coords.shift_constant_x -= anaglyph_distance;
-        cn1.renderPolygons(this.renderer.renderer_face, getFaceManager(), n, mask_right);
-        Coords.shift_constant_x += anaglyph_distance << 1;
-        cn1.renderPolygons(this.renderer2.renderer_face, getFaceManager(), n, mask_left);
-        Coords.shift_constant_x -= anaglyph_distance;
-      }
-    }
-  }
-
   private void setUpNewNodeDepthIndex() {
     // Log.log("EVERY TIME?"); // NO: fine...
     final int number_of_nodes = this.element.size();
@@ -353,7 +260,7 @@ public class NodeManager extends World {
     if (World.redraw_deepest_first && World.renderer_needs_depth_sort) {
       // The ray-traced renderer resolves occlusion per ray through
       // its BVH and never reads the sorted order, so the sort is
-      // pure cost there -- it runs inside nodeAndLinkRenderDummy()
+      // pure cost there -- it runs inside SceneRenderer.nodeAndLinkRenderDummy()
       // on every selection gesture. Skip it while ray-tracing is
       // active.
       performTheNodeSort();

@@ -14,6 +14,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
+import com.springie.render.SceneRenderer;
 import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;
 
@@ -36,7 +37,7 @@ public class PerformSelection {
         || RendererDelegator.renderer instanceof ModularRendererRaytraced) {
       // Link/face picking reads the projected caches this builds; the
       // tiled renderers do not maintain them while drawing.
-      ContextManager.getNodeManager().nodeAndLinkRenderDummy();
+      SceneRenderer.nodeAndLinkRenderDummy(ContextManager.getNodeManager());
     }
 
     final BaseElement dragged_element = World.dragged_element;

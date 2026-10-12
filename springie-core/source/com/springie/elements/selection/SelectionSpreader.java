@@ -6,7 +6,7 @@ import com.springie.elements.lists.ListOfIntegers;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.modification.pre.PrepareToModifyNodeTypes;
-import com.springie.render.RendererDelegator;
+import com.springie.world.World;
 
 public class SelectionSpreader {
   NodeManager node_manager;
@@ -22,7 +22,7 @@ public class SelectionSpreader {
   public void spreadSelectionViaLinks() {
     spreadFromNodesToLinks();
     spreadFromLinksToNodes();
-    RendererDelegator.repaint_some_objects = true;
+    World.repaint_some_requested = true;
   }
 
   public void spreadFromLinksToNodes() {

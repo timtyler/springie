@@ -6,6 +6,7 @@ package com.springie.render.modules.original;
 import com.springie.FrEnd;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.render.RendererDelegator;
+import com.springie.render.SceneRenderer;
 import com.springie.render.modules.ModularRendererBase;
 import java.awt.Graphics;
 
@@ -18,9 +19,9 @@ public class ModularRendererOld implements ModularRendererBase {
     manager.sortIndex();
 
     if (FrEnd.render_anaglyph) {
-      manager.nodeAndLinkRenderAnaglyph();
+      SceneRenderer.nodeAndLinkRenderAnaglyph(manager);
     } else {
-      manager.nodeAndLinkRenderNormal();
+      SceneRenderer.nodeAndLinkRenderNormal(manager);
     }
 
     RendererDelegator.countRenderedFrame();

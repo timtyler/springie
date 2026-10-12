@@ -16,6 +16,7 @@ import com.springie.elements.nodes.NodeType;
 import com.springie.geometry.Point3D;
 import com.springie.gui.GuiTestSupport;
 import com.springie.geometry.Coords;
+import com.springie.render.SceneRenderer;
 import java.util.ArrayList;
 import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.AfterAll;
@@ -210,7 +211,7 @@ class SingleClickNearestSelectionTest {
 
         final int clickX = projectedX(node);
         final int clickY = projectedY(node);
-        ContextManager.getNodeManager().nodeAndLinkRenderDummy();
+        SceneRenderer.nodeAndLinkRenderDummy(ContextManager.getNodeManager());
         assertSame(node,
             ContextManager.getNodeManager().isThereOne(clickX, clickY),
             "scenario broken: the node picker must see the far node");
@@ -259,7 +260,7 @@ class SingleClickNearestSelectionTest {
 
         final int clickX = projectedX(node);
         final int clickY = projectedY(node);
-        ContextManager.getNodeManager().nodeAndLinkRenderDummy();
+        SceneRenderer.nodeAndLinkRenderDummy(ContextManager.getNodeManager());
         assertSame(node,
             ContextManager.getNodeManager().isThereOne(clickX, clickY),
             "scenario broken: the node picker must see the near node");
@@ -313,7 +314,7 @@ class SingleClickNearestSelectionTest {
         final int midY = (endA.pos.y + endB.pos.y) / 2;
         final int clickX = Coords.getXCoordsInternal(midX, zNear());
         final int clickY = Coords.getYCoordsInternal(midY, zNear());
-        ContextManager.getNodeManager().nodeAndLinkRenderDummy();
+        SceneRenderer.nodeAndLinkRenderDummy(ContextManager.getNodeManager());
         assertSame(link,
             ContextManager.getLinkManager().isThereOne(clickX, clickY),
             "scenario broken: the link picker must see the near link");

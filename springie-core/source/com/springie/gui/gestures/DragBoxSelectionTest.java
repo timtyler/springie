@@ -88,7 +88,7 @@ class DragBoxSelectionTest {
       // box. The old code selected with this stale cache.
       final int s = Coords.shift;
       final com.springie.render.RendererDragBox cached =
-          ContextManager.getNodeManager().renderer.renderer_drag_box;
+          com.springie.render.RendererDelegator.drag_box;
       cached.min = new Point(0, 0);
       cached.max = new Point(0, 0);
       manager.drag_box_start =
