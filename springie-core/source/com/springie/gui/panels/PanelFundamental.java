@@ -708,6 +708,10 @@ public class PanelFundamental {
     // path, which reads the dropdown selection). Sync them here.
     final String selected = FrEnd.choose_initial.choice.getSelectedItem();
     FrEnd.next_file_path = (String) FrEnd.choose_initial.hashtable.get(selected);
+    // The engine-side copy of the selection (World.default_creature_location)
+    // needs the same sync: the item listener only fires on user changes, so
+    // without this the initial model load at boot sees a null location.
+    World.default_creature_location = FrEnd.next_file_path;
   }
 
   /**

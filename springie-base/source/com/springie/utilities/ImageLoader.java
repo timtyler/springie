@@ -54,7 +54,13 @@ public final class ImageLoader {
     try {
       //Log.log("Starting to load: " + name);
 
-      in = ImageLoader.class.getResourceAsStream(name);
+      // Resolve against the com.springie package root (absolute path), not this
+      // class's package: the graphics/ resources live in com.springie.graphics,
+      // and ImageLoader must not reference FrEnd (module layering: base must
+      // not depend on the app class). Previously FrEnd.class was used here,
+      // which resolved the same way; ImageLoader.class alone resolves against
+      // com.springie.utilities and finds nothing.
+      in = ImageLoader.class.getResourceAsStream("/com/springie/" + name);
       if (in == null) {
         throw new RuntimeException("Problem locating image file: " + name);
       }
