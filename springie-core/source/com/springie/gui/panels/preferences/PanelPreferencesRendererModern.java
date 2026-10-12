@@ -6,7 +6,7 @@ import com.springie.FrEnd;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TTChoice;
 import com.springie.gui.components.TabbedPanel;
-import com.springie.messages.NewMessageManager;
+import com.springie.world.NewMessageManager;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ElementRendererLink;
 import com.springie.render.modules.modern.ModularRendererNew;

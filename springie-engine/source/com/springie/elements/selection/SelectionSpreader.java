@@ -5,7 +5,7 @@ import com.springie.elements.links.LinkManager;
 import com.springie.elements.lists.ListOfIntegers;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.modification.pre.PrepareToModifyNodeTypes;
+import com.springie.elements.nodes.PrepareToModifyNodeTypes;
 import com.springie.world.World;
 
 public class SelectionSpreader {

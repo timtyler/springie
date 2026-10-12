@@ -5,7 +5,7 @@ import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.CompassPoint;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.messages.NewMessage;
+import com.springie.world.NewMessage;
 
 public class AlterCompassMessage extends NewMessage {
   private final CompassPoint heading;

@@ -2,6 +2,8 @@
 
 package com.springie.messages;
 
+import com.springie.world.NewMessage;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

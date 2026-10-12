@@ -4,9 +4,9 @@ package com.springie.io.in.readers.rbf;
 
 import com.springie.elements.nodes.NodeManager;
 import com.springie.io.in.AutomaticNodeColourer;
-import com.springie.modification.post.PostModification;
+import com.springie.elements.nodes.PostModification;
 import com.springie.modification.resize.ScaleToFitScreen;
-import com.springie.modification.translation.CentreOnScreen;
+import com.springie.world.CentreOnScreen;
 import com.tifsoft.utilities.execute.Executor;
 
 public class ReaderRBFExecutor implements Executor {

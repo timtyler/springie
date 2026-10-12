@@ -10,9 +10,9 @@ import com.springie.elements.links.LinkType;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.io.in.AutomaticNodeColourer;
-import com.springie.modification.post.PostModification;
+import com.springie.elements.nodes.PostModification;
 import com.springie.modification.resize.ScaleToFitScreen;
-import com.springie.modification.translation.CentreOnScreen;
+import com.springie.world.CentreOnScreen;
 import com.tifsoft.utilities.execute.Executor;
 
 public class ReaderOFFExecutor implements Executor {

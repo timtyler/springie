@@ -11,7 +11,7 @@ import com.springie.gui.GUIStrings;
 import com.springie.gui.colourpicker.ColorPicker;
 import com.springie.gui.colourpicker.ColorPickerInformer;
 import com.springie.gui.components.TabbedPanel;
-import com.springie.messages.NewMessageManager;
+import com.springie.world.NewMessageManager;
 import com.springie.messages.commands.ContinuouslyCentreMessage;
 import com.springie.muscles.Muscles;
 import com.springie.render.RendererDelegator;

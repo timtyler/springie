@@ -12,7 +12,7 @@ import com.springie.elements.links.LinkRenderType;
 import com.springie.elements.nodes.Node;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TTChoice;
-import com.springie.messages.NewMessageManager;
+import com.springie.world.NewMessageManager;
 import com.springie.messages.commands.LinkLengthMessage;
 import com.springie.render.RendererDelegator;
 import java.awt.BorderLayout;

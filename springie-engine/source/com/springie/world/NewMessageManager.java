@@ -1,5 +1,5 @@
 //This program has been placed into the public domain by its author.
-package com.springie.messages;
+package com.springie.world;
 
 import com.springie.context.ContextManager;
 import java.util.ArrayList;
@@ -25,6 +25,10 @@ public class NewMessageManager {
 
   public final int size() {
     return this.messages.size();
+  }
+
+  public final void clear() {
+    this.messages.clear();
   }
 
   public final void process() {

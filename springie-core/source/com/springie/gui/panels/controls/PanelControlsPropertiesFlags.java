@@ -10,7 +10,7 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.messages.NewMessageManager;
+import com.springie.world.NewMessageManager;
 import com.springie.messages.commands.DisableFlagMessage;
 import com.springie.messages.commands.FixFlagMessage;
 import com.springie.messages.commands.HideFlagMessage;

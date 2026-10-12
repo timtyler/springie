@@ -75,7 +75,7 @@ public final class UniverseDefaults {
   private static int compass_bias_size = 0;
 
   // Lights (Tim, 2026-10-04): N lights, stored as a list.
-  private static java.util.List<com.springie.render.modules.modern.Light> lights_snapshot = new java.util.ArrayList<>();
+  private static java.util.List<Light> lights_snapshot = new java.util.ArrayList<>();
   private static int ambient_light_pct = 0;
 
   /**
@@ -117,12 +117,12 @@ public final class UniverseDefaults {
     lights_snapshot.clear();
     // Default 6 lights (Tim, 2026-10-08): hexagon at 60-degree
     // intervals around the edge, 0-100% (50=center).
-    lights_snapshot.add(new com.springie.render.modules.modern.Light(100.0, 50.0, 100, 0x00FFFF));
-    lights_snapshot.add(new com.springie.render.modules.modern.Light(75.0, 6.7, 100, 0xFFFF00));
-    lights_snapshot.add(new com.springie.render.modules.modern.Light(25.0, 6.7, 100, 0x00FF00));
-    lights_snapshot.add(new com.springie.render.modules.modern.Light(0.0, 50.0, 100, 0xFF0000));
-    lights_snapshot.add(new com.springie.render.modules.modern.Light(25.0, 93.3, 100, 0x0000FF));
-    lights_snapshot.add(new com.springie.render.modules.modern.Light(75.0, 93.3, 100, 0xFF00FF));
+    lights_snapshot.add(new Light(100.0, 50.0, 100, 0x00FFFF));
+    lights_snapshot.add(new Light(75.0, 6.7, 100, 0xFFFF00));
+    lights_snapshot.add(new Light(25.0, 6.7, 100, 0x00FF00));
+    lights_snapshot.add(new Light(0.0, 50.0, 100, 0xFF0000));
+    lights_snapshot.add(new Light(25.0, 93.3, 100, 0x0000FF));
+    lights_snapshot.add(new Light(75.0, 93.3, 100, 0xFF00FF));
     ambient_light_pct = 0;
   }
 
@@ -150,15 +150,6 @@ public final class UniverseDefaults {
     continuously_centre_z = World.continuously_centre_z;
     show_world_markers = World.show_world_markers;
     compass_bias_size = CompassPoint.bias_size;
-    // Snapshot the N lights (Tim, 2026-10-04).
-    lights_snapshot.clear();
-    synchronized (com.springie.render.modules.modern.LightSource.class) {
-      for (final com.springie.render.modules.modern.Light light
-          : com.springie.render.modules.modern.LightSource.lights) {
-        lights_snapshot.add(new com.springie.render.modules.modern.Light(light));
-      }
-    }
-    ambient_light_pct = com.springie.render.RendererDelegator.ambient_light_pct;
     if (World.development_version) {
       max_speed = Node.max_speed;
       minimum_magnitude = World.minimum_magnitude;
@@ -191,10 +182,10 @@ public final class UniverseDefaults {
     CompassPoint.bias_size = compass_bias_size;
     // Reset universe restores the factory defaults (Tim, 2026-10-05):
     // lights spread uniformly around the edge, ambient at 0%
-    // (Tim, 2026-10-08).
-    com.springie.render.modules.modern.LightSource.resetToDefaults();
-    com.springie.render.modules.modern.LightSource.light_moved = true;
-    com.springie.render.RendererDelegator.ambient_light_pct = 0;
+    // (Tim, 2026-10-08). The render side owns the live lights.
+    if (World.reset_render_lights != null) {
+      World.reset_render_lights.run();
+    }
     if (World.development_version) {
       Node.max_speed = max_speed;
       World.minimum_magnitude = minimum_magnitude;

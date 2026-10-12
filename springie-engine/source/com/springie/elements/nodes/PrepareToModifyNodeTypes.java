@@ -1,8 +1,5 @@
-package com.springie.modification.pre;
+package com.springie.elements.nodes;
 
-import com.springie.elements.nodes.Node;
-import com.springie.elements.nodes.NodeManager;
-import com.springie.elements.nodes.NodeType;
 
 public class PrepareToModifyNodeTypes {
   NodeManager node_manager;

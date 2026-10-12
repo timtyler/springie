@@ -8,7 +8,7 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.messages.NewMessage;
+import com.springie.world.NewMessage;
 
 public class SelectClazzMessage extends NewMessage {
   public SelectClazzMessage() {

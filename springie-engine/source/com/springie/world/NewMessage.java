@@ -1,5 +1,5 @@
 //This program has been placed into the public domain by its author.
-package com.springie.messages;
+package com.springie.world;
 
 public abstract class NewMessage {
   public Object context;

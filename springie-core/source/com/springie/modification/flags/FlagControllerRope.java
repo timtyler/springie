@@ -3,7 +3,7 @@ package com.springie.modification.flags;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.modification.post.PostModification;
+import com.springie.elements.nodes.PostModification;
 import com.springie.modification.pre.PrepareToModifyLinkTypes;
 
 public class FlagControllerRope {

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Springie engine module: the simulation core, with no dependencies on
+  the render, GUI, or I/O packages. Packages: elements, world, muscles,
+  context, scene, metrics, composite, plus base (geometry, constants,
+  utilities).
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.springie</groupId>
+    <artifactId>springie-parent</artifactId>
+    <version>1.03</version>
+  </parent>
+
+  <artifactId>springie-engine</artifactId>
+  <name>Springie engine</name>
+  <description>The Springie simulation engine: model, world, and scene assembly, independent of rendering and GUI.</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.springie</groupId>
+      <artifactId>springie-base</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.2</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

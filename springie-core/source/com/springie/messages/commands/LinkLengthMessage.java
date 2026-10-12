@@ -3,7 +3,7 @@ package com.springie.messages.commands;
 
 import com.springie.FrEnd;
 import com.springie.elements.links.Link;
-import com.springie.messages.NewMessage;
+import com.springie.world.NewMessage;
 
 public class LinkLengthMessage extends NewMessage {
   private final int length;

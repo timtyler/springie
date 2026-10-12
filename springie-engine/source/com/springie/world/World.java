@@ -1,5 +1,7 @@
 package com.springie.world;
 
+import com.springie.elements.nodes.NodeManager;
+
 import com.springie.composite.CompositeManager;
 import com.springie.context.ContextManager;
 import com.springie.elements.base.BaseElementManager;
@@ -122,6 +124,46 @@ public class World extends BaseElementManager<Node> {
 
   /** Set by the engine to ask for a repaint without a full clear. */
   public static boolean repaint_some_requested;
+
+  /** Spawns explosion visuals; set by the render side (explosions package). */
+  public interface ExplosionSpawner {
+    void spawnFragment(int ix, int iy, int jx, int jy, int idx, int idy,
+      int rotspeed);
+    void spawnParticle(int ix, int iy, int idx, int idy, int type);
+  }
+
+  public static ExplosionSpawner explosion_spawner;
+
+  /** Frame/tick counter for the engine (moved from RendererDelegator). */
+  public static int generation;
+
+  /** Reset the render-side lights to factory defaults; set by the render side. */
+  public static Runnable reset_render_lights;
+
+  /** Provides preset model descriptions; set by the presets package. */
+  public interface PresetProvider {
+    String getCreatureDescription(ArgumentList arguments);
+
+    String getCreatureDescription(String location) throws Exception;
+  }
+
+  public static PresetProvider preset_provider;
+
+  /** Loads models; set by the io package. */
+  public interface ModelLoader {
+    void load(NodeManager manager, String path);
+
+    void loadFromString(NodeManager manager, String data);
+  }
+
+  public static ModelLoader model_loader;
+
+  /** Pandemic/infection simulation counters (moved from PerformSelection). */
+  public static int INFECTION_START = 64;
+  public static int VIRUS_RELEASE1 = 60;
+  public static int VIRUS_RELEASE2 = 55;
+  public static int VIRUS_RELEASE3 = 50;
+  public static int IMMUNITY_START = 48;
   // Render quality flags (moved from FrEnd).
   public static int quality;
   public static boolean render_charges = true;
@@ -148,23 +190,20 @@ public class World extends BaseElementManager<Node> {
   /** The element currently being dragged (null when none). Moved from FrEnd. */
   public static com.springie.elements.base.BaseElement dragged_element;
   /** Message queue for deferred operations. Moved from FrEnd. */
-  public static com.springie.messages.NewMessageManager new_message_manager =
-      new com.springie.messages.NewMessageManager();
+  public static NewMessageManager new_message_manager = new NewMessageManager();
 
   /**
    * Model cleanup after modification. The GUI version (FrEnd.postCleanup)
    * calls this plus GUI reflection.
    */
   public static void postCleanup() {
-    new com.springie.modification.post.PostModification(
+    new com.springie.elements.nodes.PostModification(
         com.springie.context.ContextManager.getNodeManager()).cleanup();
   }
 
   // Model loading state (moved from FrEnd).
   public static String archive;
   public static String last_file_path = "test.spr";
-  public static com.springie.io.in.DataInput data_input =
-      new com.springie.io.in.DataInput(null);
   /**
    * The currently selected model location (set by the GUI from the
    * model dropdown; the engine reads it when add() is called).

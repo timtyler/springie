@@ -29,7 +29,7 @@ import com.springie.io.in.readers.wrl.ReaderWRLExecutor;
 import com.springie.modification.automaticradius.AutomaticLinkRadius;
 import com.springie.modification.automaticradius.AutomaticNodeRadius;
 import com.springie.modification.automaticradius.DeriveLinkRadiusFromNodeRadius;
-import com.springie.modification.post.PostModification;
+import com.springie.elements.nodes.PostModification;
 import com.springie.muscles.Muscles;
 import com.springie.world.World;
 import com.tifsoft.utilities.execute.Executor;

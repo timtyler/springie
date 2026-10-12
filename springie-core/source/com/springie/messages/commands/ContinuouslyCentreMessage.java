@@ -3,7 +3,7 @@ package com.springie.messages.commands;
 import com.springie.world.World;
 
 import com.springie.FrEnd;
-import com.springie.messages.NewMessage;
+import com.springie.world.NewMessage;
 
 public class ContinuouslyCentreMessage extends NewMessage {
   /** Which axis to toggle: 0 = x, 1 = y, 2 = z. */

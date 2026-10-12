@@ -1,6 +1,8 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.messages;
+
+import com.springie.world.NewMessage;
 import com.springie.world.World;
 
 import com.springie.FrEnd;
@@ -28,7 +30,7 @@ class MessagePumpTest {
   @Test
   void holdingTheMouseDownSynthesizesNoClick() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
-      World.new_message_manager.messages.clear();
+      World.new_message_manager.clear();
       FrEnd.mouse_pressed = true;
       FrEnd.last_mousex = 12345;
       FrEnd.last_mousey = 67890;
@@ -47,7 +49,7 @@ class MessagePumpTest {
   @Test
   void queuedWorkStillDrainsWhileTheMouseIsDown() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
-      World.new_message_manager.messages.clear();
+      World.new_message_manager.clear();
       FrEnd.mouse_pressed = true;
 
       final boolean[] ran = {false};

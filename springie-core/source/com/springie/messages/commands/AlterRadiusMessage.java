@@ -5,7 +5,7 @@ import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.messages.NewMessage;
+import com.springie.world.NewMessage;
 
 public class AlterRadiusMessage extends NewMessage {
   private final int radius;

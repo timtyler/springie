@@ -4,7 +4,7 @@ package com.springie.messages.commands;
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.messages.NewMessage;
+import com.springie.world.NewMessage;
 import com.springie.modification.links.RemoveLinkAndFuseEnds;
 
 public class RemoveLinkAndFuseEndsMessage extends NewMessage {

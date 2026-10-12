@@ -3,7 +3,7 @@ package com.springie.modification.delete;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.modification.pre.PrepareToModifyNodeTypes;
+import com.springie.elements.nodes.PrepareToModifyNodeTypes;
 
 public class SphereScooper {
   NodeManager node_manager;

@@ -4,7 +4,7 @@ package com.springie.io.in.readers.spr;
 
 import com.springie.elements.nodes.NodeManager;
 import com.springie.modification.resize.ScaleToFitScreen;
-import com.springie.modification.translation.CentreOnScreen;
+import com.springie.world.CentreOnScreen;
 import com.tifsoft.utilities.execute.Executor;
 
 public class ReaderSPRExecutor implements Executor {

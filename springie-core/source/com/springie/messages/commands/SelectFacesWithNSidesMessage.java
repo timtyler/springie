@@ -5,7 +5,7 @@ import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.faces.FaceManager;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.messages.NewMessage;
+import com.springie.world.NewMessage;
 
 public class SelectFacesWithNSidesMessage extends NewMessage {
   public SelectFacesWithNSidesMessage() {

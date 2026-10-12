@@ -2,6 +2,8 @@
 
 package com.springie.gui.panels.controls;
 
+import com.springie.elements.links.FilterSelectLinks;
+
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
@@ -59,7 +61,10 @@ public class PanelControlsSelectLinks {
     }
   };
 
-  public static FilterSelectLinks comparator = filter_any_member;
+  static {
+    Link.selection_filter = filter_any_member;
+  }
+
 
   public PanelControlsSelectLinks() {
     makePanel();
@@ -91,19 +96,19 @@ public class PanelControlsSelectLinks {
             // comparator = filter_any_member;
             // break;
             case tension:
-              comparator = filter_tension;
+              Link.selection_filter = filter_tension;
               break;
             case compression:
-              comparator = filter_compression;
+              Link.selection_filter = filter_compression;
               break;
             case no_tension:
-              comparator = filter_no_tension;
+              Link.selection_filter = filter_no_tension;
               break;
             case no_compression:
-              comparator = filter_no_compression;
+              Link.selection_filter = filter_no_compression;
               break;
             default:
-              comparator = filter_any_member;
+              Link.selection_filter = filter_any_member;
               break;
           }
         }

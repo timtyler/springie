@@ -3,8 +3,8 @@
 package com.springie.messages.commands;
 
 import com.springie.FrEnd;
-import com.springie.messages.ArgumentList;
-import com.springie.messages.NewMessage;
+import com.springie.world.ArgumentList;
+import com.springie.world.NewMessage;
 import com.springie.presets.ProceduralObject;
 
 public class GenerateMatrixMessage extends NewMessage {

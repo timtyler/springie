@@ -9,12 +9,10 @@ import com.springie.elements.electrostatics.ElectrostaticRepulsion;
 import com.springie.elements.links.LinkManager;
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
-import com.springie.gui.gestures.PerformSelection;
-import com.springie.messages.ArgumentList;
-import com.springie.messages.NewMessage;
-import com.springie.modification.post.PostModification;
-import com.springie.modification.translation.CentreOnScreen;
-import com.springie.presets.PresetObjects;
+import com.springie.world.ArgumentList;
+import com.springie.world.NewMessage;
+import com.springie.elements.nodes.PostModification;
+import com.springie.world.CentreOnScreen;
 import com.springie.geometry.Coords;
 import com.springie.geometry.DepthSort;
 import com.springie.utilities.math.SquareRoot;
@@ -111,8 +109,8 @@ public class NodeManager extends World {
 
   void addCreatureFromPresetObject(final ArgumentList preset_type) {
     String d = null;
-    d = PresetObjects.getCreatureDescription(preset_type);
-    World.data_input.addFromString(d, ContextManager.getNodeManager());
+    d = World.preset_provider.getCreatureDescription(preset_type);
+    World.model_loader.loadFromString(ContextManager.getNodeManager(), d);
   }
 
   public void addCreatureFromLocation(final String location) {
@@ -124,7 +122,7 @@ public class NodeManager extends World {
     }
 
     try {
-      d = PresetObjects.getCreatureDescription(location);
+      d = World.preset_provider.getCreatureDescription(location);
     } catch (IOException e) {
       reportProblem(location);
       logger.error("Unexpected exception", e);
@@ -134,13 +132,16 @@ public class NodeManager extends World {
     } catch (SAXException e) {
       reportProblem(location);
       logger.error("Unexpected exception", e);
+    } catch (Exception e) {
+      reportProblem(location);
+      logger.error("Unexpected exception", e);
     }
 
     if (d == null) {
       return;
     }
 
-    World.data_input.addFromString(d, ContextManager.getNodeManager());
+    World.model_loader.loadFromString(ContextManager.getNodeManager(), d);
   }
 
   private void reportProblem(final String location) {
@@ -447,17 +448,17 @@ public class NodeManager extends World {
           sendDeleteNodeMessage(temp_agent);
         }
       } else {
-        if (counter == PerformSelection.INFECTION_START) {
+        if (counter == World.INFECTION_START) {
           temp_agent.clazz = new Clazz(0xFFFF4040);
         }
-        if (counter == PerformSelection.IMMUNITY_START) {
+        if (counter == World.IMMUNITY_START) {
           temp_agent.clazz = new Clazz(0xFFFFFF40);
         }
         if (counter == 1) {
           temp_agent.clazz = new Clazz(0xFF40FF40);
         }
         if (!World.pandemic_paradigm_direct_contact) {
-          if (counter == PerformSelection.VIRUS_RELEASE1) {
+          if (counter == World.VIRUS_RELEASE1) {
             releaseVirus(temp_agent);
           }
         }
@@ -711,15 +712,15 @@ public class NodeManager extends World {
   private void spreadUsingVirus(final Node node1, final Node node2, final int counter) {
     if (counter == 0) {
       if (node2.clazz.colour == virus_color) {
-        node1.type.counter = PerformSelection.INFECTION_START;
+        node1.type.counter = World.INFECTION_START;
       }
     }
   }
 
   private void spreadInfectionOneWay(final Node uninfectedNode, final int counter1, final int counter2) {
-    if (counter1 > PerformSelection.IMMUNITY_START) {
+    if (counter1 > World.IMMUNITY_START) {
       if (counter2 == 0) {
-        uninfectedNode.type.counter = PerformSelection.INFECTION_START;
+        uninfectedNode.type.counter = World.INFECTION_START;
       }
     }
   }

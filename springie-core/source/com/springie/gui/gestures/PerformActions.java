@@ -10,7 +10,7 @@ import com.springie.elements.clazz.Clazz;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeType;
 import com.springie.geometry.Point3D;
-import com.springie.modification.pre.PrepareToModifyNodeTypes;
+import com.springie.elements.nodes.PrepareToModifyNodeTypes;
 import com.springie.utilities.math.SquareRoot;
 import com.springie.utilities.random.Hortensius32Fast;
 

@@ -5,7 +5,7 @@ package com.springie.messages.commands;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.selection.SelectionSpreader;
-import com.springie.messages.NewMessage;
+import com.springie.world.NewMessage;
 
 public class SpreadSelectionViaLinksMessage extends NewMessage {
   public SpreadSelectionViaLinksMessage() {

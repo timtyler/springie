@@ -2,8 +2,8 @@ package com.springie.modification.flags;
 
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.modification.post.PostModification;
-import com.springie.modification.pre.PrepareToModifyNodeTypes;
+import com.springie.elements.nodes.PostModification;
+import com.springie.elements.nodes.PrepareToModifyNodeTypes;
 
 public class FlagControllerFixed {
   NodeManager node_manager;

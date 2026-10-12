@@ -6,7 +6,7 @@ import com.springie.geometry.Coords;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
-import com.springie.messages.NewMessage;
+import com.springie.world.NewMessage;
 import com.springie.messages.commands.DeleteSelectedMessage;
 import com.springie.messages.commands.DeselectAllMessage;
 import com.springie.messages.commands.SelectAllMessage;

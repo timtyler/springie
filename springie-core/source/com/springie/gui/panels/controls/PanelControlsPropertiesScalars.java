@@ -9,7 +9,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TextFieldWrapper;
-import com.springie.messages.NewMessageManager;
+import com.springie.world.NewMessageManager;
 import com.springie.messages.commands.AlterChargeMessage;
 import com.springie.messages.commands.AlterCompassMessage;
 import com.springie.messages.commands.AlterElasticityMessage;

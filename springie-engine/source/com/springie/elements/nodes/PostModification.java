@@ -1,4 +1,4 @@
-package com.springie.modification.post;
+package com.springie.elements.nodes;
 
 import com.springie.elements.electrostatics.ElectrostaticRepulsion;
 import com.springie.elements.faces.Face;
@@ -6,9 +6,7 @@ import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.lists.ListOfIntegers;
-import com.springie.elements.nodes.Node;
-import com.springie.elements.nodes.NodeManager;
-import com.springie.render.RendererDelegator;
+import com.springie.world.World;
 
 public class PostModification {
   NodeManager node_manager;
@@ -26,7 +24,7 @@ public class PostModification {
   public void thoroughCleanup() {
     this.node_manager.nodes_have_been_deleted = true;
     cleanup();
-    RendererDelegator.repaintAll();
+    World.repaint_requested = true;
   }
   
   public void cleanup() {
@@ -36,7 +34,7 @@ public class PostModification {
       generateListOfFaces();
       setTensegrityFlag();
     }
-    RendererDelegator.repaint_some_objects = true;
+    World.repaint_some_requested = true;
   }
 
   private void setTensegrityFlag() {

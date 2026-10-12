@@ -1,6 +1,6 @@
 package com.springie.composite;
 
-import com.springie.render.RendererDelegator;
+import com.springie.world.World;
 import com.springie.utilities.random.Hortensius32Fast;
 
 public final class Reproduction {
@@ -59,7 +59,7 @@ public final class Reproduction {
   */
 
   public static void handleReproduction(final CompositeManager cm) {
-    if ((RendererDelegator.generation & 15) == 5) { // rarely...
+    if ((World.generation & 15) == 5) { // rarely...
       for (temp = cm.number_of_creatures; --temp >= 0;) {
         temp_creature = cm.creature[temp];
         if (temp_creature.genome.executing) {

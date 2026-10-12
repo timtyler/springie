@@ -5,7 +5,7 @@ package com.springie.gui.panels.controls;
 import com.springie.FrEnd;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TextFieldWrapper;
-import com.springie.messages.NewMessageManager;
+import com.springie.world.NewMessageManager;
 import com.springie.messages.commands.GenerateFreeNodesMessage;
 import com.springie.messages.commands.GenerateMatrixMessage;
 import com.springie.messages.commands.GenerateSpherePackMessage;

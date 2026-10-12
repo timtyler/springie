@@ -25,6 +25,11 @@
       <artifactId>springie</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.springie</groupId>
+      <artifactId>springie-engine</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- Shared test helpers (GuiTestSupport) from core. -->
     <dependency>
       <groupId>com.springie</groupId>

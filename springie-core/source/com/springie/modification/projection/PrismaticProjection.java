@@ -62,7 +62,7 @@ public class PrismaticProjection {
 
     //Log.log(tokenised);
 
-    World.data_input.processBuffer(tokenised.toCharArray(), e);
+    new com.springie.io.in.DataInput(node_manager).processBuffer(tokenised.toCharArray(), e);
   }
 
   float getScaleFactor() {

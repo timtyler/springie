@@ -19,11 +19,11 @@ import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;
 
 public class PerformSelection {
-  public static int INFECTION_START = 64;
-  public static int VIRUS_RELEASE1 = 60;
-  public static int VIRUS_RELEASE2 = 55;
-  public static int VIRUS_RELEASE3 = 50;
-  public static int IMMUNITY_START = 48;
+  public static int INFECTION_START = World.INFECTION_START;
+  public static int VIRUS_RELEASE1 = World.VIRUS_RELEASE1;
+  public static int VIRUS_RELEASE2 = World.VIRUS_RELEASE2;
+  public static int VIRUS_RELEASE3 = World.VIRUS_RELEASE3;
+  public static int IMMUNITY_START = World.IMMUNITY_START;
 
   // Single-click pick arbitration: when candidates from several element
   // types match the click, only one of them is kept.

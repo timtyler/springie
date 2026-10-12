@@ -4,7 +4,7 @@ package com.springie.messages.commands;
 import com.springie.world.World;
 
 import com.springie.FrEnd;
-import com.springie.messages.ArgumentList;
+import com.springie.world.ArgumentList;
 import com.springie.render.SetUpCode;
 
 public final class ProceduralObjects {
@@ -12,7 +12,7 @@ public final class ProceduralObjects {
   }
 
   public static void allNew(final ArgumentList al) {
-    World.data_input.resetWorkspaces();
+    new com.springie.io.in.DataInput(null).resetWorkspaces();
     SetUpCode.clearAndThenAddProceduralObjects(al);
     FrEnd.reflectValuesInGUIAfterPropertyEditing();
   }

@@ -16,7 +16,7 @@ import com.springie.elements.nodes.NodeType;
 import com.springie.io.out.DuplicateLinkRemover;
 import com.springie.io.out.GarbageCollection;
 import com.springie.io.out.WriteFloatingPoint;
-import com.springie.modification.post.PostModification;
+import com.springie.elements.nodes.PostModification;
 import com.springie.modification.redundancy.RedundancyRemover;
 import com.springie.geometry.Coords;
 import com.springie.world.World;

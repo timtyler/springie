@@ -5,9 +5,7 @@ package com.springie.elements.links;
 import com.springie.elements.base.BaseElement;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.nodes.Node;
-import com.springie.explosions.fragments.LineFragmentManager;
 import com.springie.geometry.Point3D;
-import com.springie.gui.panels.controls.PanelControlsSelectLinks;
 import com.springie.muscles.Controller;
 import com.springie.muscles.Muscles;
 import com.springie.geometry.Coords;
@@ -16,6 +14,12 @@ import com.springie.utilities.random.JUR;
 import com.springie.world.World;
 
 public class Link extends BaseElement {
+  /** Set by the GUI to filter which links can be selected. */
+  public static FilterSelectLinks selection_filter = new FilterSelectLinks() {
+    public boolean qualifies(final Link l) {
+      return true;
+    }
+  };
   public Node[] nodes = new Node[0];
 
   public int[] lengths;
@@ -553,7 +557,7 @@ public class Link extends BaseElement {
           final int temp4 = (temp3 << 8) >> 23;
           temp3 = temp3 >> 23;
 
-          LineFragmentManager.add(start_x, start_y, start_x + d_x, start_y
+          if (World.explosion_spawner != null) World.explosion_spawner.spawnFragment(start_x, start_y, start_x + d_x, start_y
               + d_y, start_dx + temp3, start_dy + temp4, 4);
           start_x += d_x;
           start_y += d_y;
@@ -611,7 +615,7 @@ public class Link extends BaseElement {
   }
 
   public void setSelectedFiltered(boolean selected) {
-    if (selected && !PanelControlsSelectLinks.comparator.qualifies(this)) {
+    if (selected && !Link.selection_filter.qualifies(this)) {
       return;
     }
     this.type.selected = selected;    

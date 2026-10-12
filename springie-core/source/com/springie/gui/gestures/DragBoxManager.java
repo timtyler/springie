@@ -13,7 +13,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.modification.pre.PrepareToModifyFaceTypes;
 import com.springie.modification.pre.PrepareToModifyLinkTypes;
-import com.springie.modification.pre.PrepareToModifyNodeTypes;
+import com.springie.elements.nodes.PrepareToModifyNodeTypes;
 import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import java.awt.Point;

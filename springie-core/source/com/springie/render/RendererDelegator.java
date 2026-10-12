@@ -211,6 +211,7 @@ public final class RendererDelegator {
   private static void incrementGenerationCount() {
     if (!World.paused) {
       RendererDelegator.generation += RendererDelegator.direction;
+      World.generation += RendererDelegator.direction;
     }
   }
 

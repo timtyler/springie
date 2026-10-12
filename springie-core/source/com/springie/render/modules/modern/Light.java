@@ -6,23 +6,11 @@ package com.springie.render.modules.modern;
  * A point light source (Tim, 2026-10-04): position as percentages of the
  * viewport half-size, intensity as a percentage, and a configurable color.
  * The world coordinates are derived by LightSource.updateForViewport().
+ *
+ * <p>Extends the engine-side {@code com.springie.world.Light} (pure data)
+ * with the derived world coordinates.
  */
-public class Light {
-  /** X position as % (0-100, 50=center). */
-  public volatile double x_pct;
-
-  /** Y position as % (0-100, 50=center). */
-  public volatile double y_pct;
-
-  /** Z position as % (0-100, 50=current -50*scale in front). */
-  public volatile double z_pct;
-
-  /** Intensity 0-100%. */
-  public volatile int intensity_pct;
-
-  /** Color as 0xRRGGBB. */
-  public volatile int colour;
-
+public class Light extends com.springie.world.Light {
   /** Derived world X (fixed-point, shifted by Coords.shift). */
   public volatile double px;
 
@@ -34,40 +22,43 @@ public class Light {
 
   public Light(final double x_pct, final double y_pct, final int intensity_pct,
       final int colour) {
-    this(x_pct, y_pct, 50.0, intensity_pct, colour);
+    super(x_pct, y_pct, intensity_pct, colour);
+    initDerived();
   }
 
   public Light(final double x_pct, final double y_pct, final double z_pct,
       final int intensity_pct, final int colour) {
-    this.x_pct = x_pct;
-    this.y_pct = y_pct;
-    this.z_pct = z_pct;
-    this.intensity_pct = intensity_pct;
-    this.colour = colour;
+    super(x_pct, y_pct, z_pct, intensity_pct, colour);
+    initDerived();
+  }
+
+  private void initDerived() {
     // Initialize derived coords (Tim, 2026-10-06): 0-100% (50=center),
     // using the Coords.getXCoords convention (px = HW*S - scx at center,
     // range HW*PF for exact screen mapping).
     final double scale = (double) (1 << com.springie.geometry.Coords.shift);
     final double half_w = 400.0 * scale;
     final double half_h = 300.0 * scale;
-    this.pz = (50.0 - 2.0 * z_pct) * scale;
+    this.pz = (50.0 - 2.0 * this.z_pct) * scale;
     final double pf = (double) (com.springie.geometry.Coords.shift_constant_z
         + ((int) this.pz >> com.springie.geometry.Coords.shift_z));
-    this.px = (x_pct - 50.0) / 50.0 * half_w * (pf / scale)
+    this.px = (this.x_pct - 50.0) / 50.0 * half_w * (pf / scale)
         + (half_w - com.springie.geometry.Coords.shift_constant_x);
-    this.py = (y_pct - 50.0) / 50.0 * half_h * (pf / scale)
+    this.py = (this.y_pct - 50.0) / 50.0 * half_h * (pf / scale)
         + (half_h - com.springie.geometry.Coords.shift_constant_y);
   }
 
   /** Copy constructor. */
   public Light(final Light other) {
-    this.x_pct = other.x_pct;
-    this.y_pct = other.y_pct;
-    this.z_pct = other.z_pct;
-    this.intensity_pct = other.intensity_pct;
-    this.colour = other.colour;
+    super(other);
     this.px = other.px;
     this.py = other.py;
     this.pz = other.pz;
+  }
+
+  /** Copy from an engine-side light (data only; derived coords recomputed). */
+  public Light(final com.springie.world.Light other) {
+    super(other);
+    initDerived();
   }
 }
