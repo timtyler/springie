@@ -3,7 +3,7 @@ package com.springie.messages.commands;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
-import com.springie.demos.CompassPoint;
+import com.springie.elements.CompassPoint;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.messages.NewMessage;
 

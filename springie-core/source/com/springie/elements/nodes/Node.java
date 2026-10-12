@@ -3,7 +3,7 @@
 package com.springie.elements.nodes;
 
 import com.springie.FrEnd;
-import com.springie.demos.CompassPoint;
+import com.springie.elements.CompassPoint;
 import com.springie.elements.base.BaseElement;
 import com.springie.elements.clazz.ClazzFactory;
 import com.springie.elements.lists.ListOfIntegers;

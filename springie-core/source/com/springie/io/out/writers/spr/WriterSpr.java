@@ -2,7 +2,7 @@ package com.springie.io.out.writers.spr;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
-import com.springie.demos.CompassPoint;
+import com.springie.elements.CompassPoint;
 import com.springie.render.modules.modern.Light;
 import com.springie.render.modules.modern.LightSource;
 import com.springie.elements.base.BaseElement;

@@ -6,7 +6,7 @@ import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.context.ModelManager;
 import com.springie.context.ModelSlot;
-import com.springie.demos.DemoCatalog;
+import com.springie.messages.DemoRegistry;
 import com.springie.gui.frames.FrameMain;
 import com.springie.io.out.writers.eig.WriterEIG;
 import com.springie.io.out.writers.fdl.WriterFDL;
@@ -198,12 +198,12 @@ public class MenuBarTop extends MenuBar {
 
   /**
    * Procedural demos, built in code rather than loaded from files. The demos
-   * offered and the messages that launch them come from DemoCatalog, which
+   * offered and the messages that launch them come from DemoRegistry, which
    * the bottom button bar's file card also reads.
    */
   private Menu makeDemosMenu() {
     final Menu demos = new Menu("Demos");
-    for (final DemoCatalog.Demo demo : DemoCatalog.DEMOS) {
+    for (final DemoRegistry.Demo demo : DemoRegistry.demos()) {
       final MenuItem item = new MenuItem(demo.name);
       item.addActionListener(new ActionListener() {
         public void actionPerformed(final ActionEvent e) {

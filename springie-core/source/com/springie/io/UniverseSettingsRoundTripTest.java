@@ -3,7 +3,7 @@ package com.springie.io;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
-import com.springie.demos.CompassPoint;
+import com.springie.elements.CompassPoint;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.io.in.DataInput;

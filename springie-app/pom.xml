@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Springie app module: assembles the executable jar by shading
+  springie-base, springie-core and springie-demos together.
+  No sources of its own, just the packaging.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.springie</groupId>
+    <artifactId>springie-parent</artifactId>
+    <version>1.03</version>
+  </parent>
+
+  <artifactId>springie-app</artifactId>
+  <name>Springie app</name>
+  <description>The executable Springie jar.</description>
+
+  <!-- Keep the historic jar name. -->
+  <build>
+    <finalName>springie-${project.version}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.6.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <!-- Merge META-INF/services so the SLF4J provider and the
+                     DemoProvider are found. -->
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>com.springie.FrEnd</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <!-- mvn package exec:exec: build the shaded jar, then run it. -->
+          <executable>java</executable>
+          <arguments>
+            <argument>-jar</argument>
+            <argument>${project.build.directory}/${project.build.finalName}.jar</argument>
+          </arguments>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.springie</groupId>
+      <artifactId>springie-base</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.springie</groupId>
+      <artifactId>springie</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.springie</groupId>
+      <artifactId>springie-demos</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+</project>

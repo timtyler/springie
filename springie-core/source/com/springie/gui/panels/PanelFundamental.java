@@ -4,7 +4,7 @@ package com.springie.gui.panels;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
-import com.springie.demos.DemoCatalog;
+import com.springie.messages.DemoRegistry;
 import com.springie.gui.components.ButtonBar;
 import com.springie.gui.components.ChoiceWithDescription;
 import com.springie.gui.components.ImageButton;
@@ -374,8 +374,8 @@ public class PanelFundamental {
           return;
         }
         // The placeholder maps to no demo and is ignored.
-        final DemoCatalog.Demo demo =
-            DemoCatalog.forName((String) e.getItem());
+        final DemoRegistry.Demo demo =
+            DemoRegistry.forName((String) e.getItem());
         if (demo != null) {
           // Demos are built in code, not loaded from a file, so show the
           // demo's name in the window title the way file loads do.
@@ -385,7 +385,7 @@ public class PanelFundamental {
       }
     });
     this.choose_demo.choice.addItem(DEMO_PLACEHOLDER);
-    for (final DemoCatalog.Demo demo : DemoCatalog.DEMOS) {
+    for (final DemoRegistry.Demo demo : DemoRegistry.demos()) {
       this.choose_demo.choice.addItem(demo.name);
     }
   }
@@ -612,7 +612,7 @@ public class PanelFundamental {
         // demos -- sync the hidden demos dropdown so launchSelected() works.
         final String preset = FrEnd.choose_preset_index.choice.getSelectedItem();
         if ("Demos".equals(preset)) {
-          final DemoCatalog.Demo demo = DemoCatalog.forName(string);
+          final DemoRegistry.Demo demo = DemoRegistry.forName(string);
           if (demo != null && choose_demo != null) {
             choose_demo.choice.select(string);
           }
@@ -679,7 +679,7 @@ public class PanelFundamental {
   private void setUpDemosLeafIndex() {
     FrEnd.choose_initial.removeAll();
     FrEnd.choose_initial.hashtable.clear();
-    for (final DemoCatalog.Demo demo : DemoCatalog.DEMOS) {
+    for (final DemoRegistry.Demo demo : DemoRegistry.demos()) {
       FrEnd.choose_initial.choice.addItem(demo.name);
       FrEnd.choose_initial.hashtable.put(demo.name, demo.name);
     }
@@ -769,7 +769,7 @@ public class PanelFundamental {
       // Populate Initial with the demo names (as setUpDemosLeafIndex does).
       FrEnd.choose_initial.removeAll();
       FrEnd.choose_initial.hashtable.clear();
-      for (final DemoCatalog.Demo demo : DemoCatalog.DEMOS) {
+      for (final DemoRegistry.Demo demo : DemoRegistry.demos()) {
         FrEnd.choose_initial.choice.addItem(demo.name);
         FrEnd.choose_initial.hashtable.put(demo.name, demo.name);
       }
@@ -790,7 +790,7 @@ public class PanelFundamental {
    * selected model file, as before.
    */
   void launchSelected() {
-    final DemoCatalog.Demo demo = selectedDemo();
+    final DemoRegistry.Demo demo = selectedDemo();
     if (demo != null) {
       // Demos are built in code, not loaded from a file, so show the
       // demo's name in the window title the way file loads do.
@@ -805,12 +805,12 @@ public class PanelFundamental {
    * The demo currently chosen in the demos dropdown, or null when the
    * placeholder is showing (a model file is current).
    */
-  DemoCatalog.Demo selectedDemo() {
+  DemoRegistry.Demo selectedDemo() {
     if (this.choose_demo == null) {
       return null;
     }
     // The placeholder maps to no demo.
-    return DemoCatalog.forName(this.choose_demo.choice.getSelectedItem());
+    return DemoRegistry.forName(this.choose_demo.choice.getSelectedItem());
   }
 
   public static String getXMLIndexPath() {

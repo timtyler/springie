@@ -1,7 +1,7 @@
 package com.springie.io;
 
 import com.springie.context.ContextManager;
-import com.springie.demos.CompassPoint;
+import com.springie.elements.CompassPoint;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;

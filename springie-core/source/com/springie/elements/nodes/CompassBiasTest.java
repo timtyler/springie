@@ -4,7 +4,7 @@ package com.springie.elements.nodes;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
-import com.springie.demos.CompassPoint;
+import com.springie.elements.CompassPoint;
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
 import com.springie.world.World;

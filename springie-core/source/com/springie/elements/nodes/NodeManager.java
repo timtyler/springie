@@ -4,7 +4,7 @@ package com.springie.elements.nodes;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
-import com.springie.demos.CompassPoint;
+import com.springie.elements.CompassPoint;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.electrostatics.ElectrostaticRepulsion;
 import com.springie.elements.links.LinkManager;
