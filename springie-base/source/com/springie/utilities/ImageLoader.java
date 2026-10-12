@@ -7,7 +7,6 @@
  **/
 
 package com.springie.utilities;
-import com.springie.FrEnd;
 import java.awt.Toolkit;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -55,9 +54,7 @@ public final class ImageLoader {
     try {
       //Log.log("Starting to load: " + name);
 
-      in = FrEnd.class.getResourceAsStream(name);
-
-      //in = ImageLoader.class.getResourceAsStream(name);
+      in = ImageLoader.class.getResourceAsStream(name);
       if (in == null) {
         throw new RuntimeException("Problem locating image file: " + name);
       }
