@@ -6,7 +6,7 @@ import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.world.NewMessage;
-import com.springie.modification.automaticradius.AutomaticLinkRadius;
+import com.springie.io.in.AutomaticLinkRadius;
 
 public class AutomaticLinkRadiusMessage extends NewMessage {
   public AutomaticLinkRadiusMessage() {

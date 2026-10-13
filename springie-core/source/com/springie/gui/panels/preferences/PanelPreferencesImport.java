@@ -3,6 +3,7 @@
 package com.springie.gui.panels.preferences;
 
 import com.springie.FrEnd;
+import com.springie.io.IoConfig;
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
 import java.awt.Label;
@@ -22,7 +23,7 @@ public class PanelPreferencesImport {
 
   private Checkbox checkbox_merge;
 
-  public static int import_scale = 94;
+  // IoConfig.import_scale now in IoConfig (io module).
 
   public PanelPreferencesImport() {
     makePanel();
@@ -34,7 +35,7 @@ public class PanelPreferencesImport {
         "Merge new structures with the scene");
     this.checkbox_merge.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        FrEnd.merge = ((Checkbox) e.getSource()).getState();
+        IoConfig.merge = ((Checkbox) e.getSource()).getState();
       }
     });
     panel_merge.add(this.checkbox_merge);
@@ -49,16 +50,16 @@ public class PanelPreferencesImport {
     panel.add("West", new Label("Import scale:", Label.RIGHT));
 
     this.scroll_bar_import_scale = new Scrollbar(Scrollbar.HORIZONTAL,
-        import_scale, 10, 0, 110);
+        IoConfig.import_scale, 10, 0, 110);
     this.scroll_bar_import_scale
         .addAdjustmentListener(new AdjustmentListener() {
           public void adjustmentValueChanged(final AdjustmentEvent e) {
-            import_scale = e.getValue();
+            IoConfig.import_scale = e.getValue();
             reflectImportScale();
           }
         });
     panel.add("Center", this.scroll_bar_import_scale);
-    this.label_import_scale = new Label("" + import_scale, Label.LEFT);
+    this.label_import_scale = new Label("" + IoConfig.import_scale, Label.LEFT);
 
     panel.add("East", this.label_import_scale);
 
@@ -66,18 +67,18 @@ public class PanelPreferencesImport {
   }
 
   public void reflectImportScale() {
-    this.scroll_bar_import_scale.setValue(import_scale);
-    this.label_import_scale.setText("" + import_scale);
+    this.scroll_bar_import_scale.setValue(IoConfig.import_scale);
+    this.label_import_scale.setText("" + IoConfig.import_scale);
   }
 
   /**
    * Restores the default import preferences.
    */
   public void resetToDefaults() {
-    FrEnd.merge = false;
+    IoConfig.merge = false;
     this.checkbox_merge.setState(false);
 
-    import_scale = 94;
+    IoConfig.import_scale = 94;
     reflectImportScale();
   }
 }

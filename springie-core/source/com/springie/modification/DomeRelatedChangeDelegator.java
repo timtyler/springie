@@ -14,7 +14,7 @@ import com.springie.modification.flags.FlagControllerFixed;
 import com.springie.modification.flags.FlagControllerHidden;
 import com.springie.modification.flags.FlagControllerRope;
 import com.springie.modification.resize.LinkLengthEqualisation;
-import com.springie.modification.resize.LinkResetter;
+import com.springie.io.in.LinkResetter;
 import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 

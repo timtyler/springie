@@ -1,0 +1,63 @@
+package com.springie.io.in.redundancy;
+
+import com.springie.elements.faces.Face;
+import com.springie.elements.faces.FaceType;
+import com.springie.elements.nodes.NodeManager;
+import java.util.ArrayList;
+
+public class TypeRedundancyRemoverFace {
+  NodeManager node_manager;
+
+  public TypeRedundancyRemoverFace(NodeManager node_manager) {
+    this.node_manager = node_manager;
+  }
+
+  public void removeRedundancy() {
+    removeRedundancyInFaceTypes();
+
+    this.node_manager.getFaceManager().each_has_its_own_type = false;
+  }
+
+  // polygons...
+  public void removeRedundancyInFaceTypes() {
+    final ArrayList<FaceType> v = this.node_manager.getFaceManager().face_type_factory.array;
+    final int size = v.size();
+    for (int i = size; --i >= 0;) {
+      final FaceType nt = v.get(i);
+      if (equalspreviousPolygonType(v, i)) {
+        final int first = getFirstPolygonType(v, nt, i);
+        replacePolygonTypeWithPrevious(v, i, first);
+      }
+    }
+  }
+
+  private void replacePolygonTypeWithPrevious(final ArrayList<FaceType> v, final int old, final int nww) {
+    final FaceType nt_old = v.get(old);
+    final FaceType nt_nww = v.get(nww);
+    final int n_o_p = this.node_manager.getFaceManager().element.size();
+    for (int i = n_o_p; --i >= 0;) {
+      final Face p = (Face) this.node_manager.getFaceManager().element.get(i);
+      if (p.type.equals(nt_old)) {
+        p.type = nt_nww;
+      }
+    }
+
+    v.remove(old);
+  }
+
+  private int getFirstPolygonType(final ArrayList<FaceType> v, final FaceType t, final int max) {
+    for (int i = max; --i >= 0;) {
+      if (t.equals(v.get(i))) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
+
+  private boolean equalspreviousPolygonType(final ArrayList<FaceType> v, final int max) {
+    final FaceType t = v.get(max);
+
+    return getFirstPolygonType(v, t, max) > 0;
+  }
+}

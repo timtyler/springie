@@ -4,6 +4,7 @@ package com.springie.gui.panels.preferences;
 
 import com.springie.FrEnd;
 import com.springie.gui.components.TTChoice;
+import com.springie.io.IoConfig;
 import com.springie.preferences.Preferences;
 import java.awt.BorderLayout;
 import java.awt.Label;
@@ -25,9 +26,9 @@ public class PanelPreferencesPOVExport {
 
   private Label label_pov_immersion_depth;
 
-  public static int pov_immersion_depth;
+  // IoConfig.pov_immersion_depth now in IoConfig (io module).
 
-  public static int pov_view_height = 50;
+  // IoConfig.pov_view_height now in IoConfig (io module).
 
   private TTChoice choose_pov_ground;
 
@@ -53,16 +54,16 @@ public class PanelPreferencesPOVExport {
     panel.add("West", new Label("POV: Immersion depth:", Label.RIGHT));
 
     this.scroll_bar_pov_immersion_depth = new Scrollbar(Scrollbar.HORIZONTAL,
-        pov_immersion_depth, 10, 0, 110);
+        IoConfig.pov_immersion_depth, 10, 0, 110);
     this.scroll_bar_pov_immersion_depth
         .addAdjustmentListener(new AdjustmentListener() {
           public void adjustmentValueChanged(final AdjustmentEvent e) {
-            pov_immersion_depth = e.getValue();
+            IoConfig.pov_immersion_depth = e.getValue();
             reflectPOVImmersionDepth();
           }
         });
     panel.add("Center", this.scroll_bar_pov_immersion_depth);
-    this.label_pov_immersion_depth = new Label("" + pov_immersion_depth,
+    this.label_pov_immersion_depth = new Label("" + IoConfig.pov_immersion_depth,
         Label.LEFT);
 
     panel.add("East", this.label_pov_immersion_depth);
@@ -71,8 +72,8 @@ public class PanelPreferencesPOVExport {
   }
 
   public void reflectPOVImmersionDepth() {
-    this.scroll_bar_pov_immersion_depth.setValue(pov_immersion_depth);
-    this.label_pov_immersion_depth.setText("" + pov_immersion_depth);
+    this.scroll_bar_pov_immersion_depth.setValue(IoConfig.pov_immersion_depth);
+    this.label_pov_immersion_depth.setText("" + IoConfig.pov_immersion_depth);
   }
 
   private Panel setUpSliderPOVViewHeight() {
@@ -81,16 +82,16 @@ public class PanelPreferencesPOVExport {
     panel.add("West", new Label("POV: View height:", Label.RIGHT));
 
     this.scroll_bar_pov_view_height = new Scrollbar(Scrollbar.HORIZONTAL,
-        pov_view_height, 10, 0, 110);
+        IoConfig.pov_view_height, 10, 0, 110);
     this.scroll_bar_pov_view_height
         .addAdjustmentListener(new AdjustmentListener() {
           public void adjustmentValueChanged(final AdjustmentEvent e) {
-            pov_view_height = e.getValue();
+            IoConfig.pov_view_height = e.getValue();
             reflectPOVViewHeight();
           }
         });
     panel.add("Center", this.scroll_bar_pov_view_height);
-    this.label_pov_view_height = new Label("" + pov_view_height, Label.LEFT);
+    this.label_pov_view_height = new Label("" + IoConfig.pov_view_height, Label.LEFT);
 
     panel.add("East", this.label_pov_view_height);
 
@@ -98,8 +99,8 @@ public class PanelPreferencesPOVExport {
   }
 
   public void reflectPOVViewHeight() {
-    this.scroll_bar_pov_view_height.setValue(pov_view_height);
-    this.label_pov_view_height.setText("" + pov_view_height);
+    this.scroll_bar_pov_view_height.setValue(IoConfig.pov_view_height);
+    this.label_pov_view_height.setText("" + IoConfig.pov_view_height);
   }
 
   private Panel getPOVCompressionPanel() {
@@ -174,10 +175,10 @@ public class PanelPreferencesPOVExport {
    * their defaults from the (freshly reset) Preferences map.
    */
   public void resetToDefaults() {
-    pov_immersion_depth = 0;
+    IoConfig.pov_immersion_depth = 0;
     reflectPOVImmersionDepth();
 
-    pov_view_height = 50;
+    IoConfig.pov_view_height = 50;
     reflectPOVViewHeight();
 
     this.choose_pov_compression.choice.select((String) FrEnd.preferences.map

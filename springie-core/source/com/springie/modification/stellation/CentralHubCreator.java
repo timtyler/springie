@@ -9,7 +9,7 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
 import com.springie.geometry.Point3D;
 import com.springie.elements.nodes.PostModification;
-import com.springie.modification.pre.PrepareToModifyLinkTypes;
+import com.springie.elements.links.PrepareToModifyLinkTypes;
 import com.springie.elements.nodes.PrepareToModifyNodeTypes;
 
 public class CentralHubCreator {

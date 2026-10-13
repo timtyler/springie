@@ -1,6 +1,8 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.preferences;
+
+import com.springie.io.IoConfig;
 import com.springie.world.World;
 
 import com.springie.FrEnd;
@@ -49,16 +51,16 @@ class PreferencesResetTest {
         FrEnd.action_left_type = Actions.KILL;
         FrEnd.action_middle_type = Actions.KILL;
         FrEnd.action_right_type = Actions.KILL;
-        FrEnd.merge = true;
+        IoConfig.merge = true;
         World.quality = Quality.SOLID;
         World.xor = true;
 
         Coords.shift_constant_x = 12345;
         Coords.shift_constant_y = -999;
 
-        PanelPreferencesImport.import_scale = 5;
-        PanelPreferencesPOVExport.pov_view_height = 99;
-        PanelPreferencesPOVExport.pov_immersion_depth = 77;
+        IoConfig.import_scale = 5;
+        IoConfig.pov_view_height = 99;
+        IoConfig.pov_immersion_depth = 77;
         FrEnd.preferences.map.put(Preferences.key_output_pov_sky, "black");
         FrEnd.preferences.map.put(Preferences.key_output_pov_ground, "rock");
         FrEnd.preferences.map.put(Preferences.key_output_pov_compression,
@@ -127,7 +129,7 @@ class PreferencesResetTest {
       assertEquals(Actions.SELECT, FrEnd.action_left_type);
       assertEquals(Actions.TRANSLATE, FrEnd.action_middle_type);
       assertEquals(Actions.ROTATE, FrEnd.action_right_type);
-      assertFalse(FrEnd.merge);
+      assertFalse(IoConfig.merge);
       assertEquals(Quality.THICK_OUTLINE, World.quality);
       assertFalse(World.xor);
 
@@ -135,9 +137,9 @@ class PreferencesResetTest {
       assertEquals(0, Coords.shift_constant_y);
       assertEquals(Coords.shift_shifted, Coords.shift_constant_z);
 
-      assertEquals(94, PanelPreferencesImport.import_scale);
-      assertEquals(50, PanelPreferencesPOVExport.pov_view_height);
-      assertEquals(0, PanelPreferencesPOVExport.pov_immersion_depth);
+      assertEquals(94, IoConfig.import_scale);
+      assertEquals(50, IoConfig.pov_view_height);
+      assertEquals(0, IoConfig.pov_immersion_depth);
       assertEquals("white",
           FrEnd.preferences.map.get(Preferences.key_output_pov_sky));
       assertEquals("none",

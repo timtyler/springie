@@ -3,6 +3,8 @@
 // How broken? Bins? Surely not.
 
 package com.springie;
+
+import com.springie.io.IoConfig;
 import com.springie.world.World;
 
 import com.springie.constants.Actions;
@@ -78,8 +80,8 @@ import com.springie.elements.nodes.PostModification;
 import com.springie.modification.pre.PrepareToModifyFaceClazzes;
 import com.springie.modification.pre.PrepareToModifyFaceTypes;
 import com.springie.modification.pre.PrepareToModifyLinkClazzes;
-import com.springie.modification.pre.PrepareToModifyLinkTypes;
-import com.springie.modification.pre.PrepareToModifyNodeClazzes;
+import com.springie.elements.links.PrepareToModifyLinkTypes;
+import com.springie.elements.nodes.PrepareToModifyNodeClazzes;
 import com.springie.elements.nodes.PrepareToModifyNodeTypes;
 import com.springie.muscles.Muscles;
 import com.springie.preferences.Preferences;
@@ -161,7 +163,13 @@ public class FrEnd extends Panel implements Runnable {
 
 
 
-  public static boolean output_linefeeds = true;
+  static {
+    // Wire up io module callbacks (decoupled from FrEnd).
+    IoConfig.after_property_editing = FrEnd::reflectValuesInGUIAfterPropertyEditing;
+    IoConfig.after_serious_editing = FrEnd::reflectAllValuesInGUIAfterSeriousEditing;
+    IoConfig.select_all = () -> FrEnd.perform_selection.selectAll();
+    IoConfig.deselect_all = () -> FrEnd.perform_selection.deselectAll();
+  }
 
 
 
@@ -171,7 +179,6 @@ public class FrEnd extends Panel implements Runnable {
   public static int node_initial_size = 32;
 
 
-  public static boolean merge;
 
   static boolean draw_guide = true;
 

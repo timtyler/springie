@@ -8,7 +8,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.modification.pre.PrepareToModifyFaceClazzes;
 import com.springie.modification.pre.PrepareToModifyLinkClazzes;
-import com.springie.modification.pre.PrepareToModifyNodeClazzes;
+import com.springie.elements.nodes.PrepareToModifyNodeClazzes;
 import com.springie.render.RendererDelegator;
 
 public class ColourChanger {

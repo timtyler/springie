@@ -4,7 +4,7 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.PostModification;
-import com.springie.modification.pre.PrepareToModifyLinkTypes;
+import com.springie.elements.links.PrepareToModifyLinkTypes;
 
 public class FlagControllerDisabled {
   NodeManager node_manager;

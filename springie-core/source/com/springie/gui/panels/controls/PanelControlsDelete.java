@@ -12,7 +12,7 @@ import com.springie.messages.commands.DeleteSelectedMessage;
 import com.springie.messages.commands.RemoveLinkAndFuseEndsMessage;
 import com.springie.messages.commands.RemoveLinksMessage;
 import com.springie.messages.commands.RemovePolygonsMessage;
-import com.springie.modification.links.FuseSelectedNodes;
+import com.springie.io.in.FuseSelectedNodes;
 import java.awt.Button;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;

@@ -1,6 +1,8 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.presets;
+
+import com.springie.utilities.ColourFactory;
 import com.springie.world.World;
 
 import com.springie.FrEnd;
