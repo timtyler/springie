@@ -24,7 +24,7 @@ To package, use:
 mvn clean package
 
 To run, use:
-java -jar target/springie-1.03.jar
+java -jar springie-app/target/springie-1.03.jar
 
 To build and run with one command, use:
 mvn package exec:exec

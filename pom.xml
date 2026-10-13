@@ -119,6 +119,20 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <!-- mvn package exec:exec from the root runs this goal on every
+               module; only springie-app (which overrides skip below) should
+               actually launch anything. The executable must still be valid
+               here because Maven checks required parameters before the
+               mojo's skip logic runs. -->
+          <skip>true</skip>
+          <executable>java</executable>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
