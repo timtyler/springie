@@ -1,0 +1,172 @@
+package com.springie.modification;
+
+import com.springie.context.ContextManager;
+import com.springie.elements.links.LinkManager;
+import com.springie.elements.nodes.NodeManager;
+import com.springie.metrics.AverageChargeGetter;
+import com.springie.metrics.AverageElasticityGetter;
+import com.springie.metrics.AverageLengthGetter;
+import com.springie.metrics.AverageRadiusGetter;
+import com.springie.metrics.AverageStiffnessGetter;
+import com.springie.modification.flags.FlagControllerDisabled;
+import com.springie.modification.flags.FlagControllerFixed;
+import com.springie.modification.flags.FlagControllerHidden;
+import com.springie.modification.flags.FlagControllerRope;
+import com.springie.modification.resize.LinkLengthEqualisation;
+import com.springie.io.in.LinkResetter;
+import com.springie.geometry.Coords;
+import com.springie.render.RendererDelegator;
+
+public final class DomeRelatedChangeDelegator {
+  NodeManager node_manager;
+
+  LinkManager link_manager;
+
+  private DomeRelatedChangeDelegator() {
+    // ...
+  }
+
+  public static void equaliseLinkLengths() {
+    LinkLengthEqualisation tool;
+    tool = new LinkLengthEqualisation(ContextManager.getNodeManager());
+    tool.equalise();
+  }
+
+  // The +/- buttons on the Properties > Scalars panel nudge the selected
+  // value by a single step in slider units, clamped to the slider's range.
+  // (They used to scale multiplicatively by a percentage taken from an
+  // unrelated scrollbar on the Misc panel, which meant the step size was
+  // unpredictable, + then - did not return to the starting value, and at
+  // zero the + button did nothing at all. Worse, the damping pair was
+  // mismatched: "+" scaled elasticity while "-" scaled damping.)
+
+  // Slider ranges (maximum - visible amount) for the Scalars panel.
+  private static final int DAMPING_MIN = 0;
+  private static final int DAMPING_MAX = 200;
+  private static final int ELASTICITY_MIN = 0;
+  private static final int ELASTICITY_MAX = 350;
+  private static final int LENGTH_MIN_PX = 0;
+  private static final int LENGTH_MAX_PX = 9799;
+  private static final int RADIUS_SHIFT = 7;
+  private static final int RADIUS_MIN = 0;
+  private static final int RADIUS_MAX = 799;
+  private static final int CHARGE_MIN = -100;
+  private static final int CHARGE_MAX = 100;
+
+  private static int clamp(final int value, final int min, final int max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  public static void shortenLinks() {
+    changeLengthBy(-1);
+  }
+
+  public static void lengthenLinks() {
+    changeLengthBy(1);
+  }
+
+  private static void changeLengthBy(final int delta_px) {
+    CommandContextHolder.get().prepareToModifyLinkTypes();
+    final int average_px = new AverageLengthGetter(
+        ContextManager.getNodeManager()).getAverage() >> Coords.shift;
+    final int new_px = clamp(average_px + delta_px, LENGTH_MIN_PX,
+        LENGTH_MAX_PX);
+    ContextManager.getLinkManager()
+        .setLengthOfSelected(new_px << Coords.shift);
+  }
+
+  public static void expand() {
+    changeRadiusBy(1);
+  }
+
+  public static void contract() {
+    changeRadiusBy(-1);
+  }
+
+  private static void changeRadiusBy(final int delta) {
+    CommandContextHolder.get().prepareToModifyAllTypes();
+    final int average = new AverageRadiusGetter(
+        ContextManager.getNodeManager()).getAverage() >> RADIUS_SHIFT;
+    final int new_value = clamp(average + delta, RADIUS_MIN, RADIUS_MAX)
+        << RADIUS_SHIFT;
+    ContextManager.getLinkManager().setRadiusOfSelected(new_value);
+    ContextManager.getNodeManager().setRadiusOfSelected(new_value);
+    RendererDelegator.repaintAll();
+  }
+
+  public static void chargeDown() {
+    changeChargeBy(-1);
+  }
+
+  public static void chargeUp() {
+    changeChargeBy(1);
+  }
+
+  private static void changeChargeBy(final int delta) {
+    CommandContextHolder.get().prepareToModifyNodeTypes();
+    final int average = new AverageChargeGetter(
+        ContextManager.getNodeManager()).getAverage();
+    ContextManager.getNodeManager()
+        .setChargeOfSelected(clamp(average + delta, CHARGE_MIN, CHARGE_MAX));
+    CommandContextHolder.get().postCleanup();
+  }
+
+  public static void elasticityUp() {
+    changeElasticityBy(1);
+  }
+
+  public static void elasticityDown() {
+    changeElasticityBy(-1);
+  }
+
+  private static void changeElasticityBy(final int delta) {
+    CommandContextHolder.get().prepareToModifyLinkTypes();
+    final int average = new AverageElasticityGetter(
+        ContextManager.getNodeManager()).getAverage();
+    ContextManager.getLinkManager().setElasticityOfSelected(
+        clamp(average + delta, ELASTICITY_MIN, ELASTICITY_MAX));
+  }
+
+  public static void stiffnessUp() {
+    changeDampingBy(1);
+  }
+
+  public static void stiffnessDown() {
+    changeDampingBy(-1);
+  }
+
+  private static void changeDampingBy(final int delta) {
+    CommandContextHolder.get().prepareToModifyLinkTypes();
+    final int average = new AverageStiffnessGetter(
+        ContextManager.getNodeManager()).getAverage();
+    ContextManager.getLinkManager().setStiffnessOfSelected(
+        clamp(average + delta, DAMPING_MIN, DAMPING_MAX));
+  }
+
+  public static void resetLinkLengths() {
+    new LinkResetter(ContextManager.getNodeManager()).reset();
+  }
+
+  public static void hide() {
+    new FlagControllerHidden(ContextManager.getNodeManager())
+        .hide(CommandContextHolder.get().getFlagHidden());
+    CommandContextHolder.get().postCleanup();
+  }
+
+  public static void fix() {
+    new FlagControllerFixed(ContextManager.getNodeManager())
+        .fix(CommandContextHolder.get().getFlagPinned());
+  }
+
+  public static void rope() {
+    new FlagControllerRope(ContextManager.getNodeManager())
+        .rope(CommandContextHolder.get().getFlagCompression(), CommandContextHolder.get().getFlagTension());
+    CommandContextHolder.get().postCleanup();
+  }
+
+  public static void disable() {
+    new FlagControllerDisabled(ContextManager.getNodeManager())
+        .disable(CommandContextHolder.get().getFlagDisabled());
+    CommandContextHolder.get().postCleanup();
+  }
+}

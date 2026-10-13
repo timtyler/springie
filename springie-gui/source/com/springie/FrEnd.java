@@ -1248,6 +1248,47 @@ public class FrEnd extends Panel implements Runnable {
       public void killAllLinks(final com.springie.elements.nodes.Node node) { FrEnd.killAllLinks(node); }
       public void greyStepIfNeeded() { FrEnd.greyStepIfNeeded(); }
       public void setFilePath(final String path) { FrEnd.setFilePath(path); }
+      // Panel reflect methods (Tim, 2026-10-13, Phase 2).
+      public void reflectCharge() { FrEnd.panel_edit_properties_scalars.reflectCharge(); }
+      public void reflectCompass() { FrEnd.panel_edit_properties_scalars.reflectCompass(); }
+      public void reflectElasticity() { FrEnd.panel_edit_properties_scalars.reflectElasticity(); }
+      public void reflectLength() { FrEnd.panel_edit_properties_scalars.reflectLength(); }
+      public void reflectPhase() { FrEnd.panel_edit_properties_scalars.reflectPhase(); }
+      public void reflectRadius() { FrEnd.panel_edit_properties_scalars.reflectRadius(); }
+      public void reflectStiffness() { FrEnd.panel_edit_properties_scalars.reflectStiffness(); }
+      // Generate panel values (Tim, 2026-10-13, Phase 2).
+      public String getGenerateFreeNodes() { return FrEnd.panel_edit_generate.textfield_generate_free_nodes.getText(); }
+      public String getGenerateMatrixX() { return FrEnd.panel_edit_generate.textfield_generate_matrix_x.getText(); }
+      public String getGenerateMatrixY() { return FrEnd.panel_edit_generate.textfield_generate_matrix_y.getText(); }
+      public String getGenerateMatrixZ() { return FrEnd.panel_edit_generate.textfield_generate_matrix_z.getText(); }
+      public String getGenerateSpherePack() { return FrEnd.panel_edit_generate.textfield_generate_sphere_pack.getText(); }
+      public String getGenerateStringLength() { return FrEnd.panel_edit_generate.textfield_generate_string_length.getText(); }
+      public String getGenerateTubeCircumference() { return FrEnd.panel_edit_generate.textfield_generate_tube_circumference.getText(); }
+      public String getGenerateTubeLength() { return FrEnd.panel_edit_generate.textfield_generate_tube_length.getText(); }
+      // Misc panel values (Tim, 2026-10-13, Phase 2).
+      public boolean getSplitLinksRemoveOld() { return FrEnd.panel_edit_misc.checkbox_split_links_remove_old.getState(); }
+      public String getAddNodesInnerEden() { return FrEnd.panel_edit_misc.textfield_add_nodes_inner_eden.getText(); }
+      public String getAddPolygons() { return FrEnd.panel_edit_misc.textfield_add_polygons.getText(); }
+      public String getAddStellations() { return FrEnd.panel_edit_misc.textfield_add_stellations.getText(); }
+      public String getAddTriaxialNodes() { return FrEnd.panel_edit_misc.textfield_add_triaxial_nodes.getText(); }
+      public String getAutomaticLinkRadius() { return FrEnd.panel_edit_misc.textfield_automatic_link_radius.getText(); }
+      public String getAutomaticNodeRadius() { return FrEnd.panel_edit_misc.textfield_automatic_node_radius.getText(); }
+      public String getLinkNearestNNodes() { return FrEnd.panel_edit_misc.textfield_link_nearest_n_nodes.getText(); }
+      public String getSplitLinks() { return FrEnd.panel_edit_misc.textfield_split_links.getText(); }
+      // Select advanced panel values (Tim, 2026-10-13, Phase 2).
+      public String getSelectFacesWithNSides() { return FrEnd.panel_edit_select_advanced.textfield_select_faces_with_n_sides.getText(); }
+      public String getNextFilePath() { return "" + FrEnd.next_file_path; }
+      public int getGeneration() { return FrEnd.generation; }
+      public void incrementGeneration() { FrEnd.generation++; }
+      public int getColourPickerColour() { return FrEnd.panel_edit_color.color_picker_controller.getColour(); }
+      public boolean getFlagCompression() { return FrEnd.panel_edit_properties_flags.checkbox_compression.getState(); }
+      public boolean getFlagDisabled() { return FrEnd.panel_edit_properties_flags.checkbox_disabled.getState(); }
+      public boolean getFlagHidden() { return FrEnd.panel_edit_properties_flags.checkbox_hidden.getState(); }
+      public boolean getFlagPinned() { return FrEnd.panel_edit_properties_flags.checkbox_pinned.getState(); }
+      public boolean getFlagTension() { return FrEnd.panel_edit_properties_flags.checkbox_tension.getState(); }
+      public int[] transferLinkLengths() { return new com.springie.gui.gestures.TransferUtilities().transferLinkLengths(); }
+      public int[] transferLinkRadii() { return new com.springie.gui.gestures.TransferUtilities().transferLinkRadii(); }
+      public int[] transferNodeRadii() { return new com.springie.gui.gestures.TransferUtilities().transferNodeRadii(); }
     });
 
     FrEnd.application = true;

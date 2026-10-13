@@ -1,0 +1,29 @@
+//This program has been placed into the public domain by its author.
+
+package com.springie.messages.commands;
+
+import com.springie.modification.CommandContextHolder;
+
+import com.springie.context.ContextManager;
+import com.springie.elements.nodes.NodeManager;
+import com.springie.world.NewMessage;
+import com.springie.modification.faces.FaceMaker;
+
+public class AddPolygonsMessage extends NewMessage {
+  public AddPolygonsMessage() {
+    super(null);
+  }
+
+  public Object execute() {
+    final NodeManager node_manager = ContextManager.getNodeManager();
+    final FaceMaker polygon_maker = new FaceMaker(node_manager);
+    //final int c = CommandContextHolder.get().getColourPickerColour();
+    final int i = Integer
+      .parseInt(CommandContextHolder.get().getAddPolygons());
+    polygon_maker.addPolygons(i);
+
+    CommandContextHolder.get().postCleanup();
+
+    return null;
+  }
+}
