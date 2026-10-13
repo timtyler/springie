@@ -1,6 +1,6 @@
 // This program has been placed into the public domain by its author.
 
-package com.springie.presets;
+package com.springie.gui;
 
 import com.springie.gui.components.ChoiceWithDescription;
 import com.springie.io.in.ResourceLoader;

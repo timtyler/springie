@@ -2,7 +2,6 @@
 
 package com.springie.preferences;
 
-import com.springie.FrEnd;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +20,6 @@ public class Preferences {
     this.map.put(Preferences.key_output_pov_ground, "none");
     this.map.put(Preferences.key_output_pov_sky, "white");
     this.map.put(Preferences.key_output_pov_compression, "bulge");
-    this.map.put(Preferences.key_update_animation_when_pointer_over, Boolean.valueOf(FrEnd.viewer));
+    this.map.put(Preferences.key_update_animation_when_pointer_over, Boolean.valueOf(false));
   }
 }

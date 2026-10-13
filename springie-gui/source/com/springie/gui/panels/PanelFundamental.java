@@ -17,7 +17,7 @@ import com.springie.world.NewMessage;
 import com.springie.world.NewMessageManager;
 import com.springie.messages.commands.DeleteSelectedMessage;
 import com.springie.messages.commands.SelectClazzMessage;
-import com.springie.presets.AddXMLModelIndexLeaves;
+import com.springie.gui.AddXMLModelIndexLeaves;
 import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.utilities.FilePath;

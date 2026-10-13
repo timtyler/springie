@@ -5,7 +5,6 @@ package com.springie.presets;
 import com.springie.utilities.ColourFactory;
 import com.springie.world.World;
 
-import com.springie.FrEnd;
 import com.springie.io.in.readers.spr.ReaderSPR;
 import com.springie.world.ArgumentList;
 import com.springie.utilities.random.JUR;
@@ -60,7 +59,7 @@ public final class PresetObjects {
     // }
     // }
 
-    FrEnd.setFilePath(location);
+    com.springie.io.IoConfig.set_file_path.accept(location);
 
     return new ReaderSPR().translate(location);
   }

@@ -40,10 +40,22 @@
       <artifactId>springie-io</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.springie</groupId>
+      <artifactId>springie-gui</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- Shared test helpers (GuiTestSupport) from core. -->
     <dependency>
       <groupId>com.springie</groupId>
       <artifactId>springie</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.springie</groupId>
+      <artifactId>springie-gui</artifactId>
       <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>

@@ -169,6 +169,8 @@ public class FrEnd extends Panel implements Runnable {
     IoConfig.after_serious_editing = FrEnd::reflectAllValuesInGUIAfterSeriousEditing;
     IoConfig.select_all = () -> FrEnd.perform_selection.selectAll();
     IoConfig.deselect_all = () -> FrEnd.perform_selection.deselectAll();
+    IoConfig.on_reset = () -> FrEnd.extension.calledOnReset();
+    IoConfig.set_file_path = FrEnd::setFilePath;
   }
 
 

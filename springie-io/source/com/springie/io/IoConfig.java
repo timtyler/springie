@@ -28,4 +28,6 @@ public class IoConfig {
   public static Runnable after_serious_editing = () -> {};
   public static Runnable select_all = () -> {};
   public static Runnable deselect_all = () -> {};
+  public static Runnable on_reset = () -> {};
+  public static java.util.function.Consumer<String> set_file_path = (s) -> {};
 }

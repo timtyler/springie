@@ -15,7 +15,7 @@ import com.springie.io.out.writers.off.WriterOFF;
 import com.springie.io.out.writers.pov.WriterPOV;
 import com.springie.io.out.writers.spr.WriterSpr;
 import com.springie.io.out.writers.wrl.WriterWRL;
-import com.springie.presets.AddXMLModelIndexLeaves;
+import com.springie.gui.AddXMLModelIndexLeaves;
 import com.springie.utilities.FilePath;
 import java.awt.CheckboxMenuItem;
 import java.awt.FileDialog;
