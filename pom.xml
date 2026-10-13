@@ -35,6 +35,7 @@
     <module>springie-engine</module>
     <module>springie-renderer</module>
     <module>springie-io</module>
+    <module>springie-presets</module>
     <module>springie-core</module>
     <module>springie-gui</module>
     <module>springie-demos</module>

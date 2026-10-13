@@ -158,16 +158,16 @@ class WheelbarrowDemoTest {
     assertNotNull(hub0);
 
     final NodeManager nm = ContextManager.getNodeManager();
-    // 6 nodes per rim x 2 rims + 2 hubs + 2 handle nodes + 2 feet x 3 = 22.
-    // (Tim, 2026-10-01: hexagonal prism, axle, N/S, handle -- nothing else;
-    // Tim, 2026-10-10: triangular foot on each handle end.)
-    assertEquals(22, nm.element.size());
+    // 6 nodes per rim x 2 rims + 2 hubs + 2 handle nodes = 16.
+    // (Tim, 2026-10-01: hexagonal prism, axle, N/S, handle -- nothing else.
+    // Triangular feet removed 2026-10-13: they exploded the model.)
+    assertEquals(16, nm.element.size());
 
     final LinkManager lm = nm.getLinkManager();
     // 6 segments x 5 (rim0, rim1, cross, 2 mirror diagonals) = 30 rim
     // links + 1 rigid axle + 12 passive spokes + 2 handle shafts
-    // + 1 handle cross-brace + 2 X-brace cables + 2 feet x 4 = 56.
-    assertEquals(56, lm.element.size());
+    // + 1 handle cross-brace + 2 X-brace cables = 48.
+    assertEquals(48, lm.element.size());
   }
 
   @Test
@@ -221,7 +221,7 @@ class WheelbarrowDemoTest {
         handle_count++;
       }
     }
-    assertEquals(13, handle_count, "must have 13 handle links");
+    assertEquals(5, handle_count, "must have 5 handle links");
   }
 
   @Test

@@ -42,6 +42,11 @@
     </dependency>
     <dependency>
       <groupId>com.springie</groupId>
+      <artifactId>springie-presets</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.springie</groupId>
       <artifactId>springie</artifactId>
       <version>${project.version}</version>
     </dependency>
