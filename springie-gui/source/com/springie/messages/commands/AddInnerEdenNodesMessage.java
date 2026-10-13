@@ -2,6 +2,8 @@
 
 package com.springie.messages.commands;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
@@ -22,7 +24,7 @@ public class AddInnerEdenNodesMessage extends NewMessage {
     hexagon_maker.createNodesInTriaxialOuterLayer(sf4);
     //createNodesInInnerEdenLayer(sf4);
     //hexagon_maker.createNodesInTriaxialOuterLayer(sf4);
-    FrEnd.postCleanup();
+    CommandContextHolder.get().postCleanup();
 
     return null;
   }

@@ -1,6 +1,8 @@
 //This program has been placed into the public domain by its author.
 package com.springie.messages.commands;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
@@ -16,7 +18,7 @@ public class ColourCartesianMessage extends NewMessage {
     final NodeManager node_manager = ContextManager.getNodeManager();
 
     new ColourClassificationCartesian(node_manager).setColour();
-    FrEnd.postCleanup();
+    CommandContextHolder.get().postCleanup();
 
     return null;
   }

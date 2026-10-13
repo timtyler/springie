@@ -1,6 +1,8 @@
 //This program has been placed into the public domain by its author.
 package com.springie.messages.commands;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.faces.FaceManager;
@@ -21,7 +23,7 @@ public class DeleteSelectedMessage extends NewMessage {
     node_manager.deleteSelected();
     link_manager.deleteSelected();
     face_manager.deleteSelected();
-    FrEnd.postCleanup();
+    CommandContextHolder.get().postCleanup();
 
     return null;
   }

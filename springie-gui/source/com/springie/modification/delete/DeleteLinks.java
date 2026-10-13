@@ -1,5 +1,7 @@
 package com.springie.modification.delete;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
@@ -22,7 +24,7 @@ public class DeleteLinks {
     for (int counter = number_of_nodes; --counter >= 0;) {
       final Node candidate = (Node) this.node_manager.element.get(counter);
       if (candidate.type.selected) {
-        FrEnd.killAllLinks(candidate);
+        CommandContextHolder.get().killAllLinks(candidate);
       }
     }
     

@@ -1,6 +1,8 @@
 //This program has been placed into the public domain by its author.
 package com.springie.messages.commands;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.links.LinkManager;
@@ -21,7 +23,7 @@ public class AlterPhaseMessage extends NewMessage {
 
     link_manager.setPhaseOfSelected(this.phase);
     FrEnd.panel_edit_properties_scalars.reflectPhase();
-    FrEnd.reflectValuesInGUIAfterPropertyEditing();
+    CommandContextHolder.get().reflectValuesInGUIAfterPropertyEditing();
 
     return null;
   }

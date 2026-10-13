@@ -2,6 +2,8 @@
 
 package com.springie.messages.commands;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
@@ -21,7 +23,7 @@ public class AddPolygonsMessage extends NewMessage {
       .parseInt(FrEnd.panel_edit_misc.textfield_add_polygons.getText());
     polygon_maker.addPolygons(i);
 
-    FrEnd.postCleanup();
+    CommandContextHolder.get().postCleanup();
 
     return null;
   }

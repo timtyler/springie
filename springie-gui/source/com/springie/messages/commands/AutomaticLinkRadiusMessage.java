@@ -2,6 +2,8 @@
 
 package com.springie.messages.commands;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
@@ -20,7 +22,7 @@ public class AutomaticLinkRadiusMessage extends NewMessage {
       .getText();
     final double alr_d = Double.parseDouble(alr_s);
     alr.set(alr_d);
-    FrEnd.postCleanup();
+    CommandContextHolder.get().postCleanup();
 
     return null;
   }

@@ -1,6 +1,8 @@
 //This program has been placed into the public domain by its author.
 package com.springie.messages;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.world.NewMessage;
 import com.springie.world.World;
 
@@ -16,8 +18,8 @@ public class SystemMessages {
         // would load the preset into a stale, invisible manager and the
         // restart would appear to do nothing.
         ModelManager.replaceCurrentModel("" + FrEnd.next_file_path);
-        FrEnd.setFilePath(ModelManager.activeFilePath());
-        FrEnd.reflectAllValuesInGUIAfterSeriousEditing();
+        CommandContextHolder.get().setFilePath(ModelManager.activeFilePath());
+        CommandContextHolder.get().reflectAllValuesInGUIAfterSeriousEditing();
         return null;
       }
     };
@@ -39,7 +41,7 @@ public class SystemMessages {
       public Object execute() {
         World.paused = !World.paused;
         //FrEnd.panel_fundamental.button_bar_paused.getState();
-        FrEnd.greyStepIfNeeded();
+        CommandContextHolder.get().greyStepIfNeeded();
         return null;
       }
     };

@@ -1,6 +1,8 @@
 // This code has been placed into the public domain by its author
 package com.springie.modification.links;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
@@ -34,7 +36,7 @@ public class RemoveLinkAndFuseEnds {
       }
     }
     
-    FrEnd.postCleanup();
+    CommandContextHolder.get().postCleanup();
   }
 
   private void deleteAndFuseEnds(final Link l) {

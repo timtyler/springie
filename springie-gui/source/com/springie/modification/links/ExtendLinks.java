@@ -1,5 +1,7 @@
 package com.springie.modification.links;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.Link;
@@ -40,7 +42,7 @@ public class ExtendLinks {
       }
     }
 
-    FrEnd.postCleanup();
+    CommandContextHolder.get().postCleanup();
   }
 
   private void extend(final Link l, final float sf) {

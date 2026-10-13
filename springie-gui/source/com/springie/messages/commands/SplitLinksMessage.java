@@ -2,6 +2,8 @@
 
 package com.springie.messages.commands;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
@@ -24,7 +26,7 @@ public class SplitLinksMessage extends NewMessage {
 
     ls.divide(ls_i, b);
 
-    FrEnd.postCleanup();
+    CommandContextHolder.get().postCleanup();
 
     return null;
   }

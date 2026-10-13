@@ -1,6 +1,8 @@
 //This program has been placed into the public domain by its author.
 package com.springie.messages.commands;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.faces.FaceManager;
@@ -18,11 +20,11 @@ public class DeselectAllMessage extends NewMessage {
     final FaceManager face_manager = node_manager.getFaceManager();
     final LinkManager link_manager = node_manager.getLinkManager();
 
-    FrEnd.prepareToModifyAllTypes();
+    CommandContextHolder.get().prepareToModifyAllTypes();
     node_manager.deselectAll();
     link_manager.deselectAll();
     face_manager.deselectAll();
-    FrEnd.postCleanup();
+    CommandContextHolder.get().postCleanup();
 
     return null;
   }

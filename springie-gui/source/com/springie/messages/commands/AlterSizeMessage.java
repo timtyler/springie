@@ -1,6 +1,8 @@
 //This program has been placed into the public domain by its author.
 package com.springie.messages.commands;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.links.LinkManager;
@@ -19,10 +21,10 @@ public class AlterSizeMessage extends NewMessage {
     final NodeManager node_manager = ContextManager.getNodeManager();
     final LinkManager link_manager = node_manager.getLinkManager();
 
-    FrEnd.prepareToModifyAllTypes();
+    CommandContextHolder.get().prepareToModifyAllTypes();
     node_manager.setSizeOfSelected((byte) this.size);
     link_manager.setSizeOfSelected(this.size);
-    FrEnd.reflectValuesInGUIAfterPropertyEditing();
+    CommandContextHolder.get().reflectValuesInGUIAfterPropertyEditing();
 
     return null;
   }

@@ -2,6 +2,8 @@
 
 package com.springie.messages.commands;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
@@ -18,7 +20,7 @@ public class RemovePolygonsMessage extends NewMessage {
     final DeletePolygons deleter_p = new DeletePolygons(node_manager);
     deleter_p.delete();
 
-    FrEnd.postCleanup();
+    CommandContextHolder.get().postCleanup();
 
     return null;
   }

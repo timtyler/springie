@@ -67,7 +67,7 @@ public final class DomeRelatedChangeDelegator {
   }
 
   private static void changeLengthBy(final int delta_px) {
-    FrEnd.prepareToModifyLinkTypes();
+    CommandContextHolder.get().prepareToModifyLinkTypes();
     final int average_px = new AverageLengthGetter(
         ContextManager.getNodeManager()).getAverage() >> Coords.shift;
     final int new_px = clamp(average_px + delta_px, LENGTH_MIN_PX,
@@ -85,7 +85,7 @@ public final class DomeRelatedChangeDelegator {
   }
 
   private static void changeRadiusBy(final int delta) {
-    FrEnd.prepareToModifyAllTypes();
+    CommandContextHolder.get().prepareToModifyAllTypes();
     final int average = new AverageRadiusGetter(
         ContextManager.getNodeManager()).getAverage() >> RADIUS_SHIFT;
     final int new_value = clamp(average + delta, RADIUS_MIN, RADIUS_MAX)
@@ -104,12 +104,12 @@ public final class DomeRelatedChangeDelegator {
   }
 
   private static void changeChargeBy(final int delta) {
-    FrEnd.prepareToModifyNodeTypes();
+    CommandContextHolder.get().prepareToModifyNodeTypes();
     final int average = new AverageChargeGetter(
         ContextManager.getNodeManager()).getAverage();
     ContextManager.getNodeManager()
         .setChargeOfSelected(clamp(average + delta, CHARGE_MIN, CHARGE_MAX));
-    FrEnd.postCleanup();
+    CommandContextHolder.get().postCleanup();
   }
 
   public static void elasticityUp() {
@@ -121,7 +121,7 @@ public final class DomeRelatedChangeDelegator {
   }
 
   private static void changeElasticityBy(final int delta) {
-    FrEnd.prepareToModifyLinkTypes();
+    CommandContextHolder.get().prepareToModifyLinkTypes();
     final int average = new AverageElasticityGetter(
         ContextManager.getNodeManager()).getAverage();
     ContextManager.getLinkManager().setElasticityOfSelected(
@@ -137,7 +137,7 @@ public final class DomeRelatedChangeDelegator {
   }
 
   private static void changeDampingBy(final int delta) {
-    FrEnd.prepareToModifyLinkTypes();
+    CommandContextHolder.get().prepareToModifyLinkTypes();
     final int average = new AverageStiffnessGetter(
         ContextManager.getNodeManager()).getAverage();
     ContextManager.getLinkManager().setStiffnessOfSelected(
@@ -151,7 +151,7 @@ public final class DomeRelatedChangeDelegator {
   public static void hide() {
     new FlagControllerHidden(ContextManager.getNodeManager())
         .hide(FrEnd.panel_edit_properties_flags.checkbox_hidden.getState());
-    FrEnd.postCleanup();
+    CommandContextHolder.get().postCleanup();
   }
 
   public static void fix() {
@@ -162,12 +162,12 @@ public final class DomeRelatedChangeDelegator {
   public static void rope() {
     new FlagControllerRope(ContextManager.getNodeManager())
         .rope(FrEnd.panel_edit_properties_flags.checkbox_compression.getState(), FrEnd.panel_edit_properties_flags.checkbox_tension.getState());
-    FrEnd.postCleanup();
+    CommandContextHolder.get().postCleanup();
   }
 
   public static void disable() {
     new FlagControllerDisabled(ContextManager.getNodeManager())
         .disable(FrEnd.panel_edit_properties_flags.checkbox_disabled.getState());
-    FrEnd.postCleanup();
+    CommandContextHolder.get().postCleanup();
   }
 }

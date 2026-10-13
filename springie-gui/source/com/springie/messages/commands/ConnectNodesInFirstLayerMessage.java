@@ -2,6 +2,8 @@
 
 package com.springie.messages.commands;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
@@ -17,7 +19,7 @@ public class ConnectNodesInFirstLayerMessage extends NewMessage {
     final NodeManager node_manager = ContextManager.getNodeManager();
     final GeodesicMaker geodesic_maker = new GeodesicMaker(node_manager);
     geodesic_maker.connectNodesInFirstLayer();
-    FrEnd.postCleanup();
+    CommandContextHolder.get().postCleanup();
 
     return null;
   }

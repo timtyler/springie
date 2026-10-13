@@ -1,5 +1,7 @@
 package com.springie.modification.polyhedra;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.LinkManager;
@@ -48,7 +50,7 @@ public class MakeLinksToNearestNode {
       createLinks(i, list_of_nearest);
     }
 
-    FrEnd.postCleanup();
+    CommandContextHolder.get().postCleanup();
   }
 
   private int[] getArrayOfSelectedNodes() {

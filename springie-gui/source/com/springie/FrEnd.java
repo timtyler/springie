@@ -55,6 +55,7 @@ import com.springie.gui.panels.controls.PanelControlsSelectLinks;
 import com.springie.gui.panels.controls.PanelControlsSelectMain;
 import com.springie.gui.panels.controls.PanelControlsStatistics;
 import com.springie.gui.panels.controls.PanelControlsUniverse;
+import com.springie.modification.CommandContextHolder;
 import com.springie.gui.panels.controls.PanelControlsVelocities;
 import com.springie.gui.panels.preferences.PanelPreferences;
 import com.springie.gui.panels.preferences.PanelPreferencesDisplay;
@@ -1233,6 +1234,22 @@ public class FrEnd extends Panel implements Runnable {
 
     final FrEnd frontend = new FrEnd();
 
+    // Wire the command context for decoupled commands (Tim, 2026-10-13).
+    // Uses an anonymous implementation to avoid static/instance name clashes.
+    CommandContextHolder.set(new com.springie.modification.CommandContext() {
+      public void prepareToModifyAllTypes() { FrEnd.prepareToModifyAllTypes(); }
+      public void prepareToModifyNodeTypes() { FrEnd.prepareToModifyNodeTypes(); }
+      public void prepareToModifyLinkTypes() { FrEnd.prepareToModifyLinkTypes(); }
+      public void prepareToModifyFaceTypes() { FrEnd.prepareToModifyFaceTypes(); }
+      public void postCleanup() { FrEnd.postCleanup(); }
+      public void reflectAllValuesInGUIAfterSeriousEditing() { FrEnd.reflectAllValuesInGUIAfterSeriousEditing(); }
+      public void reflectValuesInGUIAfterPropertyEditing() { FrEnd.reflectValuesInGUIAfterPropertyEditing(); }
+      public void updateGUIToReflectSelectionChange() { FrEnd.updateGUIToReflectSelectionChange(); }
+      public void killAllLinks(final com.springie.elements.nodes.Node node) { FrEnd.killAllLinks(node); }
+      public void greyStepIfNeeded() { FrEnd.greyStepIfNeeded(); }
+      public void setFilePath(final String path) { FrEnd.setFilePath(path); }
+    });
+
     FrEnd.application = true;
 
     frame_main = new FrameMain(window_title_prefix, frontend);
@@ -1241,4 +1258,6 @@ public class FrEnd extends Panel implements Runnable {
 
     FrEnd.applyControlsWindowOptions();
   }
+
+
 }

@@ -2,6 +2,8 @@
 
 package com.springie.modification.projection;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.gui.gestures.TransferUtilities;
 
 import com.springie.FrEnd;
@@ -45,7 +47,7 @@ public class RescaleManager {
 
     rescaleLinks(scale_factor);
 
-    FrEnd.postCleanup(); // *unless* cache contains radii...
+    CommandContextHolder.get().postCleanup(); // *unless* cache contains radii...
   }
 
   private void rescaleNodes(final float scale_factor) {

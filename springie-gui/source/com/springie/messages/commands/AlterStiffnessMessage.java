@@ -1,6 +1,8 @@
 //This program has been placed into the public domain by its author.
 package com.springie.messages.commands;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.links.LinkManager;
@@ -19,10 +21,10 @@ public class AlterStiffnessMessage extends NewMessage {
     final NodeManager node_manager = ContextManager.getNodeManager();
     final LinkManager link_manager = node_manager.getLinkManager();
 
-    FrEnd.prepareToModifyLinkTypes();
+    CommandContextHolder.get().prepareToModifyLinkTypes();
     link_manager.setStiffnessOfSelected(this.stiffness);
     FrEnd.panel_edit_properties_scalars.reflectStiffness();
-    FrEnd.reflectValuesInGUIAfterPropertyEditing();
+    CommandContextHolder.get().reflectValuesInGUIAfterPropertyEditing();
 
     return null;
   }

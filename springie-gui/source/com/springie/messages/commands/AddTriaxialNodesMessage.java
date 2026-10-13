@@ -2,6 +2,8 @@
 
 package com.springie.messages.commands;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
@@ -20,7 +22,7 @@ public class AddTriaxialNodesMessage extends NewMessage {
       .parseFloat(FrEnd.panel_edit_misc.textfield_add_triaxial_nodes
         .getText());
     hexagon_maker.createNodesInTriaxialOuterLayer(sf2);
-    FrEnd.postCleanup();
+    CommandContextHolder.get().postCleanup();
 
     return null;
   }

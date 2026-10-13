@@ -1,6 +1,8 @@
 //This program has been placed into the public domain by its author.
 package com.springie.messages.commands;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
@@ -17,10 +19,10 @@ public class AlterChargeMessage extends NewMessage {
   public Object execute() {
     final NodeManager node_manager = ContextManager.getNodeManager();
 
-    FrEnd.prepareToModifyNodeTypes();
+    CommandContextHolder.get().prepareToModifyNodeTypes();
     node_manager.setChargeOfSelected(this.charge);
     FrEnd.panel_edit_properties_scalars.reflectCharge();
-    FrEnd.reflectValuesInGUIAfterPropertyEditing();
+    CommandContextHolder.get().reflectValuesInGUIAfterPropertyEditing();
 
     return null;
   }

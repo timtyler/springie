@@ -1,5 +1,7 @@
 package com.springie.modification.faces;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.faces.Face;
@@ -68,7 +70,7 @@ public class FaceMaker {
     }
 
     if (created > 0) {
-      FrEnd.updateGUIToReflectSelectionChange();
+      CommandContextHolder.get().updateGUIToReflectSelectionChange();
     }
 
     return created;

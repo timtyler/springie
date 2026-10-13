@@ -2,6 +2,8 @@
 
 package com.springie.messages.commands;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
@@ -18,7 +20,7 @@ public class AddCentralHubMessage extends NewMessage {
     final CentralHubCreator central_hub_creator = new CentralHubCreator(
       node_manager);
     central_hub_creator.create();
-    FrEnd.postCleanup();
+    CommandContextHolder.get().postCleanup();
 
     return null;
   }

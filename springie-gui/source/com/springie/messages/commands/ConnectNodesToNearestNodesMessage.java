@@ -2,6 +2,8 @@
 
 package com.springie.messages.commands;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
@@ -21,7 +23,7 @@ public class ConnectNodesToNearestNodesMessage extends NewMessage {
       .parseInt(FrEnd.panel_edit_misc.textfield_link_nearest_n_nodes
         .getText());
     mltnn.connectNodesToNearestNodes(n_nearest);
-    FrEnd.postCleanup();
+    CommandContextHolder.get().postCleanup();
 
     return null;
   }

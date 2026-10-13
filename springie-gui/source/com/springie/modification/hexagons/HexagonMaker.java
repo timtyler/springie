@@ -1,5 +1,7 @@
 package com.springie.modification.hexagons;
 
+import com.springie.modification.CommandContextHolder;
+
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
@@ -55,7 +57,7 @@ public class HexagonMaker {
 //      createLinks(i, list_of_nearest);
 //    }
 //
-//    FrEnd.postCleanup();
+//    CommandContextHolder.get().postCleanup();
 //  }
 //
 //  private int[] getArrayOfSelectedNodes() {
