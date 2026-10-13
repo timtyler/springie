@@ -2,7 +2,7 @@
 
 package com.springie.gui.colourpicker;
 
-import com.springie.io.out.WriteFloatingPoint;
+import com.springie.utilities.WriteFloatingPoint;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 

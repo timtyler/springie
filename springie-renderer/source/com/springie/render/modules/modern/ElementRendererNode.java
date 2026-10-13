@@ -3,7 +3,6 @@
 package com.springie.render.modules.modern;
 import com.springie.world.World;
 
-import com.springie.FrEnd;
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;

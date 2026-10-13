@@ -1,4 +1,4 @@
-package com.springie.render;
+package com.springie.gui;
 import com.springie.world.World;
 
 import com.springie.FrEnd;

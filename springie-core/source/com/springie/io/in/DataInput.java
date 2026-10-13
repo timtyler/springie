@@ -46,7 +46,7 @@ public class DataInput {
    * Last model-load error to paint on the canvas (null if none).
    * Set when a load fails; cleared on the next successful load.
    */
-  public static String load_error = null;
+  
 
   Reader in;
 
@@ -187,13 +187,13 @@ public class DataInput {
     try {
       input = new ReaderSPR().translate(filename);
       // Success: clear any previous load error.
-      load_error = null;
+      World.load_error = null;
     } catch (IOException e) {
       logger.error("Unexpected exception", e);
-      load_error = "Failed to load: " + filename + " (" + e.getMessage() + ")";
+      World.load_error = "Failed to load: " + filename + " (" + e.getMessage() + ")";
     } catch (SAXException e) {
       logger.error("Unexpected exception", e);
-      load_error = "Failed to parse: " + filename + " (" + e.getMessage() + ")";
+      World.load_error = "Failed to parse: " + filename + " (" + e.getMessage() + ")";
     }
 
     if (World.development_version) {

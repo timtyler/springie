@@ -2,7 +2,6 @@
 package com.springie.render;
 import com.springie.geometry.Coords;
 
-import com.springie.gui.gestures.DragBoxManager;
 import java.awt.Graphics;
 import java.awt.Point;
 
@@ -29,15 +28,17 @@ public class RendererDragBox {
    */
   public boolean cache_valid = false;
 
-  public void draw(final Graphics g, final DragBoxManager drag_box_manager) {
-    drawDragBox(g, drag_box_manager);
+  public void draw(final Graphics g) {
+    drawDragBox(g);
   }
 
-  private void drawDragBox(final Graphics g, final DragBoxManager drag_box_manager) {
+  private void drawDragBox(final Graphics g) {
+    final Point drag_box_start = RendererDelegator.drag_box_start;
+    final Point drag_box_end = RendererDelegator.drag_box_end;
     g.setClip(0, 0, 9999, 9999);
-    if (drag_box_manager.drag_box_end != null) {
-      if (drag_box_manager.drag_box_start != null) {
-        cacheDragBoxCoordinates(drag_box_manager);
+    if (drag_box_end != null) {
+      if (drag_box_start != null) {
+        cacheDragBoxCoordinates(drag_box_start, drag_box_end);
 
         // No erase step: every frame painted during a drag repaints the
         // damaged region (the bins are forced dirty, the ray-traced
@@ -48,7 +49,6 @@ public class RendererDragBox {
         g.setColor(RendererDelegator.colour_selected);
         drawTheCurrentDragBox(g);
       } else {
-        drag_box_manager.drag_box_end = null;
         resetMaxAndMin();
       }
     }
@@ -60,9 +60,7 @@ public class RendererDragBox {
     this.cache_valid = false;
   }
 
-  private void cacheDragBoxCoordinates(final DragBoxManager drag_box_manager) {
-    final Point one = drag_box_manager.drag_box_start;
-    final Point two = drag_box_manager.drag_box_end;
+  private void cacheDragBoxCoordinates(final Point one, final Point two) {
 
     if (this.cache_valid) {
       this.last_min.x = this.min.x;

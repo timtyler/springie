@@ -5,7 +5,7 @@ import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.world.ArgumentList;
-import com.springie.render.SetUpCode;
+import com.springie.gui.SetUpCode;
 
 public final class ProceduralObjects {
   private ProceduralObjects() {

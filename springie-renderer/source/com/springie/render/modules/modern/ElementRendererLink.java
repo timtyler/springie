@@ -7,9 +7,7 @@ import com.springie.elements.links.Link;
 import com.springie.elements.nodes.Node;
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
-import com.springie.gui.panels.controls.PanelControlsStatistics;
-import com.springie.gui.panels.preferences.PanelPreferencesRendererModern;
-import com.springie.io.out.WriteFloatingPoint;
+import com.springie.utilities.WriteFloatingPoint;
 import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import java.util.ArrayList;
@@ -394,7 +392,7 @@ public final class ElementRendererLink {
       return_vector.add(composite);
     }
 
-    final int render_label_when = PanelPreferencesRendererModern.render_label_when;
+    final int render_label_when = RendererDelegator.render_label_when;
 
     if (render_label_when == 1 || render_label_when == 3 && link.isSelected()) {
       return_vector.add(addRelevantText(link, min_z));
@@ -522,7 +520,7 @@ public final class ElementRendererLink {
     final int length = link.type.length;
 
     final double fraction = length
-        / (double) PanelControlsStatistics.length_of_shortest_link;
+        / (double) RendererDelegator.length_of_shortest_link;
 
     final String text = emitFloat(fraction);
     final int length_of_text = text.length();

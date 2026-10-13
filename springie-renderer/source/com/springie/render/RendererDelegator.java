@@ -2,14 +2,10 @@ package com.springie.render;
 import com.springie.geometry.Coords;
 import com.springie.world.World;
 
-import com.springie.FrEnd;
 import com.springie.composite.Reproduction;
 import com.springie.context.ContextManager;
 import com.springie.explosions.fragments.LineFragmentManager;
 import com.springie.explosions.particles.ParticleManager;
-import com.springie.gui.gestures.DragBoxManager;
-import com.springie.gui.panels.UpdateEnabledComponents;
-import com.springie.io.in.DataInput;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;
@@ -42,6 +38,14 @@ public final class RendererDelegator {
   public static int generation;
 
   public static boolean repaint_all_objects = true;
+  public static boolean show_boundary_box = true;
+  public static boolean show_exhaust;
+  public static boolean render_anaglyph;
+  /** The main canvas; set by FrEnd during initialization. */
+  public static RenderCanvas canvas;
+  /** Drag-box selection points; set by the GUI's DragBoxManager. */
+  public static java.awt.Point drag_box_start;
+  public static java.awt.Point drag_box_end;
 
   public static boolean repaint_some_objects = true;
 
@@ -256,7 +260,9 @@ public final class RendererDelegator {
 
     refreshFpsLabel();
 
-    UpdateEnabledComponents.actuallyUpdate();
+    if (components_updater != null) {
+      components_updater.run();
+    }
   }
 
   /**
@@ -265,7 +271,7 @@ public final class RendererDelegator {
    * the logs.
    */
   private static void paintLoadError(final Graphics graphics) {
-    final String error = DataInput.load_error;
+    final String error = World.load_error;
     if (error == null) {
       return;
     }
@@ -307,16 +313,32 @@ public final class RendererDelegator {
    * from the paint path, so the AWT label is always touched on a thread
    * that may touch AWT.
    */
+  /** Set by the GUI to display the FPS. */
+  public static java.util.function.Consumer<String> fps_display;
+
   static void refreshFpsLabel() {
     if (fps_dirty) {
       fps_dirty = false;
-      FrEnd.panel_preferences_display.label_fps_value.setText(fps_string);
+      if (fps_display != null) {
+        fps_display.accept(fps_string);
+      }
     }
   }
 
+  /** Set by the GUI; called when the extension needs updating. */
+  public static Runnable extension_updater;
+  /** Set by the GUI; called to update enabled components. */
+  public static Runnable components_updater;
+  /** When to render labels (renderer setting). */
+  public static int render_label_when = 2;
+  /** Length of the shortest link (for scaling). */
+  public static int length_of_shortest_link;
+
   private static void possibleInitialClear(final Graphics graphics) {
     if (World.module) {
-      FrEnd.extension.update();
+      if (extension_updater != null) {
+        extension_updater.run();
+      }
     }
 
     if (RendererDelegator.repaint_all_objects || World.repaint_requested) {
@@ -358,8 +380,7 @@ public final class RendererDelegator {
    */
 
   private static void renderDragBox(final Graphics graphics) {
-    final DragBoxManager drag_box_manager = FrEnd.perform_actions.drag_box_manager;
-    final boolean repaint = drag_box_manager.drag_box_end != null;
+    final boolean repaint = RendererDelegator.drag_box_end != null;
 
     // The modern tiled renderer draws the box into the tiles as geometry
     // (see ModularRendererNew.addDragBoxToTiles), and the ray tracer
@@ -376,7 +397,7 @@ public final class RendererDelegator {
       // tracer includes the damaged region in its dirty rectangles; the
       // old polygon renderer gets a full clear-and-redraw (see below).
       final RendererDragBox drag_box_renderer = RendererDelegator.drag_box;
-      drag_box_renderer.draw(graphics, FrEnd.perform_actions.drag_box_manager);
+      drag_box_renderer.draw(graphics);
     }
 
     if (repaint) {
@@ -387,7 +408,7 @@ public final class RendererDelegator {
       // DragBoxManager.drag) and when frames complete, which is enough
       // to keep the box up to date.
       if (!raytraced) {
-        FrEnd.main_canvas.panel.repaint();
+        RendererDelegator.canvas.getPanel().repaint();
         if (RendererDelegator.renderer
             instanceof com.springie.render.modules.original.ModularRendererOld) {
           // The old polygon renderer paints straight onto the screen with
@@ -456,9 +477,12 @@ public final class RendererDelegator {
    * one physics frame. Package-private for testing.
    */
   static void stepIfNeeded() {
-    if (FrEnd.stepping > 0) {
-      if (--FrEnd.stepping == 0) {
-        FrEnd.endStepping();
+    if (World.stepping > 0) {
+      if (--World.stepping == 0) {
+        World.paused = true;
+        if (World.stepping_finished != null) {
+          World.stepping_finished.run();
+        }
       }
     }
   }

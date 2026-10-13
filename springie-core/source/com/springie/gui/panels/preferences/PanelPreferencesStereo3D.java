@@ -39,10 +39,10 @@ public class PanelPreferencesStereo3D {
 
   void makePanel() {
     final Panel panel_anaglyph = new Panel();
-    this.checkbox_anaglyph = new Checkbox("Stereo3D", FrEnd.render_anaglyph);
+    this.checkbox_anaglyph = new Checkbox("Stereo3D", RendererDelegator.render_anaglyph);
     this.checkbox_anaglyph.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        FrEnd.render_anaglyph = ((Checkbox) e.getSource()).getState();
+        RendererDelegator.render_anaglyph = ((Checkbox) e.getSource()).getState();
         RendererDelegator.repaintAll();
       }
     });

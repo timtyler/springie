@@ -1,9 +1,10 @@
 // This code has been placed into the public domain by its author
 
-package com.springie.render;
+package com.springie.gui;
 
 import com.springie.FrEnd;
 import com.springie.gui.components.DropablePanel;
+import com.springie.render.RendererDelegator;
 import java.awt.Graphics;
 import java.awt.Panel;
 
@@ -16,11 +17,11 @@ public final class RendererPanels {
     final Panel panel = new Panel() {
       static final long serialVersionUID = 1250;
       public void paint(final Graphics g) {
-        FrEnd.main_canvas.paint(g);
+        RendererDelegator.canvas.paint(g);
       }
 
       public void update(final Graphics g) {
-        FrEnd.main_canvas.update(g);
+        RendererDelegator.canvas.update(g);
       }
     };
     return panel;
@@ -31,11 +32,11 @@ public final class RendererPanels {
       final DropablePanel panel = new DropablePanel() {
         static final long serialVersionUID = 1250;
         public void paint(final Graphics g) {
-          FrEnd.main_canvas.paint(g);
+          RendererDelegator.canvas.paint(g);
         }
 
         public void update(final Graphics g) {
-          FrEnd.main_canvas.update(g);
+          RendererDelegator.canvas.update(g);
         }
       };
       return panel;

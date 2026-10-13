@@ -2,7 +2,6 @@
 
 package com.springie.render.modules.modern;
 
-import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.geometry.Coords;
 import com.springie.geometry.DepthSort;
@@ -330,13 +329,13 @@ public class RendererTileManager {
       final int aa, final int px, final int coarse_w, final int coarse_h,
       final int render_w, final int render_h) {
     if (tile.image == null) {
-      FrEnd.main_canvas.panel
+      RendererDelegator.canvas.getPanel()
           .setBackground(RendererDelegator.color_background);
       if (aa > 1 || px > 1) {
         tile.image = new BufferedImage(render_w, render_h,
             BufferedImage.TYPE_INT_RGB);
       } else {
-        tile.image = FrEnd.main_canvas.createImage(block_size,
+        tile.image = RendererDelegator.canvas.createImage(block_size,
             block_size);
       }
     }

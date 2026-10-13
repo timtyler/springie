@@ -3,7 +3,6 @@
 package com.springie.render;
 import com.springie.geometry.Coords;
 
-import com.springie.FrEnd;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Random;
@@ -27,7 +26,7 @@ import java.util.Random;
  * outline appears to sparkle on all over rather than tracing the edges in
  * turn, and it is the same every run.
  *
- * <p>On by default; see FrEnd.show_boundary_box.
+ * <p>On by default; see RendererDelegator.show_boundary_box.
  */
 public final class BoundaryBoxDots {
   /** Total dots in the outline, shared across however many edges draw. */
@@ -71,10 +70,10 @@ public final class BoundaryBoxDots {
 
   /**
    * Plots a single gray dot of the boundary-box outline. Call once per
-   * frame; a no-op unless FrEnd.show_boundary_box is on.
+   * frame; a no-op unless RendererDelegator.show_boundary_box is on.
    */
   public static void drawOneDot(final Graphics g) {
-    if (!FrEnd.show_boundary_box) {
+    if (!RendererDelegator.show_boundary_box) {
       return;
     }
     rebuildIfViewChanged();

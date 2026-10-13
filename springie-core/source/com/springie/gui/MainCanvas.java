@@ -1,6 +1,11 @@
 // This code has been placed into the public domain by its author
 
-package com.springie.render;
+package com.springie.gui;
+
+import com.springie.render.RenderCanvas;
+import com.springie.render.LightSourceDots;
+import com.springie.render.RendererDelegator;
+import com.springie.render.BoundaryBoxDots;
 import com.springie.world.World;
 import com.springie.geometry.Coords;
 
@@ -24,10 +29,14 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.ImageObserver;
 
-public class MainCanvas {
+public class MainCanvas implements RenderCanvas {
   static final long serialVersionUID = 1250; 
 
   public Panel panel = RendererPanels.setUpPanelForFrame2();
+
+  public Panel getPanel() {
+    return this.panel;
+  }
 
   RendererInfoButton info_button = new RendererInfoButton();
 

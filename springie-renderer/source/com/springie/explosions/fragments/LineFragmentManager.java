@@ -2,7 +2,6 @@
 
 package com.springie.explosions.fragments;
 
-import com.springie.FrEnd;
 import com.springie.render.RendererDelegator;
 import java.awt.Color;
 
@@ -40,7 +39,7 @@ public final class LineFragmentManager {
   }
 
   public static void update() {
-    if (FrEnd.show_exhaust) {
+    if (RendererDelegator.show_exhaust) {
       if (current_max_number > 0) {
         RendererDelegator.graphics_handle.setColor(RendererDelegator.color_background);
 

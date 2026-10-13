@@ -51,7 +51,7 @@ public class DragBoxTrailTest {
   private static BufferedImage capture() throws Exception {
     final BufferedImage[] img = new BufferedImage[1];
     SwingUtilities.invokeAndWait(() -> {
-      final Panel canvas = FrEnd.main_canvas.panel;
+      final Panel canvas = RendererDelegator.canvas.getPanel();
       img[0] = new BufferedImage(canvas.getWidth(), canvas.getHeight(),
           BufferedImage.TYPE_INT_RGB);
       canvas.printAll(img[0].getGraphics());

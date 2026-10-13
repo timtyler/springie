@@ -68,7 +68,7 @@ public class PolygonRendererClickBoxTest {
       saved_renderer = RendererDelegator.renderer;
       saved_paused = World.paused;
       RendererDelegator.renderer = new ModularRendererOld();
-      FrEnd.main_canvas.forceResize();
+      RendererDelegator.canvas.forceResize();
       RendererDelegator.repaintAll();
     });
     // Let a full clear-and-redraw settle.
@@ -81,7 +81,7 @@ public class PolygonRendererClickBoxTest {
       World.paused = saved_paused;
       FrEnd.perform_actions.drag_box_manager.drag_box_start = null;
       FrEnd.perform_actions.drag_box_manager.drag_box_end = null;
-      FrEnd.main_canvas.forceResize();
+      RendererDelegator.canvas.forceResize();
       RendererDelegator.repaintAll();
     });
     GuiTestSupport.repaintAndWait();
@@ -89,18 +89,18 @@ public class PolygonRendererClickBoxTest {
 
   private static void dispatch(final MouseEvent e) throws Exception {
     SwingUtilities.invokeAndWait(
-        () -> FrEnd.main_canvas.panel.dispatchEvent(e));
+        () -> RendererDelegator.canvas.getPanel().dispatchEvent(e));
   }
 
   private static void press(final int x, final int y) throws Exception {
-    final Panel panel = FrEnd.main_canvas.panel;
+    final Panel panel = RendererDelegator.canvas.getPanel();
     dispatch(new MouseEvent(panel, MouseEvent.MOUSE_PRESSED,
         System.currentTimeMillis(), InputEvent.BUTTON1_DOWN_MASK,
         x, y, 1, false, MouseEvent.BUTTON1));
   }
 
   private static void release(final int x, final int y) throws Exception {
-    final Panel panel = FrEnd.main_canvas.panel;
+    final Panel panel = RendererDelegator.canvas.getPanel();
     dispatch(new MouseEvent(panel, MouseEvent.MOUSE_RELEASED,
         System.currentTimeMillis(), InputEvent.BUTTON1_DOWN_MASK,
         x, y, 1, false, MouseEvent.BUTTON1));
@@ -127,7 +127,7 @@ public class PolygonRendererClickBoxTest {
     final Robot robot = new Robot();
     final Point[] loc = new Point[1];
     SwingUtilities.invokeAndWait(
-        () -> loc[0] = FrEnd.main_canvas.panel.getLocationOnScreen());
+        () -> loc[0] = RendererDelegator.canvas.getPanel().getLocationOnScreen());
     return robot.createScreenCapture(
         new Rectangle(loc[0].x + px - 12, loc[0].y + py - 12, 25, 25));
   }
@@ -208,7 +208,7 @@ public class PolygonRendererClickBoxTest {
       SwingUtilities.invokeAndWait(() -> {
         saved_renderer = RendererDelegator.renderer;
         RendererDelegator.renderer = new ModularRendererNew();
-        FrEnd.main_canvas.forceResize();
+        RendererDelegator.canvas.forceResize();
         RendererDelegator.repaintAll();
       });
       GuiTestSupport.repaintAndWait();

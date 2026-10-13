@@ -43,7 +43,7 @@ public class RaytracedViewportShadeTest {
       saved_renderer = RendererDelegator.renderer;
       RendererDelegator.renderer = new ModularRendererRaytraced();
       World.paused = true;
-      FrEnd.main_canvas.forceResize();
+      RendererDelegator.canvas.forceResize();
       RendererDelegator.repaint_all_objects = true;
     });
     repaintAndWait();
@@ -62,7 +62,7 @@ public class RaytracedViewportShadeTest {
   }
 
   private static void repaintAndWait() throws Exception {
-    SwingUtilities.invokeAndWait(() -> FrEnd.main_canvas.panel.repaint());
+    SwingUtilities.invokeAndWait(() -> RendererDelegator.canvas.getPanel().repaint());
     // Queue behind the paint event: when this returns, the paint ran.
     SwingUtilities.invokeAndWait(() -> {
     });
@@ -122,8 +122,8 @@ public class RaytracedViewportShadeTest {
     SwingUtilities.invokeAndWait(() -> {
       final Rectangle[] area = new Rectangle[1];
       FrEnd.frame_main.toFront();
-      final Point p = FrEnd.main_canvas.panel.getLocationOnScreen();
-      area[0] = new Rectangle(p, FrEnd.main_canvas.panel.getSize());
+      final Point p = RendererDelegator.canvas.getPanel().getLocationOnScreen();
+      area[0] = new Rectangle(p, RendererDelegator.canvas.getPanel().getSize());
       try {
         image[0] = new Robot().createScreenCapture(area[0]);
       } catch (java.awt.AWTException e) {

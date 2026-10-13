@@ -7,7 +7,8 @@ import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.io.out.WriteFloatingPoint;
+import com.springie.render.RendererDelegator;
+import com.springie.utilities.WriteFloatingPoint;
 import java.awt.Component;
 import java.awt.Label;
 import java.awt.Panel;
@@ -32,7 +33,6 @@ public class PanelControlsStatistics {
 
   public int number_of_selected_faces;
 
-  public static int length_of_shortest_link;
 
   public PanelControlsStatistics() {
     makePanel();
@@ -70,15 +70,15 @@ public class PanelControlsStatistics {
 
     final LinkManager link_manager = ContextManager.getLinkManager();
 
-    length_of_shortest_link = Integer.MAX_VALUE;
+    RendererDelegator.length_of_shortest_link = Integer.MAX_VALUE;
     long total = 0;
     int count = 0;
 
     final int n_o_l = link_manager.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final Link link = (Link) link_manager.element.get(temp);
-      if (link.type.length < length_of_shortest_link) {
-        length_of_shortest_link = link.type.length;
+      if (link.type.length < RendererDelegator.length_of_shortest_link) {
+        RendererDelegator.length_of_shortest_link = link.type.length;
       }
       if (link.type.selected) {
         total += link.type.length;
@@ -88,9 +88,9 @@ public class PanelControlsStatistics {
 
     String text = "";
     if (count > 0) {
-      if (length_of_shortest_link > 0) {
+      if (RendererDelegator.length_of_shortest_link > 0) {
         final long average = total / count;
-        final double fraction = average / (double) length_of_shortest_link;
+        final double fraction = average / (double) RendererDelegator.length_of_shortest_link;
 
         text += "Link rest length: ";
         text += WriteFloatingPoint.emit((float) fraction, 5, true);

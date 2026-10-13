@@ -3,14 +3,12 @@
 package com.springie.render.modules.modern;
 import com.springie.world.World;
 
-import com.springie.FrEnd;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.gui.gestures.DragBoxManager;
 import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.ModularRendererBase;
@@ -89,26 +87,24 @@ public class ModularRendererNew implements ModularRendererBase {
    * when it moves -- no trails, even with show_tiles gaps.
    */
   private void addDragBoxToTiles(final ArrayList<PolygonComposite> all) {
-    final DragBoxManager drag_box_manager =
-        FrEnd.perform_actions.drag_box_manager;
-    if (drag_box_manager == null
-        || drag_box_manager.drag_box_start == null
-        || drag_box_manager.drag_box_end == null) {
+    final java.awt.Point start = RendererDelegator.drag_box_start;
+    final java.awt.Point end = RendererDelegator.drag_box_end;
+    if (start == null || end == null) {
       return;
     }
 
     final int x0 = Coords.getPixelFromInternalCoords(
-        Math.min(drag_box_manager.drag_box_start.x,
-            drag_box_manager.drag_box_end.x));
+        Math.min(start.x,
+            end.x));
     final int x1 = Coords.getPixelFromInternalCoords(
-        Math.max(drag_box_manager.drag_box_start.x,
-            drag_box_manager.drag_box_end.x));
+        Math.max(start.x,
+            end.x));
     final int y0 = Coords.getPixelFromInternalCoords(
-        Math.min(drag_box_manager.drag_box_start.y,
-            drag_box_manager.drag_box_end.y));
+        Math.min(start.y,
+            end.y));
     final int y1 = Coords.getPixelFromInternalCoords(
-        Math.max(drag_box_manager.drag_box_start.y,
-            drag_box_manager.drag_box_end.y));
+        Math.max(start.y,
+            end.y));
 
     // 3px thick lines, matching RendererDragBox.drawThickLine.
     final int t = 3;

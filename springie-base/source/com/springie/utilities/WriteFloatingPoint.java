@@ -1,4 +1,4 @@
-package com.springie.io.out;
+package com.springie.utilities;
 
 public final class WriteFloatingPoint {
   private WriteFloatingPoint() {

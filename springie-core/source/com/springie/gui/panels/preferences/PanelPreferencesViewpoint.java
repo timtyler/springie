@@ -60,10 +60,10 @@ public class PanelPreferencesViewpoint {
     final Panel panel = new Panel();
     this.checkbox_show_boundary_box =
         new Checkbox(GUIStrings.SHOW_BOUNDARY_BOX);
-    this.checkbox_show_boundary_box.setState(FrEnd.show_boundary_box);
+    this.checkbox_show_boundary_box.setState(RendererDelegator.show_boundary_box);
     this.checkbox_show_boundary_box.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        FrEnd.show_boundary_box =
+        RendererDelegator.show_boundary_box =
             getCheckboxShowBoundaryBox().getState();
         // A full redraw: the dots are painted in screen space, so turning
         // the box off must clear them from the whole canvas, and the flag
@@ -176,7 +176,7 @@ public class PanelPreferencesViewpoint {
    */
   public void resetToDefaults() {
     // The boundary-box dots are on by default.
-    FrEnd.show_boundary_box = true;
+    RendererDelegator.show_boundary_box = true;
     this.checkbox_show_boundary_box.setState(true);
     Coords.shift_constant_x = 0;
     Coords.shift_constant_y = 0;

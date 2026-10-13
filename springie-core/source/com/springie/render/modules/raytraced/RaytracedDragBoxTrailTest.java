@@ -60,7 +60,7 @@ class RaytracedDragBoxTrailTest {
 
   private static void repaintAndSettle() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.main_canvas.panel.repaint();
+      RendererDelegator.canvas.getPanel().repaint();
     });
     // Ensure the EDT has processed the repaint, so the ray-traced frame
     // has started (holdModelForFrame goes true while a frame is in
@@ -84,8 +84,8 @@ class RaytracedDragBoxTrailTest {
     final Rectangle[] area = new Rectangle[1];
     SwingUtilities.invokeAndWait(() -> {
       FrEnd.frame_main.toFront();
-      final Point p = FrEnd.main_canvas.panel.getLocationOnScreen();
-      area[0] = new Rectangle(p, FrEnd.main_canvas.panel.getSize());
+      final Point p = RendererDelegator.canvas.getPanel().getLocationOnScreen();
+      area[0] = new Rectangle(p, RendererDelegator.canvas.getPanel().getSize());
     });
     return new Robot().createScreenCapture(area[0]);
   }
@@ -130,7 +130,7 @@ class RaytracedDragBoxTrailTest {
     SwingUtilities.invokeAndWait(() -> {
       previous[0] = RendererDelegator.renderer;
       RendererDelegator.renderer = new ModularRendererRaytraced();
-      FrEnd.main_canvas.forceResize();
+      RendererDelegator.canvas.forceResize();
     });
     try {
       // First drag over an empty area (top-left, away from the model).

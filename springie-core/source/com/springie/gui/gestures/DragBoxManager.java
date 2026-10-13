@@ -32,6 +32,8 @@ public class DragBoxManager {
     }
 
     this.drag_box_end = new Point(x, y);
+    RendererDelegator.drag_box_start = this.drag_box_start;
+    RendererDelegator.drag_box_end = this.drag_box_end;
     RendererDelegator.repaint_some_objects = true;
   }
 
@@ -71,6 +73,8 @@ public class DragBoxManager {
 
     RendererDelegator.repaint_some_objects = true;
     this.drag_box_start = null;
+    RendererDelegator.drag_box_start = null;
+    RendererDelegator.drag_box_end = null;
     // The release drops the box: every reader gates on the start point,
     // and the ray tracer takes one last damage rect from its own
     // last-frame record to erase the box for good.

@@ -3,7 +3,6 @@
 package com.springie.render;
 import com.springie.geometry.Coords;
 
-import com.springie.gui.gestures.DragBoxManager;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -71,20 +70,19 @@ public class RendererDragBoxTest {
     g.setColor(Color.WHITE);
     g.fillRect(0, 0, 400, 400);
 
-    final DragBoxManager manager = new DragBoxManager();
     final RendererDragBox drag_box = new RendererDragBox();
 
     // First paint of the drag: rectangle at (10,10)-(50,50).
-    manager.drag_box_start = internal(10);
-    manager.drag_box_end = internal(50);
-    drag_box.draw(g, manager);
+    RendererDelegator.drag_box_start = internal(10);
+    RendererDelegator.drag_box_end = internal(50);
+    drag_box.draw(g);
 
     // Second paint, mouse moved: rectangle now (10,10)-(100,100).
     // The old code erased the first rectangle with the background
     // colour here; the right (x=50) and bottom (y=50) edges lay inside
     // the new rectangle's interior, so the erase left black pixels.
-    manager.drag_box_end = internal(100);
-    drag_box.draw(g, manager);
+    RendererDelegator.drag_box_end = internal(100);
+    drag_box.draw(g);
     g.dispose();
 
     int black = 0;

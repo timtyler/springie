@@ -140,6 +140,15 @@ public class World extends BaseElementManager<Node> {
   /** Reset the render-side lights to factory defaults; set by the render side. */
   public static Runnable reset_render_lights;
 
+  /** Last model-load error message; set by io, displayed by renderer. */
+  public static String load_error;
+
+  /** Stepping mode counter; the renderer decrements it each frame. */
+  public static volatile int stepping;
+
+  /** Called when stepping finishes; set by the GUI. */
+  public static Runnable stepping_finished;
+
   /** Provides preset model descriptions; set by the presets package. */
   public interface PresetProvider {
     String getCreatureDescription(ArgumentList arguments);

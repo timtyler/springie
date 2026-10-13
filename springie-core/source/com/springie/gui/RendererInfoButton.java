@@ -1,6 +1,6 @@
 // This code has been placed into the public domain by its author
 
-package com.springie.render;
+package com.springie.gui;
 import com.springie.geometry.Coords;
 
 import com.springie.FrEnd;

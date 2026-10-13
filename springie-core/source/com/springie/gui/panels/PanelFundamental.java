@@ -428,10 +428,10 @@ public class PanelFundamental {
             World.paused = false;
 
             try {
-              FrEnd.stepping = Integer.parseInt(FrEnd.textfield_step_size
+              World.stepping = Integer.parseInt(FrEnd.textfield_step_size
                   .getText());
             } catch (RuntimeException e) {
-              FrEnd.stepping = 1;
+              World.stepping = 1;
             }
 
             FrEnd.greyPauseAndRestartIfNeeded();

@@ -50,12 +50,12 @@ class BoundaryBoxDotsTest {
     Coords.shift_constant_x = 0;
     Coords.shift_constant_y = 0;
     Coords.shift_constant_z = 192;
-    this.saved_show_boundary_box = FrEnd.show_boundary_box;
+    this.saved_show_boundary_box = RendererDelegator.show_boundary_box;
   }
 
   @AfterEach
   void resetFlag() {
-    FrEnd.show_boundary_box = this.saved_show_boundary_box;
+    RendererDelegator.show_boundary_box = this.saved_show_boundary_box;
     Coords.x_pixels = this.saved_x_pixels;
     Coords.y_pixels = this.saved_y_pixels;
     Coords.x_pixelso2 = this.saved_x_pixelso2;
@@ -87,7 +87,7 @@ class BoundaryBoxDotsTest {
     final BufferedImage img = new BufferedImage(64, 64,
         BufferedImage.TYPE_INT_RGB);
     final Graphics2D g = img.createGraphics();
-    FrEnd.show_boundary_box = false;
+    RendererDelegator.show_boundary_box = false;
     BoundaryBoxDots.drawOneDot(g);
     g.dispose();
     assertEquals(0, dotPixels(img), "flag off must draw nothing");
@@ -98,7 +98,7 @@ class BoundaryBoxDotsTest {
     final BufferedImage img = new BufferedImage(800, 600,
         BufferedImage.TYPE_INT_RGB);
     final Graphics2D g = img.createGraphics();
-    FrEnd.show_boundary_box = true;
+    RendererDelegator.show_boundary_box = true;
     // Reset the shared dot counter: dot 0 is on a visible edge with the
     // pinned test Coords, so one draw plots one visible dot. No loop.
     BoundaryBoxDots.resetForTest();

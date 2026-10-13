@@ -3,14 +3,12 @@
 package com.springie.render.modules.raytraced;
 import com.springie.world.World;
 
-import com.springie.FrEnd;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.gui.gestures.DragBoxManager;
 import com.springie.geometry.Coords;
 import com.springie.render.RectangleInt;
 import com.springie.render.RendererDelegator;
@@ -691,8 +689,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     // Ask the main loop for another pass so the finished frame displays,
     // even when the model is not animating.
     RendererDelegator.repaint_some_objects = true;
-    if (FrEnd.main_canvas != null && FrEnd.main_canvas.panel != null) {
-      FrEnd.main_canvas.panel.repaint();
+    if (RendererDelegator.canvas != null && RendererDelegator.canvas.getPanel() != null) {
+      RendererDelegator.canvas.getPanel().repaint();
     }
   }
 
@@ -863,10 +861,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
    * never touches the tiles.
    */
   private static boolean isDragBoxActive() {
-    return FrEnd.perform_actions != null
-        && FrEnd.perform_actions.drag_box_manager != null
-        && FrEnd.perform_actions.drag_box_manager.drag_box_start != null
-        && FrEnd.perform_actions.drag_box_manager.drag_box_end != null;
+    return RendererDelegator.drag_box_start != null
+        && RendererDelegator.drag_box_end != null;
   }
 
   /**
@@ -875,15 +871,16 @@ public class ModularRendererRaytraced implements ModularRendererBase {
    * RendererDragBox.drawThickLine.
    */
   private static void drawDragBox(final Graphics g) {
-    final DragBoxManager dbm = FrEnd.perform_actions.drag_box_manager;
+    final java.awt.Point start = RendererDelegator.drag_box_start;
+    final java.awt.Point end = RendererDelegator.drag_box_end;
     final int x0 = Coords.getPixelFromInternalCoords(
-        Math.min(dbm.drag_box_start.x, dbm.drag_box_end.x));
+        Math.min(start.x, end.x));
     final int x1 = Coords.getPixelFromInternalCoords(
-        Math.max(dbm.drag_box_start.x, dbm.drag_box_end.x));
+        Math.max(start.x, end.x));
     final int y0 = Coords.getPixelFromInternalCoords(
-        Math.min(dbm.drag_box_start.y, dbm.drag_box_end.y));
+        Math.min(start.y, end.y));
     final int y1 = Coords.getPixelFromInternalCoords(
-        Math.max(dbm.drag_box_start.y, dbm.drag_box_end.y));
+        Math.max(start.y, end.y));
     g.setColor(RendererDelegator.colour_selected);
     final int t = 3;
     // Left, top, bottom, right edges.

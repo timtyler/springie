@@ -1,7 +1,6 @@
 package com.springie.render;
 import com.springie.world.World;
 
-import com.springie.FrEnd;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,40 +31,40 @@ class SteppingTest {
   @BeforeEach
   void saveState() {
     old_paused = World.paused;
-    old_stepping = FrEnd.stepping;
+    old_stepping = World.stepping;
   }
 
   @AfterEach
   void restoreState() {
     World.paused = old_paused;
-    FrEnd.stepping = old_stepping;
+    World.stepping = old_stepping;
   }
 
   @Test
   void stepDecrementsCounterSynchronously() {
     // Simulate the step button: paused=false, stepping=2.
     World.paused = false;
-    FrEnd.stepping = 2;
+    World.stepping = 2;
 
     // First physics frame: counter 2 -> 1, still running.
     RendererDelegator.stepIfNeeded();
-    assertEquals(1, FrEnd.stepping, "stepping must decrement by one per frame");
+    assertEquals(1, World.stepping, "stepping must decrement by one per frame");
     assertFalse(World.paused, "must not pause until counter reaches zero");
 
     // Second physics frame: counter 1 -> 0, endStepping() pauses.
     RendererDelegator.stepIfNeeded();
-    assertEquals(0, FrEnd.stepping, "stepping must reach zero");
+    assertEquals(0, World.stepping, "stepping must reach zero");
     assertTrue(World.paused, "must pause when stepping completes");
   }
 
   @Test
   void stepDoesNothingWhenCounterIsZero() {
     World.paused = false;
-    FrEnd.stepping = 0;
+    World.stepping = 0;
 
     RendererDelegator.stepIfNeeded();
 
-    assertEquals(0, FrEnd.stepping, "zero counter must stay zero");
+    assertEquals(0, World.stepping, "zero counter must stay zero");
     assertFalse(World.paused, "must not pause when not stepping");
   }
 
@@ -73,11 +72,11 @@ class SteppingTest {
   void singleStepPausesAfterOneFrame() {
     // The common case: user clicks Step once (stepping=1).
     World.paused = false;
-    FrEnd.stepping = 1;
+    World.stepping = 1;
 
     RendererDelegator.stepIfNeeded();
 
-    assertEquals(0, FrEnd.stepping);
+    assertEquals(0, World.stepping);
     assertTrue(World.paused, "single step must pause after exactly one frame");
   }
 }

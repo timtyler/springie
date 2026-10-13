@@ -8,7 +8,7 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.geometry.Point3D;
 import com.springie.io.out.GarbageCollection;
-import com.springie.io.out.WriteFloatingPoint;
+import com.springie.utilities.WriteFloatingPoint;
 import com.springie.metrics.BoundingBox;
 import com.springie.modification.redundancy.RedundancyRemover;
 import java.io.FileWriter;

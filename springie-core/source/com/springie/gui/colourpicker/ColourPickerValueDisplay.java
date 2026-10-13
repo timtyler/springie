@@ -2,7 +2,7 @@
 
 package com.springie.gui.colourpicker;
 
-import com.springie.io.out.WriteFloatingPoint;
+import com.springie.utilities.WriteFloatingPoint;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Label;

@@ -84,9 +84,9 @@ import com.springie.elements.nodes.PrepareToModifyNodeTypes;
 import com.springie.muscles.Muscles;
 import com.springie.preferences.Preferences;
 import com.springie.geometry.Coords;
-import com.springie.render.MainCanvas;
+import com.springie.gui.MainCanvas;
 import com.springie.render.RendererDelegator;
-import com.springie.render.SetUpCode;
+import com.springie.gui.SetUpCode;
 import com.springie.render.WorldMarkers;
 import com.springie.utilities.FilePath;
 import com.springie.utilities.random.Hortensius32Fast;
@@ -154,14 +154,12 @@ public class FrEnd extends Panel implements Runnable {
 
 
 
-  public static boolean render_anaglyph;
 
 
 
 
 
 
-  public static boolean show_boundary_box = true;
 
   public static boolean output_linefeeds = true;
 
@@ -254,14 +252,12 @@ public class FrEnd extends Panel implements Runnable {
 
   public static boolean mouse_pressed;
 
-  public static boolean show_exhaust;
 
   public static int generation;
 
 
   // Volatile: written on the animation thread (step button message),
   // read/written on the AWT thread (RendererDelegator, sync with physics).
-  public static volatile int stepping;
 
   static int start_type;
 
@@ -494,10 +490,34 @@ public class FrEnd extends Panel implements Runnable {
     setUpGestureManagers();
 
     main_canvas = new MainCanvas(this);
+    RendererDelegator.canvas = main_canvas;
+    World.stepping_finished = new Runnable() {
+      public void run() {
+        greyPauseAndRestartIfNeeded();
+        if (button_step != null) {
+          button_step.setEnabled(true);
+        }
+      }
+    };
+    RendererDelegator.fps_display = new java.util.function.Consumer<String>() {
+      public void accept(final String fps) {
+        panel_preferences_display.label_fps_value.setText(fps);
+      }
+    };
+    RendererDelegator.extension_updater = new Runnable() {
+      public void run() {
+        extension.update();
+      }
+    };
+    RendererDelegator.components_updater = new Runnable() {
+      public void run() {
+        UpdateEnabledComponents.actuallyUpdate();
+      }
+    };
 
     World.paused = false;
 
-    show_exhaust = true;
+    RendererDelegator.show_exhaust = true;
     World.quality = Quality.MULTIPLE;
 
     panel_with_controls_at_bottom = setUpPanelForFrame2();
@@ -955,7 +975,7 @@ public class FrEnd extends Panel implements Runnable {
   }
 
   public static final void endStepping() {
-    stepping = 0;
+    World.stepping = 0;
     World.paused = true;
     greyPauseAndRestartIfNeeded();
     // button_step.setLabel(GUIStrings.STEP);

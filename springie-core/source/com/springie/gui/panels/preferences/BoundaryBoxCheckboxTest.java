@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * The dotted boundary-box overlay is a viewport aid, not part of the
  * universe: its checkbox must live on the Preferences Viewpoint tab and
  * nowhere on the Universe tab, and toggling it must flip
- * FrEnd.show_boundary_box.
+ * RendererDelegator.show_boundary_box.
  */
 class BoundaryBoxCheckboxTest {
 
@@ -98,9 +98,9 @@ class BoundaryBoxCheckboxTest {
           FrEnd.panel_preferences_viewpoint.checkbox_show_boundary_box;
       assertNotNull(checkbox, "expected the checkbox field to exist");
       clickCheckbox(checkbox, ItemEvent.SELECTED);
-      assertTrue(FrEnd.show_boundary_box, "checking must turn the dots on");
+      assertTrue(RendererDelegator.show_boundary_box, "checking must turn the dots on");
       clickCheckbox(checkbox, ItemEvent.DESELECTED);
-      assertFalse(FrEnd.show_boundary_box, "unchecking must turn the dots off");
+      assertFalse(RendererDelegator.show_boundary_box, "unchecking must turn the dots off");
     });
   }
 

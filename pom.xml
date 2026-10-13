@@ -33,6 +33,7 @@
   <modules>
     <module>springie-base</module>
     <module>springie-engine</module>
+    <module>springie-renderer</module>
     <module>springie-core</module>
     <module>springie-demos</module>
     <module>springie-app</module>

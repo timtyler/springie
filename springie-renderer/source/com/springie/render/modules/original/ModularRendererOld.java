@@ -3,7 +3,6 @@
 package com.springie.render.modules.original;
 
 
-import com.springie.FrEnd;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.render.RendererDelegator;
 import com.springie.render.SceneRenderer;
@@ -18,7 +17,7 @@ public class ModularRendererOld implements ModularRendererBase {
   public void nodeAndLinkRender(final NodeManager manager) {
     manager.sortIndex();
 
-    if (FrEnd.render_anaglyph) {
+    if (RendererDelegator.render_anaglyph) {
       SceneRenderer.nodeAndLinkRenderAnaglyph(manager);
     } else {
       SceneRenderer.nodeAndLinkRenderNormal(manager);

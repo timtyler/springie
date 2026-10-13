@@ -81,6 +81,11 @@
     </dependency>
     <dependency>
       <groupId>com.springie</groupId>
+      <artifactId>springie-renderer</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.springie</groupId>
       <artifactId>springie-demos</artifactId>
       <version>${project.version}</version>
     </dependency>

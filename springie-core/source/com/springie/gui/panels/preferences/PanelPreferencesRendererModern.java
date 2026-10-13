@@ -84,7 +84,6 @@ public class PanelPreferencesRendererModern {
 
   TTChoice choose_label_when;
 
-  public static int render_label_when = 2;
 
   public PanelPreferencesRendererModern(NewMessageManager new_message_manager) {
     this.new_message_manager = new_message_manager;
@@ -311,7 +310,7 @@ public class PanelPreferencesRendererModern {
       public void itemStateChanged(final ItemEvent e) {
         final String scs = (String) e.getItem();
         final int val = PanelPreferencesRendererModern.this.choose_label_when.str_to_num(scs);
-        PanelPreferencesRendererModern.render_label_when = val;
+        RendererDelegator.render_label_when = val;
         RendererDelegator.repaintAll();
       }
     });
@@ -319,7 +318,7 @@ public class PanelPreferencesRendererModern {
     this.choose_label_when.add("always", 1);
     this.choose_label_when.add("never", 2);
     this.choose_label_when.add("selected", 3);
-    this.choose_label_when.choice.select(this.choose_label_when.num_to_str(render_label_when));
+    this.choose_label_when.choice.select(this.choose_label_when.num_to_str(RendererDelegator.render_label_when));
     panel.add(this.choose_label_when.choice);
 
     return panel;
@@ -528,9 +527,9 @@ public class PanelPreferencesRendererModern {
         .num_to_str(1));
 
     // Show labels: never by default.
-    render_label_when = 2;
+    RendererDelegator.render_label_when = 2;
     this.choose_label_when.choice.select(this.choose_label_when
-        .num_to_str(render_label_when));
+        .num_to_str(RendererDelegator.render_label_when));
 
     FrEnd.main_canvas.forceResize();
   }
