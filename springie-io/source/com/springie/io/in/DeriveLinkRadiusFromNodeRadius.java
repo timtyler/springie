@@ -1,7 +1,6 @@
 // This code has been placed into the public domain by its author
 package com.springie.io.in;
 
-import com.springie.io.IoConfig;
 
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
@@ -20,9 +19,11 @@ public class DeriveLinkRadiusFromNodeRadius {
   }
 
   public void setInitially() {
-    IoConfig.select_all.run();
+    com.springie.context.ContextManager.getNodeManager().selectAll();
+    com.springie.context.ContextManager.getNodeManager().getLinkManager().selectAll();
     set();
-    IoConfig.deselect_all.run();
+    com.springie.context.ContextManager.getNodeManager().deselectAll();
+    com.springie.context.ContextManager.getNodeManager().getLinkManager().deselectAll();
   }
 
   public void set() {

@@ -26,8 +26,6 @@ public class IoConfig {
   // Callbacks the application wires up (replaces FrEnd.reflect* calls).
   public static Runnable after_property_editing = () -> {};
   public static Runnable after_serious_editing = () -> {};
-  public static Runnable select_all = () -> {};
-  public static Runnable deselect_all = () -> {};
   public static Runnable on_reset = () -> {};
   public static java.util.function.Consumer<String> set_file_path = (s) -> {};
 }
