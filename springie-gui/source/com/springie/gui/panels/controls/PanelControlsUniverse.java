@@ -820,6 +820,9 @@ public class PanelControlsUniverse {
           }
           LightSource.light_moved = true;
           rebuildLightControls();
+          // Refresh the screen to remove the deleted light's dot
+          // (Tim, 2026-10-13).
+          com.springie.render.RendererDelegator.repaintAll();
         }
       });
       east.add("East", delete);
@@ -848,6 +851,19 @@ public class PanelControlsUniverse {
       this.tab_light_colours.add("Light " + (i + 1), tab);
     }
     this.tab_light_colours.validate();
+  }
+
+  /**
+   * Activates the tab for the given light index (0-based).
+   * Does nothing if the tab panel is not currently visible --
+   * we don't want to open the Universe panel just because a light
+   * was clicked in the 3D view (Tim, 2026-10-13).
+   */
+  public void activateLightTab(final int index) {
+    if (this.tab_light_colours == null || !this.tab_light_colours.isShowing()) {
+      return;
+    }
+    this.tab_light_colours.show("Light " + (index + 1));
   }
 
   /**

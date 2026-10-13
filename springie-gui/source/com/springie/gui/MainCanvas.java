@@ -131,6 +131,16 @@ public class MainCanvas implements RenderCanvas {
             LightSourceDots.hitTestLight(e.getX(), e.getY());
         if (hit != null) {
           LightSourceDots.dragging_light = hit;
+          // Activate the light's GUI tab (if the Universe panel is visible).
+          // (Tim, 2026-10-13.)
+          final int light_index;
+          synchronized (com.springie.render.modules.modern.LightSource.class) {
+            light_index =
+                com.springie.render.modules.modern.LightSource.lights.indexOf(hit);
+          }
+          if (light_index >= 0) {
+            FrEnd.panel_universe.activateLightTab(light_index);
+          }
           return;
         }
         final MainCanvas canvas = getCanvas();
