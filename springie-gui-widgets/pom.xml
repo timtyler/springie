@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Springie gui-widgets module: reusable AWT UI components.
+  No dependencies on the app (FrEnd) or other Springie modules.
+  Pure UI toolkit layer.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.springie</groupId>
+    <artifactId>springie-parent</artifactId>
+    <version>1.03</version>
+  </parent>
+
+  <artifactId>springie-gui-widgets</artifactId>
+  <name>Springie gui-widgets</name>
+  <description>Reusable AWT UI widgets for Springie (no app dependencies).</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.springie</groupId>
+      <artifactId>springie-base</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+</project>

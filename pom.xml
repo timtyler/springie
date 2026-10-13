@@ -32,6 +32,7 @@
 
   <modules>
     <module>springie-base</module>
+    <module>springie-gui-widgets</module>
     <module>springie-engine</module>
     <module>springie-renderer</module>
     <module>springie-io</module>
