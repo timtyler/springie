@@ -2,10 +2,9 @@
 
 package com.springie.gui;
 
-import com.springie.FrEnd;
 
 public interface GUIStrings {
-  String ABOUT = FrEnd.application_name;
+  String ABOUT = "Springie";
 
   String ABOUT_DESC = "Tensegrity simulator";
 

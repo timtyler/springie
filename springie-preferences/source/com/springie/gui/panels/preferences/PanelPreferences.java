@@ -7,7 +7,6 @@ import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TabbedPanel;
 import com.springie.preferences.Preferences;
 import com.springie.render.RendererDelegator;
-import com.springie.gui.RendererInfoButton;
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Checkbox;
