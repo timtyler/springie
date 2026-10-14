@@ -503,7 +503,7 @@ public class PanelControlsUniverse {
         com.springie.render.RendererDelegator.repaintAll();
       }
     });
-    final Panel panel_colored = new Panel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+    final Panel panel_colored = new Panel(new FlowLayout(FlowLayout.CENTER, 0, 0));
     panel_colored.add(checkbox_colored_lighting);
     panel_lights.add("North", panel_colored);
 
