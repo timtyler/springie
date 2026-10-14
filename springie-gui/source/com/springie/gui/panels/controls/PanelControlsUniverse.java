@@ -46,6 +46,7 @@ public class PanelControlsUniverse {
   private TabbedPanel tab_light_colours;
   private Button button_add_light;
   private Scrollbar scrollbar_light_ambient;
+  private Checkbox checkbox_colored_lighting;
   private Label label_light_ambient;
 
   public Checkbox checkbox_gravity_switch;
@@ -484,7 +485,7 @@ public class PanelControlsUniverse {
     // Colored lighting checkbox (Tim, 2026-10-14): when off, positioned
     // lights are ignored and ambient white is pumped up. Default on.
     // Toggling redisplays the whole screen.
-    final Checkbox checkbox_colored_lighting = new Checkbox("Colored lighting", true);
+    this.checkbox_colored_lighting = new Checkbox("Colored lighting", true);
     checkbox_colored_lighting.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
         final boolean on = checkbox_colored_lighting.getState();
@@ -909,6 +910,10 @@ public class PanelControlsUniverse {
     rebuildLightControls();
     this.scrollbar_light_ambient.setValue(RendererDelegator.ambient_light_pct);
     this.label_light_ambient.setText("" + RendererDelegator.ambient_light_pct);
+    // Sync colored lighting checkbox (Tim, 2026-10-14).
+    if (this.checkbox_colored_lighting != null) {
+      this.checkbox_colored_lighting.setState(LightSource.colored_lighting);
+    }
   }
 
   public Label getLabelBias() {

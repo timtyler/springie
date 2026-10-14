@@ -68,7 +68,15 @@ public final class SetUpCode {
       public void run() {
         com.springie.render.modules.modern.LightSource.resetToDefaults();
         com.springie.render.modules.modern.LightSource.light_moved = true;
+        // Reset colored lighting state (Tim, 2026-10-14).
+        com.springie.render.modules.modern.LightSource.colored_lighting = true;
         com.springie.render.RendererDelegator.ambient_light_pct = 0;
+        com.springie.render.RendererDelegator.ambient_colored_pct = 0;
+        com.springie.render.RendererDelegator.ambient_white_pct = 80;
+        // Sync the UI (Tim, 2026-10-14).
+        if (com.springie.FrEnd.panel_universe != null) {
+          com.springie.FrEnd.panel_universe.reflectLights();
+        }
       }
     };
     WorldManager.initial();
