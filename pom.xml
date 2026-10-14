@@ -41,6 +41,7 @@
     <module>springie-command</module>
     <module>springie-core</module>
     <module>springie-gestures</module>
+    <module>springie-preferences</module>
     <module>springie-gui</module>
     <module>springie-demos</module>
     <module>springie-app</module>
