@@ -7,7 +7,11 @@ import java.awt.GridLayout;
 import java.awt.Panel;
 
 public class ColorPicker {
-  public Panel panel = new Panel();
+  public Panel panel = new Panel() {{
+    setLayout(new GridLayout(0, 1, 0, 0));
+    setForeground(java.awt.Color.black);
+    setBackground(java.awt.Color.lightGray);
+  }};
 
   public ColourPickerController color_picker_controller;
 
