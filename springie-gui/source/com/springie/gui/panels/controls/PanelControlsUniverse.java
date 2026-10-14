@@ -769,6 +769,9 @@ public class PanelControlsUniverse {
         } else {
           light.z_pct = val;
         }
+        // Recompute derived coords (Tim, 2026-10-13): the slider changes
+        // the percentage, but px/py/pz are cached.
+        light.updateDerivedCoords();
         value.setText("" + val);
         LightSource.light_moved = true;
       }

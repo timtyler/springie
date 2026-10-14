@@ -23,16 +23,17 @@ public class Light extends com.springie.world.Light {
   public Light(final double x_pct, final double y_pct, final int intensity_pct,
       final int colour) {
     super(x_pct, y_pct, intensity_pct, colour);
-    initDerived();
+    updateDerivedCoords();
   }
 
   public Light(final double x_pct, final double y_pct, final double z_pct,
       final int intensity_pct, final int colour) {
     super(x_pct, y_pct, z_pct, intensity_pct, colour);
-    initDerived();
+    updateDerivedCoords();
   }
 
-  private void initDerived() {
+  /** Recomputes derived px/py/pz from the x/y/z percentages. */
+  public void updateDerivedCoords() {
     // Initialize derived coords (Tim, 2026-10-06): 0-100% (50=center),
     // using the Coords.getXCoords convention (px = HW*S - scx at center,
     // range HW*PF for exact screen mapping).
@@ -59,6 +60,6 @@ public class Light extends com.springie.world.Light {
   /** Copy from an engine-side light (data only; derived coords recomputed). */
   public Light(final com.springie.world.Light other) {
     super(other);
-    initDerived();
+    updateDerivedCoords();
   }
 }

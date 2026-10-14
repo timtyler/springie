@@ -148,6 +148,8 @@ public final class LightSourceDots {
     }
     light_ref.x_pct = x_pct;
     light_ref.y_pct = y_pct;
+    // Recompute derived coords (Tim, 2026-10-13).
+    light_ref.updateDerivedCoords();
     // The illumination changed: force a re-trace (Tim, 2026-10-04).
     LightSource.light_moved = true;
     // Refresh the UI sliders (Tim, 2026-10-05).
