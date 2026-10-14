@@ -4,6 +4,7 @@ package com.springie.gui.panels.preferences;
 
 import com.springie.FrEnd;
 import com.springie.gui.GUIStrings;
+import com.springie.gui.RendererInfoButton;
 import com.springie.gui.components.TabbedPanel;
 import com.springie.preferences.Preferences;
 import com.springie.render.RendererDelegator;
