@@ -27,11 +27,6 @@
     </dependency>
     <dependency>
       <groupId>com.springie</groupId>
-      <artifactId>springie-gestures</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.springie</groupId>
       <artifactId>springie-command</artifactId>
       <version>${project.version}</version>
     </dependency>
