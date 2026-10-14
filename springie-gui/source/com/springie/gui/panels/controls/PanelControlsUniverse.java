@@ -497,7 +497,9 @@ public class PanelControlsUniverse {
         label_light_ambient.setText("" + val);
         com.springie.world.UniverseDefaults.setAmbientLightPct(val);
         LightSource.light_moved = true;
-        // Redisplay the whole screen (Tim, 2026-10-14).
+        // Redisplay the whole screen (Tim, 2026-10-14): force a full
+        // clear so the light dots vanish, border and all.
+        com.springie.render.RendererDelegator.repaint_all_objects = true;
         com.springie.render.RendererDelegator.repaintAll();
       }
     });
