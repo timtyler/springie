@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.preferences;
+import com.springie.gui.state.UniverseState;
 
 import com.springie.io.IoConfig;
 import com.springie.world.World;
@@ -47,10 +48,10 @@ class PreferencesResetTest {
         World.render_hidden_links = true;
         World.explosions = false;
         World.redraw_deepest_first = false;
-        FrEnd.delay = Delay._DELAY_100;
-        FrEnd.action_left_type = Actions.KILL;
-        FrEnd.action_middle_type = Actions.KILL;
-        FrEnd.action_right_type = Actions.KILL;
+        UniverseState.delay = Delay._DELAY_100;
+        UniverseState.action_left_type = Actions.KILL;
+        UniverseState.action_middle_type = Actions.KILL;
+        UniverseState.action_right_type = Actions.KILL;
         IoConfig.merge = true;
         World.quality = Quality.SOLID;
         World.xor = true;
@@ -99,7 +100,7 @@ class PreferencesResetTest {
         DeepObjectColourCalculator.factor = 100;
         DeepObjectColourCalculator.depth_is_relative = false;
 
-        FrEnd.controls_window_mode = FrEnd.CONTROLS_DOCKED;
+        UniverseState.controls_window_mode = UniverseState.CONTROLS_DOCKED;
         FrEnd.applyControlsWindowOptions();
       });
 
@@ -125,10 +126,10 @@ class PreferencesResetTest {
       assertFalse(World.render_hidden_links);
       assertTrue(World.explosions);
       assertTrue(World.redraw_deepest_first);
-      assertEquals(Delay._DELAY_2, FrEnd.delay);
-      assertEquals(Actions.SELECT, FrEnd.action_left_type);
-      assertEquals(Actions.TRANSLATE, FrEnd.action_middle_type);
-      assertEquals(Actions.ROTATE, FrEnd.action_right_type);
+      assertEquals(Delay._DELAY_2, UniverseState.delay);
+      assertEquals(Actions.SELECT, UniverseState.action_left_type);
+      assertEquals(Actions.TRANSLATE, UniverseState.action_middle_type);
+      assertEquals(Actions.ROTATE, UniverseState.action_right_type);
       assertFalse(IoConfig.merge);
       assertEquals(Quality.THICK_OUTLINE, World.quality);
       assertFalse(World.xor);
@@ -192,7 +193,7 @@ class PreferencesResetTest {
       // Reset restores the docked default: the controls panel lives in
       // the main window, the separate controls frame is hidden, and the
       // stay-on-top listener is off (it only applies to always-on-top).
-      assertEquals(FrEnd.CONTROLS_DOCKED, FrEnd.controls_window_mode);
+      assertEquals(UniverseState.CONTROLS_DOCKED, UniverseState.controls_window_mode);
       assertFalse(FrEnd.frame_controls.isAlwaysOnTop());
       assertFalse(FrEnd.isControlsStayOnTopActive());
       assertEquals(FrEnd.panel_main_area,

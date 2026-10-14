@@ -185,7 +185,6 @@ public class FrEnd extends Panel implements Runnable {
 
   public static boolean depth_cues;
 
-  public static int weapon_type = ToolTypes._PENCIL;
 
   public static String initial_type;
 
@@ -193,13 +192,9 @@ public class FrEnd extends Panel implements Runnable {
 
 
   // 2 is too much for IE JVM!
-  public static int delay = Delay._DELAY_2;
 
-  public static int action_left_type = Actions.SELECT;
 
-  public static int action_middle_type = Actions.TRANSLATE;
 
-  public static int action_right_type = Actions.ROTATE;
 
 
 
@@ -338,7 +333,6 @@ public class FrEnd extends Panel implements Runnable {
   public static final int CONTROLS_FREE_FLOATING = 1;
   public static final int CONTROLS_DOCKED = 2;
 
-  public static int controls_window_mode = CONTROLS_DOCKED;
 
   public static Frame frame_panel_about;
 

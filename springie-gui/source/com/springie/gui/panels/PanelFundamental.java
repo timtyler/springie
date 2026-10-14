@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels;
+import com.springie.gui.state.UniverseState;
 import com.springie.world.World;
 
 import com.springie.FrEnd;
@@ -307,7 +308,7 @@ public class PanelFundamental {
 
     this.button_controls.addActionListener(new ActionListener() {
       public void actionPerformed(final ActionEvent arg0) {
-        if (FrEnd.controls_window_mode == FrEnd.CONTROLS_DOCKED) {
+        if (UniverseState.controls_window_mode == UniverseState.CONTROLS_DOCKED) {
           // The controls live docked in the main window: toggle the
           // docked panel, so the button still operates -- hiding them
           // gives the canvas the full window width.
@@ -528,7 +529,7 @@ public class PanelFundamental {
     ItemListener il = new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
         final String str = (String) (e.getItem());
-        FrEnd.action_left_type = ButtonMouseActionStrings
+        UniverseState.action_left_type = ButtonMouseActionStrings
             .stringToActionNumber(str);
       }
     };

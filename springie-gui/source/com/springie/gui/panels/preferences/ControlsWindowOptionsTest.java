@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.preferences;
+import com.springie.gui.state.UniverseState;
 
 import com.springie.FrEnd;
 import com.springie.gui.GUIStrings;
@@ -43,7 +44,7 @@ class ControlsWindowOptionsTest {
       // Known-good state for the next test: docked (the default).
       // Docking hides the separate controls frame; undocking tests
       // make it visible again themselves.
-      FrEnd.controls_window_mode = FrEnd.CONTROLS_DOCKED;
+      UniverseState.controls_window_mode = UniverseState.CONTROLS_DOCKED;
       FrEnd.applyControlsWindowOptions();
     });
   }
@@ -58,10 +59,10 @@ class ControlsWindowOptionsTest {
     final int[] mode = new int[1];
     final boolean[] stay_on_top = new boolean[1];
     SwingUtilities.invokeAndWait(() -> {
-      mode[0] = FrEnd.controls_window_mode;
+      mode[0] = UniverseState.controls_window_mode;
       stay_on_top[0] = FrEnd.isControlsStayOnTopActive();
     });
-    assertEquals(FrEnd.CONTROLS_DOCKED, mode[0],
+    assertEquals(UniverseState.CONTROLS_DOCKED, mode[0],
         "controls window mode must default to docked");
     assertFalse(stay_on_top[0],
         "stay-on-top listener must be off in docked mode");
@@ -73,7 +74,7 @@ class ControlsWindowOptionsTest {
     final Container[] parent = new Container[1];
     SwingUtilities.invokeAndWait(() -> {
       FrEnd.frame_controls.setVisible(true);
-      FrEnd.controls_window_mode = FrEnd.CONTROLS_ALWAYS_ON_TOP;
+      UniverseState.controls_window_mode = UniverseState.CONTROLS_ALWAYS_ON_TOP;
       FrEnd.applyControlsWindowOptions();
       visible[0] = FrEnd.frame_controls.isVisible();
       parent[0] = FrEnd.panel_controls_all.panel.getParent();
@@ -91,7 +92,7 @@ class ControlsWindowOptionsTest {
     final Container[] parent = new Container[1];
     SwingUtilities.invokeAndWait(() -> {
       FrEnd.frame_controls.setVisible(true);
-      FrEnd.controls_window_mode = FrEnd.CONTROLS_FREE_FLOATING;
+      UniverseState.controls_window_mode = FrEnd.CONTROLS_FREE_FLOATING;
       FrEnd.applyControlsWindowOptions();
       stay_on_top[0] = FrEnd.isControlsStayOnTopActive();
       visible[0] = FrEnd.frame_controls.isVisible();
@@ -110,7 +111,7 @@ class ControlsWindowOptionsTest {
     final Container[] parent = new Container[1];
     final boolean[] frame_visible = new boolean[1];
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.controls_window_mode = FrEnd.CONTROLS_DOCKED;
+      UniverseState.controls_window_mode = UniverseState.CONTROLS_DOCKED;
       FrEnd.applyControlsWindowOptions();
       parent[0] = FrEnd.panel_controls_all.panel.getParent();
       frame_visible[0] = FrEnd.frame_controls.isVisible();
@@ -128,10 +129,10 @@ class ControlsWindowOptionsTest {
     final boolean[] visible = new boolean[1];
     SwingUtilities.invokeAndWait(() -> {
       // Dock first.
-      FrEnd.controls_window_mode = FrEnd.CONTROLS_DOCKED;
+      UniverseState.controls_window_mode = UniverseState.CONTROLS_DOCKED;
       FrEnd.applyControlsWindowOptions();
       // Then undock to free-floating.
-      FrEnd.controls_window_mode = FrEnd.CONTROLS_FREE_FLOATING;
+      UniverseState.controls_window_mode = FrEnd.CONTROLS_FREE_FLOATING;
       FrEnd.applyControlsWindowOptions();
       parent[0] = FrEnd.panel_controls_all.panel.getParent();
       visible[0] = FrEnd.frame_controls.isVisible();
@@ -146,7 +147,7 @@ class ControlsWindowOptionsTest {
   void dockingTwiceDoesNotReparentTwice() throws Exception {
     final int[] count = new int[1];
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.controls_window_mode = FrEnd.CONTROLS_DOCKED;
+      UniverseState.controls_window_mode = UniverseState.CONTROLS_DOCKED;
       FrEnd.applyControlsWindowOptions();
       FrEnd.applyControlsWindowOptions(); // Second time.
       // Count how many times the controls panel appears in the inner area.
@@ -190,12 +191,12 @@ class ControlsWindowOptionsTest {
   void resetRestoresDocked() throws Exception {
     final int[] mode = new int[1];
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.controls_window_mode = FrEnd.CONTROLS_ALWAYS_ON_TOP;
+      UniverseState.controls_window_mode = UniverseState.CONTROLS_ALWAYS_ON_TOP;
       FrEnd.applyControlsWindowOptions();
       FrEnd.panel_preferences.resetPreferences();
-      mode[0] = FrEnd.controls_window_mode;
+      mode[0] = UniverseState.controls_window_mode;
     });
-    assertEquals(FrEnd.CONTROLS_DOCKED, mode[0],
+    assertEquals(UniverseState.CONTROLS_DOCKED, mode[0],
         "reset must restore docked mode");
   }
 
@@ -208,7 +209,7 @@ class ControlsWindowOptionsTest {
 
     final boolean[] brought_forward = new boolean[1];
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.controls_window_mode = FrEnd.CONTROLS_ALWAYS_ON_TOP;
+      UniverseState.controls_window_mode = UniverseState.CONTROLS_ALWAYS_ON_TOP;
       FrEnd.applyControlsWindowOptions();
       assertTrue(FrEnd.isControlsStayOnTopActive());
       final Frame real_controls = FrEnd.frame_controls;
@@ -245,7 +246,7 @@ class ControlsWindowOptionsTest {
     final boolean[] non_focusable_during_raise = new boolean[1];
     final boolean[] focusable_after = new boolean[1];
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.controls_window_mode = FrEnd.CONTROLS_ALWAYS_ON_TOP;
+      UniverseState.controls_window_mode = UniverseState.CONTROLS_ALWAYS_ON_TOP;
       FrEnd.applyControlsWindowOptions();
       final Frame real_controls = FrEnd.frame_controls;
       try {
@@ -310,7 +311,7 @@ class ControlsWindowOptionsTest {
     final boolean[] non_focusable_during_raise = new boolean[1];
     final boolean[] focusable_after = new boolean[1];
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.controls_window_mode = FrEnd.CONTROLS_ALWAYS_ON_TOP;
+      UniverseState.controls_window_mode = UniverseState.CONTROLS_ALWAYS_ON_TOP;
       FrEnd.applyControlsWindowOptions();
       final Frame real_controls = FrEnd.frame_controls;
       try {
@@ -366,7 +367,7 @@ class ControlsWindowOptionsTest {
       final Frame controls = FrEnd.frame_controls;
       // Undock first: docked, the controls (with the Preferences tab)
       // live in the main window, not in this frame.
-      FrEnd.controls_window_mode = FrEnd.CONTROLS_ALWAYS_ON_TOP;
+      UniverseState.controls_window_mode = UniverseState.CONTROLS_ALWAYS_ON_TOP;
       FrEnd.applyControlsWindowOptions();
       controls.setSize(320, 600);
       controls.setVisible(true);

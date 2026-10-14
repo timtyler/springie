@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.preferences;
+import com.springie.gui.state.UniverseState;
 
 import com.springie.FrEnd;
 import com.springie.constants.Delay;
@@ -33,7 +34,7 @@ public class PanelPreferencesUpdate {
     final TTChoice choose_delay = new TTChoice(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
         final String string = (String) e.getItem();
-        FrEnd.delay = FrEnd.choose_delay.str_to_num(string);
+        UniverseState.delay = FrEnd.choose_delay.str_to_num(string);
       }
     });
 
@@ -51,7 +52,7 @@ public class PanelPreferencesUpdate {
     choose_delay.add("100", Delay._DELAY_100);
     choose_delay.add("200", Delay._DELAY_200);
     choose_delay.add("512", Delay._DELAY_512);
-    choose_delay.choice.select(choose_delay.num_to_str(FrEnd.delay));
+    choose_delay.choice.select(choose_delay.num_to_str(UniverseState.delay));
     panel_delay.add(choose_delay.choice);
 
     final Panel panel_step_size = new Panel();
@@ -93,7 +94,7 @@ public class PanelPreferencesUpdate {
   public void resetToDefaults() {
     FrEnd.choose_delay.choice.select(FrEnd.choose_delay
         .num_to_str(Delay._DELAY_2));
-    FrEnd.delay = Delay._DELAY_2;
+    UniverseState.delay = Delay._DELAY_2;
 
     FrEnd.textfield_step_size.setText("1");
 

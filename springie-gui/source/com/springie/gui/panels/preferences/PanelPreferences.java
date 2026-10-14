@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.preferences;
+import com.springie.gui.state.UniverseState;
 
 import com.springie.FrEnd;
 import com.springie.gui.GUIStrings;
@@ -74,10 +75,10 @@ public class PanelPreferences {
     this.choice_controls_window_mode.add(GUIStrings.CONTROL_WINDOW_ALWAYS_ON_TOP);
     this.choice_controls_window_mode.add(GUIStrings.CONTROL_WINDOW_FREE_FLOATING);
     this.choice_controls_window_mode.add(GUIStrings.CONTROL_WINDOW_DOCKED);
-    this.choice_controls_window_mode.select(FrEnd.controls_window_mode);
+    this.choice_controls_window_mode.select(UniverseState.controls_window_mode);
     this.choice_controls_window_mode.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        FrEnd.controls_window_mode =
+        UniverseState.controls_window_mode =
             ((Choice) e.getSource()).getSelectedIndex();
         FrEnd.applyControlsWindowOptions();
       }
@@ -126,8 +127,8 @@ public class PanelPreferences {
   public void resetPreferences() {
     FrEnd.preferences = new Preferences();
 
-    FrEnd.controls_window_mode = FrEnd.CONTROLS_DOCKED;
-    this.choice_controls_window_mode.select(FrEnd.CONTROLS_DOCKED);
+    UniverseState.controls_window_mode = UniverseState.CONTROLS_DOCKED;
+    this.choice_controls_window_mode.select(UniverseState.CONTROLS_DOCKED);
     // In case the choice was already in its default state (no item event
     // fires then).
     FrEnd.applyControlsWindowOptions();

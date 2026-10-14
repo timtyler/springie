@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels;
+import com.springie.gui.state.UniverseState;
 
 import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
@@ -39,7 +40,7 @@ class ControlsButtonDockTest {
   @AfterEach
   void restoreOptions() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.controls_window_mode = FrEnd.CONTROLS_ALWAYS_ON_TOP;
+      UniverseState.controls_window_mode = UniverseState.CONTROLS_ALWAYS_ON_TOP;
       FrEnd.applyControlsWindowOptions();
       FrEnd.frame_controls.setVisible(true);
     });
@@ -88,7 +89,7 @@ class ControlsButtonDockTest {
   @Test
   void controlsButtonStaysEnabledWhenDocked() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.controls_window_mode = FrEnd.CONTROLS_DOCKED;
+      UniverseState.controls_window_mode = UniverseState.CONTROLS_DOCKED;
       FrEnd.applyControlsWindowOptions();
     });
     final boolean[] enabled = new boolean[1];
@@ -101,7 +102,7 @@ class ControlsButtonDockTest {
   @Test
   void controlsButtonTogglesTheDockedPanel() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.controls_window_mode = FrEnd.CONTROLS_DOCKED;
+      UniverseState.controls_window_mode = UniverseState.CONTROLS_DOCKED;
       FrEnd.applyControlsWindowOptions();
     });
     // ImageButton has no doClick; fire the action path directly.

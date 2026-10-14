@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.preferences;
+import com.springie.gui.state.UniverseState;
 
 import com.springie.FrEnd;
 import com.springie.constants.Actions;
@@ -36,14 +37,14 @@ public class PanelPreferencesEdit {
     panel.add(new Label("Right-click to", Label.RIGHT));
     this.choose_right_action = new TTChoice(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        FrEnd.action_right_type = getChooseRightAction().str_to_num(
+        UniverseState.action_right_type = getChooseRightAction().str_to_num(
             (String) (e.getItem()));
       }
     });
     addActionTypes(this.choose_right_action);
 
     this.choose_right_action.choice.select(this.choose_right_action
-        .num_to_str(FrEnd.action_right_type));
+        .num_to_str(UniverseState.action_right_type));
     panel.add(this.choose_right_action.choice);
 
     return panel;
@@ -55,14 +56,14 @@ public class PanelPreferencesEdit {
     panel.add(new Label("Middle-click to", Label.RIGHT));
     this.choose_middle_action = new TTChoice(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        FrEnd.action_middle_type = getChooseMiddleAction().str_to_num(
+        UniverseState.action_middle_type = getChooseMiddleAction().str_to_num(
             (String) (e.getItem()));
       }
     });
     addActionTypes(this.choose_middle_action);
 
     this.choose_middle_action.choice.select(this.choose_middle_action
-        .num_to_str(FrEnd.action_middle_type));
+        .num_to_str(UniverseState.action_middle_type));
     panel.add(this.choose_middle_action.choice);
     return panel;
   }
@@ -74,14 +75,14 @@ public class PanelPreferencesEdit {
     panel.add(new Label("Left-click to", Label.RIGHT));
     this.choose_left_action = new TTChoice(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        FrEnd.action_left_type = getChooseLeftAction().str_to_num(
+        UniverseState.action_left_type = getChooseLeftAction().str_to_num(
             (String) (e.getItem()));
       }
     });
     addActionTypes(this.choose_left_action);
 
     this.choose_left_action.choice.select(this.choose_left_action
-        .num_to_str(FrEnd.action_left_type));
+        .num_to_str(UniverseState.action_left_type));
     panel.add(this.choose_left_action.choice);
     return panel;
   }
@@ -141,15 +142,15 @@ public class PanelPreferencesEdit {
   public void resetToDefaults() {
     this.choose_left_action.choice.select(this.choose_left_action
         .num_to_str(Actions.SELECT));
-    FrEnd.action_left_type = Actions.SELECT;
+    UniverseState.action_left_type = Actions.SELECT;
 
     this.choose_middle_action.choice.select(this.choose_middle_action
         .num_to_str(Actions.TRANSLATE));
-    FrEnd.action_middle_type = Actions.TRANSLATE;
+    UniverseState.action_middle_type = Actions.TRANSLATE;
 
     this.choose_right_action.choice.select(this.choose_right_action
         .num_to_str(Actions.ROTATE));
-    FrEnd.action_right_type = Actions.ROTATE;
+    UniverseState.action_right_type = Actions.ROTATE;
   }
 
 }

@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.gestures;
+import com.springie.gui.state.UniverseState;
 
 import com.springie.FrEnd;
 import com.springie.constants.Actions;
@@ -236,7 +237,7 @@ public class PerformActions {
   }
 
   void single_killing(final int x, final int y) {
-    switch (FrEnd.weapon_type) {
+    switch (UniverseState.weapon_type) {
     case ToolTypes._PENCIL:
       kill_a_cell(x, y);
       break;
@@ -316,7 +317,7 @@ public class PerformActions {
     float num;
     int temp;
 
-    switch (FrEnd.weapon_type) {
+    switch (UniverseState.weapon_type) {
     case ToolTypes._MACHINE:
       temp = 12;
       break;

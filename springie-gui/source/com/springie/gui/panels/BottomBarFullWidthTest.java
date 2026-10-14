@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels;
+import com.springie.gui.state.UniverseState;
 
 import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
@@ -30,7 +31,7 @@ class BottomBarFullWidthTest {
   static void restoreAndDispose() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       // Leave the app in its default state for the next test class.
-      FrEnd.controls_window_mode = FrEnd.CONTROLS_DOCKED;
+      UniverseState.controls_window_mode = UniverseState.CONTROLS_DOCKED;
       FrEnd.applyControlsWindowOptions();
     });
     GuiTestSupport.disposeFrames();
@@ -38,7 +39,7 @@ class BottomBarFullWidthTest {
 
   @Test
   void bottomBarSpansFullWidthWhileDocked() throws Exception {
-    applyModeAndResize(FrEnd.CONTROLS_DOCKED);
+    applyModeAndResize(UniverseState.CONTROLS_DOCKED);
     final int[] widths = readWidths();
     assertEquals(widths[1], widths[0],
         "docked: bottom bar (" + widths[0] + ") must span the full"
@@ -56,7 +57,7 @@ class BottomBarFullWidthTest {
 
   @Test
   void bottomBarSpansFullWidthWhileAlwaysOnTop() throws Exception {
-    applyModeAndResize(FrEnd.CONTROLS_ALWAYS_ON_TOP);
+    applyModeAndResize(UniverseState.CONTROLS_ALWAYS_ON_TOP);
     final int[] widths = readWidths();
     assertEquals(widths[1], widths[0],
         "always-on-top: bottom bar (" + widths[0] + ") must span the"
@@ -79,7 +80,7 @@ class BottomBarFullWidthTest {
    */
   private static void applyModeAndResize(final int mode) throws Exception {
     SwingUtilities.invokeAndWait(() -> {
-      FrEnd.controls_window_mode = mode;
+      UniverseState.controls_window_mode = mode;
       FrEnd.applyControlsWindowOptions();
       FrEnd.frame_main.setSize(900, 700);
       FrEnd.frame_main.validate();

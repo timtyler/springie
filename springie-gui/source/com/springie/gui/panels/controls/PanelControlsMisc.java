@@ -1,6 +1,7 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.controls;
+import com.springie.gui.state.UniverseState;
 import com.springie.world.World;
 
 import com.springie.FrEnd;
@@ -287,7 +288,7 @@ public class PanelControlsMisc {
         final String stateChangedString = (String) (e.getItem());
 
         if (FrEnd.choose_tool.str_to_num(stateChangedString) != -99) {
-          FrEnd.weapon_type = FrEnd.choose_tool.str_to_num(stateChangedString);
+          UniverseState.weapon_type = FrEnd.choose_tool.str_to_num(stateChangedString);
         }
       }
     });
@@ -298,7 +299,7 @@ public class PanelControlsMisc {
     FrEnd.choose_tool.add("an aerosol", ToolTypes._SPRAY);
     FrEnd.choose_tool.add("potato printing", ToolTypes._POTATO);
     FrEnd.choose_tool.choice.select(FrEnd.choose_tool
-        .num_to_str(FrEnd.weapon_type));
+        .num_to_str(UniverseState.weapon_type));
     panel_tool.add(FrEnd.choose_tool.choice);
 
 //    // MAKE_MOTIONLESS
