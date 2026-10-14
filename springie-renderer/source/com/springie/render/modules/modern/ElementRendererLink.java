@@ -277,7 +277,7 @@ public final class ElementRendererLink {
       double az = point1n.z - point0n.z;
       final double alen = Math.sqrt(ax * ax + ay * ay + az * az);
       // Ambient light (Tim, 2026-10-03).
-      final double ambient_l = 0.5 * RendererDelegator.ambient_light_pct / 100.0;
+      final double ambient_l = 1.0 * RendererDelegator.ambient_light_pct / 100.0;
       double r_factor = ambient_l;
       double g_factor = ambient_l;
       double b_factor = ambient_l;

@@ -53,7 +53,7 @@ final class Raytracer {
    * 50% = 96, matching the old hardcoded ambient.
    */
   private static int ambientBase() {
-    return (int) (192.0 * RendererDelegator.ambient_light_pct / 100.0);
+    return (int) (384.0 * RendererDelegator.ambient_light_pct / 100.0);
   }
 
   static {

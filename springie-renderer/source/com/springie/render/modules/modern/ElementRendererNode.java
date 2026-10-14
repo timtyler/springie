@@ -56,7 +56,7 @@ public final class ElementRendererNode {
         final double nz = normal.z / (double) (1 << Coords.shift);
         final double nlen = Math.sqrt(nx * nx + ny * ny + nz * nz);
         // Ambient light (Tim, 2026-10-03).
-        final double ambient_n = 0.5 * RendererDelegator.ambient_light_pct / 100.0;
+        final double ambient_n = 1.0 * RendererDelegator.ambient_light_pct / 100.0;
         double r_factor = ambient_n;
         double g_factor = ambient_n;
         double b_factor = ambient_n;

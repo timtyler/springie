@@ -147,7 +147,7 @@ public final class ElementRendererFace {
         com.springie.geometry.Coords.y_pixelso2);
     // Combine: ambient + diffuse from N lights (Tim, 2026-10-04).
     // Ambient light (Tim, 2026-10-03): from the slider. 50% = 0.25.
-    final double ambient = 0.5 * RendererDelegator.ambient_light_pct / 100.0;
+    final double ambient = 1.0 * RendererDelegator.ambient_light_pct / 100.0;
     // Per-output-channel diffuse: sum each light's factor scaled by
     // its color (Tim, 2026-10-04).
     double r_factor = ambient;

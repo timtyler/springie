@@ -46,7 +46,6 @@ public class PanelControlsUniverse {
   private TabbedPanel tab_light_colours;
   private Button button_add_light;
   private Scrollbar scrollbar_light_ambient;
-  private int saved_ambient_pct = 0;
   private Label label_light_ambient;
 
   public Checkbox checkbox_gravity_switch;
@@ -490,18 +489,13 @@ public class PanelControlsUniverse {
       public void itemStateChanged(final ItemEvent e) {
         final boolean on = checkbox_colored_lighting.getState();
         LightSource.colored_lighting = on;
-        if (!on) {
-          // Save ambient and pump it up (Tim, 2026-10-14).
-          saved_ambient_pct = RendererDelegator.ambient_light_pct;
-          RendererDelegator.ambient_light_pct = 80;
-          scrollbar_light_ambient.setValue(80);
-          label_light_ambient.setText("80");
-        } else {
-          // Restore ambient (Tim, 2026-10-14).
-          RendererDelegator.ambient_light_pct = saved_ambient_pct;
-          scrollbar_light_ambient.setValue(saved_ambient_pct);
-          label_light_ambient.setText("" + saved_ambient_pct);
-        }
+        // Select between the two stored ambient values (Tim, 2026-10-14).
+        final int val = on ? RendererDelegator.ambient_colored_pct
+            : RendererDelegator.ambient_white_pct;
+        RendererDelegator.ambient_light_pct = val;
+        scrollbar_light_ambient.setValue(val);
+        label_light_ambient.setText("" + val);
+        com.springie.world.UniverseDefaults.setAmbientLightPct(val);
         LightSource.light_moved = true;
         // Redisplay the whole screen (Tim, 2026-10-14).
         com.springie.render.RendererDelegator.repaintAll();
@@ -543,6 +537,12 @@ public class PanelControlsUniverse {
       public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int val = e.getValue();
         RendererDelegator.ambient_light_pct = val;
+        // Store in the active mode's slot (Tim, 2026-10-14).
+        if (LightSource.colored_lighting) {
+          RendererDelegator.ambient_colored_pct = val;
+        } else {
+          RendererDelegator.ambient_white_pct = val;
+        }
         label_light_ambient.setText("" + val);
         // Write through to the universe snapshot (Tim, 2026-10-04): or
         // the value is lost when defaults are re-applied.

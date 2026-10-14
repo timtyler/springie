@@ -168,6 +168,10 @@ public final class RendererDelegator {
    * Default 0% (Tim, 2026-10-08).
    */
   public static int ambient_light_pct = 0;
+  /** Stored ambient for colored-lighting mode (Tim, 2026-10-14). */
+  public static int ambient_colored_pct = 0;
+  /** Stored ambient for white-only mode (Tim, 2026-10-14). Default 80. */
+  public static int ambient_white_pct = 80;
 
   /**
    * Anti-aliasing supersampling factor (1 to 5): 1x1 is off, 2x2, 3x3,
