@@ -179,6 +179,10 @@ public final class LightSourceDots {
    * Only draws 1 frame in 16 to keep it cheap.
    */
   public static void draw(final Graphics g) {
+    // No dots when colored lighting is off (Tim, 2026-10-14).
+    if (!com.springie.render.modules.modern.LightSource.colored_lighting) {
+      return;
+    }
     // Draw at most 1 frame in 16 (Tim, 2026-10-04): the dots are
     // cheap but the canvas blit isn't; every frame is too much.
     frame_count = (frame_count + 1) % FRAME_SKIP;

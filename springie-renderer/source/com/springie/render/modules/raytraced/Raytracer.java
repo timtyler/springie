@@ -100,6 +100,10 @@ final class Raytracer {
 
   /** Gets light i's world X, or 0 if i is out of range (N lights, Tim, 2026-10-04). */
   private static double lightPx(final int i) {
+    // No positioned lights when colored lighting is off (Tim, 2026-10-14).
+    if (!LightSource.colored_lighting) {
+      return 0.0;
+    }
     synchronized (LightSource.class) {
       if (i >= 0 && i < LightSource.lights.size()) {
         return LightSource.lights.get(i).px;
@@ -110,6 +114,9 @@ final class Raytracer {
 
   /** Gets light i's world Y, or 0 if out of range. */
   private static double lightPy(final int i) {
+    if (!LightSource.colored_lighting) {
+      return 0.0;
+    }
     synchronized (LightSource.class) {
       if (i >= 0 && i < LightSource.lights.size()) {
         return LightSource.lights.get(i).py;
@@ -120,6 +127,9 @@ final class Raytracer {
 
   /** Gets light i's world Z, or 0 if out of range. */
   private static double lightPz(final int i) {
+    if (!LightSource.colored_lighting) {
+      return 0.0;
+    }
     synchronized (LightSource.class) {
       if (i >= 0 && i < LightSource.lights.size()) {
         return LightSource.lights.get(i).pz;

@@ -71,6 +71,7 @@ public final class ElementRendererNode {
           // Per-output-channel diffuse: sum each light's factor scaled
           // by its color.
           synchronized (LightSource.class) {
+            if (LightSource.colored_lighting)
             for (final Light light : LightSource.lights) {
               if (light.intensity_pct <= 0) {
                 continue;

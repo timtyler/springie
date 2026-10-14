@@ -46,6 +46,7 @@ public class PanelControlsUniverse {
   private TabbedPanel tab_light_colours;
   private Button button_add_light;
   private Scrollbar scrollbar_light_ambient;
+  private int saved_ambient_pct = 0;
   private Label label_light_ambient;
 
   public Checkbox checkbox_gravity_switch;
@@ -480,6 +481,35 @@ public class PanelControlsUniverse {
     // its intensity slider at the top, delete button, and color picker.
     // The old duplicate intensity list at the top is gone.
     final Panel panel_lights = new Panel(new BorderLayout(0, 8));
+
+    // Colored lighting checkbox (Tim, 2026-10-14): when off, positioned
+    // lights are ignored and ambient white is pumped up. Default on.
+    // Toggling redisplays the whole screen.
+    final Checkbox checkbox_colored_lighting = new Checkbox("Colored lighting", true);
+    checkbox_colored_lighting.addItemListener(new ItemListener() {
+      public void itemStateChanged(final ItemEvent e) {
+        final boolean on = checkbox_colored_lighting.getState();
+        LightSource.colored_lighting = on;
+        if (!on) {
+          // Save ambient and pump it up (Tim, 2026-10-14).
+          saved_ambient_pct = RendererDelegator.ambient_light_pct;
+          RendererDelegator.ambient_light_pct = 80;
+          scrollbar_light_ambient.setValue(80);
+          label_light_ambient.setText("80");
+        } else {
+          // Restore ambient (Tim, 2026-10-14).
+          RendererDelegator.ambient_light_pct = saved_ambient_pct;
+          scrollbar_light_ambient.setValue(saved_ambient_pct);
+          label_light_ambient.setText("" + saved_ambient_pct);
+        }
+        LightSource.light_moved = true;
+        // Redisplay the whole screen (Tim, 2026-10-14).
+        com.springie.render.RendererDelegator.repaintAll();
+      }
+    });
+    final Panel panel_colored = new Panel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+    panel_colored.add(checkbox_colored_lighting);
+    panel_lights.add("North", panel_colored);
 
     // Light tabs (Tim, 2026-10-04/05): one tab per light.
     // In the Center so the tabs get the available space.

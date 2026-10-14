@@ -29,6 +29,9 @@ public class LightSource {
    * (Tim, 2026-10-04).
    */
   public static volatile boolean light_moved = false;
+  /** Colored lighting on/off (Tim, 2026-10-14): when off, positioned
+   * lights are ignored and ambient white is used. Default on. */
+  public static volatile boolean colored_lighting = true;
 
   /** Directional versions (for compatibility). */
   public static final Vector3D source_red = new Vector3D(-100, -100, -100);

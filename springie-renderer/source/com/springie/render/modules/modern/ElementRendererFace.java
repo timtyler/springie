@@ -158,6 +158,7 @@ public final class ElementRendererFace {
     double spec_g = 0.0;
     double spec_b = 0.0;
     synchronized (LightSource.class) {
+      if (LightSource.colored_lighting)
       for (final com.springie.render.modules.modern.Light light
           : LightSource.lights) {
         if (light.intensity_pct <= 0) {
