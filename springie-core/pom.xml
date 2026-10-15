@@ -16,7 +16,7 @@
   </parent>
 
   <artifactId>springie</artifactId>
-  <name>Springie</name>
+  <name>Springie core</name>
   <description>A tensegrity simulator using Java.</description>
 
   <dependencies>
