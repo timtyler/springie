@@ -8,12 +8,23 @@
 <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.2//EN" "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
 <module name="Checker">
 <property name="severity" value="warning"/>
+<module name="SuppressionFilter">
+  <property name="file" value="${maven.multiModuleProjectDirectory}/checkstyle-suppressions.xml"/>
+</module>
 <module name="FileTabCharacter"></module>
 <module name="RegexpSingleline">
   <!-- A disabled test must stay visible: every @Disabled is a warning,
        so a skipped test can't rot silently. Re-enable or delete it. -->
   <property name="format" value="^\s*@Disabled\b"/>
   <property name="message" value="Disabled test: re-enable it or delete it."/>
+</module>
+<module name="RegexpSingleline">
+  <!-- Architectural boundary (Tim, 2026-10-15): athlete code must never
+       depend on judge code. Scoped to springie-olympics-athletes via
+       checkstyle-suppressions.xml. -->
+  <property name="id" value="AthleteJudgeDependency"/>
+  <property name="format" value="^import .*\.demos\..*(Judge|Rule)\b"/>
+  <property name="message" value="Athlete code must not depend on judge code."/>
 </module>
 
 <module name="TreeWalker">
