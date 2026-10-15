@@ -14,6 +14,11 @@
   <dependencies>
     <dependency>
       <groupId>com.springie</groupId>
+      <artifactId>springie-command</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.springie</groupId>
       <artifactId>springie-base</artifactId>
       <version>${project.version}</version>
     </dependency>

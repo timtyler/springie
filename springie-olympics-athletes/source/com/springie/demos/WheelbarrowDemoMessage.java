@@ -24,7 +24,7 @@ public class WheelbarrowDemoMessage extends NewMessage {
     // Sync the Universe panel (gravity etc.) with the demo's settings.
     // Must run on the AWT thread: this message executes on the animation
     // thread, and AWT components are not thread-safe.
-    EventQueue.invokeLater(FrEnd::reflectValuesInGUIAfterPropertyEditing);
+    EventQueue.invokeLater(() -> com.springie.modification.CommandContextHolder.get().reflectValuesInGUIAfterPropertyEditing());
     return null;
   }
 }
