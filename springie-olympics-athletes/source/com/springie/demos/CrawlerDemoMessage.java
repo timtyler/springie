@@ -2,7 +2,6 @@
 package com.springie.demos;
 import com.springie.world.World;
 
-import com.springie.FrEnd;
 import com.springie.world.NewMessage;
 import java.awt.EventQueue;
 
