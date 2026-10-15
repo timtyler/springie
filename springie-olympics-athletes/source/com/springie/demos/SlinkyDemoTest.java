@@ -118,12 +118,13 @@ class SlinkyDemoTest {
       HeadlessRunner.resetWorldRandom();
       HeadlessRunner.pinPhysicsState();
       final com.springie.elements.nodes.NodeManager nm = HeadlessRunner.newJudgedRun();
-      final com.springie.elements.nodes.Node hub = SlinkyDemo.buildAt(400);
+      SlinkyDemo.buildAt(400);
+      final com.springie.elements.nodes.Node hub = SlinkyDemo.reference_node;
       HeadlessRunner.settle(nm, 60);
       for (int i = 0; i < 600; i++) {
         nm.nodeAndLinkUpdate();
       }
-      return new long[] {(long) hub.x, (long) hub.z};
+      return new long[] {(long) hub.pos.x, (long) hub.pos.z};
     });
   }
 

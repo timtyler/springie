@@ -169,7 +169,7 @@ class HopperDemoTest {
       for (int i = 0; i < 600; i++) {
         nm.nodeAndLinkUpdate();
       }
-      return new long[] {(long) hub.x, (long) hub.y};
+      return new long[] {(long) hub.pos.x, (long) hub.pos.y};
     });
   }
 

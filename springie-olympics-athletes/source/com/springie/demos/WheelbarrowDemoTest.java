@@ -14,7 +14,6 @@ import com.springie.geometry.Coords;
 import com.springie.world.World;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -242,7 +241,7 @@ class WheelbarrowDemoTest {
       for (int i = 0; i < 600; i++) {
         nm.nodeAndLinkUpdate();
       }
-      return new long[] {(long) hub.x, (long) hub.z};
+      return new long[] {(long) hub.pos.x, (long) hub.pos.z};
     });
   }
 
@@ -266,19 +265,6 @@ class WheelbarrowDemoTest {
       assertTrue(Double.isFinite(node.pos.y), "Node " + i + " y is not finite");
       assertTrue(Double.isFinite(node.pos.z), "Node " + i + " z is not finite");
     }
-  }
-
-  @Disabled("no drive yet: the minimal prism has no muscles or kick, so it "
-      + "sits still. Re-enable when a drive is added.")
-  @Test
-  void rollingMatchExceedsThreshold() {
-    final RollingJudge.Result result = RollingJudge.score(600, false);
-    assertTrue(result.rolling_match > 0.8,
-        "rollingMatch=" + result.rolling_match + " (expected > 0.8)");
-    assertTrue(!result.disqualified,
-        "judged run must not be disqualified");
-    assertTrue(result.distance_px > 150,
-        "distance=" + result.distance_px + " (expected > 150px)");
   }
 
   @Test

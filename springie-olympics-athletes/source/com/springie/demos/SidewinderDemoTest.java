@@ -154,12 +154,15 @@ class SidewinderDemoTest {
       HeadlessRunner.resetWorldRandom();
       HeadlessRunner.pinPhysicsState();
       final com.springie.elements.nodes.NodeManager nm = HeadlessRunner.newJudgedRun();
-      final com.springie.elements.nodes.Node hub = SidewinderDemo.buildAt(400);
+      SidewinderDemo.buildAt(400);
+      // Node 0 is the chain's first (tail) node: buildAt adds nodes in order.
+      final com.springie.elements.nodes.Node hub =
+          (com.springie.elements.nodes.Node) nm.element.get(0);
       HeadlessRunner.settle(nm, 60);
       for (int i = 0; i < 600; i++) {
         nm.nodeAndLinkUpdate();
       }
-      return new long[] {(long) hub.x, (long) hub.z};
+      return new long[] {(long) hub.pos.x, (long) hub.pos.z};
     });
   }
 
