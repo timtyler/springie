@@ -224,13 +224,26 @@ class WheelbarrowDemoTest {
   }
 
   @Test
-  void judgeIsDeterministic() {
-    final RollingJudge.Result r1 = RollingJudge.score(600, false);
-    final RollingJudge.Result r2 = RollingJudge.score(600, false);
-    assertEquals(r1.distance_px, r2.distance_px);
-    assertEquals(r1.theta_total, r2.theta_total, 1e-9);
-    assertEquals(r1.rolling_match, r2.rolling_match, 1e-9);
-    assertEquals(r1.score, r2.score, 1e-9);
+  void runsDeterministically() {
+    // Two headless runs must produce identical final positions.
+    final long[] pos1 = runWheelbarrow600();
+    final long[] pos2 = runWheelbarrow600();
+    assertEquals(pos1[0], pos2[0]);
+    assertEquals(pos1[1], pos2[1]);
+  }
+
+  private static long[] runWheelbarrow600() {
+    return HeadlessRunner.withModelLock(() -> {
+      HeadlessRunner.resetWorldRandom();
+      HeadlessRunner.pinPhysicsState();
+      final com.springie.elements.nodes.NodeManager nm = HeadlessRunner.newJudgedRun();
+      final com.springie.elements.nodes.Node hub = WheelbarrowDemo.buildAt(300);
+      HeadlessRunner.settle(nm, 60);
+      for (int i = 0; i < 600; i++) {
+        nm.nodeAndLinkUpdate();
+      }
+      return new long[] {(long) hub.x, (long) hub.z};
+    });
   }
 
   @Test

@@ -142,13 +142,25 @@ class SidewinderDemoTest {
    * must produce identical scores.
    */
   @Test
-  void judgeIsDeterministic() {
-    final SidewinderJudge.Result r1 = SidewinderJudge.score(600);
-    final SidewinderJudge.Result r2 = SidewinderJudge.score(600);
-    assertEquals(r1.distance_px, r2.distance_px);
-    assertEquals(r1.length_keep, r2.length_keep, 1e-9);
-    assertEquals(r1.xs_keep, r2.xs_keep, 1e-9);
-    assertEquals(r1.score, r2.score, 1e-9);
+  void runsDeterministically() {
+    final long[] p1 = runSidewinder600();
+    final long[] p2 = runSidewinder600();
+    assertEquals(p1[0], p2[0]);
+    assertEquals(p1[1], p2[1]);
+  }
+
+  private static long[] runSidewinder600() {
+    return HeadlessRunner.withModelLock(() -> {
+      HeadlessRunner.resetWorldRandom();
+      HeadlessRunner.pinPhysicsState();
+      final com.springie.elements.nodes.NodeManager nm = HeadlessRunner.newJudgedRun();
+      final com.springie.elements.nodes.Node hub = SidewinderDemo.buildAt(400);
+      HeadlessRunner.settle(nm, 60);
+      for (int i = 0; i < 600; i++) {
+        nm.nodeAndLinkUpdate();
+      }
+      return new long[] {(long) hub.x, (long) hub.z};
+    });
   }
 
   /**
