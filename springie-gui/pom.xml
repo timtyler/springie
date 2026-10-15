@@ -60,6 +60,12 @@
       <artifactId>springie</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.springie</groupId>
+      <artifactId>springie-olympics-athletes</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
