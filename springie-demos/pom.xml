@@ -16,7 +16,7 @@
   </parent>
 
   <artifactId>springie-demos</artifactId>
-  <name>Springie demos</name>
+  <name>Springie olympics</name>
   <description>Procedural demo model builders and their launch messages.</description>
 
   <dependencies>
