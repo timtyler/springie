@@ -14,9 +14,9 @@ public final class UniverseState {
   }
 
   // Controls window mode.
-  public static final int CONTROLS_DOCKED = 0;
-  public static final int CONTROLS_ALWAYS_ON_TOP = 1;
-  public static final int CONTROLS_SEPARATE = 2;
+  public static final int CONTROLS_ALWAYS_ON_TOP = 0;
+  public static final int CONTROLS_FREE_FLOATING = 1;
+  public static final int CONTROLS_DOCKED = 2;
   public static int controls_window_mode = CONTROLS_DOCKED;
 
   // Current tool.

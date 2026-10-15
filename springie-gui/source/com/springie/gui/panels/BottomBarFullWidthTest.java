@@ -66,7 +66,7 @@ class BottomBarFullWidthTest {
 
   @Test
   void bottomBarSpansFullWidthWhileFreeFloating() throws Exception {
-    applyModeAndResize(FrEnd.CONTROLS_FREE_FLOATING);
+    applyModeAndResize(UniverseState.CONTROLS_FREE_FLOATING);
     final int[] widths = readWidths();
     assertEquals(widths[1], widths[0],
         "free-floating: bottom bar (" + widths[0] + ") must span the"

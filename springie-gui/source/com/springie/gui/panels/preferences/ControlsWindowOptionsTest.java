@@ -92,7 +92,7 @@ class ControlsWindowOptionsTest {
     final Container[] parent = new Container[1];
     SwingUtilities.invokeAndWait(() -> {
       FrEnd.frame_controls.setVisible(true);
-      UniverseState.controls_window_mode = FrEnd.CONTROLS_FREE_FLOATING;
+      UniverseState.controls_window_mode = UniverseState.CONTROLS_FREE_FLOATING;
       FrEnd.applyControlsWindowOptions();
       stay_on_top[0] = FrEnd.isControlsStayOnTopActive();
       visible[0] = FrEnd.frame_controls.isVisible();
@@ -132,7 +132,7 @@ class ControlsWindowOptionsTest {
       UniverseState.controls_window_mode = UniverseState.CONTROLS_DOCKED;
       FrEnd.applyControlsWindowOptions();
       // Then undock to free-floating.
-      UniverseState.controls_window_mode = FrEnd.CONTROLS_FREE_FLOATING;
+      UniverseState.controls_window_mode = UniverseState.CONTROLS_FREE_FLOATING;
       FrEnd.applyControlsWindowOptions();
       parent[0] = FrEnd.panel_controls_all.panel.getParent();
       visible[0] = FrEnd.frame_controls.isVisible();

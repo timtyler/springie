@@ -330,9 +330,6 @@ public class FrEnd extends Panel implements Runnable {
 
   /** The controls window can float above the main window, float freely,
    * or be docked into the main window's layout. */
-  public static final int UniverseState.CONTROLS_ALWAYS_ON_TOP = 0;
-  public static final int CONTROLS_FREE_FLOATING = 1;
-  public static final int UniverseState.CONTROLS_DOCKED = 2;
 
 
   public static Frame frame_panel_about;
