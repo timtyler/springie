@@ -101,7 +101,12 @@
     </dependency>
     <dependency>
       <groupId>com.springie</groupId>
-      <artifactId>springie-demos</artifactId>
+      <artifactId>springie-olympics-athletes</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.springie</groupId>
+      <artifactId>springie-olympics-judges</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
