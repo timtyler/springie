@@ -3,6 +3,7 @@
 // How broken? Bins? Surely not.
 
 package com.springie;
+import com.springie.gui.state.UniverseState;
 
 import com.springie.io.IoConfig;
 import com.springie.world.World;
@@ -329,9 +330,9 @@ public class FrEnd extends Panel implements Runnable {
 
   /** The controls window can float above the main window, float freely,
    * or be docked into the main window's layout. */
-  public static final int CONTROLS_ALWAYS_ON_TOP = 0;
+  public static final int UniverseState.CONTROLS_ALWAYS_ON_TOP = 0;
   public static final int CONTROLS_FREE_FLOATING = 1;
-  public static final int CONTROLS_DOCKED = 2;
+  public static final int UniverseState.CONTROLS_DOCKED = 2;
 
 
   public static Frame frame_panel_about;
@@ -671,13 +672,13 @@ public class FrEnd extends Panel implements Runnable {
       }
     }
 
-    if (controls_window_mode == CONTROLS_ALWAYS_ON_TOP) {
+    if (UniverseState.controls_window_mode == UniverseState.CONTROLS_ALWAYS_ON_TOP) {
       startControlsStayOnTop();
     } else {
       stopControlsStayOnTop();
     }
 
-    if (controls_window_mode == CONTROLS_DOCKED) {
+    if (UniverseState.controls_window_mode == UniverseState.CONTROLS_DOCKED) {
       dockControlsWithMain();
     } else {
       undockControlsFromMain();
@@ -844,7 +845,7 @@ public class FrEnd extends Panel implements Runnable {
     // Only show the frame if we're not in the middle of docking;
     // the caller decides visibility for free-floating vs always-on-top.
     // (Both need the frame visible.)
-    if (controls_window_mode != CONTROLS_DOCKED) {
+    if (UniverseState.controls_window_mode != UniverseState.CONTROLS_DOCKED) {
       frame_controls.setVisible(true);
     }
   }
@@ -955,7 +956,7 @@ public class FrEnd extends Panel implements Runnable {
 
       main_canvas.panel.repaint();
 
-      if (delay > 0) {
+      if (UniverseState.delay > 0) {
         takeFortyWinks();
       }
 
@@ -971,7 +972,7 @@ public class FrEnd extends Panel implements Runnable {
 
   private void takeFortyWinks() {
     try {
-      Thread.sleep(delay);
+      Thread.sleep(UniverseState.delay);
     } catch (InterruptedException e) {
     }
   }
@@ -1032,15 +1033,15 @@ public class FrEnd extends Panel implements Runnable {
 
   public static void processMouseClick(final int x, final int y) {
     if ((main_canvas.modifiers & InputEvent.BUTTON1_MASK) != 0) {
-      perform_actions.actionSwitch(x, y, action_left_type);
+      perform_actions.actionSwitch(x, y, UniverseState.action_left_type);
     }
 
     if ((main_canvas.modifiers & InputEvent.BUTTON2_MASK) != 0) {
-      perform_actions.actionSwitch(x, y, action_middle_type);
+      perform_actions.actionSwitch(x, y, UniverseState.action_middle_type);
     }
 
     if ((main_canvas.modifiers & InputEvent.BUTTON3_MASK) != 0) {
-      perform_actions.actionSwitch(x, y, action_right_type);
+      perform_actions.actionSwitch(x, y, UniverseState.action_right_type);
     }
 
     last_mousex = x;
