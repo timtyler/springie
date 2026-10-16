@@ -54,7 +54,7 @@ public final class RockingHorseDemo {
   public static int gravity_strength = 5;
 
   /** Muscle amplitude, percent. */
-  public static int muscle_amplitude_pct = 10; // Optimized 2026-10-15: 473px/600t.
+  public static int muscle_amplitude_pct = 4; // Tim, 2026-10-15.
 
   /** Muscle period, in ticks. */
   public static int muscle_period_ticks = 36; // Optimized 2026-10-15.
@@ -81,7 +81,7 @@ public final class RockingHorseDemo {
     final Clazz link_clazz = node_manager.clazz_factory.getNew(0xFFB6C1);
     final NodeType node_type = node_manager.node_type_factory.getNew();
     node_type.log_mass = 20;
-    final int radius = 8 << Coords.shift;
+    final int radius = 16 << Coords.shift; // Doubled (Tim, 2026-10-15).
     node_type.radius = radius;
 
     World.gravity_active = true;
@@ -90,6 +90,7 @@ public final class RockingHorseDemo {
     World.ground_friction = friction;
     World.bounding_box_bounciness = 0; // Rebounds off (Tim, 2026-10-15).
     World.global_temperature = 0;
+    com.springie.render.modules.modern.LightSource.colored_lighting = false; // Tim, 2026-10-15.
 
     // Muscles: all four slant struts share one oscillator (Tim's rule).
     Muscles.enabled = true;
