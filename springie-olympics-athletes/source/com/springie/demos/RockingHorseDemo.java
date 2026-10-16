@@ -148,6 +148,12 @@ public final class RockingHorseDemo {
     // 2 diagonal cross-links on the base rectangle.
     passive(link_manager, link_clazz, f_left, b_right, radius);
     passive(link_manager, link_clazz, f_right, b_left, radius);
+    // 2 diagonal cross-links on the left square (Tim, 2026-10-15).
+    passive(link_manager, link_clazz, f_apex, b_left, radius);
+    passive(link_manager, link_clazz, f_left, b_apex, radius);
+    // 2 diagonal cross-links on the right square (Tim, 2026-10-15).
+    passive(link_manager, link_clazz, f_apex, b_right, radius);
+    passive(link_manager, link_clazz, f_right, b_apex, radius);
 
     // Muscles on the 4 main slanting-up struts.
     // Front pair in sync (phase 0); back pair 90 degrees out.
