@@ -951,7 +951,18 @@ public class FrEnd extends Panel implements Runnable {
       // model-building messages must not run concurrently with physics.
       MessagePump.processAll();
 
-      main_canvas.panel.repaint();
+      if (World.headless) {
+        // Headless mode (Tim, 2026-10-15): skip rendering, run physics
+        // directly. The demo loads via the real message path above, so
+        // this stays on the true UI execution path minus the pixels.
+        if (!World.paused) {
+          ContextManager.getNodeManager().nodeAndLinkUpdate();
+          RendererDelegator.generation++;
+          World.generation++;
+        }
+      } else {
+        main_canvas.panel.repaint();
+      }
 
       if (UniverseState.delay > 0) {
         takeFortyWinks();

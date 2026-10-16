@@ -92,6 +92,14 @@ public class World extends BaseElementManager<Node> {
   // Simulation control state (moved from FrEnd for the engine split).
   // These are read by the physics engine and written by the GUI.
   public static boolean paused;
+  /**
+   * Headless mode (Tim, 2026-10-15): run the real FrEnd animation loop
+   * but skip rendering. The demo loads via the real message path, World
+   * settings are the real ones, but instead of repaint() the animation
+   * thread calls nodeAndLinkUpdate() directly. Much closer to the UI
+   * path than manually replicating setup.
+   */
+  public static boolean headless;
   public static boolean check_collisions = true;
   public static boolean continuously_centre_x;
   public static boolean continuously_centre_y;
