@@ -4,7 +4,7 @@ package com.springie.messages;
 
 /**
  * A provider of demo entries, discovered at runtime via {@link java.util.ServiceLoader}.
- * The springie-demos module provides the implementation; springie-core only
+ * The springie-olympics-athletes module provides the implementation; springie-core only
  * depends on this interface, so there is no compile-time cycle.
  *
  * <p>Implementations register their demos by calling

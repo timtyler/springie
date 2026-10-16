@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Springie app module: assembles the executable jar by shading
-  springie-base, springie-core and springie-demos together.
+  springie-base, springie-core and springie-olympics-athletes together.
   No sources of its own, just the packaging.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"

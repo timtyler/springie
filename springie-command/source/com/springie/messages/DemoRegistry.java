@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * never drift apart.
  *
  * <p>Demos are provided by {@link DemoProvider} implementations, discovered
- * via {@link ServiceLoader}. The springie-demos module provides them; this
+ * via {@link ServiceLoader}. The springie-olympics-athletes module provides them; this
  * class lives in springie-core so the GUI can list demos without depending
  * on the demos module.
  */
