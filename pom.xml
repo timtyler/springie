@@ -48,9 +48,6 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <!-- Root dir for checkstyle's suppression file (Checkstyle can't see
-         Maven's built-in maven.multiModuleProjectDirectory property). -->
-    <springie.rootdir>${project.basedir}</springie.rootdir>
     <maven.compiler.release>17</maven.compiler.release>
     <junit.version>5.10.3</junit.version>
     <jmh.version>1.37</jmh.version>

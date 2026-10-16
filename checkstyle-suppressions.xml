@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE suppressions PUBLIC "-//Puppy Crawl//DTD Suppressions 1.2//EN" "http://www.puppycrawl.com/dtds/suppressions_1_2.dtd">
-<suppressions>
-  <!-- AthleteJudgeDependency check applies ONLY to springie-olympics-athletes.
-       Suppress it everywhere else. -->
-  <suppress checks="AthleteJudgeDependency" files="^(?!.*springie-olympics-athletes[\\/]).*$"/>
-</suppressions>
