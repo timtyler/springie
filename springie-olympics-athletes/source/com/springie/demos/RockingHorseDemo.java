@@ -54,10 +54,10 @@ public final class RockingHorseDemo {
   public static int gravity_strength = 5;
 
   /** Muscle amplitude, percent. */
-  public static int muscle_amplitude_pct = 8;
+  public static int muscle_amplitude_pct = 10; // Optimized 2026-10-15: 473px/600t.
 
   /** Muscle period, in ticks. */
-  public static int muscle_period_ticks = 48;
+  public static int muscle_period_ticks = 36; // Optimized 2026-10-15.
 
   /**
    * Back-pair phase offset, in ticks. 90 degrees = 24% of the 48-tick
@@ -86,6 +86,7 @@ public final class RockingHorseDemo {
 
     World.gravity_active = true;
     World.gravity_strength = gravity_strength;
+    com.springie.elements.CompassPoint.bias_size = 40; // Tim, 2026-10-15: 40% for visible N/S effect.
     World.ground_friction = friction;
     World.bounding_box_bounciness = 0; // Rebounds off (Tim, 2026-10-15).
     World.global_temperature = 0;
@@ -125,14 +126,18 @@ public final class RockingHorseDemo {
     f_apex.compass = CompassPoint.N;
     b_apex.compass = CompassPoint.S;
 
-    // Front triangle edges (passive).
+    // Muscles share one oscillator (Tim's rule).
+    final GlobalOscillatorController muscle =
+        new GlobalOscillatorController(Muscles.active_oscillator);
+
+    // Front triangle edges.
     passive(link_manager, link_clazz, f_apex, f_left, radius);
     passive(link_manager, link_clazz, f_apex, f_right, radius);
-    passive(link_manager, link_clazz, f_left, f_right, radius);
+    muscleLink(link_manager, link_clazz, f_left, f_right, muscle, 0, radius);
     // Back triangle edges (passive).
     passive(link_manager, link_clazz, b_apex, b_left, radius);
     passive(link_manager, link_clazz, b_apex, b_right, radius);
-    passive(link_manager, link_clazz, b_left, b_right, radius);
+    muscleLink(link_manager, link_clazz, b_left, b_right, muscle, back_phase_ticks, radius);
 
     // Axle: front apex to back apex.
     final LinkType axle_type = link_manager.link_type_factory.getNew();
@@ -157,8 +162,6 @@ public final class RockingHorseDemo {
 
     // Muscles on the 4 main slanting-up struts.
     // Front pair in sync (phase 0); back pair 90 degrees out.
-    final GlobalOscillatorController muscle =
-        new GlobalOscillatorController(Muscles.active_oscillator);
     muscleLink(link_manager, link_clazz, f_apex, f_left, muscle, 0, radius);
     muscleLink(link_manager, link_clazz, f_apex, f_right, muscle, 0, radius);
     muscleLink(link_manager, link_clazz, b_apex, b_left, muscle, back_phase_ticks, radius);
