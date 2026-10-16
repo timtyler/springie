@@ -49,11 +49,14 @@ public abstract class HeadlessRunner {
    * be dead code because buildAt overrides it.
    */
   public static void pinPhysicsState() {
-    World.gravity_active = true;
-    World.gravity_strength = 5;
-    World.ground_friction = 100;
+    // Use the main GUI's default settings (World field initializers).
+    // Tim 2026-10-15: headless must match the GUI; if they conflict,
+    // the GUI wins. (Previously pinned to arbitrary test values.)
+    World.gravity_active = false;
+    World.gravity_strength = 2;
+    World.ground_friction = 0;
     World.minimum_magnitude = 0;
-    World.maximum_magnitude = Integer.MAX_VALUE;
+    World.maximum_magnitude = 1 << 24;
     com.springie.elements.nodes.Node.max_speed = Integer.MAX_VALUE;
     com.springie.elements.nodes.Node.viscocity = 0;
     com.springie.world.World.three_d = true;
