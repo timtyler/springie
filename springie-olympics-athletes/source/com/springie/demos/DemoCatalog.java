@@ -15,6 +15,7 @@ public final class DemoCatalog implements DemoProvider {
 
   @Override
   public void registerDemos() {
+    DemoRegistry.register("Rocking horse", RockingHorseDemoMessage::new);
     DemoRegistry.register("Sidewinder", SidewinderDemoMessage::new);
     DemoRegistry.register("Crawler", CrawlerDemoMessage::new);
     DemoRegistry.register("Spider Tank", SpiderTankDemoMessage::new);
