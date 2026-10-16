@@ -959,6 +959,12 @@ public class FrEnd extends Panel implements Runnable {
           ContextManager.getNodeManager().nodeAndLinkUpdate();
           RendererDelegator.generation++;
           World.generation++;
+          // Debug aid (Tim, 2026-10-16): render every Nth frame so you
+          // can visually compare headless vs UI.
+          if (World.headless_render_every > 0 &&
+              RendererDelegator.generation % World.headless_render_every == 0) {
+            main_canvas.panel.repaint();
+          }
         }
       } else {
         main_canvas.panel.repaint();

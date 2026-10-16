@@ -100,6 +100,11 @@ public class World extends BaseElementManager<Node> {
    * path than manually replicating setup.
    */
   public static boolean headless;
+  /**
+   * Headless debug aid (Tim, 2026-10-16): when headless, render every Nth
+   * frame (0 = never). Lets you visually compare headless vs UI.
+   */
+  public static int headless_render_every = 0;
   public static boolean check_collisions = true;
   public static boolean continuously_centre_x;
   public static boolean continuously_centre_y;
