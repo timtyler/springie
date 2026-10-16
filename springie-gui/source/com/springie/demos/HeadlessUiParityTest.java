@@ -64,6 +64,9 @@ class HeadlessUiParityTest {
       HeadlessRunner.pinPhysicsState();
       final NodeManager nm = HeadlessRunner.newJudgedRun();
       WheelbarrowDemo.buildAt(300);
+      // Match the demo message: the UI path sets these after buildAt.
+      World.continuously_centre_x = true;
+      World.demo_model = true;
       HeadlessRunner.settle(nm, 60);
       for (int i = 0; i < TICKS; i++) {
         nm.nodeAndLinkUpdate();
