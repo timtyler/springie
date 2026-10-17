@@ -153,7 +153,7 @@ public class PanelPreferencesDisplay {
     final Choice choice_skip_frames = new Choice();
     choice_skip_frames.add("Every 1");
     choice_skip_frames.add("Every 2");
-    choice_skip_frames.add("Every 5");
+    choice_skip_frames.add("Every 4");
     choice_skip_frames.add("Every 8");
     choice_skip_frames.add("Every 16");
     // Sync with current state.
@@ -161,7 +161,7 @@ public class PanelPreferencesDisplay {
       choice_skip_frames.select(0);
     } else if (World.headless_render_every == 2) {
       choice_skip_frames.select(1);
-    } else if (World.headless_render_every == 5) {
+    } else if (World.headless_render_every == 4) {
       choice_skip_frames.select(2);
     } else if (World.headless_render_every == 8) {
       choice_skip_frames.select(3);
@@ -178,8 +178,8 @@ public class PanelPreferencesDisplay {
           World.headless = true;
           if ("Every 2".equals(sel)) {
             World.headless_render_every = 2;
-          } else if ("Every 5".equals(sel)) {
-            World.headless_render_every = 5;
+          } else if ("Every 4".equals(sel)) {
+            World.headless_render_every = 4;
           } else if ("Every 8".equals(sel)) {
             World.headless_render_every = 8;
           } else if ("Every 16".equals(sel)) {
