@@ -21,7 +21,6 @@ import com.springie.world.World;
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Checkbox;
-import java.awt.Choice;
 import java.awt.FlowLayout;
 import java.awt.Label;
 import java.awt.Panel;
@@ -63,7 +62,6 @@ public class PanelControlsUniverse {
   public Checkbox checkbox_show_world_markers;
 
   public Checkbox checkbox_collision_check;
-
 
   public Checkbox checkbox_muscles;
 
@@ -398,7 +396,6 @@ public class PanelControlsUniverse {
     });
     panel_collision_check.add(this.checkbox_collision_check);
 
-
     final Panel panel_bias = new Panel();
     panel_bias.setLayout(new BorderLayout(0, 8));
     panel_bias.add("West", new Label("Bias:", Label.RIGHT));
@@ -464,49 +461,6 @@ public class PanelControlsUniverse {
     panel_main.add(panel_collision_check);
     panel_main.add(panel_charge_switch);
 
-    // Headless mode (Tim, 2026-10-16): skip rendering, run physics directly.
-    // The "Render every" dropdown lets you visually compare headless vs UI.
-    final Checkbox checkbox_headless = new Checkbox("Headless (skip rendering)");
-    checkbox_headless.setState(World.headless);
-    final Choice choice_headless_render = new Choice();
-    choice_headless_render.add("Never");
-    choice_headless_render.add("Every 10");
-    choice_headless_render.add("Every 50");
-    choice_headless_render.add("Every 100");
-    choice_headless_render.setEnabled(World.headless);
-    // Sync dropdown with current value.
-    if (World.headless_render_every == 10) {
-      choice_headless_render.select(1);
-    } else if (World.headless_render_every == 50) {
-      choice_headless_render.select(2);
-    } else if (World.headless_render_every == 100) {
-      choice_headless_render.select(3);
-    }
-    checkbox_headless.addItemListener(new ItemListener() {
-      public void itemStateChanged(final ItemEvent e) {
-        World.headless = checkbox_headless.getState();
-        choice_headless_render.setEnabled(World.headless);
-      }
-    });
-    choice_headless_render.addItemListener(new ItemListener() {
-      public void itemStateChanged(final ItemEvent e) {
-        final String sel = choice_headless_render.getSelectedItem();
-        if ("Every 10".equals(sel)) {
-          World.headless_render_every = 10;
-        } else if ("Every 50".equals(sel)) {
-          World.headless_render_every = 50;
-        } else if ("Every 100".equals(sel)) {
-          World.headless_render_every = 100;
-        } else {
-          World.headless_render_every = 0;
-        }
-      }
-    });
-    final Panel panel_headless = new Panel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-    panel_headless.add(checkbox_headless);
-    panel_headless.add(new Label("Render:"));
-    panel_headless.add(choice_headless_render);
-    panel_main.add(panel_headless);
 
     if (World.development_version) {
       panel_main.add(panel_bias); // bias...
