@@ -147,54 +147,6 @@ public class PanelPreferencesDisplay {
 
     this.panel_frame.add(this.panel_main, "Center");
 
-    // Separate animation thread (Tim, 2026-10-17): run physics on the
-    // animation thread instead of via AWT repaint. Respects Skip frames.
-    final Checkbox checkbox_headless = new Checkbox("Separate animation thread");
-    checkbox_headless.setState(World.headless);
-    checkbox_headless.addItemListener(new ItemListener() {
-      public void itemStateChanged(final ItemEvent e) {
-        World.headless = checkbox_headless.getState();
-      }
-    });
-    // Skip frames (Tim, 2026-10-17): in normal (non-headless) mode,
-    // render 1 in N frames. Does not affect headless mode.
-    final Choice choice_skip_frames = new Choice();
-    choice_skip_frames.add("Every 1");
-    choice_skip_frames.add("Every 2");
-    choice_skip_frames.add("Every 4");
-    choice_skip_frames.add("Every 8");
-    choice_skip_frames.add("Every 16");
-    if (World.headless_render_every == 2) {
-      choice_skip_frames.select(1);
-    } else if (World.headless_render_every == 4) {
-      choice_skip_frames.select(2);
-    } else if (World.headless_render_every == 8) {
-      choice_skip_frames.select(3);
-    } else if (World.headless_render_every == 16) {
-      choice_skip_frames.select(4);
-    }
-    choice_skip_frames.addItemListener(new ItemListener() {
-      public void itemStateChanged(final ItemEvent e) {
-        final String sel = choice_skip_frames.getSelectedItem();
-        if ("Every 2".equals(sel)) {
-          World.headless_render_every = 2;
-        } else if ("Every 4".equals(sel)) {
-          World.headless_render_every = 4;
-        } else if ("Every 8".equals(sel)) {
-          World.headless_render_every = 8;
-        } else if ("Every 16".equals(sel)) {
-          World.headless_render_every = 16;
-        } else {
-          World.headless_render_every = 0;
-        }
-      }
-    });
-    final Panel panel_headless = new Panel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-    panel_headless.add(checkbox_headless);
-    panel_headless.add(new Label("Skip frames:"));
-    panel_headless.add(choice_skip_frames);
-    this.panel_frame.add(panel_headless, "South");
-
     this.panel_main.add(FrEnd.panel_preferences_renderer_modern.panel, "Center");
 
     this.panel_renderer.setLayout(new BorderLayout());

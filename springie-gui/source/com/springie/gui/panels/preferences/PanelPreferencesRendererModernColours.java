@@ -8,6 +8,7 @@ import com.springie.gui.colourpicker.ColorPickerInformer;
 import com.springie.gui.components.TabbedPanel;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ElementRendererLink;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Label;
@@ -91,12 +92,13 @@ public class PanelPreferencesRendererModernColours {
     this.tab_colours_general.add("Charges", this.panel_colors_charges.panel);
 
     // Label colors moved to the Labels tab (Tim, 2026-10-17).
-    final Panel panel_label_fg = new Panel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-    panel_label_fg.add(new Label("Foreground:"));
-    panel_label_fg.add(this.panel_colors_label.panel);
-    final Panel panel_label_bg = new Panel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-    panel_label_bg.add(new Label("Background:"));
-    panel_label_bg.add(this.panel_colours_label_background.panel);
+    // Label colors fill the entire panel (Tim, 2026-10-17).
+    final Panel panel_label_fg = new Panel(new BorderLayout(5, 0));
+    panel_label_fg.add(new Label("Foreground:"), BorderLayout.WEST);
+    panel_label_fg.add(this.panel_colors_label.panel, BorderLayout.CENTER);
+    final Panel panel_label_bg = new Panel(new BorderLayout(5, 0));
+    panel_label_bg.add(new Label("Background:"), BorderLayout.WEST);
+    panel_label_bg.add(this.panel_colours_label_background.panel, BorderLayout.CENTER);
     FrEnd.panel_preferences_shared_show.panel_labels.add(panel_label_fg);
     FrEnd.panel_preferences_shared_show.panel_labels.add(panel_label_bg);
 

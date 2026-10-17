@@ -7,6 +7,8 @@ import com.springie.FrEnd;
 import com.springie.render.RendererDelegator;
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
+import java.awt.Choice;
+import java.awt.FlowLayout;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.event.ItemEvent;
@@ -143,6 +145,8 @@ public class PanelPreferencesRendererSharedShow {
     this.panel_main.add(panel_render_charges);
     this.panel_main.add(panel_render_hidden);
     this.panel_main.add(getBackgroundPanel());
+    this.panel_main.add(getSeparateThreadPanel());
+    this.panel_main.add(getSkipFramesPanel());
 
     // The tile and fog controls live on their own top-level tabs
     // (next to Colours), not as sub-tabs of Renderer.
@@ -224,4 +228,57 @@ public class PanelPreferencesRendererSharedShow {
     RendererDelegator.repaintAll();
   }
 
+
+  private Panel getSeparateThreadPanel() {
+    // Separate animation thread (Tim, 2026-10-17).
+    final Panel panel = new Panel(new FlowLayout(FlowLayout.CENTER, 5, 0));
+    final Checkbox checkbox = new Checkbox("Separate animation thread");
+    checkbox.setState(World.headless);
+    checkbox.addItemListener(new ItemListener() {
+      public void itemStateChanged(final ItemEvent e) {
+        World.headless = checkbox.getState();
+      }
+    });
+    panel.add(checkbox);
+    return panel;
+  }
+
+  private Panel getSkipFramesPanel() {
+    // Skip frames (Tim, 2026-10-17).
+    final Panel panel = new Panel(new FlowLayout(FlowLayout.CENTER, 5, 0));
+    panel.add(new Label("Skip frames:"));
+    final Choice choice = new Choice();
+    choice.add("Every 1");
+    choice.add("Every 2");
+    choice.add("Every 4");
+    choice.add("Every 8");
+    choice.add("Every 16");
+    if (World.headless_render_every == 2) {
+      choice.select(1);
+    } else if (World.headless_render_every == 4) {
+      choice.select(2);
+    } else if (World.headless_render_every == 8) {
+      choice.select(3);
+    } else if (World.headless_render_every == 16) {
+      choice.select(4);
+    }
+    choice.addItemListener(new ItemListener() {
+      public void itemStateChanged(final ItemEvent e) {
+        final String sel = choice.getSelectedItem();
+        if ("Every 2".equals(sel)) {
+          World.headless_render_every = 2;
+        } else if ("Every 4".equals(sel)) {
+          World.headless_render_every = 4;
+        } else if ("Every 8".equals(sel)) {
+          World.headless_render_every = 8;
+        } else if ("Every 16".equals(sel)) {
+          World.headless_render_every = 16;
+        } else {
+          World.headless_render_every = 0;
+        }
+      }
+    });
+    panel.add(choice);
+    return panel;
+  }
 }
