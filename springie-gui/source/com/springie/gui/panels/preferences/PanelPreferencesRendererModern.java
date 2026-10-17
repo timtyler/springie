@@ -107,6 +107,8 @@ public class PanelPreferencesRendererModern {
 
     tab.add("Fog", FrEnd.panel_preferences_shared_show.panel_fog);
 
+    tab.add("Labels", FrEnd.panel_preferences_shared_show.panel_labels);
+
     this.panel.add(tab);
 
     final Panel panel_node_polyhedron = panelNodePolyhedron();
@@ -129,6 +131,8 @@ public class PanelPreferencesRendererModern {
         FrEnd.panel_preferences_shared_misc.panel_face_lines };
 
     this.panel_labels_row = getPanelLabelsWhen();
+    // Move to the Labels tab (Tim, 2026-10-17).
+    FrEnd.panel_preferences_shared_show.panel_labels.add(this.panel_labels_row);
 
     // The Tiles rows move to the "Tiles" tab, the modern Misc rows
     // (node/tube tessellation) to the "Renderer" tab, and the shared

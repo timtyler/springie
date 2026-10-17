@@ -9,6 +9,8 @@ import com.springie.gui.components.TabbedPanel;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ElementRendererLink;
 import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Label;
 import java.awt.Panel;
 
 public class PanelPreferencesRendererModernColours {
@@ -88,11 +90,17 @@ public class PanelPreferencesRendererModernColours {
     this.tab_colours_general.add("Selection", this.panel_colours_selection.panel);
     this.tab_colours_general.add("Charges", this.panel_colors_charges.panel);
 
-    this.tab_colours_label.add("Background", this.panel_colours_label_background.panel);
-    this.tab_colours_label.add("Foreground", this.panel_colors_label.panel);
+    // Label colors moved to the Labels tab (Tim, 2026-10-17).
+    final Panel panel_label_fg = new Panel(new FlowLayout(FlowLayout.CENTER, 5, 0));
+    panel_label_fg.add(new Label("Foreground:"));
+    panel_label_fg.add(this.panel_colors_label.panel);
+    final Panel panel_label_bg = new Panel(new FlowLayout(FlowLayout.CENTER, 5, 0));
+    panel_label_bg.add(new Label("Background:"));
+    panel_label_bg.add(this.panel_colours_label_background.panel);
+    FrEnd.panel_preferences_shared_show.panel_labels.add(panel_label_fg);
+    FrEnd.panel_preferences_shared_show.panel_labels.add(panel_label_bg);
 
     this.tab_colours_main.add("General", this.tab_colours_general);
-    this.tab_colours_main.add("Label", this.tab_colours_label);
     // The colour filters live here too: the Filled:/Wireframe: choices
     // pick "Colour-A"/"Colour-B", whose pickers sit on this card.
     this.tab_colours_main.add("Filters",

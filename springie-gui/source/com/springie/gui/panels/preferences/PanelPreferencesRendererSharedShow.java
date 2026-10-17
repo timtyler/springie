@@ -33,6 +33,12 @@ public class PanelPreferencesRendererSharedShow {
    */
   public Panel panel_fog = FrEnd.setUpPanelForFrame2();
 
+  /**
+   * The "Labels" tab: the "Show labels on" choice and label fg/bg colors.
+   * (Tim, 2026-10-17): moved from Renderer > Main and Colours > Label.
+   */
+  public Panel panel_labels = FrEnd.setUpPanelForFrame2();
+
 
   public Checkbox checkbox_redraw_deepest_first;
 

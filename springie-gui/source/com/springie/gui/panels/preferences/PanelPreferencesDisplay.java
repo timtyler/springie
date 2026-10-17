@@ -112,8 +112,7 @@ public class PanelPreferencesDisplay {
     renderer_main.add(getPixellationPanel(), 2);
     renderer_main.add(
         FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first, 3);
-    renderer_main.add(
-        FrEnd.panel_preferences_renderer_modern.panel_labels_row, 4);
+
     // Move the tile rows into the Renderer Main tab so the renderer
     // selector, pixellation, and tile options are all visible at the
     // same time (Tim, 2026-10-03). The Tiles tab is removed below.
