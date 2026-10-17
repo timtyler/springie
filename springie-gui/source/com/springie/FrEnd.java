@@ -952,12 +952,16 @@ public class FrEnd extends Panel implements Runnable {
       MessagePump.processAll();
 
       if (World.headless) {
-        // Headless mode (Tim, 2026-10-15): skip ALL rendering, run physics
-        // directly. The Skip frames setting does not affect headless mode.
+        // Separate animation thread (Tim, 2026-10-17): run physics directly
+        // on the animation thread. Respects the Skip frames setting.
         if (!World.paused) {
           ContextManager.getNodeManager().nodeAndLinkUpdate();
           RendererDelegator.generation++;
           World.generation++;
+          if (World.headless_render_every <= 1 ||
+              RendererDelegator.generation % World.headless_render_every == 0) {
+            main_canvas.panel.repaint();
+          }
         }
       } else if (World.headless_render_every > 1) {
         // Skip frames (Tim, 2026-10-17): in normal mode, render 1 in N

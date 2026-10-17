@@ -147,10 +147,9 @@ public class PanelPreferencesDisplay {
 
     this.panel_frame.add(this.panel_main, "Center");
 
-    // Headless mode (Tim, 2026-10-17): checkbox for pure headless (no
-    // rendering). The Skip frames dropdown is separate and does not
-    // affect headless mode.
-    final Checkbox checkbox_headless = new Checkbox("Headless mode");
+    // Separate animation thread (Tim, 2026-10-17): run physics on the
+    // animation thread instead of via AWT repaint. Respects Skip frames.
+    final Checkbox checkbox_headless = new Checkbox("Separate animation thread");
     checkbox_headless.setState(World.headless);
     checkbox_headless.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
