@@ -952,17 +952,21 @@ public class FrEnd extends Panel implements Runnable {
       MessagePump.processAll();
 
       if (World.headless) {
-        // Headless mode (Tim, 2026-10-15): skip rendering, run physics
-        // directly. The demo loads via the real message path above, so
-        // this stays on the true UI execution path minus the pixels.
+        // Headless mode (Tim, 2026-10-15): skip ALL rendering, run physics
+        // directly. The Skip frames setting does not affect headless mode.
         if (!World.paused) {
           ContextManager.getNodeManager().nodeAndLinkUpdate();
           RendererDelegator.generation++;
           World.generation++;
-          // Debug aid (Tim, 2026-10-16): render every Nth frame so you
-          // can visually compare headless vs UI.
-          if (World.headless_render_every > 0 &&
-              RendererDelegator.generation % World.headless_render_every == 0) {
+        }
+      } else if (World.headless_render_every > 1) {
+        // Skip frames (Tim, 2026-10-17): in normal mode, render 1 in N
+        // frames. Physics runs every tick; rendering is skipped for N-1.
+        if (!World.paused) {
+          ContextManager.getNodeManager().nodeAndLinkUpdate();
+          RendererDelegator.generation++;
+          World.generation++;
+          if (RendererDelegator.generation % World.headless_render_every == 0) {
             main_canvas.panel.repaint();
           }
         }
