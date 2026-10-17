@@ -33,6 +33,19 @@ public class LightSource {
    * lights are ignored and ambient white is used. Default on. */
   public static volatile boolean colored_lighting = true;
 
+  /**
+   * Sets colored lighting, keeping the ambient in sync (Tim, 2026-10-16):
+   * when off, use the white ambient; when on, use the colored ambient.
+   * Demos should call this instead of setting the flag directly, so the
+   * display doesn't go black from a stale ambient value.
+   */
+  public static void setColoredLighting(boolean on) {
+    colored_lighting = on;
+    com.springie.render.RendererDelegator.ambient_light_pct = on
+        ? com.springie.render.RendererDelegator.ambient_colored_pct
+        : com.springie.render.RendererDelegator.ambient_white_pct;
+  }
+
   /** Directional versions (for compatibility). */
   public static final Vector3D source_red = new Vector3D(-100, -100, -100);
   public static final Vector3D source_green = new Vector3D(0, -100, -100);

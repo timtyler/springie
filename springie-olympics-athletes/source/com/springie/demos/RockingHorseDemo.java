@@ -90,7 +90,9 @@ public final class RockingHorseDemo {
     World.ground_friction = friction;
     World.bounding_box_bounciness = 0; // Rebounds off (Tim, 2026-10-15).
     World.global_temperature = 0;
-    com.springie.render.modules.modern.LightSource.colored_lighting = false; // Tim, 2026-10-15.
+    // Use the setter (Tim, 2026-10-16): keeps ambient in sync so the
+    // display doesn't go black.
+    com.springie.render.modules.modern.LightSource.setColoredLighting(false);
 
     // Muscles: all four slant struts share one oscillator (Tim's rule).
     Muscles.enabled = true;
