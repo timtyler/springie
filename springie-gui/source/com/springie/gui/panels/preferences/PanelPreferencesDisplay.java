@@ -148,49 +148,50 @@ public class PanelPreferencesDisplay {
 
     this.panel_frame.add(this.panel_main, "Center");
 
-    // Headless mode (Tim, 2026-10-17): skip rendering, run physics directly.
-    // Moved from Universe > Main. The "Render every" dropdown lets you
-    // visually compare headless vs UI (1-in-N frame rendering).
-    final Checkbox checkbox_headless = new Checkbox("Headless (skip rendering)");
-    checkbox_headless.setState(World.headless);
-    final Choice choice_headless_render = new Choice();
-    choice_headless_render.add("Never");
-    choice_headless_render.add("Every 10");
-    choice_headless_render.add("Every 50");
-    choice_headless_render.add("Every 100");
-    choice_headless_render.setEnabled(World.headless);
-    if (World.headless_render_every == 10) {
-      choice_headless_render.select(1);
-    } else if (World.headless_render_every == 50) {
-      choice_headless_render.select(2);
-    } else if (World.headless_render_every == 100) {
-      choice_headless_render.select(3);
+    // Skip frames (Tim, 2026-10-17): render 1 in N frames, run physics
+    // directly for the skipped frames. "Every 1" = normal rendering.
+    final Choice choice_skip_frames = new Choice();
+    choice_skip_frames.add("Every 1");
+    choice_skip_frames.add("Every 2");
+    choice_skip_frames.add("Every 5");
+    choice_skip_frames.add("Every 8");
+    choice_skip_frames.add("Every 16");
+    // Sync with current state.
+    if (!World.headless) {
+      choice_skip_frames.select(0);
+    } else if (World.headless_render_every == 2) {
+      choice_skip_frames.select(1);
+    } else if (World.headless_render_every == 5) {
+      choice_skip_frames.select(2);
+    } else if (World.headless_render_every == 8) {
+      choice_skip_frames.select(3);
+    } else if (World.headless_render_every == 16) {
+      choice_skip_frames.select(4);
     }
-    checkbox_headless.addItemListener(new ItemListener() {
+    choice_skip_frames.addItemListener(new ItemListener() {
       public void itemStateChanged(final ItemEvent e) {
-        World.headless = checkbox_headless.getState();
-        choice_headless_render.setEnabled(World.headless);
-      }
-    });
-    choice_headless_render.addItemListener(new ItemListener() {
-      public void itemStateChanged(final ItemEvent e) {
-        final String sel = choice_headless_render.getSelectedItem();
-        if ("Every 10".equals(sel)) {
-          World.headless_render_every = 10;
-        } else if ("Every 50".equals(sel)) {
-          World.headless_render_every = 50;
-        } else if ("Every 100".equals(sel)) {
-          World.headless_render_every = 100;
-        } else {
+        final String sel = choice_skip_frames.getSelectedItem();
+        if ("Every 1".equals(sel)) {
+          World.headless = false;
           World.headless_render_every = 0;
+        } else {
+          World.headless = true;
+          if ("Every 2".equals(sel)) {
+            World.headless_render_every = 2;
+          } else if ("Every 5".equals(sel)) {
+            World.headless_render_every = 5;
+          } else if ("Every 8".equals(sel)) {
+            World.headless_render_every = 8;
+          } else if ("Every 16".equals(sel)) {
+            World.headless_render_every = 16;
+          }
         }
       }
     });
-    final Panel panel_headless = new Panel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-    panel_headless.add(checkbox_headless);
-    panel_headless.add(new Label("Render:"));
-    panel_headless.add(choice_headless_render);
-    this.panel_frame.add(panel_headless, "South");
+    final Panel panel_skip_frames = new Panel(new FlowLayout(FlowLayout.CENTER, 5, 0));
+    panel_skip_frames.add(new Label("Skip frames:"));
+    panel_skip_frames.add(choice_skip_frames);
+    this.panel_frame.add(panel_skip_frames, "South");
 
     this.panel_main.add(FrEnd.panel_preferences_renderer_modern.panel, "Center");
 
