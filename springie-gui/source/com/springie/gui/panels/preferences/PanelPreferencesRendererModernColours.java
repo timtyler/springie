@@ -11,6 +11,7 @@ import com.springie.render.modules.modern.ElementRendererLink;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.Panel;
 
@@ -93,14 +94,18 @@ public class PanelPreferencesRendererModernColours {
 
     // Label colors moved to the Labels tab (Tim, 2026-10-17).
     // Label colors fill the entire panel (Tim, 2026-10-17).
+    // Use GridLayout(2,1) so fg and bg each get half the vertical space
+    // and expand to fill horizontally.
+    final Panel panel_label_colors = new Panel(new GridLayout(2, 1, 0, 8));
     final Panel panel_label_fg = new Panel(new BorderLayout(5, 0));
     panel_label_fg.add(new Label("Foreground:"), BorderLayout.WEST);
     panel_label_fg.add(this.panel_colors_label.panel, BorderLayout.CENTER);
     final Panel panel_label_bg = new Panel(new BorderLayout(5, 0));
     panel_label_bg.add(new Label("Background:"), BorderLayout.WEST);
     panel_label_bg.add(this.panel_colours_label_background.panel, BorderLayout.CENTER);
-    FrEnd.panel_preferences_shared_show.panel_labels.add(panel_label_fg);
-    FrEnd.panel_preferences_shared_show.panel_labels.add(panel_label_bg);
+    panel_label_colors.add(panel_label_fg);
+    panel_label_colors.add(panel_label_bg);
+    FrEnd.panel_preferences_shared_show.panel_labels.add(panel_label_colors);
 
     this.tab_colours_main.add("General", this.tab_colours_general);
     // The colour filters live here too: the Filled:/Wireframe: choices
