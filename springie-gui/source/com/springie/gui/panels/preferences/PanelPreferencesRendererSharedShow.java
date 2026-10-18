@@ -145,7 +145,6 @@ public class PanelPreferencesRendererSharedShow {
     this.panel_main.add(panel_render_charges);
     this.panel_main.add(panel_render_hidden);
     this.panel_main.add(getBackgroundPanel());
-    this.panel_main.add(getSeparateThreadPanel());
     this.panel_main.add(getSkipFramesPanel());
 
     // The tile and fog controls live on their own top-level tabs
@@ -229,19 +228,6 @@ public class PanelPreferencesRendererSharedShow {
   }
 
 
-  private Panel getSeparateThreadPanel() {
-    // Separate animation thread (Tim, 2026-10-17).
-    final Panel panel = new Panel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-    final Checkbox checkbox = new Checkbox("Separate animation thread");
-    checkbox.setState(World.headless);
-    checkbox.addItemListener(new ItemListener() {
-      public void itemStateChanged(final ItemEvent e) {
-        World.headless = checkbox.getState();
-      }
-    });
-    panel.add(checkbox);
-    return panel;
-  }
 
   private Panel getSkipFramesPanel() {
     // Skip frames (Tim, 2026-10-17).
