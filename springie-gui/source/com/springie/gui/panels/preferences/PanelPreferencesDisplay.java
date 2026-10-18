@@ -111,6 +111,7 @@ public class PanelPreferencesDisplay {
     renderer_main.add(getAntiAliasingPanel(), 1);
     renderer_main.add(getPixellationPanel(), 2);
     renderer_main.add(getSeparateThreadPanel(), 3);
+    renderer_main.add(getSkipFramesPanel(), 4);
     renderer_main.add(
         FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first, 3);
 
@@ -203,6 +204,45 @@ public class PanelPreferencesDisplay {
       }
     });
     panel.add(checkbox);
+    return panel;
+  }
+
+  private Panel getSkipFramesPanel() {
+    // Skip frames (Tim, 2026-10-17): moved under Separate animation thread.
+    final Panel panel = new Panel(new FlowLayout(FlowLayout.CENTER, 5, 0));
+    panel.add(new Label("Skip frames:"));
+    final Choice choice = new Choice();
+    choice.add("Every 1");
+    choice.add("Every 2");
+    choice.add("Every 4");
+    choice.add("Every 8");
+    choice.add("Every 16");
+    if (World.headless_render_every == 2) {
+      choice.select(1);
+    } else if (World.headless_render_every == 4) {
+      choice.select(2);
+    } else if (World.headless_render_every == 8) {
+      choice.select(3);
+    } else if (World.headless_render_every == 16) {
+      choice.select(4);
+    }
+    choice.addItemListener(new ItemListener() {
+      public void itemStateChanged(final ItemEvent e) {
+        final String sel = choice.getSelectedItem();
+        if ("Every 2".equals(sel)) {
+          World.headless_render_every = 2;
+        } else if ("Every 4".equals(sel)) {
+          World.headless_render_every = 4;
+        } else if ("Every 8".equals(sel)) {
+          World.headless_render_every = 8;
+        } else if ("Every 16".equals(sel)) {
+          World.headless_render_every = 16;
+        } else {
+          World.headless_render_every = 0;
+        }
+      }
+    });
+    panel.add(choice);
     return panel;
   }
 
