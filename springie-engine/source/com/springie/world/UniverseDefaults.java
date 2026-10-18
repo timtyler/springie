@@ -76,9 +76,9 @@ public final class UniverseDefaults {
 
   // Lights (Tim, 2026-10-04): N lights, stored as a list.
   private static java.util.List<Light> lights_snapshot = new java.util.ArrayList<>();
-  private static int ambient_light_pct = 0;
+  private static int ambient_light_pct = 50;
   private static boolean colored_lighting = true;
-  private static int ambient_colored_pct = 0;
+  private static int ambient_colored_pct = 50;
   private static int ambient_white_pct = 80;
 
   /**
@@ -126,9 +126,9 @@ public final class UniverseDefaults {
     lights_snapshot.add(new Light(0.0, 50.0, 100, 0xFF0000));
     lights_snapshot.add(new Light(25.0, 93.3, 100, 0x0000FF));
     lights_snapshot.add(new Light(75.0, 93.3, 100, 0xFF00FF));
-    ambient_light_pct = 0;
+    ambient_light_pct = 50;
     colored_lighting = true;
-    ambient_colored_pct = 0;
+    ambient_colored_pct = 50;
     ambient_white_pct = 80;
   }
 
