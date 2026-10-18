@@ -10,7 +10,6 @@ import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;
 import java.awt.BorderLayout;
-import java.awt.Checkbox;
 import java.awt.Choice;
 import java.awt.FlowLayout;
 import java.awt.Label;
@@ -110,8 +109,7 @@ public class PanelPreferencesDisplay {
     renderer_main.add(makeDisplayTypePanel(), 0);
     renderer_main.add(getAntiAliasingPanel(), 1);
     renderer_main.add(getPixellationPanel(), 2);
-    renderer_main.add(getSeparateThreadPanel(), 3);
-    renderer_main.add(getSkipFramesPanel(), 4);
+    renderer_main.add(getSkipFramesPanel(), 3);
     renderer_main.add(
         FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first, 3);
 
@@ -193,19 +191,6 @@ public class PanelPreferencesDisplay {
     return panel;
   }
 
-  private Panel getSeparateThreadPanel() {
-    // Separate animation thread (Tim, 2026-10-17): moved under Pixellated.
-    final Panel panel = new Panel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-    final Checkbox checkbox = new Checkbox("Separate animation thread");
-    checkbox.setState(World.headless);
-    checkbox.addItemListener(new ItemListener() {
-      public void itemStateChanged(final ItemEvent e) {
-        World.headless = checkbox.getState();
-      }
-    });
-    panel.add(checkbox);
-    return panel;
-  }
 
   private Panel getSkipFramesPanel() {
     // Skip frames (Tim, 2026-10-17): moved under Separate animation thread.

@@ -951,21 +951,11 @@ public class FrEnd extends Panel implements Runnable {
       // model-building messages must not run concurrently with physics.
       MessagePump.processAll();
 
-      if (World.headless) {
-        // Separate animation thread (Tim, 2026-10-17): pure headless for
-        // headless vs non-headless comparison. Physics on the animation
-        // thread, never renders. The Skip frames setting does not apply.
-        if (!World.paused) {
-          ContextManager.getNodeManager().nodeAndLinkUpdate();
-          RendererDelegator.generation++;
-          World.generation++;
-        }
-      } else {
-        // Normal mode: repaint every tick. Physics runs on the AWT thread
-        // via the repaint path (keeps physics and rendering in lockstep).
-        // Skip frames is handled in the render path, not here.
-        main_canvas.panel.repaint();
-      }
+      // (Tim, 2026-10-17): no separate animation thread. Physics always
+      // runs on the AWT thread via the repaint path. Headless mode
+      // (World.headless) skips the pixel rendering in RendererDelegator,
+      // but the physics path is identical.
+      main_canvas.panel.repaint();
 
       if (UniverseState.delay > 0) {
         takeFortyWinks();

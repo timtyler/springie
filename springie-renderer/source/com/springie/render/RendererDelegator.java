@@ -454,11 +454,13 @@ public final class RendererDelegator {
     // the call instead of redrawing at the animation tick rate. A staged
     // frame always releases the hold first (the worker sets frame_done
     // before frame_staged), so the finished frame is never skipped here.
-    // Skip frames (Tim, 2026-10-17): in normal mode, render 1 in N frames.
-    // Physics runs every tick (above); only the pixel rendering is skipped.
-    final boolean skip_frame = !World.headless
-        && World.headless_render_every > 1
-        && (generation % World.headless_render_every != 0);
+    // (Tim, 2026-10-17): no separate animation thread. World.headless
+    // means "renderer off" -- physics runs via the normal AWT path
+    // (above), but the pixel rendering is skipped entirely. Skip frames
+    // renders 1 in N frames in normal (non-headless) mode.
+    final boolean skip_frame = World.headless
+        || (World.headless_render_every > 1
+            && (generation % World.headless_render_every != 0));
     if ((!hold || renderer.hasStagedFrame()) && !skip_frame) {
       renderer.repaint(graphics, ContextManager.getNodeManager());
     }
