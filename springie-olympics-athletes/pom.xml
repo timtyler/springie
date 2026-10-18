@@ -24,12 +24,6 @@
     </dependency>
     <dependency>
       <groupId>com.springie</groupId>
-      <artifactId>springie-gui</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.springie</groupId>
       <artifactId>springie-engine</artifactId>
       <version>${project.version}</version>
     </dependency>

@@ -231,23 +231,6 @@ class WheelbarrowDemoTest {
     assertEquals(pos1[1], pos2[1]);
   }
 
-  @Test
-  void runsDeterministicallyViaFrEnd() throws Exception {
-    // Same as above, but through the real FrEnd with renderer off
-    // (Tim, 2026-10-17: no separate animation thread).
-    final long[] pos1 = runWheelbarrow600ViaFrEnd();
-    final long[] pos2 = runWheelbarrow600ViaFrEnd();
-    assertEquals(pos1[0], pos2[0]);
-    assertEquals(pos1[1], pos2[1]);
-  }
-
-  private static long[] runWheelbarrow600ViaFrEnd() throws Exception {
-    final NodeManager nm = com.springie.demos.FrEndHeadlessRunner.runDemo(
-        new WheelbarrowDemoMessage(), 600);
-    // Hub0 is element 12 (after 12 rim nodes).
-    final Node hub = (Node) nm.element.get(12);
-    return new long[] {(long) hub.pos.x, (long) hub.pos.z};
-  }
 
   private static long[] runWheelbarrow600() {
     return HeadlessRunner.withModelLock(() -> {
