@@ -6,6 +6,7 @@ import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.GuiTestSupport;
 import com.springie.render.RendererDelegator;
+import com.springie.world.NewMessage;
 import com.springie.world.World;
 
 /**
@@ -24,7 +25,7 @@ public class FrEndHeadlessRunner {
    * NodeManager for measurement.
    */
   public static NodeManager runDemo(
-      final Object demo_message, final int ticks) throws Exception {
+      final NewMessage demo_message, final int ticks) throws Exception {
     final NodeManager nm = startHeadlessRun(demo_message);
     try {
       waitForTicks(ticks);
@@ -39,7 +40,7 @@ public class FrEndHeadlessRunner {
    * The caller drives ticks via {@link #waitForOneTick()} for per-tick
    * observation. Call {@link #finishHeadlessRun()} when done.
    */
-  public static NodeManager startHeadlessRun(final Object demo_message)
+  public static NodeManager startHeadlessRun(final NewMessage demo_message)
       throws Exception {
     GuiTestSupport.bootApp();
     final boolean old_headless = World.headless;
