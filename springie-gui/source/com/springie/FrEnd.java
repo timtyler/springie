@@ -112,7 +112,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.util.List;
 
-public class FrEnd extends Panel implements Runnable {
+public class FrEnd extends Panel {
   static final long serialVersionUID = 1250;
 
   /**
@@ -248,7 +248,6 @@ public class FrEnd extends Panel implements Runnable {
   public static ChoiceWithDescription choose_preset_index;
 
 
-  public static boolean thread_terminated;
 
   static int finding_period;
 
@@ -275,7 +274,6 @@ public class FrEnd extends Panel implements Runnable {
 
   static boolean statusShown = true;
 
-  private static volatile Thread runner;
 
   static final int xoff = 4;
 
@@ -935,49 +933,6 @@ public class FrEnd extends Panel implements Runnable {
     FrEnd.prepareToModifyFaceTypes();
   }
 
-  // .....................Run Method......................
-  public final void run() {
-    // Log.log("run() called");
-    thread_terminated = false;
-
-    while (!thread_terminated) {
-      // Stepping is decremented in RendererDelegator, synchronously with
-      // the physics (nodeAndLinkUpdate). It used to be here, but repaint()
-      // is async -- the counter would hit zero and set World.paused=true before
-      // the AWT thread ran the physics, so steps were lost. (f9abb82 moved
-      // message processing to this thread, introducing the race.)
-
-      // Process messages on the animation thread (not the AWT thread):
-      // model-building messages must not run concurrently with physics.
-      MessagePump.processAll();
-
-      // (Tim, 2026-10-17): no separate animation thread. Physics always
-      // runs on the AWT thread via the repaint path. Headless mode
-      // (World.headless) skips the pixel rendering in RendererDelegator,
-      // but the physics path is identical.
-      main_canvas.panel.repaint();
-
-      if (UniverseState.delay > 0) {
-        takeFortyWinks();
-      }
-
-      Thread.yield();
-    }
-
-    thread_terminated = true;
-
-    Thread.yield();
-
-    // Log.log("Exit via thread_terminated");
-  }
-
-  private void takeFortyWinks() {
-    try {
-      Thread.sleep(UniverseState.delay);
-    } catch (InterruptedException e) {
-    }
-  }
-
   public static final void endStepping() {
     World.stepping = 0;
     World.paused = true;
@@ -989,17 +944,7 @@ public class FrEnd extends Panel implements Runnable {
   }
 
   public void startThread() {
-    // Log.log("startThread() called");
-
-    main_canvas.forceResize();
-    thread_terminated = false;
-
-    runner = new Thread(this);
-    runner.start();
-
-    validate();
-    repaint();
-    // Log.log("startThread() exited");
+    AnimationLoop.startThread(this);
   }
 
   public void stop() {
@@ -1007,8 +952,7 @@ public class FrEnd extends Panel implements Runnable {
 
     last_known_good_x = Coords.x_pixels;
     last_known_good_y = Coords.y_pixels;
-    thread_terminated = true;
-    runner = null;
+    AnimationLoop.stopThread();
 
     removeAll();
   }
