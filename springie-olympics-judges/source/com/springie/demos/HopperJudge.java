@@ -12,9 +12,9 @@ import com.springie.utilities.random.Hortensius32Fast;
 import com.springie.world.World;
 
 /**
- * Truly headless judge that scores the hopper. Does NOT start FrEnd (no
- * GUI, no animation thread) -- single-threaded and deterministic. Needs
- * DISPLAY set for AWT static init (Xvfb is fine).
+ * Headless judge that scores the hopper via the real FrEnd (Tim, 2026-10-18:
+ * no separate animation thread; World.headless means "renderer off").
+ * Needs DISPLAY set for AWT (Xvfb is fine).
  *
  * <p>Rules:
  * <ol>
@@ -131,7 +131,7 @@ public final class HopperJudge {
    * two calls give identical results, even in a JVM where a GUI test has
    * left the animation thread running.
    */
-  public static Result score(final int ticks) {
+  public static Result score(final int ticks) throws Exception {
     // Hold the model lock for the whole run (see SidewinderJudge for why:
     // a GUI test's animation thread never stops and would otherwise step
     // physics on this run's NodeManager concurrently).
@@ -140,14 +140,24 @@ public final class HopperJudge {
     }
   }
 
-  private static Result scoreWithLockHeld(int ticks) {
+  private static Result scoreWithLockHeld(int ticks) throws Exception {
     resetWorldRandom();
     pinGlobals();
 
-    ContextManager.setNodeManager(new NodeManager());
-    final NodeManager node_manager = ContextManager.getNodeManager();
+    // Via the real FrEnd (Tim, 2026-10-18). HopperDemoMessage calls
+    // buildAt(400), which populates HopperDemo.marker and HopperDemo.feet.
+    final NodeManager node_manager =
+        FrEndHeadlessRunner.startHeadlessRun(new HopperDemoMessage());
+    try {
+      return scoreRun(ticks, node_manager);
+    } finally {
+      FrEndHeadlessRunner.finishHeadlessRun();
+    }
+  }
 
-    final Node marker = HopperDemo.buildAt(400);
+  private static Result scoreRun(int ticks, final NodeManager node_manager)
+      throws Exception {
+    final Node marker = HopperDemo.marker;
     final Node[] feet = HopperDemo.feet;
     // No free shove: the hopper's target direction is up, so it must
     // start at rest on the vertical axis. Checked before the first
@@ -200,7 +210,11 @@ public final class HopperJudge {
     int hop_start = 0;
 
     for (int t = 0; t < ticks; t++) {
-      node_manager.nodeAndLinkUpdate();
+      // Step one tick through FrEnd, then pause for observation
+      // (Tim, 2026-10-18: just pause the model, no single-stepping).
+      World.paused = false;
+      FrEndHeadlessRunner.waitForOneTick();
+      World.paused = true;
 
       if (!tipped_over && tip_over.violated(node_manager)) {
         tipped_over = true;

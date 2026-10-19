@@ -79,7 +79,6 @@
           <excludes>
             <exclude>**/*Test.java</exclude>
             <exclude>**/GuiTestSupport.java</exclude>
-            <exclude>**/FrEndHeadlessRunner.java</exclude>
             <exclude>**/SqrtCandidates.java</exclude>
             <exclude>**/SquareRootAnalysis.java</exclude>
             <exclude>**/SquareRootBenchmark.java</exclude>

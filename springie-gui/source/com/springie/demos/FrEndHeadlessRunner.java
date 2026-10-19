@@ -4,7 +4,9 @@ package com.springie.demos;
 
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.gui.GuiTestSupport;
+import com.springie.FrEnd;
+import java.awt.GraphicsEnvironment;
+import javax.swing.SwingUtilities;
 import com.springie.render.RendererDelegator;
 import com.springie.world.NewMessage;
 import com.springie.world.World;
@@ -42,7 +44,11 @@ public class FrEndHeadlessRunner {
    */
   public static NodeManager startHeadlessRun(final NewMessage demo_message)
       throws Exception {
-    GuiTestSupport.bootApp();
+    if (GraphicsEnvironment.isHeadless()) {
+      throw new IllegalStateException("needs a display (Xvfb)");
+    }
+    SwingUtilities.invokeAndWait(() -> FrEnd.main(new String[0]));
+    Thread.sleep(2000); // wait for boot model load to settle
     final boolean old_headless = World.headless;
     World.headless = true;
     try {
