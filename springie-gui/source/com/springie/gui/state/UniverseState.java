@@ -23,7 +23,7 @@ public final class UniverseState {
   public static int weapon_type = ToolTypes._PENCIL;
 
   // Animation delay.
-  public static int delay = Delay._DELAY_0;
+  public static int delay = Delay._DELAY_2;
 
   // Mouse button actions.
   public static int action_left_type = Actions.SELECT;
@@ -34,7 +34,7 @@ public final class UniverseState {
   public static void resetToDefaults() {
     controls_window_mode = CONTROLS_DOCKED;
     weapon_type = ToolTypes._PENCIL;
-    delay = Delay._DELAY_0;
+    delay = Delay._DELAY_2;
     action_left_type = Actions.SELECT;
     action_middle_type = Actions.TRANSLATE;
     action_right_type = Actions.ROTATE;
