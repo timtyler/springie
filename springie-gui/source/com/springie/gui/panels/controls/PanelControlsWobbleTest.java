@@ -92,6 +92,24 @@ class PanelControlsWobbleTest {
     });
   }
 
+  @Test
+  void wobbleLabelUpdatesAtMostOnceASecond() throws Exception {
+    final PanelControlsWobble[] panel_holder = new PanelControlsWobble[1];
+    SwingUtilities.invokeAndWait(() -> {
+      final PanelControlsWobble wobble_panel = new PanelControlsWobble();
+      panel_holder[0] = wobble_panel;
+      wobble_panel.wobbleUpdated(123);
+      assertEquals("Wobble: 12.3%", wobble_panel.label_wobble.getText());
+      wobble_panel.wobbleUpdated(456);
+      assertEquals("Wobble: 12.3%", wobble_panel.label_wobble.getText());
+    });
+    Thread.sleep(1100);
+    SwingUtilities.invokeAndWait(() -> {
+      panel_holder[0].wobbleUpdated(456);
+      assertEquals("Wobble: 45.6%", panel_holder[0].label_wobble.getText());
+    });
+  }
+
   private static void scaleAllNodes(final NodeManager node_manager,
       final int[] orig_x, final int[] orig_y, final int[] orig_z,
       final int numerator, final int denominator) {

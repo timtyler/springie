@@ -14,6 +14,8 @@ public class PanelControlsWobble implements WobbleMeter.Listener {
 
   public Label label_wobble;
 
+  private long last_update_millis;
+
   public PanelControlsWobble() {
     makePanel();
   }
@@ -29,6 +31,9 @@ public class PanelControlsWobble implements WobbleMeter.Listener {
       public void hierarchyChanged(final HierarchyEvent e) {
         if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
           final boolean showing = PanelControlsWobble.this.panel.isShowing();
+          if (showing) {
+            PanelControlsWobble.this.last_update_millis = 0;
+          }
           WobbleMeter.setListener(showing ? PanelControlsWobble.this : null);
           WobbleMeter.setActive(showing);
         }
@@ -37,6 +42,12 @@ public class PanelControlsWobble implements WobbleMeter.Listener {
   }
 
   public void wobbleUpdated(final int wobble_tenths_percent) {
+    final long now = System.currentTimeMillis();
+    if (now >= this.last_update_millis
+        && now - this.last_update_millis < 1000) {
+      return;
+    }
+    this.last_update_millis = now;
     if (wobble_tenths_percent < 0) {
       this.label_wobble.setText("Wobble: --");
     } else {
