@@ -41,7 +41,8 @@ public class PanelControlsWobble implements WobbleMeter.Listener {
     });
   }
 
-  public void wobbleUpdated(final int wobble_tenths_percent) {
+  public void wobbleUpdated(final int wobble_tenths_percent,
+      final boolean selected_only) {
     final long now = System.currentTimeMillis();
     if (now >= this.last_update_millis
         && now - this.last_update_millis < 1000) {
@@ -51,7 +52,9 @@ public class PanelControlsWobble implements WobbleMeter.Listener {
     if (wobble_tenths_percent < 0) {
       this.label_wobble.setText("Wobble: --");
     } else {
-      final String text = "Wobble: " + (wobble_tenths_percent / 10) + "."
+      final String scope = selected_only ? " (selected links)" : "";
+      final String text = "Wobble" + scope + ": "
+          + (wobble_tenths_percent / 10) + "."
           + (wobble_tenths_percent % 10) + "%";
       this.label_wobble.setText(text);
     }

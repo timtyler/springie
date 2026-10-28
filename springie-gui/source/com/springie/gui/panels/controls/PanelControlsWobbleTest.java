@@ -98,14 +98,16 @@ class PanelControlsWobbleTest {
     SwingUtilities.invokeAndWait(() -> {
       final PanelControlsWobble wobble_panel = new PanelControlsWobble();
       panel_holder[0] = wobble_panel;
-      wobble_panel.wobbleUpdated(123);
-      assertEquals("Wobble: 12.3%", wobble_panel.label_wobble.getText());
-      wobble_panel.wobbleUpdated(456);
-      assertEquals("Wobble: 12.3%", wobble_panel.label_wobble.getText());
+      wobble_panel.wobbleUpdated(123, true);
+      assertEquals("Wobble (selected links): 12.3%",
+          wobble_panel.label_wobble.getText());
+      wobble_panel.wobbleUpdated(456, true);
+      assertEquals("Wobble (selected links): 12.3%",
+          wobble_panel.label_wobble.getText());
     });
     Thread.sleep(1100);
     SwingUtilities.invokeAndWait(() -> {
-      panel_holder[0].wobbleUpdated(456);
+      panel_holder[0].wobbleUpdated(456, false);
       assertEquals("Wobble: 45.6%", panel_holder[0].label_wobble.getText());
     });
   }

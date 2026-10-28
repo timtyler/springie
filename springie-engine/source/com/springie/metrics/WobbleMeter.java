@@ -25,7 +25,7 @@ import java.util.Map;
 public class WobbleMeter {
   /** Called on the AWT thread when the computed value changes. */
   public interface Listener {
-    void wobbleUpdated(int wobble_tenths_percent);
+    void wobbleUpdated(int wobble_tenths_percent, boolean selected_only);
   }
 
   /** Ticks of link-length history kept per link (about a second). */
@@ -48,6 +48,10 @@ public class WobbleMeter {
 
   private static int wobble_tenths_percent = NO_VALUE;
 
+  private static boolean scope_known;
+
+  private static boolean last_any_selected;
+
   private static final Map<Link, LinkSamples> samples_by_link =
       new IdentityHashMap<>();
 
@@ -69,6 +73,7 @@ public class WobbleMeter {
     active = new_active;
     ticks_since_recompute = 0;
     wobble_tenths_percent = NO_VALUE;
+    scope_known = false;
     samples_by_link.clear();
   }
 
@@ -79,14 +84,27 @@ public class WobbleMeter {
   /**
    * Sample one tick's link lengths, if the meter is active. Called from
    * the physics path; when inactive this is a single boolean check.
+   * With no links selected, every link is sampled; with some selected,
+   * only the selected links are.
    */
   public static void sampleIfActive(final LinkManager link_manager) {
     if (!active || link_manager == null) {
       return;
     }
+    final boolean any_selected = link_manager.getNumberOfSelected() > 0;
+    if (!scope_known) {
+      scope_known = true;
+      last_any_selected = any_selected;
+    } else if (any_selected != last_any_selected) {
+      samples_by_link.clear();
+      last_any_selected = any_selected;
+    }
     final int number_of_links = link_manager.element.size();
     for (int temp = number_of_links; --temp >= 0;) {
       final Link link = (Link) link_manager.element.get(temp);
+      if (any_selected && !link.type.selected) {
+        continue;
+      }
       LinkSamples samples = samples_by_link.get(link);
       if (samples == null) {
         samples = new LinkSamples();
@@ -112,10 +130,15 @@ public class WobbleMeter {
     }
     samples_by_link.keySet().retainAll(live_links.keySet());
 
+    final boolean any_selected = link_manager.getNumberOfSelected() > 0;
     final int[] scratch = new int[WINDOW_TICKS];
     long total_tenths = 0;
     int links_counted = 0;
-    for (final LinkSamples samples : samples_by_link.values()) {
+    for (final Map.Entry<Link, LinkSamples> entry : samples_by_link.entrySet()) {
+      if (any_selected && !entry.getKey().type.selected) {
+        continue;
+      }
+      final LinkSamples samples = entry.getValue();
       final int count = samples.count;
       if (count < 2) {
         continue;
@@ -146,7 +169,7 @@ public class WobbleMeter {
     if (new_value != wobble_tenths_percent) {
       wobble_tenths_percent = new_value;
       if (listener != null) {
-        listener.wobbleUpdated(new_value);
+        listener.wobbleUpdated(new_value, any_selected);
       }
     }
   }
