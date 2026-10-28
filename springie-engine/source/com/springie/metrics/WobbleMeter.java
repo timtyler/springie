@@ -42,6 +42,8 @@ public class WobbleMeter {
 
   private static boolean active;
 
+  private static boolean optimizing;
+
   private static Listener listener;
 
   private static int ticks_since_recompute;
@@ -71,6 +73,19 @@ public class WobbleMeter {
 
   public static void setActive(final boolean new_active) {
     active = new_active;
+    if (new_active || !optimizing) {
+      reset();
+    }
+  }
+
+  public static void setOptimizing(final boolean new_optimizing) {
+    optimizing = new_optimizing;
+    if (!new_optimizing && !active) {
+      reset();
+    }
+  }
+
+  private static void reset() {
     ticks_since_recompute = 0;
     wobble_tenths_percent = NO_VALUE;
     scope_known = false;
@@ -83,12 +98,13 @@ public class WobbleMeter {
 
   /**
    * Sample one tick's link lengths, if the meter is active. Called from
-   * the physics path; when inactive this is a single boolean check.
+   * the physics path; when neither the page nor an optimisation run
+   * needs it, this is a single boolean check.
    * With no links selected, every link is sampled; with some selected,
    * only the selected links are.
    */
   public static void sampleIfActive(final LinkManager link_manager) {
-    if (!active || link_manager == null) {
+    if ((!active && !optimizing) || link_manager == null) {
       return;
     }
     final boolean any_selected = link_manager.getNumberOfSelected() > 0;

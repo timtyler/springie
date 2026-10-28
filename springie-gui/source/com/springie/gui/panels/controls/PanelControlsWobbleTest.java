@@ -8,12 +8,15 @@ import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.components.TabbedPanel;
+import com.springie.metrics.DampingOptimizer;
 import com.springie.metrics.WobbleMeter;
 import com.springie.world.World;
 import java.awt.CardLayout;
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
 import java.awt.Label;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -109,6 +112,27 @@ class PanelControlsWobbleTest {
     SwingUtilities.invokeAndWait(() -> {
       panel_holder[0].wobbleUpdated(456, false);
       assertEquals("Wobble: 45.6%", panel_holder[0].label_wobble.getText());
+    });
+  }
+
+  @Test
+  void optimiseButtonDisablesWhileRunning() throws Exception {
+    SwingUtilities.invokeAndWait(() -> {
+      final PanelControlsWobble wobble_panel = FrEnd.panel_controls_wobble;
+      try {
+        for (final ActionListener listener
+            : wobble_panel.button_optimise_damping.getActionListeners()) {
+          listener.actionPerformed(new ActionEvent(
+              wobble_panel.button_optimise_damping,
+              ActionEvent.ACTION_PERFORMED, "press"));
+        }
+        assertTrue(DampingOptimizer.isRunning());
+        assertFalse(wobble_panel.button_optimise_damping.isEnabled());
+      } finally {
+        DampingOptimizer.abort();
+      }
+      assertFalse(DampingOptimizer.isRunning());
+      assertTrue(wobble_panel.button_optimise_damping.isEnabled());
     });
   }
 

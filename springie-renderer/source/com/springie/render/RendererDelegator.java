@@ -6,6 +6,7 @@ import com.springie.composite.Reproduction;
 import com.springie.context.ContextManager;
 import com.springie.explosions.fragments.LineFragmentManager;
 import com.springie.explosions.particles.ParticleManager;
+import com.springie.metrics.DampingOptimizer;
 import com.springie.metrics.WobbleMeter;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.modules.modern.ModularRendererNew;
@@ -448,6 +449,8 @@ public final class RendererDelegator {
       ContextManager.getNodeManager().nodeAndLinkUpdate();
 
       WobbleMeter.sampleIfActive(ContextManager.getLinkManager());
+
+      DampingOptimizer.tickIfRunning(ContextManager.getLinkManager());
 
       stepIfNeeded();
     }

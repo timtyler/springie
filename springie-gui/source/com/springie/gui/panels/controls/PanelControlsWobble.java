@@ -3,16 +3,25 @@
 package com.springie.gui.panels.controls;
 
 import com.springie.FrEnd;
+import com.springie.context.ContextManager;
+import com.springie.elements.links.LinkManager;
+import com.springie.metrics.DampingOptimizer;
 import com.springie.metrics.WobbleMeter;
+import java.awt.Button;
 import java.awt.Label;
 import java.awt.Panel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 
-public class PanelControlsWobble implements WobbleMeter.Listener {
+public class PanelControlsWobble implements WobbleMeter.Listener,
+    DampingOptimizer.Listener {
   public Panel panel = FrEnd.setUpPanelForFrame2();
 
   public Label label_wobble;
+
+  public Button button_optimise_damping;
 
   private long last_update_millis;
 
@@ -27,6 +36,22 @@ public class PanelControlsWobble implements WobbleMeter.Listener {
         "Average link-length oscillation over the last 100 ticks.",
         Label.CENTER);
     this.panel.add(label_note);
+    this.button_optimise_damping = new Button("Optimise damping");
+    this.button_optimise_damping.addActionListener(new ActionListener() {
+      public void actionPerformed(final ActionEvent e) {
+        final LinkManager link_manager = ContextManager.getLinkManager();
+        if (link_manager == null) {
+          return;
+        }
+        DampingOptimizer.setListener(PanelControlsWobble.this);
+        if (DampingOptimizer.start(link_manager)) {
+          PanelControlsWobble.this.button_optimise_damping.setEnabled(false);
+        } else {
+          DampingOptimizer.setListener(null);
+        }
+      }
+    });
+    this.panel.add(this.button_optimise_damping);
     this.panel.addHierarchyListener(new HierarchyListener() {
       public void hierarchyChanged(final HierarchyEvent e) {
         if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
@@ -39,6 +64,12 @@ public class PanelControlsWobble implements WobbleMeter.Listener {
         }
       }
     });
+  }
+
+  public void optimizationFinished() {
+    DampingOptimizer.setListener(null);
+    this.button_optimise_damping.setEnabled(true);
+    FrEnd.reflectStatusInGUI();
   }
 
   public void wobbleUpdated(final int wobble_tenths_percent,
