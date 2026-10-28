@@ -16,7 +16,7 @@ import com.springie.messages.commands.AlterElasticityMessage;
 import com.springie.messages.commands.AlterLengthMessage;
 import com.springie.messages.commands.AlterPhaseMessage;
 import com.springie.messages.commands.AlterRadiusMessage;
-import com.springie.messages.commands.AlterStiffnessMessage;
+import com.springie.messages.commands.AlterDampingMessage;
 import com.springie.messages.commands.ChargeDownMessage;
 import com.springie.messages.commands.ChargeUpMessage;
 import com.springie.messages.commands.ContractNodesMessage;
@@ -25,14 +25,14 @@ import com.springie.messages.commands.ElasticityUpMessage;
 import com.springie.messages.commands.ExpandNodesMessage;
 import com.springie.messages.commands.LengthenLinksMessage;
 import com.springie.messages.commands.ShortenLinksMessage;
-import com.springie.messages.commands.StiffnessDownMessage;
-import com.springie.messages.commands.StiffnessUpMessage;
+import com.springie.messages.commands.DampingDownMessage;
+import com.springie.messages.commands.DampingUpMessage;
 import com.springie.metrics.AverageChargeGetter;
 import com.springie.metrics.AverageElasticityGetter;
 import com.springie.metrics.AverageLengthGetter;
 import com.springie.metrics.AveragePhaseGetter;
 import com.springie.metrics.AverageRadiusGetter;
-import com.springie.metrics.AverageStiffnessGetter;
+import com.springie.metrics.AverageDampingGetter;
 import com.springie.geometry.Coords;
 import java.awt.BorderLayout;
 import java.awt.Button;
@@ -415,8 +415,8 @@ public class PanelControlsPropertiesScalars {
     this.scroll_bar_damping.addAdjustmentListener(new AdjustmentListener() {
       public void adjustmentValueChanged(final AdjustmentEvent e) {
         final int damping = e.getValue();
-        getNewMessageManager().add(new AlterStiffnessMessage(damping));
-        reflectStiffness();
+        getNewMessageManager().add(new AlterDampingMessage(damping));
+        reflectDamping();
       }
     });
     panel.add("Center", this.scroll_bar_damping);
@@ -425,14 +425,14 @@ public class PanelControlsPropertiesScalars {
     this.button_scale_damping_up = new Button(GUIStrings.EDIT_CHANGE_UP);
     this.button_scale_damping_up.addActionListener(new ActionListener() {
       public void actionPerformed(final ActionEvent e) {
-        getNewMessageManager().add(new StiffnessUpMessage());
+        getNewMessageManager().add(new DampingUpMessage());
       }
     });
 
     this.button_scale_damping_down = new Button(GUIStrings.EDIT_CHANGE_DOWN);
     this.button_scale_damping_down.addActionListener(new ActionListener() {
       public void actionPerformed(final ActionEvent e) {
-        getNewMessageManager().add(new StiffnessDownMessage());
+        getNewMessageManager().add(new DampingDownMessage());
       }
     });
 
@@ -453,7 +453,7 @@ public class PanelControlsPropertiesScalars {
 
     reflectRadius();
     reflectElasticity();
-    reflectStiffness();
+    reflectDamping();
     reflectLength();
     reflectCharge();
     reflectPhase();
@@ -467,8 +467,8 @@ public class PanelControlsPropertiesScalars {
     this.label_elasticity.setText("" + v);
   }
 
-  public void reflectStiffness() {
-    final int v = new AverageStiffnessGetter(ContextManager.getNodeManager())
+  public void reflectDamping() {
+    final int v = new AverageDampingGetter(ContextManager.getNodeManager())
         .getAverage();
     this.scroll_bar_damping.setValue(v);
     this.label_damping.setText("" + v);

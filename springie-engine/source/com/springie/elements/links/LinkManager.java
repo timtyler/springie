@@ -503,7 +503,7 @@ public class LinkManager extends BaseElementManager<Link> {
     }
   }
 
-  public final void setStiffnessOfSelected(int damping) {
+  public final void setDampingOfSelected(int damping) {
     final int n_o_l = this.element.size();
     for (int temp = n_o_l; --temp >= 0;) {
       final Link l = (Link) this.element.get(temp);

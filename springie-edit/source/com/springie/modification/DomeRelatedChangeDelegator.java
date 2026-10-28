@@ -7,7 +7,7 @@ import com.springie.metrics.AverageChargeGetter;
 import com.springie.metrics.AverageElasticityGetter;
 import com.springie.metrics.AverageLengthGetter;
 import com.springie.metrics.AverageRadiusGetter;
-import com.springie.metrics.AverageStiffnessGetter;
+import com.springie.metrics.AverageDampingGetter;
 import com.springie.modification.flags.FlagControllerDisabled;
 import com.springie.modification.flags.FlagControllerFixed;
 import com.springie.modification.flags.FlagControllerHidden;
@@ -127,19 +127,19 @@ public final class DomeRelatedChangeDelegator {
         clamp(average + delta, ELASTICITY_MIN, ELASTICITY_MAX));
   }
 
-  public static void stiffnessUp() {
+  public static void dampingUp() {
     changeDampingBy(1);
   }
 
-  public static void stiffnessDown() {
+  public static void dampingDown() {
     changeDampingBy(-1);
   }
 
   private static void changeDampingBy(final int delta) {
     CommandContextHolder.get().prepareToModifyLinkTypes();
-    final int average = new AverageStiffnessGetter(
+    final int average = new AverageDampingGetter(
         ContextManager.getNodeManager()).getAverage();
-    ContextManager.getLinkManager().setStiffnessOfSelected(
+    ContextManager.getLinkManager().setDampingOfSelected(
         clamp(average + delta, DAMPING_MIN, DAMPING_MAX));
   }
 

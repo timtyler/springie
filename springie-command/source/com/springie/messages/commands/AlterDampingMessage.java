@@ -8,12 +8,12 @@ import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.world.NewMessage;
 
-public class AlterStiffnessMessage extends NewMessage {
-  private final int stiffness;
+public class AlterDampingMessage extends NewMessage {
+  private final int damping;
 
-  public AlterStiffnessMessage(int stiffness) {
+  public AlterDampingMessage(int damping) {
     super(null);
-    this.stiffness = stiffness;
+    this.damping = damping;
   }
 
   public Object execute() {
@@ -21,8 +21,8 @@ public class AlterStiffnessMessage extends NewMessage {
     final LinkManager link_manager = node_manager.getLinkManager();
 
     CommandContextHolder.get().prepareToModifyLinkTypes();
-    link_manager.setStiffnessOfSelected(this.stiffness);
-    CommandContextHolder.get().reflectStiffness();
+    link_manager.setDampingOfSelected(this.damping);
+    CommandContextHolder.get().reflectDamping();
     CommandContextHolder.get().reflectValuesInGUIAfterPropertyEditing();
 
     return null;

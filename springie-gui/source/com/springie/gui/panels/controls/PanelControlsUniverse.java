@@ -97,7 +97,7 @@ public class PanelControlsUniverse {
   Scrollbar scroll_bar_gravity;
   Scrollbar scroll_bar_temperature;
 
-  Scrollbar scroll_bar_stiffness;
+  Scrollbar scroll_bar_damping;
 
   Scrollbar scroll_bar_elasticity;
 

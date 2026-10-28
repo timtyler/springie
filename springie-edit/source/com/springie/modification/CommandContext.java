@@ -42,7 +42,7 @@ public interface CommandContext {
   void reflectLength();
   void reflectPhase();
   void reflectRadius();
-  void reflectStiffness();
+  void reflectDamping();
 
   // Generate panel values (Tim, 2026-10-13, Phase 2).
   String getGenerateFreeNodes();

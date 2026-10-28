@@ -6,14 +6,14 @@ import com.springie.modification.CommandContextHolder;
 import com.springie.world.NewMessage;
 import com.springie.modification.DomeRelatedChangeDelegator;
 
-public class StiffnessUpMessage extends NewMessage {
-  public StiffnessUpMessage() {
+public class DampingUpMessage extends NewMessage {
+  public DampingUpMessage() {
     super(null);
   }
 
   public Object execute() {
-    DomeRelatedChangeDelegator.stiffnessUp();
-    CommandContextHolder.get().reflectStiffness();
+    DomeRelatedChangeDelegator.dampingUp();
+    CommandContextHolder.get().reflectDamping();
     return null;
   }
 }

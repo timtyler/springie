@@ -883,7 +883,7 @@ public class FrEnd extends Panel {
     panel_edit_properties_scalars.reflectCharge();
     panel_edit_properties_scalars.reflectLength();
     panel_edit_properties_scalars.reflectElasticity();
-    panel_edit_properties_scalars.reflectStiffness();
+    panel_edit_properties_scalars.reflectDamping();
 
     FrEnd.panel_universe.reflectMaxSpeed();
     FrEnd.panel_universe.reflectImpact();
@@ -1195,7 +1195,7 @@ public class FrEnd extends Panel {
       public void reflectLength() { FrEnd.panel_edit_properties_scalars.reflectLength(); }
       public void reflectPhase() { FrEnd.panel_edit_properties_scalars.reflectPhase(); }
       public void reflectRadius() { FrEnd.panel_edit_properties_scalars.reflectRadius(); }
-      public void reflectStiffness() { FrEnd.panel_edit_properties_scalars.reflectStiffness(); }
+      public void reflectDamping() { FrEnd.panel_edit_properties_scalars.reflectDamping(); }
       // Generate panel values (Tim, 2026-10-13, Phase 2).
       public String getGenerateFreeNodes() { return FrEnd.panel_edit_generate.textfield_generate_free_nodes.getText(); }
       public String getGenerateMatrixX() { return FrEnd.panel_edit_generate.textfield_generate_matrix_x.getText(); }

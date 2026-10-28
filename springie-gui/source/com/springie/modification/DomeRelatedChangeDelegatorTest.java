@@ -6,7 +6,7 @@ import com.springie.metrics.AverageChargeGetter;
 import com.springie.metrics.AverageElasticityGetter;
 import com.springie.metrics.AverageLengthGetter;
 import com.springie.metrics.AverageRadiusGetter;
-import com.springie.metrics.AverageStiffnessGetter;
+import com.springie.metrics.AverageDampingGetter;
 import com.springie.geometry.Coords;
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
@@ -58,7 +58,7 @@ class DomeRelatedChangeDelegatorTest {
   }
 
   private static int averageDamping() {
-    return new AverageStiffnessGetter(ContextManager.getNodeManager())
+    return new AverageDampingGetter(ContextManager.getNodeManager())
         .getAverage();
   }
 
@@ -97,16 +97,16 @@ class DomeRelatedChangeDelegatorTest {
     selectAllLinks();
     final int before = averageDamping();
 
-    DomeRelatedChangeDelegator.stiffnessUp();
+    DomeRelatedChangeDelegator.dampingUp();
     assertEquals(before + 1, averageDamping(),
         "damping + should increment by 1");
 
-    DomeRelatedChangeDelegator.stiffnessDown();
-    DomeRelatedChangeDelegator.stiffnessDown();
+    DomeRelatedChangeDelegator.dampingDown();
+    DomeRelatedChangeDelegator.dampingDown();
     assertEquals(before - 1, averageDamping(),
         "damping - should decrement by 1");
 
-    DomeRelatedChangeDelegator.stiffnessUp();
+    DomeRelatedChangeDelegator.dampingUp();
     assertEquals(before, averageDamping(),
         "+ then - should return to the starting value");
   }
@@ -116,7 +116,7 @@ class DomeRelatedChangeDelegatorTest {
     selectAllLinks();
     final int elasticity_before = averageElasticity();
 
-    DomeRelatedChangeDelegator.stiffnessUp();
+    DomeRelatedChangeDelegator.dampingUp();
 
     assertEquals(elasticity_before, averageElasticity(),
         "damping + must not change elasticity");
@@ -126,13 +126,13 @@ class DomeRelatedChangeDelegatorTest {
   void dampingStaysWithinSliderRange() throws Exception {
     selectAllLinks();
 
-    ContextManager.getLinkManager().setStiffnessOfSelected(200);
-    DomeRelatedChangeDelegator.stiffnessUp();
+    ContextManager.getLinkManager().setDampingOfSelected(200);
+    DomeRelatedChangeDelegator.dampingUp();
     assertEquals(200, averageDamping(),
         "damping + at the 200 maximum must stay at 200");
 
-    ContextManager.getLinkManager().setStiffnessOfSelected(0);
-    DomeRelatedChangeDelegator.stiffnessDown();
+    ContextManager.getLinkManager().setDampingOfSelected(0);
+    DomeRelatedChangeDelegator.dampingDown();
     assertEquals(0, averageDamping(),
         "damping - at the 0 minimum must stay at 0");
   }

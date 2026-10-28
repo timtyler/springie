@@ -4,12 +4,12 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.NodeManager;
 
-public class AverageStiffnessGetter {
+public class AverageDampingGetter {
   NodeManager node_manager;
 
   LinkManager link_manager;
 
-  public AverageStiffnessGetter(NodeManager node_manager) {
+  public AverageDampingGetter(NodeManager node_manager) {
     if (node_manager == null) {
       return;
     }
