@@ -58,6 +58,7 @@ import com.springie.gui.panels.controls.PanelControlsStatistics;
 import com.springie.gui.panels.controls.PanelControlsUniverse;
 import com.springie.modification.CommandContextHolder;
 import com.springie.gui.panels.controls.PanelControlsVelocities;
+import com.springie.gui.panels.controls.PanelControlsWobble;
 import com.springie.gui.panels.preferences.PanelPreferences;
 import com.springie.gui.panels.preferences.PanelPreferencesDisplay;
 import com.springie.gui.panels.preferences.PanelPreferencesEdit;
@@ -404,6 +405,8 @@ public class FrEnd extends Panel {
   public static PanelControlsPropertiesNames panel_edit_properties_names = new PanelControlsPropertiesNames(World.new_message_manager);
 
   public static PanelControlsStatistics panel_controls_statistics = new PanelControlsStatistics();
+
+  public static PanelControlsWobble panel_controls_wobble = new PanelControlsWobble();
 
   public static PanelControlsPropertiesScalars panel_edit_properties_scalars = new PanelControlsPropertiesScalars(World.new_message_manager);
 

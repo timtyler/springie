@@ -30,6 +30,7 @@ public class PanelControlsProperties {
     tab_flags.add("Flags", FrEnd.panel_edit_properties_flags.panel);
     tab_flags.add("Names", FrEnd.panel_edit_properties_names.panel);
     tab_flags.add("Statistics", FrEnd.panel_controls_statistics.panel);
+    tab_flags.add("Wobble", FrEnd.panel_controls_wobble.panel);
 
     this.panel.add(tab_flags, "South");
   }
