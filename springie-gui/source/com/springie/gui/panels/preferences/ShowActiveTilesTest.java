@@ -8,6 +8,7 @@ import com.springie.render.RendererDelegator;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.modern.RendererTileManager;
+import com.springie.world.World;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -52,11 +53,15 @@ class ShowActiveTilesTest {
   /** The renderer the app booted with, restored after the tests. */
   private static ModularRendererBase saved_renderer;
 
+  /** The paused state the app booted with, restored after the tests. */
+  private static boolean saved_paused;
+
   @BeforeAll
   static void boot() throws Exception {
     GuiTestSupport.bootApp();
     SwingUtilities.invokeAndWait(() -> {
       saved_renderer = RendererDelegator.renderer;
+      saved_paused = World.paused;
     });
   }
 
@@ -70,6 +75,14 @@ class ShowActiveTilesTest {
   @BeforeEach
   void pinModernRenderer() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
+      // Freeze the model for the whole test: physics advances inside
+      // repaint(), so every poll paint would otherwise move the scene,
+      // and the node polyhedra's red facets change the red count by
+      // hundreds of pixels between the baseline and the final capture --
+      // the exact-equality checks below can never hold on a live scene.
+      // The outlines themselves were verified to erase correctly; it was
+      // the moving model that failed these tests (Tim, 2026-11-08).
+      World.paused = true;
       RendererDelegator.renderer = new ModularRendererNew();
       FrEnd.main_canvas.forceResize();
     });
@@ -78,6 +91,7 @@ class ShowActiveTilesTest {
   @AfterAll
   static void dispose() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
+      World.paused = saved_paused;
       RendererDelegator.renderer = saved_renderer;
       FrEnd.main_canvas.forceResize();
     });
