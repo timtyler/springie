@@ -183,14 +183,21 @@ public class PolygonObject2D {
     if (b_scaled > 255) {
       b_scaled = 255;
     }
-    // Apply per-channel scaling to the base color.
-    final int base_r = colour & 0xFF;
+    // Apply per-channel scaling to the base color. (ARGB packing:
+    // red is the >> 16 byte, blue the low byte -- these two were
+    // swapped, so the red channel was scaled by the blue factor and
+    // vice versa whenever the rig was red/blue-asymmetric.)
+    final int base_r = (colour >> 16) & 0xFF;
     final int base_g = (colour >> 8) & 0xFF;
-    final int base_b = (colour >> 16) & 0xFF;
+    final int base_b = colour & 0xFF;
     final int or = (base_r * r_scaled) >> 8;
     final int og = (base_g * g_scaled) >> 8;
     final int ob = (base_b * b_scaled) >> 8;
-    final int act_colour = 0xFF000000 | or | (og << 8) | (ob << 16);
+    // ARGB packing, matching the extraction above: red at << 16,
+    // blue in the low byte. (This line also treated the low byte as
+    // red, which had cancelled the extraction swap for the channel
+    // identity while still cross-scaling the factors.)
+    final int act_colour = 0xFF000000 | (or << 16) | (og << 8) | ob;
 
     this.colour = act_colour;
     this.bounding_box = null;
