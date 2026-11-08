@@ -9,27 +9,33 @@ import com.springie.context.ContextManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.GuiTestSupport;
-import com.springie.render.RendererDelegator;
 import com.springie.world.World;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 
 /**
- * Parity check: the same demo run headless (skip rendering) and through
+ * Parity check: the same demo run headless (renderer off) and through
  * the live UI must produce the same trajectory. Tim's rule (2026-09-17):
  * headless numbers that don't reproduce in the UI are worthless.
  *
  * <p>Both paths boot the real FrEnd and load the demo via the real
- * message path. The only difference: headless sets World.headless, so
- * the animation loop skips repaint() and runs physics directly.
+ * message path; the only difference is World.headless (the renderer
+ * skips pixel drawing, physics runs via the same AWT path). The runs
+ * are driven deterministically -- the model is loaded while paused and
+ * then advanced by exactly TICKS dynamics steps via World.stepping --
+ * because the old free-running protocol compared runs whose tick
+ * counts differed by however long each load happened to take, which
+ * swamped the path difference this test exists to measure.
  */
 class HeadlessUiParityTest {
   private static final int TICKS = 600;
 
   @Test
   void wheelbarrowParity() throws Exception {
-    final double[] headless_pos = runHeadless();
-    final double[] ui_pos = runViaUi();
+    final double[] headless_pos = runPath(true);
+    final double[] ui_pos = runPath(false);
 
     double max_diff = 0;
     for (int i = 0; i < headless_pos.length; i++) {
@@ -41,40 +47,31 @@ class HeadlessUiParityTest {
         "Headless and UI paths diverged by " + max_diff + "px");
   }
 
-  /** Headless: real FrEnd, real message path, skip rendering. */
-  private static double[] runHeadless() throws Exception {
+  /** One run: real FrEnd, real message path, exactly TICKS steps. */
+  private static double[] runPath(final boolean headless) throws Exception {
     GuiTestSupport.bootApp();
     final boolean old_paused = World.paused;
     final boolean old_headless = World.headless;
     try {
-      World.headless = true;
+      World.headless = headless;
+      // Load frozen: no dynamics ticks may slip in between the build
+      // and the stepped run (a tick of difference shifts the muscle
+      // oscillator phase for the whole run).
+      World.paused = true;
       World.new_message_manager.add(new WheelbarrowDemoMessage());
       final NodeManager nm = waitForLoad(16);
+      final CountDownLatch done = new CountDownLatch(1);
+      World.stepping = TICKS;
+      World.stepping_finished = done::countDown;
       World.paused = false;
-      waitForTicks(TICKS);
-      World.paused = true;
-      final NodeManager node_manager = nm;
-      return HeadlessRunner.withModelLock(() -> snapshotPositions(node_manager));
+      if (!done.await(120, TimeUnit.SECONDS)) {
+        fail("Timed out stepping " + TICKS + " ticks");
+      }
+      return HeadlessRunner.withModelLock(() -> snapshotPositions(nm));
     } finally {
+      World.stepping_finished = null;
       World.paused = old_paused;
       World.headless = old_headless;
-    }
-  }
-
-  /** UI: real FrEnd, real message path, with rendering. */
-  private static double[] runViaUi() throws Exception {
-    GuiTestSupport.bootApp();
-    final boolean old_paused = World.paused;
-    try {
-      World.new_message_manager.add(new WheelbarrowDemoMessage());
-      final NodeManager nm = waitForLoad(16);
-      World.paused = false;
-      waitForTicks(TICKS);
-      World.paused = true;
-      final NodeManager node_manager = nm;
-      return HeadlessRunner.withModelLock(() -> snapshotPositions(node_manager));
-    } finally {
-      World.paused = old_paused;
     }
   }
 
@@ -90,17 +87,6 @@ class HeadlessUiParityTest {
     }
     fail("Demo did not load");
     return null;
-  }
-
-  private static void waitForTicks(int ticks) throws Exception {
-    final int start = RendererDelegator.generation;
-    final long deadline = System.currentTimeMillis() + 120000;
-    while (RendererDelegator.generation - start < ticks) {
-      if (System.currentTimeMillis() > deadline) {
-        fail("Timed out waiting for " + ticks + " ticks");
-      }
-      Thread.sleep(25);
-    }
   }
 
   private static double[] snapshotPositions(final NodeManager nm) {
