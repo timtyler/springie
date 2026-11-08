@@ -1,13 +1,18 @@
 // Regression test for the bundled cube.spr tensegrity model:
 // six equal, non-touching struts in cubic geometry, 24 cables.
+// Lives in springie-gui, not springie-io (Tim, 2026-11-08): it loads
+// resource://models/cube.spr, and the model files belong to
+// springie-presets, which io's test classpath cannot reach -- in io
+// the load came back empty and the test saw 0 nodes.
 
-package com.springie.io;
+package com.springie.gui.components;
 
 import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
+import com.springie.io.IoConfig;
 import com.springie.io.in.DataInput;
 import com.springie.utilities.random.Hortensius32Fast;
 import com.springie.world.World;

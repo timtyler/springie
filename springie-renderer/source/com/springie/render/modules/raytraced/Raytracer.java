@@ -1220,8 +1220,13 @@ final class Raytracer {
     }
     // Record the filled pixels as hits, so "Show active tiles" still
     // draws the tile's red outline when coarse-to-fine is on. (Tim, 2026-10-03)
-    stats.add(bx * px, by * px);
-    stats.add((x_end - 1) * px, (y_end - 1) * px);
+    // Stats may be null: the no-tracking renderTile overload passes
+    // null, and every other stats use in this file guards for it
+    // (Tim, 2026-11-08).
+    if (stats != null) {
+      stats.add(bx * px, by * px);
+      stats.add((x_end - 1) * px, (y_end - 1) * px);
+    }
   }
 
   /**
