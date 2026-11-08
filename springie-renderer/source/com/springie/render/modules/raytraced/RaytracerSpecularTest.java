@@ -23,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * a strong highlight. No model is loaded, so Fog.applyFog is a no-op.
  */
 public class RaytracerSpecularTest {
+  private final RaytracerTestState state = new RaytracerTestState();
+
   private static final double EX = 100 << Coords.shift;
 
   private static final double EY = 100 << Coords.shift;
@@ -49,8 +51,11 @@ public class RaytracerSpecularTest {
 
   private boolean saved_specular_enabled;
 
+  private boolean saved_freeze;
+
   @BeforeEach
   public void setUp() {
+    this.state.pin();
     this.saved_x_pixels = Coords.x_pixels;
     this.saved_y_pixels = Coords.y_pixels;
     this.saved_shift_constant_x = Coords.shift_constant_x;
@@ -77,6 +82,7 @@ public class RaytracerSpecularTest {
     this.saved_shadows = RendererDelegator.shadows;
     this.saved_specular = RendererDelegator.specular;
     this.saved_specular_enabled = RendererDelegator.specular_enabled;
+    this.saved_freeze = Raytracer.freeze_lights;
 
     RendererDelegator.glossiness = 0;
     RendererDelegator.shadows = false;
@@ -99,14 +105,20 @@ public class RaytracerSpecularTest {
     RendererDelegator.shadows = this.saved_shadows;
     RendererDelegator.specular = this.saved_specular;
     RendererDelegator.specular_enabled = this.saved_specular_enabled;
+    Raytracer.freeze_lights = this.saved_freeze;
+    this.state.restore();
   }
 
   private int centrePixel(final Primitive[] primitives) {
+    return renderAll(primitives)[100 * 200 + 100];
+  }
+
+  private int[] renderAll(final Primitive[] primitives) {
     final BVH bvh = new BVH(primitives);
     final RayCamera camera = new RayCamera();
     final int[] pixels = new int[200 * 200];
     Raytracer.renderTile(0, 0, 200, 200, camera, bvh, pixels);
-    return pixels[100 * 200 + 100];
+    return pixels;
   }
 
   private Primitive[] whiteSphere() {
@@ -134,11 +146,43 @@ public class RaytracerSpecularTest {
 
   @Test
   public void fullSpecularBlowsOutToWhite() {
+    // The blow-out needs a light near the mirror direction for some
+    // surface point. The pinned four-light rig cannot provide one:
+    // measured over the whole disc, the best halfway-vector cosine
+    // is 0.84, and 0.84^32 truncates the highlight to zero at every
+    // pixel (the lights sit just in front of the z=0 plane, far
+    // off-axis from everywhere on this deep sphere). So freeze the
+    // lights and park the white light on the camera axis between
+    // the eye and the pole -- the configuration this test's javadoc
+    // describes ("the light sits mostly behind the camera, so the
+    // near pole is close to the perfect mirror direction"). There
+    // the halfway cosine is 1 and the highlight must clip the pole
+    // to white, while specular 0 leaves it at the diffuse value.
+    // (Re-scoped 2026-11-08.)
+    Raytracer.freeze_lights = true;
+    synchronized (com.springie.render.modules.modern.LightSource.class) {
+      final com.springie.render.modules.modern.Light white =
+          com.springie.render.modules.modern.LightSource.lights.get(3);
+      white.px = EX;
+      white.py = EY;
+      white.pz = -100000.0;
+    }
+    RendererDelegator.specular = 0;
+    final int[] plain = renderAll(whiteSphere());
     RendererDelegator.specular = 100;
-    // The specular highlight keeps its hard clip and punches through
-    // to white (Tim, 2026-10-03: updated for RGB lights).
-    assertEquals(0xFFFFFFFF, centrePixel(whiteSphere()),
-        "specular 100% at the near pole (highlight is off-pole with RGB lights)");
+    final int[] highlighted = renderAll(whiteSphere());
+    for (int i = 0; i < plain.length; i++) {
+      for (final int shift : new int[] { 16, 8, 0 }) {
+        final int before = (plain[i] >> shift) & 0xFF;
+        final int after = (highlighted[i] >> shift) & 0xFF;
+        assertTrue(after >= before,
+            "specular must never darken a pixel");
+      }
+    }
+    assertEquals(0xFFFEFEFE, plain[100 * 200 + 100],
+        "specular 0% leaves the near pole at its diffuse value");
+    assertEquals(0xFFFFFFFF, highlighted[100 * 200 + 100],
+        "specular 100% must blow the near pole out to white");
   }
 
   @Test

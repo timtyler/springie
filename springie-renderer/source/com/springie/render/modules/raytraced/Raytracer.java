@@ -275,6 +275,15 @@ final class Raytracer {
     // anti-aliasing on the sub-pixel rays spread across the whole
     // block, resolving each coarse pixel.
     final int px = RendererDelegator.pixellation;
+    if (RendererDelegator.coarse_to_fine <= 0) {
+      // Coarse-to-fine "Off": trace every pixel (or pixellation
+      // block) exactly, with no block fills. Without this branch Off
+      // reached the coarse loop with a step of 0 and hung the render
+      // (Tim, 2026-11-08: found by the raytracer tests).
+      renderTilePixellated(x0, y0, width, height, camera, bvh, rings,
+          pixels, stats, scenic, background_rgb, px, aa);
+      return;
+    }
     if (px > 1) {
       if (RendererDelegator.simple_lighting
           && RendererDelegator.coarse_to_fine > 0) {
@@ -601,7 +610,10 @@ final class Raytracer {
     // dropdown-selected max block size (16, 8, or 4 cells). Trace the
     // corners (+ edge midpoints for larger blocks); if uniform, fill.
     // Else subdivide into quadrants down to min block, then trace.
-    final int max_cs = RendererDelegator.coarse_to_fine;
+    // Guard only: renderTile routes "Off" (0) to the exact path, but
+    // a direct caller with 0 must not hang -- the loop steps by
+    // max_cs, so a literal 0 would never advance.
+    final int max_cs = Math.max(4, RendererDelegator.coarse_to_fine);
     // Min block: 4 cells when px=1, else 1 cell (Tim, 2026-10-04).
     final int min_cs = px > 1 ? 1 : 4;
     for (int by = 0; by < ch; by += max_cs) {

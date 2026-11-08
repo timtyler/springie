@@ -21,6 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * with it on, the sub-pixel rays spread across the whole block.
  */
 public class RaytracerPixellationTest {
+  private final RaytracerTestState state = new RaytracerTestState();
+
   private static final int SIZE = 200;
 
   private static final int CENTRE_X = 140;
@@ -57,6 +59,7 @@ public class RaytracerPixellationTest {
 
   @BeforeEach
   public void setUp() {
+    this.state.pin();
     this.saved_x_pixels = Coords.x_pixels;
     this.saved_y_pixels = Coords.y_pixels;
     this.saved_x_pixelso2 = Coords.x_pixelso2;
@@ -110,6 +113,7 @@ public class RaytracerPixellationTest {
     RendererDelegator.specular = this.saved_specular;
     RendererDelegator.antialiasing = this.saved_antialiasing;
     RendererDelegator.pixellation = this.saved_pixellation;
+    this.state.restore();
   }
 
   /**

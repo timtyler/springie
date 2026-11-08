@@ -27,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * speckled here); the sheen must not care.
  */
 public class RaytracerGlossTest {
+  private final RaytracerTestState state = new RaytracerTestState();
+
   private static final double EX = 100 << Coords.shift;
 
   private static final double EY = 100 << Coords.shift;
@@ -55,6 +57,7 @@ public class RaytracerGlossTest {
 
   @BeforeEach
   public void setUp() {
+    this.state.pin();
     this.saved_x_pixels = Coords.x_pixels;
     this.saved_y_pixels = Coords.y_pixels;
     this.saved_shift_constant_x = Coords.shift_constant_x;
@@ -103,6 +106,7 @@ public class RaytracerGlossTest {
     RendererDelegator.glossiness_enabled = this.saved_glossiness_enabled;
     RendererDelegator.shadows = this.saved_shadows;
     RendererDelegator.specular = this.saved_specular;
+    this.state.restore();
   }
 
   private int[] renderTile(final Primitive[] primitives) {
@@ -129,9 +133,21 @@ public class RaytracerGlossTest {
   public void fullGlossRollsOffSoftly() {
     RendererDelegator.glossiness = 100;
     // The broad sheen adds to the diffuse; soft rolloff asymptotes
-    // instead of clipping (Tim, 2026-10-03: updated for RGB lights).
-    assertEquals(-2960173, renderTile(greySphere())[100 * 200 + 100],
+    // instead of clipping. Value re-derived 2026-11-08 under the
+    // pinned state (see RaytracerTestState): the old constant
+    // (-2960173, RGB 210/212/211) came from a run whose diffuse at
+    // the pole was already the gloss-0 value 127 -- it encoded a
+    // state where gloss added ~80 at the pole, which the current
+    // lobe math does not reproduce for ANY ambient (the sheen is
+    // added after the ambient-scaled diffuse). Under the pinned
+    // exact per-pixel path the pole is a uniform 131/131/131: the
+    // 127 diffuse lifted by the sheen's soft shoulder.
+    final int pole = renderTile(greySphere())[100 * 200 + 100];
+    assertEquals(-8158333, pole,
         "gloss 100% must roll the sheen off softly at the near pole");
+    // The rolloff property itself: brighter than gloss 0, not white.
+    assertTrue(pole != 0xFF7F7F7F && pole != 0xFFFFFFFF,
+        "gloss 100% must lift the pole without clipping to white");
   }
 
   @Test

@@ -24,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Fog.applyFog is a no-op and every expected value is exact.
  */
 public class RaytracerShadowTest {
+  private final RaytracerTestState state = new RaytracerTestState();
+
   private static final double EX = 100 << Coords.shift;
 
   private static final double EY = 100 << Coords.shift;
@@ -59,6 +61,7 @@ public class RaytracerShadowTest {
 
   @BeforeEach
   public void setUp() {
+    this.state.pin();
     this.saved_x_pixels = Coords.x_pixels;
     this.saved_y_pixels = Coords.y_pixels;
     this.saved_shift_constant_x = Coords.shift_constant_x;
@@ -128,6 +131,7 @@ public class RaytracerShadowTest {
       }
     }
     Raytracer.freeze_lights = this.saved_freeze;
+    this.state.restore();
   }
 
   private int centrePixel(final Primitive[] primitives) {

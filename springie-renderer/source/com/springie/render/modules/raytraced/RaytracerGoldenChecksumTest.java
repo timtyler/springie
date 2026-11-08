@@ -22,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * EXPECTED_* constants below.
  */
 public class RaytracerGoldenChecksumTest {
+  private final RaytracerTestState state = new RaytracerTestState();
+
   private static final int SIZE = 200;
 
   private int saved_x_pixels;
@@ -63,18 +65,27 @@ public class RaytracerGoldenChecksumTest {
   private int saved_pixellation;
 
   // Golden FNV-1a checksums, printed by a first run and baked in.
-  private static final long EXPECTED_AA1_PX1 = -8536392624660286391L;
+  // Re-recorded 2026-11-08 under the pinned state (see
+  // RaytracerTestState): the previous values were recorded against
+  // unpinned renderer statics and drifted with test order -- three
+  // different values across three runs of identical code. Under the
+  // pin (four historic lights, ambient 25%, coarse-to-fine off so
+  // every pixel is traced exactly) the standalone and batch values
+  // agree, and the re-recorded values were verified stable across
+  // repeated runs before being baked in.
+  private static final long EXPECTED_AA1_PX1 = -5633081912249913907L;
 
-  private static final long EXPECTED_AA2_PX1 = 4523378636294871941L;
+  private static final long EXPECTED_AA2_PX1 = -8655434999319120786L;
 
-  private static final long EXPECTED_AA4_PX1 = -5349115492373371076L;
+  private static final long EXPECTED_AA4_PX1 = 9137029870225422727L;
 
-  private static final long EXPECTED_AA1_PX2 = -371514290003798747L;
+  private static final long EXPECTED_AA1_PX2 = -789681554536496279L;
 
-  private static final long EXPECTED_AA2_PX2 = 1314703395716931389L;
+  private static final long EXPECTED_AA2_PX2 = -475775486304657907L;
 
   @BeforeEach
   public void setUp() {
+    this.state.pin();
     this.saved_x_pixels = Coords.x_pixels;
     this.saved_y_pixels = Coords.y_pixels;
     this.saved_x_pixelso2 = Coords.x_pixelso2;
@@ -141,6 +152,7 @@ public class RaytracerGoldenChecksumTest {
     RendererDelegator.fresnel = this.saved_fresnel;
     RendererDelegator.antialiasing = this.saved_antialiasing;
     RendererDelegator.pixellation = this.saved_pixellation;
+    this.state.restore();
   }
 
   private BVH mixedScene() {

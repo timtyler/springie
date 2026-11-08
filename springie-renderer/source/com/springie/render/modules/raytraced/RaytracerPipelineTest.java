@@ -20,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * it should.
  */
 public class RaytracerPipelineTest {
+  private final RaytracerTestState state = new RaytracerTestState();
+
   private int saved_x_pixels;
 
   private int saved_y_pixels;
@@ -36,8 +38,13 @@ public class RaytracerPipelineTest {
 
   private int saved_glossiness;
 
+  private boolean saved_specular_enabled;
+
+  private boolean saved_fresnel_enabled;
+
   @BeforeEach
   public void setUp() {
+    this.state.pin();
     this.saved_x_pixels = Coords.x_pixels;
     this.saved_y_pixels = Coords.y_pixels;
     this.saved_shift_constant_x = Coords.shift_constant_x;
@@ -57,9 +64,16 @@ public class RaytracerPipelineTest {
         DeepObjectColourCalculator.depth_is_relative;
 
     // These tests pin the diffuse pipeline; reflections are covered by
-    // RaytracerReflectionTest.
+    // RaytracerReflectionTest. Specular must be pinned off, not just
+    // left at its default (enabled at 100): at full strength the
+    // highlight saturates both fog-test spheres to white and swamps
+    // the fog difference the test measures. (Found 2026-11-08.)
     this.saved_glossiness = RendererDelegator.glossiness;
+    this.saved_specular_enabled = RendererDelegator.specular_enabled;
+    this.saved_fresnel_enabled = RendererDelegator.fresnel_enabled;
     RendererDelegator.glossiness = 0;
+    RendererDelegator.specular_enabled = false;
+    RendererDelegator.fresnel_enabled = false;
   }
 
   @AfterEach
@@ -74,6 +88,9 @@ public class RaytracerPipelineTest {
     ContextManager.setNodeManager(this.saved_manager);
     DeepObjectColourCalculator.depth_is_relative = this.saved_depth_is_relative;
     RendererDelegator.glossiness = this.saved_glossiness;
+    RendererDelegator.specular_enabled = this.saved_specular_enabled;
+    RendererDelegator.fresnel_enabled = this.saved_fresnel_enabled;
+    this.state.restore();
   }
 
   /**

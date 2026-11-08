@@ -27,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
  * is centred on a flood-fill seed (75, 50) so the seeds find it.
  */
 public class RaytracerSelectionRingTest {
+  private final RaytracerTestState state = new RaytracerTestState();
+
   // The flood-fill seed at pixel (75, 50) for the 200x200 tile casts a
   // ray that crosses z=0 at world (20800, 16000): the node is centred
   // there so the seed hits it. (Perspective projection, not orthographic.)
@@ -72,6 +74,7 @@ public class RaytracerSelectionRingTest {
 
   @BeforeEach
   public void setUp() {
+    this.state.pin();
     this.saved_x_pixels = Coords.x_pixels;
     this.saved_y_pixels = Coords.y_pixels;
     this.saved_shift_constant_x = Coords.shift_constant_x;
@@ -131,6 +134,7 @@ public class RaytracerSelectionRingTest {
     RendererDelegator.fresnel_enabled = this.saved_fresnel_enabled;
     RendererDelegator.antialiasing = this.saved_antialiasing;
     RendererDelegator.scenic_background = this.saved_scenic_background;
+    this.state.restore();
   }
 
   private int[] renderWithRing() {

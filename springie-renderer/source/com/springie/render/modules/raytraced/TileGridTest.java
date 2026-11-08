@@ -95,46 +95,17 @@ public class TileGridTest {
   }
 
   /**
-   * With "show tiles" each tile is shrunk by the same 4px margin the
-   * default renderer leaves, so the background shows through as black
-   * grid lines. Origins stay on the divisor grid; tiles never overlap.
+   * "Show tiles" no longer shrinks the tiles: since 14a2513
+   * (2026-10-04, Tim) the tiles cover every pixel with no gaps, and
+   * the grid lines are a 1px black overlay drawn on the finished
+   * frame by ModularRendererRaytraced. The grid itself must tile
+   * the canvas exactly the same with the flag on or off. (The old
+   * form of this test asserted a 4px margin with uncovered gutters;
+   * that behaviour was removed in 14a2513. Re-scoped 2026-11-08.)
    */
   @Test
-  public void showTilesShrinksTilesByMargin() {
+  public void showTilesStillCoversEveryPixel() {
     RendererTileManager.show_tiles = true;
-    final int divisor = 340;
-    RendererTileManager.divisor = divisor;
-    final int width = 800;
-    final int height = 600;
-    final Tile[] tiles = ModularRendererRaytraced
-        .buildTileGrid(width, height);
-
-    final boolean[] covered = new boolean[width * height];
-    for (final Tile tile : tiles) {
-      assertTrue(tile.x0 % divisor == 0);
-      assertTrue(tile.y0 % divisor == 0);
-      assertTrue(tile.width > 0 && tile.width <= divisor - 4);
-      assertTrue(tile.height > 0 && tile.height <= divisor - 4);
-      assertEquals(Math.min(divisor - 4, width - tile.x0), tile.width);
-      assertEquals(Math.min(divisor - 4, height - tile.y0), tile.height);
-      for (int y = 0; y < tile.height; y++) {
-        for (int x = 0; x < tile.width; x++) {
-          final int index = (tile.y0 + y) * width + tile.x0 + x;
-          assertTrue(!covered[index], "pixel covered twice");
-          covered[index] = true;
-        }
-      }
-    }
-    // The 4px gutters are deliberately uncovered: they show the
-    // background as black grid lines.
-    int gutter_pixels = 0;
-    for (int y = 0; y < height; y++) {
-      for (int x = 0; x < width; x++) {
-        if (!covered[y * width + x]) {
-          gutter_pixels++;
-        }
-      }
-    }
-    assertTrue(gutter_pixels > 0, "expected uncovered gutter pixels");
+    checkGrid(800, 600, 340);
   }
 }
