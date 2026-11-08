@@ -303,6 +303,14 @@ public class World extends BaseElementManager<Node> {
     this.link_manager = new LinkManager();
     this.face_manager = new FaceManager();
     this.creature_manager = new CompositeManager();
+    // A fresh model starts its dynamics at tick zero. The tick drives
+    // the muscle oscillator phase, so leaving the previous model's
+    // count in place made a loaded demo's gait depend on how long the
+    // previous model happened to run -- the headless/UI parity gap
+    // (Tim, 2026-11-08: the boot model left tick=2 in one run, tick=3
+    // in the other, and the wheelbarrow's muscles ran one tick out of
+    // phase for the whole run).
+    this.tick = 0;
     resetAll();
   }
 
