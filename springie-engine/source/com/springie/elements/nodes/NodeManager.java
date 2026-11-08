@@ -109,7 +109,7 @@ public class NodeManager extends World {
 
   void addCreatureFromPresetObject(final ArgumentList preset_type) {
     String d = null;
-    d = World.preset_provider.getCreatureDescription(preset_type);
+    d = World.presetProvider().getCreatureDescription(preset_type);
     World.modelLoader().loadFromString(ContextManager.getNodeManager(), d);
   }
 
@@ -122,7 +122,7 @@ public class NodeManager extends World {
     }
 
     try {
-      d = World.preset_provider.getCreatureDescription(location);
+      d = World.presetProvider().getCreatureDescription(location);
     } catch (IOException e) {
       reportProblem(location);
       logger.error("Unexpected exception", e);

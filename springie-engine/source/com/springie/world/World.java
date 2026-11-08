@@ -170,7 +170,32 @@ public class World extends BaseElementManager<Node> {
     String getCreatureDescription(String location) throws Exception;
   }
 
+  /**
+   * The installed preset provider. Implemented by the presets package
+   * (PresetObjectsProvider), discovered via ServiceLoader on first use,
+   * like modelLoader(): the engine cannot depend on presets, and when
+   * only SetUpCode's GUI boot assigned this, the preset-menu load path
+   * (NodeManager.addCreatureFromLocation) silently loaded nothing in
+   * tests and headless runs (Tim, 2026-11-07). SetUpCode may still
+   * overwrite it during GUI boot.
+   */
   public static PresetProvider preset_provider;
+
+  /** The discovered preset provider, installing it into preset_provider. */
+  public static PresetProvider presetProvider() {
+    if (preset_provider == null) {
+      for (final PresetProvider provider
+          : ServiceLoader.load(PresetProvider.class)) {
+        preset_provider = provider;
+        break;
+      }
+    }
+    if (preset_provider == null) {
+      throw new IllegalStateException(
+          "no World.PresetProvider on the classpath (springie-presets missing?)");
+    }
+    return preset_provider;
+  }
 
   /** Loads models; set by the io package. */
   public interface ModelLoader {
