@@ -67,8 +67,12 @@ public class LightSource {
 
   /**
    * Resets to the six default lights (Tim, 2026-10-08): cyan, yellow,
-   * green, red, blue, magenta at 60-degree intervals around the edge;
-   * ambient to 0%.
+   * green, red, blue, magenta at 60-degree intervals around the edge.
+   * Ambient becomes whichever stored value matches the colored-lighting
+   * mode (Tim, 2026-11-07): resetting to a bare 0 while colored lighting
+   * is off left a freshly loaded model with no lighting at all, because
+   * off means the positioned lights are ignored and the ambient white
+   * is the only light there is.
    */
   public static synchronized void resetToDefaults() {
     lights.clear();
@@ -82,8 +86,11 @@ public class LightSource {
     lights.add(new Light(0.0, 50.0, 100, 0xFF0000));     // Red
     lights.add(new Light(25.0, 93.3, 100, 0x0000FF));    // Blue
     lights.add(new Light(75.0, 93.3, 100, 0xFF00FF));    // Magenta
-    // Ambient defaults to 0 (Tim, 2026-10-08).
-    com.springie.render.RendererDelegator.ambient_light_pct = 0;
+    // Ambient (Tim, 2026-10-08/2026-11-07): with colored lighting on it
+    // defaults to 0 -- the six lights do the work. With it off, the
+    // positioned lights are ignored, so use the stored white ambient.
+    com.springie.render.RendererDelegator.ambient_light_pct = colored_lighting
+        ? 0 : com.springie.render.RendererDelegator.ambient_white_pct;
     // Notify the UI to rebuild the light tabs (Tim, 2026-10-05).
     final Runnable hook = onLightsReset;
     if (hook != null) {
