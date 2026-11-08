@@ -3,8 +3,6 @@
 package com.springie.render.modules.raytraced;
 import com.springie.world.World;
 
-import com.springie.FrEnd;
-import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkTypeFactory;
@@ -12,9 +10,9 @@ import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeTypeFactory;
 import com.springie.geometry.Point3D;
-import com.springie.gui.gestures.PerformActions;
 import com.springie.geometry.Coords;
 import com.springie.render.RectangleInt;
+import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.RendererTileManager;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced.Tile;
 import java.awt.GraphicsEnvironment;
@@ -295,39 +293,30 @@ public class TileEmptyTest {
   }
 
   @Test
-  public void dragBoxDamageMarksItsTiles() {
-    // An empty scene with an active drag-box selection: the box draws
-    // directly on the screen after the blit, so its rectangle must join
-    // the dirty region -- otherwise the old rectangle's pixels are never
-    // repainted and the red box leaves a trail.
-    final NodeManager old_manager = ContextManager.getNodeManager();
-    final PerformActions old_actions = FrEnd.perform_actions;
+  public void dragBoxLeavesTilesUntouched() {
+    // The drag box is a screen-space overlay: the renderer draws it
+    // after the blit and erases it with a forced full blit (Tim,
+    // 2026-10-04), so it never touches the tiles. An active box must
+    // therefore not join any tile's dirty rect -- if it did, the tiles
+    // under it would re-trace for a rectangle that is not in the frame.
+    // (The end-to-end erase behaviour is pinned by
+    // RaytracedDragBoxTrailTest.)
+    final Point old_start = RendererDelegator.drag_box_start;
+    final Point old_end = RendererDelegator.drag_box_end;
     try {
-      ContextManager.setNodeManager(this.manager);
-      final PerformActions actions = new PerformActions();
-      FrEnd.perform_actions = actions;
-      // The damage is tracked from the gesture's live points, in internal
-      // units (shift 8) -- not the renderer draw cache.
-      actions.drag_box_manager.drag_box_start = new Point(50 << 8, 50 << 8);
-      actions.drag_box_manager.drag_box_end = new Point(150 << 8, 150 << 8);
+      // The renderers read the box from the RendererDelegator mirror,
+      // in internal units (shift 8).
+      RendererDelegator.drag_box_start = new Point(50 << 8, 50 << 8);
+      RendererDelegator.drag_box_end = new Point(150 << 8, 150 << 8);
       final RectangleInt[] rects =
           this.renderer.computeDirtyRects(this.manager);
       assertNotNull(rects);
-      final Tile[] grid = ModularRendererRaytraced.buildTileGrid(SIZE, SIZE);
-      final int hit = tileContaining(grid, 100, 100);
-      assertTrue(hit >= 0);
-      assertFalse(rects[hit].isEmpty(),
-          "the drag box's tile must be dirty");
-      final int far = tileContaining(grid, 350, 350);
-      assertTrue(far >= 0);
-      assertTrue(rects[far].isEmpty(), "a far tile must stay empty");
-      // Flush the static last-frame damage so the other tests in this
-      // class see a clean slate.
-      actions.drag_box_manager.drag_box_start = null;
-      this.renderer.computeDirtyRects(this.manager);
+      for (int i = 0; i < rects.length; i++) {
+        assertTrue(rects[i].isEmpty(), "tile " + i + " should be empty");
+      }
     } finally {
-      ContextManager.setNodeManager(old_manager);
-      FrEnd.perform_actions = old_actions;
+      RendererDelegator.drag_box_start = old_start;
+      RendererDelegator.drag_box_end = old_end;
     }
   }
 }

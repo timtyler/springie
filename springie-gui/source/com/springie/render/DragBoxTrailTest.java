@@ -41,6 +41,14 @@ public class DragBoxTrailTest {
           new Point(x0 << Coords.shift, y0 << Coords.shift);
       FrEnd.perform_actions.drag_box_manager.drag_box_end =
           new Point(x1 << Coords.shift, y1 << Coords.shift);
+      // The renderers draw from the RendererDelegator mirror, which
+      // DragBoxManager.drag() keeps in sync during a real gesture;
+      // setting the manager's fields directly (as here) must mirror
+      // them too, or nothing is drawn.
+      RendererDelegator.drag_box_start =
+          FrEnd.perform_actions.drag_box_manager.drag_box_start;
+      RendererDelegator.drag_box_end =
+          FrEnd.perform_actions.drag_box_manager.drag_box_end;
       RendererDelegator.repaintAll();
     });
     // The polygon renderer paints synchronously on the EDT: schedule the
@@ -96,6 +104,8 @@ public class DragBoxTrailTest {
     SwingUtilities.invokeAndWait(() -> {
       FrEnd.perform_actions.drag_box_manager.drag_box_start = null;
       FrEnd.perform_actions.drag_box_manager.drag_box_end = null;
+      RendererDelegator.drag_box_start = null;
+      RendererDelegator.drag_box_end = null;
       World.paused = false;
     });
   }

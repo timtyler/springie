@@ -21,10 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * A moved drag-box selection must not leave a trail in ray-traced mode
- * either. The drag rectangle is draw-only (painted after the blit); the
- * ray-traced frame's dirty rectangles must include the box's old and
- * new rectangles, or no re-traced tile repaints the old rectangle's
- * pixels and the red box persists.
+ * either. The drag rectangle is draw-only (painted after the blit, from
+ * the RendererDelegator mirror of the gesture's points); while the box
+ * is active -- and for one frame after it ends -- the renderer forces a
+ * full blit, or the partial blit would leave the old rectangle's pixels
+ * on screen and the red box would persist.
  *
  * <p>The capture uses a Robot screen grab, not printAll: MainCanvas.paint
  * starts with repaintAll, which clears the screen first and would erase
@@ -50,6 +51,14 @@ class RaytracedDragBoxTrailTest {
           new Point(x0 << Coords.shift, y0 << Coords.shift);
       FrEnd.perform_actions.drag_box_manager.drag_box_end =
           new Point(x1 << Coords.shift, y1 << Coords.shift);
+      // The renderers draw from the RendererDelegator mirror, which
+      // DragBoxManager.drag() keeps in sync during a real gesture;
+      // setting the manager's fields directly (as here) must mirror
+      // them too, or nothing is drawn.
+      RendererDelegator.drag_box_start =
+          FrEnd.perform_actions.drag_box_manager.drag_box_start;
+      RendererDelegator.drag_box_end =
+          FrEnd.perform_actions.drag_box_manager.drag_box_end;
     });
     // Two paint cycles: the first starts the frame covering the damage
     // and draws the box, the second blits the re-traced damage tiles
@@ -150,10 +159,12 @@ class RaytracedDragBoxTrailTest {
           "the new drag-box rectangle must be drawn");
 
       // Release the drag the way DragBoxManager.terminate does: the
-      // start point is gone but the cached end rectangle must still be
-      // erased on the next frames.
+      // start point is gone (and with it the renderers' mirror), but
+      // the box on screen must still be erased on the next frames.
       SwingUtilities.invokeAndWait(() -> {
         FrEnd.perform_actions.drag_box_manager.drag_box_start = null;
+        RendererDelegator.drag_box_start = null;
+        RendererDelegator.drag_box_end = null;
         RendererDelegator.repaint_some_objects = true;
       });
       repaintAndSettle();
@@ -165,6 +176,8 @@ class RaytracedDragBoxTrailTest {
       SwingUtilities.invokeAndWait(() -> {
         FrEnd.perform_actions.drag_box_manager.drag_box_start = null;
         FrEnd.perform_actions.drag_box_manager.drag_box_end = null;
+        RendererDelegator.drag_box_start = null;
+        RendererDelegator.drag_box_end = null;
         World.paused = false;
         RendererDelegator.renderer = previous[0];
       });
