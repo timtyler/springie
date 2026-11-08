@@ -244,20 +244,22 @@ public class PanelPreferencesRendererModern {
   }
 
   /**
-   * Shows or hides the "Show labels on:" row on the Renderer tab's
-   * Main sub-tab. Labels are a modern-renderer feature, so the row is removed while
+   * Shows or hides the "Show labels on:" row on the Labels tab.
+   * Labels are a modern-renderer feature, so the row is removed while
    * another renderer is active. Added and removed (never just hidden)
    * because the tab's GridLayout gives invisible components space.
    * Idempotent: the row is removed first, so a repeated call cannot
-   * duplicate it.
+   * duplicate it. (The row's home is the Labels tab since Tim,
+   * 2026-10-17; before that it lived on the Main sub-tab, and this
+   * method still moved it there -- a renderer switch pulled it off
+   * the Labels tab, and the next switch lost it entirely.)
    */
   void setLabelsRowVisible(final boolean visible) {
-    final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;
+    final Panel tab = FrEnd.panel_preferences_shared_show.panel_labels;
     tab.remove(this.panel_labels_row);
     if (visible) {
-      // Keep the row in its usual slot, right after the
-      // "Render deepest objects first" row.
-      tab.add(this.panel_labels_row, Math.min(5, tab.getComponentCount()));
+      // The row leads the Labels tab, ahead of the label colours.
+      tab.add(this.panel_labels_row, 0);
     }
     tab.validate();
   }

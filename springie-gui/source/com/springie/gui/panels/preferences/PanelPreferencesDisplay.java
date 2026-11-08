@@ -285,6 +285,7 @@ public class PanelPreferencesDisplay {
     // option is hidden there (and the sort itself is skipped).
     FrEnd.panel_preferences_renderer_modern
         .setDeepestFirstRowVisible(!no_rasterizer_concepts);
+    World.renderer_needs_depth_sort = !no_rasterizer_concepts;
     // The rasterizer-only rows ("Node polyhedron", "Cable/Strut
     // divisions", "Link sides", "Face lines") configure concepts
     // the ray-traced renderer ignores, so those rows are hidden there.

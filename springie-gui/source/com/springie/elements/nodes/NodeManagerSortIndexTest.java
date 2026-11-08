@@ -25,12 +25,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * "Render deepest objects first" is on, and must be skipped entirely
  * while the ray-traced renderer is active: the ray tracer resolves
  * occlusion per ray through its BVH and never reads the sorted order,
- * so the sort (an O(n^2) bubble sort) is pure cost there -- and it runs
- * inside nodeAndLinkRenderDummy() on every selection gesture.
+ * so the sort is pure cost there -- and it runs inside
+ * nodeAndLinkRenderDummy() on every selection gesture. The skip is
+ * carried by World.renderer_needs_depth_sort, which
+ * PanelPreferencesDisplay.applyRendererType sets from the chosen
+ * renderer; these tests swap the renderer directly, so they set the
+ * flag the same way.
  */
 class NodeManagerSortIndexTest {
 
   private boolean saved_redraw_deepest_first;
+
+  private boolean saved_renderer_needs_depth_sort;
 
   private ModularRendererBase saved_renderer;
 
@@ -48,6 +54,8 @@ class NodeManagerSortIndexTest {
   void saveAndBuildModel() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       this.saved_redraw_deepest_first = World.redraw_deepest_first;
+      this.saved_renderer_needs_depth_sort =
+          World.renderer_needs_depth_sort;
       this.saved_renderer = RendererDelegator.renderer;
       buildThreeNodeModel();
     });
@@ -57,6 +65,8 @@ class NodeManagerSortIndexTest {
   void restore() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       World.redraw_deepest_first = this.saved_redraw_deepest_first;
+      World.renderer_needs_depth_sort =
+          this.saved_renderer_needs_depth_sort;
       RendererDelegator.renderer = this.saved_renderer;
     });
   }
@@ -96,6 +106,7 @@ class NodeManagerSortIndexTest {
       throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       RendererDelegator.renderer = new ModularRendererNew();
+      World.renderer_needs_depth_sort = true;
       World.redraw_deepest_first = true;
       ContextManager.getNodeManager().sortIndex();
     });
@@ -109,6 +120,7 @@ class NodeManagerSortIndexTest {
   void sortIsSkippedWhileTheRaytracedRendererIsActive() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       RendererDelegator.renderer = new ModularRendererRaytraced();
+      World.renderer_needs_depth_sort = false;
       World.redraw_deepest_first = true;
       ContextManager.getNodeManager().sortIndex();
     });
@@ -121,6 +133,7 @@ class NodeManagerSortIndexTest {
   void sortIsSkippedWhenDeepestFirstIsOff() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       RendererDelegator.renderer = new ModularRendererNew();
+      World.renderer_needs_depth_sort = true;
       World.redraw_deepest_first = false;
       ContextManager.getNodeManager().sortIndex();
     });
@@ -131,6 +144,7 @@ class NodeManagerSortIndexTest {
   void sortedIndexOrdersNodesByAscendingDepth() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       RendererDelegator.renderer = new ModularRendererNew();
+      World.renderer_needs_depth_sort = true;
       World.redraw_deepest_first = true;
       ContextManager.getNodeManager().sortIndex();
     });

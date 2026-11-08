@@ -125,11 +125,11 @@ public class PanelPreferencesRendererModernTest {
 
   /**
    * The preferences tab bar holds four top-level tabs -- Renderer
-   * (the old Main content), Colours, Tiles and Fog: the Tiles and Fog
-   * sub-tabs moved up next to Colours, and the shared-show panel just
-   * hosts the Main content now. "Render deepest objects first" and
-   * "Show labels on:" keep their slots at the top of the Renderer tab,
-   * after Pixellation.
+   * (the old Main content), Colours, Fog and Labels: Tiles moved into
+   * the Renderer Main tab (Tim, 2026-10-03), Fog moved up next to
+   * Colours, and the Labels tab was added next to Fog (Tim,
+   * 2026-10-17). "Render deepest objects first" keeps its slot at the
+   * top of the Renderer tab, after Pixellation.
    */
   @Test
   void rendererTabHasMainTilesAndFogSubTabs() {
@@ -138,13 +138,14 @@ public class PanelPreferencesRendererModernTest {
         "the old Misc tab panel must be empty after its rows move");
 
     // No Options tab anymore, Filtering moved under Colours, and Tiles
-    // moved into the Renderer Main tab (Tim, 2026-10-03): the top-level
-    // bar is Renderer | Colours | Fog.
+    // moved into the Renderer Main tab (Tim, 2026-10-03); the Labels
+    // tab was added next to Fog (Tim, 2026-10-17): the top-level bar
+    // is Renderer | Colours | Fog | Labels.
     final TabbedPanel top_tabs = findTabbedPanel(
         FrEnd.panel_preferences_renderer_modern.panel);
     assertNotNull(top_tabs, "expected the top-level tab bar");
-    assertEquals(3, top_tabs.getComponentCount(),
-        "the top-level tab bar must be Renderer, Colours and Fog");
+    assertEquals(4, top_tabs.getComponentCount(),
+        "the top-level tab bar must be Renderer, Colours, Fog and Labels");
     assertTrue(
         top_tabs.getComponent(0) == FrEnd.panel_preferences_shared_show.panel,
         "the Renderer card must hold the shared-show panel");
@@ -158,15 +159,21 @@ public class PanelPreferencesRendererModernTest {
         top_tabs.getComponent(2)
             == FrEnd.panel_preferences_shared_show.panel_fog,
         "the Fog card must hold the fog panel");
+    // The Labels tab sits next to Fog (Tim, 2026-10-17).
+    assertTrue(
+        top_tabs.getComponent(3)
+            == FrEnd.panel_preferences_shared_show.panel_labels,
+        "the Labels card must hold the labels panel");
 
     // Filtering now lives as the Filters card under Colours, holding
     // the filters panel (Filled:/Wireframe: rows plus the Colour-A/B
-    // nested tabs).
+    // nested tabs). The old Label card left Colours when its pickers
+    // moved to the top-level Labels tab (Tim, 2026-10-17).
     final TabbedPanel colours_tabs = FrEnd.panel_preferences_renderer_modern_colours.tab_colours_main;
-    assertEquals(3, colours_tabs.getComponentCount(),
-        "the Colours bar must be General, Label and Filters");
+    assertEquals(2, colours_tabs.getComponentCount(),
+        "the Colours bar must be General and Filters");
     assertTrue(
-        colours_tabs.getComponent(2) == FrEnd.panel_preferences_renderer_modern_filters.panel,
+        colours_tabs.getComponent(1) == FrEnd.panel_preferences_renderer_modern_filters.panel,
         "the Filters card must hold the filters panel");
 
     final Panel main_tab = FrEnd.panel_preferences_shared_show.panel_main;
@@ -182,22 +189,27 @@ public class PanelPreferencesRendererModernTest {
     assertNotNull(findCheckbox(fog_tab, "Fog depth is relative"),
         "the shared fog checkbox must move to the Fog sub-tab");
 
-    // Deepest-first keeps its slot after Pixellation, followed by the
-    // labels row. The absolute slot moves: a fresh boot puts them right
-    // after Pixellation (PanelPreferencesDisplay), while the renderer's
-    // visibility helpers re-insert them one slot lower -- the relative
-    // order is what the layout guarantees.
+    // Deepest-first keeps its slot after Pixellation. The absolute
+    // slot moves: a fresh boot puts it right after Pixellation
+    // (PanelPreferencesDisplay), while the renderer's visibility
+    // helpers re-insert it one slot lower -- the relative order is
+    // what the layout guarantees.
     final int pixellation = indexOfRowWithLabel(main_tab, "Pixellated:");
     assertTrue(pixellation >= 0,
         "expected a Pixellation row on the Renderer tab's Main sub-tab");
     final int deepest = indexOf(main_tab,
         FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first);
-    final int labels = indexOf(main_tab,
-        FrEnd.panel_preferences_renderer_modern.panel_labels_row);
     assertTrue(deepest > pixellation,
         "deepest-first must sit after Pixellation");
-    assertEquals(deepest + 1, labels,
-        "the labels row must sit right after deepest-first");
+    // The "Show labels on:" row lives on the Labels tab, not Main
+    // (moved there by Tim, 2026-10-17).
+    final Panel labels_tab = FrEnd.panel_preferences_shared_show.panel_labels;
+    assertTrue(indexOf(labels_tab,
+        FrEnd.panel_preferences_renderer_modern.panel_labels_row) >= 0,
+        "the labels row must sit on the Labels tab");
+    assertEquals(-1, indexOf(main_tab,
+        FrEnd.panel_preferences_renderer_modern.panel_labels_row),
+        "the labels row must not sit on the Main sub-tab");
   }
 
   /**
@@ -287,12 +299,12 @@ public class PanelPreferencesRendererModernTest {
         FrEnd.panel_preferences_renderer_modern;
     final int main_rows = main_tab.getComponentCount();
 
-    // Switch to ray-traced: the four rows appear at the bottom of Main.
-    // (Tim, 2026-10-03: was five; Fill light moved to the Universe tab.)
+    // Switch to ray-traced: the five effect rows appear at the bottom
+    // of Main (takeEffectRows detaches the five effect rows).
     javax.swing.SwingUtilities.invokeAndWait(() ->
         modern.setRaytracedRowsVisible(true));
-    assertEquals(main_rows + 4, main_tab.getComponentCount(),
-        "ray-traced must add its four rows to the Main sub-tab");
+    assertEquals(main_rows + 5, main_tab.getComponentCount(),
+        "ray-traced must add its five rows to the Main sub-tab");
     assertNotNull(findCheckbox(main_tab, "Glossiness"),
         "the Glossiness row must be on the Main sub-tab");
     // Fill light moved to Universe tab (Tim, 2026-10-03); not here.
@@ -319,7 +331,7 @@ public class PanelPreferencesRendererModernTest {
       modern.setRaytracedRowsVisible(true);
       modern.setRaytracedRowsVisible(true);
     });
-    assertEquals(main_rows + 4, main_tab.getComponentCount(),
+    assertEquals(main_rows + 5, main_tab.getComponentCount(),
         "repeated switches must not duplicate the rows");
     javax.swing.SwingUtilities.invokeAndWait(() ->
         modern.setRaytracedRowsVisible(false));
