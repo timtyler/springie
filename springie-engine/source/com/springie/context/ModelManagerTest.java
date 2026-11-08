@@ -28,6 +28,10 @@ class ModelManagerTest {
     saved_temperature = World.global_temperature;
 
     ModelManager.resetForTests();
+    // No loader is installed here on purpose: World.modelLoader() must
+    // discover io's loader (its test loader, on this module's additional
+    // test classpath) via ServiceLoader -- the engine cannot depend on
+    // io, and SetUpCode's GUI-only assignment left this field null.
     ContextManager.setNodeManager(new NodeManager());
   }
 

@@ -23,6 +23,7 @@ import com.springie.geometry.Coords;
 import com.springie.scene.RendererArrays;
 import com.springie.utilities.math.SquareRoot;
 import com.springie.utilities.random.Hortensius32Fast;
+import java.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -178,7 +179,29 @@ public class World extends BaseElementManager<Node> {
     void loadFromString(NodeManager manager, String data);
   }
 
+  /**
+   * The installed model loader. Implemented by the io package
+   * (DataInputModelLoader), discovered via ServiceLoader on first use:
+   * the engine cannot depend on io, and the previous arrange-by-convention
+   * (only SetUpCode's GUI boot assigned this) left it null for tests and
+   * headless runs. SetUpCode may still overwrite it during GUI boot.
+   */
   public static ModelLoader model_loader;
+
+  /** The discovered model loader, installing it into model_loader. */
+  public static ModelLoader modelLoader() {
+    if (model_loader == null) {
+      for (final ModelLoader loader : ServiceLoader.load(ModelLoader.class)) {
+        model_loader = loader;
+        break;
+      }
+    }
+    if (model_loader == null) {
+      throw new IllegalStateException(
+          "no World.ModelLoader on the classpath (springie-io missing?)");
+    }
+    return model_loader;
+  }
 
   /** Pandemic/infection simulation counters (moved from PerformSelection). */
   public static int INFECTION_START = 64;

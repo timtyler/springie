@@ -110,7 +110,7 @@ public class NodeManager extends World {
   void addCreatureFromPresetObject(final ArgumentList preset_type) {
     String d = null;
     d = World.preset_provider.getCreatureDescription(preset_type);
-    World.model_loader.loadFromString(ContextManager.getNodeManager(), d);
+    World.modelLoader().loadFromString(ContextManager.getNodeManager(), d);
   }
 
   public void addCreatureFromLocation(final String location) {
@@ -141,7 +141,7 @@ public class NodeManager extends World {
       return;
     }
 
-    World.model_loader.loadFromString(ContextManager.getNodeManager(), d);
+    World.modelLoader().loadFromString(ContextManager.getNodeManager(), d);
   }
 
   private void reportProblem(final String location) {

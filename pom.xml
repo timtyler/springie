@@ -68,6 +68,18 @@
         </excludes>
       </resource>
     </resources>
+    <!-- Test resources live alongside the test sources too: the parent
+         config above points main resources at source/, and Surefire's
+         test classpath must see the same tree (e.g. the test-only
+         META-INF/services registrations under source/META-INF). -->
+    <testResources>
+      <testResource>
+        <directory>source</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </testResource>
+    </testResources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -79,6 +91,7 @@
           <excludes>
             <exclude>**/*Test.java</exclude>
             <exclude>**/GuiTestSupport.java</exclude>
+            <exclude>**/TestModelLoader.java</exclude>
             <exclude>**/SqrtCandidates.java</exclude>
             <exclude>**/SquareRootAnalysis.java</exclude>
             <exclude>**/SquareRootBenchmark.java</exclude>
@@ -87,6 +100,7 @@
           <testIncludes>
             <testInclude>**/*Test.java</testInclude>
             <testInclude>**/GuiTestSupport.java</testInclude>
+            <testInclude>**/TestModelLoader.java</testInclude>
             <testInclude>**/SqrtCandidates.java</testInclude>
             <testInclude>**/SquareRootAnalysis.java</testInclude>
             <testInclude>**/SquareRootBenchmark.java</testInclude>

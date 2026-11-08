@@ -109,7 +109,7 @@ public final class ModelManager {
     current.universe = UniverseState.capture(current.manager);
 
     final NodeManager fresh = new NodeManager();
-    World.model_loader.load(fresh, path);
+    World.modelLoader().load(fresh, path);
     // No mid-air starts: rest the loaded model on the ground plane.
     Grounding.restOnGround(fresh);
     final UniverseState universe = UniverseState.capture(fresh);
@@ -132,7 +132,7 @@ public final class ModelManager {
     ensureInitialized();
 
     final ModelSlot current = slots.get(active_index);
-    World.model_loader.load(current.manager, path);
+    World.modelLoader().load(current.manager, path);
     // No mid-air starts: rest the loaded model on the ground plane.
     Grounding.restOnGround(current.manager);
     current.universe = UniverseState.capture(current.manager);
