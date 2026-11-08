@@ -36,9 +36,10 @@ public final class ElementRendererFace {
     final Point3D center = scratch_center;
     getCoordsOfCentre(face, center);
 
-    // RGB light shading (Tim, 2026-10-03): based on angle between
-    // polygon and viewer, and polygon and light source.
-    final int rgb_shaded_colour = applyRgbLights(face, colour, center);
+    // No shading here: PolygonObject2D.set shades each quad with the
+    // N-light model, exactly as for links (Tim, 2026-11-08). This class
+    // used to pre-shade with its own RGB model (applyRgbLights,
+    // 2026-10-03), so every face was shaded twice.
 
     final int opacity = face.clazz.colour >>> 24;
 
@@ -68,7 +69,7 @@ public final class ElementRendererFace {
       v2.subtractTuple3D(center);
 
       final int new_colour = DeepObjectColourCalculator.getColourOfDeepObject(
-          rgb_shaded_colour, center.z);
+          colour, center.z);
       for (int p = 0; p < n; p++) {
         final Point3D[] points = new Point3D[4];
         final int p1_x1 = center.x + (int) (v1.x * (p + off_in) / n);
@@ -106,111 +107,5 @@ public final class ElementRendererFace {
     }
 
     sum.divideBy(npoints);
-  }
-
-  /**
-   * RGB light shading for polygon faces (Tim, 2026-10-03): modulates
-   * the colour based on the angle between the polygon normal and the
-   * viewer, and between the normal and each RGB light source.
-   */
-  private static int applyRgbLights(final Face face, final int colour,
-      final Point3D center) {
-    final int npolygon = face.nodes.size();
-    if (npolygon < 3) {
-      return colour;
-    }
-    // Compute face normal from first three nodes.
-    final Node n0 = (Node) face.nodes.get(0);
-    final Node n1 = (Node) face.nodes.get(1);
-    final Node n2 = (Node) face.nodes.get(2);
-    final double e1x = n1.pos.x - n0.pos.x;
-    final double e1y = n1.pos.y - n0.pos.y;
-    final double e1z = n1.pos.z - n0.pos.z;
-    final double e2x = n2.pos.x - n0.pos.x;
-    final double e2y = n2.pos.y - n0.pos.y;
-    final double e2z = n2.pos.z - n0.pos.z;
-    double nx = e1y * e2z - e1z * e2y;
-    double ny = e1z * e2x - e1x * e2z;
-    double nz = e1x * e2y - e1y * e2x;
-    final double len = Math.sqrt(nx * nx + ny * ny + nz * nz);
-    if (len < 1e-12) {
-      return colour;
-    }
-    nx /= len;
-    ny /= len;
-    nz /= len;
-    // View direction (orthographic): viewer looks down +Z, so the
-    // direction to the viewer is (0, 0, -1).
-    final double view_dot = Math.abs(nz);
-    // Update light positions for current viewport.
-    LightSource.updateForViewport(com.springie.geometry.Coords.x_pixelso2,
-        com.springie.geometry.Coords.y_pixelso2);
-    // Combine: ambient + diffuse from N lights (Tim, 2026-10-04).
-    // Ambient light (Tim, 2026-10-03): from the slider. 50% = 0.25.
-    final double ambient = 1.0 * RendererDelegator.ambient_light_pct / 100.0;
-    // Per-output-channel diffuse: sum each light's factor scaled by
-    // its color (Tim, 2026-10-04).
-    double r_factor = ambient;
-    double g_factor = ambient;
-    double b_factor = ambient;
-    // Specular accumulators (Tim, 2026-10-04).
-    double spec_r = 0.0;
-    double spec_g = 0.0;
-    double spec_b = 0.0;
-    synchronized (LightSource.class) {
-      if (LightSource.colored_lighting)
-      for (final com.springie.render.modules.modern.Light light
-          : LightSource.lights) {
-        if (light.intensity_pct <= 0) {
-          continue;
-        }
-        final double lx = light.px - center.x;
-        final double ly = light.py - center.y;
-        final double lz = light.pz - center.z;
-        final double ld = Math.sqrt(lx * lx + ly * ly + lz * lz);
-        if (ld < 1e-9) {
-          continue;
-        }
-        final double light_dot = Math.abs((nx * lx + ny * ly + nz * lz) / ld);
-        final double diff = 0.75 * view_dot * light_dot
-            * light.intensity_pct / 50.0;
-        final int lr = (light.colour >> 16) & 0xFF;
-        final int lg = (light.colour >> 8) & 0xFF;
-        final int lb = light.colour & 0xFF;
-        r_factor += diff * lr / 255.0;
-        g_factor += diff * lg / 255.0;
-        b_factor += diff * lb / 255.0;
-        // Specular highlight (Tim, 2026-10-03): R = 2*dot(N,L)*N - L;
-        // spec = pow(max(0, dot(R,V)), 32). View vector V = (0, 0, -1).
-        // Tints by light color (Tim, 2026-10-04).
-        final double nlx = lx / ld;
-        final double nly = ly / ld;
-        final double nlz = lz / ld;
-        final double dot_nl = nx * nlx + ny * nly + nz * nlz;
-        final double rx = 2.0 * dot_nl * nx - nlx;
-        final double ry = 2.0 * dot_nl * ny - nly;
-        final double rz = 2.0 * dot_nl * nz - nlz;
-        // V = (0, 0, -1), so dot(R,V) = -rz.
-        final double spec_dot = Math.max(0.0, -rz);
-        if (spec_dot > 0.0) {
-          final double spec = Math.pow(spec_dot, 16.0)
-              * light.intensity_pct / 50.0;
-          spec_r += spec * lr / 255.0;
-          spec_g += spec * lg / 255.0;
-          spec_b += spec * lb / 255.0;
-        }
-      }
-    }
-    r_factor = Math.min(1.0, r_factor);
-    g_factor = Math.min(1.0, g_factor);
-    b_factor = Math.min(1.0, b_factor);
-    // (Specular is accumulated in the light loop above.)
-    final int r = (colour >> 16) & 0xFF;
-    final int g = (colour >> 8) & 0xFF;
-    final int b = colour & 0xFF;
-    final int or = Math.min(255, (int) (r * r_factor + 255.0 * spec_r));
-    final int og = Math.min(255, (int) (g * g_factor + 255.0 * spec_g));
-    final int ob = Math.min(255, (int) (b * b_factor + 255.0 * spec_b));
-    return (colour & 0xFF000000) | (or << 16) | (og << 8) | ob;
   }
 }

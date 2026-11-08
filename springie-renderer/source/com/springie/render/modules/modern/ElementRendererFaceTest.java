@@ -206,22 +206,39 @@ class ElementRendererFaceTest {
   void selectedFaceUsesTheSelectionColour() {
     final Face face = squareFace(0xFF000000);
     face.type.selected = true;
-    final PolygonComposite composite = ElementRendererFace.getPolygon(face);
+    // Frame the face at the view centre and place the lights the way
+    // the renderer does every frame, so the shading is the one a user
+    // sees: the face's world centre is the view centre when the shift
+    // constants equal the half-view in world units.
+    final int saved_scx = Coords.shift_constant_x;
+    final int saved_scy = Coords.shift_constant_y;
+    final PolygonComposite composite;
+    try {
+      Coords.shift_constant_x = 400 << Coords.shift;
+      Coords.shift_constant_y = 300 << Coords.shift;
+      LightSource.updateForViewport(400, 300);
+      composite = ElementRendererFace.getPolygon(face);
+    } finally {
+      Coords.shift_constant_x = saved_scx;
+      Coords.shift_constant_y = saved_scy;
+    }
     assertTrue(composite.array.length > 0);
-    // The quads carry the selection colour through the directional-light
-    // shading in PolygonObject2D: hue preserved, uniformly dimmed.
-    // ElementRendererNode.getColour scales by [128, 255], so the red
-    // channel lands in [(255*128)>>8, (255*255)>>8] = [127, 254].
-    final int first = composite.array[0].colour;
-    final int red = (first >> 16) & 0xFF;
-    assertTrue(red >= 127 && red <= 254, "red channel: " + red);
+    // The quads carry the selection colour (pure red) through the one
+    // shading every polygon gets, PolygonObject2D.set's N-light
+    // diffuse (Tim, 2026-11-08: faces are no longer pre-shaded by
+    // ElementRendererFace as well). That shading only scales the base
+    // channels, so green and blue stay exactly zero; the red factor
+    // varies a little per quad (each quad is shaded at its own
+    // centroid), and under the default rig at the view centre it
+    // lands at 233-247 of 255 -- a clearly visible selection red.
     for (final PolygonObject2D quad : composite.array) {
-      assertEquals(first, quad.colour);
-      // RGB lights may add specular highlights (Tim, 2026-10-03), so
-      // green/blue need not be zero, but red must dominate.
       final int qred = (quad.colour >> 16) & 0xFF;
       final int qgreen = (quad.colour >> 8) & 0xFF;
       final int qblue = quad.colour & 0xFF;
+      assertEquals(0, qgreen, "green must stay zero for selection red");
+      assertEquals(0, qblue, "blue must stay zero for selection red");
+      assertTrue(qred >= 200,
+          "red must stay bright under the default rig: " + qred);
       assertTrue(qred >= qgreen && qred >= qblue,
           "red must dominate for selection colour");
     }
