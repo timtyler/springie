@@ -1,16 +1,17 @@
 // Tests for multi-model slots: each model keeps its own universe.
+// The slot tests that load real model files live in springie-io
+// (ModelManagerLoadTest): loading needs io's parser and the presets'
+// model files, and the engine cannot depend on either (Tim, 2026-11-07).
 
 package com.springie.context;
 
 import com.springie.elements.nodes.NodeManager;
-import com.springie.world.UniverseState;
 import com.springie.world.World;
 import java.awt.GraphicsEnvironment;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -28,10 +29,6 @@ class ModelManagerTest {
     saved_temperature = World.global_temperature;
 
     ModelManager.resetForTests();
-    // No loader is installed here on purpose: World.modelLoader() must
-    // discover io's loader (its test loader, on this module's additional
-    // test classpath) via ServiceLoader -- the engine cannot depend on
-    // io, and SetUpCode's GUI-only assignment left this field null.
     ContextManager.setNodeManager(new NodeManager());
   }
 
@@ -70,91 +67,9 @@ class ModelManagerTest {
   }
 
   @Test
-  void loadNewModelAddsASlotAndSwitchesToIt() {
-    final ModelSlot first = ModelManager.getActiveSlot();
-
-    ModelManager.loadNewModel("resource://models/cube.spr");
-
-    assertEquals(2, ModelManager.getSlots().size());
-    assertEquals(1, ModelManager.getActiveIndex());
-    final ModelSlot second = ModelManager.getActiveSlot();
-    assertNotSame(first.manager, second.manager);
-    assertTrue(ContextManager.getNodeManager() == second.manager);
-    assertEquals("cube.spr", second.name);
-    assertEquals(12, second.manager.element.size());
-  }
-
-  @Test
-  void switchRestoresEachModelsUniverse() {
-    ModelManager.loadNewModel("resource://models/cube.spr");
-    final ModelSlot first = ModelManager.getSlots().get(0);
-    final ModelSlot second = ModelManager.getSlots().get(1);
-
-    // give each model a distinct universe
-    World.gravity_strength = 5;
-    World.global_temperature = 10;
-    first.universe = UniverseState.capture(first.manager);
-
-    ModelManager.switchTo(1);
-    World.gravity_strength = 25;
-    World.global_temperature = 30;
-    second.universe = UniverseState.capture(second.manager);
-
-    // switching restores the stored universe
-    ModelManager.switchTo(0);
-    assertEquals(5, World.gravity_strength);
-    assertEquals(10, World.global_temperature);
-    assertTrue(ContextManager.getNodeManager() == first.manager);
-
-    ModelManager.switchTo(1);
-    assertEquals(25, World.gravity_strength);
-    assertEquals(30, World.global_temperature);
-    assertTrue(ContextManager.getNodeManager() == second.manager);
-  }
-
-  @Test
-  void switchCapturesTheUniverseBeingLeft() {
-    ModelManager.loadNewModel("resource://models/cube.spr");
-
-    World.gravity_strength = 42;
-    ModelManager.switchTo(0);
-
-    // the value we left behind was captured into the slot
-    ModelManager.switchTo(1);
-    assertEquals(42, World.gravity_strength);
-  }
-
-  @Test
-  void closeActiveSlotKeepsTheOtherModel() {
-    ModelManager.loadNewModel("resource://models/cube.spr");
-    final ModelSlot first = ModelManager.getSlots().get(0);
-
-    ModelManager.closeActiveSlot();
-
-    assertEquals(1, ModelManager.getSlots().size());
-    assertEquals(0, ModelManager.getActiveIndex());
-    assertTrue(ModelManager.getActiveSlot() == first);
-    assertTrue(ContextManager.getNodeManager() == first.manager);
-  }
-
-  @Test
   void closeLastSlotIsRefused() {
     ModelManager.closeActiveSlot();
 
     assertEquals(1, ModelManager.getSlots().size());
-  }
-
-  @Test
-  void replaceCurrentModelKeepsTheSlot() {
-    final ModelSlot slot = ModelManager.getActiveSlot();
-    final NodeManager manager = slot.manager;
-
-    ModelManager.replaceCurrentModel("resource://models/cube.spr");
-
-    assertEquals(1, ModelManager.getSlots().size());
-    assertTrue(ModelManager.getActiveSlot() == slot);
-    assertTrue(slot.manager == manager, "same manager, new contents");
-    assertEquals(12, manager.element.size());
-    assertEquals("cube.spr", slot.name);
   }
 }

@@ -184,8 +184,13 @@ public final class ModelManager {
     return leaf.isEmpty() ? "model" : leaf;
   }
 
-  /** Test-only: resets the slot list. */
-  static void resetForTests() {
+  /**
+   * Test-only: resets the slot list. Public because the loading slot
+   * tests live in springie-gui (ModelManagerLoadTest): a real load
+   * needs io's parser and the presets' model files, which the engine
+   * cannot depend on.
+   */
+  public static void resetForTests() {
     slots.clear();
     active_index = 0;
     change_listeners.clear();

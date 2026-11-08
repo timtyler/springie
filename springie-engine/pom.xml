@@ -32,66 +32,6 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.8.1</version>
-        <executions>
-          <execution>
-            <id>unpack-io-for-tests</id>
-            <phase>generate-test-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>com.springie</groupId>
-                  <artifactId>springie-io</artifactId>
-                  <version>${project.version}</version>
-                  <outputDirectory>${project.build.directory}/io-test-classpath/main</outputDirectory>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>com.springie</groupId>
-                  <artifactId>springie-io</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>tests</classifier>
-                  <type>test-jar</type>
-                  <outputDirectory>${project.build.directory}/io-test-classpath/test</outputDirectory>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>com.springie</groupId>
-                  <artifactId>springie-renderer</artifactId>
-                  <version>${project.version}</version>
-                  <outputDirectory>${project.build.directory}/io-test-classpath/renderer</outputDirectory>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>com.springie</groupId>
-                  <artifactId>springie-presets</artifactId>
-                  <version>${project.version}</version>
-                  <outputDirectory>${project.build.directory}/io-test-classpath/presets</outputDirectory>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <additionalClasspathElements>
-            <!-- The unpacked io/renderer/presets jars from above: io's
-                 test registration first, so TestModelLoader shadows the
-                 production DataInputModelLoader in the test JVM; the
-                 presets unpack brings the cube.spr resource. -->
-            <additionalClasspathElement>${project.build.directory}/io-test-classpath/test</additionalClasspathElement>
-            <additionalClasspathElement>${project.build.directory}/io-test-classpath/main</additionalClasspathElement>
-            <additionalClasspathElement>${project.build.directory}/io-test-classpath/renderer</additionalClasspathElement>
-            <additionalClasspathElement>${project.build.directory}/io-test-classpath/presets</additionalClasspathElement>
-          </additionalClasspathElements>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.4.2</version>
         <executions>

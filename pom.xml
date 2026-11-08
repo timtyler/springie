@@ -91,7 +91,6 @@
           <excludes>
             <exclude>**/*Test.java</exclude>
             <exclude>**/GuiTestSupport.java</exclude>
-            <exclude>**/TestModelLoader.java</exclude>
             <exclude>**/SqrtCandidates.java</exclude>
             <exclude>**/SquareRootAnalysis.java</exclude>
             <exclude>**/SquareRootBenchmark.java</exclude>
@@ -100,7 +99,6 @@
           <testIncludes>
             <testInclude>**/*Test.java</testInclude>
             <testInclude>**/GuiTestSupport.java</testInclude>
-            <testInclude>**/TestModelLoader.java</testInclude>
             <testInclude>**/SqrtCandidates.java</testInclude>
             <testInclude>**/SquareRootAnalysis.java</testInclude>
             <testInclude>**/SquareRootBenchmark.java</testInclude>
