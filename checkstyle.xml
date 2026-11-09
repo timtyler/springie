@@ -52,7 +52,6 @@
 <module name="FallThrough"></module>
 <module name="ModifierOrder"/>
 <module name="TrailingComment"></module>
-<module name="FinalParameters"></module>
 <module name="ImportOrder"></module>
 <module name="HiddenField"></module>
 <module name="IllegalInstantiation"></module>
