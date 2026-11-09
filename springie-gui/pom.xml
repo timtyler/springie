@@ -60,12 +60,6 @@
       <artifactId>springie</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.springie</groupId>
-      <artifactId>springie-olympics-athletes</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
@@ -82,25 +76,9 @@
           </execution>
         </executions>
       </plugin>
-      <!-- Tests that run the app (boot FrEnd / drive the real GUI /
-           read real screen pixels) are integration tests, named *IT:
-           Surefire's default includes (*Test) skip them and Failsafe's
-           default includes (*IT) run them at the end, in the verify
-           phase (Tim, 2026-11-08). `mvn test` is then the fast,
-           display-free unit run; `mvn verify` runs everything;
-           `mvn verify -DskipITs` skips the app section. -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+      <!-- The tests that run the app whole (named *IT) live in the
+           springie-system module, which comes after this one; they
+           are run there by Failsafe in the verify phase. -->
     </plugins>
   </build>
 </project>

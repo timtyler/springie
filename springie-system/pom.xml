@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Springie system module: the integration tests that run the app
+  whole (boot FrEnd, drive the real GUI, read real screen pixels).
+  The classes are named *IT and live in the same packages as the
+  code they exercise; Failsafe runs them in the verify phase.
+  This module has no main code of its own.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.springie</groupId>
+    <artifactId>springie-parent</artifactId>
+    <version>1.03</version>
+  </parent>
+
+  <artifactId>springie-system</artifactId>
+  <name>Springie system tests</name>
+  <description>System-level integration tests: boot the whole app and drive its GUI.</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.springie</groupId>
+      <artifactId>springie-gui</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.springie</groupId>
+      <artifactId>springie-olympics-athletes</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
