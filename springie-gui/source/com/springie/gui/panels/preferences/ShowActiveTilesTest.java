@@ -160,7 +160,10 @@ class ShowActiveTilesTest {
       if (red > baseline_red + OUTLINE_RED_MARGIN) {
         return;
       }
-      Thread.sleep(250);
+      // Poll tightly: the outlines live in the same paint cycle as
+      // everything else on the canvas, so a coarse sleep both delays
+      // the catch and can alias against the paint rhythm under load.
+      Thread.sleep(20);
     }
     fail(what + ": saw " + red + " red pixels, expected more than "
         + (baseline_red + OUTLINE_RED_MARGIN) + ". Failing capture saved to "
@@ -194,7 +197,7 @@ class ShowActiveTilesTest {
       if (red == expected_red) {
         return;
       }
-      Thread.sleep(250);
+      Thread.sleep(20);
     }
     assertEquals(expected_red, red,
         () -> what + ". Failing capture saved to " + saveFailureShot()
@@ -288,7 +291,7 @@ class ShowActiveTilesTest {
       if (red == expected_red) {
         return;
       }
-      Thread.sleep(250);
+      Thread.sleep(20);
     }
     assertEquals(expected_red, red,
         () -> what + ". Failing capture saved to " + saveFailureShot()

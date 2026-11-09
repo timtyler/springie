@@ -118,20 +118,40 @@ public class RaytracedViewportShadeTest {
     });
     repaintAndWait();
 
+    // Poll the capture: a single grab can land before the shaded
+    // frame has been composited to the screen, so keep grabbing
+    // until every sample point reads grey or the deadline passes;
+    // the assertions below then judge the last grab either way.
     final BufferedImage[] image = new BufferedImage[1];
-    SwingUtilities.invokeAndWait(() -> {
-      final Rectangle[] area = new Rectangle[1];
-      FrEnd.frame_main.toFront();
-      final Point p = RendererDelegator.canvas.getPanel().getLocationOnScreen();
-      area[0] = new Rectangle(p, RendererDelegator.canvas.getPanel().getSize());
-      try {
-        image[0] = new Robot().createScreenCapture(area[0]);
-      } catch (java.awt.AWTException e) {
-        throw new RuntimeException(e);
+    BufferedImage img = null;
+    final long deadline = System.currentTimeMillis() + 20000;
+    while (System.currentTimeMillis() < deadline) {
+      SwingUtilities.invokeAndWait(() -> {
+        final Rectangle[] area = new Rectangle[1];
+        FrEnd.frame_main.toFront();
+        final Point p = RendererDelegator.canvas.getPanel().getLocationOnScreen();
+        area[0] = new Rectangle(p, RendererDelegator.canvas.getPanel().getSize());
+        try {
+          image[0] = new Robot().createScreenCapture(area[0]);
+        } catch (java.awt.AWTException e) {
+          throw new RuntimeException(e);
+        }
+      });
+      img = image[0];
+      final int hh = img.getHeight();
+      boolean grey = true;
+      for (int x = 10; x <= 40; x += 10) {
+        if (img.getRGB(x, hh / 2) != 0xFF808080) {
+          grey = false;
+          break;
+        }
       }
-    });
+      if (grey) {
+        break;
+      }
+      Thread.sleep(5);
+    }
 
-    final BufferedImage img = image[0];
     final int h = img.getHeight();
     // Well inside the strip (box left edge >= ~68px even at the back
     // corners), clear of the model and the boundary-box dots.

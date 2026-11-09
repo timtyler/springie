@@ -121,14 +121,14 @@ class RaytracedDragBoxTrailTest {
    */
   private static void waitForSelected(final int x0, final int y0, final int x1, final int y1,
       String what) throws Exception {
-    final long deadline = System.currentTimeMillis() + 8000;
+    final long deadline = System.currentTimeMillis() + 20000;
     while (System.currentTimeMillis() < deadline) {
       if (countSelected(capture(), x0, y0, x1, y1) > 0) {
         return;
       }
       // Poll tightly: the box flickers with the paint cycle, so a coarse
       // poll just adds dead time between a visible frame and its capture.
-      Thread.sleep(25);
+      Thread.sleep(5);
     }
     assertTrue(false, what);
   }

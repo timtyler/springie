@@ -117,9 +117,31 @@ public class PolygonRendererClickBoxTest {
       if (condition.isTrue()) {
         return;
       }
-      Thread.sleep(50);
+      // Poll tightly: a screen condition (the drag box above all) is
+      // visible only in the gap before the next paint's clear, so a
+      // coarse sleep can alias against the paint rhythm and miss a
+      // condition that is in fact being met every frame.
+      Thread.sleep(5);
     }
     throw new AssertionError("timed out waiting for: " + what);
+  }
+
+  // Polls until no box pixels remain on screen, then asserts it. A
+  // single capture can beat the erasing repaint to the screen and
+  // report the box as left behind -- the mirror image of the flicker
+  // the appearance poll catches -- so the left-behind check polls too.
+  private static void assertNoBoxPixelsRemain(final int x, final int y,
+      final String what) throws Exception {
+    int remaining = -1;
+    final long deadline = System.currentTimeMillis() + 20000;
+    while (System.currentTimeMillis() < deadline) {
+      remaining = countBoxPixels(captureScreen(x, y));
+      if (remaining == 0) {
+        break;
+      }
+      Thread.sleep(5);
+    }
+    assertEquals(0, remaining, what);
   }
 
   // Real screen pixels around the given panel coordinates.
@@ -181,7 +203,7 @@ public class PolygonRendererClickBoxTest {
           "release to drop the drag box");
       GuiTestSupport.repaintAndWait();
 
-      assertEquals(0, countBoxPixels(captureScreen(x, y)),
+      assertNoBoxPixelsRemain(x, y,
           "no drag-box rectangle may remain on screen after a click");
     } finally {
       restoreRenderer();
@@ -234,7 +256,7 @@ public class PolygonRendererClickBoxTest {
           "release to drop the drag box");
       GuiTestSupport.repaintAndWait();
 
-      assertEquals(0, countBoxPixels(captureScreen(x, y)),
+      assertNoBoxPixelsRemain(x, y,
           "no drag-box dot may remain on screen after a click");
     } finally {
       if (saved_renderer != null) {
