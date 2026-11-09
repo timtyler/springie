@@ -17,8 +17,12 @@
 </module>
 <module name="RegexpSingleline">
   <!-- Architectural boundary (Tim, 2026-10-15): athlete code must never
-       depend on judge code. Scoped to springie-olympics-athletes via
-       checkstyle-suppressions.xml. -->
+       depend on judge code. Runs globally, not scoped: the
+       checkstyle-suppressions.xml approach was tried and dropped the same
+       day (Checkstyle cannot resolve the Maven property in the filter path,
+       and it broke the build); verified then that no non-athlete source
+       imports a ...demos.*Judge/Rule, so there are no false positives.
+       Maven module deps enforce the same boundary at compile time. -->
   <property name="id" value="AthleteJudgeDependency"/>
   <property name="format" value="^import .*\.demos\..*(Judge|Rule)\b"/>
   <property name="message" value="Athlete code must not depend on judge code."/>
