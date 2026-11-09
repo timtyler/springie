@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * main window, so the button keeps operating instead of greying out.
  * It never pops up the empty controls frame while docked.
  */
-class ControlsButtonDockTest {
+class ControlsButtonDockIT {
 
   @BeforeAll
   static void boot() throws Exception {

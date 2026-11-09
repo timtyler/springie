@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * elasticity while "-" scaled damping), so the damping buttons in
  * particular did not behave.
  */
-class DomeRelatedChangeDelegatorTest {
+class DomeRelatedChangeDelegatorIT {
 
   private static void bootApp() throws Exception {
     SwingUtilities.invokeAndWait(() -> FrEnd.main(new String[0]));

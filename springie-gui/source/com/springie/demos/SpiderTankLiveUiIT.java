@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * as soon as the budget is met instead of sleeping out the clock. The
  * animation runs at its normal delay throughout.
  */
-class SpiderTankLiveUiTest {
+class SpiderTankLiveUiIT {
   /**
    * Physics ticks to run: matches the ~4300 ticks the old 10 wall-second
    * run delivered at the normal animation rate (measured 2026-09-20).

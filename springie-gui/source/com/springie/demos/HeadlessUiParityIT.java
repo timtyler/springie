@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
  * counts differed by however long each load happened to take, which
  * swamped the path difference this test exists to measure.
  */
-class HeadlessUiParityTest {
+class HeadlessUiParityIT {
   private static final int TICKS = 600;
 
   @Test

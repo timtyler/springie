@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * background is baked into the cached bin tiles, so the damage-repair
  * pass (repaint_some_objects) is not enough -- a full repaint is needed.
  */
-class ScenicBackgroundRepaintTest {
+class ScenicBackgroundRepaintIT {
 
   @BeforeAll
   static void boot() throws Exception {

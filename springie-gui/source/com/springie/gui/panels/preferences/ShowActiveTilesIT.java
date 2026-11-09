@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * hoping a repaint happened, each check paints the canvas synchronously
  * and polls until the expected pixels appear (or a deadline passes).
  */
-class ShowActiveTilesTest {
+class ShowActiveTilesIT {
 
   /** How much redder than baseline the outlines must make the capture. */
   private static final int OUTLINE_RED_MARGIN = 100;

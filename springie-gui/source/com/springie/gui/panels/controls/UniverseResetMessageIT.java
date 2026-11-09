@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * update them silently: a toggle queued by the reset itself would be
  * processed later and silently undo it.
  */
-class UniverseResetMessageTest {
+class UniverseResetMessageIT {
 
   @BeforeAll
   static void boot() throws Exception {

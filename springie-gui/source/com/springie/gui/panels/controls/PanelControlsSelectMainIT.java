@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * The buttons end in FrEnd.reflectElementNumbersInGUI(), which rebuilds
  * the checkbox row; the rebuild has to preserve the user's states.
  */
-class PanelControlsSelectMainTest {
+class PanelControlsSelectMainIT {
 
   @BeforeAll
   static void boot() throws Exception {

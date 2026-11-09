@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * When nothing is selected, the Properties > Scalars tab must say so
  * instead of showing an empty panel.
  */
-class PanelControlsPropertiesScalarsTest {
+class PanelControlsPropertiesScalarsIT {
 
   private static Component[] scalarsChildren() throws Exception {
     final Component[][] holder = new Component[1][];

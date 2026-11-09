@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * nowhere on the Universe tab, and toggling it must flip
  * RendererDelegator.show_boundary_box.
  */
-class BoundaryBoxCheckboxTest {
+class BoundaryBoxCheckboxIT {
 
   @BeforeAll
   static void boot() throws Exception {

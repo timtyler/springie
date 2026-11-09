@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * controls panel into the main window's inner area (panel_main_area,
  * BorderLayout.EAST) -- true docking, not a snapped separate window.
  */
-class ControlsWindowOptionsTest {
+class ControlsWindowOptionsIT {
 
   @BeforeAll
   static void boot() throws Exception {

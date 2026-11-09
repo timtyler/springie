@@ -90,6 +90,7 @@
                keep them out of the main compilation... -->
           <excludes>
             <exclude>**/*Test.java</exclude>
+            <exclude>**/*IT.java</exclude>
             <exclude>**/GuiTestSupport.java</exclude>
             <exclude>**/SqrtCandidates.java</exclude>
             <exclude>**/SquareRootAnalysis.java</exclude>
@@ -98,6 +99,7 @@
           <!-- ...and compile only them (plus test-scope helpers) as tests. -->
           <testIncludes>
             <testInclude>**/*Test.java</testInclude>
+            <testInclude>**/*IT.java</testInclude>
             <testInclude>**/GuiTestSupport.java</testInclude>
             <testInclude>**/SqrtCandidates.java</testInclude>
             <testInclude>**/SquareRootAnalysis.java</testInclude>

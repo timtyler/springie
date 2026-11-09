@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * AWT Choice's listeners, which exercises the real listener path
  * (Choice.select() alone fires no event).
  */
-class DisplayTypeDropdownTest {
+class DisplayTypeDropdownIT {
 
   @BeforeAll
   static void boot() throws Exception {

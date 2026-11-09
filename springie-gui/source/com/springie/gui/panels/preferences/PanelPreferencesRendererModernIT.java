@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * stands in for the one the native peer delivers; the listener only
  * flips a repaint flag besides swapping the shape.
  */
-public class PanelPreferencesRendererModernTest {
+public class PanelPreferencesRendererModernIT {
 
   @BeforeAll
   static void boot() throws Exception {

@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * renderer; these tests swap the renderer directly, so they set the
  * flag the same way.
  */
-class NodeManagerSortIndexTest {
+class NodeManagerSortIndexIT {
 
   private boolean saved_redraw_deepest_first;
 

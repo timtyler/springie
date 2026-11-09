@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * exercises the real listener path (Choice.select() alone fires no
  * event).
  */
-class PixellationDropdownTest {
+class PixellationDropdownIT {
 
   @BeforeAll
   static void boot() throws Exception {

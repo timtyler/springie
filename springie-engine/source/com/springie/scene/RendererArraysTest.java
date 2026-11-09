@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  * the first ensureCapacity, and again after every clear(), so a click
  * landing in that window threw a NullPointerException that the
  * message pump swallowed -- the click silently did nothing (the
- * PolygonRendererClickBoxTest flake, root-caused 2026-11-08).
+ * PolygonRendererClickBoxIT flake, root-caused 2026-11-08).
  */
 class RendererArraysTest {
 

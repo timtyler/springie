@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * the renderer, and hide each strength dropdown while its effect is
  * switched off. (Tim, 2026-10-03: Fill light moved to the Universe tab.)
  */
-class PanelPreferencesRendererRaytracedTest {
+class PanelPreferencesRendererRaytracedIT {
   private int saved_glossiness;
 
   private boolean saved_glossiness_enabled;

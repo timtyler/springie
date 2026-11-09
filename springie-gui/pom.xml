@@ -83,88 +83,15 @@
         </executions>
       </plugin>
       <!-- Tests that run the app (boot FrEnd / drive the real GUI /
-           read real screen pixels) are integration tests, not unit
-           tests: Surefire excludes them and Failsafe runs them at the
-           end, in the verify phase (Tim, 2026-11-08). `mvn test` is
-           then the fast, display-free unit run; `mvn verify` runs
-           everything; `mvn verify -DskipITs` skips this section. -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>com.springie.demos.HeadlessUiParityTest</exclude>
-            <exclude>com.springie.demos.SpiderTankLiveUiTest</exclude>
-            <exclude>com.springie.elements.nodes.NodeManagerSortIndexTest</exclude>
-            <exclude>com.springie.gui.gestures.DragBoxSelectionTest</exclude>
-            <exclude>com.springie.gui.gestures.RaytracedLinkSelectionTest</exclude>
-            <exclude>com.springie.gui.gestures.SingleClickNearestSelectionTest</exclude>
-            <exclude>com.springie.gui.panels.BottomBarFullWidthTest</exclude>
-            <exclude>com.springie.gui.panels.BottomBarWrapTest</exclude>
-            <exclude>com.springie.gui.panels.ControlsButtonDockTest</exclude>
-            <exclude>com.springie.gui.panels.controls.CompassChoiceTest</exclude>
-            <exclude>com.springie.gui.panels.controls.PanelControlsPropertiesScalarsTest</exclude>
-            <exclude>com.springie.gui.panels.controls.PanelControlsSelectMainTest</exclude>
-            <exclude>com.springie.gui.panels.controls.PanelControlsWobbleTest</exclude>
-            <exclude>com.springie.gui.panels.controls.UniverseResetMessageTest</exclude>
-            <exclude>com.springie.gui.panels.preferences.BoundaryBoxCheckboxTest</exclude>
-            <exclude>com.springie.gui.panels.preferences.ControlsWindowOptionsTest</exclude>
-            <exclude>com.springie.gui.panels.preferences.DeepestFirstRowVisibilityTest</exclude>
-            <exclude>com.springie.gui.panels.preferences.DisplayTypeDropdownTest</exclude>
-            <exclude>com.springie.gui.panels.preferences.PanelPreferencesRendererModernTest</exclude>
-            <exclude>com.springie.gui.panels.preferences.PanelPreferencesRendererRaytracedTest</exclude>
-            <exclude>com.springie.gui.panels.preferences.PixellationDropdownTest</exclude>
-            <exclude>com.springie.gui.panels.preferences.PreferencesResetTest</exclude>
-            <exclude>com.springie.gui.panels.preferences.RaytracedHiddenRowsVisibilityTest</exclude>
-            <exclude>com.springie.gui.panels.preferences.ScenicBackgroundRepaintTest</exclude>
-            <exclude>com.springie.gui.panels.preferences.ShowActiveTilesTest</exclude>
-            <exclude>com.springie.messages.MessagePumpTest</exclude>
-            <exclude>com.springie.modification.DomeRelatedChangeDelegatorTest</exclude>
-            <exclude>com.springie.render.DragBoxTrailTest</exclude>
-            <exclude>com.springie.render.PolygonRendererClickBoxTest</exclude>
-            <exclude>com.springie.render.modules.raytraced.RaytracedDragBoxTrailTest</exclude>
-            <exclude>com.springie.render.modules.raytraced.RaytracedViewportShadeTest</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
+           read real screen pixels) are integration tests, named *IT:
+           Surefire's default includes (*Test) skip them and Failsafe's
+           default includes (*IT) run them at the end, in the verify
+           phase (Tim, 2026-11-08). `mvn test` is then the fast,
+           display-free unit run; `mvn verify` runs everything;
+           `mvn verify -DskipITs` skips the app section. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <includes>
-            <include>com.springie.demos.HeadlessUiParityTest</include>
-            <include>com.springie.demos.SpiderTankLiveUiTest</include>
-            <include>com.springie.elements.nodes.NodeManagerSortIndexTest</include>
-            <include>com.springie.gui.gestures.DragBoxSelectionTest</include>
-            <include>com.springie.gui.gestures.RaytracedLinkSelectionTest</include>
-            <include>com.springie.gui.gestures.SingleClickNearestSelectionTest</include>
-            <include>com.springie.gui.panels.BottomBarFullWidthTest</include>
-            <include>com.springie.gui.panels.BottomBarWrapTest</include>
-            <include>com.springie.gui.panels.ControlsButtonDockTest</include>
-            <include>com.springie.gui.panels.controls.CompassChoiceTest</include>
-            <include>com.springie.gui.panels.controls.PanelControlsPropertiesScalarsTest</include>
-            <include>com.springie.gui.panels.controls.PanelControlsSelectMainTest</include>
-            <include>com.springie.gui.panels.controls.PanelControlsWobbleTest</include>
-            <include>com.springie.gui.panels.controls.UniverseResetMessageTest</include>
-            <include>com.springie.gui.panels.preferences.BoundaryBoxCheckboxTest</include>
-            <include>com.springie.gui.panels.preferences.ControlsWindowOptionsTest</include>
-            <include>com.springie.gui.panels.preferences.DeepestFirstRowVisibilityTest</include>
-            <include>com.springie.gui.panels.preferences.DisplayTypeDropdownTest</include>
-            <include>com.springie.gui.panels.preferences.PanelPreferencesRendererModernTest</include>
-            <include>com.springie.gui.panels.preferences.PanelPreferencesRendererRaytracedTest</include>
-            <include>com.springie.gui.panels.preferences.PixellationDropdownTest</include>
-            <include>com.springie.gui.panels.preferences.PreferencesResetTest</include>
-            <include>com.springie.gui.panels.preferences.RaytracedHiddenRowsVisibilityTest</include>
-            <include>com.springie.gui.panels.preferences.ScenicBackgroundRepaintTest</include>
-            <include>com.springie.gui.panels.preferences.ShowActiveTilesTest</include>
-            <include>com.springie.messages.MessagePumpTest</include>
-            <include>com.springie.modification.DomeRelatedChangeDelegatorTest</include>
-            <include>com.springie.render.DragBoxTrailTest</include>
-            <include>com.springie.render.PolygonRendererClickBoxTest</include>
-            <include>com.springie.render.modules.raytraced.RaytracedDragBoxTrailTest</include>
-            <include>com.springie.render.modules.raytraced.RaytracedViewportShadeTest</include>
-          </includes>
-        </configuration>
         <executions>
           <execution>
             <goals>

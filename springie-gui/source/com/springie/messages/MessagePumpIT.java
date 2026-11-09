@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * drag-box end point froze at the stale position and a clicked node was
  * re-dragged to the wrong place on every frame, corrupting the model.
  */
-class MessagePumpTest {
+class MessagePumpIT {
 
   @BeforeAll
   static void boot() throws Exception {

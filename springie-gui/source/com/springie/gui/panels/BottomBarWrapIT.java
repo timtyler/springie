@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * is not hiding, so these tests walk the ancestors and assert each child
  * rectangle sits fully inside every one of them.
  */
-class BottomBarWrapTest {
+class BottomBarWrapIT {
 
   @BeforeAll
   static void boot() throws Exception {

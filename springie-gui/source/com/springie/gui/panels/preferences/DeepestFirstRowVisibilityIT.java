@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * shown/hidden, because the tab's GridLayout gives invisible
  * components space.
  */
-class DeepestFirstRowVisibilityTest {
+class DeepestFirstRowVisibilityIT {
 
   @BeforeAll
   static void boot() throws Exception {

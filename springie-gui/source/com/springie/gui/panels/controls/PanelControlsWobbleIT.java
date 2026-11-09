@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * and the meter must report the average link-length oscillation as a
  * percentage, ignoring one-off spikes.
  */
-class PanelControlsWobbleTest {
+class PanelControlsWobbleIT {
 
   private static void bootApp() throws Exception {
     SwingUtilities.invokeAndWait(() -> FrEnd.main(new String[0]));

@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * and removed rather than shown/hidden, because the tab's GridLayout
  * gives invisible components space.
  */
-class RaytracedHiddenRowsVisibilityTest {
+class RaytracedHiddenRowsVisibilityIT {
 
   private static final String[] LABELS = {
       "Node polyhedron:", "Cable divisions:", "Strut divisions:",
@@ -56,7 +56,7 @@ class RaytracedHiddenRowsVisibilityTest {
    * Leave the Polygon renderer selected after each test. Without this,
    * whichever test runs last leaves its renderer behind: the ray-traced
    * renderer paints asynchronously, which breaks later tests that capture
-   * synchronous paints (it leaked all the way to DragBoxTrailTest).
+   * synchronous paints (it leaked all the way to DragBoxTrailIT).
    */
   @AfterEach
   void restorePolygonRenderer() throws Exception {

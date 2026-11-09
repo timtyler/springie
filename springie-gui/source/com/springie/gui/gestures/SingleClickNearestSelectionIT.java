@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * cleared first), clicks the projected centre of the target, and asserts
  * that exactly one item -- the nearest -- ends up selected.
  */
-class SingleClickNearestSelectionTest {
+class SingleClickNearestSelectionIT {
 
   @BeforeAll
   static void boot() throws Exception {

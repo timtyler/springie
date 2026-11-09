@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * outer South, so its width must equal the window's content width whether
  * the controls are docked, always-on-top, or free floating.
  */
-class BottomBarFullWidthTest {
+class BottomBarFullWidthIT {
 
   @BeforeAll
   static void boot() throws Exception {

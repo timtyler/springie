@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Missing the ray-traced renderer from that check made every link click
  * throw a NullPointerException.
  */
-class RaytracedLinkSelectionTest {
+class RaytracedLinkSelectionIT {
 
   @BeforeAll
   static void boot() throws Exception {

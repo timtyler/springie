@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * leaving the renderer's cached box at its reset (0,0) state. On the old
  * code the node is not selected; on the fixed code it is.
  */
-class DragBoxSelectionTest {
+class DragBoxSelectionIT {
 
   @BeforeAll
   static void boot() throws Exception {

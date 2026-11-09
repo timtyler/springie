@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  * every selected node (driving the per-frame universe compass bias), and
  * reflects the selection back: unanimous headings show, mixed shows "-".
  */
-class CompassChoiceTest {
+class CompassChoiceIT {
 
   private static List<CompassPoint> saved_compass;
 

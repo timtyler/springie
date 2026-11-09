@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * starts with repaintAll, which clears the screen first and would erase
  * the very trail this test looks for.
  */
-class RaytracedDragBoxTrailTest {
+class RaytracedDragBoxTrailIT {
 
   @BeforeAll
   static void boot() throws Exception {

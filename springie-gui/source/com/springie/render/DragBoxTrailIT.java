@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * the old and new rectangles are explicitly repainted during a drag.
  * Without that, the old rectangle persisted over empty bins.
  */
-public class DragBoxTrailTest {
+public class DragBoxTrailIT {
 
   @BeforeAll
   static void boot() throws Exception {

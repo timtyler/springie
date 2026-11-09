@@ -80,7 +80,7 @@ class CubeTensegrityTest {
     final NodeManager manager = new NodeManager();
     ContextManager.setNodeManager(manager);
     // Pin the canvas size: ReaderSPRExecutor scales the model to fit
-    // Coords.x/y/z_pixels, and earlier GUI tests (e.g. BottomBarWrapTest)
+    // Coords.x/y/z_pixels, and earlier GUI tests (e.g. BottomBarWrapIT)
     // leave those at whatever narrow width they last resized to, which
     // changes the integer scale factor and hence the link elasticities.
     com.springie.geometry.Coords.x_pixels = 800;

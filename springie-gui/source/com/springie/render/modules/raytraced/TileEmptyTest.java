@@ -300,7 +300,7 @@ public class TileEmptyTest {
     // therefore not join any tile's dirty rect -- if it did, the tiles
     // under it would re-trace for a rectangle that is not in the frame.
     // (The end-to-end erase behaviour is pinned by
-    // RaytracedDragBoxTrailTest.)
+    // RaytracedDragBoxTrailIT.)
     final Point old_start = RendererDelegator.drag_box_start;
     final Point old_end = RendererDelegator.drag_box_end;
     try {

@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * The Preferences panel's Reset button must restore every preference to its
  * default and update the controls to match.
  */
-class PreferencesResetTest {
+class PreferencesResetIT {
 
   @Test
   void resetPreferencesRestoresDefaults() throws Exception {

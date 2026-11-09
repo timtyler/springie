@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * that paint's own shading pass -- it does not depend on the pan
  * surviving the multi-second asynchronous frame render.
  */
-public class RaytracedViewportShadeTest {
+public class RaytracedViewportShadeIT {
   static int saved_shift_x;
 
   static ModularRendererBase saved_renderer;

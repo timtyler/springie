@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * a component print into a fresh image can never see stale screen
  * pixels, which is exactly what this bug leaves behind.
  */
-public class PolygonRendererClickBoxTest {
+public class PolygonRendererClickBoxIT {
 
   @BeforeAll
   static void boot() throws Exception {
