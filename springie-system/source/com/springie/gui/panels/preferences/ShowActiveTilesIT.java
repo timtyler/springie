@@ -6,6 +6,7 @@ import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.ModularRendererBase;
+import com.springie.render.modules.modern.LightSource;
 import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.modern.RendererTileManager;
 import com.springie.world.World;
@@ -56,6 +57,9 @@ class ShowActiveTilesIT {
   /** The paused state the app booted with, restored after the tests. */
   private static boolean saved_paused;
 
+  /** The coloured-lighting state the app booted with, restored after. */
+  private static boolean saved_colored_lighting;
+
   @BeforeAll
   static void boot() throws Exception {
     GuiTestSupport.bootApp();
@@ -65,6 +69,7 @@ class ShowActiveTilesIT {
     SwingUtilities.invokeAndWait(() -> {
       saved_renderer = RendererDelegator.renderer;
       saved_paused = World.paused;
+      saved_colored_lighting = LightSource.colored_lighting;
     });
     // The assertions read real screen pixels: skip, rather than
     // fail, when the desktop cannot give a clean capture.
@@ -89,6 +94,15 @@ class ShowActiveTilesIT {
       // The outlines themselves were verified to erase correctly; it was
       // the moving model that failed these tests (Tim, 2026-11-08).
       World.paused = true;
+      // No light-source dots: LightSourceDots draws them only one frame
+      // in sixteen, and the red light's dot is ~177 pixels of exactly
+      // the red these tests count. Whether it had appeared yet when the
+      // baseline was captured decided pass/fail while the outlines
+      // erased correctly every time (measured 2026-11-09: the count
+      // jumps by 177 several frames into a run and never comes back).
+      // Coloured lighting off also stops the dots entirely. Per-test,
+      // because the first test's resetPreferences() may restore it.
+      LightSource.colored_lighting = false;
       RendererDelegator.renderer = new ModularRendererNew();
       FrEnd.main_canvas.forceResize();
     });
@@ -98,6 +112,7 @@ class ShowActiveTilesIT {
   static void dispose() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       World.paused = saved_paused;
+      LightSource.colored_lighting = saved_colored_lighting;
       RendererDelegator.renderer = saved_renderer;
       FrEnd.main_canvas.forceResize();
     });
