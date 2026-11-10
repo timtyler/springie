@@ -190,7 +190,7 @@ public class PanelPreferencesRendererOriginal {
 
     // The anaglyph stereo rows join the one layout at the bottom.
     // (Stereo 3D is only honoured by the original renderer.)
-    final Panel stereo_panel = FrEnd.panel_preferences_stereo3d.panel;
+    final Panel stereo_panel = PreferencesPanels.panel_preferences_stereo3d.panel;
     final Component[] stereo_rows = stereo_panel.getComponents();
     stereo_panel.removeAll();
     for (final Component row : stereo_rows) {

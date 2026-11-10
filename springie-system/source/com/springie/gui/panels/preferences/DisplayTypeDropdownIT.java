@@ -75,12 +75,12 @@ class DisplayTypeDropdownIT {
   }
 
   private static Choice sharedDropdown() throws Exception {
-    return displayTypeChoice(FrEnd.panel_preferences_shared_show.panel_main);
+    return displayTypeChoice(PreferencesPanels.panel_preferences_shared_show.panel_main);
   }
 
   private static Choice originalTabDropdown() throws Exception {
     return displayTypeChoice(
-        FrEnd.panel_preferences_renderer_original.panel_renderer_tab);
+        PreferencesPanels.panel_preferences_renderer_original.panel_renderer_tab);
   }
 
   private static boolean hasDisplayTypeLabel(final Panel holder) throws Exception {
@@ -138,7 +138,7 @@ class DisplayTypeDropdownIT {
 
   @Test
   void rendererTabStartsWithDisplayType() throws Exception {
-    final Panel shared = FrEnd.panel_preferences_shared_show.panel_main;
+    final Panel shared = PreferencesPanels.panel_preferences_shared_show.panel_main;
     final Choice dropdown = sharedDropdown();
     assertNotNull(dropdown, "the Main sub-tab must hold a dropdown");
     assertTrue(hasDisplayTypeLabel(shared),
@@ -174,8 +174,8 @@ class DisplayTypeDropdownIT {
     SwingUtilities.invokeAndWait(() -> {
       assertTrue(RendererDelegator.renderer instanceof ModularRendererOld,
           "picking Original must swap in the original renderer");
-      assertSame(FrEnd.panel_preferences_renderer_original.panel,
-          FrEnd.panel_preferences_display.panel_main.getComponent(0),
+      assertSame(PreferencesPanels.panel_preferences_renderer_original.panel,
+          PreferencesPanels.panel_preferences_display.panel_main.getComponent(0),
           "the Display panel must show the original renderer's tabs");
     });
 
@@ -189,8 +189,8 @@ class DisplayTypeDropdownIT {
     SwingUtilities.invokeAndWait(() -> {
       assertTrue(RendererDelegator.renderer instanceof ModularRendererNew,
           "picking Polygon must swap the polygon renderer back in");
-      assertSame(FrEnd.panel_preferences_renderer_modern.panel,
-          FrEnd.panel_preferences_display.panel_main.getComponent(0),
+      assertSame(PreferencesPanels.panel_preferences_renderer_modern.panel,
+          PreferencesPanels.panel_preferences_display.panel_main.getComponent(0),
           "the Display panel must show the polygon renderer's tabs again");
     });
     assertEquals(selectedItem(originalTab), selectedItem(shared),

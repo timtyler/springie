@@ -49,7 +49,7 @@ public class PanelPreferencesRendererModernIT {
 
   private static Choice polyhedronDropdown() {
     final Choice choice = findChoice(
-        FrEnd.panel_preferences_shared_show.panel_main);
+        PreferencesPanels.panel_preferences_shared_show.panel_main);
     assertNotNull(choice,
         "expected the Node polyhedron dropdown on the Main sub-tab");
     return choice;
@@ -133,7 +133,7 @@ public class PanelPreferencesRendererModernIT {
    */
   @Test
   void rendererTabHasMainTilesAndFogSubTabs() {
-    final Panel shared_misc_panel = FrEnd.panel_preferences_shared_misc.panel;
+    final Panel shared_misc_panel = PreferencesPanels.panel_preferences_shared_misc.panel;
     assertEquals(0, shared_misc_panel.getComponentCount(),
         "the old Misc tab panel must be empty after its rows move");
 
@@ -142,43 +142,43 @@ public class PanelPreferencesRendererModernIT {
     // tab was added next to Fog (Tim, 2026-10-17): the top-level bar
     // is Renderer | Colours | Fog | Labels.
     final TabbedPanel top_tabs = findTabbedPanel(
-        FrEnd.panel_preferences_renderer_modern.panel);
+        PreferencesPanels.panel_preferences_renderer_modern.panel);
     assertNotNull(top_tabs, "expected the top-level tab bar");
     assertEquals(4, top_tabs.getComponentCount(),
         "the top-level tab bar must be Renderer, Colours, Fog and Labels");
     assertTrue(
-        top_tabs.getComponent(0) == FrEnd.panel_preferences_shared_show.panel,
+        top_tabs.getComponent(0) == PreferencesPanels.panel_preferences_shared_show.panel,
         "the Renderer card must hold the shared-show panel");
     assertTrue(
         top_tabs.getComponent(1)
-            == FrEnd.panel_preferences_renderer_modern_colours.panel,
+            == PreferencesPanels.panel_preferences_renderer_modern_colours.panel,
         "the Colours card must hold the colours panel");
     // Tiles moved into the Renderer Main tab (Tim, 2026-10-03); Fog is
     // now at index 2.
     assertTrue(
         top_tabs.getComponent(2)
-            == FrEnd.panel_preferences_shared_show.panel_fog,
+            == PreferencesPanels.panel_preferences_shared_show.panel_fog,
         "the Fog card must hold the fog panel");
     // The Labels tab sits next to Fog (Tim, 2026-10-17).
     assertTrue(
         top_tabs.getComponent(3)
-            == FrEnd.panel_preferences_shared_show.panel_labels,
+            == PreferencesPanels.panel_preferences_shared_show.panel_labels,
         "the Labels card must hold the labels panel");
 
     // Filtering now lives as the Filters card under Colours, holding
     // the filters panel (Filled:/Wireframe: rows plus the Colour-A/B
     // nested tabs). The old Label card left Colours when its pickers
     // moved to the top-level Labels tab (Tim, 2026-10-17).
-    final TabbedPanel colours_tabs = FrEnd.panel_preferences_renderer_modern_colours.tab_colours_main;
+    final TabbedPanel colours_tabs = PreferencesPanels.panel_preferences_renderer_modern_colours.tab_colours_main;
     assertEquals(2, colours_tabs.getComponentCount(),
         "the Colours bar must be General and Filters");
     assertTrue(
-        colours_tabs.getComponent(1) == FrEnd.panel_preferences_renderer_modern_filters.panel,
+        colours_tabs.getComponent(1) == PreferencesPanels.panel_preferences_renderer_modern_filters.panel,
         "the Filters card must hold the filters panel");
 
-    final Panel main_tab = FrEnd.panel_preferences_shared_show.panel_main;
-    final Panel tiles_tab = FrEnd.panel_preferences_shared_show.panel_tiles;
-    final Panel fog_tab = FrEnd.panel_preferences_shared_show.panel_fog;
+    final Panel main_tab = PreferencesPanels.panel_preferences_shared_show.panel_main;
+    final Panel tiles_tab = PreferencesPanels.panel_preferences_shared_show.panel_tiles;
+    final Panel fog_tab = PreferencesPanels.panel_preferences_shared_show.panel_fog;
     // A modern row...
     assertNotNull(polyhedronDropdown(),
         "the Node polyhedron dropdown must move to the Main sub-tab");
@@ -198,17 +198,17 @@ public class PanelPreferencesRendererModernIT {
     assertTrue(pixellation >= 0,
         "expected a Pixellation row on the Renderer tab's Main sub-tab");
     final int deepest = indexOf(main_tab,
-        FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first);
+        PreferencesPanels.panel_preferences_shared_misc.panel_redraw_deepest_first);
     assertTrue(deepest > pixellation,
         "deepest-first must sit after Pixellation");
     // The "Show labels on:" row lives on the Labels tab, not Main
     // (moved there by Tim, 2026-10-17).
-    final Panel labels_tab = FrEnd.panel_preferences_shared_show.panel_labels;
+    final Panel labels_tab = PreferencesPanels.panel_preferences_shared_show.panel_labels;
     assertTrue(indexOf(labels_tab,
-        FrEnd.panel_preferences_renderer_modern.panel_labels_row) >= 0,
+        PreferencesPanels.panel_preferences_renderer_modern.panel_labels_row) >= 0,
         "the labels row must sit on the Labels tab");
     assertEquals(-1, indexOf(main_tab,
-        FrEnd.panel_preferences_renderer_modern.panel_labels_row),
+        PreferencesPanels.panel_preferences_renderer_modern.panel_labels_row),
         "the labels row must not sit on the Main sub-tab");
   }
 
@@ -282,9 +282,9 @@ public class PanelPreferencesRendererModernIT {
    */
   @Test
   void rendererSubTabsAreOneLayoutEach() throws Exception {
-    final Panel main_tab = FrEnd.panel_preferences_shared_show.panel_main;
-    final Panel tiles_tab = FrEnd.panel_preferences_shared_show.panel_tiles;
-    final Panel fog_tab = FrEnd.panel_preferences_shared_show.panel_fog;
+    final Panel main_tab = PreferencesPanels.panel_preferences_shared_show.panel_main;
+    final Panel tiles_tab = PreferencesPanels.panel_preferences_shared_show.panel_tiles;
+    final Panel fog_tab = PreferencesPanels.panel_preferences_shared_show.panel_fog;
     for (final Panel tab : new Panel[] { main_tab, tiles_tab, fog_tab }) {
       assertTrue(tab.getLayout() instanceof java.awt.GridLayout,
           "each Renderer sub-tab must be a single GridLayout");
@@ -296,7 +296,7 @@ public class PanelPreferencesRendererModernIT {
     }
 
     final PanelPreferencesRendererModern modern =
-        FrEnd.panel_preferences_renderer_modern;
+        PreferencesPanels.panel_preferences_renderer_modern;
     final int main_rows = main_tab.getComponentCount();
 
     // Switch to ray-traced: the five effect rows appear at the bottom

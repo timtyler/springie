@@ -67,7 +67,7 @@ class RaytracedHiddenRowsVisibilityIT {
   private static Choice sharedDropdown() throws Exception {
     final Choice[] found = new Choice[1];
     SwingUtilities.invokeAndWait(() -> {
-      final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;
+      final Panel tab = PreferencesPanels.panel_preferences_shared_show.panel_main;
       for (int i = 0; i < tab.getComponentCount() && found[0] == null; i++) {
         found[0] = findChoice(tab.getComponent(i));
       }
@@ -117,7 +117,7 @@ class RaytracedHiddenRowsVisibilityIT {
   private static Panel findRowByLabel(final String label) throws Exception {
     final Panel[] found = new Panel[1];
     SwingUtilities.invokeAndWait(() -> {
-      final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;
+      final Panel tab = PreferencesPanels.panel_preferences_shared_show.panel_main;
       for (int i = 0; i < tab.getComponentCount() && found[0] == null; i++) {
         final Component component = tab.getComponent(i);
         if (component instanceof Panel && hasLabel((Panel) component, label)) {
@@ -142,7 +142,7 @@ class RaytracedHiddenRowsVisibilityIT {
   private static int indexOfRow(final Panel row) throws Exception {
     final int[] index = new int[1];
     SwingUtilities.invokeAndWait(() -> {
-      final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;
+      final Panel tab = PreferencesPanels.panel_preferences_shared_show.panel_main;
       index[0] = -1;
       for (int i = 0; i < tab.getComponentCount(); i++) {
         if (tab.getComponent(i) == row) {
@@ -174,7 +174,7 @@ class RaytracedHiddenRowsVisibilityIT {
   void geometryRowsComeBackInOrderWhenSwitchingBack() throws Exception {
     selectRenderer("(quality)");
     selectRenderer("Polygon");
-    final Panel explosions_row = (Panel) FrEnd.panel_preferences_shared_misc.checkbox_explosions
+    final Panel explosions_row = (Panel) PreferencesPanels.panel_preferences_shared_misc.checkbox_explosions
         .getParent();
     final int explosions_index = indexOfRow(explosions_row);
     assertTrue(explosions_index >= LABELS.length,
@@ -193,7 +193,7 @@ class RaytracedHiddenRowsVisibilityIT {
     selectRenderer("Polygon");
     selectRenderer("Polygon");
     SwingUtilities.invokeAndWait(() -> {
-      final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;
+      final Panel tab = PreferencesPanels.panel_preferences_shared_show.panel_main;
       for (final String label : LABELS) {
         int count = 0;
         for (int i = 0; i < tab.getComponentCount(); i++) {

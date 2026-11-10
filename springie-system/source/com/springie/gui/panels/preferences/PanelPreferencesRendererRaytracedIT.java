@@ -94,7 +94,7 @@ class PanelPreferencesRendererRaytracedIT {
 
   /** The row panel holding the checkbox with the given label. */
   private static Container effectRow(final String label) {
-    for (final Panel row : FrEnd.panel_preferences_renderer_raytraced.effect_rows) {
+    for (final Panel row : PreferencesPanels.panel_preferences_renderer_raytraced.effect_rows) {
       if (findCheckbox(row, label) != null) {
         return row;
       }
@@ -104,7 +104,7 @@ class PanelPreferencesRendererRaytracedIT {
   }
 
   private static Checkbox effectCheckbox(final String label) {
-    for (final Panel row : FrEnd.panel_preferences_renderer_raytraced.effect_rows) {
+    for (final Panel row : PreferencesPanels.panel_preferences_renderer_raytraced.effect_rows) {
       final Checkbox checkbox = findCheckbox(row, label);
       if (checkbox != null) {
         return checkbox;
@@ -316,7 +316,7 @@ class PanelPreferencesRendererRaytracedIT {
     pick(effectDropdown("Specular"), "10%");
     tick(effectCheckbox("Fresnel"), true);
     SwingUtilities.invokeAndWait(
-        () -> FrEnd.panel_preferences_display.resetToDefaults());
+        () -> PreferencesPanels.panel_preferences_display.resetToDefaults());
 
     assertFalse(RendererDelegator.glossiness_enabled);
     assertEquals(50, RendererDelegator.glossiness);

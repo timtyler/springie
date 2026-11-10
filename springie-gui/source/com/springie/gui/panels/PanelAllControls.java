@@ -14,7 +14,7 @@ public class PanelAllControls {
     final TabbedPanel tab = new TabbedPanel();
     tab.add("Model", FrEnd.panel_edit_model.panel);
     tab.add("Universe", FrEnd.panel_universe.panel);
-    tab.add("Preferences", FrEnd.panel_preferences.panel);
+    tab.add("Preferences", FrEnd.preferencesProvider().panel());
 
     this.panel.add(tab);
 

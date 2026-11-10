@@ -121,7 +121,7 @@ class ShowActiveTilesIT {
     // Reset preferences restores the default (off).
     SwingUtilities.invokeAndWait(() -> {
       RendererTileManager.show_active_tiles = true;
-      FrEnd.panel_preferences.resetPreferences();
+      PreferencesPanels.panel_preferences.resetPreferences();
     });
     assertFalse(RendererTileManager.show_active_tiles);
     SwingUtilities.invokeAndWait(() -> {

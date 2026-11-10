@@ -486,7 +486,7 @@ public class PanelFundamental {
         // Zooming changes the projection of everything on screen, so the
         // incremental tile repaint is not enough: repaint the whole screen.
         RendererDelegator.repaint_all_objects = true;
-        FrEnd.panel_preferences_viewpoint.reflectTranslateZ();
+        FrEnd.preferencesProvider().reflectTranslateZ();
       }
     });
 
@@ -507,7 +507,7 @@ public class PanelFundamental {
 
         Coords.shift_constant_z += 20;
         RendererDelegator.repaintAll();
-        FrEnd.panel_preferences_viewpoint.reflectTranslateZ();
+        FrEnd.preferencesProvider().reflectTranslateZ();
       }
     });
 

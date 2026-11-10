@@ -41,25 +41,25 @@ public class PanelPreferences {
 
   void makePanel() {
     final TabbedPanel tab = new TabbedPanel();
-    tab.add("Display", FrEnd.panel_preferences_display.panel);
-    tab.add("Viewpoint", FrEnd.panel_preferences_viewpoint.panel);
+    tab.add("Display", PreferencesPanels.panel_preferences_display.panel);
+    tab.add("Viewpoint", PreferencesPanels.panel_preferences_viewpoint.panel);
     // I/O options get their own top-level tab after Viewpoint.
     final TabbedPanel tab_io = new TabbedPanel();
-    tab_io.add("Import", FrEnd.panel_preferences_import.panel);
+    tab_io.add("Import", PreferencesPanels.panel_preferences_import.panel);
     tab_io.add("POV-Ray export",
-        FrEnd.panel_preferences_pov_export.panel);
+        PreferencesPanels.panel_preferences_pov_export.panel);
     tab.add("I/O", tab_io);
     // Everything else lives under Misc.
     final TabbedPanel tab_misc = new TabbedPanel();
-    tab_misc.add("Editing", FrEnd.panel_preferences_edit.panel);
-    tab_misc.add("Animation", FrEnd.panel_preferences_update.panel);
+    tab_misc.add("Editing", PreferencesPanels.panel_preferences_edit.panel);
+    tab_misc.add("Animation", PreferencesPanels.panel_preferences_update.panel);
     tab.add("Misc", tab_misc);
 
     this.panel.setLayout(new BorderLayout());
     // The frames-per-second readout sits above the tabs, so it stays
     // visible while tuning the rendering settings on any tab --
     // Display, Viewpoint, or otherwise.
-    this.panel.add(FrEnd.panel_preferences_display.getFpsPanel(),
+    this.panel.add(PreferencesPanels.panel_preferences_display.getFpsPanel(),
         BorderLayout.NORTH);
     this.panel.add(tab, BorderLayout.CENTER);
 
@@ -133,12 +133,12 @@ public class PanelPreferences {
     // fires then).
     FrEnd.applyControlsWindowOptions();
 
-    FrEnd.panel_preferences_display.resetToDefaults();
-    FrEnd.panel_preferences_viewpoint.resetToDefaults();
-    FrEnd.panel_preferences_edit.resetToDefaults();
-    FrEnd.panel_preferences_update.resetToDefaults();
-    FrEnd.panel_preferences_import.resetToDefaults();
-    FrEnd.panel_preferences_pov_export.resetToDefaults();
+    PreferencesPanels.panel_preferences_display.resetToDefaults();
+    PreferencesPanels.panel_preferences_viewpoint.resetToDefaults();
+    PreferencesPanels.panel_preferences_edit.resetToDefaults();
+    PreferencesPanels.panel_preferences_update.resetToDefaults();
+    PreferencesPanels.panel_preferences_import.resetToDefaults();
+    PreferencesPanels.panel_preferences_pov_export.resetToDefaults();
 
     // Unchecked means the toolbar is displayed (default).
     this.checkbox_display_bottom_toolbar.setState(FrEnd.viewer);

@@ -54,21 +54,6 @@ import com.springie.gui.panels.controls.PanelControlsUniverse;
 import com.springie.modification.CommandContextHolder;
 import com.springie.gui.panels.controls.PanelControlsVelocities;
 import com.springie.gui.panels.controls.PanelControlsWobble;
-import com.springie.gui.panels.preferences.PanelPreferences;
-import com.springie.gui.panels.preferences.PanelPreferencesDisplay;
-import com.springie.gui.panels.preferences.PanelPreferencesEdit;
-import com.springie.gui.panels.preferences.PanelPreferencesImport;
-import com.springie.gui.panels.preferences.PanelPreferencesPOVExport;
-import com.springie.gui.panels.preferences.PanelPreferencesRendererModern;
-import com.springie.gui.panels.preferences.PanelPreferencesRendererModernColours;
-import com.springie.gui.panels.preferences.PanelPreferencesRendererModernFilters;
-import com.springie.gui.panels.preferences.PanelPreferencesRendererOriginal;
-import com.springie.gui.panels.preferences.PanelPreferencesRendererRaytraced;
-import com.springie.gui.panels.preferences.PanelPreferencesRendererSharedMisc;
-import com.springie.gui.panels.preferences.PanelPreferencesRendererSharedShow;
-import com.springie.gui.panels.preferences.PanelPreferencesStereo3D;
-import com.springie.gui.panels.preferences.PanelPreferencesUpdate;
-import com.springie.gui.panels.preferences.PanelPreferencesViewpoint;
 import com.springie.world.NewMessageManager;
 import com.springie.messages.SystemMessages;
 import com.springie.modification.colour.ColourChanger;
@@ -104,6 +89,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.util.List;
+import java.util.ServiceLoader;
 
 public class FrEnd extends Panel {
   static final long serialVersionUID = 1250;
@@ -414,38 +400,82 @@ public class FrEnd extends Panel {
 
   public static PanelHelp panel_help = new PanelHelp();
 
-  public static PanelPreferencesViewpoint panel_preferences_viewpoint = new PanelPreferencesViewpoint();
+  /** Provides the Preferences tab's panels; set by the preferences package. */
+  public interface PreferencesProvider {
+    Panel panel();
 
-  public static PanelPreferencesStereo3D panel_preferences_stereo3d = new PanelPreferencesStereo3D();
+    void reflectTranslateZ();
 
-  public static PanelPreferencesRendererSharedShow panel_preferences_shared_show = new PanelPreferencesRendererSharedShow();
+    void setBottomToolbarCheckbox(boolean state);
 
-  public static PanelPreferencesRendererSharedMisc panel_preferences_shared_misc = new PanelPreferencesRendererSharedMisc();
+    void setFpsLabelText(String text);
+  }
 
-  public static PanelPreferencesEdit panel_preferences_edit = new PanelPreferencesEdit();
+  /**
+   * The installed preferences provider. Implemented by the
+   * preferences package (PreferencesPanelsProvider), discovered via
+   * ServiceLoader on first use, like World.presetProvider(): the
+   * GUI cannot depend on springie-preferences, which sits above it.
+   * Until the split (2026-11-09) the panels were FrEnd statics,
+   * constructed here; they now live on PreferencesPanels in the
+   * preferences module, which cross-assembles them as before.
+   *
+   * Unlike presetProvider() this does not throw when no provider is
+   * found: PanelAllControls is constructed during FrEnd's own class
+   * initialisation and asks for the tab panel, so a throw would
+   * make FrEnd unloadable in any context without the preferences
+   * module -- springie-gui's own tests, for one. The fallback below
+   * stands in there; in the app the real provider is always found
+   * first (springie-app depends on springie-preferences).
+   */
+  public static PreferencesProvider preferences_provider;
 
-  public static PanelPreferencesUpdate panel_preferences_update = new PanelPreferencesUpdate();
+  /** The discovered preferences provider, installing it into preferences_provider. */
+  public static PreferencesProvider preferencesProvider() {
+    if (preferences_provider == null) {
+      for (final PreferencesProvider provider
+          : ServiceLoader.load(PreferencesProvider.class)) {
+        preferences_provider = provider;
+        break;
+      }
+    }
+    if (preferences_provider == null) {
+      preferences_provider = new MissingPreferencesProvider();
+    }
+    return preferences_provider;
+  }
 
-  public static PanelPreferencesImport panel_preferences_import = new PanelPreferencesImport();
+  /**
+   * Stand-in for contexts running without springie-preferences:
+   * the Preferences tab shows that the module is missing rather
+   * than the settings, and the operations do nothing.
+   */
+  private static final class MissingPreferencesProvider
+      implements PreferencesProvider {
+    private final Panel panel = new Panel();
 
-  public static PanelPreferencesPOVExport panel_preferences_pov_export = new PanelPreferencesPOVExport();
+    MissingPreferencesProvider() {
+      this.panel.add(new Label(
+          "Preferences unavailable: springie-preferences missing"));
+    }
 
-  public static PanelPreferencesRendererOriginal panel_preferences_renderer_original = new PanelPreferencesRendererOriginal(World.new_message_manager);
+    @Override
+    public Panel panel() {
+      return this.panel;
+    }
 
-  public static PanelPreferencesRendererModernFilters panel_preferences_renderer_modern_filters = new PanelPreferencesRendererModernFilters();
+    @Override
+    public void reflectTranslateZ() {
+    }
 
-  public static PanelPreferencesRendererModernColours panel_preferences_renderer_modern_colours = new PanelPreferencesRendererModernColours();
+    @Override
+    public void setBottomToolbarCheckbox(final boolean state) {
+    }
 
-  // Built before the modern panel: the modern panel's Renderer tab
-  // shows these ray-traced-only options at its bottom (South) while
-  // the ray-traced renderer is active.
-  public static PanelPreferencesRendererRaytraced panel_preferences_renderer_raytraced = new PanelPreferencesRendererRaytraced();
-
-  public static PanelPreferencesRendererModern panel_preferences_renderer_modern = new PanelPreferencesRendererModern(World.new_message_manager);
-
-  public static PanelPreferencesDisplay panel_preferences_display = new PanelPreferencesDisplay();
-
-  public static PanelPreferences panel_preferences = new PanelPreferences();
+    @Override
+    public void setFpsLabelText(final String text) {
+    }
+  }
 
   public static PanelAllControls panel_controls_all = new PanelAllControls();
 
@@ -494,7 +524,7 @@ public class FrEnd extends Panel {
     };
     RendererDelegator.fps_display = new java.util.function.Consumer<String>() {
       public void accept(final String fps) {
-        panel_preferences_display.label_fps_value.setText(fps);
+        preferencesProvider().setFpsLabelText(fps);
       }
     };
     RendererDelegator.extension_updater = new Runnable() {

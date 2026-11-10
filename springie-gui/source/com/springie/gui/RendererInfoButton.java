@@ -55,8 +55,7 @@ public class RendererInfoButton {
     }
 
     show();
-    FrEnd.panel_preferences.checkbox_display_bottom_toolbar
-      .setState(false);
+    FrEnd.preferencesProvider().setBottomToolbarCheckbox(false);
   }
 
   public void show() {

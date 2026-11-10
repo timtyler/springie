@@ -100,14 +100,14 @@ public class PanelPreferencesRendererModern {
     // at the bottom of the Renderer tab when the renderer is
     // switched -- a GridLayout gives invisible components space, so
     // setVisible cannot hide them.
-    this.raytraced_rows = FrEnd.panel_preferences_renderer_raytraced.takeEffectRows();
-    tab.add("Renderer", FrEnd.panel_preferences_shared_show.panel);
+    this.raytraced_rows = PreferencesPanels.panel_preferences_renderer_raytraced.takeEffectRows();
+    tab.add("Renderer", PreferencesPanels.panel_preferences_shared_show.panel);
 
-    tab.add("Colours", FrEnd.panel_preferences_renderer_modern_colours.panel);
+    tab.add("Colours", PreferencesPanels.panel_preferences_renderer_modern_colours.panel);
 
-    tab.add("Fog", FrEnd.panel_preferences_shared_show.panel_fog);
+    tab.add("Fog", PreferencesPanels.panel_preferences_shared_show.panel_fog);
 
-    tab.add("Labels", FrEnd.panel_preferences_shared_show.panel_labels);
+    tab.add("Labels", PreferencesPanels.panel_preferences_shared_show.panel_labels);
 
     this.panel.add(tab);
 
@@ -128,11 +128,11 @@ public class PanelPreferencesRendererModern {
     this.raytraced_hidden_rows = new Panel[] {
         panel_node_polyhedron, panel_cable_divisions,
         panel_strut_divisions, panel_link_sides,
-        FrEnd.panel_preferences_shared_misc.panel_face_lines };
+        PreferencesPanels.panel_preferences_shared_misc.panel_face_lines };
 
     this.panel_labels_row = getPanelLabelsWhen();
     // Move to the Labels tab (Tim, 2026-10-17).
-    FrEnd.panel_preferences_shared_show.panel_labels.add(this.panel_labels_row);
+    PreferencesPanels.panel_preferences_shared_show.panel_labels.add(this.panel_labels_row);
 
     // The Tiles rows move to the "Tiles" tab, the modern Misc rows
     // (node/tube tessellation) to the "Renderer" tab, and the shared
@@ -141,10 +141,10 @@ public class PanelPreferencesRendererModern {
     // Renderer tab instead.) PanelPreferencesDisplay inserts the top
     // rows at fixed indices afterwards, so the final order is stable.
     final PanelPreferencesRendererSharedShow shared_show =
-        FrEnd.panel_preferences_shared_show;
+        PreferencesPanels.panel_preferences_shared_show;
     moveRowsInto(shared_show.panel_tiles, this.panel_tiles);
     moveRowsInto(shared_show.panel_main, this.panel_misc);
-    FrEnd.panel_preferences_shared_misc.moveRowsInto(
+    PreferencesPanels.panel_preferences_shared_misc.moveRowsInto(
         shared_show.panel_main, shared_show.panel_fog);
   }
 
@@ -168,7 +168,7 @@ public class PanelPreferencesRendererModern {
    * removed first, so a repeated call cannot duplicate them.
    */
   void setRaytracedRowsVisible(final boolean visible) {
-    final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;
+    final Panel tab = PreferencesPanels.panel_preferences_shared_show.panel_main;
     for (final Panel row : this.raytraced_rows) {
       tab.remove(row);
     }
@@ -178,7 +178,7 @@ public class PanelPreferencesRendererModern {
       }
       // In fast mode the effect rows are irrelevant; syncSimpleLighting
       // removes them (Tim, 2026-10-03).
-      FrEnd.panel_preferences_renderer_raytraced.syncSimpleLighting();
+      PreferencesPanels.panel_preferences_renderer_raytraced.syncSimpleLighting();
     }
     tab.validate();
   }
@@ -195,9 +195,9 @@ public class PanelPreferencesRendererModern {
    * so a repeated call cannot duplicate it.
    */
   void setDeepestFirstRowVisible(final boolean visible) {
-    final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;
+    final Panel tab = PreferencesPanels.panel_preferences_shared_show.panel_main;
     final Panel row =
-      FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first;
+      PreferencesPanels.panel_preferences_shared_misc.panel_redraw_deepest_first;
     tab.remove(row);
     if (visible) {
       // Keep the row in its usual slot, right after Pixellation.
@@ -221,12 +221,12 @@ public class PanelPreferencesRendererModern {
    * so interleaved changes to the rows above cannot misplace them.
    */
   void setRaytracedHiddenRowsVisible(final boolean visible) {
-    final Panel tab = FrEnd.panel_preferences_shared_show.panel_main;
+    final Panel tab = PreferencesPanels.panel_preferences_shared_show.panel_main;
     for (final Panel row : this.raytraced_hidden_rows) {
       tab.remove(row);
     }
     if (visible) {
-      final Component anchor = FrEnd.panel_preferences_shared_misc.checkbox_explosions
+      final Component anchor = PreferencesPanels.panel_preferences_shared_misc.checkbox_explosions
           .getParent();
       int index = tab.getComponentCount();
       final Component[] components = tab.getComponents();
@@ -255,7 +255,7 @@ public class PanelPreferencesRendererModern {
    * the Labels tab, and the next switch lost it entirely.)
    */
   void setLabelsRowVisible(final boolean visible) {
-    final Panel tab = FrEnd.panel_preferences_shared_show.panel_labels;
+    final Panel tab = PreferencesPanels.panel_preferences_shared_show.panel_labels;
     tab.remove(this.panel_labels_row);
     if (visible) {
       // The row leads the Labels tab, ahead of the label colours.

@@ -33,7 +33,7 @@ class ScenicBackgroundRepaintIT {
       RendererDelegator.scenic_background = false;
       RendererDelegator.repaint_all_objects = false;
       RendererDelegator.repaint_some_objects = false;
-      FrEnd.panel_preferences_shared_show.checkbox_scenic_background
+      PreferencesPanels.panel_preferences_shared_show.checkbox_scenic_background
           .setState(false);
     });
   }
@@ -49,7 +49,7 @@ class ScenicBackgroundRepaintIT {
     final boolean[] scenic = new boolean[1];
     SwingUtilities.invokeAndWait(() -> {
       final Checkbox box =
-          FrEnd.panel_preferences_shared_show.checkbox_scenic_background;
+          PreferencesPanels.panel_preferences_shared_show.checkbox_scenic_background;
       // Start from a clean slate: no repaint requested.
       RendererDelegator.repaint_all_objects = false;
       RendererDelegator.repaint_some_objects = false;
@@ -76,7 +76,7 @@ class ScenicBackgroundRepaintIT {
     final boolean[] repaint_all = new boolean[1];
     SwingUtilities.invokeAndWait(() -> {
       final Checkbox box =
-          FrEnd.panel_preferences_shared_show.checkbox_scenic_background;
+          PreferencesPanels.panel_preferences_shared_show.checkbox_scenic_background;
       // Start with it on, then toggle off.
       RendererDelegator.scenic_background = true;
       box.setState(true);

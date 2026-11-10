@@ -105,24 +105,24 @@ public class PanelPreferencesDisplay {
     // first" checkbox and the "Show labels on" choice. (The
     // frames-per-second readout used to live here too; it now sits above
     // the Preferences tabs so it stays visible from any tab.)
-    final Panel renderer_main = FrEnd.panel_preferences_shared_show.panel_main;
+    final Panel renderer_main = PreferencesPanels.panel_preferences_shared_show.panel_main;
     renderer_main.add(makeDisplayTypePanel(), 0);
     renderer_main.add(getAntiAliasingPanel(), 1);
     renderer_main.add(getPixellationPanel(), 2);
     renderer_main.add(getSkipFramesPanel(), 3);
     renderer_main.add(
-        FrEnd.panel_preferences_shared_misc.panel_redraw_deepest_first, 3);
+        PreferencesPanels.panel_preferences_shared_misc.panel_redraw_deepest_first, 3);
 
     // Move the tile rows into the Renderer Main tab so the renderer
     // selector, pixellation, and tile options are all visible at the
     // same time (Tim, 2026-10-03). The Tiles tab is removed below.
-    final Panel tiles_panel = FrEnd.panel_preferences_shared_show.panel_tiles;
+    final Panel tiles_panel = PreferencesPanels.panel_preferences_shared_show.panel_tiles;
     final java.awt.Component[] tile_rows = tiles_panel.getComponents();
     tiles_panel.removeAll();
     for (final java.awt.Component row : tile_rows) {
       renderer_main.add(row);
     }
-    FrEnd.panel_preferences_renderer_original.panel_renderer_tab
+    PreferencesPanels.panel_preferences_renderer_original.panel_renderer_tab
         .add(makeDisplayTypePanel(), 0);
 
     // ...
@@ -147,7 +147,7 @@ public class PanelPreferencesDisplay {
 
     this.panel_frame.add(this.panel_main, "Center");
 
-    this.panel_main.add(FrEnd.panel_preferences_renderer_modern.panel, "Center");
+    this.panel_main.add(PreferencesPanels.panel_preferences_renderer_modern.panel, "Center");
 
     this.panel_renderer.setLayout(new BorderLayout());
 
@@ -276,38 +276,38 @@ public class PanelPreferencesDisplay {
         || value == Quality.RAYTRACED_FAST;
     // "Ray-traced (fast)" is the ray tracer with Simple lighting on.
     RendererDelegator.simple_lighting = value == Quality.RAYTRACED_FAST;
-    FrEnd.panel_preferences_renderer_raytraced.syncSimpleLighting();
+    PreferencesPanels.panel_preferences_renderer_raytraced.syncSimpleLighting();
     // The ray-traced renderer ignores the rasterizer concepts.
     final boolean no_rasterizer_concepts = raytraced;
-    FrEnd.panel_preferences_renderer_modern
+    PreferencesPanels.panel_preferences_renderer_modern
         .setRaytracedRowsVisible(no_rasterizer_concepts);
     // The depth sort does not apply to the ray-traced renderer, so its
     // option is hidden there (and the sort itself is skipped).
-    FrEnd.panel_preferences_renderer_modern
+    PreferencesPanels.panel_preferences_renderer_modern
         .setDeepestFirstRowVisible(!no_rasterizer_concepts);
     World.renderer_needs_depth_sort = !no_rasterizer_concepts;
     // The rasterizer-only rows ("Node polyhedron", "Cable/Strut
     // divisions", "Link sides", "Face lines") configure concepts
     // the ray-traced renderer ignores, so those rows are hidden there.
-    FrEnd.panel_preferences_renderer_modern
+    PreferencesPanels.panel_preferences_renderer_modern
         .setRaytracedHiddenRowsVisible(!no_rasterizer_concepts);
     // Labels are a modern-renderer feature, so the option is hidden for
     // the other renderers.
-    FrEnd.panel_preferences_renderer_modern
+    PreferencesPanels.panel_preferences_renderer_modern
         .setLabelsRowVisible(value == Quality.SOLID);
     if (value == Quality.THICK_OUTLINE) {
       RendererDelegator.renderer = new com.springie.render.modules.original.ModularRendererOld();
-      this.panel_main.add(FrEnd.panel_preferences_renderer_original.panel,
+      this.panel_main.add(PreferencesPanels.panel_preferences_renderer_original.panel,
           "Center");
     } else if (raytraced) {
       RendererDelegator.renderer = new ModularRendererRaytraced();
       // Shares the modern panel: the bin size lives there, and the
       // ray-traced renderer uses the same bins as the default renderer.
-      this.panel_main.add(FrEnd.panel_preferences_renderer_modern.panel,
+      this.panel_main.add(PreferencesPanels.panel_preferences_renderer_modern.panel,
           "Center");
     } else {
       RendererDelegator.renderer = new ModularRendererNew();
-      this.panel_main.add(FrEnd.panel_preferences_renderer_modern.panel,
+      this.panel_main.add(PreferencesPanels.panel_preferences_renderer_modern.panel,
           "Center");
     }
     this.panel_main.validate();
@@ -336,12 +336,12 @@ public class PanelPreferencesDisplay {
     this.choose_pixellation.choice
         .select(this.choose_pixellation.num_to_str(1));
 
-    FrEnd.panel_preferences_renderer_original.resetToDefaults();
-    FrEnd.panel_preferences_renderer_modern.resetToDefaults();
-    FrEnd.panel_preferences_renderer_raytraced.resetToDefaults();
-    FrEnd.panel_preferences_renderer_modern_filters.resetToDefaults();
-    FrEnd.panel_preferences_renderer_modern_colours.resetToDefaults();
-    FrEnd.panel_preferences_shared_show.resetToDefaults();
-    FrEnd.panel_preferences_shared_misc.resetToDefaults();
+    PreferencesPanels.panel_preferences_renderer_original.resetToDefaults();
+    PreferencesPanels.panel_preferences_renderer_modern.resetToDefaults();
+    PreferencesPanels.panel_preferences_renderer_raytraced.resetToDefaults();
+    PreferencesPanels.panel_preferences_renderer_modern_filters.resetToDefaults();
+    PreferencesPanels.panel_preferences_renderer_modern_colours.resetToDefaults();
+    PreferencesPanels.panel_preferences_shared_show.resetToDefaults();
+    PreferencesPanels.panel_preferences_shared_misc.resetToDefaults();
   }
 }

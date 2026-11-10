@@ -80,11 +80,11 @@ class BoundaryBoxCheckboxIT {
   void checkboxLivesOnViewpointTabNotUniverse() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       final Checkbox onViewpoint = findBoundaryBoxCheckbox(
-          FrEnd.panel_preferences_viewpoint.panel);
+          PreferencesPanels.panel_preferences_viewpoint.panel);
       assertNotNull(onViewpoint,
           "the Show boundary box checkbox must be on the Viewpoint tab");
       assertTrue(
-          contains(FrEnd.panel_preferences_viewpoint.panel, onViewpoint),
+          contains(PreferencesPanels.panel_preferences_viewpoint.panel, onViewpoint),
           "the checkbox must be reachable from the Viewpoint panel");
       assertNull(findBoundaryBoxCheckbox(FrEnd.panel_universe.panel),
           "the Show boundary box checkbox must not be on the Universe tab");
@@ -95,7 +95,7 @@ class BoundaryBoxCheckboxIT {
   void checkboxTogglesTheFlag() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       final Checkbox checkbox =
-          FrEnd.panel_preferences_viewpoint.checkbox_show_boundary_box;
+          PreferencesPanels.panel_preferences_viewpoint.checkbox_show_boundary_box;
       assertNotNull(checkbox, "expected the checkbox field to exist");
       clickCheckbox(checkbox, ItemEvent.SELECTED);
       assertTrue(RendererDelegator.show_boundary_box, "checking must turn the dots on");
@@ -108,7 +108,7 @@ class BoundaryBoxCheckboxIT {
   void togglingRequestsAFullCanvasRedraw() throws Exception {
     SwingUtilities.invokeAndWait(() -> {
       final Checkbox checkbox =
-          FrEnd.panel_preferences_viewpoint.checkbox_show_boundary_box;
+          PreferencesPanels.panel_preferences_viewpoint.checkbox_show_boundary_box;
       assertNotNull(checkbox, "expected the checkbox field to exist");
       RendererDelegator.repaint_all_objects = false;
       clickCheckbox(checkbox, ItemEvent.DESELECTED);

@@ -104,13 +104,13 @@ public class PanelPreferencesRendererModernColours {
     panel_label_bg.add(this.panel_colours_label_background.panel, BorderLayout.CENTER);
     panel_label_colors.add(panel_label_fg);
     panel_label_colors.add(panel_label_bg);
-    FrEnd.panel_preferences_shared_show.panel_labels.add(panel_label_colors);
+    PreferencesPanels.panel_preferences_shared_show.panel_labels.add(panel_label_colors);
 
     this.tab_colours_main.add("General", this.tab_colours_general);
     // The colour filters live here too: the Filled:/Wireframe: choices
     // pick "Colour-A"/"Colour-B", whose pickers sit on this card.
     this.tab_colours_main.add("Filters",
-        FrEnd.panel_preferences_renderer_modern_filters.panel);
+        PreferencesPanels.panel_preferences_renderer_modern_filters.panel);
 
     this.panel.add(this.tab_colours_main);
   }

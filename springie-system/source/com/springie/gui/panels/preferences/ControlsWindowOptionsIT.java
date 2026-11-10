@@ -167,7 +167,7 @@ class ControlsWindowOptionsIT {
     final Choice[] choice = new Choice[1];
     final int[] item_count = new int[1];
     SwingUtilities.invokeAndWait(() -> {
-      choice[0] = findChoice(FrEnd.panel_preferences.panel,
+      choice[0] = findChoice(PreferencesPanels.panel_preferences.panel,
           GUIStrings.CONTROL_WINDOW_ALWAYS_ON_TOP);
       if (choice[0] != null) {
         item_count[0] = choice[0].getItemCount();
@@ -193,7 +193,7 @@ class ControlsWindowOptionsIT {
     SwingUtilities.invokeAndWait(() -> {
       UniverseState.controls_window_mode = UniverseState.CONTROLS_ALWAYS_ON_TOP;
       FrEnd.applyControlsWindowOptions();
-      FrEnd.panel_preferences.resetPreferences();
+      PreferencesPanels.panel_preferences.resetPreferences();
       mode[0] = UniverseState.controls_window_mode;
     });
     assertEquals(UniverseState.CONTROLS_DOCKED, mode[0],
@@ -373,7 +373,7 @@ class ControlsWindowOptionsIT {
       controls.setVisible(true);
       findTabbedPanel(controls).show("Preferences");
       controls.validate();
-      choice[0] = findChoice(FrEnd.panel_preferences.panel,
+      choice[0] = findChoice(PreferencesPanels.panel_preferences.panel,
           GUIStrings.CONTROL_WINDOW_DOCKED);
       // Walk up the ancestors: the choice rectangle must sit fully
       // inside each of them, otherwise some parent is clipping it.

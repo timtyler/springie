@@ -119,7 +119,7 @@ class PreferencesResetIT {
           "separate controls frame should be hidden when docked");
 
       SwingUtilities.invokeAndWait(
-          () -> FrEnd.panel_preferences.resetPreferences());
+          () -> PreferencesPanels.panel_preferences.resetPreferences());
 
       // Every static is back at its default...
       assertTrue(World.render_nodes);

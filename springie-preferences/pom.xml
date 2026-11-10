@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Springie preferences module: the Preferences tab's panels
+  (com.springie.gui.panels.preferences), split out of springie-gui
+  as a conceptual module of their own (Tim, 2026-11-09), the same
+  treatment springie-system got for the integration tests.
+
+  The panels keep their package and their code; they reach the rest
+  of the GUI through FrEnd as before. FrEnd cannot depend on this
+  module (it sits above springie-gui), so the panels' construction
+  moved here (PreferencesPanels) and FrEnd discovers the handful of
+  operations it needs through FrEnd.PreferencesProvider, loaded via
+  ServiceLoader, the pattern World uses for its PresetProvider.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.springie</groupId>
+    <artifactId>springie-parent</artifactId>
+    <version>1.03</version>
+  </parent>
+
+  <artifactId>springie-preferences</artifactId>
+  <name>Springie preferences</name>
+  <description>The Preferences tab panels: display, viewpoint, renderer and misc settings UI.</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.springie</groupId>
+      <artifactId>springie-gui</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.springie</groupId>
+      <artifactId>springie-gui-widgets</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.springie</groupId>
+      <artifactId>springie-renderer</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.springie</groupId>
+      <artifactId>springie-engine</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.springie</groupId>
+      <artifactId>springie</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+</project>
