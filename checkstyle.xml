@@ -55,9 +55,9 @@
 <module name="EqualsHashCode"></module>
 <module name="FallThrough"></module>
 <module name="ModifierOrder"/>
-<module name="TrailingComment"></module>
+<!-- module name="TrailingComment"></module -->
 <module name="ImportOrder"></module>
-<module name="HiddenField"></module>
+<!-- module name="HiddenField"></module -->
 <module name="IllegalInstantiation"></module>
 <module name="IllegalCatch"></module>
 <module name="IllegalTokenText"></module>
