@@ -59,6 +59,27 @@
             <argument>${project.build.directory}/${project.build.finalName}.jar</argument>
           </arguments>
         </configuration>
+        <executions>
+          <execution>
+            <!-- This module builds last, so at verify time every module's
+                 checkstyle result file for this build is on disk. Print
+                 the cross-module totals and save them to
+                 target/checkstyle-summary.txt. Informational only. -->
+            <id>checkstyle-summary</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>${java.home}/bin/java</executable>
+              <arguments>
+                <argument>${project.basedir}/tools/CheckstyleSummary.java</argument>
+                <argument>${project.basedir}/..</argument>
+                <argument>${project.build.directory}/checkstyle-summary.txt</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
