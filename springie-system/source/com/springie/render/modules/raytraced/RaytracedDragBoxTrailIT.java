@@ -36,6 +36,9 @@ class RaytracedDragBoxTrailIT {
   @BeforeAll
   static void boot() throws Exception {
     GuiTestSupport.bootApp();
+    // The assertions read real screen pixels: skip, rather than
+    // fail, when the desktop cannot give a clean capture.
+    GuiTestSupport.assumeCleanDesktop();
   }
 
   @AfterAll
@@ -130,6 +133,7 @@ class RaytracedDragBoxTrailIT {
       // poll just adds dead time between a visible frame and its capture.
       Thread.sleep(5);
     }
+    GuiTestSupport.abortIfDesktopUnclean(what);
     assertTrue(false, what);
   }
 

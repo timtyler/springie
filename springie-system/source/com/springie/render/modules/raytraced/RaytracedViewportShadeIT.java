@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * The grey border outside the viewpoint box must survive ray-traced
@@ -38,9 +39,17 @@ public class RaytracedViewportShadeIT {
   @BeforeAll
   static void setUpOnce() throws Exception {
     GuiTestSupport.bootApp();
+    // Capture the state @AfterAll restores BEFORE the guard: the
+    // teardown runs even when the guard aborts the class, and it
+    // must never restore a never-captured null over the live state.
     saved_shift_x = Coords.shift_constant_x;
     SwingUtilities.invokeAndWait(() -> {
       saved_renderer = RendererDelegator.renderer;
+    });
+    // The assertions read real screen pixels: skip, rather than
+    // fail, when the desktop cannot give a clean capture.
+    GuiTestSupport.assumeCleanDesktop();
+    SwingUtilities.invokeAndWait(() -> {
       RendererDelegator.renderer = new ModularRendererRaytraced();
       World.paused = true;
       RendererDelegator.canvas.forceResize();
@@ -153,6 +162,28 @@ public class RaytracedViewportShadeIT {
     }
 
     final int h = img.getHeight();
+    boolean grey = true;
+    for (int x = 10; x <= 40; x += 10) {
+      if (img.getRGB(x, h / 2) != 0xFF808080) {
+        grey = false;
+        break;
+      }
+    }
+    if (!grey) {
+      // The strip never read grey. If the captures stopped showing
+      // the app at all (uniformly black, or the window lost the
+      // foreground), that is the desktop failing the test, not the
+      // shade: skip instead of failing. On a clean desktop these
+      // checks pass and the assertions below fail as before.
+      if (GuiTestSupport.captureIsBlank(img)) {
+        assumeTrue(false,
+            "screen-capture test skipped: captures are uniformly"
+                + " black -- the display is asleep, locked, or not"
+                + " the one being captured");
+      }
+      GuiTestSupport.abortIfDesktopUnclean(
+          "grey border after a ray-traced frame");
+    }
     // Well inside the strip (box left edge >= ~68px even at the back
     // corners), clear of the model and the boundary-box dots.
     for (int x = 10; x <= 40; x += 10) {

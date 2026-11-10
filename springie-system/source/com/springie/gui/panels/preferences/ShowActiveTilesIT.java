@@ -59,10 +59,16 @@ class ShowActiveTilesIT {
   @BeforeAll
   static void boot() throws Exception {
     GuiTestSupport.bootApp();
+    // Capture the state @AfterAll restores BEFORE the guard: the
+    // teardown runs even when the guard aborts the class, and it
+    // must never restore a never-captured null over the live state.
     SwingUtilities.invokeAndWait(() -> {
       saved_renderer = RendererDelegator.renderer;
       saved_paused = World.paused;
     });
+    // The assertions read real screen pixels: skip, rather than
+    // fail, when the desktop cannot give a clean capture.
+    GuiTestSupport.assumeCleanDesktop();
   }
 
   /**
@@ -165,6 +171,7 @@ class ShowActiveTilesIT {
       // the catch and can alias against the paint rhythm under load.
       Thread.sleep(20);
     }
+    GuiTestSupport.abortIfDesktopUnclean(what);
     fail(what + ": saw " + red + " red pixels, expected more than "
         + (baseline_red + OUTLINE_RED_MARGIN) + ". Failing capture saved to "
         + saveFailureShot() + " (captured area " + this.last_capture_area
@@ -199,6 +206,7 @@ class ShowActiveTilesIT {
       }
       Thread.sleep(20);
     }
+    GuiTestSupport.abortIfDesktopUnclean(what);
     assertEquals(expected_red, red,
         () -> what + ". Failing capture saved to " + saveFailureShot()
             + " (captured area " + this.last_capture_area + ")");
@@ -293,6 +301,7 @@ class ShowActiveTilesIT {
       }
       Thread.sleep(20);
     }
+    GuiTestSupport.abortIfDesktopUnclean(what);
     assertEquals(expected_red, red,
         () -> what + ". Failing capture saved to " + saveFailureShot()
             + " (captured area " + this.last_capture_area + ")");

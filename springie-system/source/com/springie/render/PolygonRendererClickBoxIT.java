@@ -53,6 +53,9 @@ public class PolygonRendererClickBoxIT {
   @BeforeAll
   static void boot() throws Exception {
     GuiTestSupport.bootApp();
+    // The assertions read real screen pixels: skip, rather than
+    // fail, when the desktop cannot give a clean capture.
+    GuiTestSupport.assumeCleanDesktop();
   }
 
   @AfterAll
@@ -123,6 +126,11 @@ public class PolygonRendererClickBoxIT {
       // condition that is in fact being met every frame.
       Thread.sleep(5);
     }
+    // A wait can also time out because the desktop stopped being
+    // usable (window covered, machine in use); that is a skip, not
+    // a failure. On a clean desktop this returns and the wait fails
+    // as before.
+    GuiTestSupport.abortIfDesktopUnclean(what);
     throw new AssertionError("timed out waiting for: " + what);
   }
 
@@ -141,6 +149,7 @@ public class PolygonRendererClickBoxIT {
       }
       Thread.sleep(5);
     }
+    GuiTestSupport.abortIfDesktopUnclean(what);
     assertEquals(0, remaining, what);
   }
 
