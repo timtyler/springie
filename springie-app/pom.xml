@@ -61,12 +61,14 @@
         </configuration>
         <executions>
           <execution>
-            <!-- This module builds last, so at verify time every module's
-                 checkstyle result file for this build is on disk. Print
-                 the cross-module totals and save them to
+            <!-- This module builds last, so by package time every module's
+                 checkstyle result file for this build is on disk. Bound to
+                 package so the totals print on mvn package as well as on
+                 mvn verify (which passes through package). Print the
+                 cross-module totals and save them to
                  target/checkstyle-summary.txt. Informational only. -->
             <id>checkstyle-summary</id>
-            <phase>verify</phase>
+            <phase>package</phase>
             <goals>
               <goal>exec</goal>
             </goals>
