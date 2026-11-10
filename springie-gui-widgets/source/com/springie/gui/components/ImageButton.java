@@ -381,9 +381,10 @@ public class ImageButton extends Canvas implements ActionListener {
   }
 
   private static java.awt.Window findWindowAncestor(java.awt.Component c) {
-    while (c != null && !(c instanceof java.awt.Window)) {
-      c = c.getParent();
+    java.awt.Component node = c;
+    while (node != null && !(node instanceof java.awt.Window)) {
+      node = node.getParent();
     }
-    return (java.awt.Window) c;
+    return (java.awt.Window) node;
   }
 }

@@ -79,17 +79,19 @@ public final class ScenicBackground {
   public static int sampleClamped(final BufferedImage image, int x, int y) {
     final int w = image.getWidth();
     final int h = image.getHeight();
-    if (x < 0) {
-      x = 0;
-    } else if (x >= w) {
-      x = w - 1;
+    int cx = x;
+    int cy = y;
+    if (cx < 0) {
+      cx = 0;
+    } else if (cx >= w) {
+      cx = w - 1;
     }
-    if (y < 0) {
-      y = 0;
-    } else if (y >= h) {
-      y = h - 1;
+    if (cy < 0) {
+      cy = 0;
+    } else if (cy >= h) {
+      cy = h - 1;
     }
-    return image.getRGB(x, y);
+    return image.getRGB(cx, cy);
   }
 
   /**

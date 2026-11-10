@@ -330,6 +330,7 @@ final class Raytracer {
       final boolean[] visited, final int[] flood, int top,
       final int[] grid_x, final int[] grid_y, final int grid_w,
       final int grid_h) {
+    int stack_top = top;
     for (int s = 0; s < grid_x.length; s++) {
       final int cx = grid_x[s];
       final int cy = grid_y[s];
@@ -400,20 +401,20 @@ final class Raytracer {
           stats.add(sx, sy);
         }
         if (sx > 0) {
-          flood[top++] = idx - 1;
+          flood[stack_top++] = idx - 1;
         }
         if (sx + 1 < width) {
-          flood[top++] = idx + 1;
+          flood[stack_top++] = idx + 1;
         }
         if (sy > 0) {
-          flood[top++] = idx - width;
+          flood[stack_top++] = idx - width;
         }
         if (sy + 1 < height) {
-          flood[top++] = idx + width;
+          flood[stack_top++] = idx + width;
         }
       }
     }
-    return top;
+    return stack_top;
   }
 
   private static void renderTileFloodFill(final int x0, final int y0, final int width,

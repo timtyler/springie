@@ -986,47 +986,51 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       int divisor, final int width, final int height,
       long x0, long y0, long x1, long y1) {
     final int px = RendererDelegator.pixellation;
+    long dirty_x0 = x0;
+    long dirty_y0 = y0;
+    long dirty_x1 = x1;
+    long dirty_y1 = y1;
     if (px > 1) {
-      x0 -= px;
-      y0 -= px;
-      x1 += px;
-      y1 += px;
+      dirty_x0 -= px;
+      dirty_y0 -= px;
+      dirty_x1 += px;
+      dirty_y1 += px;
     }
     if (RendererTileManager.one_big_tile) {
       // Tim: one big tile -- there's only tile 0, mark it dirty.
       // Clamp to the canvas.
-      if (x1 < 0 || y1 < 0 || x0 >= width || y0 >= height) {
+      if (dirty_x1 < 0 || dirty_y1 < 0 || dirty_x0 >= width || dirty_y0 >= height) {
         return;
       }
-      if (x0 < 0) {
-        x0 = 0;
+      if (dirty_x0 < 0) {
+        dirty_x0 = 0;
       }
-      if (y0 < 0) {
-        y0 = 0;
+      if (dirty_y0 < 0) {
+        dirty_y0 = 0;
       }
-      if (x1 >= width) {
-        x1 = width - 1;
+      if (dirty_x1 >= width) {
+        dirty_x1 = width - 1;
       }
-      if (y1 >= height) {
-        y1 = height - 1;
+      if (dirty_y1 >= height) {
+        dirty_y1 = height - 1;
       }
-      rects[0].unionBox(x0, y0, x1, y1);
+      rects[0].unionBox(dirty_x0, dirty_y0, dirty_x1, dirty_y1);
       return;
     }
-    if (x1 < 0 || y1 < 0 || x0 >= width || y0 >= height) {
+    if (dirty_x1 < 0 || dirty_y1 < 0 || dirty_x0 >= width || dirty_y0 >= height) {
       return;
     }
-    if (x0 < 0) {
-      x0 = 0;
+    if (dirty_x0 < 0) {
+      dirty_x0 = 0;
     }
-    if (y0 < 0) {
-      y0 = 0;
+    if (dirty_y0 < 0) {
+      dirty_y0 = 0;
     }
-    if (x1 >= width) {
-      x1 = width - 1;
+    if (dirty_x1 >= width) {
+      dirty_x1 = width - 1;
     }
-    if (y1 >= height) {
-      y1 = height - 1;
+    if (dirty_y1 >= height) {
+      dirty_y1 = height - 1;
     }
     // Clamped to the canvas, every (tx, ty) in range names a real tile:
     // only the trailing column/row past the canvas edge was dropped from
@@ -1034,23 +1038,23 @@ public class ModularRendererRaytraced implements ModularRendererBase {
     // Uses the shared tile-index logic (Tim, 2026-10-03) so the ray tracer
     // agrees with the polygon renderer on tile boundaries.
     final int tx0 = com.springie.render.modules.modern.RendererTileManager
-        .tileForPixel((int) x0, divisor);
+        .tileForPixel((int) dirty_x0, divisor);
     final int tx1 = com.springie.render.modules.modern.RendererTileManager
-        .tileForMaxPixel((int) x1, divisor);
+        .tileForMaxPixel((int) dirty_x1, divisor);
     final int ty0 = com.springie.render.modules.modern.RendererTileManager
-        .tileForPixel((int) y0, divisor);
+        .tileForPixel((int) dirty_y0, divisor);
     final int ty1 = com.springie.render.modules.modern.RendererTileManager
-        .tileForMaxPixel((int) y1, divisor);
+        .tileForMaxPixel((int) dirty_y1, divisor);
     for (int ty = ty0; ty <= ty1; ty++) {
       final int row = ty * nx;
       for (int tx = tx0; tx <= tx1; tx++) {
         final Tile tile = tiles[row + tx];
-        final long cx0 = Math.max(x0, tile.x0);
-        final long cy0 = Math.max(y0, tile.y0);
+        final long cx0 = Math.max(dirty_x0, tile.x0);
+        final long cy0 = Math.max(dirty_y0, tile.y0);
         final long cx1 =
-            Math.min(x1, (long) tile.x0 + tile.width - 1);
+            Math.min(dirty_x1, (long) tile.x0 + tile.width - 1);
         final long cy1 =
-            Math.min(y1, (long) tile.y0 + tile.height - 1);
+            Math.min(dirty_y1, (long) tile.y0 + tile.height - 1);
         if (cx0 > cx1 || cy0 > cy1) {
           continue;
         }
