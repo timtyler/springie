@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * discarded, so Properties > Scalars stayed empty no matter what was
  * selected.
  */
-class UpdateEnabledComponentsTest {
+class UpdateEnabledComponentsIT {
 
   private static int scalarsChildCount() throws Exception {
     final int[] count = new int[1];

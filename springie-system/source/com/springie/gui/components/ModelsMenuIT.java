@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-class ModelsMenuTest {
+class ModelsMenuIT {
 
   @BeforeEach
   void setUp() throws Exception {
