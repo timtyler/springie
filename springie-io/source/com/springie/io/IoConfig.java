@@ -24,8 +24,8 @@ public class IoConfig {
   public static int import_scale = 94;
 
   // Callbacks the application wires up (replaces FrEnd.reflect* calls).
-  public static Runnable after_property_editing = () -> {};
-  public static Runnable after_serious_editing = () -> {};
-  public static Runnable on_reset = () -> {};
-  public static java.util.function.Consumer<String> set_file_path = (s) -> {};
+  public static Runnable after_property_editing = () -> { };
+  public static Runnable after_serious_editing = () -> { };
+  public static Runnable on_reset = () -> { };
+  public static java.util.function.Consumer<String> set_file_path = s -> { };
 }

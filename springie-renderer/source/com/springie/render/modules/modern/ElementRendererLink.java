@@ -5,11 +5,11 @@ package com.springie.render.modules.modern;
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.links.Link;
 import com.springie.elements.nodes.Node;
+import com.springie.geometry.Coords;
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
-import com.springie.utilities.WriteFloatingPoint;
-import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
+import com.springie.utilities.WriteFloatingPoint;
 import java.util.ArrayList;
 import java.util.WeakHashMap;
 
@@ -292,7 +292,7 @@ public final class ElementRendererLink {
         // Per-output-channel diffuse: sum each light's factor scaled
         // by its color.
         synchronized (LightSource.class) {
-          if (LightSource.colored_lighting)
+          if (LightSource.colored_lighting) {
           for (final Light light : LightSource.lights) {
             if (light.intensity_pct <= 0) {
               continue;
@@ -346,6 +346,7 @@ public final class ElementRendererLink {
                 spec_b_l += spec * lb / 255.0;
               }
             }
+          }
           }
         }
         r_factor = Math.min(1.0, r_factor);

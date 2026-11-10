@@ -7,9 +7,9 @@ import com.springie.elements.base.BaseElement;
 import com.springie.elements.clazz.ClazzFactory;
 import com.springie.elements.lists.ListOfIntegers;
 import com.springie.elements.nodegrid.GridOfBinsForCachedNodes;
+import com.springie.geometry.Coords;
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
-import com.springie.geometry.Coords;
 import com.springie.world.World;
 
 /**
@@ -169,42 +169,50 @@ public class Node extends BaseElement {
           int temp_x = temp3 >> 24;
           int temp_y = (temp3 << 8) >> 24;
 
-          if (World.explosion_spawner != null) World.explosion_spawner.spawnParticle(_x - cos_tab[temp] * this.type.radius, _y
+          if (World.explosion_spawner != null) {
+            World.explosion_spawner.spawnParticle(_x - cos_tab[temp] * this.type.radius, _y
             - sin_tab[temp] * _r, _dx
             - ((cos_tab[temp] * temp_radius) >> lut_shift) + temp_x, _dy
             - ((sin_tab[temp] * temp_radius) >> lut_shift) + temp_y,
             0);
+          }
           //temp++;
           temp_radius = 0x100 + ((temp3 >> 8) & 0xff);
           temp_x = (temp3 << 22) >> 24;
           temp_y = (temp3 << 18) >> 24;
 
-          if (World.explosion_spawner != null) World.explosion_spawner.spawnParticle(_x - cos_tab[temp] * this.type.radius, _y
+          if (World.explosion_spawner != null) {
+            World.explosion_spawner.spawnParticle(_x - cos_tab[temp] * this.type.radius, _y
             - sin_tab[temp] * _r, _dx
             - ((cos_tab[temp] * temp_radius) >> lut_shift) + temp_x, _dy
             - ((sin_tab[temp] * temp_radius) >> lut_shift) + temp_y,
             0);
+          }
 
           //temp++;
           temp_radius = 0x100 + ((temp3 >> 10) & 0xff);
           temp_x = (temp3 << 12) >> 24;
           temp_y = (temp3 << 4) >> 24;
 
-          if (World.explosion_spawner != null) World.explosion_spawner.spawnParticle(_x - cos_tab[temp] * this.type.radius, _y
+          if (World.explosion_spawner != null) {
+            World.explosion_spawner.spawnParticle(_x - cos_tab[temp] * this.type.radius, _y
             - sin_tab[temp] * _r, _dx
             - ((cos_tab[temp] * temp_radius) >> lut_shift) + temp_x, _dy
             - ((sin_tab[temp] * temp_radius) >> lut_shift) + temp_y,
             1);
+          }
           //temp++;
           temp_radius = 0x100 + ((temp3 >> 12) & 0xff);
           temp_x = (temp3 << 16) >> 24;
           temp_y = (temp3 << 20) >> 24;
 
-          if (World.explosion_spawner != null) World.explosion_spawner.spawnParticle(_x - cos_tab[temp] * this.type.radius, _y
+          if (World.explosion_spawner != null) {
+            World.explosion_spawner.spawnParticle(_x - cos_tab[temp] * this.type.radius, _y
             - sin_tab[temp] * _r, _dx
             - ((cos_tab[temp] * temp_radius) >> lut_shift) + temp_x, _dy
             - ((sin_tab[temp] * temp_radius) >> lut_shift) + temp_y,
             2);
+          }
         }
 
         final int temp5 = ((20 * 256) / this.type.radius) + 1;
@@ -216,10 +224,12 @@ public class Node extends BaseElement {
           final int temp_x = 0;
           final int temp_y = 0;
 
-          if (World.explosion_spawner != null) World.explosion_spawner.spawnFragment(_x - cos_tab[temp] * _r, _y - sin_tab[temp]
+          if (World.explosion_spawner != null) {
+            World.explosion_spawner.spawnFragment(_x - cos_tab[temp] * _r, _y - sin_tab[temp]
             * _r, _x - cos_tab[temp4] * _r, _y - sin_tab[temp4] * _r, _dx
             - ((cos_tab[temp] * temp_radius) >> lut_shift) + temp_x, _dy
             - ((sin_tab[temp] * temp_radius) >> lut_shift) + temp_y, 1024);
+          }
         }
       }
     }

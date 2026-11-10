@@ -2,14 +2,14 @@
 
 package com.springie.io.in;
 
-import com.springie.io.IoConfig;
-
 import com.springie.context.ContextManager;
 import com.springie.elements.CompassPoint;
 import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
+import com.springie.elements.nodes.PostModification;
+import com.springie.io.IoConfig;
 import com.springie.io.in.readers.crudeclay.ReaderCrudeClay;
 import com.springie.io.in.readers.dat.ReaderDAT;
 import com.springie.io.in.readers.dat.ReaderDATExecutor;
@@ -27,8 +27,6 @@ import com.springie.io.in.readers.spr.ReaderSPRExecutor;
 import com.springie.io.in.readers.tensegrity.ReaderTens;
 import com.springie.io.in.readers.wrl.ReaderWRL;
 import com.springie.io.in.readers.wrl.ReaderWRLExecutor;
-import com.springie.io.in.DeriveLinkRadiusFromNodeRadius;
-import com.springie.elements.nodes.PostModification;
 import com.springie.muscles.Muscles;
 import com.springie.world.World;
 import com.tifsoft.utilities.execute.Executor;

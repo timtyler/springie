@@ -2,7 +2,6 @@
 
 package com.springie.gui.panels.preferences;
 
-import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
 import com.springie.render.RendererDelegator;
 import java.awt.Checkbox;

@@ -2,16 +2,13 @@
 
 package com.springie.modification.projection;
 
-import com.springie.modification.CommandContextHolder;
-
-import com.springie.modification.CommandContextHolder;
-
 import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.geometry.Point3D;
+import com.springie.modification.CommandContextHolder;
 
 public class RescaleManager {
   int[] link_length;

@@ -12,7 +12,7 @@ package com.springie.modification;
 public final class CommandContextHolder {
   private static CommandContext context;
 
-  private CommandContextHolder() {}
+  private CommandContextHolder() { }
 
   public static void set(final CommandContext ctx) {
     context = ctx;

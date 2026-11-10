@@ -1,14 +1,13 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.render.modules.modern;
-import com.springie.world.World;
-
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.nodes.Node;
+import com.springie.geometry.Coords;
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
-import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
+import com.springie.world.World;
 import java.awt.Point;
 import java.util.ArrayList;
 
@@ -71,7 +70,7 @@ public final class ElementRendererNode {
           // Per-output-channel diffuse: sum each light's factor scaled
           // by its color.
           synchronized (LightSource.class) {
-            if (LightSource.colored_lighting)
+            if (LightSource.colored_lighting) {
             for (final Light light : LightSource.lights) {
               if (light.intensity_pct <= 0) {
                 continue;
@@ -117,6 +116,7 @@ public final class ElementRendererNode {
                 spec_g_n += spec * lg / 255.0;
                 spec_b_n += spec * lb / 255.0;
               }
+            }
             }
           }
           r_factor = Math.min(1.0, r_factor);

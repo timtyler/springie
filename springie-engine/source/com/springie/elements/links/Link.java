@@ -5,10 +5,10 @@ package com.springie.elements.links;
 import com.springie.elements.base.BaseElement;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.nodes.Node;
+import com.springie.geometry.Coords;
 import com.springie.geometry.Point3D;
 import com.springie.muscles.Controller;
 import com.springie.muscles.Muscles;
-import com.springie.geometry.Coords;
 import com.springie.utilities.math.SquareRoot;
 import com.springie.utilities.random.JUR;
 import com.springie.world.World;
@@ -557,8 +557,10 @@ public class Link extends BaseElement {
           final int temp4 = (temp3 << 8) >> 23;
           temp3 = temp3 >> 23;
 
-          if (World.explosion_spawner != null) World.explosion_spawner.spawnFragment(start_x, start_y, start_x + d_x, start_y
+          if (World.explosion_spawner != null) {
+            World.explosion_spawner.spawnFragment(start_x, start_y, start_x + d_x, start_y
               + d_y, start_dx + temp3, start_dy + temp4, 4);
+          }
           start_x += d_x;
           start_y += d_y;
           start_dx += d_dx;

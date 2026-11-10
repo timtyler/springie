@@ -2,7 +2,6 @@
 
 package com.springie.gui.panels.preferences;
 
-import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
 import com.springie.render.RendererDelegator;
 import java.awt.Checkbox;
@@ -72,9 +71,13 @@ class PanelPreferencesRendererRaytracedIT {
     try {
       SwingUtilities.invokeAndWait(() -> {
         final Checkbox shadows = effectCheckbox("Shadows");
-        if (shadows != null) shadows.setState(false);
+        if (shadows != null) {
+          shadows.setState(false);
+        }
         final Checkbox specular = effectCheckbox("Specular");
-        if (specular != null) specular.setState(true);
+        if (specular != null) {
+          specular.setState(true);
+        }
       });
     } catch (Exception e) {
       // Panel not yet created; ignore.

@@ -1,8 +1,6 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.render.modules.raytraced;
-import com.springie.world.World;
-
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.Link;
@@ -15,6 +13,7 @@ import com.springie.render.RendererDelegator;
 import com.springie.render.ScenicBackground;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.modules.modern.RendererTileManager;
+import com.springie.world.World;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -341,8 +340,8 @@ public class ModularRendererRaytraced implements ModularRendererBase {
       // Simple lighting bypasses shadows, so they don't make the frame
       // global in fast mode. (The scenic background and background
       // colour changes still do.) (Tim, 2026-10-03)
-      final boolean global = (RendererDelegator.shadows
-              && !RendererDelegator.simple_lighting)
+      final boolean global = RendererDelegator.shadows
+              && !RendererDelegator.simple_lighting
           || RendererDelegator.scenic_background || background_changed
           || com.springie.render.modules.modern.LightSource.light_moved;
       // Remember for the blit: the flag is cleared now, but the blit

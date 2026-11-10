@@ -104,7 +104,7 @@ public class WobbleMeter {
    * only the selected links are.
    */
   public static void sampleIfActive(final LinkManager link_manager) {
-    if ((!active && !optimizing) || link_manager == null) {
+    if (!active && !optimizing || link_manager == null) {
       return;
     }
     final boolean any_selected = link_manager.getNumberOfSelected() > 0;

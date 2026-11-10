@@ -1,8 +1,6 @@
 package com.springie.elements.nodes;
 
 import com.springie.elements.clazz.Clazz;
-import com.springie.elements.nodes.Node;
-import com.springie.elements.nodes.NodeManager;
 
 public class PrepareToModifyNodeClazzes {
   NodeManager node_manager;

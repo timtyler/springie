@@ -29,11 +29,11 @@ public interface CommandContext {
 
   void updateGUIToReflectSelectionChange();
 
-  void killAllLinks(final Node node);
+  void killAllLinks(Node node);
 
   void greyStepIfNeeded();
 
-  void setFilePath(final String path);
+  void setFilePath(String path);
 
   // Panel reflect methods (Tim, 2026-10-13, Phase 2).
   void reflectCharge();

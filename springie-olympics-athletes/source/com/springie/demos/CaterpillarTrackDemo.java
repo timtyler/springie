@@ -2,9 +2,8 @@
 
 package com.springie.demos;
 
-import com.springie.elements.CompassPoint;
-
 import com.springie.context.ContextManager;
+import com.springie.elements.CompassPoint;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
@@ -12,11 +11,11 @@ import com.springie.elements.links.LinkType;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
+import com.springie.geometry.Coords;
 import com.springie.geometry.Point3D;
 import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
 import com.springie.muscles.Oscillator;
-import com.springie.geometry.Coords;
 import com.springie.world.World;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -158,9 +157,9 @@ public final class CaterpillarTrackDemo {
   private static boolean keep(final int ring, final int i) {
     final int mod = i % 3;
     // Ring 0: XXO, Ring 1: XOX, Ring 2: OXX (X=delete, O=keep).
-    return (ring == 0 && mod == 2)
-        || (ring == 1 && mod == 1)
-        || (ring == 2 && mod == 0);
+    return ring == 0 && mod == 2
+        || ring == 1 && mod == 1
+        || ring == 2 && mod == 0;
   }
 
   /** Squared 3D distance between two nodes (descaled, for comparisons). */

@@ -2,7 +2,6 @@
 
 package com.springie.gui.panels.preferences;
 
-import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
 import java.awt.Choice;
 import java.awt.Component;

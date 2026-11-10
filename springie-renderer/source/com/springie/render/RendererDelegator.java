@@ -1,17 +1,16 @@
 package com.springie.render;
-import com.springie.geometry.Coords;
-import com.springie.world.World;
-
 import com.springie.composite.Reproduction;
 import com.springie.context.ContextManager;
 import com.springie.explosions.fragments.LineFragmentManager;
 import com.springie.explosions.particles.ParticleManager;
+import com.springie.geometry.Coords;
 import com.springie.metrics.DampingOptimizer;
 import com.springie.metrics.WobbleMeter;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;
 import com.springie.utilities.random.JUR;
+import com.springie.world.World;
 import com.springie.world.WorldManager;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -465,8 +464,8 @@ public final class RendererDelegator {
     // (above), but the pixel rendering is skipped entirely. Skip frames
     // renders 1 in N frames in normal (non-headless) mode.
     final boolean skip_frame = World.headless
-        || (World.headless_render_every > 1
-            && (generation % World.headless_render_every != 0));
+        || World.headless_render_every > 1
+            && generation % World.headless_render_every != 0;
     if ((!hold || renderer.hasStagedFrame()) && !skip_frame) {
       renderer.repaint(graphics, ContextManager.getNodeManager());
     }
