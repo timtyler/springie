@@ -1,8 +1,6 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.gestures;
-import com.springie.world.World;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.base.BaseElement;
@@ -11,12 +9,13 @@ import com.springie.elements.faces.FaceType;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkType;
 import com.springie.elements.nodes.Node;
-import com.springie.geometry.Point3D;
 import com.springie.geometry.Coords;
+import com.springie.geometry.Point3D;
 import com.springie.render.RendererDelegator;
 import com.springie.render.SceneRenderer;
 import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;
+import com.springie.world.World;
 
 public class PerformSelection {
   public static int INFECTION_START = World.INFECTION_START;

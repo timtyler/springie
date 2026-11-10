@@ -1,10 +1,5 @@
 package com.springie.io.out.writers.eig;
 
-import com.springie.io.in.redundancy.RedundancyRemover;
-
-import com.springie.io.IoConfig;
-
-
 import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.faces.Face;
@@ -16,11 +11,13 @@ import com.springie.elements.links.LinkType;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
-import com.springie.geometry.Point3D;
-import com.springie.io.out.GarbageCollection;
-import com.springie.utilities.WriteFloatingPoint;
-import com.springie.metrics.BoundingBox;
 import com.springie.geometry.Coords;
+import com.springie.geometry.Point3D;
+import com.springie.io.IoConfig;
+import com.springie.io.in.redundancy.RedundancyRemover;
+import com.springie.io.out.GarbageCollection;
+import com.springie.metrics.BoundingBox;
+import com.springie.utilities.WriteFloatingPoint;
 import com.tifsoft.xml.writer.XMLWriterAttribute;
 import com.tifsoft.xml.writer.XMLWriterCharacters;
 import com.tifsoft.xml.writer.XMLWriterTagPair;

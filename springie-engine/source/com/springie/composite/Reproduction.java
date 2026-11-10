@@ -1,7 +1,7 @@
 package com.springie.composite;
 
-import com.springie.world.World;
 import com.springie.utilities.random.Hortensius32Fast;
+import com.springie.world.World;
 
 public final class Reproduction {
   // static variables...

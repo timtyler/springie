@@ -1,14 +1,13 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.controls;
-import com.springie.world.World;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.CompassPoint;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.GuiTestSupport;
+import com.springie.world.World;
 import java.awt.Choice;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;

@@ -1,8 +1,6 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.gui.gestures;
-import com.springie.world.World;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
@@ -13,10 +11,11 @@ import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
+import com.springie.geometry.Coords;
 import com.springie.geometry.Point3D;
 import com.springie.gui.GuiTestSupport;
-import com.springie.geometry.Coords;
 import com.springie.render.SceneRenderer;
+import com.springie.world.World;
 import java.util.ArrayList;
 import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.AfterAll;

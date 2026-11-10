@@ -1,12 +1,10 @@
 //This program has been placed into the public domain by its author.
 package com.springie.messages;
 
+import com.springie.context.ModelManager;
 import com.springie.modification.CommandContextHolder;
-
 import com.springie.world.NewMessage;
 import com.springie.world.World;
-
-import com.springie.context.ModelManager;
 
 public class SystemMessages {
   public NewMessage getRestartMessage() {

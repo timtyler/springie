@@ -8,9 +8,9 @@ import com.springie.render.RendererDelegator;
 import java.awt.Checkbox;
 import java.awt.Choice;
 import java.awt.Component;
+import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.Panel;
-import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 

@@ -1,9 +1,6 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.controls;
-import com.springie.gui.state.UniverseState;
-import com.springie.world.World;
-
 import com.springie.FrEnd;
 import com.springie.constants.ToolTypes;
 import com.springie.context.ContextManager;
@@ -11,8 +8,7 @@ import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TTChoice;
 import com.springie.gui.components.TabbedPanel;
 import com.springie.gui.components.TextFieldWrapper;
-import com.springie.world.NewMessage;
-import com.springie.world.NewMessageManager;
+import com.springie.gui.state.UniverseState;
 import com.springie.messages.commands.AddCentralHubMessage;
 import com.springie.messages.commands.AddInnerEdenNodesMessage;
 import com.springie.messages.commands.AddPolygonsMessage;
@@ -33,6 +29,9 @@ import com.springie.modification.faces.FaceReverser;
 import com.springie.modification.links.ExtendLinks;
 import com.springie.modification.projection.PrismaticProjection;
 import com.springie.modification.stellation.DimpleMaker;
+import com.springie.world.NewMessage;
+import com.springie.world.NewMessageManager;
+import com.springie.world.World;
 import java.awt.Button;
 import java.awt.Checkbox;
 import java.awt.Label;

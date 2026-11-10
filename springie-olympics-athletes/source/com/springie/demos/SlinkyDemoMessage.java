@@ -1,8 +1,7 @@
 //This program has been placed into the public domain by its author.
 package com.springie.demos;
-import com.springie.world.World;
-
 import com.springie.world.NewMessage;
+import com.springie.world.World;
 import java.awt.EventQueue;
 
 public class SlinkyDemoMessage extends NewMessage {

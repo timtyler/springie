@@ -1,14 +1,7 @@
 package com.springie.io.out.writers.spr;
 
-import com.springie.io.in.redundancy.RedundancyRemover;
-
-import com.springie.io.IoConfig;
-
-
 import com.springie.context.ContextManager;
 import com.springie.elements.CompassPoint;
-import com.springie.render.modules.modern.Light;
-import com.springie.render.modules.modern.LightSource;
 import com.springie.elements.base.BaseElement;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.electrostatics.ElectrostaticRepulsion;
@@ -21,12 +14,16 @@ import com.springie.elements.links.LinkType;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
+import com.springie.elements.nodes.PostModification;
+import com.springie.geometry.Coords;
+import com.springie.io.IoConfig;
+import com.springie.io.in.redundancy.RedundancyRemover;
 import com.springie.io.out.DuplicateLinkRemover;
 import com.springie.io.out.GarbageCollection;
-import com.springie.utilities.WriteFloatingPoint;
-import com.springie.elements.nodes.PostModification;
 import com.springie.muscles.Muscles;
-import com.springie.geometry.Coords;
+import com.springie.render.modules.modern.Light;
+import com.springie.render.modules.modern.LightSource;
+import com.springie.utilities.WriteFloatingPoint;
 import com.springie.world.World;
 import com.tifsoft.xml.writer.XMLWriterAttribute;
 import com.tifsoft.xml.writer.XMLWriterSinglet;

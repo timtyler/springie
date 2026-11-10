@@ -2,8 +2,8 @@
 
 package com.springie.render.modules.modern;
 
-import com.springie.geometry.Point3D;
 import com.springie.geometry.Coords;
+import com.springie.geometry.Point3D;
 import com.springie.render.RectangleInt;
 import java.awt.Color;
 import java.awt.Graphics;

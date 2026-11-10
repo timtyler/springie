@@ -1,11 +1,10 @@
 // This program has been placed into the public domain by its author.
 package com.springie.elements.nodes;
-import com.springie.world.World;
-
 import com.springie.context.ContextManager;
+import com.springie.geometry.Coords;
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
-import com.springie.geometry.Coords;
+import com.springie.world.World;
 import java.awt.GraphicsEnvironment;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

@@ -2,8 +2,8 @@ package com.springie.modification.resize;
 
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
-import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.links.PrepareToModifyLinkTypes;
+import com.springie.elements.nodes.NodeManager;
 
 public class LinkLengthEqualisation {
   NodeManager node_manager;

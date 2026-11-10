@@ -3,11 +3,10 @@
 package com.springie.messages;
 
 
-import com.springie.world.NewMessage;
-import com.springie.world.World;
-
 import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
+import com.springie.world.NewMessage;
+import com.springie.world.World;
 import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

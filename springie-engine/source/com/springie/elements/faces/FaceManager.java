@@ -1,12 +1,11 @@
 //This code has been placed into the public domain by its author
 
 package com.springie.elements.faces;
-import com.springie.world.World;
-
 import com.springie.elements.base.BaseElementManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.nodes.Node;
 import com.springie.geometry.Coords;
+import com.springie.world.World;
 import java.util.ArrayList;
 
 public class FaceManager extends BaseElementManager<Face> {

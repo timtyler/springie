@@ -1,9 +1,8 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.gui;
-import com.springie.geometry.Coords;
-
 import com.springie.FrEnd;
+import com.springie.geometry.Coords;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;

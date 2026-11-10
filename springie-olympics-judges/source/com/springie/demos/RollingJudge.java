@@ -3,7 +3,6 @@
 package com.springie.demos;
 
 import com.springie.elements.CompassPoint;
-
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 

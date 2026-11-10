@@ -4,13 +4,13 @@ package com.springie.modification.stellation;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.links.LinkType;
+import com.springie.elements.links.PrepareToModifyLinkTypes;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
-import com.springie.geometry.Point3D;
 import com.springie.elements.nodes.PostModification;
-import com.springie.elements.links.PrepareToModifyLinkTypes;
 import com.springie.elements.nodes.PrepareToModifyNodeTypes;
+import com.springie.geometry.Point3D;
 
 public class CentralHubCreator {
   NodeManager node_manager;

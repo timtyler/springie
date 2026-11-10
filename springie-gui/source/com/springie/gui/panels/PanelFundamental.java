@@ -1,27 +1,26 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels;
-import com.springie.gui.state.UniverseState;
-import com.springie.world.World;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
-import com.springie.messages.DemoRegistry;
+import com.springie.geometry.Coords;
+import com.springie.gui.AddXMLModelIndexLeaves;
 import com.springie.gui.components.ButtonBar;
 import com.springie.gui.components.ChoiceWithDescription;
 import com.springie.gui.components.ImageButton;
 import com.springie.gui.components.TextFieldWrapper;
 import com.springie.gui.components.WrapLayout;
 import com.springie.gui.panels.preferences.ButtonMouseActionStrings;
+import com.springie.gui.state.UniverseState;
 import com.springie.io.out.writers.spr.WriterSpr;
-import com.springie.world.NewMessage;
-import com.springie.world.NewMessageManager;
+import com.springie.messages.DemoRegistry;
 import com.springie.messages.commands.DeleteSelectedMessage;
 import com.springie.messages.commands.SelectClazzMessage;
-import com.springie.gui.AddXMLModelIndexLeaves;
-import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.utilities.FilePath;
+import com.springie.world.NewMessage;
+import com.springie.world.NewMessageManager;
+import com.springie.world.World;
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.CardLayout;

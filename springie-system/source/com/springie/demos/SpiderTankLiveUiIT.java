@@ -1,7 +1,5 @@
 // This code has been placed into the public domain by its author.
 package com.springie.demos;
-import com.springie.world.World;
-
 import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
@@ -10,6 +8,7 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.gui.GuiTestSupport;
 import com.springie.muscles.Sensors;
 import com.springie.render.RendererDelegator;
+import com.springie.world.World;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;

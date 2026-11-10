@@ -1,11 +1,10 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels;
-import com.springie.gui.state.UniverseState;
-
 import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
 import com.springie.gui.components.ImageButton;
+import com.springie.gui.state.UniverseState;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;

@@ -1,18 +1,17 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.controls;
-import com.springie.world.World;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.gui.GUIStrings;
-import com.springie.world.NewMessage;
-import com.springie.world.NewMessageManager;
+import com.springie.io.in.FuseSelectedNodes;
 import com.springie.messages.commands.DeleteSelectedMessage;
 import com.springie.messages.commands.RemoveLinkAndFuseEndsMessage;
 import com.springie.messages.commands.RemoveLinksMessage;
 import com.springie.messages.commands.RemovePolygonsMessage;
-import com.springie.io.in.FuseSelectedNodes;
+import com.springie.world.NewMessage;
+import com.springie.world.NewMessageManager;
+import com.springie.world.World;
 import java.awt.Button;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;

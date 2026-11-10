@@ -1,8 +1,6 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.render.modules.modern;
-import com.springie.world.World;
-
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.Link;
@@ -12,6 +10,7 @@ import com.springie.elements.nodes.NodeManager;
 import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.ModularRendererBase;
+import com.springie.world.World;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;

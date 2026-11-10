@@ -2,12 +2,12 @@ package com.springie.modification;
 
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
+import com.springie.geometry.Coords;
 import com.springie.metrics.AverageChargeGetter;
+import com.springie.metrics.AverageDampingGetter;
 import com.springie.metrics.AverageElasticityGetter;
 import com.springie.metrics.AverageLengthGetter;
 import com.springie.metrics.AverageRadiusGetter;
-import com.springie.metrics.AverageDampingGetter;
-import com.springie.geometry.Coords;
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
 import javax.swing.SwingUtilities;

@@ -2,9 +2,8 @@
 
 package com.springie.demos;
 
-import com.springie.elements.CompassPoint;
-
 import com.springie.context.ContextManager;
+import com.springie.elements.CompassPoint;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;

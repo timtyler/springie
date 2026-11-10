@@ -1,11 +1,10 @@
 // This program has been placed into the public domain by its author.
 package com.springie.render;
 import com.springie.geometry.Coords;
-import com.springie.world.World;
-
 import com.springie.geometry.Vector3D;
 import com.springie.render.modules.modern.PolygonComposite;
 import com.springie.render.modules.modern.PolygonObject2D;
+import com.springie.world.World;
 import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;

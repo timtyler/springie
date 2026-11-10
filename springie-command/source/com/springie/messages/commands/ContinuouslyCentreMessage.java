@@ -1,8 +1,7 @@
 //This program has been placed into the public domain by its author.
 package com.springie.messages.commands;
-import com.springie.world.World;
-
 import com.springie.world.NewMessage;
+import com.springie.world.World;
 
 public class ContinuouslyCentreMessage extends NewMessage {
   /** Which axis to toggle: 0 = x, 1 = y, 2 = z. */

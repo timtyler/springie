@@ -1,6 +1,4 @@
 package com.springie.gui;
-import com.springie.world.World;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.context.ModelManager;
@@ -10,6 +8,7 @@ import com.springie.explosions.particles.ParticleManager;
 import com.springie.io.in.DataInput;
 import com.springie.presets.PresetObjects;
 import com.springie.world.ArgumentList;
+import com.springie.world.World;
 import com.springie.world.WorldManager;
 
 /*

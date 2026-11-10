@@ -2,9 +2,8 @@
 
 package com.springie.demos;
 
-import com.springie.elements.CompassPoint;
-
 import com.springie.context.ContextManager;
+import com.springie.elements.CompassPoint;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
@@ -12,10 +11,10 @@ import com.springie.elements.links.LinkType;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
+import com.springie.geometry.Coords;
 import com.springie.geometry.Point3D;
 import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
-import com.springie.geometry.Coords;
 import com.springie.world.Grounding;
 import com.springie.world.World;
 

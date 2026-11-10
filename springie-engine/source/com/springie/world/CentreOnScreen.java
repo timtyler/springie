@@ -2,10 +2,10 @@ package com.springie.world;
 
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
+import com.springie.geometry.Coords;
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
 import com.springie.metrics.BoundingBox;
-import com.springie.geometry.Coords;
 
 public final class CentreOnScreen {
   private CentreOnScreen() {

@@ -2,7 +2,6 @@
 
 package com.springie.render;
 import com.springie.geometry.Coords;
-
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.MultipleGradientPaint;

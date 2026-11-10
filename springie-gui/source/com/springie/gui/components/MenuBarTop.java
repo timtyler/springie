@@ -1,13 +1,11 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.components;
-import com.springie.world.World;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.context.ModelManager;
 import com.springie.context.ModelSlot;
-import com.springie.messages.DemoRegistry;
+import com.springie.gui.AddXMLModelIndexLeaves;
 import com.springie.gui.frames.FrameMain;
 import com.springie.io.out.writers.eig.WriterEIG;
 import com.springie.io.out.writers.fdl.WriterFDL;
@@ -15,8 +13,9 @@ import com.springie.io.out.writers.off.WriterOFF;
 import com.springie.io.out.writers.pov.WriterPOV;
 import com.springie.io.out.writers.spr.WriterSpr;
 import com.springie.io.out.writers.wrl.WriterWRL;
-import com.springie.gui.AddXMLModelIndexLeaves;
+import com.springie.messages.DemoRegistry;
 import com.springie.utilities.FilePath;
+import com.springie.world.World;
 import java.awt.CheckboxMenuItem;
 import java.awt.FileDialog;
 import java.awt.Menu;

@@ -1,11 +1,10 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.render;
-import com.springie.geometry.Coords;
-import com.springie.world.World;
-
 import com.springie.FrEnd;
+import com.springie.geometry.Coords;
 import com.springie.gui.GuiTestSupport;
+import com.springie.world.World;
 import java.awt.Panel;
 import java.awt.Point;
 import java.awt.image.BufferedImage;

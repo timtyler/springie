@@ -2,8 +2,8 @@
 
 package com.springie.render.modules.raytraced;
 
-import com.springie.geometry.Vector3D;
 import com.springie.geometry.Coords;
+import com.springie.geometry.Vector3D;
 import com.springie.render.RendererDelegator;
 import com.springie.render.ScenicBackground;
 import com.springie.render.modules.modern.LightSource;

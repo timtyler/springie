@@ -1,13 +1,12 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.render;
-import com.springie.world.World;
-
 import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.original.ModularRendererOld;
+import com.springie.world.World;
 import java.awt.Panel;
 import java.awt.Point;
 import java.awt.Rectangle;

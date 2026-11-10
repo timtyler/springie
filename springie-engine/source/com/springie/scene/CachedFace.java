@@ -1,11 +1,10 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.scene;
-import com.springie.geometry.Coords;
-
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.faces.Face;
 import com.springie.elements.nodes.Node;
+import com.springie.geometry.Coords;
 import java.awt.Point;
 import java.util.ArrayList;
 

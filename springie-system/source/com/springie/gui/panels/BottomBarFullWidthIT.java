@@ -1,10 +1,9 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels;
-import com.springie.gui.state.UniverseState;
-
 import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
+import com.springie.gui.state.UniverseState;
 import java.awt.Container;
 import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.AfterAll;

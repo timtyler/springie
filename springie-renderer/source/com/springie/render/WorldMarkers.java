@@ -1,11 +1,10 @@
 package com.springie.render;
 import com.springie.geometry.Coords;
-import com.springie.world.World;
-
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
 import com.springie.render.modules.modern.PolygonComposite;
 import com.springie.render.modules.modern.PolygonObject2D;
+import com.springie.world.World;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;

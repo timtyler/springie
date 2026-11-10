@@ -1,12 +1,11 @@
 package com.springie.modification.polyhedra;
 
-import com.springie.modification.CommandContextHolder;
-
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.links.LinkType;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
+import com.springie.modification.CommandContextHolder;
 import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

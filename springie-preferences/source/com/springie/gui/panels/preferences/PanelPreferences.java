@@ -1,12 +1,11 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.preferences;
-import com.springie.gui.state.UniverseState;
-
 import com.springie.FrEnd;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.RendererInfoButton;
 import com.springie.gui.components.TabbedPanel;
+import com.springie.gui.state.UniverseState;
 import com.springie.preferences.Preferences;
 import com.springie.render.RendererDelegator;
 import java.awt.BorderLayout;

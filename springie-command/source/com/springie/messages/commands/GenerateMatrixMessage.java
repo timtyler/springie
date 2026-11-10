@@ -3,10 +3,9 @@
 package com.springie.messages.commands;
 
 import com.springie.modification.CommandContextHolder;
-
+import com.springie.presets.ProceduralObject;
 import com.springie.world.ArgumentList;
 import com.springie.world.NewMessage;
-import com.springie.presets.ProceduralObject;
 
 public class GenerateMatrixMessage extends NewMessage {
   public GenerateMatrixMessage() {

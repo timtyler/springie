@@ -3,18 +3,19 @@
 // How broken? Bins? Surely not.
 
 package com.springie;
-import com.springie.gui.state.UniverseState;
-
-import com.springie.io.IoConfig;
-import com.springie.world.World;
-
 import com.springie.constants.Quality;
 import com.springie.context.ContextManager;
 import com.springie.context.ModelManager;
 import com.springie.elements.links.Link;
+import com.springie.elements.links.PrepareToModifyLinkTypes;
 import com.springie.elements.nodes.Node;
+import com.springie.elements.nodes.PrepareToModifyNodeClazzes;
+import com.springie.elements.nodes.PrepareToModifyNodeTypes;
 import com.springie.extension.Module;
+import com.springie.geometry.Coords;
 import com.springie.geometry.Point3D;
+import com.springie.gui.MainCanvas;
+import com.springie.gui.SetUpCode;
 import com.springie.gui.colourpicker.ColorPicker;
 import com.springie.gui.colourpicker.ColorPickerInformer;
 import com.springie.gui.components.ChoiceWithDescription;
@@ -51,27 +52,24 @@ import com.springie.gui.panels.controls.PanelControlsSelectLinks;
 import com.springie.gui.panels.controls.PanelControlsSelectMain;
 import com.springie.gui.panels.controls.PanelControlsStatistics;
 import com.springie.gui.panels.controls.PanelControlsUniverse;
-import com.springie.modification.CommandContextHolder;
 import com.springie.gui.panels.controls.PanelControlsVelocities;
 import com.springie.gui.panels.controls.PanelControlsWobble;
-import com.springie.world.NewMessageManager;
+import com.springie.gui.state.UniverseState;
+import com.springie.io.IoConfig;
 import com.springie.messages.SystemMessages;
+import com.springie.modification.CommandContextHolder;
 import com.springie.modification.colour.ColourChanger;
 import com.springie.modification.pre.PrepareToModifyFaceClazzes;
 import com.springie.modification.pre.PrepareToModifyFaceTypes;
 import com.springie.modification.pre.PrepareToModifyLinkClazzes;
-import com.springie.elements.links.PrepareToModifyLinkTypes;
-import com.springie.elements.nodes.PrepareToModifyNodeClazzes;
-import com.springie.elements.nodes.PrepareToModifyNodeTypes;
 import com.springie.muscles.Muscles;
 import com.springie.preferences.Preferences;
-import com.springie.geometry.Coords;
-import com.springie.gui.MainCanvas;
 import com.springie.render.RendererDelegator;
-import com.springie.gui.SetUpCode;
 import com.springie.render.WorldMarkers;
 import com.springie.utilities.FilePath;
 import com.springie.utilities.random.Hortensius32Fast;
+import com.springie.world.NewMessageManager;
+import com.springie.world.World;
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;

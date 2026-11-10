@@ -1,8 +1,6 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.gestures;
-import com.springie.gui.state.UniverseState;
-
 import com.springie.FrEnd;
 import com.springie.constants.Actions;
 import com.springie.constants.ToolTypes;
@@ -10,8 +8,9 @@ import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeType;
-import com.springie.geometry.Point3D;
 import com.springie.elements.nodes.PrepareToModifyNodeTypes;
+import com.springie.geometry.Point3D;
+import com.springie.gui.state.UniverseState;
 import com.springie.utilities.math.SquareRoot;
 import com.springie.utilities.random.Hortensius32Fast;
 

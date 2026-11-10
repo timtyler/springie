@@ -1,10 +1,9 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.preferences;
-import com.springie.world.World;
-
 import com.springie.FrEnd;
 import com.springie.render.RendererDelegator;
+import com.springie.world.World;
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
 import java.awt.Label;

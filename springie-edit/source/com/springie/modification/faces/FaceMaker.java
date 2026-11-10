@@ -1,7 +1,5 @@
 package com.springie.modification.faces;
 
-import com.springie.modification.CommandContextHolder;
-
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
@@ -10,6 +8,7 @@ import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
+import com.springie.modification.CommandContextHolder;
 import com.springie.modification.DomeMakingUtilities;
 import com.springie.utilities.random.JUR;
 import java.util.ArrayList;

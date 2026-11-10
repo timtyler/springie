@@ -1,8 +1,6 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.elements.nodes;
-import com.springie.world.World;
-
 import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.geometry.Point3D;
@@ -11,6 +9,7 @@ import com.springie.render.RendererDelegator;
 import com.springie.render.modules.ModularRendererBase;
 import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced;
+import com.springie.world.World;
 import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;

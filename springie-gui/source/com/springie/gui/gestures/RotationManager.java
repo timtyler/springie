@@ -1,15 +1,14 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.gui.gestures;
-import com.springie.world.World;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.Node;
-import com.springie.geometry.Point3D;
 import com.springie.geometry.Coords;
+import com.springie.geometry.Point3D;
 import com.springie.render.RendererDelegator;
 import com.springie.render.WorldMarkers;
+import com.springie.world.World;
 
 public class RotationManager {
   private int start_x;

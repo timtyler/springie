@@ -2,21 +2,20 @@
 
 package com.springie.gui;
 
-import com.springie.render.RenderCanvas;
-import com.springie.render.LightSourceDots;
-import com.springie.render.RendererDelegator;
-import com.springie.render.BoundaryBoxDots;
-import com.springie.world.World;
-import com.springie.geometry.Coords;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
-import com.springie.world.NewMessage;
+import com.springie.geometry.Coords;
 import com.springie.messages.commands.DeleteSelectedMessage;
 import com.springie.messages.commands.DeselectAllMessage;
 import com.springie.messages.commands.SelectAllMessage;
 import com.springie.messages.commands.SelectClazzMessage;
 import com.springie.messages.commands.SelectTypeMessage;
+import com.springie.render.BoundaryBoxDots;
+import com.springie.render.LightSourceDots;
+import com.springie.render.RenderCanvas;
+import com.springie.render.RendererDelegator;
+import com.springie.world.NewMessage;
+import com.springie.world.World;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;

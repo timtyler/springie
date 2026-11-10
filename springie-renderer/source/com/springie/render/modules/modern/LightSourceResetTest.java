@@ -2,12 +2,11 @@
 
 package com.springie.render.modules.modern;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import com.springie.render.RendererDelegator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * A model load resets the lights (ReaderTens calls resetToDefaults).

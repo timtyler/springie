@@ -4,7 +4,6 @@ package com.springie.demos;
 
 import com.springie.world.NewMessage;
 import com.springie.world.World;
-
 import java.awt.EventQueue;
 
 public class RockingHorseDemoMessage extends NewMessage {

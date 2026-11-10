@@ -3,8 +3,8 @@
 package com.springie.io.in.readers.rbf;
 
 import com.springie.elements.nodes.NodeManager;
-import com.springie.io.in.AutomaticNodeColourer;
 import com.springie.elements.nodes.PostModification;
+import com.springie.io.in.AutomaticNodeColourer;
 import com.springie.io.in.ScaleToFitScreen;
 import com.springie.world.CentreOnScreen;
 import com.tifsoft.utilities.execute.Executor;

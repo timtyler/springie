@@ -9,9 +9,9 @@ import com.springie.elements.links.LinkManager;
 import com.springie.elements.links.LinkType;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
+import com.springie.geometry.Coords;
 import com.springie.geometry.Point3D;
 import com.springie.modification.delete.DeleteLinks;
-import com.springie.geometry.Coords;
 
 public class DraggedLinkManager {
   public Node pointer_node;

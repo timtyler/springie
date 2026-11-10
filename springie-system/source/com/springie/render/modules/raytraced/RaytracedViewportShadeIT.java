@@ -1,11 +1,10 @@
 package com.springie.render.modules.raytraced;
-import com.springie.world.World;
-
 import com.springie.FrEnd;
-import com.springie.gui.GuiTestSupport;
 import com.springie.geometry.Coords;
+import com.springie.gui.GuiTestSupport;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.ModularRendererBase;
+import com.springie.world.World;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;

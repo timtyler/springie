@@ -2,14 +2,14 @@
 
 package com.springie.demos;
 
+import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.FrEnd;
-import java.awt.GraphicsEnvironment;
-import javax.swing.SwingUtilities;
 import com.springie.render.RendererDelegator;
 import com.springie.world.NewMessage;
 import com.springie.world.World;
+import java.awt.GraphicsEnvironment;
+import javax.swing.SwingUtilities;
 
 /**
  * Runs demos through the real FrEnd with the renderer off

@@ -1,10 +1,5 @@
 package com.springie.io.out.writers.fdl;
 
-import com.springie.io.in.redundancy.RedundancyRemover;
-
-import com.springie.io.IoConfig;
-
-
 import com.springie.context.ContextManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.electrostatics.ElectrostaticRepulsion;
@@ -17,11 +12,13 @@ import com.springie.elements.links.LinkType;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
+import com.springie.elements.nodes.PostModification;
+import com.springie.geometry.Coords;
+import com.springie.io.IoConfig;
+import com.springie.io.in.redundancy.RedundancyRemover;
 import com.springie.io.out.DuplicateLinkRemover;
 import com.springie.io.out.GarbageCollection;
 import com.springie.utilities.WriteFloatingPoint;
-import com.springie.elements.nodes.PostModification;
-import com.springie.geometry.Coords;
 import com.springie.world.World;
 import java.io.FileWriter;
 import java.io.IOException;

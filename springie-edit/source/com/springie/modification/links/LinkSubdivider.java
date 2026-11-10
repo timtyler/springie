@@ -4,12 +4,12 @@ import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.links.LinkType;
+import com.springie.elements.links.PrepareToModifyLinkTypes;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
 import com.springie.geometry.Point3D;
 import com.springie.geometry.Vector3D;
-import com.springie.elements.links.PrepareToModifyLinkTypes;
 import com.springie.utilities.random.JUR;
 
 public class LinkSubdivider {

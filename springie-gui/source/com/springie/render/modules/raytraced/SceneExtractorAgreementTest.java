@@ -1,8 +1,6 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.render.modules.raytraced;
-import com.springie.world.World;
-
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.faces.Face;
 import com.springie.elements.links.Link;
@@ -10,14 +8,15 @@ import com.springie.elements.links.LinkType;
 import com.springie.elements.links.LinkTypeFactory;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.geometry.Point3D;
 import com.springie.geometry.Coords;
+import com.springie.geometry.Point3D;
 import com.springie.render.RendererDelegator;
 import com.springie.render.scene.ModelScene;
 import com.springie.render.scene.SceneExtractor;
 import com.springie.render.scene.SceneFace;
 import com.springie.render.scene.SceneLink;
 import com.springie.render.scene.SceneNode;
+import com.springie.world.World;
 import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import org.junit.jupiter.api.Test;

@@ -4,10 +4,10 @@ import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
+import com.springie.elements.links.PrepareToModifyLinkTypes;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.PostModification;
-import com.springie.elements.links.PrepareToModifyLinkTypes;
 import com.springie.elements.nodes.PrepareToModifyNodeTypes;
 
 public class FlagControllerHidden {

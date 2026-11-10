@@ -1,11 +1,6 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.preferences;
-import com.springie.gui.state.UniverseState;
-
-import com.springie.io.IoConfig;
-import com.springie.world.World;
-
 import com.springie.FrEnd;
 import com.springie.constants.Actions;
 import com.springie.constants.Delay;
@@ -15,9 +10,11 @@ import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceRenderTypes;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkRenderType;
-import com.springie.gui.GuiTestSupport;
-import com.springie.preferences.Preferences;
 import com.springie.geometry.Coords;
+import com.springie.gui.GuiTestSupport;
+import com.springie.gui.state.UniverseState;
+import com.springie.io.IoConfig;
+import com.springie.preferences.Preferences;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.ColourModifier;
 import com.springie.render.modules.modern.ElementRendererLink;
@@ -25,6 +22,7 @@ import com.springie.render.modules.modern.ModularRendererNew;
 import com.springie.render.modules.modern.RendererTileManager;
 import com.springie.render.modules.modern.SimpleC60;
 import com.springie.render.modules.modern.SimpleDodecahedron;
+import com.springie.world.World;
 import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;

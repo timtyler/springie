@@ -2,7 +2,6 @@
 
 package com.springie.render;
 import com.springie.geometry.Coords;
-
 import com.springie.render.modules.modern.Light;
 import com.springie.render.modules.modern.LightSource;
 import java.awt.Color;

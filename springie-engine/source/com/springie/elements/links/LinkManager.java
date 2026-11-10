@@ -1,19 +1,18 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.elements.links;
-import com.springie.world.World;
-
 import com.springie.context.ContextManager;
 import com.springie.elements.base.BaseElementManager;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.lists.ListOfIntegers;
 import com.springie.elements.nodes.Node;
+import com.springie.geometry.Coords;
 import com.springie.geometry.Point3D;
 import com.springie.muscles.Controller;
 import com.springie.muscles.Muscles;
 import com.springie.scene.CachedLink;
-import com.springie.geometry.Coords;
 import com.springie.utilities.math.SquareRoot;
+import com.springie.world.World;
 import java.util.ArrayList;
 import java.util.List;
 

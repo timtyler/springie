@@ -1,15 +1,14 @@
 // This code has been placed into the public domain by its author
 package com.springie.modification.links;
 
-import com.springie.modification.CommandContextHolder;
-
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
+import com.springie.elements.links.PrepareToModifyLinkTypes;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.PostModification;
-import com.springie.elements.links.PrepareToModifyLinkTypes;
 import com.springie.elements.nodes.PrepareToModifyNodeTypes;
+import com.springie.modification.CommandContextHolder;
 
 public class RemoveLinkAndFuseEnds {
   NodeManager node_manager;

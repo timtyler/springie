@@ -1,12 +1,11 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.scene;
-import com.springie.geometry.Coords;
-import com.springie.world.World;
-
 import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.nodes.Node;
+import com.springie.geometry.Coords;
 import com.springie.geometry.Point3D;
+import com.springie.world.World;
 
 public class CachedNode {
   public Point3D pos = new Point3D(0, 0, 0);

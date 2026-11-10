@@ -1,11 +1,10 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.controls;
-import com.springie.world.World;
-
 import com.springie.FrEnd;
 import com.springie.gui.GuiTestSupport;
 import com.springie.world.UniverseDefaults;
+import com.springie.world.World;
 import java.awt.Checkbox;
 import java.awt.ItemSelectable;
 import java.awt.event.ItemEvent;

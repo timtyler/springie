@@ -2,10 +2,9 @@
 
 package com.springie.gui.panels.controls;
 
-import com.springie.elements.links.FilterSelectLinks;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
+import com.springie.elements.links.FilterSelectLinks;
 import com.springie.elements.links.Link;
 import com.springie.gui.components.TTChoice;
 import java.awt.Label;

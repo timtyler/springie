@@ -2,17 +2,16 @@
 
 package com.springie.demos;
 
-import com.springie.elements.CompassPoint;
-
 import com.springie.context.ContextManager;
+import com.springie.elements.CompassPoint;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
+import com.springie.geometry.Coords;
 import com.springie.muscles.GlobalOscillatorController;
 import com.springie.muscles.Muscles;
 import com.springie.muscles.Sensors;
-import com.springie.geometry.Coords;
 import com.springie.utilities.random.Hortensius32Fast;
 import com.springie.world.World;
 import java.util.ArrayList;

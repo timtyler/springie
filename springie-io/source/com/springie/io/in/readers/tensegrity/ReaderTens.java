@@ -1,14 +1,8 @@
 package com.springie.io.in.readers.tensegrity;
 
-import com.springie.io.in.LinkResetter;
-
-import com.springie.io.IoConfig;
-
 import com.springie.composite.Composite;
 import com.springie.context.ContextManager;
 import com.springie.elements.CompassPoint;
-import com.springie.render.modules.modern.Light;
-import com.springie.render.modules.modern.LightSource;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.faces.Face;
 import com.springie.elements.faces.FaceType;
@@ -17,7 +11,11 @@ import com.springie.elements.links.LinkType;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeType;
+import com.springie.io.IoConfig;
+import com.springie.io.in.LinkResetter;
 import com.springie.muscles.Muscles;
+import com.springie.render.modules.modern.Light;
+import com.springie.render.modules.modern.LightSource;
 import com.springie.world.World;
 import java.io.Reader;
 import java.util.ArrayList;

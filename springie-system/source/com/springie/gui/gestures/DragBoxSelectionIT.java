@@ -1,14 +1,13 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.gui.gestures;
-import com.springie.world.World;
-
 import com.springie.FrEnd;
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.gui.GuiTestSupport;
 import com.springie.geometry.Coords;
+import com.springie.gui.GuiTestSupport;
+import com.springie.world.World;
 import java.awt.Point;
 import java.util.List;
 import javax.swing.SwingUtilities;

@@ -1,11 +1,10 @@
 package com.springie.modification.delete;
 
-import com.springie.modification.CommandContextHolder;
-
+import com.springie.elements.links.PrepareToModifyLinkTypes;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.elements.links.PrepareToModifyLinkTypes;
 import com.springie.elements.nodes.PrepareToModifyNodeTypes;
+import com.springie.modification.CommandContextHolder;
 import com.springie.render.RendererDelegator;
 
 public class DeleteLinks {

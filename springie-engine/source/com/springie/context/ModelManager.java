@@ -5,11 +5,10 @@
 // * simulation parameters it was saved -- or last left -- with.
 
 package com.springie.context;
-import com.springie.world.World;
-
 import com.springie.elements.nodes.NodeManager;
 import com.springie.world.Grounding;
 import com.springie.world.UniverseState;
+import com.springie.world.World;
 import java.util.ArrayList;
 import java.util.List;
 

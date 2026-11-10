@@ -2,12 +2,11 @@
 
 package com.springie.messages.commands;
 
-import com.springie.modification.CommandContextHolder;
-
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.world.NewMessage;
+import com.springie.modification.CommandContextHolder;
 import com.springie.modification.hexagons.HexagonMaker;
+import com.springie.world.NewMessage;
 
 public class AddTriaxialNodesMessage extends NewMessage {
   public AddTriaxialNodesMessage() {

@@ -1,8 +1,6 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.panels.preferences;
-import com.springie.world.World;
-
 import com.springie.FrEnd;
 import com.springie.constants.Quality;
 import com.springie.elements.faces.Face;
@@ -12,9 +10,10 @@ import com.springie.elements.links.LinkRenderType;
 import com.springie.elements.nodes.Node;
 import com.springie.gui.GUIStrings;
 import com.springie.gui.components.TTChoice;
-import com.springie.world.NewMessageManager;
 import com.springie.messages.commands.LinkLengthMessage;
 import com.springie.render.RendererDelegator;
+import com.springie.world.NewMessageManager;
+import com.springie.world.World;
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
 import java.awt.CheckboxGroup;

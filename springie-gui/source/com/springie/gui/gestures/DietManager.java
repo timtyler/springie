@@ -7,8 +7,8 @@ import com.springie.context.ContextManager;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.Node;
-import com.springie.geometry.Point3D;
 import com.springie.geometry.Coords;
+import com.springie.geometry.Point3D;
 import com.springie.render.RendererDelegator;
 
 public class DietManager {

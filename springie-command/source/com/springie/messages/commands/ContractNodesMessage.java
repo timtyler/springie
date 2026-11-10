@@ -3,9 +3,8 @@
 package com.springie.messages.commands;
 
 import com.springie.modification.CommandContextHolder;
-
-import com.springie.world.NewMessage;
 import com.springie.modification.DomeRelatedChangeDelegator;
+import com.springie.world.NewMessage;
 
 public class ContractNodesMessage extends NewMessage {
   public ContractNodesMessage() {

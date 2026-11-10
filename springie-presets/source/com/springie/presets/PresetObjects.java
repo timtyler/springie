@@ -2,11 +2,10 @@
 
 package com.springie.presets;
 
-import com.springie.utilities.ColourFactory;
-
 import com.springie.io.in.readers.spr.ReaderSPR;
-import com.springie.world.ArgumentList;
+import com.springie.utilities.ColourFactory;
 import com.springie.utilities.random.JUR;
+import com.springie.world.ArgumentList;
 import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,20 +1,19 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.render.modules.raytraced;
-import com.springie.world.World;
-
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkTypeFactory;
 import com.springie.elements.nodes.Node;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.nodes.NodeTypeFactory;
-import com.springie.geometry.Point3D;
 import com.springie.geometry.Coords;
+import com.springie.geometry.Point3D;
 import com.springie.render.RectangleInt;
 import com.springie.render.RendererDelegator;
 import com.springie.render.modules.modern.RendererTileManager;
 import com.springie.render.modules.raytraced.ModularRendererRaytraced.Tile;
+import com.springie.world.World;
 import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import org.junit.jupiter.api.AfterEach;

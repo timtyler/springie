@@ -4,8 +4,8 @@ package com.springie.io.in;
 
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkManager;
-import com.springie.elements.nodes.NodeManager;
 import com.springie.elements.links.PrepareToModifyLinkTypes;
+import com.springie.elements.nodes.NodeManager;
 
 public class DeriveLinkRadiusFromNodeRadius {
   NodeManager node_manager;

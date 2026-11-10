@@ -3,7 +3,6 @@
 package com.springie.demos;
 
 import com.springie.elements.CompassPoint;
-
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;

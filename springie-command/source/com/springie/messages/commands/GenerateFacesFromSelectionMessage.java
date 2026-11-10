@@ -4,8 +4,8 @@ package com.springie.messages.commands;
 
 import com.springie.context.ContextManager;
 import com.springie.elements.nodes.NodeManager;
-import com.springie.world.NewMessage;
 import com.springie.modification.faces.FaceMaker;
+import com.springie.world.NewMessage;
 
 public class GenerateFacesFromSelectionMessage extends NewMessage {
   public GenerateFacesFromSelectionMessage() {

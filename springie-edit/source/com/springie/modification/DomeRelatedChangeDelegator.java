@@ -3,18 +3,18 @@ package com.springie.modification;
 import com.springie.context.ContextManager;
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.NodeManager;
+import com.springie.geometry.Coords;
+import com.springie.io.in.LinkResetter;
 import com.springie.metrics.AverageChargeGetter;
+import com.springie.metrics.AverageDampingGetter;
 import com.springie.metrics.AverageElasticityGetter;
 import com.springie.metrics.AverageLengthGetter;
 import com.springie.metrics.AverageRadiusGetter;
-import com.springie.metrics.AverageDampingGetter;
 import com.springie.modification.flags.FlagControllerDisabled;
 import com.springie.modification.flags.FlagControllerFixed;
 import com.springie.modification.flags.FlagControllerHidden;
 import com.springie.modification.flags.FlagControllerRope;
 import com.springie.modification.resize.LinkLengthEqualisation;
-import com.springie.io.in.LinkResetter;
-import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
 
 public final class DomeRelatedChangeDelegator {
