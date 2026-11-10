@@ -1148,7 +1148,8 @@ final class Raytracer {
     return false;
   }
 
-  private static boolean samplesUniform(final BlockSamples s) {    Primitive first_prim = null;
+  private static boolean samplesUniform(final BlockSamples s) {
+    Primitive first_prim = null;
     int first_rgb = 0;
     boolean seen_hit = false;
     boolean seen_miss = false;

@@ -835,7 +835,8 @@ public final class ReaderTens {
   }
 
   //?
-  private static void setUpUniverseProperties(final NodeManager node_manager) {    World.three_d = true;
+  private static void setUpUniverseProperties(final NodeManager node_manager) {
+    World.three_d = true;
     node_manager.electrostatic.charge_active = true;
     World.gravity_active = false;
     World.gravity_strength = 10;
