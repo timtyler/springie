@@ -3,7 +3,6 @@
 package com.springie.render.modules.raytraced;
 import com.springie.world.World;
 
-import com.springie.FrEnd;
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.Link;
 import com.springie.elements.links.LinkTypeFactory;

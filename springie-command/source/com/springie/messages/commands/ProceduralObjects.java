@@ -2,8 +2,6 @@
 
 package com.springie.messages.commands;
 
-import com.springie.io.IoConfig;
-import com.springie.world.World;
 
 import com.springie.world.ArgumentList;
 

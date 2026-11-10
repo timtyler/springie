@@ -2,12 +2,6 @@
 
 package com.springie.demos;
 
-import com.springie.context.ContextManager;
-import com.springie.elements.nodes.Node;
-import com.springie.elements.nodes.NodeManager;
-import com.springie.geometry.Coords;
-import com.springie.utilities.random.Hortensius32Fast;
-import com.springie.world.World;
 
 /**
  * Shared pipeline for the truly headless judges. Every judge was

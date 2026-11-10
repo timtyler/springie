@@ -3,7 +3,6 @@
 package com.springie.presets;
 
 import com.springie.utilities.ColourFactory;
-import com.springie.world.World;
 
 import com.springie.io.in.readers.spr.ReaderSPR;
 import com.springie.world.ArgumentList;

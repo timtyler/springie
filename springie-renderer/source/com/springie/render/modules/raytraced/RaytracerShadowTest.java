@@ -7,7 +7,6 @@ import com.springie.elements.DeepObjectColourCalculator;
 import com.springie.elements.nodes.NodeManager;
 import com.springie.geometry.Coords;
 import com.springie.render.RendererDelegator;
-import com.springie.render.modules.modern.LightSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

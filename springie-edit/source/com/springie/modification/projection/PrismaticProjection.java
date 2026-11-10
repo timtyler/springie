@@ -1,7 +1,6 @@
 // This code has been placed into the public domain by its author
 
 package com.springie.modification.projection;
-import com.springie.world.World;
 
 import com.springie.elements.links.LinkManager;
 import com.springie.elements.nodes.NodeManager;

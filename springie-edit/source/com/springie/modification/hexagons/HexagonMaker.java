@@ -1,6 +1,5 @@
 package com.springie.modification.hexagons;
 
-import com.springie.modification.CommandContextHolder;
 
 import com.springie.elements.clazz.Clazz;
 import com.springie.elements.links.Link;

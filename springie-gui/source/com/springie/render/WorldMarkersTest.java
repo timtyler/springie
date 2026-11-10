@@ -3,7 +3,6 @@ package com.springie.render;
 import com.springie.geometry.Coords;
 import com.springie.world.World;
 
-import com.springie.FrEnd;
 import com.springie.geometry.Vector3D;
 import com.springie.render.modules.modern.PolygonComposite;
 import com.springie.render.modules.modern.PolygonObject2D;

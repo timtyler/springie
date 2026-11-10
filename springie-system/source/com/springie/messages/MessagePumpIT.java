@@ -2,7 +2,6 @@
 
 package com.springie.messages;
 
-import com.springie.modification.CommandContextHolder;
 
 import com.springie.world.NewMessage;
 import com.springie.world.World;

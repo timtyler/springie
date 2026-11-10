@@ -1,7 +1,6 @@
 // This program has been placed into the public domain by its author.
 
 package com.springie.gui.frames;
-import com.springie.world.World;
 
 import com.springie.FrEnd;
 import com.springie.gui.components.GraphicsDirectory;
