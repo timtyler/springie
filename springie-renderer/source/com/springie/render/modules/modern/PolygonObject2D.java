@@ -141,34 +141,32 @@ public class PolygonObject2D {
     // hardcoded. Black lights + 0% ambient = black.
     final double ambient =
         com.springie.render.RendererDelegator.ambient_light_pct / 100.0;
-    synchronized (LightSource.class) {
-      for (final com.springie.render.modules.modern.Light light
-          : LightSource.lights) {
-        final int pct = light.intensity_pct;
-        if (pct <= 0) {
-          continue;
-        }
-        final double lx = light.px - cx;
-        final double ly = light.py - cy;
-        final double lz = light.pz - cz;
-        final double llen = Math.sqrt(lx * lx + ly * ly + lz * lz);
-        if (llen < 1e-9) {
-          continue;
-        }
-        // Diffuse: dot of normal with direction to light. Backfaces
-        // (dot < 0) get no contribution (Tim, 2026-10-05).
-        double dot = (nx * lx + ny * ly + nz * lz) / llen;
-        if (dot < 0.0) {
-          dot = 0.0;
-        }
-        // Boost point lights 2x (Tim, 2026-10-07): they barely affected
-        // the model at 1x.
-        final double contrib = dot * pct / 100.0 * 2.0;
-        final int col = light.colour;
-        r_acc += contrib * ((col >> 16) & 0xFF) / 255.0;
-        g_acc += contrib * ((col >> 8) & 0xFF) / 255.0;
-        b_acc += contrib * (col & 0xFF) / 255.0;
+    for (final com.springie.render.modules.modern.Light light
+        : LightSource.lights) {
+      final int pct = light.intensity_pct;
+      if (pct <= 0) {
+        continue;
       }
+      final double lx = light.px - cx;
+      final double ly = light.py - cy;
+      final double lz = light.pz - cz;
+      final double llen = Math.sqrt(lx * lx + ly * ly + lz * lz);
+      if (llen < 1e-9) {
+        continue;
+      }
+      // Diffuse: dot of normal with direction to light. Backfaces
+      // (dot < 0) get no contribution (Tim, 2026-10-05).
+      double dot = (nx * lx + ny * ly + nz * lz) / llen;
+      if (dot < 0.0) {
+        dot = 0.0;
+      }
+      // Boost point lights 2x (Tim, 2026-10-07): they barely affected
+      // the model at 1x.
+      final double contrib = dot * pct / 100.0 * 2.0;
+      final int col = light.colour;
+      r_acc += contrib * ((col >> 16) & 0xFF) / 255.0;
+      g_acc += contrib * ((col >> 8) & 0xFF) / 255.0;
+      b_acc += contrib * (col & 0xFF) / 255.0;
     }
     // Scale to 0-255 per channel: ambient + accumulated, clamped.
     int r_scaled = (int) ((ambient + r_acc) * 255.0);

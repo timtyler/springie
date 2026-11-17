@@ -53,11 +53,9 @@ final class RaytracerTestState {
     this.saved_coarse_to_fine = RendererDelegator.coarse_to_fine;
     this.saved_simple_lighting = RendererDelegator.simple_lighting;
     this.saved_background = RendererDelegator.color_background_number;
-    synchronized (LightSource.class) {
-      this.saved_lights = new ArrayList<>();
-      for (final Light light : LightSource.lights) {
-        this.saved_lights.add(new Light(light));
-      }
+    this.saved_lights = new ArrayList<>();
+    for (final Light light : LightSource.lights) {
+      this.saved_lights.add(new Light(light));
     }
 
     LightSource.colored_lighting = true;
@@ -67,13 +65,11 @@ final class RaytracerTestState {
     // Keep the UI's onLightsReset hook out of it: in a JVM where a GUI
     // test booted the app, reset paths can fire a hook that posts UI
     // rebuilds to the EDT and blocks against a half-torn-down panel.
-    synchronized (LightSource.class) {
-      LightSource.lights.clear();
-      LightSource.lights.add(new Light(10.0, 50.0, 100, 0xFF0000));
-      LightSource.lights.add(new Light(90.0, 50.0, 100, 0x00FF00));
-      LightSource.lights.add(new Light(50.0, 10.0, 100, 0x0000FF));
-      LightSource.lights.add(new Light(50.0, 90.0, 100, 0xFFFFFF));
-    }
+    LightSource.lights.clear();
+    LightSource.lights.add(new Light(10.0, 50.0, 100, 0xFF0000));
+    LightSource.lights.add(new Light(90.0, 50.0, 100, 0x00FF00));
+    LightSource.lights.add(new Light(50.0, 10.0, 100, 0x0000FF));
+    LightSource.lights.add(new Light(50.0, 90.0, 100, 0xFFFFFF));
     RendererDelegator.ambient_light_pct = 25;
     RendererDelegator.coarse_to_fine = 0;
     RendererDelegator.simple_lighting = false;
@@ -86,11 +82,9 @@ final class RaytracerTestState {
     RendererDelegator.coarse_to_fine = this.saved_coarse_to_fine;
     RendererDelegator.simple_lighting = this.saved_simple_lighting;
     RendererDelegator.color_background_number = this.saved_background;
-    synchronized (LightSource.class) {
-      LightSource.lights.clear();
-      for (final Light light : this.saved_lights) {
-        LightSource.lights.add(new Light(light));
-      }
+    LightSource.lights.clear();
+    for (final Light light : this.saved_lights) {
+      LightSource.lights.add(new Light(light));
     }
   }
 }

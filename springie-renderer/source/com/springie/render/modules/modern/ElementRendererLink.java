@@ -291,63 +291,61 @@ public final class ElementRendererLink {
         // Diffuse + specular from N lights (Tim, 2026-10-04).
         // Per-output-channel diffuse: sum each light's factor scaled
         // by its color.
-        synchronized (LightSource.class) {
-          if (LightSource.colored_lighting) {
-          for (final Light light : LightSource.lights) {
-            if (light.intensity_pct <= 0) {
-              continue;
-            }
-            final double lx = light.px - midx;
-            final double ly = light.py - midy;
-            final double lz = light.pz - midz;
-            final double ld = Math.sqrt(lx * lx + ly * ly + lz * lz);
-            if (ld < 1e-12) {
-              continue;
-            }
-            // Cylinder diffuse: brightest where the light direction is
-            // perpendicular to the link axis.
-            final double light_dot = (lx * ax + ly * ay + lz * az) / ld;
-            final double diff = 0.75
-                * Math.sqrt(Math.max(0.0, 1.0 - light_dot * light_dot))
-                * light.intensity_pct / 50.0;
-            final int lr = (light.colour >> 16) & 0xFF;
-            final int lg = (light.colour >> 8) & 0xFF;
-            final int lb = light.colour & 0xFF;
-            r_factor += diff * lr / 255.0;
-            g_factor += diff * lg / 255.0;
-            b_factor += diff * lb / 255.0;
-            // Specular highlight (Tim, 2026-10-03): for a cylinder, use
-            // the normal at the brightest point:
-            // N = normalize(L - (L·A)*A). View V = (0, 0, -1).
-            // Tints by light color (Tim, 2026-10-04).
-            final double nlx = lx / ld;
-            final double nly = ly / ld;
-            final double nlz = lz / ld;
-            final double ldotA = nlx * ax + nly * ay + nlz * az;
-            double nnx = nlx - ldotA * ax;
-            double nny = nly - ldotA * ay;
-            double nnz = nlz - ldotA * az;
-            final double nlen =
-                Math.sqrt(nnx * nnx + nny * nny + nnz * nnz);
-            if (nlen > 1e-12) {
-              nnx /= nlen;
-              nny /= nlen;
-              nnz /= nlen;
-              final double ndotl = nnx * nlx + nny * nly + nnz * nlz;
-              final double rx = 2.0 * ndotl * nnx - nlx;
-              final double ry = 2.0 * ndotl * nny - nly;
-              final double rz = 2.0 * ndotl * nnz - nlz;
-              final double rdotv = -rz;
-              if (rdotv > 0.0) {
-                final double spec = Math.pow(rdotv, 16.0)
-                    * light.intensity_pct / 50.0;
-                spec_r_l += spec * lr / 255.0;
-                spec_g_l += spec * lg / 255.0;
-                spec_b_l += spec * lb / 255.0;
-              }
+        if (LightSource.colored_lighting) {
+        for (final Light light : LightSource.lights) {
+          if (light.intensity_pct <= 0) {
+            continue;
+          }
+          final double lx = light.px - midx;
+          final double ly = light.py - midy;
+          final double lz = light.pz - midz;
+          final double ld = Math.sqrt(lx * lx + ly * ly + lz * lz);
+          if (ld < 1e-12) {
+            continue;
+          }
+          // Cylinder diffuse: brightest where the light direction is
+          // perpendicular to the link axis.
+          final double light_dot = (lx * ax + ly * ay + lz * az) / ld;
+          final double diff = 0.75
+              * Math.sqrt(Math.max(0.0, 1.0 - light_dot * light_dot))
+              * light.intensity_pct / 50.0;
+          final int lr = (light.colour >> 16) & 0xFF;
+          final int lg = (light.colour >> 8) & 0xFF;
+          final int lb = light.colour & 0xFF;
+          r_factor += diff * lr / 255.0;
+          g_factor += diff * lg / 255.0;
+          b_factor += diff * lb / 255.0;
+          // Specular highlight (Tim, 2026-10-03): for a cylinder, use
+          // the normal at the brightest point:
+          // N = normalize(L - (L·A)*A). View V = (0, 0, -1).
+          // Tints by light color (Tim, 2026-10-04).
+          final double nlx = lx / ld;
+          final double nly = ly / ld;
+          final double nlz = lz / ld;
+          final double ldotA = nlx * ax + nly * ay + nlz * az;
+          double nnx = nlx - ldotA * ax;
+          double nny = nly - ldotA * ay;
+          double nnz = nlz - ldotA * az;
+          final double nlen =
+              Math.sqrt(nnx * nnx + nny * nny + nnz * nnz);
+          if (nlen > 1e-12) {
+            nnx /= nlen;
+            nny /= nlen;
+            nnz /= nlen;
+            final double ndotl = nnx * nlx + nny * nly + nnz * nlz;
+            final double rx = 2.0 * ndotl * nnx - nlx;
+            final double ry = 2.0 * ndotl * nny - nly;
+            final double rz = 2.0 * ndotl * nnz - nlz;
+            final double rdotv = -rz;
+            if (rdotv > 0.0) {
+              final double spec = Math.pow(rdotv, 16.0)
+                  * light.intensity_pct / 50.0;
+              spec_r_l += spec * lr / 255.0;
+              spec_g_l += spec * lg / 255.0;
+              spec_b_l += spec * lb / 255.0;
             }
           }
-          }
+        }
         }
         r_factor = Math.min(1.0, r_factor);
         g_factor = Math.min(1.0, g_factor);

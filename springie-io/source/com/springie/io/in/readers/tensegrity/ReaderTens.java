@@ -60,13 +60,11 @@ public final class ReaderTens {
    * Returns the light at the given index, or null if out of range.
    */
   private static Light lightAt(final int index) {
-    synchronized (LightSource.class) {
-      final List<Light> lights = LightSource.lights;
-      if (index < 0 || index >= lights.size()) {
-        return null;
-      }
-      return lights.get(index);
+    final List<Light> lights = LightSource.lights;
+    if (index < 0 || index >= lights.size()) {
+      return null;
     }
+    return lights.get(index);
   }
 
   public static void interpretBuffer(final NodeManager node_manager, final char[] buf,
@@ -546,11 +544,12 @@ public final class ReaderTens {
                   case Instructions.LC: {
                     // N lights (Tim, 2026-10-04): rebuild the list;
                     // the LI/LP/LO/LX/LY tokens that follow fill it in.
-                    synchronized (LightSource.class) {
-                      LightSource.lights.clear();
-                      for (int li = 0; li < temp; li++) {
-                        LightSource.lights.add(new Light(0.0, 0.0, 50, 0xFFFFFF));
-                      }
+                    // No lock (2026-11-17): the list is copy-on-write,
+                    // so a render that catches the rebuild half done
+                    // just sees fewer lights for a frame -- transient.
+                    LightSource.lights.clear();
+                    for (int li = 0; li < temp; li++) {
+                      LightSource.lights.add(new Light(0.0, 0.0, 50, 0xFFFFFF));
                     }
                     current_light_index = 0;
                     break;

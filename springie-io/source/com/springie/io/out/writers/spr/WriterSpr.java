@@ -116,20 +116,18 @@ public class WriterSpr {
     // Lights (Tim, 2026-10-04): N lights persisted as a count plus
     // per-light attributes (0-indexed). Positions are percentages of
     // the viewport half-size, so they survive window resizes.
-    synchronized (LightSource.class) {
-      final List<Light> lights = LightSource.lights;
-      uni.add(new XMLWriterAttribute("light_count", "" + lights.size()));
-      for (int i = 0; i < lights.size(); i++) {
-        final Light light = lights.get(i);
-        uni.add(new XMLWriterAttribute("light" + i + "_pct",
-            "" + light.intensity_pct));
-        uni.add(new XMLWriterAttribute("light" + i + "_colour",
-            "" + light.colour));
-        uni.add(new XMLWriterAttribute("light" + i + "_x_pct",
-            "" + (int) Math.round(light.x_pct)));
-        uni.add(new XMLWriterAttribute("light" + i + "_y_pct",
-            "" + (int) Math.round(light.y_pct)));
-      }
+    final List<Light> lights = LightSource.lights;
+    uni.add(new XMLWriterAttribute("light_count", "" + lights.size()));
+    for (int i = 0; i < lights.size(); i++) {
+      final Light light = lights.get(i);
+      uni.add(new XMLWriterAttribute("light" + i + "_pct",
+          "" + light.intensity_pct));
+      uni.add(new XMLWriterAttribute("light" + i + "_colour",
+          "" + light.colour));
+      uni.add(new XMLWriterAttribute("light" + i + "_x_pct",
+          "" + (int) Math.round(light.x_pct)));
+      uni.add(new XMLWriterAttribute("light" + i + "_y_pct",
+          "" + (int) Math.round(light.y_pct)));
     }
 
     recursivelyOutputAllNodes(uni);

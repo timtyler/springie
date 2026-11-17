@@ -58,18 +58,16 @@ public final class LightSourceDots {
    */
   public static Light hitTestLight(final int sx, final int sy) {
     LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
-    synchronized (LightSource.class) {
-      // Defensive: if the list is empty, reset to defaults (Tim, 2026-10-04).
-      if (LightSource.lights.isEmpty()) {
-        LightSource.resetToDefaults();
-        LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
-      }
-      for (int i = 0; i < LightSource.lights.size(); i++) {
-        final Light light = LightSource.lights.get(i);
-        if (light.intensity_pct > 0
-            && near(sx, sy, light.px, light.py, light.pz)) {
-          return light;
-        }
+    // Defensive: if the list is empty, reset to defaults (Tim, 2026-10-04).
+    if (LightSource.lights.isEmpty()) {
+      LightSource.resetToDefaults();
+      LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
+    }
+    for (int i = 0; i < LightSource.lights.size(); i++) {
+      final Light light = LightSource.lights.get(i);
+      if (light.intensity_pct > 0
+          && near(sx, sy, light.px, light.py, light.pz)) {
+        return light;
       }
     }
     return null;
@@ -85,9 +83,7 @@ public final class LightSourceDots {
     if (light == null) {
       return -1;
     }
-    synchronized (LightSource.class) {
-      return LightSource.lights.indexOf(light);
-    }
+    return LightSource.lights.indexOf(light);
   }
 
   private static boolean near(final int sx, final int sy, final double wx,
@@ -163,10 +159,8 @@ public final class LightSourceDots {
    */
   @Deprecated
   public static void dragTo(final int light, final int sx, final int sy) {
-    synchronized (LightSource.class) {
-      if (light >= 0 && light < LightSource.lights.size()) {
-        dragTo(LightSource.lights.get(light), sx, sy);
-      }
+    if (light >= 0 && light < LightSource.lights.size()) {
+      dragTo(LightSource.lights.get(light), sx, sy);
     }
   }
 
@@ -197,39 +191,36 @@ public final class LightSourceDots {
     final int bg = com.springie.render.RendererDelegator
         .color_background_number;
     g.setColor(new Color(bg));
-    synchronized (LightSource.class) {
-      // Resize tracking arrays if light count changed.
-      final int n = LightSource.lights.size();
-      if (last_sx.length != n) {
-        last_sx = new int[n];
-        last_sy = new int[n];
-        java.util.Arrays.fill(last_sx, -1);
-        java.util.Arrays.fill(last_sy, -1);
+    // Resize tracking arrays if light count changed.
+    final int n = LightSource.lights.size();
+    if (last_sx.length != n) {
+      last_sx = new int[n];
+      last_sy = new int[n];
+      java.util.Arrays.fill(last_sx, -1);
+      java.util.Arrays.fill(last_sy, -1);
+    }
+    for (int i = 0; i < n; i++) {
+      if (last_sx[i] >= 0) {
+        // Wipe with a 2px margin (Tim, 2026-10-07): the white ring's
+        // drawOval pixels extend past the fill, leaving trails.
+        g.fillOval(last_sx[i] - RADIUS - 2, last_sy[i] - RADIUS - 2,
+            (RADIUS + 2) * 2, (RADIUS + 2) * 2);
       }
-      for (int i = 0; i < n; i++) {
-        if (last_sx[i] >= 0) {
-          // Wipe with a 2px margin (Tim, 2026-10-07): the white ring's
-          // drawOval pixels extend past the fill, leaving trails.
-          g.fillOval(last_sx[i] - RADIUS - 2, last_sy[i] - RADIUS - 2,
-              (RADIUS + 2) * 2, (RADIUS + 2) * 2);
-        }
-        last_sx[i] = -1;
-        last_sy[i] = -1;
-      }
+      last_sx[i] = -1;
+      last_sy[i] = -1;
     }
     // Skip lights at 0% intensity (Tim, 2026-10-03).
     // Dots use the configured light colors (Tim, 2026-10-04).
-    synchronized (LightSource.class) {
-      final int n = LightSource.lights.size();
-      for (int i = 0; i < n; i++) {
-        final Light light = LightSource.lights.get(i);
-        if (light.intensity_pct > 0) {
-          final int[] pos = drawOne(g, light.px, light.py, light.pz,
-              new Color(light.colour));
-          if (pos != null && i < last_sx.length) {
-            last_sx[i] = pos[0];
-            last_sy[i] = pos[1];
-          }
+    // (Count re-read: it was a separate block before the locks went.)
+    final int count = LightSource.lights.size();
+    for (int i = 0; i < count; i++) {
+      final Light light = LightSource.lights.get(i);
+      if (light.intensity_pct > 0) {
+        final int[] pos = drawOne(g, light.px, light.py, light.pz,
+            new Color(light.colour));
+        if (pos != null && i < last_sx.length) {
+          last_sx[i] = pos[0];
+          last_sy[i] = pos[1];
         }
       }
     }

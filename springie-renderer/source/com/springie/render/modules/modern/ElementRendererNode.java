@@ -69,55 +69,53 @@ public final class ElementRendererNode {
           // Diffuse + specular from N lights (Tim, 2026-10-04).
           // Per-output-channel diffuse: sum each light's factor scaled
           // by its color.
-          synchronized (LightSource.class) {
-            if (LightSource.colored_lighting) {
-            for (final Light light : LightSource.lights) {
-              if (light.intensity_pct <= 0) {
-                continue;
-              }
-              final double lx = light.px - node.pos.x;
-              final double ly = light.py - node.pos.y;
-              final double lz = light.pz - node.pos.z;
-              final double ld = Math.sqrt(lx * lx + ly * ly + lz * lz);
-              if (ld < 1e-12) {
-                continue;
-              }
-              // Backfaces get no diffuse (Tim, 2026-10-07): was
-              // Math.abs, which lit both sides.
-              final double light_dot_raw =
-                  (nnx * lx + nny * ly + nnz * lz) / ld;
-              final double light_dot =
-                  light_dot_raw < 0.0 ? 0.0 : light_dot_raw;
-              final double diff =
-                  0.75 * light_dot * light.intensity_pct / 50.0;
-              final int lr = (light.colour >> 16) & 0xFF;
-              final int lg = (light.colour >> 8) & 0xFF;
-              final int lb = light.colour & 0xFF;
-              r_factor += diff * lr / 255.0;
-              g_factor += diff * lg / 255.0;
-              b_factor += diff * lb / 255.0;
-              // Specular highlight (Tim, 2026-10-03):
-              // R = 2*dot(N,L)*N - L; spec = pow(max(0, dot(R,V)), 16).
-              // View vector V = (0, 0, -1). Tints by light color
-              // (Tim, 2026-10-04).
-              final double nlx = lx / ld;
-              final double nly = ly / ld;
-              final double nlz = lz / ld;
-              final double dot_nl = nnx * nlx + nny * nly + nnz * nlz;
-              final double rx = 2.0 * dot_nl * nnx - nlx;
-              final double ry = 2.0 * dot_nl * nny - nly;
-              final double rz = 2.0 * dot_nl * nnz - nlz;
-              // V = (0, 0, -1), so dot(R,V) = -rz.
-              final double spec_dot = Math.max(0.0, -rz);
-              if (spec_dot > 0.0) {
-                final double spec = Math.pow(spec_dot, 16.0)
-                    * light.intensity_pct / 50.0;
-                spec_r_n += spec * lr / 255.0;
-                spec_g_n += spec * lg / 255.0;
-                spec_b_n += spec * lb / 255.0;
-              }
+          if (LightSource.colored_lighting) {
+          for (final Light light : LightSource.lights) {
+            if (light.intensity_pct <= 0) {
+              continue;
             }
+            final double lx = light.px - node.pos.x;
+            final double ly = light.py - node.pos.y;
+            final double lz = light.pz - node.pos.z;
+            final double ld = Math.sqrt(lx * lx + ly * ly + lz * lz);
+            if (ld < 1e-12) {
+              continue;
             }
+            // Backfaces get no diffuse (Tim, 2026-10-07): was
+            // Math.abs, which lit both sides.
+            final double light_dot_raw =
+                (nnx * lx + nny * ly + nnz * lz) / ld;
+            final double light_dot =
+                light_dot_raw < 0.0 ? 0.0 : light_dot_raw;
+            final double diff =
+                0.75 * light_dot * light.intensity_pct / 50.0;
+            final int lr = (light.colour >> 16) & 0xFF;
+            final int lg = (light.colour >> 8) & 0xFF;
+            final int lb = light.colour & 0xFF;
+            r_factor += diff * lr / 255.0;
+            g_factor += diff * lg / 255.0;
+            b_factor += diff * lb / 255.0;
+            // Specular highlight (Tim, 2026-10-03):
+            // R = 2*dot(N,L)*N - L; spec = pow(max(0, dot(R,V)), 16).
+            // View vector V = (0, 0, -1). Tints by light color
+            // (Tim, 2026-10-04).
+            final double nlx = lx / ld;
+            final double nly = ly / ld;
+            final double nlz = lz / ld;
+            final double dot_nl = nnx * nlx + nny * nly + nnz * nlz;
+            final double rx = 2.0 * dot_nl * nnx - nlx;
+            final double ry = 2.0 * dot_nl * nny - nly;
+            final double rz = 2.0 * dot_nl * nnz - nlz;
+            // V = (0, 0, -1), so dot(R,V) = -rz.
+            final double spec_dot = Math.max(0.0, -rz);
+            if (spec_dot > 0.0) {
+              final double spec = Math.pow(spec_dot, 16.0)
+                  * light.intensity_pct / 50.0;
+              spec_r_n += spec * lr / 255.0;
+              spec_g_n += spec * lg / 255.0;
+              spec_b_n += spec * lb / 255.0;
+            }
+          }
           }
           r_factor = Math.min(1.0, r_factor);
           g_factor = Math.min(1.0, g_factor);

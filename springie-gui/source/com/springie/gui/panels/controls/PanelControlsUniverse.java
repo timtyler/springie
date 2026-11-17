@@ -521,9 +521,7 @@ public class PanelControlsUniverse {
     this.button_add_light = new Button("Add light");
     this.button_add_light.addActionListener(new ActionListener() {
       public void actionPerformed(final ActionEvent e) {
-        synchronized (LightSource.class) {
-          LightSource.lights.add(new Light(0.0, 0.0, 100, 0xFFFFFF));
-        }
+        LightSource.lights.add(new Light(0.0, 0.0, 100, 0xFFFFFF));
         LightSource.light_moved = true;
         rebuildLightControls();
       }
@@ -824,9 +822,7 @@ public class PanelControlsUniverse {
    */
   private void rebuildLightControls() {
     final Light[] lights;
-    synchronized (LightSource.class) {
-      lights = LightSource.lights.toArray(new Light[0]);
-    }
+    lights = LightSource.lights.toArray(new Light[0]);
     this.tab_light_colours.removeAll();
     // Clear tracked sliders; they are re-added by makePctSlider below.
     this.light_pos_sliders.clear();
@@ -853,9 +849,7 @@ public class PanelControlsUniverse {
       final Button delete = new Button("Delete");
       delete.addActionListener(new ActionListener() {
         public void actionPerformed(final ActionEvent e) {
-          synchronized (LightSource.class) {
-            LightSource.lights.remove(light);
-          }
+          LightSource.lights.remove(light);
           LightSource.light_moved = true;
           rebuildLightControls();
           // Refresh the screen to remove the deleted light's dot
