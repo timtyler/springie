@@ -15,10 +15,11 @@ public class LightSource {
    * of truth; world coordinates are derived by updateForViewport().
    * Percentages survive window resizes and are what we persist.
    * Copy-on-write (2026-11-17): no lock anywhere. The UI thread's
-   * edits to this list are the message; render threads take a
-   * consistent snapshot (toArray) at a tile/frame boundary and work
-   * from that. Individual Light fields are volatile for the
-   * event/render thread handoff.
+   * edits to this list are the message; render threads read the
+   * list directly, lock-free -- an add/remove swaps in a new
+   * backing array rather than disturbing a read in progress.
+   * Individual Light fields are volatile for the event/render
+   * thread handoff.
    */
   public static final List<Light> lights = new CopyOnWriteArrayList<>();
 
