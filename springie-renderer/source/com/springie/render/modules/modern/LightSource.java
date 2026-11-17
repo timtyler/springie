@@ -3,8 +3,8 @@
 package com.springie.render.modules.modern;
 
 import com.springie.geometry.Vector3D;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class LightSource {
   public static final Vector3D source_1 = new Vector3D(-116, -67, -217);
@@ -14,10 +14,13 @@ public class LightSource {
    * (as % of viewport half-size), intensity %, and color. The source
    * of truth; world coordinates are derived by updateForViewport().
    * Percentages survive window resizes and are what we persist.
-   * Guarded by the LightSource class lock for add/remove; individual
-   * Light fields are volatile for the event/render thread handoff.
+   * Copy-on-write (2026-11-17): no lock anywhere. The UI thread's
+   * edits to this list are the message; render threads take a
+   * consistent snapshot (toArray) at a tile/frame boundary and work
+   * from that. Individual Light fields are volatile for the
+   * event/render thread handoff.
    */
-  public static final List<Light> lights = new ArrayList<>();
+  public static final List<Light> lights = new CopyOnWriteArrayList<>();
 
   static {
     resetToDefaults();
@@ -74,7 +77,7 @@ public class LightSource {
    * off means the positioned lights are ignored and the ambient white
    * is the only light there is.
    */
-  public static synchronized void resetToDefaults() {
+  public static void resetToDefaults() {
     lights.clear();
     // Six lights spread uniformly around the edge (Tim, 2026-10-08):
     // hexagon at 60-degree intervals, 0-100% (50 = center).
@@ -113,24 +116,22 @@ public class LightSource {
     final double scale = (double) (1 << com.springie.geometry.Coords.shift);
     final double half_w = (double) hw * scale;
     final double half_h = (double) hh * scale;
-    synchronized (LightSource.class) {
-      for (final Light light : lights) {
-        // Z: 0-100% maps to +50*scale (behind) through -50*scale (the
-        // previous fixed front value) to -150*scale (far front). 50% is
-        // the default front position (Tim, 2026-10-06).
-        light.pz = (50.0 - 2.0 * light.z_pct) * scale;
-        // 0-100% (50=center) to world coords (Tim, 2026-10-06). The
-        // Coords.getXCoords convention is: sx = HW + (px + scx - HW*S)/PF,
-        // so px = HW*S - scx is the screen center. The range is HW*PF
-        // for exact screen mapping (PF = perspective factor at the
-        // light's depth).
-        final double pf = (double) (com.springie.geometry.Coords.shift_constant_z
-            + ((int) light.pz >> com.springie.geometry.Coords.shift_z));
-        light.px = (light.x_pct - 50.0) / 50.0 * half_w * (pf / scale)
-            + (half_w - com.springie.geometry.Coords.shift_constant_x);
-        light.py = (light.y_pct - 50.0) / 50.0 * half_h * (pf / scale)
-            + (half_h - com.springie.geometry.Coords.shift_constant_y);
-      }
+    for (final Light light : lights) {
+      // Z: 0-100% maps to +50*scale (behind) through -50*scale (the
+      // previous fixed front value) to -150*scale (far front). 50% is
+      // the default front position (Tim, 2026-10-06).
+      light.pz = (50.0 - 2.0 * light.z_pct) * scale;
+      // 0-100% (50=center) to world coords (Tim, 2026-10-06). The
+      // Coords.getXCoords convention is: sx = HW + (px + scx - HW*S)/PF,
+      // so px = HW*S - scx is the screen center. The range is HW*PF
+      // for exact screen mapping (PF = perspective factor at the
+      // light's depth).
+      final double pf = (double) (com.springie.geometry.Coords.shift_constant_z
+          + ((int) light.pz >> com.springie.geometry.Coords.shift_z));
+      light.px = (light.x_pct - 50.0) / 50.0 * half_w * (pf / scale)
+          + (half_w - com.springie.geometry.Coords.shift_constant_x);
+      light.py = (light.y_pct - 50.0) / 50.0 * half_h * (pf / scale)
+          + (half_h - com.springie.geometry.Coords.shift_constant_y);
     }
   }
 }

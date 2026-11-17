@@ -6,6 +6,7 @@ import com.springie.geometry.Coords;
 import com.springie.geometry.Vector3D;
 import com.springie.render.RendererDelegator;
 import com.springie.render.ScenicBackground;
+import com.springie.render.modules.modern.Light;
 import com.springie.render.modules.modern.LightSource;
 import com.springie.render.modules.modern.RendererTileManager;
 import java.awt.image.BufferedImage;
@@ -98,16 +99,65 @@ final class Raytracer {
     LightSource.updateForViewport(Coords.x_pixelso2, Coords.y_pixelso2);
   }
 
+  /**
+   * One tile thread's copy of the lights (2026-11-17): the lights are
+   * a static feature of the scene for the duration of a tile, so each
+   * tile copies the values it needs once, at the tile's start, and
+   * shades from the copy -- no lock on the per-pixel path. The UI
+   * thread edits the live LightSource.lights list (that edit is the
+   * message); a mid-frame edit lands in the next tile to start, and
+   * any transient difference while a light is dragged is acceptable.
+   */
+  private static final class LightSnapshot {
+    private double[] px = new double[0];
+
+    private double[] py = new double[0];
+
+    private double[] pz = new double[0];
+
+    private int[] pct = new int[0];
+
+    private int[] colour = new int[0];
+
+    private int count;
+  }
+
+  private static final ThreadLocal<LightSnapshot> TILE_LIGHTS =
+      ThreadLocal.withInitial(LightSnapshot::new);
+
+  /** Copies the live lights into this thread's tile snapshot. */
+  private static void snapshotLights() {
+    final LightSnapshot snap = TILE_LIGHTS.get();
+    // The copy-on-write list's toArray is a consistent snapshot of
+    // the list as of this call, even if the UI thread edits it
+    // mid-copy; the volatile Light fields then hand over the values.
+    final Light[] current = LightSource.lights.toArray(new Light[0]);
+    if (snap.px.length < current.length) {
+      snap.px = new double[current.length];
+      snap.py = new double[current.length];
+      snap.pz = new double[current.length];
+      snap.pct = new int[current.length];
+      snap.colour = new int[current.length];
+    }
+    for (int i = 0; i < current.length; i++) {
+      snap.px[i] = current[i].px;
+      snap.py[i] = current[i].py;
+      snap.pz[i] = current[i].pz;
+      snap.pct[i] = current[i].intensity_pct;
+      snap.colour[i] = current[i].colour;
+    }
+    snap.count = current.length;
+  }
+
   /** Gets light i's world X, or 0 if i is out of range (N lights, Tim, 2026-10-04). */
   private static double lightPx(final int i) {
     // No positioned lights when colored lighting is off (Tim, 2026-10-14).
     if (!LightSource.colored_lighting) {
       return 0.0;
     }
-    synchronized (LightSource.class) {
-      if (i >= 0 && i < LightSource.lights.size()) {
-        return LightSource.lights.get(i).px;
-      }
+    final LightSnapshot snap = TILE_LIGHTS.get();
+    if (i >= 0 && i < snap.count) {
+      return snap.px[i];
     }
     return 0.0;
   }
@@ -117,10 +167,9 @@ final class Raytracer {
     if (!LightSource.colored_lighting) {
       return 0.0;
     }
-    synchronized (LightSource.class) {
-      if (i >= 0 && i < LightSource.lights.size()) {
-        return LightSource.lights.get(i).py;
-      }
+    final LightSnapshot snap = TILE_LIGHTS.get();
+    if (i >= 0 && i < snap.count) {
+      return snap.py[i];
     }
     return 0.0;
   }
@@ -130,39 +179,34 @@ final class Raytracer {
     if (!LightSource.colored_lighting) {
       return 0.0;
     }
-    synchronized (LightSource.class) {
-      if (i >= 0 && i < LightSource.lights.size()) {
-        return LightSource.lights.get(i).pz;
-      }
+    final LightSnapshot snap = TILE_LIGHTS.get();
+    if (i >= 0 && i < snap.count) {
+      return snap.pz[i];
     }
     return 0.0;
   }
 
   /** Gets light i's intensity %, or 0 if out of range. */
   private static int lightPct(final int i) {
-    synchronized (LightSource.class) {
-      if (i >= 0 && i < LightSource.lights.size()) {
-        return LightSource.lights.get(i).intensity_pct;
-      }
+    final LightSnapshot snap = TILE_LIGHTS.get();
+    if (i >= 0 && i < snap.count) {
+      return snap.pct[i];
     }
     return 0;
   }
 
   /** Gets light i's colour, or 0 if out of range. */
   private static int lightColour(final int i) {
-    synchronized (LightSource.class) {
-      if (i >= 0 && i < LightSource.lights.size()) {
-        return LightSource.lights.get(i).colour;
-      }
+    final LightSnapshot snap = TILE_LIGHTS.get();
+    if (i >= 0 && i < snap.count) {
+      return snap.colour[i];
     }
     return 0;
   }
 
-  /** Gets the number of lights. */
+  /** Gets the number of lights in this tile's snapshot. */
   private static int lightCount() {
-    synchronized (LightSource.class) {
-      return LightSource.lights.size();
-    }
+    return TILE_LIGHTS.get().count;
   }
 
   private Raytracer() {
@@ -242,6 +286,8 @@ final class Raytracer {
       HitStats stats) {
     // Position the RGB lights for the current viewport (Tim, 2026-10-03).
     updateLightPositions();
+    // Take this tile's lock-free copy of the lights (2026-11-17).
+    snapshotLights();
     final Ray ray = new Ray();
     final Hit hit = new Hit();
     final int[] stack = new int[64];
