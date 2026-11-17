@@ -16,7 +16,7 @@
   </parent>
 
   <artifactId>springie-renderer</artifactId>
-  <name>Springie renderer</name>
+  <name>Springie-renderer</name>
   <description>The Springie renderer: visualization of the simulation, independent of GUI and I/O.</description>
 
   <dependencies>

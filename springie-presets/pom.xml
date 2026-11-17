@@ -15,7 +15,7 @@
   </parent>
 
   <artifactId>springie-presets</artifactId>
-  <name>Springie presets</name>
+  <name>Springie-presets</name>
   <description>Built-in models and preset objects for Springie.</description>
 
   <dependencies>

@@ -18,7 +18,7 @@
   </parent>
 
   <artifactId>springie-system</artifactId>
-  <name>Springie system tests</name>
+  <name>Springie-system-tests</name>
   <description>System-level integration tests: boot the whole app and drive its GUI.</description>
 
   <dependencies>

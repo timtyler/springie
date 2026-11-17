@@ -16,7 +16,7 @@
   </parent>
 
   <artifactId>springie-app</artifactId>
-  <name>Springie app</name>
+  <name>Springie-app</name>
   <description>The executable Springie jar.</description>
 
   <!-- Keep the historic jar name. -->

@@ -15,6 +15,6 @@
   </parent>
 
   <artifactId>springie-base</artifactId>
-  <name>Springie base</name>
+  <name>Springie-base</name>
   <description>Leaf packages: geometry, constants, utilities.</description>
 </project>

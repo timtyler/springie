@@ -16,7 +16,7 @@
   </parent>
 
   <artifactId>springie-gui-widgets</artifactId>
-  <name>Springie gui-widgets</name>
+  <name>Springie-gui-widgets</name>
   <description>Reusable AWT UI widgets for Springie (no app dependencies).</description>
 
   <dependencies>

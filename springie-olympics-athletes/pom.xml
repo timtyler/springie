@@ -9,7 +9,7 @@
     <version>1.03</version>
   </parent>
   <artifactId>springie-olympics-athletes</artifactId>
-  <name>Springie olympics athletes</name>
+  <name>Springie-olympics-athletes</name>
   <description>Springie olympics athletes.</description>
   <dependencies>
     <dependency>

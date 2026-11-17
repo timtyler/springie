@@ -16,7 +16,7 @@
   </parent>
 
   <artifactId>springie-gui</artifactId>
-  <name>Springie gui</name>
+  <name>Springie-gui</name>
   <description>The Springie GUI: AWT user interface for the simulator.</description>
 
   <dependencies>

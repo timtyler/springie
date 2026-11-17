@@ -16,7 +16,7 @@
   </parent>
 
   <artifactId>springie-command</artifactId>
-  <name>Springie command</name>
+  <name>Springie-command</name>
   <description>Undoable editing commands and model operations for Springie.</description>
 
   <dependencies>

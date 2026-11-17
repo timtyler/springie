@@ -24,7 +24,7 @@
   </parent>
 
   <artifactId>springie-preferences</artifactId>
-  <name>Springie preferences</name>
+  <name>Springie-preferences</name>
   <description>The Preferences tab panels: display, viewpoint, renderer and misc settings UI.</description>
 
   <dependencies>

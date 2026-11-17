@@ -17,7 +17,7 @@
   </parent>
 
   <artifactId>springie-engine</artifactId>
-  <name>Springie engine</name>
+  <name>Springie-engine</name>
   <description>The Springie simulation engine: model, world, and scene assembly, independent of rendering and GUI.</description>
 
   <dependencies>

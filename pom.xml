@@ -20,7 +20,7 @@
   <artifactId>springie-parent</artifactId>
   <version>1.03</version>
   <packaging>pom</packaging>
-  <name>Springie parent</name>
+  <name>Springie-parent</name>
   <description>A tensegrity simulator using Java.</description>
   <url>https://springie.com/</url>
 

@@ -16,7 +16,7 @@
   </parent>
 
   <artifactId>springie-io</artifactId>
-  <name>Springie io</name>
+  <name>Springie-io</name>
   <description>The Springie io module: file format readers and writers, independent of GUI.</description>
 
   <dependencies>

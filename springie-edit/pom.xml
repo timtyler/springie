@@ -15,7 +15,7 @@
   </parent>
 
   <artifactId>springie-edit</artifactId>
-  <name>Springie edit</name>
+  <name>Springie-edit</name>
   <description>Model editing operations for Springie.</description>
 
   <dependencies>
