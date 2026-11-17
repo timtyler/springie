@@ -66,9 +66,8 @@ final class AABB {
         return false;
       }
     } else {
-      final double inv = 1.0 / ray.dx;
-      double ta = (this.min_x - ray.ox) * inv;
-      double tb = (this.max_x - ray.ox) * inv;
+      double ta = (this.min_x - ray.ox) * ray.inv_dx;
+      double tb = (this.max_x - ray.ox) * ray.inv_dx;
       if (ta > tb) {
         final double tmp = ta;
         ta = tb;
@@ -90,9 +89,8 @@ final class AABB {
         return false;
       }
     } else {
-      final double inv = 1.0 / ray.dy;
-      double ta = (this.min_y - ray.oy) * inv;
-      double tb = (this.max_y - ray.oy) * inv;
+      double ta = (this.min_y - ray.oy) * ray.inv_dy;
+      double tb = (this.max_y - ray.oy) * ray.inv_dy;
       if (ta > tb) {
         final double tmp = ta;
         ta = tb;
@@ -114,9 +112,8 @@ final class AABB {
         return false;
       }
     } else {
-      final double inv = 1.0 / ray.dz;
-      double ta = (this.min_z - ray.oz) * inv;
-      double tb = (this.max_z - ray.oz) * inv;
+      double ta = (this.min_z - ray.oz) * ray.inv_dz;
+      double tb = (this.max_z - ray.oz) * ray.inv_dz;
       if (ta > tb) {
         final double tmp = ta;
         ta = tb;

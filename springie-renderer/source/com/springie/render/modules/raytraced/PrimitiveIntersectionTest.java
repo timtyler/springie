@@ -20,9 +20,7 @@ public class PrimitiveIntersectionTest {
     ray.oy = oy;
     ray.oz = oz;
     final double inv = 1.0 / Math.sqrt(dx * dx + dy * dy + dz * dz);
-    ray.dx = dx * inv;
-    ray.dy = dy * inv;
-    ray.dz = dz * inv;
+    ray.setDirection(dx * inv, dy * inv, dz * inv);
     return ray;
   }
 

@@ -23,9 +23,7 @@ class RTRingTest {
     ray.ox = ox;
     ray.oy = oy;
     ray.oz = oz;
-    ray.dx = dx;
-    ray.dy = dy;
-    ray.dz = dz;
+    ray.setDirection(dx, dy, dz);
     return ray;
   }
 

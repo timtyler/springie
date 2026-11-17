@@ -83,9 +83,7 @@ class RaySceneSelectionTest {
     ray.ox = 25600 + mid;
     ray.oy = 25600;
     ray.oz = -196608;
-    ray.dx = 0;
-    ray.dy = 0;
-    ray.dz = 1;
+    ray.setDirection(0, 0, 1);
     assertTrue(rings[0].intersect(ray, hit),
         "a ray through the annulus must hit the ring");
     assertEquals(196608.0, hit.t, 1e-6);

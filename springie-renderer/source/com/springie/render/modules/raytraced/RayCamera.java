@@ -59,8 +59,7 @@ final class RayCamera {
     ray.ox = this.ex;
     ray.oy = this.ey;
     ray.oz = this.ez;
-    ray.dx = dx * inverse_length;
-    ray.dy = dy * inverse_length;
-    ray.dz = inverse_length;
+    ray.setDirection(dx * inverse_length, dy * inverse_length,
+        inverse_length);
   }
 }

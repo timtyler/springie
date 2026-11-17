@@ -1740,9 +1740,7 @@ final class Raytracer {
         shadow_ray.ox = px + hit.nx;
         shadow_ray.oy = py + hit.ny;
         shadow_ray.oz = pz_light + hit.nz;
-        shadow_ray.dx = dx;
-        shadow_ray.dy = dy;
-        shadow_ray.dz = dz;
+        shadow_ray.setDirection(dx, dy, dz);
         shadow_hit.reset();
         // Only nearby geometry occludes (50000 fixed-point units).
         if (bvh.intersect(shadow_ray, shadow_hit, stack)
@@ -1906,9 +1904,7 @@ final class Raytracer {
       shadow_ray.ox = px + hit.nx;
       shadow_ray.oy = py + hit.ny;
       shadow_ray.oz = pz_light + hit.nz;
-      shadow_ray.dx = rx;
-      shadow_ray.dy = ry;
-      shadow_ray.dz = rz;
+      shadow_ray.setDirection(rx, ry, rz);
       shadow_hit.reset();
       if (bvh.intersect(shadow_ray, shadow_hit, stack) && shadow_hit.primitive != null) {
         // Single bounce: flat base color of what we hit, fogged.
@@ -1990,9 +1986,7 @@ final class Raytracer {
       shadow_ray.ox = px + side * hit.nx;
       shadow_ray.oy = py + side * hit.ny;
       shadow_ray.oz = pz + side * hit.nz;
-      shadow_ray.dx = dx;
-      shadow_ray.dy = dy;
-      shadow_ray.dz = dz;
+      shadow_ray.setDirection(dx, dy, dz);
       shadow_hit.reset();
       if (bvh.intersect(shadow_ray, shadow_hit, stack)) {
         // Blocked only if the occluder is closer than the light.
@@ -2019,9 +2013,7 @@ final class Raytracer {
     shadow_ray.ox = px + side * hit.nx;
     shadow_ray.oy = py + side * hit.ny;
     shadow_ray.oz = pz + side * hit.nz;
-    shadow_ray.dx = LIGHT_X;
-    shadow_ray.dy = LIGHT_Y;
-    shadow_ray.dz = LIGHT_Z;
+    shadow_ray.setDirection(LIGHT_X, LIGHT_Y, LIGHT_Z);
     shadow_hit.reset();
     return bvh.intersect(shadow_ray, shadow_hit, stack);
   }

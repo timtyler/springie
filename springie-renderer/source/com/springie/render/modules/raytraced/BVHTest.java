@@ -29,7 +29,7 @@ public class BVHTest {
     assertTrue(bvh.isEmpty());
     final Ray ray = new Ray();
     ray.oz = -1000.0;
-    ray.dz = 1.0;
+    ray.setDirection(0.0, 0.0, 1.0);
     assertFalse(bvh.intersect(ray, new Hit(), new int[64]));
   }
 
@@ -66,9 +66,7 @@ public class BVHTest {
       double dy = random.nextDouble() - 0.5;
       final double dz = 1.0;
       final double inv = 1.0 / Math.sqrt(dx * dx + dy * dy + dz * dz);
-      ray.dx = dx * inv;
-      ray.dy = dy * inv;
-      ray.dz = dz * inv;
+      ray.setDirection(dx * inv, dy * inv, dz * inv);
 
       final Hit expected = new Hit();
       final boolean expected_hit = bruteForce(primitives, ray, expected);
@@ -92,7 +90,7 @@ public class BVHTest {
     final BVH bvh = new BVH(primitives);
     final Ray ray = new Ray();
     ray.oz = -1000.0;
-    ray.dz = 1.0;
+    ray.setDirection(0.0, 0.0, 1.0);
     final Hit hit = new Hit();
     assertTrue(bvh.intersect(ray, hit, new int[64]));
     assertEquals(1400.0, hit.t, 1e-9);
