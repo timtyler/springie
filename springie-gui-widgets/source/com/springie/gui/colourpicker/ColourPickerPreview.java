@@ -48,8 +48,10 @@ public class ColourPickerPreview extends Panel {
       }
     };
 
-    // "Put" applies the proposed colour (Tim, 2026-10-08).
-    this.button_set = new Button("Put");
+    // The three buttons are named for their swatch (Tim, 2026-11-17):
+    // "Proposed" applies the proposed colour; "Original" and "Last"
+    // load those colours back into the picker.
+    this.button_set = new Button("Proposed");
     this.button_set.addActionListener(action_listener_set);
     this.panel_proposed.add(this.button_set);
 
@@ -60,7 +62,7 @@ public class ColourPickerPreview extends Panel {
       }
     };
 
-    this.button_reset = new Button("Put");
+    this.button_reset = new Button("Original");
     this.button_reset.addActionListener(action_listener_put_original);
     this.panel_original.add(this.button_reset);
 
@@ -71,7 +73,7 @@ public class ColourPickerPreview extends Panel {
       }
     };
 
-    this.button_last = new Button("Put");
+    this.button_last = new Button("Last");
     this.button_last.addActionListener(action_listener_put_last);
     this.panel_last.add(this.button_last);
 
